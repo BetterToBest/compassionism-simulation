@@ -789,26 +789,56 @@ function drawInsights(m, stability, p) {
   const pov = m.poverty;
   const insights = [];
 
+  // Poverty insight — suggestions only mention systems that are currently OFF
   if (pov < 2) {
     insights.push({ icon: '✅', title: 'Poverty target achieved', body: pov.toFixed(1)+'% poverty rate — below the 2% threshold established in the research framework.' });
   } else if (pov < 10) {
-    insights.push({ icon: '📈', title: 'Strong poverty reduction', body: pov.toFixed(1)+'% poverty rate — significant improvement from baseline, though below the <2% target.' });
+    const povTips = [];
+    if (p.bu < 1200) povTips.push('raising BU allocation toward $1,200');
+    if (p.partRate < 0.78) povTips.push('increasing participation toward 78%');
+    if (!p.ptf) povTips.push('enabling PTF');
+    if (!p.pth) povTips.push('enabling PTH');
+    const tipStr = povTips.length ? ' Try ' + povTips.join(', ') + '.' : '';
+    insights.push({ icon: '📈', title: 'Strong poverty reduction', body: pov.toFixed(1)+'% poverty rate — significant improvement from baseline, though below the <2% target.'+tipStr });
   } else {
-    insights.push({ icon: '⚠️', title: 'Poverty target not met', body: pov.toFixed(1)+'% poverty rate. Try increasing BU allocation, participation rate, or enabling PTF/PTH.' });
+    const povTips = [];
+    if (p.bu < 1200) povTips.push('raising BU allocation toward $1,200');
+    if (p.partRate < 0.78) povTips.push('increasing participation toward 78%');
+    if (!p.ptf) povTips.push('enabling PTF');
+    if (!p.pth) povTips.push('enabling PTH');
+    if (p.maxOctave < 6) povTips.push('raising the octave ceiling');
+    const tipStr = povTips.length ? ' Try ' + povTips.join(', ') + '.' : ' All systems are active — check BU amount and participation rate.';
+    insights.push({ icon: '⚠️', title: 'Poverty target not met', body: pov.toFixed(1)+'% poverty rate.'+tipStr });
   }
 
+  // Gini insight — suggestions only mention systems that are currently OFF or under-tuned
   if (m.gini <= 0.25) {
     insights.push({ icon: '⚖️', title: 'Gini target achieved', body: 'Gini of '+m.gini.toFixed(3)+' is below the 0.25 target — meaningfully better than Nordic benchmarks (0.27–0.29).' });
   } else {
-    insights.push({ icon: '📊', title: 'Inequality persists', body: 'Gini of '+m.gini.toFixed(3)+'. The research framework targets ≤0.25. Consider raising octave levels or enabling PTH.' });
+    const giniTips = [];
+    if (p.maxOctave < 6) giniTips.push('raising the octave ceiling (higher tiers lift lower earners more)');
+    if (!p.pth) giniTips.push('enabling PTH (Acre Equity builds wealth at the bottom)');
+    if (!p.ptf) giniTips.push('enabling PTF (cost savings benefit lower-income agents most)');
+    if (p.bu < 1200) giniTips.push('increasing BU allocation');
+    if (p.partRate < 0.78) giniTips.push('raising participation rate');
+    const tipStr = giniTips.length
+      ? ' Consider ' + giniTips.join(', ') + '.'
+      : ' All systems active — this Gini may reflect your current BU level and participation rate.';
+    insights.push({ icon: '📊', title: 'Inequality persists', body: 'Gini of '+m.gini.toFixed(3)+'. The research framework targets ≤0.25.'+tipStr });
   }
 
+  // Stability insight — context-aware
   if (stability >= 0.90) {
     insights.push({ icon: '🏛️', title: 'High system stability', body: Math.round(stability*100)+'% stability — the system is resilient to parameter variation. Network effects have activated.' });
   } else if (p.partRate < 0.55) {
-    insights.push({ icon: '🔗', title: 'Below critical threshold', body: 'Participation is '+Math.round(p.partRate*100)+'% — below the 55% minimum for network effects to activate. Stability is limited.' });
+    insights.push({ icon: '🔗', title: 'Below critical threshold', body: 'Participation is '+Math.round(p.partRate*100)+'% — below the 55% minimum for network effects to activate. Raise participation to restore stability.' });
   } else {
-    insights.push({ icon: '⚡', title: 'Moderate stability', body: 'System is functional but fragile. Increasing participation or PTF coverage would improve resilience.' });
+    const stabTips = [];
+    if (!p.ptf) stabTips.push('enabling PTF (adds a resilient merchant network)');
+    if (p.partRate < 0.75) stabTips.push('raising participation above 75%');
+    if (p.bu < 1000) stabTips.push('increasing BU allocation for a stronger floor');
+    const tipStr = stabTips.length ? ' Try ' + stabTips.join(', ') + '.' : ' Fine-tune BU allocation and participation rate to push above 90%.';
+    insights.push({ icon: '⚡', title: 'Moderate stability', body: 'System is functional but not fully resilient.'+tipStr });
   }
 
   document.getElementById('insights-grid').innerHTML = insights.map(i => `
