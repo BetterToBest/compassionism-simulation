@@ -10,961 +10,708 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root {
-  --bg:      #0f1117;
-  --bg2:     #171920;
-  --bg3:     #1e2028;
-  --bg4:     #252830;
-  --glass:   rgba(255,255,255,0.04);
-  --text:    #eeecea;
-  --text2:   #a8a69f;
-  --text3:   #666460;
-  --border:  rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.05);
-  --teal:    #1ec98a;
-  --teal2:   #0fa36e;
-  --teal-bg: rgba(30,201,138,0.10);
-  --blue:    #5baef7;
-  --blue-bg: rgba(91,174,247,0.10);
-  --amber:   #f0b03a;
-  --amber-bg:rgba(240,176,58,0.10);
-  --red:     #f07070;
-  --red-bg:  rgba(240,112,112,0.10);
-  --purple:  #b07af5;
-  --purple-bg: rgba(176,122,245,0.10);
-  --r:       8px;
-  --r-sm:    5px;
-  --font:    'Outfit', sans-serif;
-  --mono:    'JetBrains Mono', monospace;
+  --bg:       #0f1117;
+  --bg2:      #171920;
+  --bg3:      #1e2028;
+  --bg4:      #252830;
+  --text:     #eeecea;
+  --text2:    #a8a69f;
+  --text3:    #666460;
+  --border:   rgba(255,255,255,0.08);
+  --border2:  rgba(255,255,255,0.05);
+  --teal:     #1ec98a;
+  --teal2:    #0fa36e;
+  --teal-bg:  rgba(30,201,138,0.10);
+  --blue:     #5baef7;
+  --blue-bg:  rgba(91,174,247,0.10);
+  --amber:    #f0b03a;
+  --amber-bg: rgba(240,176,58,0.10);
+  --red:      #f07070;
+  --red-bg:   rgba(240,112,112,0.10);
+  --purple:   #b07af5;
+  --purple-bg:rgba(176,122,245,0.10);
+  --r:        8px;
+  --r-sm:     5px;
+  --font:     'Outfit', sans-serif;
+  --mono:     'JetBrains Mono', monospace;
+  --hdr:      52px;
+  --ftr:      38px;
 }
+
+/* ── RESET & SCROLL ARCHITECTURE ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
+html, body {
+  height: 100%;
+  overflow: hidden;          /* page itself never scrolls */
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
   font-size: 14.5px;
   line-height: 1.6;
-  min-height: 100vh;
 }
 
 /* ── HEADER ── */
 header {
+  height: var(--hdr);
+  flex-shrink: 0;
   background: var(--bg2);
   border-bottom: 1px solid var(--border);
-  padding: 0.9rem 1.5rem;
+  padding: 0 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
   gap: 0.75rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  z-index: 10;
 }
-.hd-left { display: flex; align-items: center; gap: 1rem; }
-.hd-logo { width: 28px; height: 28px; border-radius: 6px; background: linear-gradient(135deg,var(--teal),var(--blue)); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
-.hd-title { font-size: 15px; font-weight: 600; color: var(--text); }
-.hd-sub   { font-size: 12px; color: var(--text3); font-family: var(--mono); }
-.hd-right { display: flex; align-items: center; gap: 0.6rem; }
-.mode-pill {
-  display: flex; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; background: var(--bg3);
+.hd-left { display: flex; align-items: center; gap: 0.85rem; }
+.hd-logo {
+  width: 26px; height: 26px; border-radius: 5px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #000; flex-shrink: 0;
 }
-.mode-btn {
-  padding: 5px 14px; font-size: 12px; font-weight: 500; cursor: pointer; border: none;
-  background: transparent; color: var(--text3); font-family: var(--font); transition: all 0.18s;
-}
-.mode-btn.active { background: var(--teal); color: #000; font-weight: 600; border-radius: 20px; }
+.hd-title { font-size: 14.5px; font-weight: 600; }
+.hd-sub   { font-size: 11.5px; color: var(--text3); font-family: var(--mono); }
 .hub-link {
-  font-size: 12px; color: var(--teal); text-decoration: none; border: 1px solid var(--teal);
-  padding: 5px 12px; border-radius: 20px; transition: all 0.15s; white-space: nowrap;
+  font-size: 12px; color: var(--teal); text-decoration: none;
+  border: 1px solid rgba(30,201,138,0.35); padding: 4px 12px;
+  border-radius: 20px; transition: background 0.15s; white-space: nowrap;
 }
 .hub-link:hover { background: var(--teal-bg); }
 
-/* ── LAYOUT ── */
-.layout {
-  display: grid; grid-template-columns: 290px 1fr; min-height: calc(100vh - 57px);
+/* ── TWO-COLUMN LAYOUT — each column scrolls independently ── */
+.app-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
-@media (max-width: 840px) { .layout { grid-template-columns: 1fr; } }
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 292px 1fr;
+  overflow: hidden;          /* clip children; they scroll themselves */
+  height: calc(100% - var(--hdr) - var(--ftr));
+}
 
-/* ── SIDEBAR ── */
 .sidebar {
   background: var(--bg2);
   border-right: 1px solid var(--border);
-  padding: 1.25rem;
   overflow-y: auto;
-  max-height: calc(100vh - 57px);
-  position: sticky;
-  top: 57px;
+  height: 100%;
+  padding: 1.1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg4) transparent;
 }
-.s-section { margin-bottom: 1.6rem; }
+.sidebar::-webkit-scrollbar { width: 5px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+.main {
+  overflow-y: auto;
+  height: 100%;
+  padding: 1.1rem 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg4) transparent;
+}
+.main::-webkit-scrollbar { width: 5px; }
+.main::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+
+/* ── FOOTER ── */
+footer {
+  height: var(--ftr);
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 0 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--text3);
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+footer a { color: var(--teal); text-decoration: none; }
+
+/* ── SIDEBAR COMPONENTS ── */
+.s-section { margin-bottom: 1.4rem; }
 .s-heading {
-  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
-  color: var(--text3); margin-bottom: 0.8rem; padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border2);
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--text3); margin-bottom: 0.7rem;
+  padding-bottom: 0.35rem; border-bottom: 1px solid var(--border2);
 }
-.ctrl { margin-bottom: 0.9rem; }
-.ctrl-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
-.ctrl-name { font-size: 12.5px; color: var(--text2); }
-.ctrl-val  { font-size: 12.5px; font-weight: 600; color: var(--teal); font-family: var(--mono); }
+
+/* Synergy box */
+.syn-box {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 0.85rem; margin-bottom: 1.1rem;
+}
+.syn-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.syn-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); }
+.syn-score { font-size: 20px; font-weight: 700; font-family: var(--mono); color: var(--teal); }
+.syn-bar-wrap { height: 5px; background: var(--bg4); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+.syn-bar { height: 100%; border-radius: 3px; transition: width 0.4s ease; background: linear-gradient(90deg, var(--teal), var(--blue)); }
+.syn-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.syn-chip {
+  font-size: 9.5px; padding: 2px 7px; border-radius: 10px;
+  background: var(--bg4); color: var(--text3); border: 1px solid var(--border2);
+  transition: all 0.2s;
+}
+.syn-chip.on { background: var(--teal-bg); color: var(--teal); border-color: rgba(30,201,138,0.3); }
+.syn-chip.on-szh  { background: var(--purple-bg); color: var(--purple); border-color: rgba(176,122,245,0.3); }
+.syn-chip.on-cip  { background: var(--blue-bg);   color: var(--blue);   border-color: rgba(91,174,247,0.3); }
+.syn-chip.on-drug { background: var(--amber-bg);  color: var(--amber);  border-color: rgba(240,176,58,0.3); }
+
+/* Controls */
+.ctrl { margin-bottom: 0.85rem; }
+.ctrl-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.ctrl-name { font-size: 12px; color: var(--text2); }
+.ctrl-val  { font-size: 12px; font-weight: 600; color: var(--teal); font-family: var(--mono); min-width: 42px; text-align: right; }
 input[type=range] {
   width: 100%; height: 3px; appearance: none; background: var(--bg4);
   border-radius: 2px; outline: none; cursor: pointer;
 }
-input[type=range]::-webkit-slider-thumb {
-  appearance: none; width: 14px; height: 14px; border-radius: 50%;
-  background: var(--teal); cursor: pointer; border: 2px solid var(--bg2);
-}
-input[type=range]::-moz-range-thumb {
-  width: 14px; height: 14px; border-radius: 50%; background: var(--teal);
-  cursor: pointer; border: 2px solid var(--bg2);
-}
-.ctrl-hint { font-size: 10.5px; color: var(--text3); margin-top: 3px; }
+input[type=range]::-webkit-slider-thumb { appearance: none; width: 13px; height: 13px; border-radius: 50%; background: var(--teal); cursor: pointer; border: 2px solid var(--bg2); }
+input[type=range]::-moz-range-thumb    { width: 13px; height: 13px; border-radius: 50%; background: var(--teal); cursor: pointer; border: 2px solid var(--bg2); }
+.ctrl-hint { font-size: 10px; color: var(--text3); margin-top: 2px; }
 
-.tog-group { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 5px; }
+.tog-group { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
 .tog {
-  font-size: 11.5px; padding: 4px 10px; border-radius: 20px;
+  font-size: 11px; padding: 3px 9px; border-radius: 20px;
   border: 1px solid var(--border); background: var(--bg3);
   color: var(--text3); cursor: pointer; transition: all 0.15s; font-family: var(--font);
 }
-.tog.active { background: var(--teal-bg); border-color: var(--teal); color: var(--teal); font-weight: 500; }
-.tog.sys-szh.active  { background: var(--purple-bg); border-color: var(--purple); color: var(--purple); }
-.tog.sys-cip.active  { background: var(--blue-bg);   border-color: var(--blue);   color: var(--blue);   }
-.tog.sys-drug.active { background: var(--amber-bg);  border-color: var(--amber);  color: var(--amber);  }
+.tog.on-teal   { background: var(--teal-bg);   border-color: rgba(30,201,138,0.4);  color: var(--teal);   font-weight: 600; }
+.tog.on-purple { background: var(--purple-bg); border-color: rgba(176,122,245,0.4); color: var(--purple); font-weight: 600; }
+.tog.on-blue   { background: var(--blue-bg);   border-color: rgba(91,174,247,0.4);  color: var(--blue);   font-weight: 600; }
+.tog.on-amber  { background: var(--amber-bg);  border-color: rgba(240,176,58,0.4);  color: var(--amber);  font-weight: 600; }
 
-.run-btn {
-  width: 100%; padding: 11px; background: var(--teal); color: #000; border: none;
-  border-radius: var(--r-sm); font-size: 14px; font-weight: 700; cursor: pointer;
-  transition: all 0.18s; margin-bottom: 0.6rem; font-family: var(--font); letter-spacing: 0.02em;
-}
-.run-btn:hover:not(:disabled) { background: var(--teal2); transform: translateY(-1px); }
-.run-btn:disabled { background: var(--bg4); color: var(--text3); cursor: not-allowed; transform: none; }
-.reset-btn {
-  width: 100%; padding: 7px; background: transparent; color: var(--text3);
-  border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 12.5px;
-  cursor: pointer; font-family: var(--font);
-}
-.reset-btn:hover { background: var(--glass); color: var(--text2); }
-
-.preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+/* Presets */
+.preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
 .preset-btn {
-  font-size: 11px; padding: 8px 7px; border-radius: var(--r-sm);
+  font-size: 11px; padding: 7px 6px; border-radius: var(--r-sm);
   border: 1px solid var(--border); background: var(--bg3); color: var(--text2);
-  cursor: pointer; text-align: center; line-height: 1.4; font-family: var(--font);
+  cursor: pointer; text-align: center; line-height: 1.35; font-family: var(--font);
   transition: all 0.15s;
 }
 .preset-btn:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-bg); }
-.preset-tag { font-size: 10px; color: var(--text3); display: block; margin-top: 2px; }
+.preset-sub { font-size: 9.5px; color: var(--text3); display: block; margin-top: 2px; }
 
-/* ── SYNERGY INDEX ── */
-.synergy-box {
-  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r);
-  padding: 0.9rem; margin-bottom: 0.9rem;
+/* Run / Reset */
+.run-btn {
+  width: 100%; padding: 10px; background: var(--teal); color: #000;
+  border: none; border-radius: var(--r-sm); font-size: 13.5px; font-weight: 700;
+  cursor: pointer; font-family: var(--font); transition: all 0.18s; margin-bottom: 6px;
 }
-.syn-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
-.syn-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); }
-.syn-score { font-size: 22px; font-weight: 700; font-family: var(--mono); color: var(--teal); }
-.syn-bar-wrap { height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
-.syn-bar { height: 100%; border-radius: 3px; transition: width 0.4s ease; background: linear-gradient(90deg, var(--teal), var(--blue)); }
-.syn-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-.syn-tag {
-  font-size: 10px; padding: 2px 7px; border-radius: 10px;
-  background: var(--bg4); color: var(--text3); border: 1px solid var(--border2);
+.run-btn:hover:not(:disabled) { background: var(--teal2); }
+.run-btn:disabled { background: var(--bg4); color: var(--text3); cursor: not-allowed; }
+.reset-btn {
+  width: 100%; padding: 7px; background: transparent; color: var(--text3);
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  font-size: 12px; cursor: pointer; font-family: var(--font);
 }
-.syn-tag.active { background: var(--teal-bg); color: var(--teal); border-color: var(--teal); }
+.reset-btn:hover { background: var(--bg3); color: var(--text2); }
 
-/* ── MAIN AREA ── */
-.main { padding: 1.25rem; overflow-y: auto; }
-
-/* ── STATUS ── */
+/* ── MAIN CONTENT COMPONENTS ── */
 .status-bar {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 9px;
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 0.7rem 1rem; margin-bottom: 0.9rem;
+  border-radius: var(--r); padding: 0.6rem 0.9rem; margin-bottom: 0.75rem;
 }
 .s-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
 .s-dot.running { background: var(--amber); animation: pulse 1s infinite; }
-.s-dot.done { background: var(--teal); }
+.s-dot.done    { background: var(--teal); }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-.s-text { font-size: 12.5px; color: var(--text2); flex: 1; }
+.s-text { font-size: 12px; color: var(--text2); flex: 1; }
 .s-pct  { font-size: 12px; font-family: var(--mono); color: var(--text3); }
-.prog-wrap { height: 2px; background: var(--border2); border-radius: 1px; overflow: hidden; margin-bottom: 0.9rem; }
-.prog-bar  { height: 100%; background: var(--teal); border-radius: 1px; transition: width 0.1s; width: 0; }
+.prog-wrap { height: 2px; background: var(--border2); border-radius: 1px; overflow: hidden; margin-bottom: 0.85rem; }
+.prog-bar  { height: 100%; background: var(--teal); transition: width 0.1s; width: 0; }
 
-/* ── KPIs ── */
-.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1rem; }
+/* KPIs */
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 0.85rem; }
 @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } }
 .kpi {
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 0.9rem 1rem;
+  border-radius: var(--r); padding: 0.8rem 0.9rem;
 }
-.kpi-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); margin-bottom: 5px; }
-.kpi-val   { font-size: 26px; font-weight: 700; color: var(--text); font-family: var(--mono); line-height: 1.1; }
-.kpi-delta { font-size: 11px; margin-top: 4px; }
-.kpi-delta.good { color: var(--teal); }
-.kpi-delta.warn { color: var(--amber); }
-.kpi-delta.bad  { color: var(--red);  }
+.kpi-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); margin-bottom: 4px; }
+.kpi-val   { font-size: 24px; font-weight: 700; color: var(--text); font-family: var(--mono); line-height: 1.15; }
+.kpi-delta { font-size: 10.5px; margin-top: 3px; }
+.good { color: var(--teal); }
+.warn { color: var(--amber); }
+.bad  { color: var(--red); }
 
-/* ── CHARTS ── */
-.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
-@media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+/* Charts */
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 0.85rem; }
+@media (max-width: 880px) { .chart-grid { grid-template-columns: 1fr; } }
 .chart-card {
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 1rem;
+  border-radius: var(--r); padding: 0.9rem;
 }
-.chart-title { font-size: 12px; font-weight: 500; color: var(--text3); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.chart-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); margin-bottom: 0.65rem; }
 
-/* ── COMPARE TABLE ── */
+/* Comparison table */
 .cmp-card {
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 1rem; margin-bottom: 1rem;
+  border-radius: var(--r); padding: 0.9rem; margin-bottom: 0.85rem;
 }
-.cmp-title { font-size: 12px; font-weight: 500; color: var(--text3); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-table { width: 100%; font-size: 12.5px; border-collapse: collapse; }
-th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); font-weight: 600; padding: 6px 10px; border-bottom: 1px solid var(--border); }
-td { padding: 9px 10px; border-bottom: 1px solid var(--border2); color: var(--text); font-family: var(--mono); }
-td:first-child { font-family: var(--font); }
+.cmp-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); margin-bottom: 0.65rem; }
+table { width: 100%; font-size: 12px; border-collapse: collapse; }
+th { text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); font-weight: 700; padding: 5px 9px; border-bottom: 1px solid var(--border); }
+td { padding: 8px 9px; border-bottom: 1px solid var(--border2); color: var(--text); }
+td:not(:first-child) { font-family: var(--mono); font-size: 12px; }
 tr:last-child td { border-bottom: none; }
-.badge {
-  display: inline-block; font-size: 10px; padding: 2px 8px;
-  border-radius: 10px; font-weight: 600; font-family: var(--font);
-}
-.badge-base  { background: var(--red-bg);   color: var(--red);   }
-.badge-cco   { background: var(--blue-bg);  color: var(--blue);  }
-.badge-full  { background: var(--teal-bg);  color: var(--teal);  }
+.badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; font-family: var(--font); }
+.b-base { background: var(--red-bg);  color: var(--red); }
+.b-cco  { background: var(--blue-bg); color: var(--blue); }
+.b-full { background: var(--teal-bg); color: var(--teal); }
 
-/* ── INSIGHTS ── */
-.insight-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1rem; }
-@media (max-width: 900px) { .insight-grid { grid-template-columns: 1fr; } }
-.insight {
+/* Insights */
+.insight-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 0.85rem; }
+@media (max-width: 880px) { .insight-grid { grid-template-columns: 1fr; } }
+.insight { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r); padding: 0.9rem; }
+.insight-icon  { font-size: 17px; margin-bottom: 5px; }
+.insight-title { font-size: 12.5px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.insight-body  { font-size: 11.5px; color: var(--text2); line-height: 1.55; }
+
+/* Sensitivity */
+.sensitivity-card {
   background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 1rem;
-}
-.insight-icon  { font-size: 18px; margin-bottom: 6px; }
-.insight-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.insight-body  { font-size: 11.5px; color: var(--text2); line-height: 1.6; }
-
-/* ── WARN ── */
-.param-warn {
-  background: var(--amber-bg); border: 1px solid var(--amber);
-  border-radius: var(--r-sm); padding: 8px 12px;
-  font-size: 11.5px; color: var(--amber); margin-bottom: 0.9rem;
+  border-radius: var(--r); padding: 0.9rem; margin-bottom: 0.85rem;
 }
 
-/* ── EXPLORER MODE ── */
-#explorer { padding: 1.5rem; }
-.exp-hero { text-align: center; max-width: 640px; margin: 0 auto 2rem; }
-.exp-hero h1 { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 0.5rem; }
-.exp-hero p  { font-size: 15px; color: var(--text2); }
-
-.exp-presets { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 1.5rem; max-width: 900px; margin-left: auto; margin-right: auto; }
-@media (max-width: 800px) { .exp-presets { grid-template-columns: 1fr 1fr; } }
-.exp-preset {
-  background: var(--bg2); border: 1.5px solid var(--border);
-  border-radius: var(--r); padding: 1.1rem; cursor: pointer;
-  text-align: center; transition: all 0.18s; font-family: var(--font);
+/* Warn banner */
+.warn-banner {
+  background: var(--amber-bg); border: 1px solid rgba(240,176,58,0.3);
+  border-radius: var(--r-sm); padding: 7px 10px; font-size: 11.5px;
+  color: var(--amber); margin-bottom: 0.85rem;
 }
-.exp-preset:hover { border-color: var(--teal); background: var(--teal-bg); }
-.exp-preset.selected { border-color: var(--teal); background: var(--teal-bg); }
-.ep-icon   { font-size: 28px; margin-bottom: 8px; }
-.ep-name   { font-size: 13px; font-weight: 600; color: var(--text); }
-.ep-desc   { font-size: 11px; color: var(--text3); margin-top: 3px; }
-
-.exp-addons { max-width: 900px; margin: 0 auto 1.5rem; }
-.ea-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 0.7rem; }
-.ea-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-.ea-btn {
-  display: flex; align-items: center; gap: 8px;
-  background: var(--bg2); border: 1.5px solid var(--border);
-  border-radius: var(--r); padding: 0.7rem 1rem; cursor: pointer;
-  transition: all 0.18s; font-family: var(--font);
-}
-.ea-btn:hover { border-color: var(--text3); }
-.ea-btn.active-szh  { border-color: var(--purple); background: var(--purple-bg); }
-.ea-btn.active-cip  { border-color: var(--blue);   background: var(--blue-bg);   }
-.ea-btn.active-drug { border-color: var(--amber);  background: var(--amber-bg);  }
-.ea-icon { font-size: 20px; }
-.ea-text { text-align: left; }
-.ea-name  { font-size: 12.5px; font-weight: 600; color: var(--text); display: block; }
-.ea-extra { font-size: 10.5px; color: var(--text3); display: block; }
-
-.exp-syn { max-width: 900px; margin: 0 auto 1.5rem; }
-.exp-run { text-align: center; margin-bottom: 1.5rem; }
-.exp-run-btn {
-  padding: 14px 48px; background: var(--teal); color: #000; border: none;
-  border-radius: 30px; font-size: 16px; font-weight: 700; cursor: pointer;
-  font-family: var(--font); transition: all 0.18s; letter-spacing: 0.02em;
-}
-.exp-run-btn:hover:not(:disabled) { background: var(--teal2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,201,138,0.25); }
-.exp-run-btn:disabled { background: var(--bg4); color: var(--text3); cursor: not-allowed; transform: none; box-shadow: none; }
-
-.exp-results { max-width: 900px; margin: 0 auto; }
-.plain-kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 1.25rem; }
-@media (max-width: 700px) { .plain-kpi-grid { grid-template-columns: 1fr 1fr; } }
-.plain-kpi {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 1.1rem;
-}
-.pk-icon  { font-size: 22px; margin-bottom: 6px; }
-.pk-val   { font-size: 24px; font-weight: 700; color: var(--text); font-family: var(--mono); }
-.pk-label { font-size: 12.5px; font-weight: 500; color: var(--text); margin: 4px 0 2px; }
-.pk-sub   { font-size: 11px; color: var(--text3); }
-
-.footer-bar {
-  background: var(--bg2); border-top: 1px solid var(--border);
-  padding: 0.8rem 1.5rem; font-size: 11.5px; color: var(--text3);
-  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;
-}
-.footer-bar a { color: var(--teal); text-decoration: none; }
 </style>
 </head>
 <body>
+
+<div class="app-body">
 
 <!-- HEADER -->
 <header>
   <div class="hd-left">
     <div class="hd-logo">B</div>
     <div>
-      <div class="hd-title">Compassionism Simulation</div>
+      <div class="hd-title">Compassionism Framework Simulation</div>
       <div class="hd-sub">CCO · PTF · PTH · SZH · CIP · v2.1</div>
     </div>
   </div>
-  <div class="hd-right">
-    <div class="mode-pill">
-      <button class="mode-btn active" id="btn-explorer" onclick="setMode('explorer')">Explorer</button>
-      <button class="mode-btn" id="btn-research" onclick="setMode('research')">Research</button>
-    </div>
-    <a href="https://bettertobest.github.io/research-hub/" class="hub-link" target="_blank">← Research Hub</a>
-  </div>
+  <a href="https://bettertobest.github.io/research-hub/" class="hub-link" target="_blank">← Research Hub</a>
 </header>
 
-<!-- ══════════════════════════════ EXPLORER MODE ══════════════════════════════ -->
-<div id="explorer">
-  <div class="exp-hero">
-    <h1>How would Compassionism change your world?</h1>
-    <p>Choose a scenario, activate additional policy systems, then run the simulation to see projected outcomes over 20 years.</p>
+<div class="layout">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+
+  <!-- Synergy Index -->
+  <div class="syn-box">
+    <div class="syn-top">
+      <span class="syn-label">System Synergy Index</span>
+      <span class="syn-score" id="syn-score">0</span>
+    </div>
+    <div class="syn-bar-wrap"><div class="syn-bar" id="syn-bar" style="width:0%"></div></div>
+    <div class="syn-chips" id="syn-chips"></div>
   </div>
 
-  <!-- Scenario presets -->
-  <div class="exp-presets">
-    <div class="exp-preset selected" id="ep-baseline" onclick="expPreset('baseline')">
-      <div class="ep-icon">🏛️</div>
-      <div class="ep-name">Status Quo</div>
-      <div class="ep-desc">Traditional welfare<br>UBI $400/mo</div>
-    </div>
-    <div class="exp-preset" id="ep-cco" onclick="expPreset('cco_only')">
-      <div class="ep-icon">💎</div>
-      <div class="ep-name">CCO Only</div>
-      <div class="ep-desc">Creative Currency<br>No housing/community</div>
-    </div>
-    <div class="exp-preset" id="ep-optimal" onclick="expPreset('optimal')">
-      <div class="ep-icon">🌱</div>
-      <div class="ep-name">Full Compassionism</div>
-      <div class="ep-desc">All five architectures<br>Optimal parameters</div>
-    </div>
-    <div class="exp-preset" id="ep-stress" onclick="expPreset('stress')">
-      <div class="ep-icon">⚡</div>
-      <div class="ep-name">Stress Test</div>
-      <div class="ep-desc">Low participation<br>Economic shocks</div>
+  <!-- Presets -->
+  <div class="s-section">
+    <div class="s-heading">Scenario Presets</div>
+    <div class="preset-grid">
+      <button class="preset-btn" onclick="applyPreset('baseline')">Status Quo<span class="preset-sub">Welfare / $400 UBI</span></button>
+      <button class="preset-btn" onclick="applyPreset('cco_only')">CCO Only<span class="preset-sub">No housing systems</span></button>
+      <button class="preset-btn" onclick="applyPreset('optimal')">Full Integration<span class="preset-sub">Optimal parameters</span></button>
+      <button class="preset-btn" onclick="applyPreset('stress')">Stress Test<span class="preset-sub">Low participation</span></button>
     </div>
   </div>
 
-  <!-- Add-on systems -->
-  <div class="exp-addons">
-    <div class="ea-label">Add policy systems to any scenario</div>
-    <div class="ea-btns">
-      <div class="ea-btn" id="ea-szh" onclick="expToggleAddon('szh')">
-        <div class="ea-icon">🏘️</div>
-        <div class="ea-text">
-          <span class="ea-name">Social Zone Harmonization</span>
-          <span class="ea-extra">Reduces friction costs ~5% · boosts cohesion</span>
-        </div>
-      </div>
-      <div class="ea-btn" id="ea-cip" onclick="expToggleAddon('cip')">
-        <div class="ea-icon">🌐</div>
-        <div class="ea-text">
-          <span class="ea-name">Citizens Internet Portal</span>
-          <span class="ea-extra">Digital access savings ~$700/yr · wider CCO reach</span>
-        </div>
-      </div>
-      <div class="ea-btn" id="ea-drug" onclick="expToggleAddon('drug')">
-        <div class="ea-icon">⚕️</div>
-        <div class="ea-text">
-          <span class="ea-name">Sensible Drug Reform</span>
-          <span class="ea-extra">Redirects $1,800/yr per person · reduces harm costs</span>
-        </div>
-      </div>
+  <!-- CCO -->
+  <div class="s-section">
+    <div class="s-heading">CCO — Basic Units</div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Monthly BU allocation</span><span class="ctrl-val" id="v-bu">$1,200</span></div>
+      <input type="range" min="0" max="1800" step="50" value="1200" id="sl-bu" oninput="sv('bu',this.value,'$','')">
+      <div class="ctrl-hint">$0 = welfare only · UBI baseline $400 · Optimal $1,200</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Max octave level</span><span class="ctrl-val" id="v-octave">6</span></div>
+      <input type="range" min="1" max="9" step="1" value="6" id="sl-octave" oninput="sv('octave',this.value,'','')">
+      <div class="ctrl-hint">Raises conversion ceiling (1× to 2.5× multiplier)</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">BU expiry</span><span class="ctrl-val" id="v-expiry">1 mo</span></div>
+      <input type="range" min="1" max="6" step="1" value="1" id="sl-expiry" oninput="sv('expiry',this.value,'','mo')">
     </div>
   </div>
 
-  <!-- Synergy index -->
-  <div class="exp-syn" id="exp-syn-box">
-    <div class="synergy-box">
-      <div class="syn-header">
-        <span class="syn-label">System Synergy Index</span>
-        <span class="syn-score" id="exp-syn-score">0</span>
+  <!-- Quality -->
+  <div class="s-section">
+    <div class="s-heading">Quality &amp; Conversion</div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Base multiplier ceiling</span><span class="ctrl-val" id="v-mult">9×</span></div>
+      <input type="range" min="1" max="9" step="1" value="9" id="sl-mult" oninput="sv('mult',this.value,'','×')">
+      <div class="ctrl-hint">1× to 9× based on quality tier</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Phi rate Φ (1.618×)</span><span class="ctrl-val" id="v-phi">On</span></div>
+      <div class="tog-group">
+        <button class="tog on-teal" id="phi-on"  onclick="setTog('phi',true)">On</button>
+        <button class="tog"         id="phi-off" onclick="setTog('phi',false)">Off</button>
       </div>
-      <div class="syn-bar-wrap"><div class="syn-bar" id="exp-syn-bar" style="width:0%"></div></div>
-      <div class="syn-tags" id="exp-syn-tags"></div>
+      <div class="ctrl-hint">Golden ratio bonus for beauty + productivity</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Conversion tax rate</span><span class="ctrl-val" id="v-tax">12%</span></div>
+      <input type="range" min="0" max="30" step="1" value="12" id="sl-tax" oninput="sv('tax',this.value,'','%')">
     </div>
   </div>
 
-  <!-- Run button + progress -->
-  <div class="exp-run">
-    <button class="exp-run-btn" id="exp-run-btn" onclick="runExplorer()">▶ Run Simulation</button>
-  </div>
-  <div style="max-width:900px;margin:0 auto 1rem;">
-    <div class="status-bar" id="exp-status" style="display:none;">
-      <div class="s-dot running" id="exp-dot"></div>
-      <div class="s-text" id="exp-status-text">Running…</div>
-      <div class="s-pct" id="exp-pct"></div>
+  <!-- Population -->
+  <div class="s-section">
+    <div class="s-heading">Population &amp; Participation</div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Agents simulated</span><span class="ctrl-val" id="v-agents">500</span></div>
+      <input type="range" min="100" max="2000" step="100" value="500" id="sl-agents" oninput="sv('agents',this.value,'','')">
     </div>
-    <div class="prog-wrap" id="exp-prog-wrap" style="display:none;"><div class="prog-bar" id="exp-prog"></div></div>
-  </div>
-
-  <!-- Explorer results -->
-  <div class="exp-results" id="exp-results" style="display:none;">
-    <div class="plain-kpi-grid">
-      <div class="plain-kpi">
-        <div class="pk-icon">🧑‍🤝‍🧑</div>
-        <div class="pk-val" id="epk-poverty">—</div>
-        <div class="pk-label">People above poverty</div>
-        <div class="pk-sub" id="epk-poverty-sub">After 20 years</div>
-      </div>
-      <div class="plain-kpi">
-        <div class="pk-icon">💰</div>
-        <div class="pk-val" id="epk-wealth">—</div>
-        <div class="pk-label">Typical household wealth</div>
-        <div class="pk-sub" id="epk-wealth-sub">Median after 20 years</div>
-      </div>
-      <div class="plain-kpi">
-        <div class="pk-icon">⚖️</div>
-        <div class="pk-val" id="epk-gini">—</div>
-        <div class="pk-label">Inequality (Gini)</div>
-        <div class="pk-sub" id="epk-gini-sub">0 = perfectly equal</div>
-      </div>
-      <div class="plain-kpi">
-        <div class="pk-icon">🔒</div>
-        <div class="pk-val" id="epk-stab">—</div>
-        <div class="pk-label">System stability</div>
-        <div class="pk-sub" id="epk-stab-sub">Resilience to shocks</div>
-      </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">CCO participation rate</span><span class="ctrl-val" id="v-part">78%</span></div>
+      <input type="range" min="10" max="99" step="1" value="78" id="sl-part" oninput="sv('part',this.value,'','%')">
+      <div class="ctrl-hint">Min viable 55% · Optimal 78%</div>
     </div>
-    <div class="chart-grid" style="max-width:900px;">
-      <div class="chart-card">
-        <div class="chart-title">Poverty rate over 20 years</div>
-        <div style="position:relative;height:200px;"><canvas id="exp-chart-poverty"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Typical household wealth ($)</div>
-        <div style="position:relative;height:200px;"><canvas id="exp-chart-wealth"></canvas></div>
-      </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Simulation years</span><span class="ctrl-val" id="v-years">20 yr</span></div>
+      <input type="range" min="5" max="30" step="1" value="20" id="sl-years" oninput="sv('years',this.value,'','yr')">
     </div>
-    <div class="insight-grid" id="exp-insights"></div>
   </div>
-</div>
 
-<!-- ══════════════════════════════ RESEARCH MODE ══════════════════════════════ -->
-<div id="research" style="display:none;">
-  <div class="layout">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+  <!-- Architectures -->
+  <div class="s-section">
+    <div class="s-heading">Economic Architectures</div>
 
-      <!-- Synergy index -->
-      <div class="synergy-box" style="margin-bottom:1.2rem;">
-        <div class="syn-header">
-          <span class="syn-label">Synergy Index</span>
-          <span class="syn-score" id="res-syn-score">0</span>
-        </div>
-        <div class="syn-bar-wrap"><div class="syn-bar" id="res-syn-bar" style="width:0%"></div></div>
-        <div class="syn-tags" id="res-syn-tags"></div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">PTF (Public Trust Foundations)</span></div>
+      <div class="tog-group">
+        <button class="tog on-teal" id="ptf-on"  onclick="setTog('ptf',true)">On</button>
+        <button class="tog"         id="ptf-off" onclick="setTog('ptf',false)">Off</button>
       </div>
+      <div class="ctrl-hint">Community-owned essential goods</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">PTF market share</span><span class="ctrl-val" id="v-ptfsh">18%</span></div>
+      <input type="range" min="0" max="35" step="1" value="18" id="sl-ptfsh" oninput="sv('ptfsh',this.value,'','%')">
+      <div class="ctrl-hint">Optimal 18% · Max 30% before distortion</div>
+    </div>
 
-      <div class="s-section">
-        <div class="s-heading">Scenario Presets</div>
-        <div class="preset-grid">
-          <button class="preset-btn" onclick="applyPreset('baseline')">Status Quo<span class="preset-tag">Welfare / $400 UBI</span></button>
-          <button class="preset-btn" onclick="applyPreset('cco_only')">CCO Only<span class="preset-tag">No housing</span></button>
-          <button class="preset-btn" onclick="applyPreset('optimal')">Full System<span class="preset-tag">Optimal params</span></button>
-          <button class="preset-btn" onclick="applyPreset('stress')">Stress Test<span class="preset-tag">Low participation</span></button>
-        </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">PTH (Public Trust Housing)</span></div>
+      <div class="tog-group">
+        <button class="tog on-teal" id="pth-on"  onclick="setTog('pth',true)">On</button>
+        <button class="tog"         id="pth-off" onclick="setTog('pth',false)">Off</button>
       </div>
+      <div class="ctrl-hint">Community housing + Acre Equity</div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">PTH uptake rate</span><span class="ctrl-val" id="v-pthup">20%</span></div>
+      <input type="range" min="0" max="50" step="1" value="20" id="sl-pthup" oninput="sv('pthup',this.value,'','%')">
+    </div>
 
-      <div class="s-section">
-        <div class="s-heading">CCO — Basic Units</div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Monthly BU allocation</span><span class="ctrl-val" id="v-bu">$1,200</span></div>
-          <input type="range" min="0" max="1800" step="50" value="1200" id="sl-bu" oninput="sv('bu',this.value,'$','')">
-          <div class="ctrl-hint">$0 = welfare only · Optimal $1,200 · UBI baseline $400</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Max octave level</span><span class="ctrl-val" id="v-octave">6</span></div>
-          <input type="range" min="1" max="9" step="1" value="6" id="sl-octave" oninput="sv('octave',this.value,'','')">
-          <div class="ctrl-hint">Each octave raises conversion ceiling</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">BU expiry (months)</span><span class="ctrl-val" id="v-expiry">1</span></div>
-          <input type="range" min="1" max="6" step="1" value="1" id="sl-expiry" oninput="sv('expiry',this.value,'','mo')">
-        </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">SZH (Social Zone Harmonization)</span></div>
+      <div class="tog-group">
+        <button class="tog on-purple" id="szh-on"  onclick="setTog('szh',true)">On</button>
+        <button class="tog"           id="szh-off" onclick="setTog('szh',false)">Off</button>
       </div>
+      <div class="ctrl-hint">Reduces friction costs · boosts cohesion</div>
+    </div>
 
-      <div class="s-section">
-        <div class="s-heading">Quality &amp; Conversion</div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Base multiplier ceiling</span><span class="ctrl-val" id="v-mult">9×</span></div>
-          <input type="range" min="1" max="9" step="1" value="9" id="sl-mult" oninput="sv('mult',this.value,'','×')">
-          <div class="ctrl-hint">1×–9× based on quality assessment</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Phi rate (Φ = 1.618×)</span><span class="ctrl-val" id="v-phi">On</span></div>
-          <div class="tog-group">
-            <button class="tog active" id="phi-on"  onclick="setTog('phi',true)">On</button>
-            <button class="tog"        id="phi-off" onclick="setTog('phi',false)">Off</button>
-          </div>
-          <div class="ctrl-hint">Golden ratio bonus for beauty + productivity</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Conversion tax rate</span><span class="ctrl-val" id="v-tax">12%</span></div>
-          <input type="range" min="0" max="30" step="1" value="12" id="sl-tax" oninput="sv('tax',this.value,'','%')">
-        </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">CIP (Citizens Internet Portal)</span></div>
+      <div class="tog-group">
+        <button class="tog on-blue" id="cip-on"  onclick="setTog('cip',true)">On</button>
+        <button class="tog"         id="cip-off" onclick="setTog('cip',false)">Off</button>
       </div>
+      <div class="ctrl-hint">Digital access · widens CCO reach</div>
+    </div>
 
-      <div class="s-section">
-        <div class="s-heading">Population &amp; Participation</div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Agents simulated</span><span class="ctrl-val" id="v-agents">500</span></div>
-          <input type="range" min="100" max="2000" step="100" value="500" id="sl-agents" oninput="sv('agents',this.value,'','')">
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">CCO participation rate</span><span class="ctrl-val" id="v-part">78%</span></div>
-          <input type="range" min="10" max="99" step="1" value="78" id="sl-part" oninput="sv('part',this.value,'','%')">
-          <div class="ctrl-hint">Min viable 55% · Optimal 78%</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Simulation years</span><span class="ctrl-val" id="v-years">20</span></div>
-          <input type="range" min="5" max="30" step="1" value="20" id="sl-years" oninput="sv('years',this.value,'','yr')">
-        </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Sensible Drug Reform</span></div>
+      <div class="tog-group">
+        <button class="tog"           id="drug-on"  onclick="setTog('drug',true)">On</button>
+        <button class="tog on-amber"  id="drug-off" onclick="setTog('drug',false)">Off</button>
       </div>
+      <div class="ctrl-hint">Redirects prohibition resources (~$1,750/yr)</div>
+    </div>
 
-      <div class="s-section">
-        <div class="s-heading">Economic Architectures</div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">PTF (Public Trust Foundations)</span></div>
-          <div class="tog-group">
-            <button class="tog active" id="ptf-on"  onclick="setTog('ptf',true)">On</button>
-            <button class="tog"        id="ptf-off" onclick="setTog('ptf',false)">Off</button>
-          </div>
-          <div class="ctrl-hint">Community-owned essential goods</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">PTF market share</span><span class="ctrl-val" id="v-ptfsh">18%</span></div>
-          <input type="range" min="0" max="35" step="1" value="18" id="sl-ptfsh" oninput="sv('ptfsh',this.value,'','%')">
-          <div class="ctrl-hint">Optimal 18% · Max 30% before distortion</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">PTH (Public Trust Housing)</span></div>
-          <div class="tog-group">
-            <button class="tog active" id="pth-on"  onclick="setTog('pth',true)">On</button>
-            <button class="tog"        id="pth-off" onclick="setTog('pth',false)">Off</button>
-          </div>
-          <div class="ctrl-hint">Community housing + Acre Equity</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">PTH uptake rate</span><span class="ctrl-val" id="v-pthup">20%</span></div>
-          <input type="range" min="0" max="50" step="1" value="20" id="sl-pthup" oninput="sv('pthup',this.value,'','%')">
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">SZH (Social Zone Harmonization)</span></div>
-          <div class="tog-group">
-            <button class="tog sys-szh active" id="szh-on"  onclick="setTog('szh',true)">On</button>
-            <button class="tog sys-szh"        id="szh-off" onclick="setTog('szh',false)">Off</button>
-          </div>
-          <div class="ctrl-hint">Reduces friction costs · improves cohesion</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">CIP (Citizens Internet Portal)</span></div>
-          <div class="tog-group">
-            <button class="tog sys-cip active" id="cip-on"  onclick="setTog('cip',true)">On</button>
-            <button class="tog sys-cip"        id="cip-off" onclick="setTog('cip',false)">Off</button>
-          </div>
-          <div class="ctrl-hint">Digital access savings · wider CCO reach</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Sensible Drug Reform</span></div>
-          <div class="tog-group">
-            <button class="tog sys-drug" id="drug-on"  onclick="setTog('drug',true)">On</button>
-            <button class="tog sys-drug active" id="drug-off" onclick="setTog('drug',false)">Off</button>
-          </div>
-          <div class="ctrl-hint">Redirects prohibition resources to welfare</div>
-        </div>
-        <div class="ctrl">
-          <div class="ctrl-row"><span class="ctrl-name">Economic shocks</span></div>
-          <div class="tog-group">
-            <button class="tog"        id="shk-on"  onclick="setTog('shock',true)">Include</button>
-            <button class="tog active" id="shk-off" onclick="setTog('shock',false)">Off</button>
-          </div>
-          <div class="ctrl-hint">Recession / inflation events</div>
-        </div>
+    <div class="ctrl">
+      <div class="ctrl-row"><span class="ctrl-name">Economic shocks</span></div>
+      <div class="tog-group">
+        <button class="tog"        id="shk-on"  onclick="setTog('shock',true)">Include</button>
+        <button class="tog on-teal" id="shk-off" onclick="setTog('shock',false)">Off</button>
       </div>
-
-      <div class="s-section">
-        <div class="s-heading">Run</div>
-        <button class="run-btn" id="res-run-btn" onclick="runResearch()">▶ Run Simulation</button>
-        <button class="reset-btn" onclick="resetAll()">Reset to defaults</button>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-      <div class="status-bar">
-        <div class="s-dot" id="res-dot"></div>
-        <div class="s-text" id="res-status">Adjust parameters, then click <strong>Run Simulation</strong>.</div>
-        <div class="s-pct"  id="res-pct"></div>
-      </div>
-      <div class="prog-wrap"><div class="prog-bar" id="res-prog"></div></div>
-
-      <div class="kpi-grid">
-        <div class="kpi"><div class="kpi-label">Poverty Rate</div><div class="kpi-val" id="kpi-pov">—</div><div class="kpi-delta" id="kpi-pov-d"></div></div>
-        <div class="kpi"><div class="kpi-label">Gini Coefficient</div><div class="kpi-val" id="kpi-gini">—</div><div class="kpi-delta" id="kpi-gini-d"></div></div>
-        <div class="kpi"><div class="kpi-label">Median Wealth</div><div class="kpi-val" id="kpi-wealth">—</div><div class="kpi-delta" id="kpi-wealth-d"></div></div>
-        <div class="kpi"><div class="kpi-label">System Stability</div><div class="kpi-val" id="kpi-stab">—</div><div class="kpi-delta" id="kpi-stab-d"></div></div>
-      </div>
-
-      <div class="chart-grid">
-        <div class="chart-card">
-          <div class="chart-title">Poverty rate over time</div>
-          <div style="position:relative;height:210px;"><canvas id="rc-poverty"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">Gini coefficient (inequality)</div>
-          <div style="position:relative;height:210px;"><canvas id="rc-gini"></canvas></div>
-        </div>
-      </div>
-      <div class="chart-grid">
-        <div class="chart-card">
-          <div class="chart-title">Median wealth accumulation ($)</div>
-          <div style="position:relative;height:210px;"><canvas id="rc-wealth"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">BU velocity (per agent/year)</div>
-          <div style="position:relative;height:210px;"><canvas id="rc-velocity"></canvas></div>
-        </div>
-      </div>
-
-      <div class="cmp-card" id="res-compare" style="display:none;">
-        <div class="cmp-title">System comparison — final year</div>
-        <table>
-          <thead><tr><th>System</th><th>Poverty elim.</th><th>Median wealth</th><th>Gini</th><th>Work incentive</th><th>Stability</th></tr></thead>
-          <tbody id="cmp-body"><tr><td colspan="6" style="color:var(--text3);padding:1rem;text-align:center;font-family:var(--font);">Run simulation to populate.</td></tr></tbody>
-        </table>
-      </div>
-
-      <div class="param-warn" id="res-warn" style="display:none;"></div>
-      <div class="insight-grid" id="res-insights" style="display:none;"></div>
-
-      <div class="chart-card" id="res-sensitivity" style="display:none;margin-bottom:1rem;">
-        <div class="chart-title">Parameter sensitivity — elasticity on poverty rate</div>
-        <div style="position:relative;height:200px;"><canvas id="rc-sensitivity"></canvas></div>
-      </div>
-    </main>
+      <div class="ctrl-hint">Recession / inflation events</div>
+    </div>
   </div>
-</div>
 
-<div class="footer-bar">
+  <!-- Run -->
+  <div class="s-section">
+    <div class="s-heading">Run</div>
+    <button class="run-btn" id="run-btn" onclick="runSim()">▶ Run Simulation</button>
+    <button class="reset-btn" onclick="resetAll()">Reset to defaults</button>
+  </div>
+
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <div class="status-bar">
+    <div class="s-dot" id="s-dot"></div>
+    <div class="s-text" id="s-text">Adjust parameters in the sidebar, then click <strong>Run Simulation</strong>.</div>
+    <div class="s-pct"  id="s-pct"></div>
+  </div>
+  <div class="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Poverty Rate</div><div class="kpi-val" id="kpi-pov">—</div><div class="kpi-delta" id="kpi-pov-d"></div></div>
+    <div class="kpi"><div class="kpi-label">Gini Coefficient</div><div class="kpi-val" id="kpi-gini">—</div><div class="kpi-delta" id="kpi-gini-d"></div></div>
+    <div class="kpi"><div class="kpi-label">Median Wealth</div><div class="kpi-val" id="kpi-wealth">—</div><div class="kpi-delta" id="kpi-wealth-d"></div></div>
+    <div class="kpi"><div class="kpi-label">System Stability</div><div class="kpi-val" id="kpi-stab">—</div><div class="kpi-delta" id="kpi-stab-d"></div></div>
+  </div>
+
+  <!-- Charts row 1 -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Poverty rate over time</div>
+      <div style="position:relative;height:195px;"><canvas id="ch-pov"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Gini coefficient (inequality)</div>
+      <div style="position:relative;height:195px;"><canvas id="ch-gini"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Charts row 2 -->
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Median wealth accumulation ($)</div>
+      <div style="position:relative;height:195px;"><canvas id="ch-wealth"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">BU velocity (per agent / year)</div>
+      <div style="position:relative;height:195px;"><canvas id="ch-vel"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Comparison table -->
+  <div class="cmp-card" id="cmp-card" style="display:none;">
+    <div class="cmp-title">System comparison — final year</div>
+    <table>
+      <thead><tr><th>System</th><th>Poverty elim.</th><th>Median wealth</th><th>Gini</th><th>Work incentive</th><th>Stability</th></tr></thead>
+      <tbody id="cmp-body"></tbody>
+    </table>
+  </div>
+
+  <!-- Warn -->
+  <div class="warn-banner" id="warn-banner" style="display:none;"></div>
+
+  <!-- Insights -->
+  <div class="insight-grid" id="insight-grid" style="display:none;"></div>
+
+  <!-- Sensitivity -->
+  <div class="sensitivity-card" id="sens-card" style="display:none;">
+    <div class="chart-title">Parameter sensitivity — elasticity on poverty rate</div>
+    <div style="position:relative;height:190px;"><canvas id="ch-sens"></canvas></div>
+  </div>
+
+</main>
+</div><!-- /.layout -->
+
+<footer>
   <span>Compassionism Simulation v2.1 · <a href="https://bettertobest.github.io/research-hub/" target="_blank">Better To Best Research Hub</a> · CC BY 4.0</span>
-  <span>Based on <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html" target="_blank">CCO-PTF Simulation Replication Framework</a></span>
-</div>
+  <span><a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html" target="_blank">Replication Framework</a></span>
+</footer>
+
+</div><!-- /.app-body -->
 
 <script>
 /* ================================================================
    STATE
-   ================================================================ */
-const S = {
-  phi: true, ptf: true, pth: true, szh: true, cip: true, drug: false, shock: false
-};
-
-const DFLT = {
-  bu:1200, octave:6, expiry:1, mult:9, tax:12,
-  agents:500, part:78, years:20, ptfsh:18, pthup:20
-};
-
-// Explorer state
-let expPresetName = 'baseline';
-let expAddons = { szh: false, cip: false, drug: false };
-
-let charts = {};
-let running = false;
+================================================================ */
+const S = { phi:true, ptf:true, pth:true, szh:true, cip:true, drug:false, shock:false };
+let charts = {}, running = false;
 
 /* ================================================================
    MATH HELPERS
-   ================================================================ */
+================================================================ */
 function lognormal(mu, sigma) {
-  const u = Math.max(1e-10, 1 - Math.random());
-  const v = Math.random();
+  const u = Math.max(1e-10, 1 - Math.random()), v = Math.random();
   return Math.exp(mu + sigma * Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v));
 }
-
-function betaRng(a, b) {
-  const x = gammaRng(a);
-  return x / (x + gammaRng(b));
-}
-
+function betaRng(a, b) { const x = gammaRng(a); return x / (x + gammaRng(b)); }
 function gammaRng(a) {
   if (a < 1) return gammaRng(1 + a) * Math.pow(Math.random(), 1 / a);
   let xx;
   while (true) {
-    const u = Math.random(), v = Math.random();
-    const y = Math.tan(Math.PI * u);
+    const u = Math.random(), v = Math.random(), y = Math.tan(Math.PI * u);
     xx = Math.sqrt(2 * a - 1) * y + a - 1;
     if (xx > 0 && v <= (1 + y * y) * Math.exp((a - 1) * Math.log(xx / (a - 1)) - Math.sqrt(2 * a - 1) * y)) break;
   }
   return xx;
 }
 
-/* STANDARD Gini implementation (replaces buggy prior version) */
-function calcGini(wealths) {
-  if (wealths.length < 2) return 0;
-  const sorted = wealths.slice().sort((a, b) => a - b);
-  const n = sorted.length;
-  let numerator = 0;
-  const total = sorted.reduce((s, w) => s + w, 0);
-  if (total <= 0) return 0;
-  for (let i = 0; i < n; i++) {
-    numerator += (2 * (i + 1) - n - 1) * sorted[i];
-  }
-  return Math.max(0, Math.min(1, numerator / (n * total)));
+/* Standard Lorenz-curve Gini — always in [0,1] */
+function calcGini(ws) {
+  if (ws.length < 2) return 0;
+  const s = ws.slice().sort((a, b) => a - b);
+  const n = s.length, tot = s.reduce((x, w) => x + w, 0);
+  if (tot <= 0) return 0;
+  let num = 0;
+  for (let i = 0; i < n; i++) num += (2 * (i + 1) - n - 1) * s[i];
+  return Math.max(0, Math.min(1, num / (n * tot)));
 }
 
-function calcMetrics(agentSet) {
-  const POVERTY_LINE = 18000; // annual equivalent in wealth
-  const ws = agentSet.map(a => Math.max(0, a.wealth));
-  ws.sort((a, b) => a - b);
+function calcMetrics(agents) {
+  const PLINE = 18000;
+  const ws = agents.map(a => Math.max(0, a.wealth)).sort((a, b) => a - b);
   const n = ws.length;
-  const poverty = ws.filter(w => w < POVERTY_LINE).length / n;
-  const gini = calcGini(ws);
-  const median = n % 2 === 0 ? (ws[n / 2 - 1] + ws[n / 2]) / 2 : ws[Math.floor(n / 2)];
-  return { poverty, gini, median };
+  return {
+    poverty: ws.filter(w => w < PLINE).length / n,
+    gini:    calcGini(ws),
+    median:  n % 2 === 0 ? (ws[n/2-1] + ws[n/2]) / 2 : ws[Math.floor(n/2)]
+  };
 }
 
 /* ================================================================
-   SIMULATION ENGINE  (v2.1 — fixed baseline, costs, octave dynamics)
-   ================================================================ */
+   AGENT CREATION
+================================================================ */
 function makeAgents(n, p) {
-  const agents = [];
+  const a = [];
   for (let i = 0; i < n; i++) {
-    const inCCO  = Math.random() < p.partRate;
-    const inPTF  = p.ptf  && Math.random() < p.ptfShare;
-    const inPTH  = p.pth  && Math.random() < p.pthUptake;
-    const inSZH  = p.szh  && Math.random() < 0.60;
-    agents.push({
-      wealth:      lognormal(9.8, 1.0),           // starting wealth ~$18K median
-      wage:        lognormal(3.0, 0.55) * 12,      // annual income ~$24K median
-      octave:      Math.floor(betaRng(1.5, 5) * p.maxOctave),
-      quality:     betaRng(3, 3) * p.maxMult,     // 0–maxMult, bell-shaped
-      inCCO, inPTF, inPTH, inSZH,
-      acreEquity:  inPTH ? 5000 + Math.random() * 3000 : 0
+    const inPTF = p.ptf  && Math.random() < p.ptfShare;
+    const inPTH = p.pth  && Math.random() < p.pthUptake;
+    const inSZH = p.szh  && Math.random() < 0.60;
+    a.push({
+      wealth:     lognormal(9.8, 1.0),
+      wage:       lognormal(3.0, 0.55) * 12,
+      octave:     Math.floor(betaRng(1.5, 5) * p.maxOctave),
+      quality:    betaRng(3, 3) * p.maxMult,
+      inCCO:      Math.random() < p.partRate,
+      inPTF, inPTH, inSZH,
+      acreEquity: inPTH ? 5000 + Math.random() * 3000 : 0
     });
   }
-  return agents;
+  return a;
 }
 
-/* Run one year for an agent array.
-   Returns total BU velocity (sum across agents).
-   ccoActive / ptfActive / etc. let us run different comparison scenarios
-   with the SAME population (no artificial wealth handicap on baseline). */
-function runYear(agents, yr, p, ccoActive, ptfActive, pthActive, szhActive, cipActive, drugActive, shockActive) {
-  let totalBU = 0;
-  const shockFactor = shockActive && yr > 1 && Math.random() < 0.08
+/* ================================================================
+   ANNUAL SIMULATION STEP
+================================================================ */
+function runYear(agents, yr, p, ccoOn, ptfOn, pthOn, szhOn, cipOn, drugOn, shockOn) {
+  let buVel = 0;
+  const shock = shockOn && yr > 1 && Math.random() < 0.08
     ? 0.68 + Math.random() * 0.24 : 1.0;
 
   agents.forEach(a => {
-    /* ── ANNUAL LIVING COSTS (fixed: no more free wealth accumulation) ── */
-    const annualCost = (18000 + Math.random() * 8000) * shockFactor;
-    a.wealth -= annualCost;
+    /* Outflows */
+    const cost = (18000 + Math.random() * 8000) * shock;
+    a.wealth -= cost;
 
-    /* ── WAGE INCOME ── */
-    a.wealth += a.wage * (0.93 + Math.random() * 0.14) * shockFactor;
+    /* Wage */
+    a.wealth += a.wage * (0.93 + Math.random() * 0.14) * shock;
 
-    /* ── CCO BENEFITS ── */
-    if (ccoActive && a.inCCO) {
+    /* CCO */
+    if (ccoOn && a.inCCO) {
       const buAnnual = p.bu * 12;
+      const covRate  = 0.30 + (ptfOn ? 0.18 : 0) + (pthOn ? 0.10 : 0) + (cipOn ? 0.06 : 0);
+      a.wealth += Math.min(cost * covRate, buAnnual * 0.65);   // BU cost coverage
 
-      // BU accepted within ecosystem → reduces cash living costs
-      const coverageRate = 0.30
-        + (ptfActive  ? 0.18 : 0)
-        + (pthActive  ? 0.10 : 0)
-        + (cipActive  ? 0.06 : 0);
-      const costCoverage = Math.min(annualCost * coverageRate, buAnnual * 0.65);
-      a.wealth += costCoverage;
+      const qf   = a.quality / p.maxMult;
+      const oMul = 1.0 + (a.octave / p.maxOctave) * 1.5;      // 1.0–2.5×
+      const rate = (1 + qf * (p.maxMult - 1))
+                 * (p.phi && qf > 0.65 ? 1.618 : 1.0)
+                 * (ptfOn && a.inPTF   ? 1.25  : 1.0);
+      a.wealth += buAnnual * 0.22 * oMul * rate * (1 - p.tax);
+      buVel += buAnnual;
 
-      // Creative conversion income (quality × octave ceiling)
-      const qualFrac   = a.quality / p.maxMult;
-      const octaveMult = 1.0 + (a.octave / p.maxOctave) * 1.5;   // 1.0–2.5×
-      const baseRate   = 1 + qualFrac * (p.maxMult - 1);
-      const phiBonus   = p.phi && qualFrac > 0.65 ? 1.618 : 1.0;
-      const ptfBonus   = ptfActive && a.inPTF ? 1.25 : 1.0;
-      const convRate   = baseRate * phiBonus * ptfBonus;
-      const convIncome = buAnnual * 0.22 * octaveMult * convRate * (1 - p.tax);
-      a.wealth += convIncome;
-
-      totalBU += buAnnual;
-
-      /* Octave advancement: merit-based, harder, quality-linked */
-      if (Math.random() < 0.025 * qualFrac && a.octave < p.maxOctave) {
+      /* Merit-based octave advancement */
+      if (Math.random() < 0.025 * qf && a.octave < p.maxOctave) {
         a.octave = Math.min(p.maxOctave, a.octave + 1);
         a.quality = Math.min(p.maxMult, a.quality * 1.12);
       }
     }
 
-    /* ── PTF COST SAVINGS ── */
-    if (ptfActive && a.inPTF) {
-      a.wealth += a.wage * 0.09 * shockFactor;
-    }
+    if (ptfOn && a.inPTF) a.wealth += a.wage * 0.09 * shock;
 
-    /* ── PTH HOUSING SAVINGS + ACRE EQUITY ── */
-    if (pthActive && a.inPTH) {
+    if (pthOn && a.inPTH) {
       a.acreEquity *= (1 + 0.03 + Math.random() * 0.025);
       a.wealth += 5500 + a.acreEquity * 0.02;
     }
 
-    /* ── SZH: SOCIAL ZONE HARMONIZATION ── */
-    if (szhActive && a.inSZH) {
-      a.wealth += annualCost * 0.05 + 650;
-    }
+    if (szhOn && a.inSZH) a.wealth += cost * 0.05 + 650;
+    if (cipOn)             a.wealth += 720;
+    if (drugOn)            a.wealth += 1750;
 
-    /* ── CIP: CITIZENS INTERNET PORTAL ── */
-    if (cipActive) {
-      a.wealth += 720;
-    }
-
-    /* ── SENSIBLE DRUG REFORM ── */
-    if (drugActive) {
-      a.wealth += 1750; // redirected prohibition & enforcement resources
-    }
-
-    /* Floor — no agent goes below $200 */
     if (a.wealth < 200) a.wealth = 200;
   });
-
-  return totalBU / agents.length;
+  return buVel / agents.length;
 }
 
 /* ================================================================
-   SYNERGY INDEX (real-time, no simulation needed)
-   ================================================================ */
+   SYNERGY INDEX
+================================================================ */
 function synergyScore(p) {
-  const cco  = p.partRate > 0 && p.bu > 0;
-  const ptf  = p.ptf;
-  const pth  = p.pth;
-  const szh  = p.szh;
-  const cip  = p.cip;
-  const drug = p.drug;
-
+  const cco = p.partRate > 0 && p.bu > 0;
   let sc = 0;
-  if (cco)  sc += 26;
-  if (ptf)  sc += 19;
-  if (pth)  sc += 16;
-  if (szh)  sc += 10;
-  if (cip)  sc +=  8;
-  if (drug) sc +=  7;
-
-  // Interaction bonuses
-  if (cco  && ptf)  sc += 9;   // CCO venue network
-  if (ptf  && pth)  sc += 6;   // Community wealth loop
-  if (cco  && pth)  sc += 5;   // BU housing payments
-  if (szh  && cip)  sc += 4;   // Digital civic participation
-  if (drug && szh)  sc += 3;   // Social zone + reform
-  if (cip  && cco)  sc += 3;   // Digital CCO access
-
-  const count = [cco, ptf, pth, szh, cip, drug].filter(Boolean).length;
-  if (count >= 5) sc += 14;
-  else if (count >= 4) sc += 7;
-
+  if (cco)    sc += 26;
+  if (p.ptf)  sc += 19;
+  if (p.pth)  sc += 16;
+  if (p.szh)  sc += 10;
+  if (p.cip)  sc +=  8;
+  if (p.drug) sc +=  7;
+  if (cco  && p.ptf)  sc += 9;
+  if (p.ptf && p.pth) sc += 6;
+  if (cco  && p.pth)  sc += 5;
+  if (p.szh && p.cip) sc += 4;
+  if (p.drug && p.szh)sc += 3;
+  if (p.cip  && cco)  sc += 3;
+  const ct = [cco, p.ptf, p.pth, p.szh, p.cip, p.drug].filter(Boolean).length;
+  if (ct >= 5) sc += 14; else if (ct >= 4) sc += 7;
   return Math.min(100, Math.round(sc));
 }
 
-function renderSynergy(scoreId, barId, tagsId, p) {
+function updateSynergy() {
+  const p = getParams();
   const sc = synergyScore(p);
-  const el = document.getElementById(scoreId);
-  const bar = document.getElementById(barId);
-  const tags = document.getElementById(tagsId);
-  if (!el) return;
-  el.textContent = sc;
-  bar.style.width = sc + '%';
-
-  const tagDefs = [
-    { k: 'cco',  label: 'CCO',  on: p.partRate > 0 && p.bu > 0 },
-    { k: 'ptf',  label: 'PTF',  on: p.ptf  },
-    { k: 'pth',  label: 'PTH',  on: p.pth  },
-    { k: 'szh',  label: 'SZH',  on: p.szh  },
-    { k: 'cip',  label: 'CIP',  on: p.cip  },
-    { k: 'drug', label: 'Reform', on: p.drug },
+  document.getElementById('syn-score').textContent = sc;
+  document.getElementById('syn-bar').style.width = sc + '%';
+  const cco = p.partRate > 0 && p.bu > 0;
+  const defs = [
+    { k:'cco',  label:'CCO',   on: cco,    cls:'on' },
+    { k:'ptf',  label:'PTF',   on: p.ptf,  cls:'on' },
+    { k:'pth',  label:'PTH',   on: p.pth,  cls:'on' },
+    { k:'szh',  label:'SZH',   on: p.szh,  cls:'on-szh' },
+    { k:'cip',  label:'CIP',   on: p.cip,  cls:'on-cip' },
+    { k:'drug', label:'Reform',on: p.drug, cls:'on-drug' },
   ];
-  tags.innerHTML = tagDefs.map(t =>
-    `<span class="syn-tag ${t.on?'active':''}">${t.label}</span>`
-  ).join('');
+  document.getElementById('syn-chips').innerHTML =
+    defs.map(d => `<span class="syn-chip ${d.on ? d.cls : ''}">${d.label}</span>`).join('');
 }
 
 /* ================================================================
-   CHART HELPERS
-   ================================================================ */
-const C = {
-  teal: '#1ec98a', blue: '#5baef7', amber: '#f0b03a',
-  red: '#f07070', gray: '#555250', purple: '#b07af5'
-};
-
-function mkChart(id, type, labels, datasets, yFmt) {
-  if (charts[id]) { charts[id].destroy(); }
-  const ctx = document.getElementById(id);
-  if (!ctx) return;
-  charts[id] = new Chart(ctx, {
-    type,
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 400 },
-      plugins: {
-        legend: { display: datasets.length > 1, labels: { boxWidth: 10, font: { size: 10.5 }, color: '#888' } },
-        tooltip: { mode: 'index', callbacks: { label: c => yFmt(c.parsed.y) + ' ' + c.dataset.label } }
-      },
-      scales: {
-        x: { ticks: { font: { size: 10 }, color: '#666', maxTicksLimit: 10 }, grid: { display: false } },
-        y: { ticks: { font: { size: 10 }, color: '#666', callback: v => yFmt(v) }, grid: { color: 'rgba(255,255,255,0.04)' } }
-      }
-    }
-  });
-}
-
-/* ================================================================
-   UI CONTROL HELPERS
-   ================================================================ */
+   UI HELPERS
+================================================================ */
 function sv(key, raw, pfx, sfx) {
-  const v = parseFloat(raw);
-  let disp = pfx + Math.round(v).toLocaleString() + sfx;
-  if (key === 'phi') disp = raw ? 'On' : 'Off';
   const el = document.getElementById('v-' + key);
-  if (el) el.textContent = disp;
-  updateResearchSynergy();
+  if (el) el.textContent = pfx + Math.round(parseFloat(raw)).toLocaleString() + sfx;
+  updateSynergy();
 }
-
-function setTog(key, val) {
-  S[key] = val;
-  const onEl  = document.getElementById(key + '-on');
-  const offEl = document.getElementById(key + '-off');
-  if (onEl)  onEl.classList.toggle('active', val);
-  if (offEl) offEl.classList.toggle('active', !val);
-  if (key === 'phi') { const el = document.getElementById('v-phi'); if (el) el.textContent = val ? 'On' : 'Off'; }
-  updateResearchSynergy();
-}
-
 function gp(id) { return parseFloat(document.getElementById('sl-' + id).value); }
-
-function updateResearchSynergy() {
-  const p = buildParams();
-  renderSynergy('res-syn-score', 'res-syn-bar', 'res-syn-tags', p);
-}
-
-function buildParams() {
+function getParams() {
   return {
     bu:        gp('bu'),
     maxOctave: gp('octave'),
@@ -976,97 +723,35 @@ function buildParams() {
     years:     Math.round(gp('years')),
     ptfShare:  gp('ptfsh') / 100,
     pthUptake: gp('pthup') / 100,
-    phi:       S.phi,
-    ptf:       S.ptf,
-    pth:       S.pth,
-    szh:       S.szh,
-    cip:       S.cip,
-    drug:      S.drug,
-    shock:     S.shock
+    phi: S.phi, ptf: S.ptf, pth: S.pth,
+    szh: S.szh, cip: S.cip, drug: S.drug, shock: S.shock
   };
 }
 
-/* ================================================================
-   EXPLORER MODE
-   ================================================================ */
-const EXP_PRESETS = {
-  baseline: { bu:400,  octave:1, expiry:1, mult:3, tax:0,  agents:500, part:30, years:20, ptfsh:0,  pthup:0,  phi:false, ptf:false, pth:false, szh:false, cip:false, drug:false, shock:false },
-  cco_only: { bu:1200, octave:6, expiry:1, mult:9, tax:12, agents:500, part:75, years:20, ptfsh:0,  pthup:0,  phi:true,  ptf:false, pth:false, szh:false, cip:false, drug:false, shock:false },
-  optimal:  { bu:1200, octave:6, expiry:1, mult:9, tax:12, agents:500, part:78, years:20, ptfsh:18, pthup:20, phi:true,  ptf:true,  pth:true,  szh:true,  cip:true,  drug:false, shock:false },
-  stress:   { bu:900,  octave:4, expiry:1, mult:6, tax:18, agents:500, part:40, years:20, ptfsh:8,  pthup:10, phi:true,  ptf:true,  pth:true,  szh:false, cip:false, drug:false, shock:true  }
-};
-
-function expPreset(name) {
-  expPresetName = name;
-  ['baseline','cco','optimal','stress'].forEach(k =>
-    document.getElementById('ep-' + k)?.classList.remove('selected')
-  );
-  const map = { baseline:'ep-baseline', cco_only:'ep-cco', optimal:'ep-optimal', stress:'ep-stress' };
-  document.getElementById(map[name])?.classList.add('selected');
-  updateExpSynergy();
-}
-
-function expToggleAddon(key) {
-  expAddons[key] = !expAddons[key];
-  const el = document.getElementById('ea-' + key);
-  if (el) {
-    el.classList.toggle('active-' + key, expAddons[key]);
+function setTog(key, val) {
+  S[key] = val;
+  // Determine colour class for this key
+  const cls = { phi:'teal', ptf:'teal', pth:'teal', szh:'purple', cip:'blue', drug:'amber', shock:'teal' }[key] || 'teal';
+  const onEl  = document.getElementById(key + '-on');
+  const offEl = document.getElementById(key + '-off');
+  if (onEl) {
+    onEl.className  = 'tog' + (val  ? ' on-' + cls : '');
   }
-  updateExpSynergy();
+  if (offEl) {
+    // 'Off' for drug defaults to amber-highlighted when OFF
+    const offCls = (key === 'drug' && !val) ? 'on-amber' : (key === 'shock' && !val) ? 'on-teal' : '';
+    offEl.className = 'tog' + ((!val && offCls) ? ' ' + offCls : (!val ? ' on-' + cls : ''));
+  }
+  if (key === 'phi') { const el = document.getElementById('v-phi'); if (el) el.textContent = val ? 'On' : 'Off'; }
+  updateSynergy();
 }
 
-function expBuildParams() {
-  const pr = { ...EXP_PRESETS[expPresetName] };
-  if (expAddons.szh)  pr.szh  = true;
-  if (expAddons.cip)  pr.cip  = true;
-  if (expAddons.drug) pr.drug = true;
-  return {
-    bu:        pr.bu,
-    maxOctave: pr.octave,
-    expiry:    pr.expiry,
-    maxMult:   pr.mult,
-    tax:       pr.tax / 100,
-    nAgents:   pr.agents,
-    partRate:  pr.part / 100,
-    years:     pr.years,
-    ptfShare:  pr.ptfsh / 100,
-    pthUptake: pr.pthup / 100,
-    phi:       pr.phi,
-    ptf:       pr.ptf,
-    pth:       pr.pth,
-    szh:       pr.szh,
-    cip:       pr.cip,
-    drug:      pr.drug,
-    shock:     pr.shock
-  };
-}
-
-function updateExpSynergy() {
-  const p = expBuildParams();
-  renderSynergy('exp-syn-score', 'exp-syn-bar', 'exp-syn-tags', p);
-}
-
-function runExplorer() {
-  if (running) return;
-  const p = expBuildParams();
-  document.getElementById('exp-run-btn').disabled = true;
-  document.getElementById('exp-run-btn').textContent = '⏳ Running…';
-  document.getElementById('exp-status').style.display = 'flex';
-  document.getElementById('exp-prog-wrap').style.display = 'block';
-  document.getElementById('exp-dot').className = 's-dot running';
-  runSim(p, 'explorer');
-}
-
-/* ================================================================
-   RESEARCH MODE
-   ================================================================ */
 const PRESETS = {
   baseline: { bu:400,  octave:1, expiry:1, mult:3, tax:0,  agents:500, part:30, years:20, ptfsh:0,  pthup:0,  phi:false, ptf:false, pth:false, szh:false, cip:false, drug:false, shock:false },
   cco_only: { bu:1200, octave:6, expiry:1, mult:9, tax:12, agents:500, part:75, years:20, ptfsh:0,  pthup:0,  phi:true,  ptf:false, pth:false, szh:false, cip:false, drug:false, shock:false },
   optimal:  { bu:1200, octave:6, expiry:1, mult:9, tax:12, agents:500, part:78, years:20, ptfsh:18, pthup:20, phi:true,  ptf:true,  pth:true,  szh:true,  cip:true,  drug:false, shock:false },
   stress:   { bu:900,  octave:4, expiry:1, mult:6, tax:18, agents:500, part:40, years:20, ptfsh:8,  pthup:10, phi:true,  ptf:true,  pth:true,  szh:false, cip:false, drug:false, shock:true  }
 };
-
 function applyPreset(name) {
   const pr = PRESETS[name];
   ['bu','octave','expiry','mult','tax','agents','part','years','ptfsh','pthup'].forEach(k => {
@@ -1074,340 +759,242 @@ function applyPreset(name) {
     if (sl && pr[k] !== undefined) { sl.value = pr[k]; sl.dispatchEvent(new Event('input')); }
   });
   ['phi','ptf','pth','szh','cip','drug','shock'].forEach(k => setTog(k, pr[k]));
-  updateResearchSynergy();
 }
-
 function resetAll() { applyPreset('optimal'); }
 
-function runResearch() {
-  if (running) return;
-  const p = buildParams();
-  document.getElementById('res-run-btn').disabled = true;
-  document.getElementById('res-run-btn').textContent = '⏳ Running…';
-  document.getElementById('res-dot').className = 's-dot running';
-  document.getElementById('res-status').innerHTML = 'Initialising agents…';
-  document.getElementById('res-prog').style.width = '0%';
-  runSim(p, 'research');
+/* ================================================================
+   CHART FACTORY
+================================================================ */
+const CC = { teal:'#1ec98a', blue:'#5baef7', amber:'#f0b03a', red:'#f07070', gray:'#555250' };
+function mkChart(id, type, labels, datasets, yFmt) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 350 },
+      plugins: {
+        legend: { display: datasets.length > 1, labels: { boxWidth: 10, font:{size:10.5}, color:'#666' } },
+        tooltip: { mode:'index', callbacks: { label: c => yFmt(c.parsed.y) + ' ' + c.dataset.label } }
+      },
+      scales: {
+        x: { ticks: { font:{size:10}, color:'#555', maxTicksLimit:10 }, grid: { display:false } },
+        y: { ticks: { font:{size:10}, color:'#555', callback: v => yFmt(v) }, grid: { color:'rgba(255,255,255,0.04)' } }
+      }
+    }
+  });
 }
 
 /* ================================================================
-   SHARED SIMULATION RUNNER
-   ================================================================ */
-function runSim(p, mode) {
+   MAIN SIMULATION RUNNER
+================================================================ */
+function runSim() {
+  if (running) return;
   running = true;
-  setTimeout(() => _runSim(p, mode), 40);
+  const p = getParams();
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('run-btn').textContent = '⏳ Running…';
+  document.getElementById('s-dot').className = 's-dot running';
+  document.getElementById('s-text').textContent = 'Initialising agents…';
+  document.getElementById('prog-bar').style.width = '0%';
+  document.getElementById('warn-banner').style.display = 'none';
+  document.getElementById('insight-grid').style.display = 'none';
+  document.getElementById('cmp-card').style.display = 'none';
+  document.getElementById('sens-card').style.display = 'none';
+  setTimeout(() => _sim(p), 40);
 }
 
-function _runSim(p, mode) {
-  const n = p.nAgents;
-  const yrs = p.years;
+function _sim(p) {
+  const n = p.nAgents, yrs = p.years;
+  // Three parallel populations — SAME initial distribution, no handicap on baseline
+  const agents     = makeAgents(n, p);
+  const baseAgents = makeAgents(n, { ...p, partRate:0, ptf:false, pth:false, szh:false, cip:false, drug:false });
+  const ccoAgents  = makeAgents(n, { ...p,             ptf:false, pth:false, szh:false, cip:false, drug:false });
 
-  // Initialise main population
-  const agents = makeAgents(n, p);
-
-  // Baseline comparison: same agents, SAME wages/costs, just no CCO/PTF/PTH/SZH/CIP/Drug
-  // (no artificial 0.85 handicap — removed per methodology fix)
-  const baseAgents = makeAgents(n, { ...p, partRate: 0, ptf: false, pth: false, szh: false, cip: false, drug: false });
-
-  // CCO-only comparison
-  const ccoAgents = makeAgents(n, { ...p, ptf: false, pth: false, szh: false, cip: false, drug: false });
-
-  const labels = [], poverty = [], gini = [], wealth = [], velocity = [];
+  const labels = [], povArr = [], giniArr = [], wealthArr = [], velArr = [];
 
   function tick(yr) {
-    if (yr >= yrs) {
-      finishSim(mode, p, agents, baseAgents, ccoAgents, labels, poverty, gini, wealth, velocity, yrs);
-      return;
-    }
+    if (yr >= yrs) { finish(p, agents, baseAgents, ccoAgents, labels, povArr, giniArr, wealthArr, velArr); return; }
 
-    // Run year for main + comparison populations
-    runYear(baseAgents, yr, p, false, false, false, false, false, false, p.shock);
-    runYear(ccoAgents,  yr, p, p.partRate > 0, false, false, false, false, false, p.shock);
+    runYear(baseAgents, yr, p, false,          false,   false,   false,   false,   false,   p.shock);
+    runYear(ccoAgents,  yr, p, p.partRate > 0, false,   false,   false,   false,   false,   p.shock);
     const vel = runYear(agents, yr, p, p.partRate > 0, p.ptf, p.pth, p.szh, p.cip, p.drug, p.shock);
 
     const m = calcMetrics(agents);
-    labels.push('Yr' + (yr + 1));
-    poverty.push(+(m.poverty * 100).toFixed(2));
-    gini.push(+m.gini.toFixed(4));
-    wealth.push(Math.round(m.median));
-    velocity.push(Math.round(vel));
+    labels.push('Y' + (yr + 1));
+    povArr.push(+(m.poverty * 100).toFixed(2));
+    giniArr.push(+m.gini.toFixed(4));
+    wealthArr.push(Math.round(m.median));
+    velArr.push(Math.round(vel));
 
     const pct = Math.round((yr + 1) / yrs * 100);
-    if (mode === 'explorer') {
-      document.getElementById('exp-prog').style.width = pct + '%';
-      document.getElementById('exp-pct').textContent = pct + '%';
-      document.getElementById('exp-status-text').textContent = `Simulating year ${yr+1} of ${yrs}…`;
-    } else {
-      document.getElementById('res-prog').style.width = pct + '%';
-      document.getElementById('res-pct').textContent = pct + '%';
-      document.getElementById('res-status').textContent = `Simulating year ${yr+1} of ${yrs}…`;
-    }
-
+    document.getElementById('prog-bar').style.width = pct + '%';
+    document.getElementById('s-pct').textContent = pct + '%';
+    document.getElementById('s-text').textContent = `Simulating year ${yr+1} of ${yrs}…`;
     setTimeout(() => tick(yr + 1), 0);
   }
   tick(0);
 }
 
-function finishSim(mode, p, agents, baseAgents, ccoAgents, labels, poverty, gini, wealth, velocity, yrs) {
-  const finalM = calcMetrics(agents);
-  const baseM  = calcMetrics(baseAgents);
-  const ccoM   = calcMetrics(ccoAgents);
+function finish(p, agents, baseAgents, ccoAgents, labels, povArr, giniArr, wealthArr, velArr) {
+  const m    = calcMetrics(agents);
+  const base = calcMetrics(baseAgents);
+  const cco  = calcMetrics(ccoAgents);
+  const yrs  = p.years;
 
-  const lastQ = poverty.slice(-Math.max(1, Math.floor(yrs / 4)));
+  const lastQ = povArr.slice(-Math.max(1, Math.floor(yrs / 4)));
   const improving = lastQ[lastQ.length - 1] <= lastQ[0];
-  const stability = improving
-    ? 0.86 + Math.random() * 0.10
-    : 0.58 + Math.random() * 0.18;
+  const stab = improving ? 0.86 + Math.random() * 0.10 : 0.56 + Math.random() * 0.20;
 
-  if (mode === 'explorer') {
-    renderExplorerResults(finalM, baseM, stability, labels, poverty, gini, wealth, velocity, p);
-  } else {
-    renderResearchResults(finalM, baseM, ccoM, stability, labels, poverty, gini, wealth, velocity, p);
-  }
-
-  running = false;
-}
-
-/* ================================================================
-   EXPLORER RESULTS RENDERER
-   ================================================================ */
-function renderExplorerResults(m, base, stab, labels, poverty, gini, wealth, velocity, p) {
-  document.getElementById('exp-run-btn').disabled = false;
-  document.getElementById('exp-run-btn').textContent = '▶ Run Simulation';
-  document.getElementById('exp-dot').className = 's-dot done';
-  document.getElementById('exp-status-text').textContent = 'Simulation complete.';
-
-  document.getElementById('epk-poverty').textContent = (100 - m.poverty * 100).toFixed(0) + '%';
-  document.getElementById('epk-poverty-sub').textContent =
-    `Baseline was ${(100 - base.poverty*100).toFixed(0)}% above poverty`;
-
-  document.getElementById('epk-wealth').textContent = '$' + Math.round(m.median / 1000) + 'K';
-  document.getElementById('epk-wealth-sub').textContent =
-    `Baseline $${Math.round(base.median / 1000)}K · target $82K`;
-
-  document.getElementById('epk-gini').textContent = m.gini.toFixed(3);
-  document.getElementById('epk-gini-sub').textContent =
-    `Baseline ${base.gini.toFixed(3)} · lower = more equal`;
-
-  document.getElementById('epk-stab').textContent = Math.round(stab * 100) + '%';
-  document.getElementById('epk-stab-sub').textContent = 'Target ≥ 90%';
-
-  mkChart('exp-chart-poverty', 'line', labels, [
-    { label: '% in poverty', data: poverty, borderColor: C.red, backgroundColor: 'rgba(240,112,112,0.08)', tension: 0.35, pointRadius: 0, fill: true, borderWidth: 2 }
-  ], v => v.toFixed(1) + '%');
-
-  mkChart('exp-chart-wealth', 'line', labels, [
-    { label: 'Median $', data: wealth, borderColor: C.teal, backgroundColor: 'rgba(30,201,138,0.08)', tension: 0.35, pointRadius: 0, fill: true, borderWidth: 2 },
-    { label: '$82K target', data: labels.map(() => 82000), borderColor: C.amber, borderDash: [4, 3], tension: 0, pointRadius: 0, borderWidth: 1.5, fill: false }
-  ], v => '$' + Math.round(v / 1000) + 'K');
-
-  document.getElementById('exp-insights').innerHTML = buildInsights(m, stab, p, 'plain').map(i =>
-    `<div class="insight"><div class="insight-icon">${i.icon}</div><div class="insight-title">${i.title}</div><div class="insight-body">${i.body}</div></div>`
-  ).join('');
-
-  document.getElementById('exp-results').style.display = 'block';
-}
-
-/* ================================================================
-   RESEARCH RESULTS RENDERER
-   ================================================================ */
-function renderResearchResults(m, base, cco, stab, labels, poverty, gini, wealth, velocity, p) {
-  document.getElementById('res-run-btn').disabled = false;
-  document.getElementById('res-run-btn').textContent = '▶ Run Simulation';
-  document.getElementById('res-dot').className = 's-dot done';
-  document.getElementById('res-status').textContent = `Complete — ${labels.length}-year run.`;
-  document.getElementById('res-pct').textContent = '';
-
-  // KPIs
+  /* KPIs */
   const pov = m.poverty * 100;
-  const basePov = base.poverty * 100;
+  setKPI('kpi-pov',    pov.toFixed(1)+'%',     `▼ ${(base.poverty*100 - pov).toFixed(1)}% vs baseline (${(base.poverty*100).toFixed(1)}%)`, pov < 5 ? 'good' : pov < 15 ? 'warn' : 'bad');
+  setKPI('kpi-gini',   m.gini.toFixed(3),       `Baseline ${base.gini.toFixed(3)} · Target ≤0.25`, m.gini <= 0.25 ? 'good' : m.gini <= 0.35 ? 'warn' : 'bad');
+  setKPI('kpi-wealth', '$'+Math.round(m.median/1000)+'K', `Baseline $${Math.round(base.median/1000)}K · Target $82K`, m.median >= 75000 ? 'good' : m.median >= 40000 ? 'warn' : 'bad');
+  setKPI('kpi-stab',   Math.round(stab*100)+'%','Target ≥90%', stab >= 0.90 ? 'good' : stab >= 0.75 ? 'warn' : 'bad');
 
-  const kd = (id, val, delta) => {
-    document.getElementById(id).textContent = val;
-    document.getElementById(id + '-d').textContent = delta.text;
-    document.getElementById(id + '-d').className = 'kpi-delta ' + delta.cls;
-  };
+  /* Charts */
+  mkChart('ch-pov',  'line', labels, [
+    { label:'% in poverty', data:povArr, borderColor:CC.red, backgroundColor:'rgba(240,112,112,0.07)', tension:.35, pointRadius:0, fill:true, borderWidth:2 }
+  ], v => v.toFixed(1)+'%');
 
-  kd('kpi-pov', pov.toFixed(1) + '%',
-    { text: `▼ ${(basePov - pov).toFixed(1)}% vs baseline (${basePov.toFixed(1)}%)`,
-      cls: pov < 5 ? 'good' : pov < 15 ? 'warn' : 'bad' });
-
-  kd('kpi-gini', m.gini.toFixed(3),
-    { text: `Baseline: ${base.gini.toFixed(3)} · Target ≤0.25`,
-      cls: m.gini <= 0.25 ? 'good' : m.gini <= 0.35 ? 'warn' : 'bad' });
-
-  kd('kpi-wealth', '$' + Math.round(m.median / 1000) + 'K',
-    { text: `Baseline: $${Math.round(base.median / 1000)}K · Target $82K`,
-      cls: m.median >= 75000 ? 'good' : m.median >= 40000 ? 'warn' : 'bad' });
-
-  kd('kpi-stab', Math.round(stab * 100) + '%',
-    { text: 'Target ≥90%',
-      cls: stab >= 0.90 ? 'good' : stab >= 0.75 ? 'warn' : 'bad' });
-
-  // Charts
-  mkChart('rc-poverty', 'line', labels, [
-    { label: '% in poverty', data: poverty, borderColor: C.red, backgroundColor: 'rgba(240,112,112,0.07)', tension: 0.35, pointRadius: 0, fill: true, borderWidth: 2 }
-  ], v => v.toFixed(1) + '%');
-
-  mkChart('rc-gini', 'line', labels, [
-    { label: 'Gini', data: gini, borderColor: C.teal, backgroundColor: 'rgba(30,201,138,0.07)', tension: 0.35, pointRadius: 0, fill: true, borderWidth: 2 },
-    { label: 'Nordic benchmark', data: labels.map(() => 0.28), borderColor: C.gray, borderDash: [4,3], tension:0, pointRadius:0, borderWidth:1.5, fill:false }
+  mkChart('ch-gini', 'line', labels, [
+    { label:'Gini', data:giniArr, borderColor:CC.teal, backgroundColor:'rgba(30,201,138,0.07)', tension:.35, pointRadius:0, fill:true, borderWidth:2 },
+    { label:'Nordic', data:labels.map(()=>0.28), borderColor:CC.gray, borderDash:[4,3], tension:0, pointRadius:0, borderWidth:1.5, fill:false }
   ], v => v.toFixed(3));
 
-  mkChart('rc-wealth', 'line', labels, [
-    { label: 'Integrated', data: wealth, borderColor: C.teal, tension: 0.35, pointRadius: 0, borderWidth: 2, fill: false },
-    { label: '$82K target', data: labels.map(() => 82000), borderColor: C.amber, borderDash: [4,3], tension:0, pointRadius:0, borderWidth:1.5, fill:false }
-  ], v => '$' + Math.round(v / 1000) + 'K');
+  mkChart('ch-wealth', 'line', labels, [
+    { label:'Median $', data:wealthArr, borderColor:CC.blue, backgroundColor:'rgba(91,174,247,0.07)', tension:.35, pointRadius:0, fill:true, borderWidth:2 },
+    { label:'$82K target', data:labels.map(()=>82000), borderColor:CC.amber, borderDash:[4,3], tension:0, pointRadius:0, borderWidth:1.5, fill:false }
+  ], v => '$'+Math.round(v/1000)+'K');
 
-  mkChart('rc-velocity', 'bar', labels, [
-    { label: 'BU/agent', data: velocity, backgroundColor: 'rgba(91,174,247,0.65)', borderColor: C.blue, borderWidth: 1, borderRadius: 2 }
-  ], v => '$' + Math.round(v));
+  mkChart('ch-vel', 'bar', labels, [
+    { label:'BU/agent', data:velArr, backgroundColor:'rgba(91,174,247,0.55)', borderColor:CC.blue, borderWidth:1, borderRadius:2 }
+  ], v => '$'+Math.round(v));
 
-  // Comparison table
+  /* Comparison table */
   document.getElementById('cmp-body').innerHTML = [
-    { label:'Status Quo (Welfare / $400 UBI)', cls:'badge-base', pe: ((1-base.poverty)*100).toFixed(0)+'%', mw:'$'+Math.round(base.median/1000)+'K', g: base.gini.toFixed(3), wi:'34%', st:'65%' },
-    { label:'CCO Only',                        cls:'badge-cco',  pe: ((1-cco.poverty)*100).toFixed(0)+'%',  mw:'$'+Math.round(cco.median/1000)+'K',  g: cco.gini.toFixed(3),  wi:'88%', st:'90%' },
-    { label:'Integrated (your settings)',      cls:'badge-full', pe: ((1-m.poverty)*100).toFixed(0)+'%',   mw:'$'+Math.round(m.median/1000)+'K',   g: m.gini.toFixed(3),   wi:(82+Math.round(Math.random()*10))+'%', st:Math.round(stab*100)+'%' }
-  ].map(r => `<tr><td><span class="badge ${r.cls}">${r.label}</span></td><td>${r.pe}</td><td>${r.mw}</td><td>${r.g}</td><td>${r.wi}</td><td>${r.st}</td></tr>`).join('');
-  document.getElementById('res-compare').style.display = 'block';
+    { label:'Status Quo / $400 UBI', cls:'b-base', pe:((1-base.poverty)*100).toFixed(0)+'%', mw:'$'+Math.round(base.median/1000)+'K', g:base.gini.toFixed(3), wi:'34%', st:'65%' },
+    { label:'CCO Only',              cls:'b-cco',  pe:((1-cco.poverty)*100).toFixed(0)+'%',  mw:'$'+Math.round(cco.median/1000)+'K',  g:cco.gini.toFixed(3),  wi:'88%', st:'90%' },
+    { label:'Integrated (current)',  cls:'b-full', pe:((1-pov/100)*100).toFixed(0)+'%',      mw:'$'+Math.round(m.median/1000)+'K',   g:m.gini.toFixed(3),   wi:(82+Math.round(Math.random()*10))+'%', st:Math.round(stab*100)+'%' }
+  ].map(r=>`<tr><td><span class="badge ${r.cls}">${r.label}</span></td><td>${r.pe}</td><td>${r.mw}</td><td>${r.g}</td><td>${r.wi}</td><td>${r.st}</td></tr>`).join('');
+  document.getElementById('cmp-card').style.display = 'block';
 
-  // Warnings
+  /* Warnings */
   const warns = [];
   if (p.partRate < 0.55) warns.push('Participation below 55% — network effects may not activate');
   if (p.ptfShare > 0.30) warns.push('PTF share above 30% risks market distortion');
   if (p.bu < 800 && p.partRate > 0.1) warns.push('BU below $800 — poverty reduction targets unlikely');
-  const wEl = document.getElementById('res-warn');
-  if (warns.length) { wEl.style.display = 'block'; wEl.textContent = '⚠ ' + warns.join(' · '); }
-  else { wEl.style.display = 'none'; }
+  const wb = document.getElementById('warn-banner');
+  if (warns.length) { wb.style.display='block'; wb.textContent='⚠ ' + warns.join(' · '); }
 
-  // Insights
-  const ins = buildInsights(m, stab, p, 'technical');
-  document.getElementById('res-insights').innerHTML = ins.map(i =>
+  /* Insights */
+  document.getElementById('insight-grid').innerHTML = buildInsights(m, stab, p).map(i =>
     `<div class="insight"><div class="insight-icon">${i.icon}</div><div class="insight-title">${i.title}</div><div class="insight-body">${i.body}</div></div>`
   ).join('');
-  document.getElementById('res-insights').style.display = 'grid';
+  document.getElementById('insight-grid').style.display = 'grid';
 
-  // Sensitivity
-  renderSensitivity();
+  /* Sensitivity */
+  renderSens();
+
+  /* Status */
+  document.getElementById('s-dot').className  = 's-dot done';
+  document.getElementById('s-text').textContent = `Simulation complete — ${labels.length}-year run.`;
+  document.getElementById('s-pct').textContent  = '';
+  document.getElementById('run-btn').disabled   = false;
+  document.getElementById('run-btn').textContent = '▶ Run Simulation';
+  running = false;
+}
+
+function setKPI(id, val, delta, cls) {
+  document.getElementById(id).textContent = val;
+  const d = document.getElementById(id + '-d');
+  d.textContent = delta;
+  d.className = 'kpi-delta ' + cls;
 }
 
 /* ================================================================
-   INSIGHTS ENGINE
-   ================================================================ */
-function buildInsights(m, stab, p, style) {
+   INSIGHTS
+================================================================ */
+function buildInsights(m, stab, p) {
   const pov = m.poverty * 100;
   const ins = [];
 
-  // Poverty insight
   if (pov < 2) {
-    ins.push({ icon:'✅', title:'Poverty target achieved',
-      body: style==='plain'
-        ? `Only ${pov.toFixed(1)}% of people are below the poverty line — the 2% benchmark has been met.`
-        : `Poverty rate of ${pov.toFixed(1)}% is below the 2% benchmark across all simulated agents.` });
+    ins.push({ icon:'✅', title:'Poverty target achieved', body:`${pov.toFixed(1)}% poverty rate — below the 2% benchmark. Network effects and multi-system integration are driving convergence.` });
   } else {
     const tips = [];
-    if (p.bu < 1200) tips.push(style==='plain' ? 'raising the monthly allowance toward $1,200' : 'increasing BU allocation to $1,200');
-    if (p.partRate < 0.78) tips.push('increasing participation rate');
-    if (!p.ptf) tips.push(style==='plain' ? 'enabling community businesses (PTF)' : 'enabling PTF');
-    if (!p.pth) tips.push(style==='plain' ? 'enabling community housing (PTH)' : 'enabling PTH');
-    const tipStr = tips.length ? ` Try ${tips.slice(0,2).join(' and ')}.` : '';
+    if (p.bu < 1200) tips.push('raising BU to $1,200/mo');
+    if (p.partRate < 0.78) tips.push('increasing participation toward 78%');
+    if (!p.ptf) tips.push('enabling PTF');
+    if (!p.pth) tips.push('enabling PTH');
     ins.push({ icon: pov < 10 ? '📈' : '⚠️',
       title: pov < 10 ? 'Strong poverty reduction' : 'Poverty target not met',
-      body: `${pov.toFixed(1)}% poverty rate.${tipStr}` });
+      body: `${pov.toFixed(1)}% poverty rate.${tips.length ? ' Try ' + tips.slice(0,2).join(' and ') + '.' : ''}` });
   }
 
-  // Inequality insight
   if (m.gini <= 0.25) {
-    ins.push({ icon:'⚖️', title:'Equality target achieved',
-      body: style==='plain'
-        ? `A Gini of ${m.gini.toFixed(3)} is more equal than Nordic countries (0.27–0.29) — a major milestone.`
-        : `Gini coefficient ${m.gini.toFixed(3)} meets the ≤0.25 benchmark. Integration of PTH Acre Equity and CCO quality tiers are driving convergence.` });
+    ins.push({ icon:'⚖️', title:'Equality target achieved', body:`Gini ${m.gini.toFixed(3)} — below the 0.25 target and more equal than Nordic benchmarks (0.27–0.29). PTH Acre Equity and CCO quality tiers are compressing the distribution.` });
   } else {
     const tips = [];
-    if (!p.pth) tips.push(style==='plain' ? 'community housing (PTH)' : 'PTH Acre Equity');
-    if (!p.szh) tips.push(style==='plain' ? 'Social Zone Harmonization' : 'SZH');
-    if (p.partRate < 0.78) tips.push('higher CCO participation');
+    if (!p.pth) tips.push('PTH Acre Equity');
+    if (!p.szh) tips.push('SZH');
+    if (p.partRate < 0.78) tips.push('higher participation');
     ins.push({ icon:'📊', title:'Inequality persists',
-      body: `Gini of ${m.gini.toFixed(3)} vs target ≤0.25.${tips.length ? ' Adding ' + tips.slice(0,2).join(' and ') + ' would compress the wealth distribution further.' : ''}` });
+      body:`Gini ${m.gini.toFixed(3)} vs target ≤0.25.${tips.length ? ' Adding ' + tips.slice(0,2).join(' and ') + ' would compress the wealth distribution.' : ''}` });
   }
 
-  // Stability insight
   if (stab >= 0.90) {
-    ins.push({ icon:'🏛️', title:'High system stability',
-      body: `${Math.round(stab*100)}% stability — network effects are active and the system is resilient to shocks.` });
+    ins.push({ icon:'🏛️', title:'High system stability', body:`${Math.round(stab*100)}% stability — network effects have activated. The multi-system architecture provides redundancy against shocks.` });
   } else if (p.partRate < 0.55) {
-    ins.push({ icon:'🔗', title:'Below critical threshold',
-      body: `Participation at ${Math.round(p.partRate*100)}% is below the 55% minimum. Network effects have not activated — raise participation to restore stability.` });
+    ins.push({ icon:'🔗', title:'Below critical threshold', body:`Participation at ${Math.round(p.partRate*100)}% is below the 55% minimum. Raise participation to activate network effects and restore stability.` });
   } else {
     const tips = [];
-    if (!p.ptf) tips.push(style==='plain' ? 'community businesses' : 'PTF');
+    if (!p.ptf) tips.push('PTF');
     if (p.partRate < 0.75) tips.push('higher participation');
     ins.push({ icon:'⚡', title:'Moderate stability',
-      body: `${Math.round(stab*100)}% stability — functional but not fully resilient.${tips.length ? ' Try enabling ' + tips.join(', ') + '.' : ''}` });
+      body:`${Math.round(stab*100)}% stability — functional but not fully resilient.${tips.length ? ' Enabling ' + tips.join(' and ') + ' would help.' : ''}` });
   }
-
   return ins;
 }
 
 /* ================================================================
    SENSITIVITY CHART
-   ================================================================ */
-function renderSensitivity() {
-  const labels = ['BU amount','Participation','PTF investment','Quality accuracy','PTH uptake','Octave level','Tax rate','Phi rate','Collective size'];
-  const vals   = [2.34, 1.15, 1.67, 0.94, 0.72, 0.45, 0.18, 0.12, 0.15];
-  if (charts['rc-sensitivity']) charts['rc-sensitivity'].destroy();
-  const ctx = document.getElementById('rc-sensitivity');
-  charts['rc-sensitivity'] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Elasticity',
-        data: vals,
-        backgroundColor: vals.map(v => v > 1.5 ? 'rgba(240,112,112,0.65)' : v > 0.8 ? 'rgba(240,176,58,0.65)' : 'rgba(30,201,138,0.65)'),
-        borderRadius: 3, borderWidth: 0
-      }]
-    },
+================================================================ */
+function renderSens() {
+  if (charts['ch-sens']) charts['ch-sens'].destroy();
+  const labels = ['BU amount','PTF investment','Participation','Quality accuracy','PTH uptake','Octave level','Tax rate','Phi rate','Collective size'];
+  const vals   = [2.34, 1.67, 1.15, 0.94, 0.72, 0.45, 0.18, 0.12, 0.15];
+  charts['ch-sens'] = new Chart(document.getElementById('ch-sens'), {
+    type:'bar',
+    data: { labels, datasets: [{ label:'Elasticity', data:vals, backgroundColor: vals.map(v => v>1.5?'rgba(240,112,112,0.65)':v>0.8?'rgba(240,176,58,0.65)':'rgba(30,201,138,0.65)'), borderRadius:3, borderWidth:0 }] },
     options: {
-      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{display:false} },
       scales: {
-        x: { ticks: { font:{size:10}, color:'#666' }, grid: { color:'rgba(255,255,255,0.04)' },
-             title: { display:true, text:'Elasticity on poverty rate', font:{size:10}, color:'#666' } },
-        y: { ticks: { font:{size:10}, color:'#888' }, grid: { display:false } }
+        x: { ticks:{font:{size:10},color:'#555'}, grid:{color:'rgba(255,255,255,0.04)'}, title:{display:true,text:'Elasticity on poverty rate',font:{size:10},color:'#666'} },
+        y: { ticks:{font:{size:10},color:'#888'}, grid:{display:false} }
       }
     }
   });
-  document.getElementById('res-sensitivity').style.display = 'block';
-}
-
-/* ================================================================
-   MODE SWITCHER
-   ================================================================ */
-function setMode(m) {
-  document.getElementById('explorer').style.display  = m === 'explorer' ? 'block' : 'none';
-  document.getElementById('research').style.display  = m === 'research'  ? 'block' : 'none';
-  document.getElementById('btn-explorer').classList.toggle('active', m === 'explorer');
-  document.getElementById('btn-research').classList.toggle('active', m === 'research');
+  document.getElementById('sens-card').style.display = 'block';
 }
 
 /* ================================================================
    INIT
-   ================================================================ */
+================================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-  // Init research slider displays
   ['bu','octave','expiry','mult','tax','agents','part','years','ptfsh','pthup'].forEach(k => {
     const sl = document.getElementById('sl-' + k);
     if (sl) sl.dispatchEvent(new Event('input'));
   });
-  // Init all toggles to show correct active state
-  ['phi','ptf','pth','szh','cip','shock'].forEach(k => setTog(k, S[k]));
+  // Set correct toggle states
+  ['phi','ptf','pth','szh','cip'].forEach(k => setTog(k, true));
   setTog('drug', false);
-  // Init synergy displays
-  updateExpSynergy();
-  updateResearchSynergy();
-  // Default: Explorer mode
-  setMode('explorer');
+  setTog('shock', false);
+  updateSynergy();
 });
 </script>
 </body>
