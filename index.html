@@ -308,16 +308,6 @@ tr:last-child td { border-bottom: none; }
 <!-- ══ SIDEBAR ══ -->
 <aside class="sidebar">
 
-  <!-- Synergy Index -->
-  <div class="syn-box">
-    <div class="syn-top">
-      <span class="syn-label">System Synergy Index</span>
-      <span class="syn-score" id="syn-score">0</span>
-    </div>
-    <div class="syn-bar-wrap"><div class="syn-bar" id="syn-bar" style="width:0%"></div></div>
-    <div class="syn-chips" id="syn-chips"></div>
-  </div>
-
   <!-- Presets -->
   <div class="s-section">
     <div class="s-heading">Scenario Presets</div>
@@ -456,6 +446,19 @@ tr:last-child td { border-bottom: none; }
     </div>
   </div>
 
+  <!-- Synergy Index -->
+  <div class="s-section">
+    <div class="s-heading">System Synergy Index</div>
+    <div class="syn-box" style="margin-bottom:0;">
+      <div class="syn-top">
+        <span class="syn-label" style="font-size:11px;color:var(--text2);text-transform:none;letter-spacing:0;">Active systems reinforcing each other</span>
+        <span class="syn-score" id="syn-score">0</span>
+      </div>
+      <div class="syn-bar-wrap"><div class="syn-bar" id="syn-bar" style="width:0%"></div></div>
+      <div class="syn-chips" id="syn-chips" style="margin-top:6px;"></div>
+    </div>
+  </div>
+
   <!-- Run -->
   <div class="s-section">
     <div class="s-heading">Run</div>
@@ -502,7 +505,7 @@ tr:last-child td { border-bottom: none; }
       <div style="position:relative;height:195px;"><canvas id="ch-wealth"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">BU velocity (per agent / year)</div>
+      <div class="chart-title">Median wealth — baseline vs CCO-only vs integrated ($)</div>
       <div style="position:relative;height:195px;"><canvas id="ch-vel"></canvas></div>
     </div>
   </div>
@@ -597,7 +600,7 @@ function makeAgents(n, p) {
     const inSZH = p.szh  && Math.random() < 0.60;
     a.push({
       wealth:     lognormal(9.8, 1.0),
-      wage:       lognormal(3.0, 0.55) * 12,
+      wage:       lognormal(10.2, 0.65),   // annual income, median ~$27K
       octave:     Math.floor(betaRng(1.5, 5) * p.maxOctave),
       quality:    betaRng(3, 3) * p.maxMult,
       inCCO:      Math.random() < p.partRate,
@@ -635,7 +638,8 @@ function runYear(agents, yr, p, ccoOn, ptfOn, pthOn, szhOn, cipOn, drugOn, shock
       const rate = (1 + qf * (p.maxMult - 1))
                  * (p.phi && qf > 0.65 ? 1.618 : 1.0)
                  * (ptfOn && a.inPTF   ? 1.25  : 1.0);
-      a.wealth += buAnnual * 0.22 * oMul * rate * (1 - p.tax);
+      const rawConv = buAnnual * 0.06 * oMul * rate * (1 - p.tax);
+      a.wealth += Math.min(rawConv, 12000); // cap at $12K/yr
       buVel += buAnnual;
 
       /* Merit-based octave advancement */
@@ -813,21 +817,24 @@ function _sim(p) {
   const baseAgents = makeAgents(n, { ...p, partRate:0, ptf:false, pth:false, szh:false, cip:false, drug:false });
   const ccoAgents  = makeAgents(n, { ...p,             ptf:false, pth:false, szh:false, cip:false, drug:false });
 
-  const labels = [], povArr = [], giniArr = [], wealthArr = [], velArr = [];
+  const labels = [], povArr = [], giniArr = [], wealthArr = [], baseWArr = [], ccoWArr = [];
 
   function tick(yr) {
-    if (yr >= yrs) { finish(p, agents, baseAgents, ccoAgents, labels, povArr, giniArr, wealthArr, velArr); return; }
+    if (yr >= yrs) { finish(p, agents, baseAgents, ccoAgents, labels, povArr, giniArr, wealthArr, baseWArr, ccoWArr); return; }
 
     runYear(baseAgents, yr, p, false,          false,   false,   false,   false,   false,   p.shock);
     runYear(ccoAgents,  yr, p, p.partRate > 0, false,   false,   false,   false,   false,   p.shock);
-    const vel = runYear(agents, yr, p, p.partRate > 0, p.ptf, p.pth, p.szh, p.cip, p.drug, p.shock);
+    runYear(agents,     yr, p, p.partRate > 0, p.ptf, p.pth, p.szh, p.cip, p.drug, p.shock);
 
-    const m = calcMetrics(agents);
+    const m  = calcMetrics(agents);
+    const mb = calcMetrics(baseAgents);
+    const mc = calcMetrics(ccoAgents);
     labels.push('Y' + (yr + 1));
     povArr.push(+(m.poverty * 100).toFixed(2));
     giniArr.push(+m.gini.toFixed(4));
     wealthArr.push(Math.round(m.median));
-    velArr.push(Math.round(vel));
+    baseWArr.push(Math.round(mb.median));
+    ccoWArr.push(Math.round(mc.median));
 
     const pct = Math.round((yr + 1) / yrs * 100);
     document.getElementById('prog-bar').style.width = pct + '%';
@@ -838,7 +845,7 @@ function _sim(p) {
   tick(0);
 }
 
-function finish(p, agents, baseAgents, ccoAgents, labels, povArr, giniArr, wealthArr, velArr) {
+function finish(p, agents, baseAgents, ccoAgents, labels, povArr, giniArr, wealthArr, baseWArr, ccoWArr) {
   const m    = calcMetrics(agents);
   const base = calcMetrics(baseAgents);
   const cco  = calcMetrics(ccoAgents);
@@ -870,9 +877,11 @@ function finish(p, agents, baseAgents, ccoAgents, labels, povArr, giniArr, wealt
     { label:'$82K target', data:labels.map(()=>82000), borderColor:CC.amber, borderDash:[4,3], tension:0, pointRadius:0, borderWidth:1.5, fill:false }
   ], v => '$'+Math.round(v/1000)+'K');
 
-  mkChart('ch-vel', 'bar', labels, [
-    { label:'BU/agent', data:velArr, backgroundColor:'rgba(91,174,247,0.55)', borderColor:CC.blue, borderWidth:1, borderRadius:2 }
-  ], v => '$'+Math.round(v));
+  mkChart('ch-vel', 'line', labels, [
+    { label:'Baseline / $400 UBI', data:baseWArr,  borderColor:CC.red,   tension:.35, pointRadius:0, borderWidth:1.5, fill:false, borderDash:[4,3] },
+    { label:'CCO only',            data:ccoWArr,   borderColor:CC.blue,  tension:.35, pointRadius:0, borderWidth:1.5, fill:false },
+    { label:'Integrated',          data:wealthArr, borderColor:CC.teal,  tension:.35, pointRadius:0, borderWidth:2,   fill:false }
+  ], v => '$'+Math.round(v/1000)+'K');
 
   /* Comparison table */
   document.getElementById('cmp-body').innerHTML = [
