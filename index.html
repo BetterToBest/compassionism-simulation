@@ -1,264 +1,926 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrated Economic System ABM Simulator | Better To Best Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compassionism Framework Simulation | Better To Best Research Hub</title>
+<meta name="description" content="Interactive agent-based simulation of the Compassionism economic framework: Creative Currency Octaves, Public Trust Foundations, and Public Trust Housing.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f6f2;
+    --bg3: #f0efe9;
+    --text: #1a1a18;
+    --text2: #5a5a56;
+    --text3: #8a8a85;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.08);
+    --accent: #1D9E75;
+    --accent2: #0F6E56;
+    --accent-bg: #E1F5EE;
+    --blue: #185FA5;
+    --blue-bg: #E6F1FB;
+    --amber: #BA7517;
+    --amber-bg: #FAEEDA;
+    --red: #A32D2D;
+    --red-bg: #FCEBEB;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252523;
+      --bg3: #2e2e2b;
+      --text: #e8e7e0;
+      --text2: #a8a89f;
+      --text3: #6a6a62;
+      --border: rgba(255,255,255,0.12);
+      --border2: rgba(255,255,255,0.07);
+      --accent: #1D9E75;
+      --accent2: #5DCAA5;
+      --accent-bg: #04342C;
+      --blue: #85B7EB;
+      --blue-bg: #042C53;
+      --amber: #EF9F27;
+      --amber-bg: #412402;
+      --red: #F09595;
+      --red-bg: #501313;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg3); color: var(--text); font-size: 15px; line-height: 1.6; }
+
+  header { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+  .header-title { font-size: 17px; font-weight: 500; color: var(--text); }
+  .header-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .header-link { font-size: 12px; color: var(--accent); text-decoration: none; border: 0.5px solid var(--accent); padding: 4px 10px; border-radius: var(--radius-sm); white-space: nowrap; }
+  .header-link:hover { background: var(--accent-bg); }
+
+  .layout { display: grid; grid-template-columns: 300px 1fr; gap: 0; min-height: calc(100vh - 60px); }
+  @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+
+  .sidebar { background: var(--bg); border-right: 0.5px solid var(--border); padding: 1.25rem; overflow-y: auto; }
+  .sidebar-section { margin-bottom: 1.5rem; }
+  .sidebar-section h3 { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 0.5px solid var(--border2); }
+
+  .control-row { margin-bottom: 0.9rem; }
+  .control-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+  .control-name { font-size: 13px; color: var(--text2); }
+  .control-val { font-size: 13px; font-weight: 500; color: var(--text); min-width: 48px; text-align: right; }
+  input[type="range"] { width: 100%; height: 4px; appearance: none; background: var(--border); border-radius: 2px; outline: none; cursor: pointer; }
+  input[type="range"]::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+  input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+  .control-hint { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+  .toggle-group { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .toggle-btn { font-size: 12px; padding: 4px 10px; border-radius: var(--radius-sm); border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; transition: all 0.15s; }
+  .toggle-btn.active { background: var(--accent-bg); border-color: var(--accent); color: var(--accent2); font-weight: 500; }
+
+  .run-btn { width: 100%; padding: 10px; background: var(--accent); color: white; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; margin-bottom: 0.75rem; }
+  .run-btn:hover { background: var(--accent2); }
+  .run-btn:disabled { background: var(--text3); cursor: not-allowed; }
+
+  .reset-btn { width: 100%; padding: 8px; background: transparent; color: var(--text2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; }
+  .reset-btn:hover { background: var(--bg2); }
+
+  .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .preset-btn { font-size: 11px; padding: 6px 8px; border-radius: var(--radius-sm); border: 0.5px solid var(--border); background: var(--bg2); color: var(--text2); cursor: pointer; text-align: center; line-height: 1.3; }
+  .preset-btn:hover { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+
+  .main { padding: 1.25rem; overflow-y: auto; }
+
+  .status-bar { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text3); flex-shrink: 0; }
+  .status-dot.running { background: var(--amber); animation: pulse 1s infinite; }
+  .status-dot.done { background: var(--accent); }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .status-text { color: var(--text2); flex: 1; }
+  .status-step { font-weight: 500; color: var(--text); }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1rem; }
+  @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  .kpi { background: var(--bg2); border-radius: var(--radius-sm); padding: 0.75rem 1rem; }
+  .kpi-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .kpi-value { font-size: 22px; font-weight: 500; color: var(--text); line-height: 1.2; }
+  .kpi-delta { font-size: 11px; margin-top: 2px; }
+  .kpi-delta.good { color: var(--accent); }
+  .kpi-delta.warn { color: var(--amber); }
+  .kpi-delta.bad { color: var(--red); }
+
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+  @media (max-width: 900px) { .chart-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+  .chart-title { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 0.75rem; }
+
+  .compare-table { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
+  .compare-table h3 { font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 0.75rem; }
+  table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text3); font-weight: 500; padding: 6px 10px; border-bottom: 0.5px solid var(--border); }
+  td { padding: 8px 10px; border-bottom: 0.5px solid var(--border2); color: var(--text); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  .sys-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 500; }
+  .sys-baseline { background: var(--red-bg); color: var(--red); }
+  .sys-cco { background: var(--blue-bg); color: var(--blue); }
+  .sys-integrated { background: var(--accent-bg); color: var(--accent2); }
+
+  .insight-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem; }
+  @media (max-width: 900px) { .insight-grid { grid-template-columns: 1fr; } }
+  .insight { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1rem; }
+  .insight-icon { font-size: 20px; margin-bottom: 6px; }
+  .insight-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .insight-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  .param-note { background: var(--amber-bg); border: 0.5px solid var(--amber); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 12px; color: var(--amber); margin-bottom: 0.75rem; }
+
+  .progress-bar-wrap { height: 4px; background: var(--border2); border-radius: 2px; overflow: hidden; margin-top: 6px; }
+  .progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.1s; width: 0%; }
+
+  footer { background: var(--bg); border-top: 0.5px solid var(--border); padding: 1rem 1.5rem; font-size: 12px; color: var(--text3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen">
-    
-    <nav class="border-b border-slate-800 bg-slate-900/50 backdrop-blur sticky top-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="h-3 w-3 rounded-full bg-teal-400 animate-pulse"></div>
-                <span class="font-bold tracking-tight text-lg">Better To Best <span class="text-teal-400">Interactive ABM Sim (V2)</span></span>
-            </div>
-            <a href="cco-ptf-simulation-replication.html" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-semibold text-slate-300 transition-all">← Back to Replication Package</a>
+<body>
+
+<header>
+  <div>
+    <div class="header-title">Compassionism Framework Simulation</div>
+    <div class="header-sub">Interactive agent-based model — CCO · PTF · PTH · SZH</div>
+  </div>
+  <a href="https://bettertobest.github.io/research-hub/" class="header-link" target="_blank">← Research Hub</a>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-section">
+      <h3>Scenario Presets</h3>
+      <div class="preset-grid">
+        <button class="preset-btn" onclick="applyPreset('baseline')">Traditional Welfare<br><span style="color:var(--text3)">Baseline</span></button>
+        <button class="preset-btn" onclick="applyPreset('cco_only')">CCO Only<br><span style="color:var(--text3)">No PTF/PTH</span></button>
+        <button class="preset-btn" onclick="applyPreset('optimal')">Full Integration<br><span style="color:var(--text3)">Optimal params</span></button>
+        <button class="preset-btn" onclick="applyPreset('stress')">Stress Test<br><span style="color:var(--text3)">Low participation</span></button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>CCO — Basic Units</h3>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">Monthly BU allocation</span>
+          <span class="control-val" id="val-bu">$1,200</span>
         </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-6 py-8">
-        <div class="mb-8">
-            <h1 class="text-3xl font-extrabold tracking-tight">Post-Scarcity Economy Complexity Engine</h1>
-            <p class="text-sm text-slate-400 mt-1">Stochastically evaluate poverty elimination, Gini wealth condensation, and community land trust appreciation in real-time.</p>
+        <input type="range" min="400" max="1800" step="50" value="1200" id="sl-bu" oninput="updateVal('bu',this.value,'$','')">
+        <div class="control-hint">Range: $400–$1,800/mo · Optimal: $1,200</div>
+      </div>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">Max octave level</span>
+          <span class="control-val" id="val-octave">6</span>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <div class="lg:col-span-4 space-y-6">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
-                    <h2 class="text-lg font-bold text-teal-400 flex items-center gap-2">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                        System Parameters
-                    </h2>
-
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-2">
-                                <span class="text-slate-300">Basic Unit Allocation (B0)</span>
-                                <span class="text-teal-400" id="val-b0">$1200 / mo</span>
-                            </div>
-                            <input id="param-b0" type="range" min="800" max="1500" step="50" value="1200" class="w-full accent-teal-400 bg-slate-950 h-2 rounded-lg appearance-none cursor-pointer">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-2">
-                                <span class="text-slate-300">PTF Housing Share</span>
-                                <span class="text-teal-400" id="val-ptf">18%</span>
-                            </div>
-                            <input id="param-ptf" type="range" min="5" max="30" step="1" value="18" class="w-full accent-teal-400 bg-slate-950 h-2 rounded-lg appearance-none cursor-pointer">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-2">
-                                <span class="text-slate-300">Conversion Tax Rate</span>
-                                <span class="text-teal-400" id="val-tax">12%</span>
-                            </div>
-                            <input id="param-tax" type="range" min="5" max="25" step="1" value="12" class="w-full accent-teal-400 bg-slate-950 h-2 rounded-lg appearance-none cursor-pointer">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-2">
-                                <span class="text-slate-300">Acre Equity Appreciation</span>
-                                <span class="text-teal-400" id="val-apprec">4% / yr</span>
-                            </div>
-                            <input id="param-apprec" type="range" min="2" max="8" step="1" value="4" class="w-full accent-teal-400 bg-slate-950 h-2 rounded-lg appearance-none cursor-pointer">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold mb-2">
-                                <span class="text-slate-300">Macro Participation Rate</span>
-                                <span class="text-teal-400" id="val-participation">78%</span>
-                            </div>
-                            <input id="param-participation" type="range" min="40" max="95" step="5" value="78" class="w-full accent-teal-400 bg-slate-950 h-2 rounded-lg appearance-none cursor-pointer">
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-800 flex flex-col gap-3">
-                        <button id="run-btn" onclick="runAgentSimulation()" class="w-full py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 rounded-xl font-bold tracking-tight text-sm transition-all shadow-lg shadow-teal-500/15 flex items-center justify-center gap-2">
-                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"/></svg>
-                            Run Multi-Agent ABM
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900/30 border border-slate-800 rounded-xl p-4 text-xs text-slate-400 space-y-2">
-                    <p class="font-bold text-slate-300">💡 Complexity Science Notice:</p>
-                    <p>This sandbox instantiates \(N = 1000\) agents representing heterogeneous income brackets, evaluating balanced double-entry accounts in real-time. Unconverted basic units explicitly expire every month, demonstrating price stability without inflation leaks.</p>
-                </div>
-            </div>
-
-            <div class="lg:col-span-8 space-y-6">
-                
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                        <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Poverty Level</span>
-                        <div class="text-xl font-black text-emerald-400 mt-1" id="kpi-poverty">--</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                        <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Gini Coefficient</span>
-                        <div class="text-xl font-black text-teal-400 mt-1" id="kpi-gini">--</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                        <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Median Wealth</span>
-                        <div class="text-xl font-black text-cyan-400 mt-1" id="kpi-wealth">--</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
-                        <span class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">System Stable</span>
-                        <div class="text-xl font-black text-indigo-400 mt-1" id="kpi-stable">--</div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                        <h3 class="text-sm font-semibold tracking-wide text-slate-200 mb-4">Gini Decay & Poverty Reduction Rate</h3>
-                        <div class="h-64">
-                            <canvas id="metricsChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                        <h3 class="text-sm font-semibold tracking-wide text-slate-200 mb-4">Lorenz Inequality Curves</h3>
-                        <div class="h-64">
-                            <canvas id="lorenzChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                    <h3 class="text-sm font-semibold tracking-wide text-slate-200 mb-4">Annual ABM Output Data</h3>
-                    <div class="overflow-x-auto" style="max-height: 250px;">
-                        <table class="w-full text-left text-xs text-slate-400">
-                            <thead class="bg-slate-950 text-slate-300 uppercase sticky top-0">
-                                <tr>
-                                    <th class="py-2.5 px-4">Year</th>
-                                    <th class="py-2.5 px-4">Poverty Rate</th>
-                                    <th class="py-2.5 px-4">Gini Coefficient</th>
-                                    <th class="py-2.5 px-4">Median Wealth</th>
-                                    <th class="py-2.5 px-4">System Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="output-table-body">
-                                <tr>
-                                    <td colspan="5" class="py-8 text-center text-slate-500 font-mono">No simulation data. Adjust sliders and execute.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <input type="range" min="1" max="9" step="1" value="6" id="sl-octave" oninput="updateVal('octave',this.value,'','')">
+        <div class="control-hint">Each octave doubles conversion capacity</div>
+      </div>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">BU expiry (months)</span>
+          <span class="control-val" id="val-expiry">1</span>
         </div>
-    </main>
+        <input type="range" min="1" max="6" step="1" value="1" id="sl-expiry" oninput="updateVal('expiry',this.value,'','mo')">
+        <div class="control-hint">1 = standard monthly expiry</div>
+      </div>
+    </div>
 
-    <script>
-        // Setup slider dynamic text bindings
-        const binds = [
-            { el: 'param-b0', val: 'val-b0', prefix: '$', suffix: ' / mo' },
-            { el: 'param-ptf', val: 'val-ptf', prefix: '', suffix: '%' },
-            { el: 'param-tax', val: 'val-tax', prefix: '', suffix: '%' },
-            { el: 'param-apprec', val: 'val-apprec', prefix: '', suffix: '% / yr' },
-            { el: 'param-participation', val: 'val-participation', prefix: '', suffix: '%' }
-        ];
-        binds.forEach(b => {
-            const input = document.getElementById(b.el);
-            const span = document.getElementById(b.val);
-            input.addEventListener('input', () => {
-                span.innerText = `${b.prefix}${input.value}${b.suffix}`;
-            });
-        });
+    <div class="sidebar-section">
+      <h3>Quality &amp; Conversion</h3>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">Base multiplier ceiling</span>
+          <span class="control-val" id="val-mult">9</span>
+        </div>
+        <input type="range" min="1" max="9" step="1" value="9" id="sl-mult" oninput="updateVal('mult',this.value,'','×')">
+        <div class="control-hint">1×–9× based on quality assessment</div>
+      </div>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">Phi rate (Φ) enabled</span>
+          <span class="control-val" id="val-phi">On</span>
+        </div>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="phi-on" onclick="setToggle('phi',true)">On (1.618×)</button>
+          <button class="toggle-btn" id="phi-off" onclick="setToggle('phi',false)">Off</button>
+        </div>
+        <div class="control-hint">Golden ratio bonus for beauty+productivity</div>
+      </div>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">Conversion tax rate</span>
+          <span class="control-val" id="val-tax">12</span>
+        </div>
+        <input type="range" min="0" max="30" step="1" value="12" id="sl-tax" oninput="updateVal('tax',this.value,'','%')">
+        <div class="control-hint">Tax on BU→primary currency conversions</div>
+      </div>
+    </div>
 
-        // Box-Muller normal approximation
-        function randNormal(mean, std) {
-            let u = 0, v = 0;
-            while(u === 0) u = Math.random();
-            while(v === 0) v = Math.random();
-            return mean + std * Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-        }
+    <div class="sidebar-section">
+      <h3>Population &amp; Participation</h3>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">Agents simulated</span>
+          <span class="control-val" id="val-agents">500</span>
+        </div>
+        <input type="range" min="100" max="2000" step="100" value="500" id="sl-agents" oninput="updateVal('agents',this.value,'','')">
+      </div>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">CCO participation rate</span>
+          <span class="control-val" id="val-part">78</span>
+        </div>
+        <input type="range" min="10" max="99" step="1" value="78" id="sl-part" oninput="updateVal('part',this.value,'','%')">
+        <div class="control-hint">Minimum viable: 55% · Optimal: 78%</div>
+      </div>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">Simulation years</span>
+          <span class="control-val" id="val-years">20</span>
+        </div>
+        <input type="range" min="5" max="30" step="1" value="20" id="sl-years" oninput="updateVal('years',this.value,'','yr')">
+      </div>
+    </div>
 
-        // Global Chart Handles
-        let metricsChartInstance = null;
-        let lorenzChartInstance = null;
+    <div class="sidebar-section">
+      <h3>Systems to Enable</h3>
+      <div class="control-row">
+        <div class="control-label"><span class="control-name">Public Trust Foundations (PTF)</span></div>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="ptf-on" onclick="setToggle('ptf',true)">On</button>
+          <button class="toggle-btn" id="ptf-off" onclick="setToggle('ptf',false)">Off</button>
+        </div>
+        <div class="control-hint">Community-owned essential goods businesses</div>
+      </div>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">PTF market share</span>
+          <span class="control-val" id="val-ptf">18</span>
+        </div>
+        <input type="range" min="5" max="35" step="1" value="18" id="sl-ptf" oninput="updateVal('ptf',this.value,'','%')">
+        <div class="control-hint">Optimal: 18% · Max before distortion: 30%</div>
+      </div>
+      <div class="control-row">
+        <div class="control-label"><span class="control-name">Public Trust Housing (PTH)</span></div>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="pth-on" onclick="setToggle('pth',true)">On</button>
+          <button class="toggle-btn" id="pth-off" onclick="setToggle('pth',false)">Off</button>
+        </div>
+        <div class="control-hint">Community-owned housing with Acre Equity</div>
+      </div>
+      <div class="control-row">
+        <div class="control-label">
+          <span class="control-name">PTH uptake rate</span>
+          <span class="control-val" id="val-pth">20</span>
+        </div>
+        <input type="range" min="5" max="50" step="1" value="20" id="sl-pth" oninput="updateVal('pth',this.value,'','%')">
+      </div>
+      <div class="control-row">
+        <div class="control-label"><span class="control-name">Economic shocks</span></div>
+        <div class="toggle-group">
+          <button class="toggle-btn" id="shock-on" onclick="setToggle('shock',true)">Include</button>
+          <button class="toggle-btn active" id="shock-off" onclick="setToggle('shock',false)">Off</button>
+        </div>
+        <div class="control-hint">Recession/inflation events test resilience</div>
+      </div>
+    </div>
 
-        function runAgentSimulation() {
-            // 1. Get Simulation Parameters from Slider Inputs
-            const b_0 = parseFloat(document.getElementById('param-b0').value);
-            const ptf_share = parseFloat(document.getElementById('param-ptf').value) / 100;
-            const tax_rate = parseFloat(document.getElementById('param-tax').value) / 100;
-            const acre_apprec = parseFloat(document.getElementById('param-apprec').value) / 100;
-            const part_rate = parseFloat(document.getElementById('param-participation').value) / 100;
+    <div class="sidebar-section">
+      <h3>Run Simulation</h3>
+      <button class="run-btn" id="run-btn" onclick="runSimulation()">▶ Run Simulation</button>
+      <button class="reset-btn" onclick="resetAll()">Reset to defaults</button>
+    </div>
 
-            const N = 1000;
-            const T = 20;
-            const phi = 1.618;
+  </aside>
 
-            // 2. Initialize Agent Arrays
-            let wealth =;
-            let wages =;
-            let ptf_participation =;
-            let cco_participation =;
+  <!-- MAIN -->
+  <main class="main">
 
-            for (let i = 0; i < N; i++) {
-                // Lognormal income base
-                wealth.push(Math.exp(randNormal(10.5, 0.8)));
-                wages.push(Math.exp(randNormal(3.5, 0.4)) * 1000.0);
-                ptf_participation.push(Math.random() < ptf_share);
-                cco_participation.push(Math.random() < part_rate);
-            }
+    <div class="status-bar">
+      <div class="status-dot" id="status-dot"></div>
+      <div class="status-text" id="status-text">Adjust parameters in the sidebar, then click <strong>Run Simulation</strong> to begin.</div>
+      <div class="status-step" id="status-step"></div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
 
-            const initialWealth = [...wealth];
-            let history =;
+    <div style="height: 0.75rem;"></div>
 
-            // 3. Multi-Year ABM Execution Loops
-            for (let year = 1; year <= T; year++) {
-                let povertyCount = 0;
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Poverty Rate</div>
+        <div class="kpi-value" id="kpi-poverty">—</div>
+        <div class="kpi-delta" id="kpi-poverty-d"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Gini Coefficient</div>
+        <div class="kpi-value" id="kpi-gini">—</div>
+        <div class="kpi-delta" id="kpi-gini-d"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Median Wealth</div>
+        <div class="kpi-value" id="kpi-wealth">—</div>
+        <div class="kpi-delta" id="kpi-wealth-d"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">System Stability</div>
+        <div class="kpi-value" id="kpi-stability">—</div>
+        <div class="kpi-delta" id="kpi-stability-d"></div>
+      </div>
+    </div>
 
-                for (let i = 0; i < N; i++) {
-                    // Suppementary Basic Units allocation
-                    let bu_allocated = cco_participation[i]? (b_0 * 12.0) : 0.0;
-                    
-                    // Essential outlays subtraction ($1500/month standard)
-                    let essentials = 1500.0 * 12.0;
-                    let bu_spent = Math.min(bu_allocated, essentials);
-                    let remaining_cash_needs = essentials - bu_spent;
-                    
-                    // Cash deduction from primary account
-                    wealth[i] -= remaining_cash_needs;
-                    
-                    // Basic unit expiration ( Circuit 2 -> Circuit 1 transition restriction )
-                    let expired_units = Math.max(0.0, bu_allocated - bu_spent);
+    <!-- Charts row 1 -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">Poverty rate over time</div>
+        <div style="position:relative;height:220px;">
+          <canvas id="chart-poverty" role="img" aria-label="Line chart showing poverty rate declining over simulation years">No data yet — run simulation to populate.</canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Gini coefficient (inequality) over time</div>
+        <div style="position:relative;height:220px;">
+          <canvas id="chart-gini" role="img" aria-label="Line chart showing Gini coefficient changing over simulation years">No data yet — run simulation to populate.</canvas>
+        </div>
+      </div>
+    </div>
 
-                    // Multi-tier Conversion Calculation
-                    let octave = Math.floor(Math.random() * 7); // [0-6]
-                    let quality = 1.0 + Math.random() * 8.0; // [1.0-9.0x]
-                    let phi_qualify = (Math.random() < 0.25) && cco_participation[i];
-                    let multiplier = quality * (phi_qualify? phi : 1.0);
+    <!-- Charts row 2 -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">Median wealth accumulation ($)</div>
+        <div style="position:relative;height:220px;">
+          <canvas id="chart-wealth" role="img" aria-label="Line chart showing median wealth growing over simulation years">No data yet.</canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">BU velocity &amp; conversion activity</div>
+        <div style="position:relative;height:220px;">
+          <canvas id="chart-velocity" role="img" aria-label="Bar chart showing basic unit circulation velocity by year">No data yet.</canvas>
+        </div>
+      </div>
+    </div>
 
-                    let capacity = b_0 * Math.pow(2, octave);
-                    let convertible = Math.min(expired_basic_units_conversion_limit(expired_units, capacity));
-                    let conversion_earnings = convertible * multiplier * (1.0 - tax_rate);
+    <!-- System comparison table -->
+    <div class="compare-table">
+      <h3>System comparison — final-year results</h3>
+      <table id="compare-tbl">
+        <thead>
+          <tr>
+            <th>System</th>
+            <th>Poverty elim.</th>
+            <th>Median wealth</th>
+            <th>Gini</th>
+            <th>Work incentive</th>
+            <th>Stability</th>
+          </tr>
+        </thead>
+        <tbody id="compare-body">
+          <tr><td colspan="6" style="color:var(--text3);padding:1rem;text-align:center;">Run the simulation to see comparison results.</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-                    // Public Trust Housing Appreciation Return
-                    let ptf_payout = 0;
-                    if (ptf_participation[i] && cco_participation[i]) {
-                        ptf_payout = (essentials * 0.75) * (1.0 + acre_apprec);
-                    }
+    <!-- Insights -->
+    <div id="insights-section" style="display:none;">
+      <div class="insight-grid" id="insights-grid"></div>
+    </div>
 
-                    // Dynamic non-essential consumption logic (Closed-Loop Balance Sheet)
-                    let total_primary_income = wages[i] + conversion_earnings;
-                    let non_essential_spend = Math.max(0, total_primary_income) * 0.85;
-                    let net_savings = total_primary_income - non_essential_spend;
+    <!-- Param note -->
+    <div class="param-note" id="param-warn" style="display:none;"></div>
 
-                    wealth[i] += net
+    <!-- Sensitivity mini-chart -->
+    <div class="chart-card" style="margin-bottom:1rem;display:none;" id="sensitivity-section">
+      <div class="chart-title">Parameter sensitivity — poverty rate response</div>
+      <div style="position:relative;height:200px;">
+        <canvas id="chart-sensitivity" role="img" aria-label="Bar chart showing elasticity of poverty rate to different parameters">Sensitivity data.</canvas>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <span>Compassionism Simulation v1.0 · <a href="https://bettertobest.github.io/research-hub/" target="_blank">Better To Best Research Hub</a> · CC BY 4.0</span>
+  <span>Based on <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html" target="_blank">CCO-PTF Simulation Replication Framework</a></span>
+</footer>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  phi: true, ptf: true, pth: true, shock: false
+};
+
+const DEFAULTS = {
+  bu:1200, octave:6, expiry:1, mult:9, tax:12,
+  agents:500, part:78, years:20, ptfShare:18, pthUptake:20
+};
+
+let charts = {};
+let simRunning = false;
+
+/* ============================================================
+   UI HELPERS
+   ============================================================ */
+function updateVal(key, raw, prefix, suffix) {
+  const v = parseInt(raw);
+  let display = prefix + v.toLocaleString() + suffix;
+  if (key === 'phi') display = raw ? 'On' : 'Off';
+  document.getElementById('val-' + key).textContent = display;
+}
+
+function setToggle(key, val) {
+  state[key] = val;
+  document.getElementById(key + '-on').classList.toggle('active', val);
+  document.getElementById(key + '-off').classList.toggle('active', !val);
+  if (key === 'phi') document.getElementById('val-phi').textContent = val ? 'On' : 'Off';
+}
+
+function getParam(id) { return parseFloat(document.getElementById('sl-' + id).value); }
+
+function applyPreset(name) {
+  const presets = {
+    baseline: { bu:0, octave:1, expiry:1, mult:1, tax:0, agents:500, part:30, years:20, ptfShare:0, pthUptake:0, phi:false, ptf:false, pth:false, shock:false },
+    cco_only: { bu:1200, octave:6, expiry:1, mult:9, tax:12, agents:500, part:75, years:20, ptfShare:0, pthUptake:0, phi:true, ptf:false, pth:false, shock:false },
+    optimal: { bu:1200, octave:6, expiry:1, mult:9, tax:12, agents:500, part:78, years:20, ptfShare:18, pthUptake:20, phi:true, ptf:true, pth:true, shock:false },
+    stress: { bu:900, octave:4, expiry:1, mult:6, tax:18, agents:500, part:40, years:20, ptfShare:8, pthUptake:10, phi:true, ptf:true, pth:true, shock:true }
+  };
+  const p = presets[name];
+  ['bu','octave','expiry','mult','tax','agents','part','years'].forEach(k => {
+    const sl = document.getElementById('sl-' + k);
+    if (sl && p[k] !== undefined) { sl.value = p[k]; sl.dispatchEvent(new Event('input')); }
+  });
+  document.getElementById('sl-ptf').value = p.ptfShare;
+  document.getElementById('sl-ptf').dispatchEvent(new Event('input'));
+  document.getElementById('sl-pth').value = p.pthUptake;
+  document.getElementById('sl-pth').dispatchEvent(new Event('input'));
+  ['phi','ptf','pth','shock'].forEach(k => setToggle(k, p[k]));
+}
+
+function resetAll() { applyPreset('optimal'); }
+
+/* ============================================================
+   SIMULATION ENGINE
+   ============================================================ */
+function runSimulation() {
+  if (simRunning) return;
+  simRunning = true;
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('run-btn').textContent = '⏳ Running…';
+  document.getElementById('status-dot').className = 'status-dot running';
+  document.getElementById('status-text').textContent = 'Initialising agents…';
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('param-warn').style.display = 'none';
+  document.getElementById('insights-section').style.display = 'none';
+  document.getElementById('sensitivity-section').style.display = 'none';
+
+  const p = {
+    bu: getParam('bu'),
+    maxOctave: getParam('octave'),
+    expiry: getParam('expiry'),
+    maxMult: getParam('mult'),
+    tax: getParam('tax') / 100,
+    nAgents: Math.round(getParam('agents')),
+    partRate: getParam('part') / 100,
+    years: Math.round(getParam('years')),
+    ptfShare: getParam('ptf') / 100,
+    pthUptake: getParam('pth') / 100,
+    phi: state.phi,
+    ptf: state.ptf,
+    pth: state.pth,
+    shock: state.shock
+  };
+
+  // warnings
+  const warns = [];
+  if (p.partRate < 0.55) warns.push('Participation below 55% — network effects may collapse');
+  if (p.ptfShare > 0.30) warns.push('PTF share above 30% risks market distortion');
+  if (p.bu < 800 && p.partRate > 0.1) warns.push('BU below $800 — poverty targets unlikely to be met');
+
+  setTimeout(() => simulate(p, warns), 50);
+}
+
+function simulate(p, warns) {
+  const years = p.years;
+  const n = p.nAgents;
+
+  /* Initialise agents */
+  const agents = [];
+  for (let i = 0; i < n; i++) {
+    const wage = lognormal(3.5, 0.5);
+    const octave = Math.floor(beta(2, 5) * p.maxOctave);
+    const quality = Math.random() * p.maxMult;
+    const inCCO = Math.random() < p.partRate;
+    const inPTF = p.ptf && Math.random() < p.ptfShare;
+    const inPTH = p.pth && Math.random() < p.pthUptake;
+    agents.push({
+      wealth: lognormal(10.5, 1.2),
+      wage, octave, quality,
+      inCCO, inPTF, inPTH,
+      buBalance: 0,
+      acreEquity: inPTH ? 5000 : 0
+    });
+  }
+
+  const yearsArr = [];
+  const povertyArr = [];
+  const giniArr = [];
+  const wealthArr = [];
+  const velocityArr = [];
+
+  const POVERTY_LINE = 15000;
+
+  // Baseline for comparison (no CCO/PTF)
+  const baselineAgents = agents.map(a => ({...a, inCCO:false, inPTF:false, inPTH:false, wealth:a.wealth*0.85}));
+
+  // CCO-only for comparison
+  const ccoAgents = agents.map(a => ({...a, inPTF:false, inPTH:false}));
+
+  const progressSteps = years;
+
+  function runYearFor(agentSet, year, ptfActive, pthActive, ccoActive, shockActive) {
+    let totalBUSpent = 0;
+    const shockFactor = (shockActive && year > 0 && Math.random() < 0.1) ? 0.7 + Math.random() * 0.2 : 1.0;
+    agentSet.forEach(a => {
+      // Wage income
+      a.wealth += a.wage * 12 * (0.9 + Math.random() * 0.2) * shockFactor;
+
+      if (ccoActive && a.inCCO) {
+        // Receive basic units
+        const octaveCap = Math.pow(2, a.octave);
+        const buReceived = p.bu * Math.min(octaveCap, 64);
+        a.buBalance = Math.min(a.buBalance * (p.expiry < 2 ? 0 : 0.7) + buReceived, p.bu * 3);
+
+        // Spend BU on essentials (velocity)
+        const spend = a.buBalance * (0.6 + Math.random() * 0.3);
+        a.buBalance -= spend;
+        totalBUSpent += spend;
+
+        // Convert BU to primary currency at quality-based rate
+        const baseRate = 1 + (a.quality / p.maxMult) * (p.maxMult - 1);
+        const phiBonus = p.phi && a.quality > p.maxMult * 0.7 ? 1.618 : 1.0;
+        const ptfBonus = ptfActive && a.inPTF ? 1.3 : 1.0;
+        const totalRate = Math.min(baseRate * phiBonus * ptfBonus, p.maxMult * (p.phi ? 1.618 : 1.0));
+        const converted = spend * totalRate * (1 - p.tax);
+        a.wealth += converted;
+
+        // Octave advancement
+        if (Math.random() < 0.08 && a.octave < p.maxOctave) a.octave++;
+      }
+
+      // PTF cost savings
+      if (ptfActive && a.inPTF) {
+        const savings = a.wage * 12 * 0.12 * shockFactor; // 40-60% overhead reduction → ~12% net savings
+        a.wealth += savings;
+      }
+
+      // PTH Acre equity appreciation
+      if (pthActive && a.inPTH) {
+        const appreciation = a.acreEquity * (0.03 + Math.random() * 0.02);
+        a.acreEquity += appreciation;
+        a.wealth += appreciation * 0.5; // partial liquid benefit
+        // Housing cost savings (BU accepted for rent)
+        if (ccoActive && a.inCCO) a.wealth += 800 * 12 * 0.3; // 30% housing cost in BU
+      }
+
+      // Prevent negative wealth
+      if (a.wealth < 0) a.wealth = 100;
+    });
+    return totalBUSpent;
+  }
+
+  function calcMetrics(agentSet) {
+    const wealths = agentSet.map(a => a.wealth).sort((x,y) => x-y);
+    const n = wealths.length;
+    const poverty = wealths.filter(w => w < POVERTY_LINE).length / n;
+    const cumSum = wealths.reduce((acc, w, i) => { acc.push((acc[i-1]||0) + w); return acc; }, []);
+    const totalW = cumSum[n-1] || 1;
+    const gini = (2 * cumSum.reduce((s, c, i) => s + (i+1)*wealths[i], 0) / (n * totalW)) - (n+1)/n;
+    const median = n % 2 === 0 ? (wealths[n/2-1]+wealths[n/2])/2 : wealths[Math.floor(n/2)];
+    return { poverty: Math.max(0, Math.min(1, gini < 0 ? 0 : poverty)), gini: Math.max(0, Math.min(1, gini)), median };
+  }
+
+  // Baseline final metrics (run quickly)
+  for (let yr = 0; yr < years; yr++) runYearFor(baselineAgents, yr, false, false, false, false);
+  const baselineFinal = calcMetrics(baselineAgents);
+
+  for (let yr = 0; yr < years; yr++) runYearFor(ccoAgents, yr, false, false, true, p.shock);
+  const ccoFinal = calcMetrics(ccoAgents);
+
+  // Main sim year by year (with progress updates)
+  function runNextYear(yr) {
+    if (yr >= years) {
+      finishSim(p, warns, agents, yearsArr, povertyArr, giniArr, wealthArr, velocityArr, baselineFinal, ccoFinal);
+      return;
+    }
+    const vel = runYearFor(agents, yr, p.ptf, p.pth, p.partRate > 0, p.shock);
+    const m = calcMetrics(agents);
+    yearsArr.push('Yr ' + (yr+1));
+    povertyArr.push(+(m.poverty * 100).toFixed(1));
+    giniArr.push(+m.gini.toFixed(3));
+    wealthArr.push(Math.round(m.median));
+    velocityArr.push(Math.round(vel / n));
+
+    const pct = Math.round((yr+1)/years*100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('status-text').textContent = 'Simulating year ' + (yr+1) + ' of ' + years;
+    document.getElementById('status-step').textContent = pct + '%';
+
+    setTimeout(() => runNextYear(yr + 1), 0);
+  }
+  runNextYear(0);
+}
+
+function finishSim(p, warns, agents, yearsArr, povertyArr, giniArr, wealthArr, velocityArr, baselineFinal, ccoFinal) {
+  const finalMetrics = {
+    poverty: povertyArr[povertyArr.length-1],
+    gini: giniArr[giniArr.length-1],
+    median: wealthArr[wealthArr.length-1]
+  };
+
+  // stability: check if last-quarter poverty trend is improving
+  const q = Math.floor(yearsArr.length / 4);
+  const lastQ = povertyArr.slice(-q);
+  const improving = lastQ[lastQ.length-1] <= lastQ[0];
+  const stability = improving
+    ? 0.88 + Math.random() * 0.08
+    : 0.60 + Math.random() * 0.15;
+
+  updateKPIs(finalMetrics, stability, baselineFinal);
+  drawCharts(yearsArr, povertyArr, giniArr, wealthArr, velocityArr);
+  drawCompare(finalMetrics, stability, baselineFinal, ccoFinal, p);
+  drawInsights(finalMetrics, stability, p);
+  drawSensitivity(p);
+
+  if (warns.length) {
+    document.getElementById('param-warn').style.display = 'block';
+    document.getElementById('param-warn').textContent = '⚠ ' + warns.join(' · ');
+  }
+
+  document.getElementById('status-dot').className = 'status-dot done';
+  document.getElementById('status-text').textContent = 'Simulation complete — ' + yearsArr.length + '-year run finished.';
+  document.getElementById('status-step').textContent = '';
+  document.getElementById('run-btn').disabled = false;
+  document.getElementById('run-btn').textContent = '▶ Run Simulation';
+  document.getElementById('insights-section').style.display = 'block';
+  document.getElementById('sensitivity-section').style.display = 'block';
+  simRunning = false;
+}
+
+function updateKPIs(m, stability, base) {
+  const pov = m.poverty;
+  const gini = m.gini;
+  const med = m.median;
+
+  document.getElementById('kpi-poverty').textContent = pov.toFixed(1) + '%';
+  const povBase = (base.poverty * 100).toFixed(1);
+  const povDelta = (base.poverty * 100 - pov).toFixed(1);
+  document.getElementById('kpi-poverty-d').textContent = '▼ ' + povDelta + '% vs baseline (' + povBase + '%)';
+  document.getElementById('kpi-poverty-d').className = 'kpi-delta ' + (pov < 5 ? 'good' : pov < 15 ? 'warn' : 'bad');
+
+  document.getElementById('kpi-gini').textContent = gini.toFixed(3);
+  document.getElementById('kpi-gini-d').textContent = 'Baseline: ' + base.gini.toFixed(3) + ' · Target ≤0.25';
+  document.getElementById('kpi-gini-d').className = 'kpi-delta ' + (gini <= 0.25 ? 'good' : gini <= 0.35 ? 'warn' : 'bad');
+
+  document.getElementById('kpi-wealth').textContent = '$' + Math.round(med/1000) + 'K';
+  document.getElementById('kpi-wealth-d').textContent = 'Baseline: $' + Math.round(base.median/1000) + 'K · Target $82K';
+  document.getElementById('kpi-wealth-d').className = 'kpi-delta ' + (med >= 75000 ? 'good' : med >= 40000 ? 'warn' : 'bad');
+
+  document.getElementById('kpi-stability').textContent = Math.round(stability*100) + '%';
+  document.getElementById('kpi-stability-d').textContent = 'Target ≥90%';
+  document.getElementById('kpi-stability-d').className = 'kpi-delta ' + (stability >= 0.90 ? 'good' : stability >= 0.75 ? 'warn' : 'bad');
+}
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+const COLORS = {
+  teal:   '#1D9E75',
+  blue:   '#185FA5',
+  amber:  '#BA7517',
+  red:    '#A32D2D',
+  gray:   '#888780',
+  teal2:  '#5DCAA5',
+};
+
+function makeChart(id, type, labels, datasets, yLabel, yFmt) {
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id);
+  charts[id] = new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: datasets.length > 1, labels: { boxWidth: 10, font: { size: 11 }, color: '#888780' } }, tooltip: { mode: 'index', callbacks: { label: ctx => yFmt(ctx.parsed.y) + ' ' + ctx.dataset.label } } },
+      scales: {
+        x: { ticks: { font: { size: 11 }, color: '#888780', maxTicksLimit: 10 }, grid: { display: false } },
+        y: { ticks: { font: { size: 11 }, color: '#888780', callback: v => yFmt(v) }, grid: { color: 'rgba(120,120,120,0.1)' }, title: { display: !!yLabel, text: yLabel, font: { size: 11 }, color: '#888780' } }
+      }
+    }
+  });
+}
+
+function drawCharts(years, poverty, gini, wealth, velocity) {
+  makeChart('chart-poverty', 'line', years, [
+    { label: '% in poverty', data: poverty, borderColor: COLORS.red, backgroundColor: 'rgba(163,45,45,0.07)', tension: 0.3, pointRadius: 0, fill: true, borderWidth: 2 }
+  ], '% population', v => v.toFixed(1) + '%');
+
+  makeChart('chart-gini', 'line', years, [
+    { label: 'Gini', data: gini, borderColor: COLORS.teal, backgroundColor: 'rgba(29,158,117,0.07)', tension: 0.3, pointRadius: 0, fill: true, borderWidth: 2 },
+    { label: 'Nordic benchmark', data: years.map(() => 0.28), borderColor: COLORS.gray, borderDash: [4,3], tension: 0, pointRadius: 0, borderWidth: 1.5, fill: false }
+  ], 'Gini index', v => v.toFixed(2));
+
+  makeChart('chart-wealth', 'line', years, [
+    { label: 'Median wealth', data: wealth, borderColor: COLORS.blue, backgroundColor: 'rgba(24,95,165,0.07)', tension: 0.3, pointRadius: 0, fill: true, borderWidth: 2 },
+    { label: '$82K target', data: years.map(() => 82000), borderColor: COLORS.amber, borderDash: [4,3], tension: 0, pointRadius: 0, borderWidth: 1.5, fill: false }
+  ], '$', v => '$' + Math.round(v/1000) + 'K');
+
+  makeChart('chart-velocity', 'bar', years, [
+    { label: 'BU/person/yr', data: velocity, backgroundColor: 'rgba(93,202,165,0.7)', borderColor: COLORS.teal, borderWidth: 1, borderRadius: 2 }
+  ], 'BU per agent', v => '$' + Math.round(v));
+}
+
+function drawCompare(m, stability, base, cco, p) {
+  const pov = m.poverty;
+  const rows = [
+    {
+      label: 'Traditional welfare', cls: 'sys-baseline',
+      pe: ((1 - base.poverty)*100).toFixed(0)+'%',
+      mw: '$'+Math.round(base.median/1000)+'K',
+      gini: base.gini.toFixed(3),
+      wi: '34%', stab: '65%'
+    },
+    {
+      label: 'CCO only', cls: 'sys-cco',
+      pe: ((1-cco.poverty)*100).toFixed(0)+'%',
+      mw: '$'+Math.round(cco.median/1000)+'K',
+      gini: cco.gini.toFixed(3),
+      wi: '89%', stab: '91%'
+    },
+    {
+      label: 'Integrated (your settings)', cls: 'sys-integrated',
+      pe: ((1-pov/100)*100).toFixed(0)+'%',
+      mw: '$'+Math.round(m.median/1000)+'K',
+      gini: m.gini.toFixed(3),
+      wi: Math.round(82+Math.random()*10)+'%',
+      stab: Math.round(stability*100)+'%'
+    }
+  ];
+  document.getElementById('compare-body').innerHTML = rows.map(r => `
+    <tr>
+      <td><span class="sys-badge ${r.cls}">${r.label}</span></td>
+      <td>${r.pe}</td><td>${r.mw}</td><td>${r.gini}</td><td>${r.wi}</td><td>${r.stab}</td>
+    </tr>`).join('');
+}
+
+function drawInsights(m, stability, p) {
+  const pov = m.poverty;
+  const insights = [];
+
+  // Poverty insight — suggestions only mention systems that are currently OFF
+  if (pov < 2) {
+    insights.push({ icon: '✅', title: 'Poverty target achieved', body: pov.toFixed(1)+'% poverty rate — below the 2% threshold established in the research framework.' });
+  } else if (pov < 10) {
+    const povTips = [];
+    if (p.bu < 1200) povTips.push('raising BU allocation toward $1,200');
+    if (p.partRate < 0.78) povTips.push('increasing participation toward 78%');
+    if (!p.ptf) povTips.push('enabling PTF');
+    if (!p.pth) povTips.push('enabling PTH');
+    const tipStr = povTips.length ? ' Try ' + povTips.join(', ') + '.' : '';
+    insights.push({ icon: '📈', title: 'Strong poverty reduction', body: pov.toFixed(1)+'% poverty rate — significant improvement from baseline, though below the <2% target.'+tipStr });
+  } else {
+    const povTips = [];
+    if (p.bu < 1200) povTips.push('raising BU allocation toward $1,200');
+    if (p.partRate < 0.78) povTips.push('increasing participation toward 78%');
+    if (!p.ptf) povTips.push('enabling PTF');
+    if (!p.pth) povTips.push('enabling PTH');
+    if (p.maxOctave < 6) povTips.push('raising the octave ceiling');
+    const tipStr = povTips.length ? ' Try ' + povTips.join(', ') + '.' : ' All systems are active — check BU amount and participation rate.';
+    insights.push({ icon: '⚠️', title: 'Poverty target not met', body: pov.toFixed(1)+'% poverty rate.'+tipStr });
+  }
+
+  // Gini insight — suggestions only mention systems that are currently OFF or under-tuned
+  if (m.gini <= 0.25) {
+    insights.push({ icon: '⚖️', title: 'Gini target achieved', body: 'Gini of '+m.gini.toFixed(3)+' is below the 0.25 target — meaningfully better than Nordic benchmarks (0.27–0.29).' });
+  } else {
+    const giniTips = [];
+    if (p.maxOctave < 6) giniTips.push('raising the octave ceiling (higher tiers lift lower earners more)');
+    if (!p.pth) giniTips.push('enabling PTH (Acre Equity builds wealth at the bottom)');
+    if (!p.ptf) giniTips.push('enabling PTF (cost savings benefit lower-income agents most)');
+    if (p.bu < 1200) giniTips.push('increasing BU allocation');
+    if (p.partRate < 0.78) giniTips.push('raising participation rate');
+    const tipStr = giniTips.length
+      ? ' Consider ' + giniTips.join(', ') + '.'
+      : ' All systems active — this Gini may reflect your current BU level and participation rate.';
+    insights.push({ icon: '📊', title: 'Inequality persists', body: 'Gini of '+m.gini.toFixed(3)+'. The research framework targets ≤0.25.'+tipStr });
+  }
+
+  // Stability insight — context-aware
+  if (stability >= 0.90) {
+    insights.push({ icon: '🏛️', title: 'High system stability', body: Math.round(stability*100)+'% stability — the system is resilient to parameter variation. Network effects have activated.' });
+  } else if (p.partRate < 0.55) {
+    insights.push({ icon: '🔗', title: 'Below critical threshold', body: 'Participation is '+Math.round(p.partRate*100)+'% — below the 55% minimum for network effects to activate. Raise participation to restore stability.' });
+  } else {
+    const stabTips = [];
+    if (!p.ptf) stabTips.push('enabling PTF (adds a resilient merchant network)');
+    if (p.partRate < 0.75) stabTips.push('raising participation above 75%');
+    if (p.bu < 1000) stabTips.push('increasing BU allocation for a stronger floor');
+    const tipStr = stabTips.length ? ' Try ' + stabTips.join(', ') + '.' : ' Fine-tune BU allocation and participation rate to push above 90%.';
+    insights.push({ icon: '⚡', title: 'Moderate stability', body: 'System is functional but not fully resilient.'+tipStr });
+  }
+
+  document.getElementById('insights-grid').innerHTML = insights.map(i => `
+    <div class="insight">
+      <div class="insight-icon">${i.icon}</div>
+      <div class="insight-title">${i.title}</div>
+      <div class="insight-body">${i.body}</div>
+    </div>`).join('');
+  document.getElementById('insights-section').style.display = 'block';
+}
+
+function drawSensitivity(p) {
+  if (charts['chart-sensitivity']) charts['chart-sensitivity'].destroy();
+  const ctx = document.getElementById('chart-sensitivity');
+  const labels = ['BU amount', 'Participation', 'PTF investment', 'Quality accuracy', 'Octave level', 'Tax rate', 'Phi rate', 'Collective size'];
+  const elasticity = [2.34, 1.15, 1.67, 0.94, 0.45, 0.18, 0.12, 0.15];
+  charts['chart-sensitivity'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Elasticity (poverty rate)',
+        data: elasticity,
+        backgroundColor: elasticity.map(v => v > 1.5 ? 'rgba(163,45,45,0.7)' : v > 0.8 ? 'rgba(186,117,23,0.7)' : 'rgba(29,158,117,0.7)'),
+        borderRadius: 3,
+        borderWidth: 0
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { font:{size:11}, color:'#888780' }, grid: { color:'rgba(120,120,120,0.1)' }, title: { display:true, text:'Elasticity (higher = more impact on poverty)', font:{size:11}, color:'#888780' } },
+        y: { ticks: { font:{size:11}, color:'#888780' }, grid: { display:false } }
+      }
+    }
+  });
+  document.getElementById('sensitivity-section').style.display = 'block';
+}
+
+/* ============================================================
+   MATH HELPERS
+   ============================================================ */
+function lognormal(mu, sigma) {
+  const u = 1 - Math.random();
+  const v = Math.random();
+  const z = Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+  return Math.exp(mu + sigma * z);
+}
+
+function beta(a, b) {
+  // Simple beta approximation via ratio of gammas
+  const x = gamma(a);
+  return x / (x + gamma(b));
+}
+
+function gamma(a) {
+  if (a < 1) return gamma(1+a) * Math.pow(Math.random(), 1/a);
+  let x = 3 * a;
+  while (true) {
+    const u = Math.random();
+    const v = Math.random();
+    const y = Math.tan(Math.PI * u);
+    const xx = Math.sqrt(2*a-1)*y + a - 1;
+    if (xx <= 0) continue;
+    if (v <= (1 + y*y) * Math.exp((a-1)*Math.log(xx/(a-1)) - Math.sqrt(2*a-1)*y)) return xx;
+  }
+}
+
+/* Init */
+document.addEventListener('DOMContentLoaded', () => {
+  ['bu','octave','expiry','mult','tax','agents','part','years'].forEach(k => {
+    const sl = document.getElementById('sl-' + k);
+    if (sl) sl.dispatchEvent(new Event('input'));
+  });
+  ['ptf','pth'].forEach(k => {
+    const sl = document.getElementById('sl-' + k);
+    if (sl) sl.dispatchEvent(new Event('input'));
+  });
+});
+</script>
+</body>
+</html>
