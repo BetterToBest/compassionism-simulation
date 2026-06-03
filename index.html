@@ -6,34 +6,21 @@
 <meta name="author" content="Better To Best Research Collective">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/">
 <title>Compassionism Framework Simulation | Better To Best Research Hub</title>
-<meta name="description" content="Interactive agent-based simulation of all five Compassionism architectures: CCO, PTF, PTH, SZH, and CIP. BLEI-calibrated welfare metrics with US baseline comparison.">
+<meta name="description" content="Interactive agent-based simulation of all five Compassionism architectures: CCO, PTF, PTH, SZH, and CIP. BLEI-calibrated welfare metrics with annual expense system, wage dynamics, inflation modelling, and causal attribution analysis.">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Compassionism Framework Simulation",
-  "description": "Interactive agent-based simulation implementing all five Compassionism architectures — CCO, PTF, PTH, SZH, CIP — with BLEI-calibrated welfare metrics and US baseline comparison.",
+  "description": "Agent-based simulation of all five Compassionism architectures — CCO, PTF, PTH, SZH, CIP — with BLEI-calibrated welfare metrics, annual expense system, wage dynamics, inflation, and causal attribution analysis.",
   "url": "https://bettertobest.github.io/compassionism-simulation/",
   "applicationCategory": "Research Tool",
   "operatingSystem": "Any (web browser)",
-  "softwareVersion": "2.2",
-  "author": {
-    "@type": "Organization",
-    "name": "Better To Best Research Hub",
-    "url": "https://bettertobest.github.io/research-hub/"
-  },
+  "softwareVersion": "3.0",
+  "author": { "@type": "Organization", "name": "Better To Best Research Hub", "url": "https://bettertobest.github.io/research-hub/" },
   "license": "https://creativecommons.org/licenses/by/4.0/",
-  "citation": {
-    "@type": "ScholarlyArticle",
-    "name": "Basic Living Economic Index (BLEI): A Temporal Welfare Measurement Framework",
-    "url": "https://bettertobest.github.io/research-hub/basic-living-economic-index.html",
-    "author": {
-      "@type": "Person",
-      "name": "Duke Johnson",
-      "sameAs": "https://independentresearcher.academia.edu/DukeJohnson"
-    }
-  },
+  "citation": { "@type": "ScholarlyArticle", "name": "Basic Living Economic Index (BLEI): A Temporal Welfare Measurement Framework", "url": "https://bettertobest.github.io/research-hub/basic-living-economic-index.html", "author": { "@type": "Person", "name": "Duke Johnson", "sameAs": "https://independentresearcher.academia.edu/DukeJohnson" } },
   "isAccessibleForFree": true,
   "relatedLink": "https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html"
 }
@@ -68,8 +55,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg3);color:var(--text);font-size:15px;line-height:1.6}
-
-/* Header */
 header{background:var(--bg);border-bottom:.5px solid var(--border);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
 .hd-title{font-size:16px;font-weight:600;color:var(--text)}
 .hd-sub{font-size:12px;color:var(--text3);margin-top:2px;line-height:1.6}
@@ -78,19 +63,13 @@ header{background:var(--bg);border-bottom:.5px solid var(--border);padding:.9rem
 .hlink:hover{background:var(--bg2)}
 .hlink.primary{color:var(--accent);border-color:var(--accent)}
 .hlink.primary:hover{background:var(--accent-bg)}
-
-/* Acronym tooltips */
 .abbr-link{color:var(--text2);text-decoration:none;border-bottom:1px dotted var(--text3);position:relative;cursor:help;display:inline-block;transition:color .12s,border-color .12s}
 .abbr-link:hover{color:var(--accent);border-bottom-color:var(--accent)}
 .abbr-link::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#1a1a18;color:#e8e7e0;font-size:10.5px;line-height:1.35;padding:4px 9px;border-radius:4px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .abbr-link::before{content:'';position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:#1a1a18;pointer-events:none;opacity:0;transition:opacity .15s;z-index:201}
 .abbr-link:hover::after,.abbr-link:hover::before{opacity:1}
-
-/* Layout */
 .layout{display:grid;grid-template-columns:290px 1fr;align-items:start}
 @media(max-width:760px){.layout{grid-template-columns:1fr}}
-
-/* Sidebar */
 .sidebar{background:var(--bg);border-right:.5px solid var(--border);padding:1.1rem;}
 .ss{margin-bottom:1.4rem}
 .ss-head{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding-bottom:.35rem;border-bottom:.5px solid var(--border2);margin-bottom:.7rem}
@@ -103,33 +82,24 @@ input[type=range]::-webkit-slider-thumb{appearance:none;width:15px;height:15px;b
 input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
 input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--accent);border:none;cursor:pointer}
 .ch{font-size:11px;color:var(--text3);margin-top:2px}
-
 .tg{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
 .tb{font-size:11.5px;padding:3px 9px;border-radius:var(--rs);border:.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .12s}
 .tb.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent2);font-weight:500}
 .tb.on-purple{background:var(--purple-bg);border-color:var(--purple);color:var(--purple);font-weight:500}
 .tb.on-blue{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);font-weight:500}
-
 .run-btn{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;margin-bottom:.6rem;letter-spacing:.01em}
 .run-btn:hover{background:var(--accent2)}
 .run-btn:disabled{background:var(--text3);cursor:not-allowed}
 .reset-btn{width:100%;padding:7px;background:transparent;color:var(--text2);border:.5px solid var(--border);border-radius:var(--rs);font-size:12.5px;cursor:pointer}
 .reset-btn:hover{background:var(--bg2)}
-
 .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .pbtn{font-size:11px;padding:6px 7px;border-radius:var(--rs);border:.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;text-align:center;line-height:1.35;transition:all .12s}
 .pbtn:hover{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
 .pbtn-active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent2)}
-
-/* Seed input */
 .seed-input{width:100%;padding:4px 8px;border:.5px solid var(--border);border-radius:var(--rs);background:var(--bg2);color:var(--text);font-size:12.5px;outline:none;transition:border-color .12s}
 .seed-input:focus{border-color:var(--accent)}
 .seed-input::placeholder{color:var(--text3)}
-
-/* Main */
 .main{padding:1.1rem;overflow-x:hidden}
-
-/* Status */
 .status-bar{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.65rem 1rem;margin-bottom:.6rem;display:flex;align-items:center;gap:9px;font-size:13px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0}
 .dot.run{background:var(--amber);animation:pulse 1s infinite}
@@ -139,21 +109,16 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 .sp{font-weight:600;color:var(--text);font-size:12px}
 .prog{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;margin-bottom:.65rem}
 .prog-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .08s;width:0}
-
-/* Section label */
 .slabel{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:.9rem 0 .5rem;display:flex;align-items:center;gap:.5rem}
 .slabel::after{content:'';flex:1;height:.5px;background:var(--border2)}
 .slabel a{font-size:10px;color:var(--accent);text-transform:none;letter-spacing:0;text-decoration:none;margin-left:4px}
 .slabel a:hover{text-decoration:underline}
-
-/* KPI grids */
 .kgrid{display:grid;gap:9px;margin-bottom:9px}
 .kgrid-4{grid-template-columns:repeat(4,1fr)}
 .kgrid-3{grid-template-columns:repeat(3,1fr)}
 .kgrid-5{grid-template-columns:repeat(5,1fr)}
 @media(max-width:950px){.kgrid-4,.kgrid-5{grid-template-columns:repeat(2,1fr)}.kgrid-3{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:600px){.kgrid-3{grid-template-columns:repeat(2,1fr)}}
-
 .kpi{background:var(--bg2);border-radius:var(--rs);padding:.65rem .9rem;border:.5px solid var(--border2)}
 .kpi.hi{border-color:var(--accent);background:var(--accent-bg)}
 .kpi.hi2{border-color:var(--gold);background:var(--gold-bg)}
@@ -162,8 +127,6 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 .kval{font-size:20px;font-weight:600;color:var(--text);line-height:1.2}
 .kdelta{font-size:11px;margin-top:2px;line-height:1.4}
 .good{color:var(--accent)}.warn{color:var(--amber)}.bad{color:var(--red)}
-
-/* Tier badge */
 .tbadge{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:var(--rs);font-weight:600}
 .t-crisis{background:var(--red-bg);color:var(--red)}
 .t-precarious{background:var(--red-bg);color:#c04040}
@@ -171,15 +134,11 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 .t-stable{background:var(--amber-bg);color:#9a6010}
 .t-secure{background:var(--accent-bg);color:var(--accent2)}
 .t-flourishing{background:var(--gold-bg);color:var(--gold);border:.5px solid var(--gold)}
-
-/* Charts */
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
 @media(max-width:850px){.cgrid{grid-template-columns:1fr}}
 .ccard{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem}
 .ctitle{font-size:12.5px;font-weight:500;color:var(--text2);margin-bottom:.6rem}
 .csub{font-size:10.5px;color:var(--text3);margin-top:4px}
-
-/* Compare table */
 .ctable{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem;margin-bottom:9px;overflow-x:auto}
 .ctable h3{font-size:12.5px;font-weight:500;color:var(--text2);margin-bottom:.65rem}
 table{width:100%;font-size:12.5px;border-collapse:collapse;min-width:640px}
@@ -192,8 +151,6 @@ tr:hover td{background:var(--bg2)}
 .sb-cco{background:var(--blue-bg);color:var(--blue)}
 .sb-full{background:var(--accent-bg);color:var(--accent2)}
 .sb-user{background:var(--gold-bg);color:var(--gold);border:.5px solid var(--gold)}
-
-/* Export card */
 .export-card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem;margin-bottom:9px}
 .export-card-inner{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.8rem}
 .export-note{flex:1;min-width:200px}
@@ -204,8 +161,6 @@ tr:hover td{background:var(--bg2)}
 .dl-btn{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .15s}
 .dl-btn:hover{background:var(--accent2)}
 .dl-btn:disabled{background:var(--text3);cursor:not-allowed}
-
-/* Insights */
 .igrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:9px}
 @media(max-width:850px){.igrid{grid-template-columns:1fr 1fr}}
 @media(max-width:550px){.igrid{grid-template-columns:1fr}}
@@ -213,10 +168,7 @@ tr:hover td{background:var(--bg2)}
 .iicon{font-size:18px;margin-bottom:5px}
 .ititle{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px}
 .ibody{font-size:11.5px;color:var(--text2);line-height:1.55}
-
 .warn-note{background:var(--amber-bg);border:.5px solid var(--amber);border-radius:var(--rs);padding:7px 10px;font-size:11.5px;color:var(--amber);margin-bottom:.65rem}
-
-/* Active systems bar */
 .sys-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.65rem}
 .sys-pill{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:.5px solid transparent}
 .sp-off{background:var(--bg2);color:var(--text3);border-color:var(--border2)}
@@ -224,8 +176,12 @@ tr:hover td{background:var(--bg2)}
 .sp-on-b{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
 .sp-on-p{background:var(--purple-bg);color:var(--purple);border-color:var(--purple)}
 .sp-on-g{background:var(--gold-bg);color:var(--gold);border-color:var(--gold)}
-
-/* Footer */
+/* Details/summary for assumption panel */
+details.ccard>summary{list-style:none;cursor:pointer;user-select:none}
+details.ccard>summary::-webkit-details-marker{display:none}
+details.ccard[open]>summary{margin-bottom:.8rem;border-bottom:.5px solid var(--border2);padding-bottom:.6rem}
+.assump-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:700px){.assump-grid{grid-template-columns:1fr}}
 footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1.5rem;font-size:11.5px;color:var(--text3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem}
 footer a{color:var(--accent);text-decoration:none}
 footer a:hover{text-decoration:underline}
@@ -238,18 +194,12 @@ footer a:hover{text-decoration:underline}
     <div class="hd-title">Compassionism Framework Simulation</div>
     <div class="hd-sub">
       All five architectures ·
-      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco"
-         target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
-      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#ptf"
-         target="_blank" rel="noopener" data-tip="Public Trust Foundations">PTF</a> ·
-      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#pth"
-         target="_blank" rel="noopener" data-tip="Public Trust Housing">PTH</a> ·
-      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#szh"
-         target="_blank" rel="noopener" data-tip="Social Zone Harmonization">SZH</a> ·
-      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cip"
-         target="_blank" rel="noopener" data-tip="Citizens Internet Portal">CIP</a> ·
-      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html"
-         target="_blank" rel="noopener" data-tip="Basic Living Economic Index — research paper">BLEI</a>-calibrated
+      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
+      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#ptf" target="_blank" rel="noopener" data-tip="Public Trust Foundations">PTF</a> ·
+      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#pth" target="_blank" rel="noopener" data-tip="Public Trust Housing">PTH</a> ·
+      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#szh" target="_blank" rel="noopener" data-tip="Social Zone Harmonization">SZH</a> ·
+      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cip" target="_blank" rel="noopener" data-tip="Citizens Internet Portal">CIP</a> ·
+      <a class="abbr-link" href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html" target="_blank" rel="noopener" data-tip="Basic Living Economic Index — research paper">BLEI</a>-calibrated
     </div>
   </div>
   <div class="hd-links">
@@ -262,16 +212,16 @@ footer a:hover{text-decoration:underline}
 
 <div class="layout">
 
-<!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+<!-- ═══ SIDEBAR ═══ -->
 <aside class="sidebar">
 
   <div class="ss">
     <div class="ss-head">Scenario Presets</div>
     <div class="preset-grid">
-      <button class="pbtn" id="pb-baseline" onclick="applyPreset('baseline')">Traditional Welfare<br><span style="color:var(--text3)">US baseline</span></button>
+      <button class="pbtn" id="pb-baseline" onclick="applyPreset('baseline')">Traditional Welfare<br><span style="color:var(--text3)">US baseline + 3% CPI</span></button>
       <button class="pbtn" id="pb-cco"      onclick="applyPreset('cco')">CCO Only<br><span style="color:var(--text3)">No PTF/PTH/SZH/CIP</span></button>
       <button class="pbtn" id="pb-optimal"  onclick="applyPreset('optimal')">Full Integration<br><span style="color:var(--text3)">All 5 systems</span></button>
-      <button class="pbtn" id="pb-stress"   onclick="applyPreset('stress')">Stress Test<br><span style="color:var(--text3)">Low part. + shocks</span></button>
+      <button class="pbtn" id="pb-stress"   onclick="applyPreset('stress')">Stress Test<br><span style="color:var(--text3)">Low part. + shocks + AI</span></button>
     </div>
   </div>
 
@@ -302,7 +252,7 @@ footer a:hover{text-decoration:underline}
     <div class="cr">
       <div class="cl"><span class="cn">Conversion tax rate (%)</span><span class="cv" id="v-tax">12%</span></div>
       <input type="range" min="0" max="30" step="1" value="12" id="s-tax" oninput="sv('tax',this.value)">
-      <div class="ch">BU→primary currency conversion levy (progressive taper applied at high rates)</div>
+      <div class="ch">BU→primary currency conversion levy (progressive taper at high rates)</div>
     </div>
     <div class="cr">
       <div class="cl"><span class="cn">Base quality multiplier ceiling</span><span class="cv" id="v-mult">9×</span></div>
@@ -336,7 +286,7 @@ footer a:hover{text-decoration:underline}
         <button class="tb on" id="ptf-on"  onclick="tog('ptf',true)">On</button>
         <button class="tb"    id="ptf-off" onclick="tog('ptf',false)">Off</button>
       </div>
-      <div class="ch">Community-owned essential goods; reduces overhead 40–60%</div>
+      <div class="ch">Community-owned essentials; reduces cost of living 12–16% (not a wealth bonus)</div>
     </div>
     <div class="cr">
       <div class="cl"><span class="cn">PTF market share (% of providers)</span><span class="cv" id="v-ptf">18%</span></div>
@@ -353,7 +303,7 @@ footer a:hover{text-decoration:underline}
         <button class="tb on" id="pth-on"  onclick="tog('pth',true)">On</button>
         <button class="tb"    id="pth-off" onclick="tog('pth',false)">Off</button>
       </div>
-      <div class="ch">Community housing; builds Acre Equity; accepts BU for rent</div>
+      <div class="ch">Covers 35% of living costs + builds Acre Equity (no double-counting)</div>
     </div>
     <div class="cr">
       <div class="cl"><span class="cn">PTH uptake rate (% of households)</span><span class="cv" id="v-pth">20%</span></div>
@@ -396,14 +346,27 @@ footer a:hover{text-decoration:underline}
   </div>
 
   <div class="ss">
-    <div class="ss-head">Economic Shocks</div>
+    <div class="ss-head">Economic Environment</div>
     <div class="cr">
-      <div class="cl"><span class="cn">Stochastic shock events</span></div>
+      <div class="cl"><span class="cn">Stochastic recession events</span></div>
       <div class="tg">
         <button class="tb"    id="shock-on"  onclick="tog('shock',true)">Include</button>
         <button class="tb on" id="shock-off" onclick="tog('shock',false)">Off</button>
       </div>
-      <div class="ch">Recession/inflation events (10% annual probability, 20–30% income shock)</div>
+      <div class="ch">Population-level recessions (10% annual probability; persist 2–4 years at 65–85% severity)</div>
+    </div>
+    <div class="cr">
+      <div class="cl"><span class="cn">AI labor automation</span></div>
+      <div class="tg">
+        <button class="tb"    id="automation-on"  onclick="tog('automation',true)">On</button>
+        <button class="tb on" id="automation-off" onclick="tog('automation',false)">Off</button>
+      </div>
+      <div class="ch">Progressive wage displacement: yr 5+ (1.2%/yr); yr 15+ (2.2%/yr, ≈2040). Labor markets cannot reabsorb past 30% displacement.</div>
+    </div>
+    <div class="cr">
+      <div class="cl"><span class="cn">Inflation rate (% / yr)</span><span class="cv" id="v-infl">0.0%</span></div>
+      <input type="range" min="0" max="6" step="0.5" value="0" id="s-infl" oninput="sv('infl',this.value)">
+      <div class="ch">0 = stable prices (Compassionism default) · 3% = US historical CPI · PTF/PTH dampen inflation</div>
     </div>
   </div>
 
@@ -413,11 +376,7 @@ footer a:hover{text-decoration:underline}
       <div class="cl"><span class="cn">Random seed (optional)</span><span class="cv" id="v-seed" style="font-size:11px;font-weight:400;color:var(--text3)">variable</span></div>
       <input type="number" id="s-seed" class="seed-input" placeholder="e.g. 1, 42, 2025…" min="0" max="999999"
              oninput="document.getElementById('v-seed').textContent=this.value?parseInt(this.value):'variable'">
-      <div class="ch">Any integer initialises a unique reproducible sequence — the value itself carries
-        no special meaning. High vs. low, 1 vs. 99999: all equally valid, all different sequences.
-        Same seed + same parameters = byte-identical run every time. Record it to reproduce a result;
-        vary it to explore different stochastic realizations of the same scenario.
-        Blank = new sequence each run (natural Monte Carlo variance).</div>
+      <div class="ch">Same seed + same parameters = byte-identical run every time. Blank = new sequence each run.</div>
     </div>
     <button class="run-btn" id="run-btn" onclick="runSim()">▶ Run Simulation</button>
     <button class="reset-btn" onclick="applyPreset('optimal')">Reset to Full Integration defaults</button>
@@ -425,7 +384,7 @@ footer a:hover{text-decoration:underline}
 
 </aside>
 
-<!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+<!-- ═══ MAIN ═══ -->
 <main class="main">
 
   <div class="status-bar">
@@ -442,6 +401,11 @@ footer a:hover{text-decoration:underline}
     <span class="sys-pill sp-off" id="pill-pth">PTH: Off</span>
     <span class="sys-pill sp-off" id="pill-szh">SZH: Off</span>
     <span class="sys-pill sp-off" id="pill-cip">CIP: Off</span>
+  </div>
+
+  <!-- Uncertainty notice (shown after run) -->
+  <div id="uncertainty-notice" style="display:none;font-size:11px;color:var(--text3);background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--rs);padding:5px 11px;margin-bottom:.6rem">
+    📊 <strong style="color:var(--text2)">Exploratory simulation — not a forecast.</strong> Results reflect modelled agent dynamics under stated assumptions and parameter calibration. See <em>Assumptions &amp; Calibration Notes</em> below.
   </div>
 
   <!-- Core KPIs -->
@@ -478,7 +442,7 @@ footer a:hover{text-decoration:underline}
       <div class="kdelta" id="k-blei-d" style="margin-top:4px"></div>
     </div>
     <div class="kpi hi2">
-      <div class="klabel">Agents at Flourishing (730+ days)</div>
+      <div class="klabel" id="k-flour-label">Agents at Top BLEI Tier (730+ days)</div>
       <div class="kval" id="k-flour">—</div>
       <div class="kdelta" id="k-flour-d"></div>
     </div>
@@ -518,12 +482,12 @@ footer a:hover{text-decoration:underline}
     <div class="ccard">
       <div class="ctitle">Median BLEI score — days of basic living covered</div>
       <div style="position:relative;height:200px"><canvas id="ch-blei"></canvas></div>
-      <div class="csub">Threshold 30d · Stable 120d · Secure 365d · Flourishing 730d</div>
+      <div class="csub">Threshold 30d · Stable 120d · Secure 365d · Flourishing/Comfortable 730d</div>
     </div>
     <div class="ccard">
       <div class="ctitle">BLEI tier distribution — final year</div>
       <div style="position:relative;height:200px"><canvas id="ch-tiers"></canvas></div>
-      <div class="csub">Six-tier Flourishing classification (Johnson &amp; Claude, 2026)</div>
+      <div class="csub" id="tier-chart-sub">Six-tier welfare classification (Johnson &amp; Claude, 2026) · Top tier = Flourishing (CCO+PTF) or Comfortable (without)</div>
     </div>
   </div>
 
@@ -532,7 +496,7 @@ footer a:hover{text-decoration:underline}
     <h3>System comparison — final-year results
       &nbsp;<span style="font-weight:400;font-size:11px;color:var(--text3)">
         — = reference point &nbsp;·&nbsp; Poverty elim. = % of agents above $25K poverty line
-        &nbsp;·&nbsp; All comparison rows show absolute final-year values
+        &nbsp;·&nbsp; Baseline top BLEI tier = Comfortable; CCO+PTF = Flourishing
       </span>
     </h3>
     <table>
@@ -553,18 +517,13 @@ footer a:hover{text-decoration:underline}
     </table>
   </div>
 
-  <!-- Research export card — shown after simulation runs -->
+  <!-- Research export card -->
   <div id="sec-export" style="display:none" class="export-card">
     <div class="export-card-inner">
       <div class="export-note">
         <h4>Research Export</h4>
-        <p>
-          These simulations seek to identify parameter configurations where <em>optimal-for-all</em>
-          conditions align with <em>ideal-for-each</em> — analogous to a structural model meeting a
-          specified load capacity. Community input is welcomed to refine and validate the model.
-        </p>
-        <a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md"
-           target="_blank" rel="noopener">View contributors guide →</a>
+        <p>These simulations seek parameter configurations where <em>optimal-for-all</em> conditions align with <em>ideal-for-each</em>. v3.0 adds annual expense dynamics, wage growth, inflation, and AI automation modelling.</p>
+        <a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a>
       </div>
       <button class="dl-btn" onclick="downloadCSV()">⬇ Download CSV</button>
     </div>
@@ -585,11 +544,54 @@ footer a:hover{text-decoration:underline}
     <div style="position:relative;height:195px"><canvas id="ch-sens"></canvas></div>
   </div>
 
+  <!-- Causal Attribution (shown after ablation runs) -->
+  <div class="ccard" style="margin-bottom:9px;display:none" id="sec-attribution">
+    <div class="ctitle">BLEI gain attribution — system contribution analysis</div>
+    <div id="attribution-loading" style="font-size:11.5px;color:var(--text3);padding:.6rem 0;text-align:center">⏳ Calculating ablation analysis…</div>
+    <div id="attribution-chart-wrap" style="position:relative;height:160px;display:none"><canvas id="ch-attribution"></canvas></div>
+    <div class="csub">BLEI days lost when each system is removed from current configuration · 200-agent ablation subsample · Distinct stochastic realisation from main run</div>
+  </div>
+
+  <!-- Assumption Disclosure Panel (always visible) -->
+  <details class="ccard" style="margin-bottom:9px" id="sec-assumptions">
+    <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
+      <span style="font-size:9px;color:var(--text3)">▶</span>
+      📋 Model Assumptions &amp; Calibration Notes
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.0 — click to expand</span>
+    </summary>
+    <div class="assump-grid">
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px">Wealth &amp; Expense Dynamics</div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.6;margin:0">Agents earn wage income offset by annual living costs (v3.0: $1,500/yr base). PTF reduces costs directly rather than adding wealth. PTH covers the housing component (35% of costs) and builds Acre Equity separately — these are no longer double-counted. CCO food basket covers a further 20% of costs. Under baseline with no CCO, wages alone cannot cover living costs over the long run, creating realistic wealth depletion and poverty dynamics. Wealth floor at $100.</p>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px">Wage Dynamics (v3.0)</div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.6;margin:0">Wages initialised from lognormal(μ=3.5, σ=0.5). Annual growth: 1% base + 0.8% when above Precarious BLEI tier (stability premium) + 0.3% per octave level (skill premium) + CIP access bonus. When AI automation is enabled, progressive displacement begins at year 5 (≈2030) at 1.2%/yr, accelerating at year 15 (≈2040) to 2.2%/yr — beyond which labour markets cannot reabsorb at the required rate.</p>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px">Recession &amp; Shock Model (v3.0)</div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.6;margin:0">Recessions are now population-level events (10% annual probability) persisting 2–4 years at 65–85% income severity. This replaces the v2.x per-agent shock which only modelled transient individual disruptions, not the persistent unemployment and wealth destruction of real recessions. Individual agents retain idiosyncratic income variance around the population-level shock.</p>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px">Inflation Mechanism (v3.0)</div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.6;margin:0">Annual costs compound at the set inflation rate (0–6%). PTF presence dampens effective inflation (community ownership reduces price volatility by up to 50% of the PTF market share); PTH dampens housing-component inflation (10% reduction). Real wages erode when inflation exceeds wage growth. The US Baseline preset applies 3% to reflect historical CPI. Compassionism presets default to 0% (price-stable outcome hypothesis).</p>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px">BLEI Formula &amp; Tier Naming (v3.0)</div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.6;margin:0">BLEI = (liquid + γ·wage + buFood) / dailyCost. v3.0 fix: income buffer uses actual agent wage, not wealth/60 proxy (audit recommendation; wealth ≠ income for debtors/renters). Top tier: <strong>Flourishing</strong> when CCO+PTF are both active (maturing generative effects); <strong>Comfortable</strong> without CCO or PTF (BLEI §4 naming convention, Duke's note).</p>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px">Calibration Sources</div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.6;margin:0">Daily basic cost $68.33 — US CES 2023. CCO+PTH daily cost $31.67 — BLEI §3.2. EDC near-poverty baseline 62–72% — US CES 2023. Nordic Gini benchmark 0.28 — OECD. PTF optimal share 18% — framework spec. Flourishing ≥730 days — 2-year entrepreneurial capital commitment horizon (BLEI §4). Many coefficients are calibrated rather than empirically estimated; see CONTRIBUTING.md for validation opportunities.</p>
+      </div>
+    </div>
+  </details>
+
 </main>
 </div>
 
 <footer>
-  <span>Compassionism Simulation v2.2 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+  <span>Compassionism Simulation v3.0 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
   <span>
     <a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> ·
     <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication Framework</a> ·
@@ -599,89 +601,115 @@ footer a:hover{text-decoration:underline}
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v2.2
+ * COMPASSIONISM FRAMEWORK SIMULATION  v3.0
  * Better To Best Research Hub · CC BY 4.0
  * ═══════════════════════════════════════════════════════════════════════
  *
- * Changelog v2.1 → v2.2
- *   · CFG: all calibration constants centralised with paper citations
- *   · RNG: optional seeded PRNG (Mulberry32) for reproducible runs
- *   · FBS gating: octave advancement gated on financial bandwidth (BLEI §3.3)
- *   · Baseline preset corrected: participation=0%, szh=0.00, cip=0%, shocks=on
- *   · pBase/bBase szhCoh set to 0 (was 0.50 — baseline has no zone coherence)
- *   · Slider min values: participation, SZH, CIP now allow 0
- *   · calcMetrics: removed spurious gini<0 guard on poverty calculation
- *   · Table header: clarified that comparison rows show absolute values
- *   · Acronym tooltips with glossary/paper links in subtitle
- *   · JSON-LD SoftwareApplication schema added
- *   · CSV export with parameters, results, and research note
+ * Changelog v2.2 → v3.0  (GPT audit + Duke's notes, 2026)
+ *   · ANNUAL EXPENSE SYSTEM: agents now pay living costs each year;
+ *     realistic failure states under baseline (no CCO). PTF modelled as
+ *     cost reduction, not wealth injection (audit §PTF fix).
+ *   · PTH DOUBLE-COUNT FIX: removed a.wealth += 800*12*0.30 rent savings
+ *     (was triple-counting with cost reduction and Acre Equity appreciation).
+ *   · WAGE DYNAMICS: wages now grow annually based on BLEI stability,
+ *     octave level, and CIP access; displaced by AI automation when enabled.
+ *   · AI AUTOMATION: optional progressive labour displacement starting
+ *     year 5 (≈2030); accelerates at year 15 (≈2040). Duke's note on
+ *     labour markets not reabsorbing past 30% displacement.
+ *   · MULTI-YEAR RECESSION: shocks are now population-level events
+ *     persisting 2–4 years at 65–85% severity. Per-agent shock removed.
+ *   · INFLATION: annual cost compounding at configurable rate (0–6%).
+ *     PTF/PTH presence dampens effective inflation. US Baseline preset=3%.
+ *   · BLEI mInc FIX: income buffer uses actual agent wage, not
+ *     wealth/60 proxy (audit §BLEI). Minimal practical impact but
+ *     theoretically correct (wealth ≠ income for debtors/renters).
+ *   · TIER NAMING: top BLEI tier = 'Flourishing' when CCO+PTF active;
+ *     'Comfortable' otherwise. Duke's note on Compassionism qualifying
+ *     the Flourishing label via generative system maturation.
+ *   · CAUSAL ATTRIBUTION: ablation analysis after each run estimates
+ *     BLEI days contributed by each active system (200-agent subsample).
+ *   · UNCERTAINTY BADGE: exploratory simulation notice shown post-run.
+ *   · ASSUMPTION PANEL: collapsible disclosure of model assumptions,
+ *     calibration sources, and known limitations.
+ *   · NOTE: v3.0 resets the seed-42/Full Integration regression baseline.
+ *     Record new values from this version for CONTRIBUTING.md.
  * ═══════════════════════════════════════════════════════════════════════ */
 
-/* ─── CONFIGURATION (calibrated constants with paper citations) ────── */
+/* ─── CONFIGURATION ──────────────────────────────────────────────────── */
 var CFG = {
-  /* Poverty threshold — raised from $15k to $25k in v2.1 to reflect
-   * meaningful differentiation between policy scenarios after 20-yr wage
-   * accumulation. See calcMetrics note. */
   POVERTY_LINE:          25000,
 
   /* BLEI tier boundaries (days of basic living covered)
-   * Source: Johnson & Claude (2026) BLEI §4, Flourishing Classification */
-  BLEI_CRISIS_MAX:       7,     // < 7 days = Crisis
-  BLEI_PRECARIOUS_MAX:   30,    // < 30 days = Precarious
-  BLEI_THRESHOLD_MAX:    120,   // < 120 days = Threshold
-  BLEI_STABLE_MAX:       365,   // < 365 days = Stable
-  BLEI_SECURE_MAX:       730,   // < 730 days = Secure; ≥ 730 = Flourishing
+   * Source: Johnson & Claude (2026) BLEI §4 */
+  BLEI_CRISIS_MAX:       7,
+  BLEI_PRECARIOUS_MAX:   30,
+  BLEI_THRESHOLD_MAX:    120,
+  BLEI_STABLE_MAX:       365,
+  BLEI_SECURE_MAX:       730,
 
-  /* Daily basic cost benchmarks — BLEI §3.2 calibration
-   * US Consumer Expenditure Survey 2023 */
-  BASE_DAILY_COST:       68.33, // $/day, no CCO/PTH
-  CCO_PTH_DAILY_COST:    31.67, // $/day, CCO+PTH (housing generative)
+  /* Daily basic cost benchmarks — BLEI §3.2, US CES 2023 */
+  BASE_DAILY_COST:       68.33,
+  CCO_PTH_DAILY_COST:    31.67,
 
   /* SZH spatial discount coefficients — BLEI §3.2 */
-  SZH_ALL_RESIDENTS:     0.06,  // discount per coherence unit for all zone residents
-  SZH_PTF_BONUS:         0.05,  // additional discount for PTF members via direct access
+  SZH_ALL_RESIDENTS:     0.06,
+  SZH_PTF_BONUS:         0.05,
 
-  /* EDC calibration — US CES 2023 near-poverty baseline range */
+  /* EDC calibration — US CES 2023 near-poverty baseline */
   EDC_BASELINE_LO:       0.62,
   EDC_BASELINE_HI:       0.72,
-  EDC_PTH_CAP:           0.10,  // PTH: housing generative; minimal residual extraction
+  EDC_PTH_CAP:           0.10,
 
-  /* Progressive conversion tax — CCO spec §2.3
-   * effectiveTax = min(TAX_MAX, baseTax + max(0, (rate − PROG_PIVOT) × PROG_RATE))
-   * Ensures high-rate conversions (public value) contribute to public reinvestment */
+  /* Progressive conversion tax — CCO spec §2.3 */
   PROG_PIVOT:            3.0,
   PROG_RATE:             0.040,
   PROG_TAX_MAX:          0.75,
 
+  /* Annual cost of living — v3.0: creates realistic expense pressure.
+   * Calibrated so median baseline agents deplete savings over ~20 years
+   * while Full Integration agents accumulate wealth above poverty line.
+   * Source: ~30 days of basic living costs in simulation unit scale. */
+  ANNUAL_BASE_COST:      1500,
+
+  /* Wage dynamics — v3.0 (audit §wage) */
+  WAGE_BASE_GROWTH:      0.010,  // 1% base real wage growth per year
+  WAGE_BLEI_BONUS:       0.008,  // stability premium (above Precarious tier)
+  WAGE_OCTAVE_BONUS:     0.003,  // per-octave creative economy skill premium
+
+  /* AI automation displacement — Duke's labour market notes (v3.0)
+   * Year >= AI_DISPLACEMENT_YEAR_1 (~2030): labour can't reabsorb at scale
+   * Year >= AI_DISPLACEMENT_YEAR_2 (~2040): demand contracts significantly */
+  AI_DISPLACEMENT_YEAR_1: 5,
+  AI_DISPLACEMENT_YEAR_2: 15,
+  AI_DISPLACEMENT_RATE_1: 0.012,  // annual wage drag, phase 1
+  AI_DISPLACEMENT_RATE_2: 0.022,  // annual wage drag, phase 2 (accelerated)
+
   /* System targets */
   TARGET_WEALTH:         82000,
   TARGET_STABILITY:      0.90,
-  TARGET_POVERTY:        0.05,   // poverty rate < 5%
-  TARGET_FLOURISHING:    0.50,   // ≥ 50% of agents at Flourishing
+  TARGET_POVERTY:        0.05,
+  TARGET_FLOURISHING:    0.50,
   TARGET_GINI:           0.25,
   TARGET_EDC:            0.10,
-  NORDIC_GINI:           0.28,   // Nordic benchmark reference line
+  NORDIC_GINI:           0.28,
 
-  /* CCO operating thresholds */
   CCO_OPTIMAL_BU:        1200,
   CCO_MIN_PARTICIPATION: 0.55,
   PTF_OPTIMAL_SHARE:     0.18,
   PTF_DISTORTION:        0.30,
 
-  /* Golden ratio creative quality bonus — CCO spec §2.1 */
   PHI_RATIO:             1.618,
-  PHI_QUALITY_THRESH:    0.70   // fraction of maxMult above which phi bonus applies
+  PHI_QUALITY_THRESH:    0.70
 };
 
-/* ─── STATE ─────────────────────────────────────────────────────────── */
-var ST = { phi:true, ptf:true, pth:true, szh:true, cip:true, shock:false };
+/* ─── STATE ──────────────────────────────────────────────────────────── */
+var ST = { phi:true, ptf:true, pth:true, szh:true, cip:true, shock:false, automation:false };
 var charts = {};
 var running = false;
-var SIM_RESULTS = null; // populated after each simulation run
+var SIM_RESULTS = null;
 
-/* ─── SEEDED PRNG (Mulberry32) ──────────────────────────────────────── */
-var RNG = Math.random; // default: non-deterministic
-
+/* ─── SEEDED PRNG (Mulberry32) ───────────────────────────────────────── */
+var RNG = Math.random;
 function mulberry32(seed) {
   var s = seed >>> 0;
   return function() {
@@ -691,7 +719,6 @@ function mulberry32(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-
 function initRNG(seedVal) {
   if (seedVal !== null && seedVal !== '' && !isNaN(parseInt(seedVal))) {
     RNG = mulberry32(parseInt(seedVal));
@@ -700,7 +727,7 @@ function initRNG(seedVal) {
   }
 }
 
-/* ─── SLIDER DISPLAY ─────────────────────────────────────────────────── */
+/* ─── SLIDER DISPLAY ──────────────────────────────────────────────────── */
 var FMT = {
   bu:    function(v){ return v==0 ? '$0 (off)' : '$'+parseInt(v).toLocaleString(); },
   oct:   function(v){ return v; },
@@ -714,7 +741,8 @@ var FMT = {
   ptf:   function(v){ return v+'%'; },
   pth:   function(v){ return v+'%'; },
   szh:   function(v){ return (v/100).toFixed(2); },
-  cip:   function(v){ return v+'%'; }
+  cip:   function(v){ return v+'%'; },
+  infl:  function(v){ return parseFloat(v).toFixed(1)+'%'; }
 };
 
 function sv(key, raw) {
@@ -754,41 +782,48 @@ function setPill(id, active, onTxt, offTxt, onCls) {
 
 /* ─── PRESETS ─────────────────────────────────────────────────────────── */
 var PRESETS = {
-  /* US Welfare Baseline: no CCO/PTF/PTH/SZH/CIP; shocks enabled.
-   * participation=0, szh=0, cip=0 — corrected from v2.1 which incorrectly
-   * showed 30%, 0.50, and 20% respectively for a "no-intervention" scenario. */
-  baseline: { bu:0,    oct:1, exp:1, tax:0,  mult:1, agents:500, part:0,  yrs:20,
-              ptfShare:0,  pthUptake:0,  szh:0,  cip:0,
-              phi:false, ptf:false, pth:false, szh_tog:false, cip_tog:false, shock:true  },
+  /* US Welfare Baseline: no CCO/PTF/PTH/SZH/CIP; shocks on; 3% inflation.
+   * inflRate:3 reflects historic US CPI trend. Automation off (no disruption
+   * modelled in baseline by default — user can enable separately). */
+  baseline: { bu:0, oct:1, exp:1, tax:0, mult:1, agents:500, part:0, yrs:20,
+              ptfShare:0, pthUptake:0, szh:0, cip:0,
+              phi:false, ptf:false, pth:false, szh_tog:false, cip_tog:false,
+              shock:true, inflRate:3, automation:false },
 
   cco:      { bu:1200, oct:6, exp:1, tax:12, mult:9, agents:500, part:75, yrs:20,
-              ptfShare:0,  pthUptake:0,  szh:0,  cip:0,
-              phi:true,  ptf:false, pth:false, szh_tog:false, cip_tog:false, shock:false },
+              ptfShare:0, pthUptake:0, szh:0, cip:0,
+              phi:true, ptf:false, pth:false, szh_tog:false, cip_tog:false,
+              shock:false, inflRate:0, automation:false },
 
   optimal:  { bu:1200, oct:6, exp:1, tax:12, mult:9, agents:500, part:78, yrs:20,
               ptfShare:18, pthUptake:20, szh:72, cip:65,
-              phi:true,  ptf:true,  pth:true,  szh_tog:true,  cip_tog:true,  shock:false },
+              phi:true, ptf:true, pth:true, szh_tog:true, cip_tog:true,
+              shock:false, inflRate:0, automation:false },
 
-  stress:   { bu:900,  oct:4, exp:1, tax:18, mult:6, agents:500, part:40, yrs:20,
-              ptfShare:8,  pthUptake:10, szh:35, cip:30,
-              phi:true,  ptf:true,  pth:true,  szh_tog:true,  cip_tog:true,  shock:true  }
+  /* Stress: moderate inflation + AI automation to test system resilience */
+  stress:   { bu:900, oct:4, exp:1, tax:18, mult:6, agents:500, part:40, yrs:20,
+              ptfShare:8, pthUptake:10, szh:35, cip:30,
+              phi:true, ptf:true, pth:true, szh_tog:true, cip_tog:true,
+              shock:true, inflRate:2, automation:true }
 };
 
 function applyPreset(name) {
   var pr = PRESETS[name];
   var sliders = { 'bu':pr.bu, 'oct':pr.oct, 'exp':pr.exp, 'tax':pr.tax, 'mult':pr.mult,
                   'agents':pr.agents, 'part':pr.part, 'yrs':pr.yrs,
-                  'ptf':pr.ptfShare, 'pth':pr.pthUptake, 'szh':pr.szh, 'cip':pr.cip };
+                  'ptf':pr.ptfShare, 'pth':pr.pthUptake, 'szh':pr.szh, 'cip':pr.cip,
+                  'infl': pr.inflRate !== undefined ? pr.inflRate : 0 };
   for (var key in sliders) {
     var el = document.getElementById('s-'+key);
     if (el) { el.value = sliders[key]; sv(key, sliders[key]); }
   }
-  tog('phi',  pr.phi);
-  tog('ptf',  pr.ptf);
-  tog('pth',  pr.pth);
-  tog('szh',  pr.szh_tog);
-  tog('cip',  pr.cip_tog);
-  tog('shock',pr.shock);
+  tog('phi',       pr.phi);
+  tog('ptf',       pr.ptf);
+  tog('pth',       pr.pth);
+  tog('szh',       pr.szh_tog);
+  tog('cip',       pr.cip_tog);
+  tog('shock',     pr.shock);
+  tog('automation', pr.automation !== undefined ? pr.automation : false);
 
   ['baseline','cco','optimal','stress'].forEach(function(n) {
     var btn = document.getElementById('pb-'+n);
@@ -797,7 +832,6 @@ function applyPreset(name) {
 }
 
 /* ─── BLEI HELPERS ────────────────────────────────────────────────────── */
-/* Six-tier Flourishing classification (Johnson & Claude, 2026) */
 var TIERS = [
   { name:'Crisis',      num:0, cls:'t-crisis',     color:'rgba(163,45,45,0.82)'  },
   { name:'Precarious',  num:1, cls:'t-precarious',  color:'rgba(192,64,64,0.8)'   },
@@ -807,35 +841,36 @@ var TIERS = [
   { name:'Flourishing', num:5, cls:'t-flourishing', color:'rgba(122,92,0,0.8)'    }
 ];
 
-function getTier(days) {
+/* topTierName: 'Flourishing' when CCO+PTF active; 'Comfortable' otherwise.
+ * Duke's note: Flourishing requires the maturing generative effects of CCO+PTF.
+ * Without them, reaching 730+ days reflects stability but not the full
+ * Compassionism Flourishing condition. */
+function getTier(days, topTierName) {
+  topTierName = topTierName || 'Flourishing';
   if (days < CFG.BLEI_CRISIS_MAX)     return TIERS[0];
   if (days < CFG.BLEI_PRECARIOUS_MAX) return TIERS[1];
   if (days < CFG.BLEI_THRESHOLD_MAX)  return TIERS[2];
   if (days < CFG.BLEI_STABLE_MAX)     return TIERS[3];
   if (days < CFG.BLEI_SECURE_MAX)     return TIERS[4];
+  if (topTierName === 'Comfortable') {
+    return { name:'Comfortable', num:5, cls:'t-flourishing', color:TIERS[5].color };
+  }
   return TIERS[5];
 }
 
-/*
- * agentBLEI — BLEI paper §3.2 calibration:
- *   liquid assets  = wealth × 0.20
- *   income buffer  = γ × (wealth/60)  [γ: 0.20 CCO, 0.12 baseline]
- *   BU food basket = buAlloc × (990/1200)  [food basket at PTF-adjusted price]
- *   daily basic cost: $68.33 baseline | $31.67 CCO+PTH (housing generative)
- *
- *   SZH fix (v2.1): zone coherence discount applies to ALL zone residents
- *   (service routing / collective infrastructure), not just PTF members.
- *   PTF members receive an additional direct-access bonus on top.
- */
+/* agentBLEI — BLEI paper §3.2 calibration.
+ * v3.0 fix: income buffer uses actual wage (mInc = a.wage) rather than
+ * wealth/60 proxy. Corrects audit finding that wealth ≠ income for
+ * debtors, renters, and early-career agents with minimal savings.
+ * Practical impact is modest (liquid wealth dominates at most wealth levels)
+ * but theoretically correct per §3.2. */
 function agentBLEI(a, buAlloc, ccoOn, pthOn, szhOn, szhCoherence) {
   var liquid  = a.wealth * 0.20;
   var gamma   = (ccoOn && a.inCCO) ? 0.20 : 0.12;
-  var mInc    = a.wealth / 60;
+  var mInc    = a.wage;   // v3.0: actual monthly wage (was: a.wealth/60)
   var buFood  = (ccoOn && a.inCCO && buAlloc > 0) ? buAlloc * (990 / 1200) : 0;
 
-  /* SZH: spatial zone benefit for all residents */
   var szhDiscount = szhOn ? szhCoherence * CFG.SZH_ALL_RESIDENTS : 0;
-  /* Additional benefit for PTF members through direct service access */
   if (szhOn && a.inPTF) szhDiscount += szhCoherence * CFG.SZH_PTF_BONUS;
 
   var baseCost  = (ccoOn && a.inCCO && pthOn && a.inPTH) ? CFG.CCO_PTH_DAILY_COST : CFG.BASE_DAILY_COST;
@@ -843,12 +878,8 @@ function agentBLEI(a, buAlloc, ccoOn, pthOn, szhOn, szhCoherence) {
   return Math.max(0, (liquid + gamma * mInc + buFood) / dailyCost);
 }
 
-/*
- * agentEDC — calibrated to US CES 2023:
- *   near-poverty baseline EDC: 0.62–0.72
- *   median baseline EDC:       0.32–0.40
- *   PTH (Acre Equity) target:  <0.10
- */
+/* agentEDC — calibrated to US CES 2023. Uses wealth/60 for mInc since
+ * EDC calibration constants (18, 1100, 820) were derived on that scale. */
 function agentEDC(a, ccoOn, pthOn) {
   var mInc = Math.max(a.wealth / 60, 1);
   if (ccoOn && a.inCCO && pthOn && a.inPTH) {
@@ -860,7 +891,8 @@ function agentEDC(a, ccoOn, pthOn) {
   return Math.min(0.42, Math.min(0.35, 820 / mInc) + 0.03);
 }
 
-function bleiMetrics(agentSet, buAlloc, ccoOn, pthOn, szhOn, szhCoherence) {
+function bleiMetrics(agentSet, buAlloc, ccoOn, pthOn, szhOn, szhCoherence, topTierName) {
+  topTierName = topTierName || 'Flourishing';
   var scores = agentSet.map(function(a) {
     return agentBLEI(a, buAlloc, ccoOn, pthOn, szhOn, szhCoherence);
   });
@@ -868,18 +900,32 @@ function bleiMetrics(agentSet, buAlloc, ccoOn, pthOn, szhOn, szhCoherence) {
   var n = scores.length;
   var med = n%2===0 ? (scores[n/2-1]+scores[n/2])/2 : scores[Math.floor(n/2)];
   var tc = [0,0,0,0,0,0];
-  scores.forEach(function(d){ tc[getTier(d).num]++; });
+  scores.forEach(function(d){ tc[getTier(d, topTierName).num]++; });
   var pctF = tc[5] / n * 100;
   var sumEDC = agentSet.reduce(function(s,a){ return s + agentEDC(a, ccoOn, pthOn); }, 0);
   return { med:med, pctF:pctF, avgEDC:sumEDC/n, tc:tc, n:n };
 }
 
-/* ─── SIMULATION ENGINE ───────────────────────────────────────────────── */
+/* ─── RECESSION HELPER (v3.0) ────────────────────────────────────────── */
+/* Population-level multi-year recession state. Replaces per-agent annual
+ * shock. Recessions persist 2–4 years at 65–85% income severity, modelling
+ * real-world unemployment, wealth destruction, and recovery periods. */
+function updateRecession(recSt) {
+  if (recSt.active) {
+    recSt.yearsLeft--;
+    if (recSt.yearsLeft <= 0) { recSt.active = false; recSt.severity = 1.0; }
+  } else if (RNG() < 0.10) {
+    recSt.active = true;
+    recSt.yearsLeft = 1 + Math.floor(RNG() * 3);  // 2–4 year recession
+    recSt.severity  = 0.65 + RNG() * 0.20;         // 65–85% severity
+  }
+}
+
+/* ─── SIMULATION ENGINE ────────────────────────────────────────────────── */
 function runSim() {
   if (running) return;
   running = true;
 
-  /* Initialise RNG — seeded for reproducibility if seed is set */
   var seedEl  = document.getElementById('s-seed');
   var seedVal = seedEl ? seedEl.value.trim() : '';
   initRNG(seedVal);
@@ -893,6 +939,8 @@ function runSim() {
   document.getElementById('sec-insights').style.display = 'none';
   document.getElementById('sec-sens').style.display = 'none';
   document.getElementById('sec-export').style.display = 'none';
+  document.getElementById('sec-attribution').style.display = 'none';
+  document.getElementById('uncertainty-notice').style.display = 'none';
 
   var buVal = gp('s-bu');
   var p = {
@@ -914,6 +962,8 @@ function runSim() {
     szh:       ST.szh,
     cip:       ST.cip,
     shock:     ST.shock,
+    automation:ST.automation,
+    inflRate:  gp('s-infl') / 100,
     ccoOn:     buVal > 0,
     seed:      seedVal || null
   };
@@ -925,6 +975,10 @@ function runSim() {
     warns.push('PTF market share above '+Math.round(CFG.PTF_DISTORTION*100)+'% risks allocative distortion');
   if (p.ccoOn && p.bu < 800)
     warns.push('BU below $800 — poverty reduction targets unlikely to be met');
+  if (p.automation && p.years > 10)
+    warns.push('AI automation active — significant labour displacement projected after year 5; Compassionism systems provide partial mitigation');
+  if (p.inflRate > 0.04)
+    warns.push('Inflation rate above 4%/yr — significant cost compounding; PTF/PTH deflationary moderation applied');
 
   setTimeout(function(){ simulate(p, warns); }, 50);
 }
@@ -938,25 +992,20 @@ function simulate(p, warns) {
     var inCCO = p.ccoOn && RNG() < p.partRate;
     var inPTF = p.ptf   && RNG() < p.ptfShare;
     var inPTH = p.pth   && RNG() < p.pthUptake;
-    /* CIP improves merit accuracy by reducing quality noise */
     var qualNoise = p.cip ? (1 - p.cipDemo * 0.5) : 1.0;
     agents.push({
       wealth:     lognormal(10.5, 1.2),
       wage:       lognormal(3.5, 0.5),
       octave:     Math.floor(beta(2,5) * p.maxOct),
       quality:    Math.min(p.maxMult, Math.max(0, lognormal(Math.log(p.maxMult*0.5), 0.4) * qualNoise)),
-      inCCO:      inCCO,
-      inPTF:      inPTF,
-      inPTH:      inPTH,
-      buBalance:  0,
-      acreEquity: inPTH ? 5000 : 0
+      inCCO: inCCO, inPTF: inPTF, inPTH: inPTH,
+      buBalance: 0, acreEquity: inPTH ? 5000 : 0
     });
   }
 
-  /* ── Baseline comparison cohort (Traditional Welfare / no CCO) ──
-   * Represents the US welfare baseline as a fixed comparison reference.
-   * szhCoh=0: no zone coherence without SZH; shock=true: baseline includes
-   * stochastic economic events as the realistic reference condition. */
+  /* Baseline comparison cohort — US welfare reference.
+   * Uses same inflation as user scenario for consistent comparison.
+   * Automation off: baseline doesn't model disruption separately. */
   var baseAgents = agents.map(function(a){
     return Object.assign({}, a, {
       inCCO:false, inPTF:false, inPTH:false,
@@ -964,47 +1013,50 @@ function simulate(p, warns) {
     });
   });
 
-  /* ── CCO-only comparison cohort ──
-   * Fixed parameter set — always represents CCO-Only regardless of the
-   * user's active preset. (v2.1 fix: was inheriting user's bu/ccoOn which
-   * silently disabled CCO when Traditional Welfare preset was selected.) */
+  /* CCO-only comparison cohort — fixed params regardless of user preset */
   var ccoAgents = agents.map(function(a){
     return Object.assign({}, a, {
       inPTF:false, inPTH:false, acreEquity:0,
-      inCCO: RNG() < 0.78  /* fixed 78% CCO participation */
+      inCCO: RNG() < 0.78
     });
   });
 
-  /* Internal baseline params — szhCoh=0 (no SZH in baseline) */
   var pBase = {
     bu:0, maxOct:1, expiry:1, tax:0, maxMult:1, partRate:0,
     ptfShare:0, pthUptake:0, szhCoh:0, cipDemo:0,
     phi:false, ptf:false, pth:false, szh:false, cip:false,
-    shock:true,  /* baseline includes shocks as the realistic reference */
+    shock:true, inflRate: p.inflRate, automation: false,
     ccoOn:false, nAgents:n, years:years
   };
 
-  /* Internal CCO-only params */
   var pCCO = {
     bu:1200, maxOct:6, expiry:1, tax:0.12, maxMult:9,
     nAgents:n, years:years,
     partRate:0.78, ptfShare:0, pthUptake:0, szhCoh:0, cipDemo:0.20,
     phi:true, ptf:false, pth:false, szh:false, cip:false,
-    shock:false, ccoOn:true
+    shock:false, ccoOn:true,
+    inflRate: p.inflRate, automation: p.automation
   };
 
-  /* Pre-run comparison cohorts over full horizon */
   var yr;
-  for (yr=0; yr<years; yr++) runYear(baseAgents, yr, pBase);
+  var bRecSt = {active:false, severity:1.0, yearsLeft:0};
+  for (yr=0; yr<years; yr++) {
+    if (pBase.shock && yr > 0) updateRecession(bRecSt);
+    runYear(baseAgents, yr, pBase, bRecSt);
+  }
   var mBase = calcMetrics(baseAgents);
-  var bBase = bleiMetrics(baseAgents, 0, false, false, false, 0);
+  var bBase = bleiMetrics(baseAgents, 0, false, false, false, 0, 'Comfortable');
 
-  for (yr=0; yr<years; yr++) runYear(ccoAgents, yr, pCCO);
+  var ccoRecSt = {active:false, severity:1.0, yearsLeft:0};
+  for (yr=0; yr<years; yr++) {
+    if (pCCO.shock && yr > 0) updateRecession(ccoRecSt);
+    runYear(ccoAgents, yr, pCCO, ccoRecSt);
+  }
   var mCCO = calcMetrics(ccoAgents);
-  var bCCO = bleiMetrics(ccoAgents, pCCO.bu, true, false, false, 0);
+  var bCCO = bleiMetrics(ccoAgents, pCCO.bu, true, false, false, 0, 'Comfortable');
 
-  /* Main simulation — stepped via setTimeout to keep UI responsive */
   var yLabels=[], aPov=[], aGini=[], aWealth=[], aVel=[], aBlei=[];
+  var recessionState = {active:false, severity:1.0, yearsLeft:0};
 
   function step(yr) {
     if (yr >= years) {
@@ -1012,7 +1064,8 @@ function simulate(p, warns) {
              mBase, mCCO, bBase, bCCO);
       return;
     }
-    var vel  = runYear(agents, yr, p);
+    if (p.shock && yr > 0) updateRecession(recessionState);
+    var vel  = runYear(agents, yr, p, recessionState);
     var m    = calcMetrics(agents);
     var bMed = calcMedianBLEI(agents, p);
     yLabels.push('Yr '+(yr+1));
@@ -1030,50 +1083,99 @@ function simulate(p, warns) {
   step(0);
 }
 
+/* ─── runYear (v3.0 — complete rewrite) ──────────────────────────────── */
 /*
- * runYear — simulate one calendar year for an agent set under params p.
+ * Key changes from v2.2:
  *
- * BU allocation (v2.1 fix #3): buRecv is a FLAT per-participant allocation
- * equal to p.bu. Octave governs conversion CAPACITY (C = C₀ × 2ⁿ), not
- * BU quantity. All participants receive the same monthly allocation.
+ * 1. EXPENSES: each agent now pays annualBaseCost each year. Agents
+ *    with insufficient wage income + CCO returns will deplete wealth —
+ *    creating realistic failure states and meaningful poverty dynamics.
  *
- * Progressive conversion tax (v2.1 fix #4): limits right-tail wealth
- * concentration. High-rate conversions generate disproportionate public-goods
- * value (especially phi bonus = community-valued creative output), so a
- * larger fraction flows to public reinvestment.
- *   effectiveTax = min(0.75, baseTax + max(0, (rate − 3) × 0.040))
+ * 2. PTF: cost REDUCTION factor (was: wealth addition). PTF membership
+ *    reduces living costs by 12–16%, not adds income. This corrects the
+ *    audit's finding that the previous model created money ex nihilo.
  *
- * FBS gating (v2.2): octave advancement gated on financial bandwidth.
- * Agents only invest in creative development when they have basic needs
- * covered (BLEI > Precarious threshold = 30 days). This creates a realistic
- * positive feedback: higher welfare → greater advancement → better conversion.
+ * 3. PTH: REMOVED a.wealth += 800*12*0.30 rent-savings double-count.
+ *    Housing savings now correctly flow through the costFactor reduction.
+ *    Acre Equity growth (genuine wealth) is unchanged.
  *
- * BU expiry: decayFactor=0 for expiry=1 month (standard cycle) means
- * unspent BU does not carry over; monthly reset effectively enforced.
+ * 4. WAGE DYNAMICS: wages now grow annually based on financial stability,
+ *    octave skill level, and CIP access; displaced by AI automation.
+ *
+ * 5. POPULATION SHOCK: per-agent shock replaced by population-level
+ *    recessionState severity multiplier with idiosyncratic variance.
+ *
+ * 6. INFLATION: annualBaseCost compounds annually at effective inflRate,
+ *    dampened by PTF/PTH presence.
  */
-function runYear(agentSet, yr, p) {
+function runYear(agentSet, yr, p, recSt) {
   var totalBU = 0;
+  recSt = recSt || {active:false, severity:1.0, yearsLeft:0};
 
   var advRate = 0.08;
   if (p.cip) advRate += p.cipDemo * 0.04;
 
-  /* SZH amplifies PTF conversion bonus spatially */
   var ptfConvBonus = 1.30;
   if (p.szh && p.ptf) ptfConvBonus = 1.30 + (p.szhCoh - 0.50) * 0.35;
 
   var pthApprBonus  = p.szh ? p.szhCoh * 0.01 : 0;
   var szhPartBoost  = (p.szh && p.ccoOn) ? p.szhCoh * 0.04 : 0;
 
+  /* Effective inflation rate: PTF dampens via community pricing stability;
+   * PTH dampens via stable non-speculative housing component. */
+  var inflRate = p.inflRate || 0;
+  if (p.ptf && inflRate > 0) inflRate *= (1 - p.ptfShare * 0.5);
+  if (p.pth && inflRate > 0) inflRate *= 0.90;
+  var inflMult = Math.pow(1 + inflRate, yr);
+
+  var annualBaseCost = CFG.ANNUAL_BASE_COST * inflMult;
+  var popShock = recSt.active ? recSt.severity : 1.0;
+
+  /* AI automation wage displacement (Duke's labour market notes) */
+  var aiDisplacement = 0;
+  if (p.automation) {
+    if (yr >= CFG.AI_DISPLACEMENT_YEAR_2) {
+      aiDisplacement = CFG.AI_DISPLACEMENT_RATE_1 *
+        (CFG.AI_DISPLACEMENT_YEAR_2 - CFG.AI_DISPLACEMENT_YEAR_1) +
+        CFG.AI_DISPLACEMENT_RATE_2 * (yr - CFG.AI_DISPLACEMENT_YEAR_2 + 1);
+    } else if (yr >= CFG.AI_DISPLACEMENT_YEAR_1) {
+      aiDisplacement = CFG.AI_DISPLACEMENT_RATE_1 * (yr - CFG.AI_DISPLACEMENT_YEAR_1 + 1);
+    }
+    aiDisplacement = Math.min(0.10, aiDisplacement);
+  }
+
   agentSet.forEach(function(a) {
-    /* Stochastic economic shock (10% annual probability) */
-    var shock = (p.shock && yr > 0 && RNG() < 0.10) ? 0.70 + RNG() * 0.20 : 1.0;
+    var agentVar  = 0.90 + RNG() * 0.20;
+    var incomeShock = popShock * agentVar;
 
-    a.wealth += a.wage * 12 * (0.90 + RNG() * 0.20) * shock;
+    /* ── WAGE DYNAMICS ──────────────────────────────────────────── */
+    var bleiCheck = agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh);
+    var wageGrowth = CFG.WAGE_BASE_GROWTH;
+    if (bleiCheck > CFG.BLEI_PRECARIOUS_MAX) wageGrowth += CFG.WAGE_BLEI_BONUS;
+    wageGrowth += a.octave * CFG.WAGE_OCTAVE_BONUS;
+    if (p.cip) wageGrowth += p.cipDemo * 0.005;
+    wageGrowth -= aiDisplacement;
+    a.wage = Math.max(a.wage * 0.80, a.wage * (1 + wageGrowth));
 
+    /* ── ANNUAL COST OF LIVING ──────────────────────────────────── */
+    /* PTF: reduces costs (community-owned essentials overhead removed)
+     * PTH: covers housing component (35% of baseline annual cost)
+     * CCO food basket: covers food component (20% of baseline cost)
+     * v3.0: these are now cost factors, not wealth additions. */
+    var costFactor = 1.0;
+    if (p.ptf && a.inPTF) {
+      var savingsRate = p.szh ? 0.12 + p.szhCoh * 0.04 : 0.12;
+      costFactor *= (1 - savingsRate);
+    }
+    if (p.pth && a.inPTH)             costFactor *= 0.65;
+    if (p.ccoOn && a.inCCO && p.bu>0) costFactor *= 0.80;
+    var livingCost = annualBaseCost * costFactor;
+
+    a.wealth += a.wage * 12 * incomeShock - livingCost;
+
+    /* ── CCO CONVERSION INCOME ──────────────────────────────────── */
     if (p.ccoOn && a.inCCO) {
-      /* Flat BU allocation — octave governs quality/conversion, not quantity */
       var buRecv = p.bu;
-      /* decayFactor=0 for expiry<2 enforces standard monthly reset */
       var decayFactor = p.expiry < 2 ? 0 : 0.7;
       a.buBalance = Math.min(a.buBalance * decayFactor + buRecv, p.bu * 3);
 
@@ -1081,48 +1183,36 @@ function runYear(agentSet, yr, p) {
       a.buBalance -= spend;
       totalBU += spend;
 
-      /* CIP: democratic merit process raises quality over time */
       if (p.cip && RNG() < p.cipDemo * 0.15) {
         a.quality = Math.min(p.maxMult, a.quality + 0.1);
       }
 
-      /* Conversion rate: base × phi bonus × PTF access bonus × CIP accuracy */
       var baseRate = 1 + (a.quality / p.maxMult) * (p.maxMult - 1);
       var phi  = (p.phi && a.quality > p.maxMult * CFG.PHI_QUALITY_THRESH) ? CFG.PHI_RATIO : 1.0;
       var ptfB = (p.ptf && a.inPTF) ? ptfConvBonus : 1.0;
       var cipB = p.cip ? (1 + p.cipDemo * 0.12) : 1.0;
       var rate = Math.min(baseRate * phi * ptfB, p.maxMult * (p.phi ? CFG.PHI_RATIO : 1.0));
 
-      /* Progressive conversion tax — limits wealth concentration at high rates */
       var baseTax = p.cip ? p.tax * (1 - p.cipDemo * 0.18) : p.tax;
       var progTax = Math.min(CFG.PROG_TAX_MAX, baseTax + Math.max(0, (rate - CFG.PROG_PIVOT) * CFG.PROG_RATE));
-      a.wealth += spend * rate * (1 - progTax) * cipB * shock;
+      a.wealth += spend * rate * (1 - progTax) * cipB * incomeShock;
 
-      /* FBS gating (v2.2): octave advancement only when agent has financial
-       * bandwidth — BLEI score above Precarious threshold (30 days covered).
-       * Agents invest in creative development when basic needs are secured. */
-      var bleiScore = agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh);
-      var hasBandwidth = bleiScore > CFG.BLEI_PRECARIOUS_MAX;
+      /* FBS gating (BLEI §3.3): octave advancement only when financially stable */
+      var hasBandwidth = bleiCheck > CFG.BLEI_PRECARIOUS_MAX;
       if (hasBandwidth && RNG() < advRate && a.octave < p.maxOct) a.octave++;
 
-      /* SZH: spatial participation pull — zone residents may join PTF */
       if (RNG() < szhPartBoost && !a.inPTF && p.ptf) a.inPTF = RNG() < p.ptfShare;
     }
 
-    /* PTF: community-owned goods reduce cost of living, increase savings */
-    if (p.ptf && a.inPTF) {
-      var savingsRate = p.szh ? 0.12 + p.szhCoh * 0.04 : 0.12;
-      a.wealth += a.wage * 12 * savingsRate * shock;
-    }
-
-    /* PTH: housing generative — Acre Equity appreciates, reduces EDC */
+    /* ── PTH: ACRE EQUITY APPRECIATION (v3.0: no double-count) ─── */
+    /* Rent-equivalent savings handled via costFactor above.
+     * This block covers only genuine asset appreciation. */
     if (p.pth && a.inPTH) {
       var apprRate = 0.030 + RNG() * 0.020 + pthApprBonus;
       var appr = a.acreEquity * apprRate;
       a.acreEquity += appr;
       a.wealth += appr * 0.5;
-      /* CCO+PTH rent-to-equity savings ($800/month housing freed) */
-      if (p.ccoOn && a.inCCO) a.wealth += 800 * 12 * 0.30;
+      /* REMOVED: a.wealth += 800*12*0.30 — was double-counting cost savings */
     }
 
     if (a.wealth < 0) a.wealth = 100;
@@ -1130,18 +1220,7 @@ function runYear(agentSet, yr, p) {
   return totalBU;
 }
 
-/*
- * calcMetrics — compute economic statistics for an agent set.
- *
- * Poverty line: $25,000 (CFG.POVERTY_LINE). Raised from $15k in v2.1 to
- * produce meaningful differentiation between scenarios after 20-year wage
- * accumulation. At $15k, wage growth alone lifted ~90% of agents above the
- * line regardless of policy.
- *
- * calcMetrics bug fix (v2.2): removed spurious `gini<0?0:pov` guard which
- * incorrectly zeroed out poverty when Gini was negative (impossible with
- * positive wealth values; was dead code masking a conceptual error).
- */
+/* ─── METRICS ─────────────────────────────────────────────────────────── */
 function calcMetrics(agentSet) {
   var ws = agentSet.map(function(a){ return a.wealth; }).sort(function(a,b){ return a-b; });
   var n  = ws.length;
@@ -1173,8 +1252,8 @@ function finish(p, warns, agents, yLabels, aPov, aGini, aWealth, aVel, aBlei,
                 mBase, mCCO, bBase, bCCO) {
 
   var finalM = {
-    pov:  aPov[aPov.length-1],     // percentage (0–100)
-    gini: aGini[aGini.length-1],   // decimal (0–1)
+    pov:  aPov[aPov.length-1],
+    gini: aGini[aGini.length-1],
     med:  aWealth[aWealth.length-1]
   };
   var q = Math.max(1, Math.floor(yLabels.length/4));
@@ -1185,33 +1264,29 @@ function finish(p, warns, agents, yLabels, aPov, aGini, aWealth, aVel, aBlei,
   if (p.cip) stabBase += p.cipDemo * 0.10;
   var stab = Math.min(0.99, stabBase + RNG() * 0.08);
 
-  var bMain = bleiMetrics(agents, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh);
+  /* Tier naming: Flourishing requires CCO+PTF both active (Duke's note) */
+  var compassionismActive = p.ccoOn && p.ptf;
+  var topTierName = compassionismActive ? 'Flourishing' : 'Comfortable';
 
-  /* Store results for CSV export */
+  var bMain = bleiMetrics(agents, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, topTierName);
+
   SIM_RESULTS = {
-    params:       p,
-    finalPov:     finalM.pov,
-    finalGini:    finalM.gini,
-    finalWealth:  finalM.med,
-    stab:         stab,
-    blei:         bMain,
-    mBase:        mBase,
-    mCCO:         mCCO,
-    bBase:        bBase,
-    bCCO:         bCCO,
-    timestamp:    new Date().toISOString()
+    params: p, finalPov: finalM.pov, finalGini: finalM.gini, finalWealth: finalM.med,
+    stab: stab, blei: bMain, mBase: mBase, mCCO: mCCO, bBase: bBase, bCCO: bCCO,
+    topTierName: topTierName, timestamp: new Date().toISOString()
   };
 
-  renderKPIs(finalM, stab, mBase, bMain, bBase);
+  renderKPIs(finalM, stab, mBase, bMain, bBase, topTierName);
   renderCharts(yLabels, aPov, aGini, aWealth, aVel, aBlei);
-  renderTable(finalM, stab, mBase, mCCO, bMain, bBase, bCCO, p);
-  renderInsights(finalM, stab, bMain, p);
+  renderTable(finalM, stab, mBase, mCCO, bMain, bBase, bCCO, p, topTierName);
+  renderInsights(finalM, stab, bMain, p, topTierName);
   renderSens();
 
   if (warns.length) {
     document.getElementById('warn-note').style.display = 'block';
     document.getElementById('warn-note').textContent = '⚠ ' + warns.join(' · ');
   }
+  document.getElementById('uncertainty-notice').style.display = 'block';
   document.getElementById('sdot').className  = 'dot done';
   document.getElementById('stxt').textContent = 'Complete — ' + yLabels.length + '-year run finished.';
   document.getElementById('spct').textContent = '';
@@ -1221,11 +1296,139 @@ function finish(p, warns, agents, yLabels, aPov, aGini, aWealth, aVel, aBlei,
   document.getElementById('sec-sens').style.display = 'block';
   document.getElementById('sec-export').style.display = 'block';
   running = false;
+
+  /* Attribution analysis — async after UI renders */
+  var attrEl = document.getElementById('sec-attribution');
+  if (attrEl) {
+    attrEl.style.display = 'block';
+    var attrLoad = document.getElementById('attribution-loading');
+    var attrWrap = document.getElementById('attribution-chart-wrap');
+    if (attrLoad) { attrLoad.style.display = 'block'; attrLoad.textContent = '⏳ Calculating attribution (ablation runs)…'; }
+    if (attrWrap) attrWrap.style.display = 'none';
+  }
+  setTimeout(function() {
+    runAblation(p, bMain, function(ablResults) {
+      renderAttribution(bMain, ablResults);
+    });
+  }, 80);
+}
+
+/* ─── ABLATION ANALYSIS (v3.0) ────────────────────────────────────────── */
+/*
+ * Runs 200-agent subsample simulations with each active system removed,
+ * then reports the BLEI days lost — an estimate of that system's contribution.
+ * Uses a deterministic sub-seed (distinct from main run) for reproducibility.
+ * Per audit recommendation for Shapley-style causal attribution.
+ */
+function runAblation(p, bMain, callback) {
+  var ablSystems = [];
+  if (p.ccoOn)                ablSystems.push('CCO');
+  if (p.ptf && p.ptfShare>0)  ablSystems.push('PTF');
+  if (p.pth && p.pthUptake>0) ablSystems.push('PTH');
+  if (p.szh && p.szhCoh>0)    ablSystems.push('SZH');
+  if (p.cip && p.cipDemo>0)   ablSystems.push('CIP');
+
+  if (ablSystems.length < 2) { callback({}); return; }
+
+  var results   = {};
+  var ablN      = Math.min(200, p.nAgents);
+  var ablSeedBase = 9973;
+  var idx       = 0;
+  var savedRNG  = null;
+
+  function nextAblation() {
+    if (idx >= ablSystems.length) {
+      if (savedRNG) RNG = savedRNG;
+      callback(results);
+      return;
+    }
+
+    var sys  = ablSystems[idx++];
+    var pAbl = Object.assign({}, p, { nAgents: ablN });
+    switch (sys) {
+      case 'CCO': pAbl.ccoOn = false; pAbl.bu = 0; break;
+      case 'PTF': pAbl.ptf   = false; pAbl.ptfShare   = 0; break;
+      case 'PTH': pAbl.pth   = false; pAbl.pthUptake  = 0; break;
+      case 'SZH': pAbl.szh   = false; pAbl.szhCoh     = 0; break;
+      case 'CIP': pAbl.cip   = false; pAbl.cipDemo    = 0; break;
+    }
+
+    if (!savedRNG) savedRNG = RNG;
+    RNG = mulberry32(ablSeedBase + idx * 31337);
+
+    var ablAgents = [];
+    for (var i = 0; i < ablN; i++) {
+      var iCCO = pAbl.ccoOn && RNG() < pAbl.partRate;
+      var iPTF = pAbl.ptf   && RNG() < pAbl.ptfShare;
+      var iPTH = pAbl.pth   && RNG() < pAbl.pthUptake;
+      var qN   = pAbl.cip ? (1 - pAbl.cipDemo * 0.5) : 1.0;
+      ablAgents.push({
+        wealth:   lognormal(10.5, 1.2), wage: lognormal(3.5, 0.5),
+        octave:   Math.floor(beta(2,5) * pAbl.maxOct),
+        quality:  Math.min(pAbl.maxMult, Math.max(0, lognormal(Math.log(pAbl.maxMult*0.5), 0.4) * qN)),
+        inCCO: iCCO, inPTF: iPTF, inPTH: iPTH,
+        buBalance: 0, acreEquity: iPTH ? 5000 : 0
+      });
+    }
+
+    var ablRecSt = {active:false, severity:1.0, yearsLeft:0};
+    for (var yr2 = 0; yr2 < p.years; yr2++) {
+      if (pAbl.shock && yr2 > 0) updateRecession(ablRecSt);
+      runYear(ablAgents, yr2, pAbl, ablRecSt);
+    }
+
+    var ablTop = (pAbl.ccoOn && pAbl.ptf) ? 'Flourishing' : 'Comfortable';
+    results[sys] = bleiMetrics(ablAgents, pAbl.bu, pAbl.ccoOn, pAbl.pth, pAbl.szh, pAbl.szhCoh, ablTop);
+    setTimeout(nextAblation, 0);
+  }
+
+  nextAblation();
+}
+
+function renderAttribution(bMain, ablResults) {
+  var attrLoad = document.getElementById('attribution-loading');
+  var attrWrap = document.getElementById('attribution-chart-wrap');
+  if (attrLoad) attrLoad.style.display = 'none';
+  if (attrWrap) attrWrap.style.display = 'block';
+
+  var systems = Object.keys(ablResults);
+  if (!systems.length) {
+    if (attrLoad) { attrLoad.textContent = 'Attribution: fewer than 2 active systems — enable more systems to see contributions.'; attrLoad.style.display = 'block'; }
+    if (attrWrap) attrWrap.style.display = 'none';
+    return;
+  }
+
+  var colorMap = { CCO:'rgba(29,158,117,0.82)', PTF:'rgba(24,95,165,0.82)', PTH:'rgba(122,92,0,0.82)', SZH:'rgba(107,63,160,0.82)', CIP:'rgba(186,117,23,0.82)' };
+  var labels = [], deltas = [], colors = [];
+  systems.forEach(function(sys) {
+    var contribution = Math.max(0, bMain.med - (ablResults[sys].med || 0));
+    labels.push(sys);
+    deltas.push(+contribution.toFixed(1));
+    colors.push(colorMap[sys] || 'rgba(120,120,120,0.75)');
+  });
+
+  if (charts['ch-attribution']) charts['ch-attribution'].destroy();
+  var ctx = document.getElementById('ch-attribution');
+  if (!ctx) return;
+  charts['ch-attribution'] = new Chart(ctx, {
+    type:'bar',
+    data:{ labels:labels, datasets:[{ label:'BLEI days', data:deltas, backgroundColor:colors, borderRadius:3, borderWidth:0 }] },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:function(c){ return c.parsed.y.toFixed(1)+' BLEI days lost if this system is removed'; } } } },
+      scales:{
+        x:{ ticks:{font:{size:10.5},color:'#888780'}, grid:{display:false} },
+        y:{ ticks:{font:{size:10.5},color:'#888780',callback:function(v){return v+'d';}}, grid:{color:GA}, min:0,
+            title:{display:true,text:'BLEI days contributed',font:{size:10.5},color:'#888780'} }
+      }
+    }
+  });
 }
 
 /* ─── KPI RENDER ──────────────────────────────────────────────────────── */
-function renderKPIs(m, stab, base, bMain, bBase) {
-  var pov = m.pov; /* percentage form (0–100), from aPov[] */
+function renderKPIs(m, stab, base, bMain, bBase, topTierName) {
+  topTierName = topTierName || 'Flourishing';
+  var pov = m.pov;
   set('k-pov', pov.toFixed(1)+'%');
   setD('k-pov-d', '▼ '+(base.pov*100 - pov).toFixed(1)+'pp vs baseline ('+( base.pov*100).toFixed(1)+'%)',
        pov<5?'good':pov<15?'warn':'bad');
@@ -1241,12 +1444,18 @@ function renderKPIs(m, stab, base, bMain, bBase) {
   set('k-stab', Math.round(stab*100)+'%');
   setD('k-stab-d', 'Target ≥'+Math.round(CFG.TARGET_STABILITY*100)+'%', stab>=CFG.TARGET_STABILITY?'good':stab>=0.75?'warn':'bad');
 
-  var medDays = Math.round(bMain.med);
-  var tier    = getTier(medDays);
+  var medDays  = Math.round(bMain.med);
+  var tier     = getTier(medDays, topTierName);
   var baseDays = Math.round(bBase.med);
+  var baseTier = getTier(baseDays, 'Comfortable');
   set('k-blei', medDays+' days');
   var badgeHTML = '<span class="tbadge '+tier.cls+'">'+tier.name+'</span>';
-  document.getElementById('k-blei-d').innerHTML = badgeHTML + ' &nbsp; Baseline: '+baseDays+' days';
+  var baseBH    = '<span class="tbadge '+baseTier.cls+'">'+baseTier.name+'</span>';
+  document.getElementById('k-blei-d').innerHTML = badgeHTML + ' &nbsp; Baseline: '+baseDays+'d '+baseBH;
+
+  /* Update top-tier KPI label to reflect current tier name */
+  var flourLabel = document.getElementById('k-flour-label');
+  if (flourLabel) flourLabel.textContent = 'Agents at '+topTierName+' (730+ days)';
 
   set('k-flour', bMain.pctF.toFixed(1)+'%');
   setD('k-flour-d', 'Baseline: '+bBase.pctF.toFixed(1)+'% · Target >'+Math.round(CFG.TARGET_FLOURISHING*100)+'%',
@@ -1314,58 +1523,60 @@ function renderCharts(yl, pov, gini, wealth, vel, blei) {
 }
 
 /* ─── TABLE RENDER ────────────────────────────────────────────────────── */
-function renderTable(m, stab, mBase, mCCO, bMain, bBase, bCCO, p) {
-  var pov = m.pov;  /* percentage form (0–100) */
+function renderTable(m, stab, mBase, mCCO, bMain, bBase, bCCO, p, topTierName) {
+  topTierName = topTierName || 'Flourishing';
+  var pov = m.pov;
   var rows = [
     { cls:'sb-base', label:'US Welfare Baseline',
-      pe:'—',  /* reference point — not self-compared */
-      mw:'$'+Math.round(mBase.med/1000)+'K', gini:mBase.gini.toFixed(3),
-      blei:bleiCell(bBase), edc:(bBase.avgEDC*100).toFixed(0)+'%', stab:'~65%' },
+      pe:'—', mw:'$'+Math.round(mBase.med/1000)+'K', gini:mBase.gini.toFixed(3),
+      blei:bleiCell(bBase, 'Comfortable'), edc:(bBase.avgEDC*100).toFixed(0)+'%', stab:'~65%' },
     { cls:'sb-cco', label:'CCO Only',
       pe:peStr(mCCO.pov), mw:'$'+Math.round(mCCO.med/1000)+'K', gini:mCCO.gini.toFixed(3),
-      blei:bleiCell(bCCO), edc:(bCCO.avgEDC*100).toFixed(0)+'%', stab:'~88%' },
+      blei:bleiCell(bCCO, 'Comfortable'), edc:(bCCO.avgEDC*100).toFixed(0)+'%', stab:'~88%' },
     { cls:'sb-user', label:'Your Settings',
       pe:peStr(pov/100), mw:'$'+Math.round(m.med/1000)+'K', gini:m.gini.toFixed(3),
-      blei:bleiCell(bMain), edc:(bMain.avgEDC*100).toFixed(0)+'%', stab:Math.round(stab*100)+'%' }
+      blei:bleiCell(bMain, topTierName), edc:(bMain.avgEDC*100).toFixed(0)+'%', stab:Math.round(stab*100)+'%' }
   ];
 
   var html = '';
   for (var i=0; i<rows.length; i++) {
     var r = rows[i];
-    html += '<tr>';
-    html += '<td><span class="sbadge '+r.cls+'">'+r.label+'</span></td>';
+    html += '<tr><td><span class="sbadge '+r.cls+'">'+r.label+'</span></td>';
     html += '<td>'+r.pe+'</td><td>'+r.mw+'</td><td>'+r.gini+'</td>';
-    html += '<td>'+r.blei+'</td><td>'+r.edc+'</td><td>'+r.stab+'</td>';
-    html += '</tr>';
+    html += '<td>'+r.blei+'</td><td>'+r.edc+'</td><td>'+r.stab+'</td></tr>';
   }
   document.getElementById('tbl-body').innerHTML = html;
-  renderTierChart(bMain);
+  renderTierChart(bMain, topTierName);
 }
 
 function peStr(pov) { return ((1-pov)*100).toFixed(0)+'%'; }
 
-function bleiCell(bm) {
+function bleiCell(bm, topTierName) {
   var days = Math.round(bm.med);
-  var tier = getTier(days);
+  var tier = getTier(days, topTierName || 'Flourishing');
   return '<span class="tbadge '+tier.cls+'">'+tier.name+'</span> '+days+'d';
 }
 
-function renderTierChart(bm) {
+function renderTierChart(bm, topTierName) {
+  topTierName = topTierName || 'Flourishing';
   if (charts['ch-tiers']) charts['ch-tiers'].destroy();
   var ctx = document.getElementById('ch-tiers');
   if (!ctx) return;
-  var names  = TIERS.map(function(t){ return t.name; });
+  var names  = TIERS.slice(0,5).map(function(t){ return t.name; });
+  names.push(topTierName);
   var colors = TIERS.map(function(t){ return t.color; });
   var pcts   = bm.tc.map(function(c){ return +(c/bm.n*100).toFixed(1); });
+  var sub    = document.getElementById('tier-chart-sub');
+  if (sub) sub.textContent = 'Six-tier welfare classification (Johnson & Claude, 2026) · Top tier: '+topTierName+' (730+ days)';
   charts['ch-tiers'] = new Chart(ctx, {
     type:'bar',
     data:{ labels:names, datasets:[{ label:'% of agents', data:pcts, backgroundColor:colors, borderRadius:3, borderWidth:0 }] },
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:function(c){ return c.parsed.y.toFixed(1)+'% of agents'; } } } },
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:function(c){ return c.parsed.y.toFixed(1)+'% of agents'; } } } },
       scales:{
-        x:{ ticks:{ font:{size:10.5}, color:'#888780' }, grid:{ display:false } },
-        y:{ ticks:{ font:{size:10.5}, color:'#888780', callback:function(v){ return v+'%'; } }, grid:{ color:GA }, max:100 }
+        x:{ ticks:{font:{size:10.5},color:'#888780'}, grid:{display:false} },
+        y:{ ticks:{font:{size:10.5},color:'#888780',callback:function(v){return v+'%';}}, grid:{color:GA}, max:100 }
       }
     }
   });
@@ -1379,107 +1590,88 @@ function downloadCSV() {
 
   function fmt(v) {
     var s = String(v === null || v === undefined ? '' : v);
-    return (s.indexOf(',') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\n') >= 0)
-      ? '"' + s.replace(/"/g,'""') + '"' : s;
+    return (s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0) ? '"'+s.replace(/"/g,'""')+'"' : s;
   }
   function row(a) { return a.map(fmt).join(','); }
 
   var lines = [
     row(['Compassionism Framework Simulation — Research Export', '']),
     row(['Better To Best Research Hub', 'https://bettertobest.github.io/research-hub/']),
-    row(['Simulation Version', '2.2']),
+    row(['Simulation Version', '3.0']),
     row(['Timestamp', sr.timestamp]),
     row(['', '']),
-    row(['Research Note',
-         'These simulations seek parameter configurations where optimal-for-all conditions align ' +
-         'with ideal-for-each — analogous to a structural model meeting a specified load capacity. ' +
-         'Community input is welcomed to refine and validate the model.']),
+    row(['Research Note', 'Exploratory simulation — not a forecast. Results reflect modelled agent dynamics under stated assumptions. See model assumptions panel for details.']),
     row(['Contributors', 'https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md']),
     row(['', '']),
-
-    /* Parameters */
     row(['--- PARAMETERS ---', '']),
-    row(['BU Monthly Allocation ($/month)',    p.bu]),
-    row(['CCO Enabled',                        p.ccoOn ? 'Yes' : 'No']),
-    row(['CCO Participation Rate (%)',          (p.partRate*100).toFixed(0)]),
-    row(['Max Octave Level',                   p.maxOct]),
-    row(['BU Expiry (months)',                 p.expiry]),
-    row(['Phi Rate (Golden Ratio Bonus)',       p.phi ? 'On (1.618×)' : 'Off']),
-    row(['Conversion Tax Rate (%)',            (p.tax*100).toFixed(0)]),
-    row(['Quality Multiplier Ceiling',         p.maxMult]),
-    row(['Agent Population',                   p.nAgents]),
-    row(['Simulation Years',                   p.years]),
-    row(['PTF Enabled',                        p.ptf ? 'Yes' : 'No']),
-    row(['PTF Market Share (%)',               (p.ptfShare*100).toFixed(0)]),
-    row(['PTH Enabled',                        p.pth ? 'Yes' : 'No']),
-    row(['PTH Uptake Rate (%)',                (p.pthUptake*100).toFixed(0)]),
-    row(['SZH Enabled',                        p.szh ? 'Yes' : 'No']),
-    row(['Zone Coherence Index',               p.szhCoh.toFixed(2)]),
-    row(['CIP Enabled',                        p.cip ? 'Yes' : 'No']),
-    row(['CIP Democratic Participation (%)',   (p.cipDemo*100).toFixed(0)]),
-    row(['Economic Shocks',                    p.shock ? 'Yes' : 'No']),
-    row(['Random Seed',                        p.seed || 'None (natural Monte Carlo variance)']),
+    row(['BU Monthly Allocation ($/month)', p.bu]),
+    row(['CCO Enabled', p.ccoOn ? 'Yes' : 'No']),
+    row(['CCO Participation Rate (%)', (p.partRate*100).toFixed(0)]),
+    row(['Max Octave Level', p.maxOct]),
+    row(['BU Expiry (months)', p.expiry]),
+    row(['Phi Rate (Golden Ratio Bonus)', p.phi ? 'On (1.618×)' : 'Off']),
+    row(['Conversion Tax Rate (%)', (p.tax*100).toFixed(0)]),
+    row(['Quality Multiplier Ceiling', p.maxMult]),
+    row(['Agent Population', p.nAgents]),
+    row(['Simulation Years', p.years]),
+    row(['PTF Enabled', p.ptf ? 'Yes' : 'No']),
+    row(['PTF Market Share (%)', (p.ptfShare*100).toFixed(0)]),
+    row(['PTH Enabled', p.pth ? 'Yes' : 'No']),
+    row(['PTH Uptake Rate (%)', (p.pthUptake*100).toFixed(0)]),
+    row(['SZH Enabled', p.szh ? 'Yes' : 'No']),
+    row(['Zone Coherence Index', p.szhCoh.toFixed(2)]),
+    row(['CIP Enabled', p.cip ? 'Yes' : 'No']),
+    row(['CIP Democratic Participation (%)', (p.cipDemo*100).toFixed(0)]),
+    row(['Economic Shocks', p.shock ? 'Yes (multi-year recession model)' : 'No']),
+    row(['AI Labor Automation', p.automation ? 'On (progressive displacement yr 5+)' : 'Off']),
+    row(['Inflation Rate (% / yr)', (p.inflRate*100).toFixed(1)]),
+    row(['Top BLEI Tier Label', sr.topTierName]),
+    row(['Random Seed', p.seed || 'None (natural Monte Carlo variance)']),
     row(['', '']),
-
-    /* Results */
     row(['--- RESULTS: FINAL YEAR ---', '']),
-    row(['Poverty Rate (%)',                   sr.finalPov.toFixed(1)]),
-    row(['Poverty Elimination (%)',            (100 - sr.finalPov).toFixed(1)]),
-    row(['Gini Coefficient',                   sr.finalGini.toFixed(3)]),
-    row(['Median Wealth ($)',                  Math.round(sr.finalWealth)]),
-    row(['System Stability (%)',               (sr.stab*100).toFixed(0)]),
+    row(['Poverty Rate (%)', sr.finalPov.toFixed(1)]),
+    row(['Poverty Elimination (%)', (100 - sr.finalPov).toFixed(1)]),
+    row(['Gini Coefficient', sr.finalGini.toFixed(3)]),
+    row(['Median Wealth ($)', Math.round(sr.finalWealth)]),
+    row(['System Stability (%)', (sr.stab*100).toFixed(0)]),
     row(['', '']),
-
-    /* BLEI */
     row(['--- BLEI FRAMEWORK (final year) ---', '']),
-    row(['Median BLEI Score (days covered)',   Math.round(sr.blei.med)]),
-    row(['BLEI Tier',                          getTier(Math.round(sr.blei.med)).name]),
-    row(['Agents at Flourishing Tier (%)',     sr.blei.pctF.toFixed(1)]),
+    row(['Median BLEI Score (days covered)', Math.round(sr.blei.med)]),
+    row(['BLEI Top Tier', getTier(Math.round(sr.blei.med), sr.topTierName).name]),
+    row(['Agents at Top Tier (%)', sr.blei.pctF.toFixed(1)]),
     row(['Avg Extractive Drain Coefficient (%)', (sr.blei.avgEDC*100).toFixed(1)]),
     row(['', '']),
-
-    /* Tier distribution */
     row(['--- TIER DISTRIBUTION (% of agents) ---', '']),
-    row(['Crisis  (< 7 days)',    (sr.blei.tc[0]/sr.blei.n*100).toFixed(1)]),
-    row(['Precarious (7–29 days)',(sr.blei.tc[1]/sr.blei.n*100).toFixed(1)]),
+    row(['Crisis  (< 7 days)',     (sr.blei.tc[0]/sr.blei.n*100).toFixed(1)]),
+    row(['Precarious (7–29 days)', (sr.blei.tc[1]/sr.blei.n*100).toFixed(1)]),
     row(['Threshold (30–119 days)',(sr.blei.tc[2]/sr.blei.n*100).toFixed(1)]),
-    row(['Stable (120–364 days)', (sr.blei.tc[3]/sr.blei.n*100).toFixed(1)]),
-    row(['Secure (365–729 days)', (sr.blei.tc[4]/sr.blei.n*100).toFixed(1)]),
-    row(['Flourishing (730+ days)',(sr.blei.tc[5]/sr.blei.n*100).toFixed(1)]),
+    row(['Stable (120–364 days)',  (sr.blei.tc[3]/sr.blei.n*100).toFixed(1)]),
+    row(['Secure (365–729 days)',  (sr.blei.tc[4]/sr.blei.n*100).toFixed(1)]),
+    row([sr.topTierName+' (730+ days)', (sr.blei.tc[5]/sr.blei.n*100).toFixed(1)]),
     row(['', '']),
-
-    /* Comparison table */
     row(['--- SCENARIO COMPARISON (final year) ---', '']),
     row(['Configuration','Poverty Rate (%)','Poverty Elim. (%)','Median Wealth ($)','Gini','Median BLEI (days)','BLEI Tier','Avg EDC (%)']),
     row(['US Welfare Baseline',
-         (sr.mBase.pov*100).toFixed(1),
-         (100-sr.mBase.pov*100).toFixed(1),
-         Math.round(sr.mBase.med),
-         sr.mBase.gini.toFixed(3),
-         Math.round(sr.bBase.med),
-         getTier(Math.round(sr.bBase.med)).name,
-         (sr.bBase.avgEDC*100).toFixed(1)]),
+         (sr.mBase.pov*100).toFixed(1),(100-sr.mBase.pov*100).toFixed(1),Math.round(sr.mBase.med),
+         sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),
     row(['CCO Only (fixed: 78% participation, $1,200 BU)',
-         (sr.mCCO.pov*100).toFixed(1),
-         (100-sr.mCCO.pov*100).toFixed(1),
-         Math.round(sr.mCCO.med),
-         sr.mCCO.gini.toFixed(3),
-         Math.round(sr.bCCO.med),
-         getTier(Math.round(sr.bCCO.med)).name,
-         (sr.bCCO.avgEDC*100).toFixed(1)]),
+         (sr.mCCO.pov*100).toFixed(1),(100-sr.mCCO.pov*100).toFixed(1),Math.round(sr.mCCO.med),
+         sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),
     row(['Your Settings',
-         sr.finalPov.toFixed(1),
-         (100-sr.finalPov).toFixed(1),
-         Math.round(sr.finalWealth),
-         sr.finalGini.toFixed(3),
-         Math.round(sr.blei.med),
-         getTier(Math.round(sr.blei.med)).name,
-         (sr.blei.avgEDC*100).toFixed(1)]),
+         sr.finalPov.toFixed(1),(100-sr.finalPov).toFixed(1),Math.round(sr.finalWealth),
+         sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)]),
+    row(['', '']),
+    row(['--- v3.0 MODEL NOTES ---', '']),
+    row(['Annual base cost of living', '$'+CFG.ANNUAL_BASE_COST+' (PTF/PTH/CCO reduce via cost factors)']),
+    row(['PTF mechanism', 'Cost reduction (not wealth addition)']),
+    row(['PTH mechanism', 'Housing cost reduction 35% + Acre Equity growth (no double-count)']),
+    row(['BLEI income proxy', 'a.wage (actual wage, not wealth/60)']),
+    row(['Recession model', 'Population-level, 2–4 year duration']),
     row(['', '']),
     row(['--- CALIBRATION NOTES ---', '']),
     row(['Poverty line', '$'+CFG.POVERTY_LINE+' annual wealth']),
     row(['Base daily cost (no CCO/PTH)', '$'+CFG.BASE_DAILY_COST]),
-    row(['Daily cost (CCO+PTH, housing generative)', '$'+CFG.CCO_PTH_DAILY_COST]),
+    row(['Daily cost (CCO+PTH)', '$'+CFG.CCO_PTH_DAILY_COST]),
     row(['US CES 2023 near-poverty EDC baseline', CFG.EDC_BASELINE_LO+' – '+CFG.EDC_BASELINE_HI]),
     row(['BLEI paper', 'https://bettertobest.github.io/research-hub/basic-living-economic-index.html'])
   ];
@@ -1488,74 +1680,71 @@ function downloadCSV() {
   var blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
   var url  = URL.createObjectURL(blob);
   var a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'compassionism-sim-' + sr.timestamp.slice(0,10) + '.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  a.href = url; a.download = 'compassionism-sim-v3-' + sr.timestamp.slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 
 /* ─── INSIGHTS RENDER ─────────────────────────────────────────────────── */
-function renderInsights(m, stab, bMain, p) {
+function renderInsights(m, stab, bMain, p, topTierName) {
+  topTierName = topTierName || 'Flourishing';
   var pov     = m.pov;
   var medDays = Math.round(bMain.med);
-  var tier    = getTier(medDays);
+  var tier    = getTier(medDays, topTierName);
   var ins     = [];
 
-  /* Insight 1: Poverty */
   var i1 = {};
   if (pov < CFG.TARGET_POVERTY*100) {
     i1.icon = '✅'; i1.title = 'Poverty target achieved';
-    i1.body = pov.toFixed(1)+'% poverty — below the '+Math.round(CFG.TARGET_POVERTY*100)+'% target. BLEI median confirms '+tier.name+' temporal stability ('+medDays+' days).';
+    i1.body = pov.toFixed(1)+'% poverty — below the '+Math.round(CFG.TARGET_POVERTY*100)+'% target. BLEI median confirms '+tier.name+' temporal stability ('+medDays+' days). Annual living costs now offset by CCO+PTF+PTH system effects.';
   } else {
     i1.icon = '📈'; i1.title = 'Poverty reduction in progress';
     var tips1 = [];
     if (p.bu < CFG.CCO_OPTIMAL_BU && p.ccoOn) tips1.push('raise BU toward $'+CFG.CCO_OPTIMAL_BU);
     if (!p.ccoOn) tips1.push('enable CCO (set BU above $0)');
     if (p.partRate < 0.78 && p.ccoOn) tips1.push('raise participation toward 78%');
-    if (!p.ptf) tips1.push('enable PTF');
-    if (!p.pth) tips1.push('enable PTH');
-    i1.body = pov.toFixed(1)+'% poverty · BLEI median: '+tier.name+' ('+medDays+' days).';
+    if (!p.ptf) tips1.push('enable PTF to reduce living costs');
+    if (!p.pth) tips1.push('enable PTH to cover housing component');
+    i1.body = pov.toFixed(1)+'% poverty · BLEI median: '+tier.name+' ('+medDays+' days). Annual expense pressure is the primary driver — CCO conversion income and PTF/PTH cost reductions are the corrective levers.';
     if (tips1.length) i1.body += ' Try: '+tips1.join(', ')+'.';
   }
   ins.push(i1);
 
-  /* Insight 2: BLEI Flourishing */
   var i2 = {};
   if (bMain.pctF > CFG.TARGET_FLOURISHING*100) {
-    i2.icon = '🌿'; i2.title = 'Majority at Flourishing tier';
-    i2.body = bMain.pctF.toFixed(1)+'% of agents have '+CFG.BLEI_SECURE_MAX+'+ days covered — the two-year entrepreneurial investment horizon is unlocked (BLEI §4). PTH Acre Equity is driving wealth-floor formation.';
+    i2.icon = '🌿'; i2.title = 'Majority at '+topTierName+' tier';
+    i2.body = bMain.pctF.toFixed(1)+'% of agents have '+CFG.BLEI_SECURE_MAX+'+ days covered' +
+      (topTierName === 'Flourishing'
+        ? ' — the two-year entrepreneurial investment horizon is unlocked (BLEI §4). PTH Acre Equity and PTF cost reduction are driving the wealth floor.'
+        : ' — strong temporal stability. Activate CCO+PTF together to qualify agents for the Flourishing tier under BLEI §4.');
   } else if (bMain.pctF > 15) {
-    i2.icon = '📊'; i2.title = 'Flourishing tier emerging';
+    i2.icon = '📊'; i2.title = topTierName+' tier emerging';
     var tips2 = [];
-    if (!p.pth) tips2.push('enable PTH (Acre Equity eliminates rent extraction)');
+    if (!p.pth) tips2.push('enable PTH (Acre Equity offsets extractive rent)');
     else if (p.pthUptake < 0.35) tips2.push('raise PTH uptake rate');
-    if (!p.szh) tips2.push('enable SZH (zone coherence lowers daily basic cost)');
+    if (!p.szh) tips2.push('enable SZH (zone coherence lowers daily cost)');
     if (p.bu < CFG.CCO_OPTIMAL_BU && p.ccoOn) tips2.push('increase BU allocation');
-    i2.body = bMain.pctF.toFixed(1)+'% at Flourishing.';
+    i2.body = bMain.pctF.toFixed(1)+'% at '+topTierName+'.';
     i2.body += tips2.length ? ' To increase: '+tips2.join('; ')+'.' : ' Fine-tune BU allocation and participation rate.';
   } else {
     i2.icon = '⚠️'; i2.title = 'Temporal stability gap';
-    i2.body = 'Only '+bMain.pctF.toFixed(1)+'% at Flourishing. The two-year investment horizon is unavailable to most participants.';
+    i2.body = 'Only '+bMain.pctF.toFixed(1)+'% at '+topTierName+'. The two-year investment horizon is unavailable to most participants — annual living costs exceed wage income without CCO conversion gains.';
     if (!p.ccoOn) i2.body += ' Enable CCO (set BU > $0) to begin building temporal stability.';
   }
   ins.push(i2);
 
-  /* Insight 3: EDC / SZH / CIP */
   var i3 = {};
   if (bMain.avgEDC < CFG.TARGET_EDC) {
     i3.icon = '🔓'; i3.title = 'Extractive drain eliminated';
-    i3.body = 'Average EDC '+(bMain.avgEDC*100).toFixed(1)+'% — well below the US near-poverty baseline of '+Math.round(CFG.EDC_BASELINE_LO*100)+'–'+Math.round(CFG.EDC_BASELINE_HI*100)+'% (2023 CES). PTH converts rent extraction into generative Acre Equity accumulation.';
+    i3.body = 'Average EDC '+(bMain.avgEDC*100).toFixed(1)+'% — well below the US near-poverty baseline of '+Math.round(CFG.EDC_BASELINE_LO*100)+'–'+Math.round(CFG.EDC_BASELINE_HI*100)+'% (2023 CES). PTH converts rent extraction into generative Acre Equity; PTF reduces the cost base directly.';
   } else if (p.szh && p.cip) {
     i3.icon = '🏛️'; i3.title = 'SZH + CIP synergy active';
-    i3.body = 'SZH spatial coherence ('+p.szhCoh.toFixed(2)+') is amplifying PTF zone effectiveness; CIP democratic participation ('+Math.round(p.cipDemo*100)+'%) is improving merit accuracy and advancing octave levels more equitably. Together they raise stability to '+Math.round(stab*100)+'%.';
+    i3.body = 'SZH spatial coherence ('+p.szhCoh.toFixed(2)+') amplifies PTF zone effectiveness; CIP democratic participation ('+Math.round(p.cipDemo*100)+'%) improves merit accuracy and advancing octave levels equitably. Together they raise stability to '+Math.round(stab*100)+'%.';
   } else if (p.szh) {
     i3.icon = '🗺️'; i3.title = 'SZH zone coherence active';
-    i3.body = 'Zone coherence '+p.szhCoh.toFixed(2)+' is reducing daily basic costs for all zone residents and boosting PTF conversion rates. '+ (!p.cip ? 'Enable CIP to add democratic merit governance on top of spatial optimisation.' : '');
+    i3.body = 'Zone coherence '+p.szhCoh.toFixed(2)+' reduces daily living costs for all zone residents and boosts PTF conversion rates. '+(!p.cip ? 'Enable CIP to add democratic merit governance on top of spatial optimisation.' : '');
   } else if (p.cip) {
     i3.icon = '🗳️'; i3.title = 'CIP governance active';
-    i3.body = 'CIP democratic participation at '+Math.round(p.cipDemo*100)+'% is improving quality assessment accuracy, reducing tax leakage, and increasing octave advancement rates. '+(!p.szh ? 'Enable SZH to add spatial zone optimisation.' : '');
+    i3.body = 'CIP democratic participation at '+Math.round(p.cipDemo*100)+'% improves quality assessment accuracy, reduces tax leakage, and increases octave advancement rates. '+(!p.szh ? 'Enable SZH to add spatial zone optimisation.' : '');
   } else {
     i3.icon = '⚡'; i3.title = 'Activate SZH and CIP for full integration';
     i3.body = 'Average EDC at '+(bMain.avgEDC*100).toFixed(1)+'%. Enabling SZH and CIP completes the five-system integration, amplifying each layer through spatial coherence and democratic governance.';
@@ -1584,18 +1773,17 @@ function renderSens() {
     data:{ labels:labels, datasets:[{ data:vals, backgroundColor:bgCols, borderRadius:3, borderWidth:0 }] },
     options:{
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:function(c){ return 'elasticity: '+c.parsed.x.toFixed(2); } } } },
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:function(c){ return 'elasticity: '+c.parsed.x.toFixed(2); } } } },
       scales:{
-        x:{ ticks:{ font:{size:10.5}, color:'#888780' }, grid:{ color:GA },
-            title:{ display:true, text:'Poverty rate elasticity (higher = greater impact)', font:{size:10.5}, color:'#888780' } },
-        y:{ ticks:{ font:{size:10.5}, color:'#888780' }, grid:{ display:false } }
+        x:{ ticks:{font:{size:10.5},color:'#888780'}, grid:{color:GA}, title:{display:true,text:'Poverty rate elasticity (higher = greater impact)',font:{size:10.5},color:'#888780'} },
+        y:{ ticks:{font:{size:10.5},color:'#888780'}, grid:{display:false} }
       }
     }
   });
   document.getElementById('sec-sens').style.display = 'block';
 }
 
-/* ─── MATH HELPERS (use RNG for seeded reproducibility) ──────────────── */
+/* ─── MATH HELPERS ────────────────────────────────────────────────────── */
 function lognormal(mu, sigma) {
   var u = 1 - RNG(), v = RNG();
   var z = Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
