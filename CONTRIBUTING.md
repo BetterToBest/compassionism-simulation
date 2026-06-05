@@ -131,4 +131,3 @@ All contributions are released under **CC BY 4.0**. Attribution to the Better To
 
 *Better To Best Research Hub · Compassionism Framework Simulation v2.2*  
 *Principal Investigator: Duke Johnson (pseudonymous)*  
-*"Better to best — not better than, but better than before."*
