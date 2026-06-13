@@ -375,12 +375,12 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
     <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.3)</span>
     <div class="assump-grid">
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Gini — negative wealth &amp; zero-wealth (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> Gini computed on wealth clamped to ≥0 (WEALTH_FLOOR=−$10K broke standard formula). <strong>v3.3:</strong> totW=0 → Gini=0, not ||1 garbage. Gini measures distribution shape; all agents at zero = perfect equality of deprivation. BLEI poverty (% &lt;30d) captures the poverty level that Gini misses here.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Gini — negative wealth &amp; zero-wealth (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> Gini computed on wealth clamped to ≥0 (WEALTH_FLOOR=−$10K broke standard formula). <strong>v3.3:</strong> totW=0 → Gini=0, not ||1. Gini measures distribution shape; all agents at zero = perfect equality of deprivation. BLEI poverty (% &lt;30d) captures the poverty level that Gini misses here.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Wage growth diminishing returns (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Stability premium × 1/(1+0.5·max(0, wage/35−1)). Prevents structural compounding at high incomes. BLEI is purely measurement; the premium reflects the underlying stability it measures. Diminishing returns grounded in Mullainathan &amp; Shafir (2013) + Carroll (1997): marginal benefit is largest at low-to-median wages.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Recession severity distribution (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Uniform distribution replaced by beta(5,2) over [0.70,0.95]. Mode ≈ 0.86 (14% income loss) — mild recessions most common. Tail to 0.70 (30% loss, analogous to 2008–09). Calibrated against NBER post-WWII recession data: median US recession = ~12% peak income loss.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">NaN/Inf guards, percentile interpolation, SIM_COST_SCALE (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">NaN guards in agentBLEI, agentEDC, runYear, calcMetrics. p10/p90 now use proper linear interpolation (not index rounding). ANNUAL_BASE_COST renamed to SIM_COST_SCALE to avoid apparent contradiction with BASE_DAILY_COST ($68.33/day ≈ $24,941/yr vs 1,500 SIU simulation scale).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">agentEDC income proxy &amp; lognormal stability (v3.2)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>EDC:</strong> Switched from wealth/60 proxy to actual agent wage (consistent with BLEI v3.1 fix). <strong>lognormal:</strong> Math.max(1e-14,1−RNG()) protects against log(0)=−Infinity on seeds where RNG()=1. <strong>gamma():</strong> 5,000 iteration cap prevents potential infinite loop.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Comparison RNG &amp; PRESET crash (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> CCO comparison agents use deterministic index-based participation (not RNG()&lt;0.78) — preserves seed reproducibility. <strong>v3.3:</strong> PRESETS now includes 'nordic' and 'hiAI'; applyPreset() guards against undefined preset with console.error; all 6 preset buttons correctly highlighted.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Comparison RNG &amp; PRESET crash (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> CCO comparison agents use deterministic index-based participation (not RNG()&lt;0.78) — preserves seed reproducibility. <strong>v3.3:</strong> PRESETS now includes 'hiAI'; applyPreset() guards against undefined preset with console.error; all 5 preset buttons correctly highlighted.</p></div>
     </div>
 
     <span class="acat-label" style="margin-top:.85rem">📊 Empirical Calibration &amp; Mechanism Documentation</span>
@@ -427,7 +427,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  *     BLEI poverty (% agents <30d) is the correct poverty indicator in this case.
  *  2. NaN/Inf guards in agentBLEI, agentEDC, runYear, calcMetrics.
  *  3. Proper p10/p90 linear interpolation (replaces simple index rounding).
- *  4. PRESETS now includes 'nordic' and 'hiAI'; applyPreset highlights all 6 buttons.
+ *  4. PRESETS now includes 'hiAI'; applyPreset highlights all 5 buttons.
  *
  * CALIBRATION IMPROVEMENTS:
  *  5. Wage growth diminishing returns: stability premium × 1/(1 + 0.5·max(0,wage/35−1)).
@@ -499,7 +499,7 @@ function gp(id){return parseFloat(document.getElementById(id).value);}
 function updatePills(){var bv=gp('s-bu'),ccoOn=bv>0;setPill('pill-cco',ccoOn,'CCO: $'+bv+'/mo','CCO: Off','sp-on');setPill('pill-ptf',ST.ptf,'PTF: '+gp('s-ptf')+'%','PTF: Off','sp-on');setPill('pill-pth',ST.pth,'PTH: '+gp('s-pth')+'%','PTH: Off','sp-on');setPill('pill-szh',ST.szh,'SZH: '+(gp('s-szh')/100).toFixed(2),'SZH: Off','sp-on-b');setPill('pill-cip',ST.cip,'CIP: '+gp('s-cip')+'%','CIP: Off','sp-on-p');}
 function setPill(id,active,onTxt,offTxt,onCls){var el=document.getElementById(id);if(!el)return;el.textContent=active?onTxt:offTxt;el.className='sys-pill '+(active?onCls:'sp-off');}
 
-/* ─── PRESETS (v3.3: adds nordic + hiAI) ────────────────────────────── */
+/* ─── PRESETS (v3.3: adds hiAI) ────────────────────────────── */
 var PRESETS={
   baseline:{bu:0,oct:1,exp:1,tax:0,mult:1,agents:500,part:0,yrs:20,ptfShare:0,pthUptake:0,szh:0,cip:0,phi:false,ptf:false,pth:false,szh_tog:false,cip_tog:false,shock:true,inflRate:3,automation:false},
   cco:{bu:1200,oct:6,exp:1,tax:12,mult:9,agents:500,part:75,yrs:20,ptfShare:0,pthUptake:0,szh:0,cip:0,phi:true,ptf:false,pth:false,szh_tog:false,cip_tog:false,shock:false,inflRate:0,automation:false},
