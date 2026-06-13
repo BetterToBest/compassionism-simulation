@@ -17,9 +17,9 @@ The goal is not to find a single "correct" answer but to map the solution space:
 
 ### 1. Parameter Feedback & Scenario Testing
 
-Run the simulation with parameter configurations that model real-world conditions you know well — a specific region, income cohort, housing market, or policy environment. Export your results via the **Download CSV** button and open a GitHub issue with:
+Run the simulation with parameter configurations that model real-world conditions you know well — a specific region, income cohort, housing market, or policy environment. Export your results via the **Download CSV** or **Download JSON** buttons and open a GitHub issue with:
 
-- Your exported CSV attached
+- Your exported CSV or JSON attached
 - A brief description of the real-world scenario you were modeling
 - Any discrepancies between the simulation output and observed or expected outcomes
 
@@ -37,6 +37,9 @@ The simulation uses several empirically grounded constants defined in the `CFG` 
 | `PTF_OPTIMAL_SHARE` | 18% | Framework spec | Cooperative sector empirical studies |
 | `NORDIC_GINI` | 0.28 | OECD | Year-specific updates; regional variants |
 | `PROG_PIVOT` / `PROG_RATE` | 3.0 / 0.040 | Theoretical | Creative economy income distribution data |
+| `SIM_COST_SCALE` | 1,500 (sim units) | ABM calibration | Pilot data: real PTF pricing relative to market. Renamed from `ANNUAL_BASE_COST` in v3.3 to avoid scale confusion with BASE_DAILY_COST. |
+| `WAGE_MEDIAN_SIU` | 35 SIU | Framework spec | SIU wage distribution studies; cross-scenario calibration |
+| `RECESSION_BETA_A/B` | 5, 2 | NBER post-WWII | Updated recession severity data; non-US calibration |
 
 To propose a calibration update, open an issue with the prefix `calibration:`, your proposed value, the source with full citation, and if possible a comparison of output before and after the change.
 
@@ -44,11 +47,13 @@ To propose a calibration update, open an issue with the prefix `calibration:`, y
 
 The simulation supports seeded runs (Mulberry32 PRNG). To verify a result:
 
-1. Note the **Random seed** and all parameter values from the exported CSV
+1. Note the **Random seed** and all parameter values from the exported CSV or JSON
 2. Enter the same seed and parameters in the simulation
 3. Confirm the output matches byte-for-byte
 
-If results diverge under identical seed + parameters, open a bug report with both CSVs. This should not happen — if it does, it indicates a browser environment difference worth documenting.
+If results diverge under identical seed + parameters, open a bug report with both exports. This should not happen — if it does, it indicates a browser environment difference worth documenting.
+
+**v3.3 regression baseline:** use seed `42`, Full Integration preset, 20 years. Record Median BLEI (days), BLEI Poverty (% Crisis+Precarious), Gini, and Median Wealth as regression metrics. Note that v3.3 values will differ from v3.1/v3.2 due to calibration changes (wage diminishing returns, beta(5,2) recession distribution).
 
 ### 4. Model Architecture Feedback
 
@@ -60,6 +65,8 @@ Areas currently open for discussion:
 - **EDC baseline** — The extractive drain coefficient currently models rent as the dominant extraction channel. Does this adequately represent consumer debt, healthcare, and other extraction vectors?
 - **PTF distortion threshold** — The 30% market share distortion threshold is a framework specification. What empirical evidence exists for cooperative sector distortion thresholds?
 - **θ synergy coefficient** — Inter-system synergy effects (SZH amplifying PTF, CIP improving CCO quality accuracy) are currently hardcoded. Should these be exposed as parameters with empirically derived defaults?
+- **OAT sensitivity** — v3.3 computes one-at-a-time sensitivity from 11 mini-simulations (±20%, seed 7777). Contributions implementing Sobol indices or Latin hypercube sampling using the CSV export are especially welcome; see CONTRIBUTING §4 in the Replication Framework.
+- **Participant stratification** — v3.3 tracks CCO participant vs. non-participant welfare separately. Contributions testing whether non-participant poverty worsens under specific parameter combinations would strengthen the framework's equity argument.
 
 ### 5. Code Contributions
 
@@ -68,7 +75,7 @@ The simulation is intentionally a single HTML file with no build tooling — it 
 **Before submitting a pull request:**
 
 - Test in Chrome, Firefox, and Safari
-- Ensure the seeded RNG produces identical output before and after your change (use seed `42`, Full Integration preset, 20 years — record the Median BLEI score and Gini as a regression check)
+- Ensure the seeded RNG produces identical output before and after your change (use seed `42`, Full Integration preset, 20 years — record the Median BLEI score, BLEI Poverty rate, and Gini as a regression check)
 - Do not introduce external dependencies beyond the existing Chart.js CDN import
 - Follow the existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
 
@@ -76,7 +83,8 @@ The simulation is intentionally a single HTML file with no build tooling — it 
 
 - Add a "Copy parameters as URL" feature so scenarios can be shared as links
 - Add an i-button next to each BLEI tier in the distribution chart that shows its definition
-- Export the year-by-year time series (poverty, Gini, wealth, BLEI) as additional CSV rows
+- Add preset descriptions as tooltips on the preset buttons
+- Extend the validation suite with a fifth check: non-participant poverty rate does not worsen when CCO is enabled
 
 ### 6. Academic Peer Review
 
@@ -107,10 +115,10 @@ Submit review comments as GitHub issues with the prefix `review:`.
 
 Each simulation run without a fixed seed produces slightly different results — this is correct behaviour, not a bug. It reflects genuine Monte Carlo variance across the agent population. When reporting results for comparative purposes, either:
 
-1. Use a fixed seed (record it in your CSV export), or
-2. Run multiple unseeded trials and report the mean ± standard deviation across runs
+1. Use a fixed seed (record it in your CSV/JSON export), or
+2. Run multiple unseeded trials using the **Run 10×** or **Run 50×** buttons and report the mean ± 95% CI displayed by the simulation
 
-Neither approach is more "correct" — they answer different questions. Fixed seeds ask *"given this exact stochastic realization, what happens?"*; unseeded multiple trials ask *"on average across realizations, what happens?"*
+Neither approach is more "correct" — they answer different questions. Fixed seeds ask *"given this exact stochastic realization, what happens?"*; multi-run trials ask *"on average across realizations, what happens?"* The v3.3 **Run 50×** button displays a formal 95% CI (mean ± 1.96·SD/√n) suitable for publication-grade reporting.
 
 ---
 
@@ -118,8 +126,7 @@ Neither approach is more "correct" — they answer different questions. Fixed se
 
 - **Email**: BetterToBestResearch@gmail.com
 - **Hub**: [bettertobest.github.io/research-hub](https://bettertobest.github.io/research-hub/)
-- **Bluesky**: [@better-to-best.bsky.social](https://bsky.app/profile/better-to-best.bsky.social)
-- **Medium**: [medium.com/@duke.t.james](https://medium.com/@duke.t.james)
+- **Bluesky**: [@authordukejohnson.bsky.social](https://bsky.app/profile/authordukejohnson.bsky.social)
 
 ---
 
@@ -129,5 +136,5 @@ All contributions are released under **CC BY 4.0**. Attribution to the Better To
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v2.2*  
-*Principal Investigator: Duke Johnson (pseudonymous)*  
+*Better To Best Research Hub · Compassionism Framework Simulation v3.3*  
+*Principal Investigator: Duke Johnson (pseudonymous)*
