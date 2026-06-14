@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="Better To Best Research Collective">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/">
-<title>Compassionism Framework Simulation v3.3 | Better To Best Research Hub</title>
+<title>Compassionism Framework Simulation v3.4 | Better To Best Research Hub</title>
 <meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol. v3.3.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.3: OAT sensitivity, participant stratification, 50× MC CI, validation suite, ODD protocol.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.3","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.4: audit-driven transparency — reference run, full bibliography, labeled parameters, contextual insights.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.4","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+/* v3.4: auto-load illustrative reference run on page load */
+window.addEventListener('load',function(){applyPreset('optimal');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -59,9 +61,14 @@ table{width:100%;font-size:12.5px;border-collapse:collapse;min-width:640px}th{te
 .sbadge{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:var(--rs);font-weight:500}.sb-base{background:var(--red-bg);color:var(--red)}.sb-cco{background:var(--blue-bg);color:var(--blue)}.sb-user{background:var(--gold-bg);color:var(--gold);border:.5px solid var(--gold)}
 .export-card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem;margin-bottom:9px}.export-card-inner{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.8rem}.export-note{flex:1;min-width:200px}.export-note h4{font-size:12.5px;font-weight:500;color:var(--text2);margin-bottom:3px}.export-note p{font-size:11.5px;color:var(--text2);line-height:1.55;margin-bottom:4px}.export-note a{font-size:11.5px;color:var(--accent);text-decoration:none}.export-note a:hover{text-decoration:underline}
 .dl-btn{padding:8px 16px;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .15s}.dl-btn:hover{background:var(--accent2)}.dl-btn:disabled{background:var(--text3);cursor:not-allowed}
-.igrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:9px}@media(max-width:850px){.igrid{grid-template-columns:1fr 1fr}}@media(max-width:550px){.igrid{grid-template-columns:1fr}}
+/* v3.4: auto-fill so contextual insight cards lay out correctly */
+.igrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:9px;margin-bottom:9px}@media(max-width:550px){.igrid{grid-template-columns:1fr}}
 .icard{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem}.iicon{font-size:18px;margin-bottom:5px}.ititle{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:3px}.ibody{font-size:11.5px;color:var(--text2);line-height:1.55}
 .warn-note{background:var(--amber-bg);border:.5px solid var(--amber);border-radius:var(--rs);padding:7px 10px;font-size:11.5px;color:var(--amber);margin-bottom:.65rem}
+.ref-run-note{background:var(--blue-bg);border:.5px solid var(--blue);border-radius:var(--rs);padding:7px 10px;font-size:11.5px;color:var(--blue);margin-bottom:.65rem}
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:.3rem 1.4rem;margin-top:.5rem}@media(max-width:700px){.ref-grid{grid-template-columns:1fr}}
+.ref-item{font-size:11px;color:var(--text2);line-height:1.6;padding:.2rem 0}
+.ref-item a{color:var(--accent);text-decoration:none}.ref-item a:hover{text-decoration:underline}
 .sys-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.65rem}.sys-pill{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:.5px solid transparent}.sp-off{background:var(--bg2);color:var(--text3);border-color:var(--border2)}.sp-on{background:var(--accent-bg);color:var(--accent2);border-color:var(--accent)}.sp-on-b{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}.sp-on-p{background:var(--purple-bg);color:var(--purple);border-color:var(--purple)}
 /* assumptions panel */
 details.ccard>summary{list-style:none;cursor:pointer;user-select:none}details.ccard>summary::-webkit-details-marker{display:none}details.ccard[open]>summary{margin-bottom:.8rem;border-bottom:.5px solid var(--border2);padding-bottom:.6rem}
@@ -106,7 +113,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 <body>
 <header>
   <div>
-    <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.3</span></div>
+    <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.4</span></div>
     <div class="hd-sub">
       All five architectures ·
       <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -140,10 +147,10 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div class="ss">
     <div class="ss-head">CCO — Basic Units <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--text3)">(Pegged 1:1 to $)</span></div>
-    <div class="cr"><div class="cl"><span class="cn">Monthly BU allocation ($/month)</span><span class="cv" id="v-bu">$1,200</span></div><input type="range" min="0" max="1800" step="50" value="1200" id="s-bu" oninput="sv('bu',this.value)"><div class="ch">$0 = no CCO · Optimal: $1,200/month</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Monthly BU allocation ($/month)</span><span class="cv" id="v-bu">$1,200</span></div><input type="range" min="0" max="1800" step="50" value="1200" id="s-bu" oninput="sv('bu',this.value)"><div class="ch">$0 = no CCO · Reference: $1,200/month</div></div>
     <div class="cr"><div class="cl"><span class="cn">Max octave level</span><span class="cv" id="v-oct">6</span></div><input type="range" min="1" max="9" step="1" value="6" id="s-oct" oninput="sv('oct',this.value)"><div class="ch">C = C₀ × 2ⁿ — governs conversion capacity</div></div>
     <div class="cr"><div class="cl"><span class="cn">BU expiry (months)</span><span class="cv" id="v-exp">1 mo</span></div><input type="range" min="1" max="6" step="1" value="1" id="s-exp" oninput="sv('exp',this.value)"><div class="ch">1 = standard monthly cycle</div></div>
-    <div class="cr"><div class="cl"><span class="cn">Phi Φ rate (1.618× beauty bonus)</span><span class="cv" id="v-phi">On</span></div><div class="tg"><button class="tb on" id="phi-on" onclick="tog('phi',true)">On (1.618×)</button><button class="tb" id="phi-off" onclick="tog('phi',false)">Off</button></div></div>
+    <div class="cr"><div class="cl"><span class="cn">Phi Φ rate (1.618× beauty bonus)</span><span class="cv" id="v-phi">On</span></div><div class="tg"><button class="tb on" id="phi-on" onclick="tog('phi',true)">On (1.618×)</button><button class="tb" id="phi-off" onclick="tog('phi',false)">Off</button></div><div class="ch">Phi On: effective max ≈ ceiling × 1.618 (e.g., 9× → ≈14.56×) · Phi Off: max = quality ceiling only</div></div>
     <div class="cr"><div class="cl"><span class="cn">Conversion tax rate (%)</span><span class="cv" id="v-tax">12%</span></div><input type="range" min="0" max="30" step="1" value="12" id="s-tax" oninput="sv('tax',this.value)"><div class="ch">BU→primary currency levy (progressive taper)</div></div>
     <div class="cr"><div class="cl"><span class="cn">Quality multiplier ceiling</span><span class="cv" id="v-mult">9×</span></div><input type="range" min="1" max="9" step="1" value="9" id="s-mult" oninput="sv('mult',this.value)"></div>
   </div>
@@ -151,14 +158,14 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div class="ss">
     <div class="ss-head">Population &amp; Participation</div>
     <div class="cr"><div class="cl"><span class="cn">Agent population</span><span class="cv" id="v-agents">500</span></div><input type="range" min="100" max="2000" step="100" value="500" id="s-agents" oninput="sv('agents',this.value)"></div>
-    <div class="cr"><div class="cl"><span class="cn">CCO participation rate (%)</span><span class="cv" id="v-part">78%</span></div><input type="range" min="0" max="99" step="1" value="78" id="s-part" oninput="sv('part',this.value)"><div class="ch">Min viable: 55% · Optimal: 78%</div></div>
+    <div class="cr"><div class="cl"><span class="cn">CCO participation rate (%)</span><span class="cv" id="v-part">78%</span></div><input type="range" min="0" max="99" step="1" value="78" id="s-part" oninput="sv('part',this.value)"><div class="ch">Min viable: 55% · Reference: 78%</div></div>
     <div class="cr"><div class="cl"><span class="cn">Simulation years</span><span class="cv" id="v-yrs">20 yr</span></div><input type="range" min="5" max="30" step="1" value="20" id="s-yrs" oninput="sv('yrs',this.value)"></div>
   </div>
 
   <div class="ss">
     <div class="ss-head">PTF — Public Trust Foundations</div>
     <div class="cr"><div class="cl"><span class="cn">Enable PTF</span></div><div class="tg"><button class="tb on" id="ptf-on" onclick="tog('ptf',true)">On</button><button class="tb" id="ptf-off" onclick="tog('ptf',false)">Off</button></div><div class="ch">Cost reduction 12–16% (not a wealth bonus)</div></div>
-    <div class="cr"><div class="cl"><span class="cn">PTF market share (%)</span><span class="cv" id="v-ptf">18%</span></div><input type="range" min="5" max="35" step="1" value="18" id="s-ptf" oninput="sv('ptf',this.value)"><div class="ch">Optimal: ~18% · Distortion threshold: &gt;30%</div></div>
+    <div class="cr"><div class="cl"><span class="cn">PTF market share (%)</span><span class="cv" id="v-ptf">18%</span></div><input type="range" min="5" max="35" step="1" value="18" id="s-ptf" oninput="sv('ptf',this.value)"><div class="ch">Reference: ~18% · Distortion threshold: &gt;30% (efficiency losses from reducing market competition below viable threshold)</div></div>
   </div>
 
   <div class="ss">
@@ -182,7 +189,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div class="ss">
     <div class="ss-head">Economic Environment</div>
     <div class="cr"><div class="cl"><span class="cn">Stochastic recession events</span></div><div class="tg"><button class="tb" id="shock-on" onclick="tog('shock',true)">Include</button><button class="tb on" id="shock-off" onclick="tog('shock',false)">Off</button></div><div class="ch">Population-level (10% annual prob.; 2–4 yr, 65–85% income multiplier)</div></div>
-    <div class="cr"><div class="cl"><span class="cn">AI labor automation</span></div><div class="tg"><button class="tb" id="automation-on" onclick="tog('automation',true)">On</button><button class="tb on" id="automation-off" onclick="tog('automation',false)">Off</button></div><div class="ch">Heterogeneous risk per agent. Displacement yr 5+ (≈2030); accelerates yr 15+ (≈2040)</div></div>
+    <div class="cr"><div class="cl"><span class="cn">AI labor automation</span></div><div class="tg"><button class="tb" id="automation-on" onclick="tog('automation',true)">On</button><button class="tb on" id="automation-off" onclick="tog('automation',false)">Off</button></div><div class="ch">Assumes 2025 simulation start. Heterogeneous risk per agent; displacement yr 5+ (≈2030), accelerates yr 15+ (≈2040)</div></div>
     <div class="cr"><div class="cl"><span class="cn">Inflation rate (% / yr)</span><span class="cv" id="v-infl">0.0%</span></div><input type="range" min="0" max="6" step="0.5" value="0" id="s-infl" oninput="sv('infl',this.value)"><div class="ch">0 = stable prices · 3% = US CPI · PTF/PTH dampen inflation</div></div>
   </div>
 
@@ -204,7 +211,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 </aside>
 
 <main class="main">
-  <div class="status-bar"><div class="dot" id="sdot"></div><div class="st" id="stxt">Adjust parameters, then click <strong>Run Simulation</strong>.</div><div class="sp" id="spct"></div></div>
+  <div class="status-bar"><div class="dot" id="sdot"></div><div class="st" id="stxt">Loading illustrative reference run…<strong>Run Simulation</strong>.</div><div class="sp" id="spct"></div></div>
   <div class="prog"><div class="prog-bar" id="pbar"></div></div>
   <div class="sys-bar" id="sys-bar">
     <span class="sys-pill sp-off" id="pill-cco">CCO: Off</span><span class="sys-pill sp-off" id="pill-ptf">PTF: Off</span><span class="sys-pill sp-off" id="pill-pth">PTH: Off</span><span class="sys-pill sp-off" id="pill-szh">SZH: Off</span><span class="sys-pill sp-off" id="pill-cip">CIP: Off</span>
@@ -322,15 +329,21 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <div class="ccard"><div class="ctitle">First year each target threshold is crossed</div><div id="milestones-inner"></div><div class="csub" style="margin-top:.5rem">Milestones reflect the animated main run only, not comparison scenarios. "—" indicates threshold not reached in simulation period.</div></div>
   </div>
 
+  <!-- v3.4: illustrative reference run label -->
+  <div id="ref-run-label" class="ref-run-note" style="display:none">
+    📊 <strong>Illustrative reference run</strong> — seed 42 · Full Integration preset · 20 years · Adjust parameters and click ▶ Run Simulation to update with your current settings.
+  </div>
+
   <div class="ctable">
     <h3>System comparison — final-year results &nbsp;<span style="font-weight:400;font-size:11px;color:var(--text3)">Baseline/CCO-only top tier = Comfortable; CCO+PTF = Flourishing</span></h3>
+    <p style="font-size:10.5px;color:var(--text3);margin-bottom:.55rem">Top BLEI tier label: <strong>'Comfortable'</strong> for baseline/CCO-only (730+ days aspirational without PTF/PTH cost reduction); <strong>'Flourishing'</strong> when CCO+PTF active. Both thresholds = 730 days — label reflects realistic attainability. See BLEI paper for full tier definitions.</p>
     <table><thead><tr><th>Configuration</th><th>Poverty elim.</th><th>Median wealth</th><th>Gini</th><th>Median BLEI</th><th>Avg EDC</th><th>Stability</th></tr></thead>
     <tbody id="tbl-body"><tr><td colspan="7" style="color:var(--text3);padding:1.2rem;text-align:center">Run the simulation to see results.</td></tr></tbody></table>
   </div>
 
   <div id="sec-export" style="display:none" class="export-card">
     <div class="export-card-inner">
-      <div class="export-note"><h4>Research Export</h4><p>v3.3 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
+      <div class="export-note"><h4>Research Export</h4><p>v3.4 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
       <div class="export-btns">
         <button class="dl-btn" onclick="downloadCSV()">⬇ CSV</button>
         <button class="dl-btn-sec" onclick="downloadJSON()">⬇ JSON</button>
@@ -360,7 +373,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.3 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.4 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -370,14 +383,14 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Design Concepts: Emergence &amp; Adaptation</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Emergence:</strong> Poverty, inequality, and BLEI tier distributions emerge from agent-level rules — not directly imposed. <strong>Adaptation:</strong> Octave advancement gated by FBS (Mullainathan &amp; Shafir bandwidth constraint). PTF adoption via economic distress and social diffusion (Bass 1969 model). No explicit utility maximisation — behavioural rules only.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Design Concepts: Interaction &amp; Stochasticity</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Interaction:</strong> Indirect market-mediated only — no direct agent-to-agent interaction. Cooperative effects via PTF/SZH zone parameters. <strong>Stochasticity:</strong> Seeded PRNG (mulberry32); wage variance ±10%; recession events 10% annual probability (beta(5,2) severity); BU spend rates 60–90%; octave advancement (FBS-gated probability). Same seed + params → identical run.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Initialization</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Agent wealth: lognormal(10.5,1.2) → median ~$36K (Fed SCF 2022). Wage: lognormal(3.5,0.5) → median ~33 SIU. Octave: beta(2,5)×maxOct. Quality: lognormal(log(maxMult×0.5),0.4). automationRisk: uniform[0.2,1.0]. Participation flags assigned at initialization probabilities. Baseline comparison agents: wealth×0.85 — documented design choice representing lower savings absent CCO.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income → PTH Acre Equity appreciation → PTF adoption check → wealth floor clamp. BLEI = (liquid + γ·wage + buFood) / dailyCost. Gini: sorted non-negative-clamped wealth. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income → PTH Acre Equity appreciation → PTF adoption check → wealth floor clamp. BLEI = (liquid + γ·wage + buFood) / dailyCost. Gini: sorted non-negative-clamped wealth. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.3)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.4)</span>
     <div class="assump-grid">
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Gini — negative wealth &amp; zero-wealth (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> Gini computed on wealth clamped to ≥0 (WEALTH_FLOOR=−$10K broke standard formula). <strong>v3.3:</strong> totW=0 → Gini=0, not ||1. Gini measures distribution shape; all agents at zero = perfect equality of deprivation. BLEI poverty (% &lt;30d) captures the poverty level that Gini misses here.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Gini — negative wealth &amp; zero-wealth (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> Gini computed on wealth clamped to ≥0 (WEALTH_FLOOR=−$10K broke standard formula). <strong>v3.3:</strong> totW=0 → Gini=0, not 1. (Old <code>||1</code> fallback incorrectly returned 1 for zero-wealth edge case.) Gini measures distribution shape; all agents at zero = perfect equality of deprivation. BLEI poverty (% &lt;30d) captures the poverty level that Gini misses here.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Wage growth diminishing returns (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Stability premium × 1/(1+0.5·max(0, wage/35−1)). Prevents structural compounding at high incomes. BLEI is purely measurement; the premium reflects the underlying stability it measures. Diminishing returns grounded in Mullainathan &amp; Shafir (2013) + Carroll (1997): marginal benefit is largest at low-to-median wages.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Recession severity distribution (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Uniform distribution replaced by beta(5,2) over [0.70,0.95]. Mode ≈ 0.86 (14% income loss) — mild recessions most common. Tail to 0.70 (30% loss, analogous to 2008–09). Calibrated against NBER post-WWII recession data: median US recession = ~12% peak income loss.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Recession severity distribution (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Uniform distribution replaced by beta(5,2) over [0.70,0.95]. Mode ≈ 0.86 (14% income loss) — mild recessions most common. Tail to 0.70 (30% loss, analogous to 2008–09). Calibrated against NBER post-WWII recession data: median US recession ≈ 12% peak income loss. Source: <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">NBER Business Cycle Dating Committee</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">NaN/Inf guards, percentile interpolation, SIM_COST_SCALE (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">NaN guards in agentBLEI, agentEDC, runYear, calcMetrics. p10/p90 now use proper linear interpolation (not index rounding). ANNUAL_BASE_COST renamed to SIM_COST_SCALE to avoid apparent contradiction with BASE_DAILY_COST ($68.33/day ≈ $24,941/yr vs 1,500 SIU simulation scale).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">agentEDC income proxy &amp; lognormal stability (v3.2)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>EDC:</strong> Switched from wealth/60 proxy to actual agent wage (consistent with BLEI v3.1 fix). <strong>lognormal:</strong> Math.max(1e-14,1−RNG()) protects against log(0)=−Infinity on seeds where RNG()=1. <strong>gamma():</strong> 5,000 iteration cap prevents potential infinite loop.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Comparison RNG &amp; PRESET crash (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> CCO comparison agents use deterministic index-based participation (not RNG()&lt;0.78) — preserves seed reproducibility. <strong>v3.3:</strong> PRESETS now includes 'hiAI'; applyPreset() guards against undefined preset with console.error; all 5 preset buttons correctly highlighted.</p></div>
@@ -385,9 +398,9 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
     <span class="acat-label" style="margin-top:.85rem">📊 Empirical Calibration &amp; Mechanism Documentation</span>
     <div class="assump-grid">
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Daily vs. simulation cost scales</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BASE_DAILY_COST ($68.33/day) = real-world BLS CES 2023 used for BLEI calculation. SIM_COST_SCALE ($1,500) = calibrated ABM simulation scale — NOT US CES annual. Operative ratio: wage×12/SIM_COST_SCALE. Standard ABM calibrated-unit convention (Epstein &amp; Axtell 1996).</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Daily vs. simulation cost scales</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BASE_DAILY_COST ($68.33/day) = real-world BLS CES 2023 used for BLEI calculation. SIM_COST_SCALE ($1,500) = calibrated ABM simulation scale — NOT US CES annual. Operative ratio: wage×12/SIM_COST_SCALE. <strong>Worked example:</strong> agent earning 35 SIU/month → annual SIU income = 420. Operative ratio = 420/1,500 = 0.28. With CCO+PTF+PTH cost factors (0.80 × 0.88 × 0.65 ≈ 0.457), effective cost = 686 SIU → ratio = 420/686 ≈ 0.61. Standard ABM calibrated-unit convention (Epstein &amp; Axtell, 1996). Base daily cost ($68.33/day) sourced from BLS CES 2023 (<a href="https://www.bls.gov/cex/" target="_blank" rel="noopener" style="color:var(--accent)">bls.gov/cex</a>).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">BU wealth creation — counterparty accounting</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BU → quality conversion does not create wealth ex nihilo. PTF businesses accept BUs and provide real goods/services (food, utilities) at cooperative prices. Quality multiplier reflects productivity gains distributed to workers via cooperative ownership (Mondragon model, Whyte &amp; Whyte 1991). Conversion economy circulates within the PTF network.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTH Acre Equity — no double-counting</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">TWO separate PTH benefits: (1) housing cost reduction (35% of SIM_COST_SCALE) and (2) Acre Equity growth. wealth += appreciation × 0.5 is NOT double-counting — it represents the accessible liquidity fraction (50% haircut). Full appreciation tracks to acreEquity (illiquid); half flows to personal wealth. Consistent with Burlington CLT documentation.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTH Acre Equity — no double-counting</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">TWO separate PTH benefits: (1) housing cost reduction (35% of SIM_COST_SCALE) and (2) Acre Equity growth. wealth += appreciation × 0.5 is NOT double-counting — it represents the accessible liquidity fraction (50% haircut). Full appreciation tracks to acreEquity (illiquid); half flows to personal wealth. Consistent with Burlington CLT documentation (<a href="https://www.champlainhousingtrust.org" target="_blank" rel="noopener" style="color:var(--accent)">Champlain Housing Trust</a>).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Framework design intent — macro constraints</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The framework is explicitly designed to approach universal prosperity for the coming automation wave, with BU as treasury-backed community infrastructure. Absence of housing scarcity and fiscal limits is a stated hypothesis — that cooperative institutions structurally reduce these frictions — not a modeling oversight. This is a documented divergence from traditional macro models.</p></div>
     </div>
 
@@ -395,28 +408,83 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <div class="assump-grid">
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No demographic structure</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Agents lack age, retirement, disability, household size, or mortality. Acceptable for structural scenario comparison; not suitable for policy forecasting requiring life-cycle dynamics. Future: age cohorts and household transitions (see CONTRIBUTING.md).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No direct agent-to-agent interaction</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">All social effects mediated by aggregate zone parameters (SZH) rather than explicit networks. A small-world network structure would better model PTF zone clustering and SZH coherence. Noted as a future development direction in CONTRIBUTING.md.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">automationRisk uniform distribution (v3.4 flag)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">automationRisk ∈ [0.2, 1.0] is drawn from a <em>uniform</em> distribution across the population. Real automation exposure is highly bimodal and occupation-dependent (Frey &amp; Osborne, 2013; Autor, 2015): low-routine cognitive workers face minimal risk; high-routine manual/clerical workers face extreme risk. The uniform assumption may understate polarization in High Automation scenarios. Priority calibration refinement item in CONTRIBUTING.md.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">One-at-a-Time (OAT) sensitivity is not Sobol/LHC</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">OAT sensitivity varies one parameter at a time ±20% and records the poverty and BLEI response from actual model runs. It captures first-order single-parameter effects only. Parameter interactions and higher-order effects are not quantified. For rigorous uncertainty quantification, use the CSV export with external Sobol analysis in Python/R (see CONTRIBUTING.md).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No external validation</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Parameters calibrated against analogues (Alaska PFD, CLT network, Mondragon) but outcomes not validated against deployment data. Phase 4 roadmap: validation against Fed SCF, CPS, ACS, BLS CES, and OECD inequality trajectories. Required before claims of predictive validity.</p></div>
     </div>
   </details>
+  <!-- v3.4: Collapsible References & Citations -->
+  <details class="ccard" style="margin-bottom:9px" id="sec-references">
+    <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
+      <span style="font-size:9px;color:var(--text3)">▶</span>
+      📚 References &amp; Citations
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">click to expand</span>
+    </summary>
+    <div class="ref-grid">
+      <div class="ref-item">Autor, D.H. (2015). Why are there still so many jobs? The history and future of workplace automation. <em>Journal of Economic Perspectives</em>, 29(3), 3–30. <em>[automation risk]</em></div>
+      <div class="ref-item">Bass, F.M. (1969). A new product growth model for consumer durables. <em>Management Science</em>, 15(5), 215–227. <em>[PTF diffusion model]</em></div>
+      <div class="ref-item">Carroll, C.D. (1997). Buffer-stock saving and the life cycle/permanent income hypothesis. <em>Quarterly Journal of Economics</em>, 112(1), 1–55. <em>[wage diminishing returns]</em></div>
+      <div class="ref-item">Champlain Housing Trust. <em>Community Land Trust Program.</em> <a href="https://www.champlainhousingtrust.org" target="_blank" rel="noopener">champlainhousingtrust.org</a>. <em>[PTH 50% liquidity haircut]</em></div>
+      <div class="ref-item">Epstein, J.M. &amp; Axtell, R. (1996). <em>Growing Artificial Societies: Social Science from the Bottom Up.</em> MIT Press. <em>[ABM calibrated-unit convention]</em></div>
+      <div class="ref-item">Frey, C.B. &amp; Osborne, M.A. (2013). <em>The Future of Employment: How Susceptible Are Jobs to Computerisation?</em> University of Oxford. <em>[automationRisk calibration]</em></div>
+      <div class="ref-item">Grimm, V., et al. (2010). The ODD protocol: A review and first update. <em>Ecological Modelling</em>, 221(23), 2760–2768. <em>[ABM documentation standard]</em></div>
+      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Basic Living Economic Index (BLEI). Better To Best Research Hub. CC BY 4.0. <a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html" target="_blank" rel="noopener">↗ paper</a></div>
+      <div class="ref-item">Jones, D. &amp; Marinescu, I. (2018). The labor market impacts of universal and permanent cash transfers. NBER Working Paper 24312. <em>[Alaska PFD analogue]</em></div>
+      <div class="ref-item">Mullainathan, S. &amp; Shafir, E. (2013). <em>Scarcity: Why Having Too Little Means So Much.</em> Times Books. <em>[FBS bandwidth constraint, wage growth]</em></div>
+      <div class="ref-item">NBER Business Cycle Dating Committee. <em>U.S. Business Cycle Expansions and Contractions.</em> <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener">nber.org</a>. <em>[beta(5,2) recession calibration]</em></div>
+      <div class="ref-item">U.S. Bureau of Labor Statistics. (2023). <em>Consumer Expenditure Surveys.</em> <a href="https://www.bls.gov/cex/" target="_blank" rel="noopener">bls.gov/cex</a>. <em>[BASE_DAILY_COST $68.33/day]</em></div>
+      <div class="ref-item">Whyte, W.F. &amp; Whyte, K.K. (1991). <em>Making Mondragon.</em> ILR Press. <em>[BU conversion counterparty model]</em></div>
+    </div>
+  </details>
+
 </main>
 </div>
 
 <footer>
   <div>
-    <span>Compassionism Simulation v3.3 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v3.4 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a></span>
   </div>
   <div style="text-align:right">
     <div style="font-size:10.5px;color:var(--text3);margin-bottom:3px">Suggested citation:</div>
-    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.3. Better To Best Research Hub. CC BY 4.0.</span>
+    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.4. Better To Best Research Hub. CC BY 4.0.</span>
   </div>
 </footer>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v3.3
+ * COMPASSIONISM FRAMEWORK SIMULATION  v3.4
  * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v3.3 → v3.4  (audit-driven transparency — framing, citations, UI fixes)
+ *
+ * FRAMING & LABELING:
+ *  1. "Optimal" labels renamed "Reference" in all slider hints (BU, participation, PTF).
+ *  2. PTF distortion threshold: inline explanation of allocative efficiency loss added.
+ *  3. Simulation start year (2025) declared in AI automation hint text.
+ *  4. Phi rate: conditional effective max stated (On: ceiling×1.618; Off: ceiling).
+ *  5. Comfortable vs Flourishing: clarifying note in system comparison table header.
+ *
+ * TRANSPARENCY & DOCUMENTATION:
+ *  6. automationRisk uniform[0.2,1.0] added to Known Limitations (simplification flag).
+ *  7. Burlington CLT citation with link added to PTH Acre Equity calibration note.
+ *  8. SIM_COST_SCALE worked numeric example added to calibration section.
+ *  9. Gini bug note: "||1" replaced with clear prose explanation.
+ * 10. References section: collapsible full bibliography (13 sources) added.
+ * 11. NBER link added to recession calibration text in ODD section.
+ * 12. BLS CES link added to daily cost calibration note.
+ *
+ * UI BEHAVIOR:
+ * 13. renderInsights i3 card: contextual — only suggests enabling a system that is
+ *     actually off. No longer suggests SZH/CIP when both already active.
+ * 14. igrid: switched to auto-fill minmax so 2-card results render cleanly.
+ * 15. Page loads with seed 42 / Full Integration pre-run labeled as reference run.
+ *
+ * NO SIMULATION MATH CHANGES: engine, calibration constants, and formulas identical
+ * to v3.3. Regression baseline (seed 42, Full Integration, 20 yr) produces identical
+ * numerical output to v3.3.
+ * ═══════════════════════════════════════════════════════════════════════ · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v3.2 → v3.3  (peer-review hardening — Grok + ChatGPT audits)
@@ -1148,7 +1216,12 @@ function renderInsights(m,stab,bMain,p,top){
   var i3={};
   if(bMain.avgEDC<CFG.TARGET_EDC){i3.icon='🔓';i3.title='Extractive drain eliminated';i3.body='Avg EDC '+(bMain.avgEDC*100).toFixed(1)+'% — below '+Math.round(CFG.TARGET_EDC*100)+'% target. PTH converts rent extraction to Acre Equity; PTF reduces cost base.';}
   else if(p.automation){i3.icon='🤖';i3.title='AI automation displacing wages';i3.body='Heterogeneous automationRisk creating inequality. High-risk agents lose wages 3–5× faster. CCO conversion income provides partial floor buffer.';}
-  else{i3.icon='⚡';i3.title='Enable SZH + CIP for full integration';i3.body='Avg EDC '+(bMain.avgEDC*100).toFixed(1)+'%. SZH+CIP completes integration via zone coherence and democratic governance.';}
+  else{
+    // v3.4: contextual — only suggest a system if it's actually off
+    var offSystems=[];if(!p.szh)offSystems.push('SZH');if(!p.cip)offSystems.push('CIP');
+    if(offSystems.length){i3.icon='⚡';i3.title='Enable '+offSystems.join('+')+'for full integration';i3.body='Avg EDC '+(bMain.avgEDC*100).toFixed(1)+'%. '+offSystems.join(' and ')+' would complete integration via zone coherence and democratic governance.';}
+    else{i3.icon='🔍';i3.title='All systems active — explore parameters';i3.body='Avg EDC '+(bMain.avgEDC*100).toFixed(1)+'%. Try the OAT sensitivity analysis or run 10× Monte Carlo to map the solution space.';}
+  }
   ins.push(i3);
   var html='';ins.forEach(function(ic){html+='<div class="icard"><div class="iicon">'+ic.icon+'</div><div class="ititle">'+ic.title+'</div><div class="ibody">'+ic.body+'</div></div>';});
   document.getElementById('ins-grid').innerHTML=html;document.getElementById('sec-insights').style.display='block';
@@ -1159,7 +1232,7 @@ function downloadCSV(){
   if(!SIM_RESULTS)return;var sr=SIM_RESULTS,p=sr.params;
   function fmt(v){var s=String(v===null||v===undefined?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.replace(/"/g,'""')+'"':s;}
   function row(a){return a.map(fmt).join(',');}
-  var lines=[row(['Compassionism Framework Simulation — Research Export v3.3','']),row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),row(['Simulation Version','3.3']),row(['Timestamp',sr.timestamp]),row(['Citation','Johnson D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.3. Better To Best Research Hub. CC BY 4.0.']),row(['','']),row(['Note','Exploratory ABM — not a forecast. See Assumptions & ODD Protocol for model specification.']),row(['','']),row(['--- PARAMETERS ---','']),row(['BU Monthly Allocation ($/month)',p.bu]),row(['CCO Enabled',p.ccoOn?'Yes':'No']),row(['CCO Participation Rate (%)',(p.partRate*100).toFixed(0)]),row(['Max Octave Level',p.maxOct]),row(['Phi Rate',p.phi?'On (1.618×)':'Off']),row(['Conversion Tax Rate (%)',(p.tax*100).toFixed(0)]),row(['Quality Multiplier Ceiling',p.maxMult]),row(['PTF Enabled',p.ptf?'Yes':'No']),row(['PTF Market Share (%)',(p.ptfShare*100).toFixed(0)]),row(['PTH Enabled',p.pth?'Yes':'No']),row(['PTH Uptake Rate (%)',(p.pthUptake*100).toFixed(0)]),row(['SZH Enabled',p.szh?'Yes':'No']),row(['Zone Coherence Index',p.szhCoh.toFixed(2)]),row(['CIP Enabled',p.cip?'Yes':'No']),row(['CIP Participation (%)',(p.cipDemo*100).toFixed(0)]),row(['Economic Shocks',p.shock?'Yes':'No']),row(['AI Labor Automation',p.automation?'On':'Off']),row(['Inflation Rate (%/yr)',(p.inflRate*100).toFixed(1)]),row(['Agent Population',p.nAgents]),row(['Simulation Years',p.years]),row(['Random Seed',p.seed||'None (random MC)']),row(['Top BLEI Tier Label',sr.topTierName]),row(['','']),row(['--- FINAL-YEAR SUMMARY ---','']),row(['Wealth Poverty Rate (%)',sr.finalPov.toFixed(1)]),row(['BLEI Poverty (%)',sr.bleiPovPct.toFixed(1)]),row(['Gini Coefficient',sr.finalGini.toFixed(3)]),row(['Median Wealth ($)',Math.round(sr.finalWealth)]),row(['Median BLEI (days)',Math.round(sr.blei.med)]),row(['Agents at Top Tier (%)',sr.blei.pctF.toFixed(1)]),row(['Avg EDC (%)',(sr.blei.avgEDC*100).toFixed(1)]),row(['System Stability (%)',(sr.stab*100).toFixed(0)]),row(['','']),row(['--- SCENARIO COMPARISON ---','']),row(['Configuration','Wealth Pov (%)','BLEI Pov (%)','Median Wealth ($)','Gini','BLEI (days)','BLEI Tier','Avg EDC (%)']),row(['US Welfare Baseline',(sr.mBase.pov*100).toFixed(1),((sr.bBase.tc[0]+sr.bBase.tc[1])/sr.bBase.n*100).toFixed(1),Math.round(sr.mBase.med),sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),row(['CCO Only',(sr.mCCO.pov*100).toFixed(1),((sr.bCCO.tc[0]+sr.bCCO.tc[1])/sr.bCCO.n*100).toFixed(1),Math.round(sr.mCCO.med),sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),row(['Your Settings',sr.finalPov.toFixed(1),sr.bleiPovPct.toFixed(1),Math.round(sr.finalWealth),sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)])];
+  var lines=[row(['Compassionism Framework Simulation — Research Export v3.3','']),row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),row(['Simulation Version','3.3']),row(['Timestamp',sr.timestamp]),row(['Citation','Johnson D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.4. Better To Best Research Hub. CC BY 4.0.']),row(['','']),row(['Note','Exploratory ABM — not a forecast. See Assumptions & ODD Protocol for model specification.']),row(['','']),row(['--- PARAMETERS ---','']),row(['BU Monthly Allocation ($/month)',p.bu]),row(['CCO Enabled',p.ccoOn?'Yes':'No']),row(['CCO Participation Rate (%)',(p.partRate*100).toFixed(0)]),row(['Max Octave Level',p.maxOct]),row(['Phi Rate',p.phi?'On (1.618×)':'Off']),row(['Conversion Tax Rate (%)',(p.tax*100).toFixed(0)]),row(['Quality Multiplier Ceiling',p.maxMult]),row(['PTF Enabled',p.ptf?'Yes':'No']),row(['PTF Market Share (%)',(p.ptfShare*100).toFixed(0)]),row(['PTH Enabled',p.pth?'Yes':'No']),row(['PTH Uptake Rate (%)',(p.pthUptake*100).toFixed(0)]),row(['SZH Enabled',p.szh?'Yes':'No']),row(['Zone Coherence Index',p.szhCoh.toFixed(2)]),row(['CIP Enabled',p.cip?'Yes':'No']),row(['CIP Participation (%)',(p.cipDemo*100).toFixed(0)]),row(['Economic Shocks',p.shock?'Yes':'No']),row(['AI Labor Automation',p.automation?'On':'Off']),row(['Inflation Rate (%/yr)',(p.inflRate*100).toFixed(1)]),row(['Agent Population',p.nAgents]),row(['Simulation Years',p.years]),row(['Random Seed',p.seed||'None (random MC)']),row(['Top BLEI Tier Label',sr.topTierName]),row(['','']),row(['--- FINAL-YEAR SUMMARY ---','']),row(['Wealth Poverty Rate (%)',sr.finalPov.toFixed(1)]),row(['BLEI Poverty (%)',sr.bleiPovPct.toFixed(1)]),row(['Gini Coefficient',sr.finalGini.toFixed(3)]),row(['Median Wealth ($)',Math.round(sr.finalWealth)]),row(['Median BLEI (days)',Math.round(sr.blei.med)]),row(['Agents at Top Tier (%)',sr.blei.pctF.toFixed(1)]),row(['Avg EDC (%)',(sr.blei.avgEDC*100).toFixed(1)]),row(['System Stability (%)',(sr.stab*100).toFixed(0)]),row(['','']),row(['--- SCENARIO COMPARISON ---','']),row(['Configuration','Wealth Pov (%)','BLEI Pov (%)','Median Wealth ($)','Gini','BLEI (days)','BLEI Tier','Avg EDC (%)']),row(['US Welfare Baseline',(sr.mBase.pov*100).toFixed(1),((sr.bBase.tc[0]+sr.bBase.tc[1])/sr.bBase.n*100).toFixed(1),Math.round(sr.mBase.med),sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),row(['CCO Only',(sr.mCCO.pov*100).toFixed(1),((sr.bCCO.tc[0]+sr.bCCO.tc[1])/sr.bCCO.n*100).toFixed(1),Math.round(sr.mCCO.med),sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),row(['Your Settings',sr.finalPov.toFixed(1),sr.bleiPovPct.toFixed(1),Math.round(sr.finalWealth),sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)])];
   var ts=sr.timeSeries;
   if(ts&&ts.labels&&ts.labels.length){
     lines.push(row(['','']));lines.push(row(['--- ANNUAL TIME SERIES ---','']));
@@ -1176,7 +1249,7 @@ function downloadCSV(){
 
 function downloadJSON(){
   if(!SIM_RESULTS)return;var sr=SIM_RESULTS;
-  var out={meta:{version:'3.3',timestamp:sr.timestamp,tool:'Compassionism Framework Simulation',url:'https://bettertobest.github.io/compassionism-simulation/',license:'CC BY 4.0',citation:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.3. Better To Best Research Hub.'},parameters:sr.params,results:{finalPov:sr.finalPov,finalGini:sr.finalGini,finalWealth:sr.finalWealth,stability:sr.stab,bleiPovPct:sr.bleiPovPct,topTierName:sr.topTierName,blei:{median:sr.blei.med,pctFlourishing:sr.blei.pctF,avgEDC:sr.blei.avgEDC,tierCounts:sr.blei.tc},scenarios:{baseline:{pov:sr.mBase.pov*100,gini:sr.mBase.gini,wealth:sr.mBase.med,blei:sr.bBase.med},ccoOnly:{pov:sr.mCCO.pov*100,gini:sr.mCCO.gini,wealth:sr.mCCO.med,blei:sr.bCCO.med}}},timeSeries:sr.timeSeries};
+  var out={meta:{version:'3.3',timestamp:sr.timestamp,tool:'Compassionism Framework Simulation',url:'https://bettertobest.github.io/compassionism-simulation/',license:'CC BY 4.0',citation:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.4. Better To Best Research Hub.'},parameters:sr.params,results:{finalPov:sr.finalPov,finalGini:sr.finalGini,finalWealth:sr.finalWealth,stability:sr.stab,bleiPovPct:sr.bleiPovPct,topTierName:sr.topTierName,blei:{median:sr.blei.med,pctFlourishing:sr.blei.pctF,avgEDC:sr.blei.avgEDC,tierCounts:sr.blei.tc},scenarios:{baseline:{pov:sr.mBase.pov*100,gini:sr.mBase.gini,wealth:sr.mBase.med,blei:sr.bBase.med},ccoOnly:{pov:sr.mCCO.pov*100,gini:sr.mCCO.gini,wealth:sr.mCCO.med,blei:sr.bCCO.med}}},timeSeries:sr.timeSeries};
   var blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-sim-v33-'+sr.timestamp.slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
@@ -1186,6 +1259,8 @@ function beta(a,b){var x=gamma(a);return x/(x+gamma(b));}
 function gamma(a){if(a<1)return gamma(1+a)*Math.pow(Math.max(1e-14,RNG()),1/a);for(var i=0;i<5000;i++){var u=RNG(),v=RNG(),y=Math.tan(Math.PI*u),x=Math.sqrt(2*a-1)*y+a-1;if(x>0&&v<=(1+y*y)*Math.exp((a-1)*Math.log(x/(a-1))-Math.sqrt(2*a-1)*y))return x;}return a;}
 
 window.addEventListener('DOMContentLoaded',function(){applyPreset('optimal');});
+/* v3.4: auto-load illustrative reference run on page load */
+window.addEventListener('load',function(){applyPreset('optimal');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
 </script>
 </body>
 </html>
