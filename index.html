@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="Better To Best Research Collective">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/">
-<title>Compassionism Framework Simulation v3.4 | Better To Best Research Hub</title>
-<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol. v3.3.">
+<title>Compassionism Framework Simulation v3.5 | Better To Best Research Hub</title>
+<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol. v3.5.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.4: audit-driven transparency — reference run, full bibliography, labeled parameters, contextual insights.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.4","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.5: version/citation consolidation, DOI integration, effective-max UI indicator, preset naming fix.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.5","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
 /* v3.4: auto-load illustrative reference run on page load */
-window.addEventListener('load',function(){applyPreset('optimal');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
+window.addEventListener('load',function(){applyPreset('reference');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -113,7 +113,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 <body>
 <header>
   <div>
-    <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.4</span></div>
+    <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.5</span></div>
     <div class="hd-sub">
       All five architectures ·
       <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -139,7 +139,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <div class="preset-grid">
       <button class="pbtn" id="pb-baseline" onclick="applyPreset('baseline')">Traditional Welfare<br><span style="color:var(--text3)">US baseline + 3% CPI</span></button>
       <button class="pbtn" id="pb-cco"      onclick="applyPreset('cco')">CCO Only<br><span style="color:var(--text3)">No PTF/PTH/SZH/CIP</span></button>
-      <button class="pbtn" id="pb-optimal"  onclick="applyPreset('optimal')">Full Integration<br><span style="color:var(--text3)">All 5 systems</span></button>
+      <button class="pbtn" id="pb-reference" onclick="applyPreset('reference')">Full Integration<br><span style="color:var(--text3)">All 5 systems</span></button>
       <button class="pbtn" id="pb-stress"   onclick="applyPreset('stress')">Stress Test<br><span style="color:var(--text3)">Low part. + shocks + AI</span></button>
       <button class="pbtn" id="pb-hiAI"     onclick="applyPreset('hiAI')">High Automation<br><span style="color:var(--text3)">Full system + AI wave</span></button>
     </div>
@@ -152,7 +152,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <div class="cr"><div class="cl"><span class="cn">BU expiry (months)</span><span class="cv" id="v-exp">1 mo</span></div><input type="range" min="1" max="6" step="1" value="1" id="s-exp" oninput="sv('exp',this.value)"><div class="ch">1 = standard monthly cycle</div></div>
     <div class="cr"><div class="cl"><span class="cn">Phi Φ rate (1.618× beauty bonus)</span><span class="cv" id="v-phi">On</span></div><div class="tg"><button class="tb on" id="phi-on" onclick="tog('phi',true)">On (1.618×)</button><button class="tb" id="phi-off" onclick="tog('phi',false)">Off</button></div><div class="ch">Phi On: effective max ≈ ceiling × 1.618 (e.g., 9× → ≈14.56×) · Phi Off: max = quality ceiling only</div></div>
     <div class="cr"><div class="cl"><span class="cn">Conversion tax rate (%)</span><span class="cv" id="v-tax">12%</span></div><input type="range" min="0" max="30" step="1" value="12" id="s-tax" oninput="sv('tax',this.value)"><div class="ch">BU→primary currency levy (progressive taper)</div></div>
-    <div class="cr"><div class="cl"><span class="cn">Quality multiplier ceiling</span><span class="cv" id="v-mult">9×</span></div><input type="range" min="1" max="9" step="1" value="9" id="s-mult" oninput="sv('mult',this.value)"></div>
+    <div class="cr"><div class="cl"><span class="cn">Quality multiplier ceiling</span><span class="cv" id="v-mult">9×</span></div><input type="range" min="1" max="9" step="1" value="9" id="s-mult" oninput="sv('mult',this.value)"><div class="ch" id="v-mult-eff">Effective max with Phi: 14.58×</div></div>
   </div>
 
   <div class="ss">
@@ -206,7 +206,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <button class="btn-sm btn-blue" id="mc50-btn"  onclick="runMulti(50)">🎯 Run 50× · Publication CI</button>
     <button class="btn-sm btn-amber" id="oat-btn"  onclick="runOATSensitivity()" style="display:none">📐 One-at-a-Time Sensitivity Analysis</button>
     <button class="btn-sm btn-purple" id="val-btn" onclick="runValidation()">✅ Run Validation Suite</button>
-    <button class="reset-btn" onclick="applyPreset('optimal')">Reset to Full Integration defaults</button>
+    <button class="reset-btn" onclick="applyPreset('reference')">Reset to Full Integration defaults</button>
   </div>
 </aside>
   
@@ -343,7 +343,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div id="sec-export" style="display:none" class="export-card">
     <div class="export-card-inner">
-      <div class="export-note"><h4>Research Export</h4><p>v3.4 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
+      <div class="export-note"><h4>Research Export</h4><p>v3.5 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
       <div class="export-btns">
         <button class="dl-btn" onclick="downloadCSV()">⬇ CSV</button>
         <button class="dl-btn-sec" onclick="downloadJSON()">⬇ JSON</button>
@@ -373,7 +373,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.4 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.5 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -386,8 +386,12 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income → PTH Acre Equity appreciation → PTF adoption check → wealth floor clamp. BLEI = (liquid + γ·wage + buFood) / dailyCost. Gini: sorted non-negative-clamped wealth. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.4)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.5)</span>
     <div class="assump-grid">
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Version/citation consolidation &amp; DOI (v3.5)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Exported CSV/JSON files previously self-reported "v3.3" in headers, filenames, and metadata while the page displayed v3.4 — a version-string drift bug. Fixed by introducing a single <code>META</code> object as the source of truth for version, DOI, citation, and URL; all exports now read from it. Archival DOI (<a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener" style="color:var(--accent)">10.17605/OSF.IO/QWTE2</a>) added to schema.org metadata, footer, References, and both export formats.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Preset internal naming (v3.5)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Internal key <code>PRESETS.optimal</code> renamed to <code>PRESETS.reference</code> throughout (definition, button id, PRESET_IDS, OAT sensitivity mini-runs). UI-facing labels ("Full Integration", "reference run") were already correct; this closes the gap between internal code and displayed terminology.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Effective max quality multiplier indicator (v3.5)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Added a live label under the Quality Multiplier Ceiling slider showing the Phi-adjusted effective maximum (e.g. "Effective max with Phi: 14.58×"), updating on slider drag and Phi toggle. Previously the 1.618× Phi bonus on top of the stated ceiling was undocumented in the UI.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Seed range clamp &amp; EDC documentation (v3.5)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>initRNG():</strong> now enforces the same 0–999999 range as the seed input's HTML min/max, not just a NaN check. <strong>agentEDC():</strong> added a comment documenting that the 18/1100/820 constants are scenario-calibrated design targets (chosen so EDC lands within CFG.EDC_BASELINE_LO/HI at median wage for each tier), not derived from a closed-form model or external data.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Gini — negative wealth &amp; zero-wealth (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> Gini computed on wealth clamped to ≥0 (WEALTH_FLOOR=−$10K broke standard formula). <strong>v3.3:</strong> totW=0 → Gini=0, not 1. (Old <code>||1</code> fallback incorrectly returned 1 for zero-wealth edge case.) Gini measures distribution shape; all agents at zero = perfect equality of deprivation. BLEI poverty (% &lt;30d) captures the poverty level that Gini misses here.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Wage growth diminishing returns (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Stability premium × 1/(1+0.5·max(0, wage/35−1)). Prevents structural compounding at high incomes. BLEI is purely measurement; the premium reflects the underlying stability it measures. Diminishing returns grounded in Mullainathan &amp; Shafir (2013) + Carroll (1997): marginal benefit is largest at low-to-median wages.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Recession severity distribution (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Uniform distribution replaced by beta(5,2) over [0.70,0.95]. Mode ≈ 0.86 (14% income loss) — mild recessions most common. Tail to 0.70 (30% loss, analogous to 2008–09). Calibrated against NBER post-WWII recession data: median US recession ≈ 12% peak income loss. Source: <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">NBER Business Cycle Dating Committee</a>.</p></div>
@@ -429,6 +433,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div class="ref-item">Frey, C.B. &amp; Osborne, M.A. (2013). <em>The Future of Employment: How Susceptible Are Jobs to Computerisation?</em> University of Oxford. <em>[automationRisk calibration]</em></div>
       <div class="ref-item">Grimm, V., et al. (2010). The ODD protocol: A review and first update. <em>Ecological Modelling</em>, 221(23), 2760–2768. <em>[ABM documentation standard]</em></div>
       <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Basic Living Economic Index (BLEI). Better To Best Research Hub. CC BY 4.0. <a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html" target="_blank" rel="noopener">↗ paper</a></div>
+      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.5. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a>. <em>[archived version of this tool]</em></div>
       <div class="ref-item">Jones, D. &amp; Marinescu, I. (2018). The labor market impacts of universal and permanent cash transfers. NBER Working Paper 24312. <em>[Alaska PFD analogue]</em></div>
       <div class="ref-item">Mullainathan, S. &amp; Shafir, E. (2013). <em>Scarcity: Why Having Too Little Means So Much.</em> Times Books. <em>[FBS bandwidth constraint, wage growth]</em></div>
       <div class="ref-item">NBER Business Cycle Dating Committee. <em>U.S. Business Cycle Expansions and Contractions.</em> <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener">nber.org</a>. <em>[beta(5,2) recession calibration]</em></div>
@@ -442,19 +447,51 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v3.4 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
-    <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a></span>
+    <span>Compassionism Simulation v3.5 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
     <div style="font-size:10.5px;color:var(--text3);margin-bottom:3px">Suggested citation:</div>
-    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.4. Better To Best Research Hub. CC BY 4.0.</span>
+    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.5. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener" style="color:inherit">https://doi.org/10.17605/OSF.IO/QWTE2</a></span>
   </div>
 </footer>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v3.4
+ * COMPASSIONISM FRAMEWORK SIMULATION  v3.5
  * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v3.4 → v3.5  (audit-driven consolidation — version integrity, DOI, UI clarity)
+ *
+ * VERSION & CITATION INTEGRITY:
+ *  1. Fixed version-string drift: CSV/JSON exports previously self-reported "v3.3"
+ *     (header row, filename, meta.version) while the page displayed v3.4.
+ *  2. Introduced single META object {VERSION, DOI, CITATION, URL} as source of
+ *     truth. All exports, headers, and citation strings now read from it instead
+ *     of hardcoding version numbers separately in each location.
+ *  3. Archival DOI (10.17605/OSF.IO/QWTE2) added: schema.org identifier, footer
+ *     branding + citation, References panel entry, CSV export row, JSON meta.doi.
+ *
+ * NAMING & UI CLARITY:
+ *  4. Internal preset key PRESETS.optimal renamed PRESETS.reference (definition,
+ *     button id, PRESET_IDS array, OAT sensitivity mini-runs) — now matches the
+ *     "reference run" terminology already shown to users in v3.4.
+ *  5. Added live effective-max-multiplier indicator under the Quality Multiplier
+ *     Ceiling slider (e.g. "Effective max with Phi: 14.58×"), updating on slider
+ *     drag and Phi toggle. The 1.618× Phi bonus was previously undocumented in UI.
+ *
+ * ROBUSTNESS & DOCUMENTATION:
+ *  6. initRNG() now enforces the seed input's declared 0–999999 range, not just
+ *     a NaN check.
+ *  7. Documented agentEDC() calibration basis: the 18/1100/820 constants are
+ *     scenario-calibrated design targets (tuned to land within CFG.EDC_BASELINE_
+ *     LO/HI at median wage per tier), not derived from a closed-form model.
+ *
+ * NO SIMULATION MATH CHANGES: engine, calibration constants, and formulas identical
+ * to v3.4. Regression baseline (seed 42, Full Integration, 20 yr) produces identical
+ * numerical output to v3.4.
+ * ═══════════════════════════════════════════════════════════════════════ · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v3.3 → v3.4  (audit-driven transparency — framing, citations, UI fixes)
@@ -528,6 +565,16 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * baseline ×0.85: documented design choice — lower savings absent CCO stabilisation.
  * ──────────────────────────────────────────────────────────────────── */
 
+/* ─── VERSION / CITATION — single source of truth ──────────────────────
+ * Update here only; all exports, headers, and citation strings reference
+ * this object instead of hardcoding version/DOI strings. */
+var META = {
+  VERSION:'3.5',
+  DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
+  CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.5. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
+  URL:'https://bettertobest.github.io/compassionism-simulation/'
+};
+
 var CFG = {
   POVERTY_LINE:25000, BLEI_CRISIS_MAX:7, BLEI_PRECARIOUS_MAX:30,
   BLEI_THRESHOLD_MAX:120, BLEI_STABLE_MAX:365, BLEI_SECURE_MAX:730,
@@ -557,12 +604,14 @@ var VAL_STATE={active:false,results:{}};
 /* ─── PRNG ────────────────────────────────────────────────────────────── */
 var RNG=Math.random;
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
-function initRNG(v){RNG=(!isNaN(parseInt(v))&&v!==''&&v!==null)?mulberry32(parseInt(v)):Math.random;}
+function initRNG(v){var n=parseInt(v);RNG=(!isNaN(n)&&v!==''&&v!==null&&n>=0&&n<=999999)?mulberry32(n):Math.random;}
 
 /* ─── SLIDERS ─────────────────────────────────────────────────────────── */
 var FMT={bu:function(v){return v==0?'$0 (off)':'$'+parseInt(v).toLocaleString();},oct:function(v){return v;},exp:function(v){return v+' mo';},phi:function(v){return v?'On':'Off';},tax:function(v){return v+'%';},mult:function(v){return v+'×';},agents:function(v){return parseInt(v).toLocaleString();},part:function(v){return v+'%';},yrs:function(v){return v+' yr';},ptf:function(v){return v+'%';},pth:function(v){return v+'%';},szh:function(v){return(v/100).toFixed(2);},cip:function(v){return v+'%';},infl:function(v){return parseFloat(v).toFixed(1)+'%';}};
-function sv(key,raw){var el=document.getElementById('v-'+key);if(el)el.textContent=FMT[key]?FMT[key](raw):raw;updatePills();}
-function tog(key,val){ST[key]=val;var on=document.getElementById(key+'-on'),off=document.getElementById(key+'-off');if(on)on.className='tb'+(val?(' on'+(key==='szh'?' on-blue':key==='cip'?' on-purple':'')):'');if(off)off.className='tb'+(!val?' on':'');if(key==='phi'){var el=document.getElementById('v-phi');if(el)el.textContent=val?'On':'Off';}updatePills();}
+function sv(key,raw){var el=document.getElementById('v-'+key);if(el)el.textContent=FMT[key]?FMT[key](raw):raw;if(key==='mult')updateEffMax();updatePills();}
+function tog(key,val){ST[key]=val;var on=document.getElementById(key+'-on'),off=document.getElementById(key+'-off');if(on)on.className='tb'+(val?(' on'+(key==='szh'?' on-blue':key==='cip'?' on-purple':'')):'');if(off)off.className='tb'+(!val?' on':'');if(key==='phi'){var el=document.getElementById('v-phi');if(el)el.textContent=val?'On':'Off';updateEffMax();}updatePills();}
+/* v3.5: effective max quality multiplier when Phi is active (maxMult × 1.618) */
+function updateEffMax(){var el=document.getElementById('v-mult-eff');if(!el)return;var m=gp('s-mult');var eff=(m*CFG.PHI_RATIO).toFixed(2);el.textContent=ST.phi?('Effective max with Phi: '+eff+'×'):('Phi off — effective max: '+m+'×');}
 function gp(id){return parseFloat(document.getElementById(id).value);}
 function updatePills(){var bv=gp('s-bu'),ccoOn=bv>0;setPill('pill-cco',ccoOn,'CCO: $'+bv+'/mo','CCO: Off','sp-on');setPill('pill-ptf',ST.ptf,'PTF: '+gp('s-ptf')+'%','PTF: Off','sp-on');setPill('pill-pth',ST.pth,'PTH: '+gp('s-pth')+'%','PTH: Off','sp-on');setPill('pill-szh',ST.szh,'SZH: '+(gp('s-szh')/100).toFixed(2),'SZH: Off','sp-on-b');setPill('pill-cip',ST.cip,'CIP: '+gp('s-cip')+'%','CIP: Off','sp-on-p');}
 function setPill(id,active,onTxt,offTxt,onCls){var el=document.getElementById(id);if(!el)return;el.textContent=active?onTxt:offTxt;el.className='sys-pill '+(active?onCls:'sp-off');}
@@ -571,11 +620,11 @@ function setPill(id,active,onTxt,offTxt,onCls){var el=document.getElementById(id
 var PRESETS={
   baseline:{bu:0,oct:1,exp:1,tax:0,mult:1,agents:500,part:0,yrs:20,ptfShare:0,pthUptake:0,szh:0,cip:0,phi:false,ptf:false,pth:false,szh_tog:false,cip_tog:false,shock:true,inflRate:3,automation:false},
   cco:{bu:1200,oct:6,exp:1,tax:12,mult:9,agents:500,part:75,yrs:20,ptfShare:0,pthUptake:0,szh:0,cip:0,phi:true,ptf:false,pth:false,szh_tog:false,cip_tog:false,shock:false,inflRate:0,automation:false},
-  optimal:{bu:1200,oct:6,exp:1,tax:12,mult:9,agents:500,part:78,yrs:20,ptfShare:18,pthUptake:20,szh:72,cip:65,phi:true,ptf:true,pth:true,szh_tog:true,cip_tog:true,shock:false,inflRate:0,automation:false},
+  reference:{bu:1200,oct:6,exp:1,tax:12,mult:9,agents:500,part:78,yrs:20,ptfShare:18,pthUptake:20,szh:72,cip:65,phi:true,ptf:true,pth:true,szh_tog:true,cip_tog:true,shock:false,inflRate:0,automation:false},
   stress:{bu:900,oct:4,exp:1,tax:18,mult:6,agents:500,part:40,yrs:20,ptfShare:8,pthUptake:10,szh:35,cip:30,phi:true,ptf:true,pth:true,szh_tog:true,cip_tog:true,shock:true,inflRate:2,automation:true},
   hiAI:{bu:1200,oct:6,exp:1,tax:12,mult:9,agents:500,part:78,yrs:25,ptfShare:18,pthUptake:20,szh:72,cip:65,phi:true,ptf:true,pth:true,szh_tog:true,cip_tog:true,shock:false,inflRate:0,automation:true}
 };
-var PRESET_IDS=['baseline','cco','optimal','stress','hiAI'];
+var PRESET_IDS=['baseline','cco','reference','stress','hiAI'];
 function applyPreset(name){
   var pr=PRESETS[name];if(!pr){console.error('Unknown preset:',name);return;}
   var sliders={bu:pr.bu,oct:pr.oct,exp:pr.exp,tax:pr.tax,mult:pr.mult,agents:pr.agents,part:pr.part,yrs:pr.yrs,ptf:pr.ptfShare,pth:pr.pthUptake,szh:pr.szh,cip:pr.cip,infl:pr.inflRate!==undefined?pr.inflRate:0};
@@ -607,7 +656,14 @@ function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh){
   return(isNaN(r)||!isFinite(r))?0:Math.max(0,r);
 }
 
-/* v3.3: NaN guard; actual wage (v3.2 fix retained) */
+/* v3.3: NaN guard; actual wage (v3.2 fix retained)
+ * v3.5: documenting EDC constants — these are scenario-calibrated targets, not
+ * derived from a closed-form model. 18/1100/820 are numerators chosen so that
+ * agentEDC(medianWage≈33) lands inside the corresponding EDC_BASELINE band
+ * (CFG.EDC_BASELINE_LO/HI) for each participation tier; the additive terms
+ * (+0.08/+0.03) and caps (0.75/0.42/CFG.EDC_PTH_CAP) bound the curve at low
+ * and high income. Treat as design targets pending empirical EDC validation,
+ * not as parameters fit to external data (see Assumptions panel). */
 function agentEDC(a,ccoOn,pthOn){
   var mInc=Math.max(isNaN(a.wage)?1:a.wage,1);
   if(ccoOn&&a.inCCO&&pthOn&&a.inPTH)return Math.min(CFG.EDC_PTH_CAP,18/mInc);
@@ -1138,22 +1194,22 @@ function runValidation(){
 }
 var VAL_TESTS=[
   {id:'monotone',name:'BU monotonicity: $1,200 outperforms $800',fn:function(){
-    var base=Object.assign({},PRESETS.optimal);var p1=mkMiniP(base,{bu:1200});var p2=mkMiniP(base,{bu:800});
+    var base=Object.assign({},PRESETS.reference);var p1=mkMiniP(base,{bu:1200});var p2=mkMiniP(base,{bu:800});
     initRNG(1234);var r1=runMiniSim(p1);initRNG(1234);var r2=runMiniSim(p2);
     return{pass:r1.pov<r2.pov,detail:'$1,200: '+r1.pov.toFixed(1)+'% poverty vs $800: '+r2.pov.toFixed(1)+'%'};
   }},
   {id:'threshold',name:'Participation threshold: 78% outperforms 45%',fn:function(){
-    var base=Object.assign({},PRESETS.optimal);var p1=mkMiniP(base,{part:78});var p2=mkMiniP(base,{part:45});
+    var base=Object.assign({},PRESETS.reference);var p1=mkMiniP(base,{part:78});var p2=mkMiniP(base,{part:45});
     initRNG(5678);var r1=runMiniSim(p1);initRNG(5678);var r2=runMiniSim(p2);
     return{pass:r1.pov<r2.pov,detail:'78%: '+r1.pov.toFixed(1)+'% poverty vs 45%: '+r2.pov.toFixed(1)+'%'};
   }},
   {id:'benefit',name:'CCO benefit: Full integration outperforms baseline',fn:function(){
-    var p1=mkMiniP(PRESETS.optimal,{});var p2=mkMiniP(PRESETS.baseline,{});
+    var p1=mkMiniP(PRESETS.reference,{});var p2=mkMiniP(PRESETS.baseline,{});
     initRNG(9012);var r1=runMiniSim(p1);initRNG(9012);var r2=runMiniSim(p2);
     return{pass:r1.pov<r2.pov&&r1.blei>r2.blei,detail:'Full: '+r1.pov.toFixed(1)+'% pov / BLEI '+Math.round(r1.blei)+'d vs Base: '+r2.pov.toFixed(1)+'% / '+Math.round(r2.blei)+'d'};
   }},
   {id:'ptf_infl',name:'PTF dampens inflation: PTF on < PTF off (3% inflation)',fn:function(){
-    var p1=mkMiniP(PRESETS.optimal,{inflRate:3});var p2=mkMiniP(PRESETS.optimal,{inflRate:3,ptf:false,ptfShare:0});
+    var p1=mkMiniP(PRESETS.reference,{inflRate:3});var p2=mkMiniP(PRESETS.reference,{inflRate:3,ptf:false,ptfShare:0});
     initRNG(3456);var r1=runMiniSim(p1);initRNG(3456);var r2=runMiniSim(p2);
     return{pass:r1.pov<=r2.pov,detail:'PTF+infl: '+r1.pov.toFixed(1)+'% vs No PTF+infl: '+r2.pov.toFixed(1)+'%'};
   }}
@@ -1232,7 +1288,7 @@ function downloadCSV(){
   if(!SIM_RESULTS)return;var sr=SIM_RESULTS,p=sr.params;
   function fmt(v){var s=String(v===null||v===undefined?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.replace(/"/g,'""')+'"':s;}
   function row(a){return a.map(fmt).join(',');}
-  var lines=[row(['Compassionism Framework Simulation — Research Export v3.3','']),row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),row(['Simulation Version','3.3']),row(['Timestamp',sr.timestamp]),row(['Citation','Johnson D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.4. Better To Best Research Hub. CC BY 4.0.']),row(['','']),row(['Note','Exploratory ABM — not a forecast. See Assumptions & ODD Protocol for model specification.']),row(['','']),row(['--- PARAMETERS ---','']),row(['BU Monthly Allocation ($/month)',p.bu]),row(['CCO Enabled',p.ccoOn?'Yes':'No']),row(['CCO Participation Rate (%)',(p.partRate*100).toFixed(0)]),row(['Max Octave Level',p.maxOct]),row(['Phi Rate',p.phi?'On (1.618×)':'Off']),row(['Conversion Tax Rate (%)',(p.tax*100).toFixed(0)]),row(['Quality Multiplier Ceiling',p.maxMult]),row(['PTF Enabled',p.ptf?'Yes':'No']),row(['PTF Market Share (%)',(p.ptfShare*100).toFixed(0)]),row(['PTH Enabled',p.pth?'Yes':'No']),row(['PTH Uptake Rate (%)',(p.pthUptake*100).toFixed(0)]),row(['SZH Enabled',p.szh?'Yes':'No']),row(['Zone Coherence Index',p.szhCoh.toFixed(2)]),row(['CIP Enabled',p.cip?'Yes':'No']),row(['CIP Participation (%)',(p.cipDemo*100).toFixed(0)]),row(['Economic Shocks',p.shock?'Yes':'No']),row(['AI Labor Automation',p.automation?'On':'Off']),row(['Inflation Rate (%/yr)',(p.inflRate*100).toFixed(1)]),row(['Agent Population',p.nAgents]),row(['Simulation Years',p.years]),row(['Random Seed',p.seed||'None (random MC)']),row(['Top BLEI Tier Label',sr.topTierName]),row(['','']),row(['--- FINAL-YEAR SUMMARY ---','']),row(['Wealth Poverty Rate (%)',sr.finalPov.toFixed(1)]),row(['BLEI Poverty (%)',sr.bleiPovPct.toFixed(1)]),row(['Gini Coefficient',sr.finalGini.toFixed(3)]),row(['Median Wealth ($)',Math.round(sr.finalWealth)]),row(['Median BLEI (days)',Math.round(sr.blei.med)]),row(['Agents at Top Tier (%)',sr.blei.pctF.toFixed(1)]),row(['Avg EDC (%)',(sr.blei.avgEDC*100).toFixed(1)]),row(['System Stability (%)',(sr.stab*100).toFixed(0)]),row(['','']),row(['--- SCENARIO COMPARISON ---','']),row(['Configuration','Wealth Pov (%)','BLEI Pov (%)','Median Wealth ($)','Gini','BLEI (days)','BLEI Tier','Avg EDC (%)']),row(['US Welfare Baseline',(sr.mBase.pov*100).toFixed(1),((sr.bBase.tc[0]+sr.bBase.tc[1])/sr.bBase.n*100).toFixed(1),Math.round(sr.mBase.med),sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),row(['CCO Only',(sr.mCCO.pov*100).toFixed(1),((sr.bCCO.tc[0]+sr.bCCO.tc[1])/sr.bCCO.n*100).toFixed(1),Math.round(sr.mCCO.med),sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),row(['Your Settings',sr.finalPov.toFixed(1),sr.bleiPovPct.toFixed(1),Math.round(sr.finalWealth),sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)])];
+  var lines=[row(['Compassionism Framework Simulation — Research Export v'+META.VERSION,'']),row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),row(['Simulation Version',META.VERSION]),row(['DOI',META.DOI]),row(['Timestamp',sr.timestamp]),row(['Citation',META.CITATION]),row(['','']),row(['Note','Exploratory ABM — not a forecast. See Assumptions & ODD Protocol for model specification.']),row(['','']),row(['--- PARAMETERS ---','']),row(['BU Monthly Allocation ($/month)',p.bu]),row(['CCO Enabled',p.ccoOn?'Yes':'No']),row(['CCO Participation Rate (%)',(p.partRate*100).toFixed(0)]),row(['Max Octave Level',p.maxOct]),row(['Phi Rate',p.phi?'On (1.618×)':'Off']),row(['Conversion Tax Rate (%)',(p.tax*100).toFixed(0)]),row(['Quality Multiplier Ceiling',p.maxMult]),row(['PTF Enabled',p.ptf?'Yes':'No']),row(['PTF Market Share (%)',(p.ptfShare*100).toFixed(0)]),row(['PTH Enabled',p.pth?'Yes':'No']),row(['PTH Uptake Rate (%)',(p.pthUptake*100).toFixed(0)]),row(['SZH Enabled',p.szh?'Yes':'No']),row(['Zone Coherence Index',p.szhCoh.toFixed(2)]),row(['CIP Enabled',p.cip?'Yes':'No']),row(['CIP Participation (%)',(p.cipDemo*100).toFixed(0)]),row(['Economic Shocks',p.shock?'Yes':'No']),row(['AI Labor Automation',p.automation?'On':'Off']),row(['Inflation Rate (%/yr)',(p.inflRate*100).toFixed(1)]),row(['Agent Population',p.nAgents]),row(['Simulation Years',p.years]),row(['Random Seed',p.seed||'None (random MC)']),row(['Top BLEI Tier Label',sr.topTierName]),row(['','']),row(['--- FINAL-YEAR SUMMARY ---','']),row(['Wealth Poverty Rate (%)',sr.finalPov.toFixed(1)]),row(['BLEI Poverty (%)',sr.bleiPovPct.toFixed(1)]),row(['Gini Coefficient',sr.finalGini.toFixed(3)]),row(['Median Wealth ($)',Math.round(sr.finalWealth)]),row(['Median BLEI (days)',Math.round(sr.blei.med)]),row(['Agents at Top Tier (%)',sr.blei.pctF.toFixed(1)]),row(['Avg EDC (%)',(sr.blei.avgEDC*100).toFixed(1)]),row(['System Stability (%)',(sr.stab*100).toFixed(0)]),row(['','']),row(['--- SCENARIO COMPARISON ---','']),row(['Configuration','Wealth Pov (%)','BLEI Pov (%)','Median Wealth ($)','Gini','BLEI (days)','BLEI Tier','Avg EDC (%)']),row(['US Welfare Baseline',(sr.mBase.pov*100).toFixed(1),((sr.bBase.tc[0]+sr.bBase.tc[1])/sr.bBase.n*100).toFixed(1),Math.round(sr.mBase.med),sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),row(['CCO Only',(sr.mCCO.pov*100).toFixed(1),((sr.bCCO.tc[0]+sr.bCCO.tc[1])/sr.bCCO.n*100).toFixed(1),Math.round(sr.mCCO.med),sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),row(['Your Settings',sr.finalPov.toFixed(1),sr.bleiPovPct.toFixed(1),Math.round(sr.finalWealth),sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)])];
   var ts=sr.timeSeries;
   if(ts&&ts.labels&&ts.labels.length){
     lines.push(row(['','']));lines.push(row(['--- ANNUAL TIME SERIES ---','']));
@@ -1244,13 +1300,13 @@ function downloadCSV(){
   lines.push(row(['Wage diminishing returns','Stability premium × 1/(1+0.5·max(0,wage/35-1)) — prevents compounding']));
   lines.push(row(['Recession distribution','beta(5,2) over [0.70,0.95]; mode 0.86 (14% loss); NBER-calibrated']));
   lines.push(row(['SIM_COST_SCALE','Renamed from ANNUAL_BASE_COST to avoid scale confusion']));
-  var csv=lines.join('\n');var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-sim-v33-'+sr.timestamp.slice(0,10)+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  var csv=lines.join('\n');var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-sim-v'+META.VERSION.replace(/\./g,'')+'-'+sr.timestamp.slice(0,10)+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
 function downloadJSON(){
   if(!SIM_RESULTS)return;var sr=SIM_RESULTS;
-  var out={meta:{version:'3.3',timestamp:sr.timestamp,tool:'Compassionism Framework Simulation',url:'https://bettertobest.github.io/compassionism-simulation/',license:'CC BY 4.0',citation:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.4. Better To Best Research Hub.'},parameters:sr.params,results:{finalPov:sr.finalPov,finalGini:sr.finalGini,finalWealth:sr.finalWealth,stability:sr.stab,bleiPovPct:sr.bleiPovPct,topTierName:sr.topTierName,blei:{median:sr.blei.med,pctFlourishing:sr.blei.pctF,avgEDC:sr.blei.avgEDC,tierCounts:sr.blei.tc},scenarios:{baseline:{pov:sr.mBase.pov*100,gini:sr.mBase.gini,wealth:sr.mBase.med,blei:sr.bBase.med},ccoOnly:{pov:sr.mCCO.pov*100,gini:sr.mCCO.gini,wealth:sr.mCCO.med,blei:sr.bCCO.med}}},timeSeries:sr.timeSeries};
-  var blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-sim-v33-'+sr.timestamp.slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  var out={meta:{version:META.VERSION,doi:META.DOI,timestamp:sr.timestamp,tool:'Compassionism Framework Simulation',url:META.URL,license:'CC BY 4.0',citation:META.CITATION},parameters:sr.params,results:{finalPov:sr.finalPov,finalGini:sr.finalGini,finalWealth:sr.finalWealth,stability:sr.stab,bleiPovPct:sr.bleiPovPct,topTierName:sr.topTierName,blei:{median:sr.blei.med,pctFlourishing:sr.blei.pctF,avgEDC:sr.blei.avgEDC,tierCounts:sr.blei.tc},scenarios:{baseline:{pov:sr.mBase.pov*100,gini:sr.mBase.gini,wealth:sr.mBase.med,blei:sr.bBase.med},ccoOnly:{pov:sr.mCCO.pov*100,gini:sr.mCCO.gini,wealth:sr.mCCO.med,blei:sr.bCCO.med}}},timeSeries:sr.timeSeries};
+  var blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-sim-v'+META.VERSION.replace(/\./g,'')+'-'+sr.timestamp.slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
 /* ─── MATH HELPERS ────────────────────────────────────────────────────── */
@@ -1258,9 +1314,9 @@ function lognormal(mu,sigma){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.e
 function beta(a,b){var x=gamma(a);return x/(x+gamma(b));}
 function gamma(a){if(a<1)return gamma(1+a)*Math.pow(Math.max(1e-14,RNG()),1/a);for(var i=0;i<5000;i++){var u=RNG(),v=RNG(),y=Math.tan(Math.PI*u),x=Math.sqrt(2*a-1)*y+a-1;if(x>0&&v<=(1+y*y)*Math.exp((a-1)*Math.log(x/(a-1))-Math.sqrt(2*a-1)*y))return x;}return a;}
 
-window.addEventListener('DOMContentLoaded',function(){applyPreset('optimal');});
+window.addEventListener('DOMContentLoaded',function(){applyPreset('reference');});
 /* v3.4: auto-load illustrative reference run on page load */
-window.addEventListener('load',function(){applyPreset('optimal');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
+window.addEventListener('load',function(){applyPreset('reference');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
 </script>
 </body>
 </html>
