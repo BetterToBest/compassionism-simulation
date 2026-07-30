@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="Better To Best Research Collective">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/">
-<title>Compassionism Framework Simulation v3.6 | Better To Best Research Hub</title>
-<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol. v3.6.">
+<title>Compassionism Framework Simulation v3.7 | Better To Best Research Hub</title>
+<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts. v3.7.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.6: PTF slider relabeled to reflect initial-condition semantics, stability-metric tooltip, mobile table overflow fix, Monte Carlo cancel control, implicit-global fix.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.6","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.7: fixed a double preset-apply on page load, added screen-reader labels to all charts, added a collapsible in-app glossary panel.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.7","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
 /* v3.4: auto-load illustrative reference run on page load */
 window.addEventListener('load',function(){applyPreset('reference');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
 </script>
@@ -74,6 +74,9 @@ table{width:100%;font-size:12.5px;border-collapse:collapse}th{text-align:left;fo
 .sys-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.65rem}.sys-pill{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;border:.5px solid transparent}.sp-off{background:var(--bg2);color:var(--text3);border-color:var(--border2)}.sp-on{background:var(--accent-bg);color:var(--accent2);border-color:var(--accent)}.sp-on-b{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}.sp-on-p{background:var(--purple-bg);color:var(--purple);border-color:var(--purple)}
 /* assumptions panel */
 details.ccard>summary{list-style:none;cursor:pointer;user-select:none}details.ccard>summary::-webkit-details-marker{display:none}details.ccard[open]>summary{margin-bottom:.8rem;border-bottom:.5px solid var(--border2);padding-bottom:.6rem}
+/* v3.7: glossary panel */
+.gloss-item{padding:.45rem 0;border-bottom:.5px solid var(--border2)}.gloss-item:last-child{border-bottom:none}
+.gloss-term{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}.gloss-def{font-size:11px;color:var(--text2);line-height:1.5;margin:0}
 .assump-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}@media(max-width:700px){.assump-grid{grid-template-columns:1fr}}
 .acat-label{font-size:11px;font-weight:600;color:var(--text);padding:.3rem .6rem;background:var(--bg2);border-radius:var(--rs);margin-bottom:.55rem;border-left:2.5px solid var(--accent);display:block}
 /* ── v3.2 additions ── */
@@ -115,7 +118,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 <body>
 <header>
   <div>
-    <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.6</span></div>
+    <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.7</span></div>
     <div class="hd-sub">
       All five architectures ·
       <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -136,6 +139,25 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <div class="layout">
 <aside class="sidebar">
+  <details class="ccard" style="margin-bottom:1.1rem" id="sec-glossary">
+    <summary style="font-size:11.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
+      <span style="font-size:9px;color:var(--text3)">▶</span>
+      📖 Glossary
+      <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:auto">new to this? tap to expand</span>
+    </summary>
+    <div class="gloss-item"><div class="gloss-term">CCO — Creative Currency Octaves</div><p class="gloss-def">Dual-currency layer. Participants get monthly Basic Units (BU), redeemable at PTF businesses, converted to primary currency at merit-scaled rates.</p></div>
+    <div class="gloss-item"><div class="gloss-term">BU — Basic Units</div><p class="gloss-def">The community currency issued by CCO. Pegged 1:1 to primary currency, redeemable below market price at PTF establishments, expires monthly.</p></div>
+    <div class="gloss-item"><div class="gloss-term">PTF — Public Trust Foundations</div><p class="gloss-def">Community-owned, not-for-profit businesses that accept BU. Modelled as a cost-reduction mechanism (12–16% lower costs), not a wealth-addition channel.</p></div>
+    <div class="gloss-item"><div class="gloss-term">PTH — Public Trust Housing</div><p class="gloss-def">Community-owned housing; monthly payments build Acre Equity instead of paying market rent or mortgage interest.</p></div>
+    <div class="gloss-item"><div class="gloss-term">AE — Acre Equity</div><p class="gloss-def">Community equity built by PTH residents, appreciating ~4%/yr, accessible at exit subject to a tenure-based liquidity haircut.</p></div>
+    <div class="gloss-item"><div class="gloss-term">SZH — Social Zone Harmonization</div><p class="gloss-def">Spatial governance layer organizing where PTF/PTH deploy; gates cooperative synergy effects behind a zone-participation threshold.</p></div>
+    <div class="gloss-item"><div class="gloss-term">CIP — Citizens Internet Portal</div><p class="gloss-def">Digital platform administering CCO currency operations and democratic voting for PTH/PTF decisions.</p></div>
+    <div class="gloss-item"><div class="gloss-term">BLEI — Basic Living Economic Index</div><p class="gloss-def">Primary welfare metric: how many days of basic living an agent's accessible resources cover (cash + income + benefit buffers).</p></div>
+    <div class="gloss-item"><div class="gloss-term">EDC — Extractive Drain Coefficient</div><p class="gloss-def">Share of income captured by contracts that build zero household wealth (rent, interest, fees). PTH payments have EDC = 0.</p></div>
+    <div class="gloss-item"><div class="gloss-term">FBS — Financial Bandwidth Score</div><p class="gloss-def">Monthly residual resources above the basic-living threshold; gates an agent's probability of advancing an octave level.</p></div>
+    <div class="csub" style="margin-top:.5rem">Full definitions with citations: <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html" target="_blank" rel="noopener" style="color:var(--accent)">Replication Framework</a> Key Concepts panel.</div>
+  </details>
+
   <div class="ss">
     <div class="ss-head">Scenario Presets</div>
     <div class="preset-grid">
@@ -298,32 +320,32 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div class="slabel">Economic Trajectory</div>
   <div class="cgrid">
-    <div class="ccard"><div class="ctitle">Poverty rate — scenario vs baseline</div><div style="position:relative;height:200px"><canvas id="ch-pov"></canvas></div><div class="csub">Dashed = US welfare baseline trajectory (same years, population-level recessions enabled)</div></div>
-    <div class="ccard"><div class="ctitle">Gini coefficient over time</div><div style="position:relative;height:200px"><canvas id="ch-gini"></canvas></div></div>
+    <div class="ccard"><div class="ctitle">Poverty rate — scenario vs baseline</div><div style="position:relative;height:200px"><canvas id="ch-pov" role="img" aria-label="Line chart of poverty rate over time, scenario versus US welfare baseline"></canvas></div><div class="csub">Dashed = US welfare baseline trajectory (same years, population-level recessions enabled)</div></div>
+    <div class="ccard"><div class="ctitle">Gini coefficient over time</div><div style="position:relative;height:200px"><canvas id="ch-gini" role="img" aria-label="Line chart of Gini coefficient over time"></canvas></div></div>
   </div>
   <div class="cgrid">
-    <div class="ccard"><div class="ctitle">Wealth distribution — p10 / median / p90</div><div style="position:relative;height:200px"><canvas id="ch-wealth"></canvas></div><div class="csub">Dashed lines = bottom/top deciles · Filled band = median trajectory · Inequality envelope</div></div>
-    <div class="ccard"><div class="ctitle">BU velocity &amp; conversion activity</div><div style="position:relative;height:200px"><canvas id="ch-vel"></canvas></div></div>
+    <div class="ccard"><div class="ctitle">Wealth distribution — p10 / median / p90</div><div style="position:relative;height:200px"><canvas id="ch-wealth" role="img" aria-label="Line chart of wealth distribution over time showing 10th percentile, median, and 90th percentile"></canvas></div><div class="csub">Dashed lines = bottom/top deciles · Filled band = median trajectory · Inequality envelope</div></div>
+    <div class="ccard"><div class="ctitle">BU velocity &amp; conversion activity</div><div style="position:relative;height:200px"><canvas id="ch-vel" role="img" aria-label="Line chart of basic-income velocity and conversion activity over time"></canvas></div></div>
   </div>
 
   <div class="slabel">BLEI Temporal Stability</div>
   <div class="cgrid">
-    <div class="ccard"><div class="ctitle">Median BLEI score — days of basic living covered</div><div style="position:relative;height:200px"><canvas id="ch-blei"></canvas></div><div class="csub">Threshold 30d · Stable 120d · Secure 365d · Flourishing/Comfortable 730d</div></div>
-    <div class="ccard"><div class="ctitle">BLEI tier distribution — final year</div><div style="position:relative;height:200px"><canvas id="ch-tiers"></canvas></div><div class="csub" id="tier-chart-sub">Six-tier welfare classification (Johnson &amp; Claude, 2026)</div></div>
+    <div class="ccard"><div class="ctitle">Median BLEI score — days of basic living covered</div><div style="position:relative;height:200px"><canvas id="ch-blei" role="img" aria-label="Line chart of median BLEI score, days of basic living covered, over time"></canvas></div><div class="csub">Threshold 30d · Stable 120d · Secure 365d · Flourishing/Comfortable 730d</div></div>
+    <div class="ccard"><div class="ctitle">BLEI tier distribution — final year</div><div style="position:relative;height:200px"><canvas id="ch-tiers" role="img" aria-label="Bar chart of BLEI welfare tier distribution in the final year"></canvas></div><div class="csub" id="tier-chart-sub">Six-tier welfare classification (Johnson &amp; Claude, 2026)</div></div>
   </div>
 
   <!-- Distribution trajectories (hidden until run) -->
   <div class="slabel" id="label-dist" style="display:none">Distribution Trajectories</div>
   <div class="cgrid" id="sec-dist-charts" style="display:none">
-    <div class="ccard"><div class="ctitle">BLEI tier composition over time</div><div style="position:relative;height:200px"><canvas id="ch-tiers-time"></canvas></div><div class="csub">Stacked bars show share of agents in each tier per year — welfare trajectory across the full simulation</div></div>
-    <div class="ccard"><div class="ctitle">BLEI component medians — cashDays · incomeDays · benefitDays</div><div style="position:relative;height:200px"><canvas id="ch-blei-comp"></canvas></div><div class="csub">Three-component decomposition: savings buffer · income flow · BU food basket (Johnson &amp; Claude, 2026 §3)</div></div>
+    <div class="ccard"><div class="ctitle">BLEI tier composition over time</div><div style="position:relative;height:200px"><canvas id="ch-tiers-time" role="img" aria-label="Stacked bar chart of BLEI tier composition over time"></canvas></div><div class="csub">Stacked bars show share of agents in each tier per year — welfare trajectory across the full simulation</div></div>
+    <div class="ccard"><div class="ctitle">BLEI component medians — cashDays · incomeDays · benefitDays</div><div style="position:relative;height:200px"><canvas id="ch-blei-comp" role="img" aria-label="Line chart of BLEI component medians: cash days, income days, benefit days"></canvas></div><div class="csub">Three-component decomposition: savings buffer · income flow · BU food basket (Johnson &amp; Claude, 2026 §3)</div></div>
   </div>
 
   <!-- Participant Analysis charts (v3.3, shown when CCO active) -->
   <div class="slabel" id="label-strat-chart" style="display:none">Participant vs Non-Participant Analysis <span style="font-size:9px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--text3);margin-left:4px">tests whether CCO creates net positive welfare without harming non-participants</span></div>
   <div class="cgrid" id="sec-strat-charts" style="display:none">
-    <div class="ccard"><div class="ctitle">Poverty rate by participation status</div><div style="position:relative;height:200px"><canvas id="ch-strat-pov"></canvas></div><div class="csub">If non-participant poverty does not worsen, CCO generates net welfare gain</div></div>
-    <div class="ccard"><div class="ctitle">Median BLEI by participation status</div><div style="position:relative;height:200px"><canvas id="ch-strat-blei"></canvas></div><div class="csub">BLEI gap between participants and non-participants quantifies direct CCO welfare contribution</div></div>
+    <div class="ccard"><div class="ctitle">Poverty rate by participation status</div><div style="position:relative;height:200px"><canvas id="ch-strat-pov" role="img" aria-label="Line chart of poverty rate by program participation status"></canvas></div><div class="csub">If non-participant poverty does not worsen, CCO generates net welfare gain</div></div>
+    <div class="ccard"><div class="ctitle">Median BLEI by participation status</div><div style="position:relative;height:200px"><canvas id="ch-strat-blei" role="img" aria-label="Line chart of median BLEI by program participation status"></canvas></div><div class="csub">BLEI gap between participants and non-participants quantifies direct CCO welfare contribution</div></div>
   </div>
 
   <!-- Policy milestones (hidden until run) -->
@@ -346,7 +368,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div id="sec-export" style="display:none" class="export-card">
     <div class="export-card-inner">
-      <div class="export-note"><h4>Research Export</h4><p>v3.6 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
+      <div class="export-note"><h4>Research Export</h4><p>v3.7 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
       <div class="export-btns">
         <button class="dl-btn" onclick="downloadCSV()">⬇ CSV</button>
         <button class="dl-btn-sec" onclick="downloadJSON()">⬇ JSON</button>
@@ -367,7 +389,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div class="ccard" style="margin-bottom:9px;display:none" id="sec-attribution">
     <div class="ctitle">BLEI gain attribution — system contribution analysis</div>
     <div id="attribution-loading" style="font-size:11.5px;color:var(--text3);padding:.6rem 0;text-align:center">⏳ Calculating ablation analysis…</div>
-    <div id="attribution-chart-wrap" style="position:relative;height:160px;display:none"><canvas id="ch-attribution"></canvas></div>
+    <div id="attribution-chart-wrap" style="position:relative;height:160px;display:none"><canvas id="ch-attribution" role="img" aria-label="Bar chart of each subsystem’s contribution to the outcome"></canvas></div>
     <div class="csub">BLEI days lost when each system is removed · 200-agent ablation subsample · Distinct stochastic realisation from main run</div>
   </div>
 
@@ -376,7 +398,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.6 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.7 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -389,8 +411,11 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income → PTH Acre Equity appreciation → PTF adoption check → wealth floor clamp. BLEI = (liquid + γ·wage + buFood) / dailyCost. Gini: sorted non-negative-clamped wealth. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.6)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.7)</span>
     <div class="assump-grid">
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Double preset-apply on page load (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The <code>DOMContentLoaded</code> and <code>load</code> listeners both called <code>applyPreset('reference')</code>, silently re-applying all default parameters a second time before the first run executed. The <code>load</code> listener now only sets the reference seed/flag and calls <code>runSim()</code>.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Chart screen-reader labels (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">All 11 Chart.js canvases previously had no accessible name — a sighted-only presentation of every result. Added <code>role="img"</code> and a descriptive <code>aria-label</code> to each.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">In-app glossary panel (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Added a collapsible acronym glossary above Scenario Presets, mirroring the Key Concepts accordion on the replication page, so first-time users don't have to leave the tool to look up CCO/PTF/PTH/SZH/CIP and related terms.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTF slider relabeled &amp; documented as initial condition (v3.6)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The slider was labeled "PTF market share" but only set the <em>initial</em> adoption probability at t=0; independent per-agent adoption checks in <code>runYear()</code> mean the realised final share can and does exceed the slider value. Relabeled to "Initial PTF share" in the UI, CSV export, and run-configuration summary, with a slider caption explaining the organic-growth behaviour.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">System Stability tooltip (v3.6)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Added an ⓘ tooltip on the System Stability KPI disclosing that it is currently a trend+noise heuristic rather than a structural metric, with the exact formula documented in Known Limitations below.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Mobile table overflow (v3.6)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Comparison and milestone tables carried a hardcoded <code>min-width:640px</code>, forcing horizontal scrolling on every mobile viewport regardless of actual content width. Removed the fixed minimum and added a small-viewport rule that shrinks font size and cell padding instead.</p></div>
@@ -443,7 +468,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div class="ref-item">Frey, C.B. &amp; Osborne, M.A. (2013). <em>The Future of Employment: How Susceptible Are Jobs to Computerisation?</em> University of Oxford. <em>[automationRisk calibration]</em></div>
       <div class="ref-item">Grimm, V., et al. (2010). The ODD protocol: A review and first update. <em>Ecological Modelling</em>, 221(23), 2760–2768. <em>[ABM documentation standard]</em></div>
       <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Basic Living Economic Index (BLEI). Better To Best Research Hub. CC BY 4.0. <a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html" target="_blank" rel="noopener">↗ paper</a></div>
-      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.6. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a>. <em>[archived version of this tool]</em></div>
+      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.7. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a>. <em>[archived version of this tool]</em></div>
       <div class="ref-item">Jones, D. &amp; Marinescu, I. (2018). The labor market impacts of universal and permanent cash transfers. NBER Working Paper 24312. <em>[Alaska PFD analogue]</em></div>
       <div class="ref-item">Mullainathan, S. &amp; Shafir, E. (2013). <em>Scarcity: Why Having Too Little Means So Much.</em> Times Books. <em>[FBS bandwidth constraint, wage growth]</em></div>
       <div class="ref-item">NBER Business Cycle Dating Committee. <em>U.S. Business Cycle Expansions and Contractions.</em> <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener">nber.org</a>. <em>[beta(5,2) recession calibration]</em></div>
@@ -457,19 +482,62 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v3.6 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v3.7 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
     <div style="font-size:10.5px;color:var(--text3);margin-bottom:3px">Suggested citation:</div>
-    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.6. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener" style="color:inherit">https://doi.org/10.17605/OSF.IO/QWTE2</a></span>
+    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.7. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener" style="color:inherit">https://doi.org/10.17605/OSF.IO/QWTE2</a></span>
   </div>
 </footer>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v3.6
+ * COMPASSIONISM FRAMEWORK SIMULATION  v3.7
  * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v3.6 → v3.7  (external audit cross-check — Meta AI review +
+ * internal verification; accessibility & discoverability)
+ *
+ * BUG FIXES:
+ *  1. Fixed a double preset-apply on page load: the DOMContentLoaded listener
+ *     and the load listener both called applyPreset('reference'), silently
+ *     resetting all parameters a second time before the first run executed.
+ *     The load listener now only sets the reference seed/flag and runs.
+ *
+ * ACCESSIBILITY:
+ *  2. Added role="img" and a descriptive aria-label to all 11 Chart.js
+ *     canvases (poverty, Gini, wealth, velocity, BLEI, tier distribution,
+ *     tier-over-time, BLEI components, participation stratification ×2,
+ *     ablation attribution). Previously these charts had no screen-reader
+ *     exposure at all — a sighted-only presentation of every result.
+ *
+ * DISCOVERABILITY:
+ *  3. Added a collapsible in-app glossary panel (acronym + plain-language
+ *     definition for CCO, BU, PTF, PTH, AE, SZH, CIP, BLEI, EDC, FBS) above
+ *     Scenario Presets, mirroring the Key Concepts accordion already shipped
+ *     on the replication page. First-time users no longer have to leave the
+ *     tool to look up an acronym.
+ *
+ * AUDIT NOTE:
+ *  An external Meta AI review of this file raised several additional points
+ *  that do not hold against the actual v3.6 implementation and were not
+ *  acted on: RNG is already a real seeded PRNG (mulberry32), not Math.random()
+ *  — s-seed reproduces byte-identical runs; runSim()/validation already wrap
+ *  execution in try/catch with user-visible errors; the year loop already
+ *  yields via setTimeout per year rather than blocking the main thread; CSV
+ *  fields are already rounded to 1–3 significant figures, not raw floats;
+ *  and gamma()'s 5,000-iteration rejection sampler is only ever called with
+ *  fixed calibration constants (2, 5), never a user-supplied shape parameter,
+ *  so it isn't exposed to the runaway-iteration risk that review flagged.
+ *  Larger suggestions (Web Workers for the MC loop, Sobol/LHC sensitivity
+ *  indices, a per-chart data-table fallback) are deferred — current agent-
+ *  count ceilings don't require them, but they're real gaps, not dismissed.
+ *
+ * NO SIMULATION MATH CHANGES: engine, calibration constants, and formulas
+ * identical to v3.6. Regression baseline (seed 42, Full Integration, 20 yr)
+ * produces identical numerical output to v3.6.
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v3.5 → v3.6  (audit-driven transparency & honesty — Kimi external
@@ -612,9 +680,9 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'3.6',
+  VERSION:'3.7',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
-  CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.6. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
+  CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.7. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
 };
 
@@ -1389,7 +1457,11 @@ function gamma(a){if(a<1)return gamma(1+a)*Math.pow(Math.max(1e-14,RNG()),1/a);f
 
 window.addEventListener('DOMContentLoaded',function(){applyPreset('reference');});
 /* v3.4: auto-load illustrative reference run on page load */
-window.addEventListener('load',function(){applyPreset('reference');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
+/* audit fix: this handler previously called applyPreset('reference') a second time —
+   DOMContentLoaded (above) already applies it, so params were being reset twice before
+   the first run. Removed the duplicate call; this handler now only sets the reference
+   seed/flag and runs. */
+window.addEventListener('load',function(){setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
 </script>
 </body>
 </html>
