@@ -11,8 +11,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://bettertobest.github.io/research-hub/assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://bettertobest.github.io/research-hub/assets/favicon-180.png">
-<title>Compassionism Framework Simulation v3.8 | Better To Best Research Hub</title>
-<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts, isolated comparison-run RNG streams. v3.8.">
+<title>Compassionism Framework Simulation v3.9 | Better To Best Research Hub</title>
+<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts, isolated comparison-run RNG streams. v3.9.">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -39,7 +39,7 @@
 <meta name="twitter:creator" content="@Author_Duke_J">
 <meta name="twitter:site" content="@Author_Duke_J">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.8: isolated the baseline and CCO-only comparison-run RNG streams from the main trajectory for stricter reproducibility.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.8","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.9: hardened the wealth-ratio KPI against near-zero denominators and fixed a mutation of a shared params object in OAT sensitivity.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.9","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
 /* v3.4: auto-load illustrative reference run on page load */
 window.addEventListener('load',function(){applyPreset('reference');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
 </script>
@@ -151,7 +151,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div style="display:flex;align-items:center;gap:.6rem">
     <img src="https://bettertobest.github.io/research-hub/assets/bettertobest-mark-muted-originals.svg" alt="Better To Best Research Hub" width="32" height="32" style="flex-shrink:0">
     <div>
-      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.8</span></div>
+      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.9</span></div>
       <div class="hd-sub">
         All five architectures ·
         <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -402,7 +402,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div id="sec-export" style="display:none" class="export-card">
     <div class="export-card-inner">
-      <div class="export-note"><h4>Research Export</h4><p>v3.8 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
+      <div class="export-note"><h4>Research Export</h4><p>v3.9 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
       <div class="export-btns">
         <button class="dl-btn" onclick="downloadCSV()">⬇ CSV</button>
         <button class="dl-btn-sec" onclick="downloadJSON()">⬇ JSON</button>
@@ -432,7 +432,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.8 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.9 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -445,8 +445,9 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income → PTH Acre Equity appreciation → PTF adoption check → wealth floor clamp. BLEI = (liquid + γ·wage + buFood) / dailyCost. Gini: sorted non-negative-clamped wealth. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.8)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.9)</span>
     <div class="assump-grid">
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Wealth ratio near-zero guard &amp; OAT params mutation (v3.9)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The p90/p10 wealth ratio only guarded against p10 ≤ 0, so a near-zero p10 produced a misleadingly large finite ratio instead of "∞" — threshold changed to &lt;$100. Separately, OAT sensitivity's base-params setup mutated the object returned by getCurrentParams() directly; it now builds a fresh object instead.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Comparison-run RNG isolation (v3.8)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The baseline and CCO-only comparison trajectories previously ran on the same shared RNG stream the main trajectory consumed next, so changing years or agent count shifted the main run's random sequence at a fixed seed. Each comparison run now uses its own seed-derived stream (mirroring the existing ablation RNG-swap pattern), restored before the main trajectory begins.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Double preset-apply on page load (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The <code>DOMContentLoaded</code> and <code>load</code> listeners both called <code>applyPreset('reference')</code>, silently re-applying all default parameters a second time before the first run executed. The <code>load</code> listener now only sets the reference seed/flag and calls <code>runSim()</code>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Chart screen-reader labels (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">All 11 Chart.js canvases previously had no accessible name — a sighted-only presentation of every result. Added <code>role="img"</code> and a descriptive <code>aria-label</code> to each.</p></div>
@@ -517,7 +518,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v3.8 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v3.9 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
@@ -528,8 +529,52 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v3.8
+ * COMPASSIONISM FRAMEWORK SIMULATION  v3.9
  * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v3.8 → v3.9  (external audit cross-check — Gemini review +
+ * internal verification; numerical edge cases)
+ *
+ * FIXES:
+ *  1. Wealth p90/p10 ratio KPI: the guard against an undefined/misleading
+ *     ratio was `fP10>0`, which only catches zero or negative p10. A p10
+ *     of a few dollars (not uncommon near the wealth floor) produced a
+ *     technically-finite but meaningless ratio (e.g. 4,000×) instead of
+ *     showing "∞". Changed the threshold to `fP10>100` (dollars) so
+ *     near-degenerate denominators display as infinite, matching the
+ *     already-correct negative/zero case.
+ *  2. runOATSensitivity() mutated the object returned by getCurrentParams()
+ *     directly (`base.nAgents=200;base.years=10`) rather than building a
+ *     fresh object. Harmless today since nothing else held a reference to
+ *     that object, but it meant getCurrentParams() couldn't safely be
+ *     treated as a pure snapshot function. Now builds the OAT base params
+ *     via Object.assign into a new object, leaving the original untouched.
+ *
+ * AUDIT NOTE:
+ *  An external Gemini review of v3.8 proposed Object.freeze()-ing
+ *  getCurrentParams()'s return value to prevent "race conditions" from
+ *  slider changes during an in-flight run. Investigated and NOT applied:
+ *  runSim() doesn't call getCurrentParams() at all — it builds its own
+ *  separate inline params object (documented as a known duplication, not a
+ *  bug, in the Architecture notes above) — so there was no race condition
+ *  to fix, and runOATSensitivity() genuinely depends on being able to
+ *  override fields on that object (see fix #2 above, which addresses the
+ *  same underlying object more surgically). Freezing it as suggested would
+ *  have silently broken OAT's base-parameter override. The review's SRI
+ *  hash for Chart.js 4.4.1 (`sha512-gCADnVFESQU4Z8VChKFHOZekWOPE9Wq3/...`)
+ *  is NOT valid — a correct sha512 digest is 88 base64 characters; the
+ *  supplied string is 65. Do not use it. SRI-pinning is still worth doing
+ *  but needs a hash generated and verified directly against the deployed
+ *  file, not one supplied by a model from memory (same conclusion reached
+ *  auditing v3.7 → v3.8). The review's synchronous-batch-loop concern for
+ *  runMulti/runOATStep/runAblation doesn't hold either — all three already
+ *  yield via setTimeout(...,0) between iterations; only the per-scenario
+ *  inner year-loop is a tight synchronous for-loop, and at the capped
+ *  scale used there (≤200 agents) it isn't a Long Task risk.
+ *
+ * NO SIMULATION OUTPUT CHANGES except the ratio KPI display threshold
+ * described above; the underlying p10/p90 values are unchanged.
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v3.7 → v3.8  (external audit cross-check — Grok review +
@@ -756,7 +801,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'3.8',
+  VERSION:'3.9',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
   CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
@@ -1114,7 +1159,7 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
   var bMain=bleiMetrics(agents,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,top);
   var bleiPovPct=(bMain.tc[0]+bMain.tc[1])/bMain.n*100;
   var blei5=aBlei.length?aBlei[Math.min(4,aBlei.length-1)]:0;
-  var fP10=finalM.p10,fP90=finalM.p90,ratio=(fP10>0)?(fP90/fP10).toFixed(1):'∞';
+  var fP10=finalM.p10,fP90=finalM.p90,ratio=(fP10>100)?(fP90/fP10).toFixed(1):'∞';
   var policy={breakEvenYr:breakEvenYr,ratio:ratio,blei5:blei5,p10:fP10,p90:fP90};
   var fPartPov=aPartPov.length?aPartPov[aPartPov.length-1]:null;
   var fNonPov=aNonPartPov.length?aNonPartPov[aNonPartPov.length-1]:null;
@@ -1352,7 +1397,7 @@ function renderMilestones(ms){
 /* ─── OAT SENSITIVITY (v3.3: computed from actual model runs) ─────────── */
 function runOATSensitivity(){
   if(running)return;
-  var base=getCurrentParams();base.nAgents=200;base.years=10;
+  var base=Object.assign({},getCurrentParams(),{nAgents:200,years:10});
   OAT_STATE.baseParams=base;OAT_STATE.results=[];OAT_STATE.current=0;OAT_STATE.baseResult=null;
   var sc=[];
   function addSc(name,param,val){var p2=Object.assign({},base);p2[param]=val;sc.push({name:name,param:param,value:val,params:p2});}
