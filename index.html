@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="author" content="Better To Best Research Collective">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/">
-<title>Compassionism Framework Simulation v3.7 | Better To Best Research Hub</title>
-<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts. v3.7.">
+<title>Compassionism Framework Simulation v3.8 | Better To Best Research Hub</title>
+<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts, isolated comparison-run RNG streams. v3.8.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.7: fixed a double preset-apply on page load, added screen-reader labels to all charts, added a collapsible in-app glossary panel.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.7","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.8: isolated the baseline and CCO-only comparison-run RNG streams from the main trajectory for stricter reproducibility.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.8","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
 /* v3.4: auto-load illustrative reference run on page load */
 window.addEventListener('load',function(){applyPreset('reference');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
 </script>
@@ -118,7 +118,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 <body>
 <header>
   <div>
-    <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.7</span></div>
+    <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.8</span></div>
     <div class="hd-sub">
       All five architectures ·
       <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -368,7 +368,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div id="sec-export" style="display:none" class="export-card">
     <div class="export-card-inner">
-      <div class="export-note"><h4>Research Export</h4><p>v3.7 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
+      <div class="export-note"><h4>Research Export</h4><p>v3.8 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
       <div class="export-btns">
         <button class="dl-btn" onclick="downloadCSV()">⬇ CSV</button>
         <button class="dl-btn-sec" onclick="downloadJSON()">⬇ JSON</button>
@@ -398,7 +398,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.7 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.8 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -411,8 +411,9 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income → PTH Acre Equity appreciation → PTF adoption check → wealth floor clamp. BLEI = (liquid + γ·wage + buFood) / dailyCost. Gini: sorted non-negative-clamped wealth. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.7)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.8)</span>
     <div class="assump-grid">
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Comparison-run RNG isolation (v3.8)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The baseline and CCO-only comparison trajectories previously ran on the same shared RNG stream the main trajectory consumed next, so changing years or agent count shifted the main run's random sequence at a fixed seed. Each comparison run now uses its own seed-derived stream (mirroring the existing ablation RNG-swap pattern), restored before the main trajectory begins.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Double preset-apply on page load (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The <code>DOMContentLoaded</code> and <code>load</code> listeners both called <code>applyPreset('reference')</code>, silently re-applying all default parameters a second time before the first run executed. The <code>load</code> listener now only sets the reference seed/flag and calls <code>runSim()</code>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Chart screen-reader labels (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">All 11 Chart.js canvases previously had no accessible name — a sighted-only presentation of every result. Added <code>role="img"</code> and a descriptive <code>aria-label</code> to each.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">In-app glossary panel (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Added a collapsible acronym glossary above Scenario Presets, mirroring the Key Concepts accordion on the replication page, so first-time users don't have to leave the tool to look up CCO/PTF/PTH/SZH/CIP and related terms.</p></div>
@@ -468,7 +469,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div class="ref-item">Frey, C.B. &amp; Osborne, M.A. (2013). <em>The Future of Employment: How Susceptible Are Jobs to Computerisation?</em> University of Oxford. <em>[automationRisk calibration]</em></div>
       <div class="ref-item">Grimm, V., et al. (2010). The ODD protocol: A review and first update. <em>Ecological Modelling</em>, 221(23), 2760–2768. <em>[ABM documentation standard]</em></div>
       <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Basic Living Economic Index (BLEI). Better To Best Research Hub. CC BY 4.0. <a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html" target="_blank" rel="noopener">↗ paper</a></div>
-      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.7. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a>. <em>[archived version of this tool]</em></div>
+      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.8. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a>. <em>[archived version of this tool]</em></div>
       <div class="ref-item">Jones, D. &amp; Marinescu, I. (2018). The labor market impacts of universal and permanent cash transfers. NBER Working Paper 24312. <em>[Alaska PFD analogue]</em></div>
       <div class="ref-item">Mullainathan, S. &amp; Shafir, E. (2013). <em>Scarcity: Why Having Too Little Means So Much.</em> Times Books. <em>[FBS bandwidth constraint, wage growth]</em></div>
       <div class="ref-item">NBER Business Cycle Dating Committee. <em>U.S. Business Cycle Expansions and Contractions.</em> <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener">nber.org</a>. <em>[beta(5,2) recession calibration]</em></div>
@@ -482,19 +483,60 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v3.7 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v3.8 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
     <div style="font-size:10.5px;color:var(--text3);margin-bottom:3px">Suggested citation:</div>
-    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.7. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener" style="color:inherit">https://doi.org/10.17605/OSF.IO/QWTE2</a></span>
+    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation v3.8. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener" style="color:inherit">https://doi.org/10.17605/OSF.IO/QWTE2</a></span>
   </div>
 </footer>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v3.7
+ * COMPASSIONISM FRAMEWORK SIMULATION  v3.8
  * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v3.7 → v3.8  (external audit cross-check — Grok review +
+ * internal verification; RNG rigor)
+ *
+ * RIGOR FIX:
+ *  1. Baseline and CCO-only comparison runs previously ran their full
+ *     year-by-year trajectories (recession draws, wage variance, adoption
+ *     checks) on the SAME shared RNG stream that the main trajectory
+ *     consumed next — so at a fixed seed, changing years or nAgents shifted
+ *     the random sequence the main run actually saw, even though the
+ *     headline claim is "same seed + params → identical run." Each
+ *     comparison run now executes on its own stream derived from the user
+ *     seed (mulberry32(seed+700001) / mulberry32(seed+700002)), and the
+ *     stream is restored before the main trajectory begins — mirroring the
+ *     existing ablation RNG-swap pattern in runMulti(). Unseeded (Math.random)
+ *     runs are unaffected, since no reproducibility claim applies there.
+ *
+ * AUDIT NOTE:
+ *  An external Grok review of v3.7 raised several additional points that do
+ *  not hold against the actual implementation and were not acted on:
+ *  participant/non-participant KPI paths already guard against empty arrays
+ *  (`pArr.length ? ... : null`); the internal validation suite already
+ *  exists (four consistency checks, not absent); OAT already documents that
+ *  it's first-order-only, deferring Sobol/LHC to external CSV analysis as
+ *  the correct scope for a browser tool. A vendored/SRI-pinned Chart.js was
+ *  considered but not shipped this release — cdnjs's own auto-generated SRI
+ *  hashes have a documented history of not matching the served file, and a
+ *  wrong hash silently breaks every chart for every user, which is worse
+ *  than the current unpinned CDN load. Worth revisiting with a hash
+ *  generated and verified directly against the deployed file at release
+ *  time. Larger suggestions (engine extraction into modules, Web Worker for
+ *  Monte Carlo, occupation-based automation risk, demographic layer,
+ *  external SCF/CPS validation, "Formulas" panel, "reproduce this run" URL)
+ *  remain deferred — real gaps for v4.0 scoping, not dismissed.
+ *
+ * NO SIMULATION OUTPUT CHANGES for a fixed (years, nAgents) combination —
+ * this fix only decouples the main run's stream from comparison-run length.
+ * Regression baseline (seed 42, Full Integration, 20 yr) produces identical
+ * numerical output to v3.7, since baseline/CCO-only length is unchanged
+ * between versions for that specific configuration.
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v3.6 → v3.7  (external audit cross-check — Meta AI review +
@@ -680,9 +722,9 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'3.7',
+  VERSION:'3.8',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
-  CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.7. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
+  CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation v3.8. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
 };
 
@@ -892,12 +934,21 @@ function simulate(p,warns){
   var pCCO={bu:1200,maxOct:6,expiry:1,tax:0.12,maxMult:9,nAgents:n,years:years,partRate:0.78,ptfShare:0,pthUptake:0,szhCoh:0,cipDemo:0.20,phi:true,ptf:false,pth:false,szh:false,cip:false,shock:false,ccoOn:true,inflRate:p.inflRate,automation:p.automation};
 
   var baseYearlyPov=[],bRecSt={active:false,incomeMultiplier:1.0,yearsLeft:0};
+  /* v3.8 fix: baseline & CCO-only comparison runs previously consumed RNG draws from the
+     same shared stream the main trajectory uses next, so changing years/nAgents shifted
+     the main run's random sequence even at a fixed seed. Give each comparison run its own
+     derived stream (same pattern as the ablation RNG-swap in runMulti), then restore the
+     stream the main trajectory continues from — unaffected by comparison-run length. */
+  var mainRNG=RNG,seedNum=(p.seed!==null&&p.seed!==undefined&&p.seed!=='')?parseInt(p.seed):NaN;
+  RNG=isNaN(seedNum)?mainRNG:mulberry32(seedNum+700001);
   for(var bYr=0;bYr<years;bYr++){if(pBase.shock&&bYr>0)updateRecession(bRecSt);runYear(baseAgents,bYr,pBase,bRecSt);baseYearlyPov.push(+(calcMetrics(baseAgents).pov*100).toFixed(1));}
   var mBase=calcMetrics(baseAgents),bBase=bleiMetrics(baseAgents,0,false,false,false,0,'Comfortable');
 
   var ccoRecSt={active:false,incomeMultiplier:1.0,yearsLeft:0};
+  RNG=isNaN(seedNum)?mainRNG:mulberry32(seedNum+700002);
   for(var cYr=0;cYr<years;cYr++){if(pCCO.shock&&cYr>0)updateRecession(ccoRecSt);runYear(ccoAgents,cYr,pCCO,ccoRecSt);}
   var mCCO=calcMetrics(ccoAgents),bCCO=bleiMetrics(ccoAgents,pCCO.bu,true,false,false,0,'Comfortable');
+  RNG=mainRNG;
 
   var yLabels=[],aPov=[],aGini=[],aWealth=[],aVel=[],aBlei=[];
   var aP10=[],aP90=[],aTiersDist=[],aCash=[],aInc=[],aBen=[];
