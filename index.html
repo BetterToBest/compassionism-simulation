@@ -11,8 +11,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://bettertobest.github.io/research-hub/assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://bettertobest.github.io/research-hub/assets/favicon-180.png">
-<title>Compassionism Framework Simulation v4.0 | Better To Best Research Hub</title>
-<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, FBS-gated advancement, 50× Monte Carlo stochastic CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts, paired-population comparison runs. v4.0.">
+<title>Compassionism Framework Simulation v4.1 | Better To Best Research Hub</title>
+<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, FBS-gated advancement, 50× Monte Carlo stochastic CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts, paired-population comparison runs. v4.1.">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -39,7 +39,7 @@
 <meta name="twitter:creator" content="@Author_Duke_J">
 <meta name="twitter:site" content="@Author_Duke_J">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.0","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.1","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -149,7 +149,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div style="display:flex;align-items:center;gap:.6rem">
     <img src="https://bettertobest.github.io/research-hub/assets/bettertobest-mark-muted-originals.svg" alt="Better To Best Research Hub" width="32" height="32" style="flex-shrink:0">
     <div>
-      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.0</span></div>
+      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.1</span></div>
       <div class="hd-sub">
         All five architectures ·
         <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -204,11 +204,11 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div class="ss">
     <div class="ss-head">CCO — Basic Units <span style="font-size:9px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--text3)">(Pegged 1:1 to $)</span></div>
     <div class="cr"><div class="cl"><span class="cn">Monthly BU allocation ($/month)</span><span class="cv" id="v-bu">$1,200</span></div><input type="range" min="0" max="1800" step="50" value="1200" id="s-bu" oninput="sv('bu',this.value)"><div class="ch">$0 = no CCO · Reference: $1,200/month</div></div>
-    <div class="cr"><div class="cl"><span class="cn">Max octave level</span><span class="cv" id="v-oct">6</span></div><input type="range" min="1" max="9" step="1" value="6" id="s-oct" oninput="sv('oct',this.value)"><div class="ch">C = C₀ × 2ⁿ — governs conversion capacity</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Max octave level</span><span class="cv" id="v-oct">6</span></div><input type="range" min="1" max="9" step="1" value="6" id="s-oct" oninput="sv('oct',this.value)"><div class="ch">Governs CCO conversion-rate ceiling — scales from 1× toward the quality multiplier cap as an agent's octave rises (v4.0)</div></div>
     <div class="cr"><div class="cl"><span class="cn">BU expiry (months)</span><span class="cv" id="v-exp">1 mo</span></div><input type="range" min="1" max="6" step="1" value="1" id="s-exp" oninput="sv('exp',this.value)"><div class="ch">1 = standard monthly cycle</div></div>
     <div class="cr"><div class="cl"><span class="cn">Phi Φ rate (1.618× beauty bonus)</span><span class="cv" id="v-phi">On</span></div><div class="tg"><button class="tb on" id="phi-on" onclick="tog('phi',true)">On (1.618×)</button><button class="tb" id="phi-off" onclick="tog('phi',false)">Off</button></div><div class="ch">Phi On: effective max ≈ ceiling × 1.618 (e.g., 9× → ≈14.56×) · Phi Off: max = quality ceiling only</div></div>
     <div class="cr"><div class="cl"><span class="cn">Conversion tax rate (%)</span><span class="cv" id="v-tax">12%</span></div><input type="range" min="0" max="30" step="1" value="12" id="s-tax" oninput="sv('tax',this.value)"><div class="ch">BU→primary currency levy (progressive taper)</div></div>
-    <div class="cr"><div class="cl"><span class="cn">Quality multiplier ceiling</span><span class="cv" id="v-mult">9×</span></div><input type="range" min="1" max="9" step="1" value="9" id="s-mult" oninput="sv('mult',this.value)"><div class="ch" id="v-mult-eff">Effective max with Phi: 14.58×</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Quality multiplier ceiling</span><span class="cv" id="v-mult">9×</span></div><input type="range" min="1" max="9" step="1" value="9" id="s-mult" oninput="sv('mult',this.value)"><div class="ch" id="v-mult-eff">Effective max with Phi: 14.56×</div></div>
   </div>
 
   <div class="ss">
@@ -244,7 +244,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div class="ss">
     <div class="ss-head">Economic Environment</div>
-    <div class="cr"><div class="cl"><span class="cn">Stochastic recession events</span></div><div class="tg"><button class="tb" id="shock-on" onclick="tog('shock',true)">Include</button><button class="tb on" id="shock-off" onclick="tog('shock',false)">Off</button></div><div class="ch">Population-level (10% annual prob.; 2–4 yr, 65–85% income multiplier)</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Stochastic recession events</span></div><div class="tg"><button class="tb" id="shock-on" onclick="tog('shock',true)">Include</button><button class="tb on" id="shock-off" onclick="tog('shock',false)">Off</button></div><div class="ch">Population-level (10% annual prob.; 1–3 yr, 70–95% income multiplier)</div></div>
     <div class="cr"><div class="cl"><span class="cn">AI labor automation</span></div><div class="tg"><button class="tb" id="automation-on" onclick="tog('automation',true)">On</button><button class="tb on" id="automation-off" onclick="tog('automation',false)">Off</button></div><div class="ch">Assumes 2025 simulation start. Heterogeneous risk per agent; displacement yr 5+ (≈2030), accelerates yr 15+ (≈2040)</div></div>
     <div class="cr"><div class="cl"><span class="cn">Inflation rate (% / yr)</span><span class="cv" id="v-infl">0.0%</span></div><input type="range" min="0" max="6" step="0.5" value="0" id="s-infl" oninput="sv('infl',this.value)"><div class="ch">0 = stable prices · 3% = US CPI · PTF/PTH dampen inflation</div></div>
   </div>
@@ -352,7 +352,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div class="slabel">Economic Trajectory</div>
   <div class="cgrid">
-    <div class="ccard"><div class="ctitle">Poverty rate — scenario vs baseline</div><div style="position:relative;height:200px"><canvas id="ch-pov" role="img" aria-label="Line chart of poverty rate over time, scenario versus US welfare baseline"></canvas></div><div class="csub">Dashed = US welfare baseline trajectory (same years, population-level recessions enabled)</div></div>
+    <div class="ccard"><div class="ctitle">Poverty rate — scenario vs baseline</div><div style="position:relative;height:200px"><canvas id="ch-pov" role="img" aria-label="Line chart of poverty rate over time, scenario versus US welfare baseline"></canvas></div><div class="csub">Dashed = US welfare baseline trajectory (same years; recessions apply to baseline only when your scenario has them enabled — see Cumulative Bug Fixes)</div></div>
     <div class="ccard"><div class="ctitle">Gini coefficient over time</div><div style="position:relative;height:200px"><canvas id="ch-gini" role="img" aria-label="Line chart of Gini coefficient over time"></canvas></div></div>
   </div>
   <div class="cgrid">
@@ -430,7 +430,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.0 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.1 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -443,8 +443,11 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income at a rate capped by octave-tier capacity → FBS-gated octave advancement check (v4.0) → PTH Acre Equity appreciation plus a payment→equity contribution (v4.0) → PTF adoption check (innovation + distress + Bass imitation, v4.0) → wealth floor clamp. BLEI = (liquid + γ·wage·SIU_TO_USD + buFood) / dailyCost (v4.0: wage converted to USD before summing — see Empirical Calibration below). Gini (v4.0): computed on EDC-adjusted net wealth, W_nominal − EDC×Y×12. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>) — mode 0.90 (10% loss), mean ≈0.88 (~12% loss).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.0)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.1)</span>
     <div class="assump-grid">
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTF attribution leak in paired-population ablation (v4.1)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The v4.0 paired-population ablation redesign (below) intentionally builds every removal scenario's agents under the FULL config so membership flags (inCCO/inPTF/inPTH) match across scenarios for RNG-pairing — correct for the simulation mechanics, which already re-check the relevant system toggle everywhere they consume those flags. But agentBLEI()'s SZH+PTF synergy term trusted <code>a.inPTF</code> directly with no <code>ptfOn</code> parameter to check against, unlike <code>ccoOn</code>/<code>pthOn</code>, which already gate <code>a.inCCO</code>/<code>a.inPTH</code> everywhere they're used (independently re-audited in this pass and confirmed unaffected). Result: the "Remove PTF" ablation result could retain a synergy bonus it shouldn't have whenever SZH was also active — worth roughly 12 BLEI days per affected agent in testing — understating PTF's true contribution on the Attribution chart. Fixed by threading <code>ptfOn</code> through <code>agentBLEI()</code>/<code>bleiMetrics()</code>, mirroring how <code>pthOn</code> already works; normal (non-ablation) runs are numerically unaffected. Found in a Claude (Anthropic) chat audit, Aug 2026.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Illustrative reference-run label was never shown (v4.1)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><code>IS_REF_RUN</code> was set true by the page-load auto-run (v3.4) but nothing ever read it, so the "📊 Illustrative reference run — seed 42…" banner stayed <code>display:none</code> permanently since its introduction — general-purpose neighbors (the Exploratory-simulation notice above the KPIs) covered for it, which is likely why this went unnoticed across several audit passes. Wired up in <code>finish()</code>: the flag is read once, to show the banner only for the genuine auto-loaded run, and reset immediately after so it can't linger into a later manual or chained Monte Carlo run.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Stale UI hint text corrected against current formulas (v4.1)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Several small strings had drifted from the mechanics they describe. The recession hint stated a 2–4 year / 65–85% income-multiplier range; the actual beta(5,2) formula (unchanged since v3.3, and correctly described elsewhere in this panel) produces 1–3 years / 70–95% — apparently a leftover from before that v3.3 change, missed by every subsequent audit including the one that corrected this same distribution's mode figure elsewhere on this page (below). The Max Octave hint described conversion capacity as "C = C₀ × 2ⁿ"; the actual v4.0 mechanism (above) is linear in octave/maxOct, reaching exactly the quality multiplier ceiling at max octave — an exponential form would hit 512× at octave 9, far past that ceiling — so the hint now describes the real shape. The Quality Multiplier Ceiling's static default read "14.58×" against the correct "14.56×" (9×1.618) shown one field above it; cosmetic, since <code>updateEffMax()</code> corrects it as soon as the reference preset auto-loads, but wrong in markup. The poverty-chart baseline caption asserted baseline recessions are unconditionally "enabled," no longer accurate once v4.0 paired baseline's shock exposure to the user's own toggle. OAT sensitivity's PTF-share perturbation used range [0,0.35] instead of the slider's actual [0.05,0.35], a minor overstatement of that one parameter's ±20% step.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Octave advancement, conversion capacity &amp; PTF diffusion (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Octave advancement is now FBS-gated (P(advance)=1−exp(−λ·FBS), a per-agent λ~U(0.001,0.008)) rather than a fixed probability — an agent at FBS=0 can no longer advance regardless of BLEI. Octave now governs CCO conversion-rate <em>capacity</em> (quality modulates the realised rate within it); previously octave had no role in conversion at all. PTF adoption gained a Bass (1969) imitation term based on current adoption share. External review (<a href="https://www.refine.ink/app/session/4e84aa99-44ff-438f-9382-719bf9714344" target="_blank" rel="noopener" style="color:var(--accent)">Refine.ink, Aug 2026</a>) + BLEI paper §8 Table 6.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTH Acre Equity payment contribution &amp; SZH network-density gating (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">A documented share (25%) of PTH's annual housing-cost saving now routes into Acre Equity instead of landing entirely as liquid relief — the "payments build equity" mechanism was previously absent (appreciation-only); no new wealth is created, this re-routes where an already-counted saving lands. SZH's synergy coefficient θ is now network-density-gated (0 below 55% PTF density, scaling to 0.25 at 90%+) rather than plain-linear in coherence.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Dimensional (unit) coherence in BLEI, FBS &amp; Gini (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">agentBLEI(), calcBLEIComponents(), the new FBS gate, and the Gini net-wealth adjustment now convert wage (SIU) to real USD via a single derived constant, SIU_TO_USD = (BASE_DAILY_COST×365)/SIM_COST_SCALE, before mixing it with dollar-valued terms — previously a raw SIU number was added directly into USD sums. agentEDC()'s saturation constants were rescaled so EDC responds to income above the median instead of sitting at a constant value for every realistic wage. The main wealth-accumulation loop was deliberately left unchanged — see Empirical Calibration below.</p></div>
@@ -524,7 +527,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v4.0 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v4.1 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
@@ -1023,7 +1026,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'4.0',
+  VERSION:'4.1',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
   CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
@@ -1135,14 +1138,25 @@ function szhTheta(coh){
 
 /* v3.3: NaN guards added throughout.
  * v4.0: gamma*mInc term converted SIU→USD via CFG.SIU_TO_USD (see UNIT SYSTEM note) —
- * previously a raw SIU number was added directly to USD-valued liquid/buFood terms. */
-function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh){
+ * previously a raw SIU number was added directly to USD-valued liquid/buFood terms.
+ * v4.1: added the ptfOn parameter (audit finding — see AUDIT NOTE at top of file).
+ * ccoOn and pthOn were already threaded through and checked alongside a.inCCO/a.inPTH
+ * everywhere they're used below; PTF had no equivalent, so the θ bonus trusted a.inPTF
+ * alone. That's harmless in the main simulation (a.inPTF can't be true when p.ptf is
+ * false there — makeAgent() short-circuits on cfgP.ptf), but runAblation() deliberately
+ * builds every scenario's population under the FULL p (for RNG-pairing — see its
+ * comment) while simulating under a per-scenario pCfg, so a "PTF removed" ablation run
+ * can have agents with a leftover a.inPTF=true from construction even though PTF is off
+ * for that run. Without ptfOn, this function had no way to tell — the θ bonus leaked
+ * into the "remove PTF" attribution result whenever SZH was also active, understating
+ * PTF's true contribution on the Attribution chart. Now gated exactly like pthOn. */
+function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh,ptfOn){
   var liquid=Math.max(0,(isNaN(a.wealth)?0:a.wealth)*0.20);
   var gamma=(ccoOn&&a.inCCO)?0.20:0.12;
   var mInc=Math.max(isNaN(a.wage)?1:a.wage,0.1)*CFG.SIU_TO_USD;
   var buFood=(ccoOn&&a.inCCO&&buAlloc>0)?buAlloc*(990/1200):0;
   var szhD=szhOn?szhCoh*CFG.SZH_ALL_RESIDENTS:0;
-  if(szhOn&&a.inPTF)szhD+=szhTheta(szhCoh)*0.20;  // v4.0: threshold-gated (was szhCoh*SZH_PTF_BONUS, linear)
+  if(szhOn&&ptfOn&&a.inPTF)szhD+=szhTheta(szhCoh)*0.20;  // v4.0: threshold-gated (was szhCoh*SZH_PTF_BONUS, linear); v4.1: +ptfOn gate
   var baseCost=(ccoOn&&a.inCCO&&pthOn&&a.inPTH)?CFG.CCO_PTH_DAILY_COST:CFG.BASE_DAILY_COST;
   var dc=Math.max(baseCost*(1-szhD),0.1);
   var r=(liquid+gamma*mInc+buFood)/dc;
@@ -1177,9 +1191,9 @@ function agentEDC(a,ccoOn,pthOn){
   return Math.min(0.42,Math.min(0.35,(0.35*w)/mInc)+0.03);
 }
 
-function bleiMetrics(agents,buAlloc,ccoOn,pthOn,szhOn,szhCoh,top){
+function bleiMetrics(agents,buAlloc,ccoOn,pthOn,szhOn,szhCoh,ptfOn,top){
   top=top||'Flourishing';
-  var sc=agents.map(function(a){return agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh);});
+  var sc=agents.map(function(a){return agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh,ptfOn);});
   sc.sort(function(a,b){return a-b;});
   var n=sc.length,med=n%2===0?(sc[n/2-1]+sc[n/2])/2:sc[Math.floor(n/2)];
   var tc=[0,0,0,0,0,0];sc.forEach(function(d){tc[getTier(d,top).num]++;});
@@ -1193,7 +1207,7 @@ function calcBLEIComponents(agents,p){
     var liq=Math.max(0,(isNaN(a.wealth)?0:a.wealth)*0.20);
     var g=(p.ccoOn&&a.inCCO)?0.20:0.12;
     var buF=(p.ccoOn&&a.inCCO&&p.bu>0)?p.bu*(990/1200):0;
-    var sD=p.szh?p.szhCoh*CFG.SZH_ALL_RESIDENTS:0;if(p.szh&&a.inPTF)sD+=szhTheta(p.szhCoh)*0.20;  // v4.0: threshold-gated
+    var sD=p.szh?p.szhCoh*CFG.SZH_ALL_RESIDENTS:0;if(p.szh&&p.ptf&&a.inPTF)sD+=szhTheta(p.szhCoh)*0.20;  // v4.0: threshold-gated; v4.1: +p.ptf gate (see agentBLEI)
     var dc=Math.max(((p.ccoOn&&a.inCCO&&p.pth&&a.inPTH)?CFG.CCO_PTH_DAILY_COST:CFG.BASE_DAILY_COST)*(1-sD),0.1);
     cash.push(liq/dc);inc.push(g*Math.max(isNaN(a.wage)?0:a.wage,0)*CFG.SIU_TO_USD/dc);ben.push(buF/dc);  // v4.0: SIU→USD on income term
   });
@@ -1363,12 +1377,12 @@ function simulate(p,warns){
   var baseAgents=[];for(var bi=0;bi<n;bi++)baseAgents.push(makeAgent(pBase));
   baseAgents.forEach(function(a){a.wealth*=0.85;});  // documented design choice — lower savings absent CCO
   for(var bYr=0;bYr<years;bYr++){runYear(baseAgents,bYr,pBase,recAt(bYr));baseYearlyPov.push(+(calcMetrics(baseAgents,false,false).pov*100).toFixed(1));}
-  var mBase=calcMetrics(baseAgents,false,false),bBase=bleiMetrics(baseAgents,0,false,false,false,0,'Comfortable');
+  var mBase=calcMetrics(baseAgents,false,false),bBase=bleiMetrics(baseAgents,0,false,false,false,0,false,'Comfortable');
 
   RNG=isNaN(seedNum)?mainRNG:mulberry32(seedNum+700002);
   var ccoAgents=[];for(var ci=0;ci<n;ci++)ccoAgents.push(makeAgent(pCCO));
   for(var cYr=0;cYr<years;cYr++){runYear(ccoAgents,cYr,pCCO,recAt(cYr));}
-  var mCCO=calcMetrics(ccoAgents,pCCO.ccoOn,false),bCCO=bleiMetrics(ccoAgents,pCCO.bu,pCCO.ccoOn,false,false,0,'Comfortable');
+  var mCCO=calcMetrics(ccoAgents,pCCO.ccoOn,false),bCCO=bleiMetrics(ccoAgents,pCCO.bu,pCCO.ccoOn,false,false,0,false,'Comfortable');
   RNG=mainRNG;
 
   var yLabels=[],aPov=[],aGini=[],aWealth=[],aVel=[],aBlei=[];
@@ -1386,7 +1400,7 @@ function simulate(p,warns){
     aPov.push(+(m.pov*100).toFixed(1));aGini.push(+m.gini.toFixed(3));
     aWealth.push(Math.round(m.med));aVel.push(Math.round(vel/n));aBlei.push(Math.round(bMed));
     aP10.push(Math.round(m.p10));aP90.push(Math.round(m.p90));
-    var tc=[0,0,0,0,0,0];agents.forEach(function(a){tc[getTier(agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh)).num]++;});
+    var tc=[0,0,0,0,0,0];agents.forEach(function(a){tc[getTier(agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf)).num]++;});
     aTiersDist.push(tc.map(function(c){return+(c/n*100).toFixed(1);}));
     var comp=calcBLEIComponents(agents,p);aCash.push(+comp.cash.toFixed(1));aInc.push(+comp.inc.toFixed(1));aBen.push(+comp.ben.toFixed(1));
     /* v3.3: participant stratification */
@@ -1448,7 +1462,7 @@ function runYear(agentSet,yr,p,recSt){
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
     var agentVar=0.90+RNG()*0.20,incomeShock=popShock*agentVar;
-    var bleiCheck=agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh);
+    var bleiCheck=agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
     /* v3.3: wage growth with diminishing returns on stability premium */
     var wg=CFG.WAGE_BASE_GROWTH;
     if(bleiCheck>CFG.BLEI_PRECARIOUS_MAX){
@@ -1580,16 +1594,23 @@ function calcMetrics(agentSet,ccoOn,pthOn){
 /* v3.3: proper linear interpolation for percentiles */
 function interpP(sorted,p){var n=sorted.length;if(!n)return 0;var pos=p*(n-1),lo=Math.floor(pos),hi=Math.ceil(pos);return lo===hi?sorted[lo]:sorted[lo]+(pos-lo)*(sorted[hi]-sorted[lo]);}
 
-function calcMedianBLEI(agents,p){var sc=agents.map(function(a){return agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh);});sc.sort(function(a,b){return a-b;});var n=sc.length;if(!n)return 0;return n%2===0?(sc[n/2-1]+sc[n/2])/2:sc[Math.floor(n/2)];}
+function calcMedianBLEI(agents,p){var sc=agents.map(function(a){return agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);});sc.sort(function(a,b){return a-b;});var n=sc.length;if(!n)return 0;return n%2===0?(sc[n/2-1]+sc[n/2])/2:sc[Math.floor(n/2)];}
 
 /* ─── FINISH ──────────────────────────────────────────────────────────── */
 function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr,totalConversionAll){
+  /* v4.1 fix: IS_REF_RUN was set true on the page-load auto-run (see bottom of file,
+   * "v3.4: auto-load illustrative reference run") but nothing ever read it — #ref-run-
+   * label ("📊 Illustrative reference run — seed 42...") stayed display:none permanently
+   * (audit finding). Captured here, reset immediately so it can't leak into a chained MC
+   * run's finish() call or any later manual run, and applied below once the rest of this
+   * run's display state is being set. */
+  var wasRefRun=IS_REF_RUN;IS_REF_RUN=false;
   var finalM={pov:aPov[aPov.length-1],gini:aGini[aGini.length-1],med:aWealth[aWealth.length-1],p10:aP10.length?aP10[aP10.length-1]:0,p90:aP90.length?aP90[aP90.length-1]:0};
   var q=Math.max(1,Math.floor(yLabels.length/4)),lQ=aPov.slice(-q),improving=lQ[lQ.length-1]<=lQ[0];
   var stabBase=improving?0.88:0.60;if(p.cip)stabBase+=p.cipDemo*0.10;
   var stab=Math.min(0.99,stabBase+RNG()*0.08);
   var compassActive=p.ccoOn&&p.ptf,top=compassActive?'Flourishing':'Comfortable';
-  var bMain=bleiMetrics(agents,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,top);
+  var bMain=bleiMetrics(agents,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf,top);
   var bleiPovPct=(bMain.tc[0]+bMain.tc[1])/bMain.n*100;
   var blei5=aBlei.length?aBlei[Math.min(4,aBlei.length-1)]:0;
   var fP10=finalM.p10,fP90=finalM.p90,ratio=(fP10>100)?(fP90/fP10).toFixed(1):'∞';
@@ -1627,6 +1648,7 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
   renderInsights(finalM,stab,bMain,p,top);
   renderMilestones(findMilestones(aPov,aGini,aWealth,aBlei,baseYearlyPov));
   renderSens();showRunConfig(p);
+  var refLbl=document.getElementById('ref-run-label');if(refLbl)refLbl.style.display=wasRefRun?'block':'none';
 
   ['sec-policy-kpis','label-policy','sec-dist-charts','label-dist'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display=id.indexOf('label')>=0?'flex':'grid';});
 
@@ -1728,6 +1750,16 @@ function renderStratKPIs(partPov,nonPartPov,partBLEI,nonPartBLEI,p,top){
  *     differ between the reference and each removal run.
  *  2. Deltas are signed. A subsystem whose removal improves BLEI now shows as a negative
  *     bar instead of being clamped to zero — see renderAttribution.
+ * v4.1: fixed a leak this paired-population design introduced. buildPop() intentionally
+ * builds every scenario's agents under the FULL p (see its comment) so membership flags
+ * (inCCO/inPTF/inPTH) match across scenarios for RNG-pairing — but that means a "PTF
+ * removed" run's agents can still carry a.inPTF=true from construction even though pA.ptf
+ * is false for that run. runYear() already re-checks pCfg.ptf everywhere it matters during
+ * simulation, so this never affected the mechanics. bleiMetrics()/agentBLEI()'s SZH+PTF
+ * synergy term did NOT re-check it (no ptfOn param existed), so the "PTF removed" result
+ * kept a synergy bonus it shouldn't have whenever SZH was also active — understating PTF's
+ * true attribution. Fixed by passing ptfOn through (pA.ptf below), mirroring how pthOn
+ * already gates a.inPTH. ccoOn/pthOn were unaffected — see the AUDIT NOTE at top of file.
  * callback(res, fullMetrics): res[sys] = bleiMetrics with that subsystem removed;
  * fullMetrics = the paired full-system reference this batch's deltas are measured against. */
 function runAblation(p,bMain,callback){
@@ -1742,7 +1774,7 @@ function runAblation(p,bMain,callback){
     for(var y=0;y<p.years;y++)runYear(agentsArr,y,pCfg,recPath?recPath[y]:rSt);
   }
   var fullPop=buildPop();runPop(fullPop,p);
-  var fullMetrics=bleiMetrics(fullPop,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,(p.ccoOn&&p.ptf)?'Flourishing':'Comfortable');
+  var fullMetrics=bleiMetrics(fullPop,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf,(p.ccoOn&&p.ptf)?'Flourishing':'Comfortable');
   var idx=0;
   function next(){
     if(idx>=sys.length){RNG=sRNG;callback(res,fullMetrics);return;}
@@ -1750,7 +1782,7 @@ function runAblation(p,bMain,callback){
     if(s==='CCO'){pA.ccoOn=false;pA.bu=0;}else if(s==='PTF'){pA.ptf=false;pA.ptfShare=0;}else if(s==='PTH'){pA.pth=false;pA.pthUptake=0;}else if(s==='SZH'){pA.szh=false;pA.szhCoh=0;}else if(s==='CIP'){pA.cip=false;pA.cipDemo=0;}
     var popA=buildPop();  // same seed0 → bit-identical population/membership to fullPop
     runPop(popA,pA);
-    res[s]=bleiMetrics(popA,pA.bu,pA.ccoOn,pA.pth,pA.szh,pA.szhCoh,(pA.ccoOn&&pA.ptf)?'Flourishing':'Comfortable');
+    res[s]=bleiMetrics(popA,pA.bu,pA.ccoOn,pA.pth,pA.szh,pA.szhCoh,pA.ptf,(pA.ccoOn&&pA.ptf)?'Flourishing':'Comfortable');
     setTimeout(next,0);
   }
   next();
@@ -1881,7 +1913,12 @@ function runOATSensitivity(){
    * a common perturbation scale." A value-relative ±20% is also undefined/zero whenever
    * the base value is 0 (e.g. the Reference preset's 0% inflation) — range-based avoids
    * that failure mode as well as unifying the scale across all five parameters. */
-  var RANGE={bu:[0,1800],partRate:[0,0.99],ptfShare:[0,0.35],inflRate:[0,0.06],tax:[0,0.30]};
+  /* v4.1: ptfShare range corrected to [0.05,0.35] — the slider's actual min is 5%, not
+   * 0% (see s-ptf in the markup). Using [0,0.35] understated the true slider span,
+   * giving this one parameter a slightly different ±20% step (7pp) than its own slider
+   * actually spans (6pp) — a minor inconsistency with the "each parameter's own slider
+   * range" claim below, caught alongside the other v4.1 audit findings. */
+  var RANGE={bu:[0,1800],partRate:[0,0.99],ptfShare:[0.05,0.35],inflRate:[0,0.06],tax:[0,0.30]};
   function pert(key){return 0.20*(RANGE[key][1]-RANGE[key][0]);}
   function clampR(key,v){return Math.max(RANGE[key][0],Math.min(RANGE[key][1],v));}
   if(base.ccoOn&&base.bu>0){var dBu=pert('bu');addSc('BU +20% of range','bu',Math.round(clampR('bu',base.bu+dBu)/50)*50);addSc('BU −20% of range','bu',Math.round(clampR('bu',base.bu-dBu)/50)*50);}
