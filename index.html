@@ -11,8 +11,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://bettertobest.github.io/research-hub/assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://bettertobest.github.io/research-hub/assets/favicon-180.png">
-<title>Compassionism Framework Simulation v3.9 | Better To Best Research Hub</title>
-<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, 50× Monte Carlo 95% CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts, isolated comparison-run RNG streams. v3.9.">
+<title>Compassionism Framework Simulation v4.0 | Better To Best Research Hub</title>
+<meta name="description" content="Policy-grade agent-based simulation of all five Compassionism architectures. BLEI welfare metrics, FBS-gated advancement, 50× Monte Carlo stochastic CI, participant stratification, computed OAT sensitivity, validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts, paired-population comparison runs. v4.0.">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -39,9 +39,7 @@
 <meta name="twitter:creator" content="@Author_Duke_J">
 <meta name="twitter:site" content="@Author_Duke_J">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v3.9: hardened the wealth-ratio KPI against near-zero denominators and fixed a mutation of a shared params object in OAT sensitivity.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"3.9","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
-/* v3.4: auto-load illustrative reference run on page load */
-window.addEventListener('load',function(){applyPreset('reference');setTimeout(function(){IS_REF_RUN=true;var s=document.getElementById('s-seed');if(s)s.value='42';document.getElementById('v-seed').textContent='42';runSim();},300);});
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Policy-grade ABM of CCO, PTF, PTH, SZH, CIP. v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.0","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -151,7 +149,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div style="display:flex;align-items:center;gap:.6rem">
     <img src="https://bettertobest.github.io/research-hub/assets/bettertobest-mark-muted-originals.svg" alt="Better To Best Research Hub" width="32" height="32" style="flex-shrink:0">
     <div>
-      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v3.9</span></div>
+      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.0</span></div>
       <div class="hd-sub">
         All five architectures ·
         <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -261,8 +259,8 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <button class="run-btn" id="run-btn" onclick="runSim()">▶ Run Simulation</button>
     <button class="reset-btn" id="cancel-btn" onclick="cancelSim()" style="display:none;border-color:var(--red);color:var(--red);margin-bottom:.5rem">✕ Cancel Run</button>
     <button class="btn-sm btn-blue" id="multi-btn" onclick="runMulti(3)">📊 Run 3× · Variance range</button>
-    <button class="btn-sm btn-blue" id="mc10-btn"  onclick="runMulti(10)">🎯 Run 10× · Quick 95% CI</button>
-    <button class="btn-sm btn-blue" id="mc50-btn"  onclick="runMulti(50)">🎯 Run 50× · Publication CI</button>
+    <button class="btn-sm btn-blue" id="mc10-btn"  onclick="runMulti(10)">🎯 Run 10× · Stochastic CI</button>
+    <button class="btn-sm btn-blue" id="mc50-btn"  onclick="runMulti(50)">🎯 Run 50× · Stochastic CI</button>
     <button class="btn-sm btn-amber" id="oat-btn"  onclick="runOATSensitivity()" style="display:none">📐 One-at-a-Time Sensitivity Analysis</button>
     <button class="btn-sm btn-purple" id="val-btn" onclick="runValidation()">✅ Run Validation Suite</button>
     <button class="reset-btn" onclick="applyPreset('reference')">Reset to Full Integration defaults</button>
@@ -317,7 +315,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <div class="ccard">
       <div class="ctitle" id="multirun-header">Statistical range</div>
       <div id="multirun-inner"></div>
-      <div class="csub" id="multirun-sub" style="margin-top:.6rem">Mean ± SD. Use Run 10× or 50× for 95% CI (mean ± 1.96·SD/√n). For formal Sobol/LHC sensitivity, use CSV export with Python/R.</div>
+      <div class="csub" id="multirun-sub" style="margin-top:.6rem">Mean ± SD. Use Run 10× or 50× for 95% CI (mean ± 1.96·SD/√n) — a stochastic-error range from re-running this simulation with the same parameters, not a full uncertainty interval (excludes calibration, parameter, and structural uncertainty). For formal Sobol/LHC sensitivity, use CSV export with Python/R.</div>
     </div>
   </div>
 
@@ -348,7 +346,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div class="ctitle">Sanity checks — internal consistency (200 agents, 10 years each)</div>
       <div id="val-loading" style="font-size:11.5px;color:var(--text3);padding:.5rem 0;text-align:center;display:none">⏳ Running checks…</div>
       <div id="val-inner"></div>
-      <div class="csub" style="margin-top:.5rem">Internal design-target checks only, not external empirical validation. All four should PASS under well-calibrated parameters. Report failures to CONTRIBUTING.md.</div>
+      <div class="csub" style="margin-top:.5rem">Internal design-target checks only, not external empirical validation. All four should PASS under well-calibrated parameters. Report failures via <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</div>
     </div>
   </div>
 
@@ -402,7 +400,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div id="sec-export" style="display:none" class="export-card">
     <div class="export-card-inner">
-      <div class="export-note"><h4>Research Export</h4><p>v3.9 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline). JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/bettertobest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
+      <div class="export-note"><h4>Research Export</h4><p>v4.0 — full annual time-series (poverty, Gini, wealth p10/p50/p90, BLEI components, participant stratification, baseline) plus cumulative CCO conversion proceeds. JSON export includes complete parameter + results snapshot for replication.</p><a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">View contributors guide →</a></div>
       <div class="export-btns">
         <button class="dl-btn" onclick="downloadCSV()">⬇ CSV</button>
         <button class="dl-btn-sec" onclick="downloadJSON()">⬇ JSON</button>
@@ -432,7 +430,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v3.9 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.0 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -441,12 +439,18 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Overview: State Variables</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Per agent: <code>wealth</code> (USD), <code>wage</code> (SIU), <code>octave</code> (skill tier 0–maxOct), <code>quality</code> (1–9×), <code>automationRisk</code> ∈ [0.2,1.0], <code>inCCO/inPTF/inPTH</code> (participation flags), <code>buBalance</code>, <code>acreEquity</code>. Aggregate observables: poverty rate, Gini, BLEI tier distribution, EDC, stability index.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Design Concepts: Emergence &amp; Adaptation</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Emergence:</strong> Poverty, inequality, and BLEI tier distributions emerge from agent-level rules — not directly imposed. <strong>Adaptation:</strong> Octave advancement gated by FBS (Mullainathan &amp; Shafir bandwidth constraint). PTF adoption via economic distress and social diffusion (Bass 1969 model). No explicit utility maximisation — behavioural rules only.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Design Concepts: Interaction &amp; Stochasticity</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Interaction:</strong> Indirect market-mediated only — no direct agent-to-agent interaction. Cooperative effects via PTF/SZH zone parameters. <strong>Stochasticity:</strong> Seeded PRNG (mulberry32); wage variance ±10%; recession events 10% annual probability (beta(5,2) severity); BU spend rates 60–90%; octave advancement (FBS-gated probability). Same seed + params → identical run.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Initialization</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Agent wealth: lognormal(10.5,1.2) → median ~$36K (Fed SCF 2022). Wage: lognormal(3.5,0.5) → median ~33 SIU. Octave: beta(2,5)×maxOct. Quality: lognormal(log(maxMult×0.5),0.4). automationRisk: uniform[0.2,1.0]. Participation flags assigned at initialization probabilities. Baseline comparison agents: wealth×0.85 — documented design choice representing lower savings absent CCO.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income → PTH Acre Equity appreciation → PTF adoption check → wealth floor clamp. BLEI = (liquid + γ·wage + buFood) / dailyCost. Gini: sorted non-negative-clamped wealth. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>).</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Initialization</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Agent wealth: lognormal(10.5,1.2) → median ~$36K (Fed SCF 2022). Wage: lognormal(3.5,0.5) → median ~33 SIU. Octave: beta(2,5)×maxOct. Quality: lognormal(log(maxMult×0.5),0.4). automationRisk: uniform[0.2,1.0]. λ (FBS capability coefficient, v4.0): uniform[0.001,0.008] per agent. Participation flags assigned at initialization probabilities. Baseline comparison agents: wealth×0.85 — documented design choice representing lower savings absent CCO. Baseline and CCO-only comparison populations (v4.0) are generated independently from their own scenario parameters, not copied from the tested scenario's agents.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income at a rate capped by octave-tier capacity → FBS-gated octave advancement check (v4.0) → PTH Acre Equity appreciation plus a payment→equity contribution (v4.0) → PTF adoption check (innovation + distress + Bass imitation, v4.0) → wealth floor clamp. BLEI = (liquid + γ·wage·SIU_TO_USD + buFood) / dailyCost (v4.0: wage converted to USD before summing — see Empirical Calibration below). Gini (v4.0): computed on EDC-adjusted net wealth, W_nominal − EDC×Y×12. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>) — mode 0.90 (10% loss), mean ≈0.88 (~12% loss).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v3.9)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.0)</span>
     <div class="assump-grid">
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Octave advancement, conversion capacity &amp; PTF diffusion (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Octave advancement is now FBS-gated (P(advance)=1−exp(−λ·FBS), a per-agent λ~U(0.001,0.008)) rather than a fixed probability — an agent at FBS=0 can no longer advance regardless of BLEI. Octave now governs CCO conversion-rate <em>capacity</em> (quality modulates the realised rate within it); previously octave had no role in conversion at all. PTF adoption gained a Bass (1969) imitation term based on current adoption share. External review (<a href="https://www.refine.ink/app/session/4e84aa99-44ff-438f-9382-719bf9714344" target="_blank" rel="noopener" style="color:var(--accent)">Refine.ink, Aug 2026</a>) + BLEI paper §8 Table 6.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTH Acre Equity payment contribution &amp; SZH network-density gating (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">A documented share (25%) of PTH's annual housing-cost saving now routes into Acre Equity instead of landing entirely as liquid relief — the "payments build equity" mechanism was previously absent (appreciation-only); no new wealth is created, this re-routes where an already-counted saving lands. SZH's synergy coefficient θ is now network-density-gated (0 below 55% PTF density, scaling to 0.25 at 90%+) rather than plain-linear in coherence.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Dimensional (unit) coherence in BLEI, FBS &amp; Gini (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">agentBLEI(), calcBLEIComponents(), the new FBS gate, and the Gini net-wealth adjustment now convert wage (SIU) to real USD via a single derived constant, SIU_TO_USD = (BASE_DAILY_COST×365)/SIM_COST_SCALE, before mixing it with dollar-valued terms — previously a raw SIU number was added directly into USD sums. agentEDC()'s saturation constants were rescaled so EDC responds to income above the median instead of sitting at a constant value for every realistic wage. The main wealth-accumulation loop was deliberately left unchanged — see Empirical Calibration below.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Baseline &amp; CCO-only comparison isolation (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Baseline and CCO-only comparison populations are now generated independently from their own scenario parameters instead of being copied from the tested scenario's agents (which previously let e.g. the main run's Max Octave slider silently change the "baseline" comparison). Baseline's shock exposure is now paired with the main scenario's toggle (was hardcoded on) and its inflation anchored to the documented 3% CPI baseline (was copying the user's slider). "CCO Only" now mirrors the user's own CCO settings rather than a fixed reference calibration, isolating the marginal effect of PTF/PTH/SZH/CIP. When shocks are enabled, all three trajectories now draw from the same precomputed recession path ("paired shocks").</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Monte Carlo, ablation &amp; OAT statistics (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Fixed a flag-clearing bug that made every 3×/10×/50× Monte Carlo request silently execute exactly once with zero results collected — the MC controls were completely non-functional. Ablation/attribution now uses a paired population and paired RNG stream across every removal scenario plus a matched "full system" reference run, with signed deltas (a subsystem whose removal improves BLEI now shows as negative instead of being clamped to zero). OAT sensitivity now perturbs all five parameters by a uniform ±20% of each parameter's own slider range, replacing a mix of relative and fixed-percentage-point steps that didn't share a common scale.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Validation suite parameter mapping &amp; CI labeling (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Two validation tests silently tested nothing: the participation-threshold test passed <code>{part:78}</code>/<code>{part:45}</code> to a function that reads <code>partRate</code>, so both runs used the same 78%; the inflation test passed <code>{inflRate:3}</code>, read as a 0–1 fraction — 300%/yr, not 3%. Both fixed. The 10×/50× "Publication CI" label overstated what those bounds capture (a stochastic-error range at fixed parameters, not a full outcome-uncertainty interval) — relabeled "Stochastic CI" with copy stating the scope.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Wealth ratio near-zero guard &amp; OAT params mutation (v3.9)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The p90/p10 wealth ratio only guarded against p10 ≤ 0, so a near-zero p10 produced a misleadingly large finite ratio instead of "∞" — threshold changed to &lt;$100. Separately, OAT sensitivity's base-params setup mutated the object returned by getCurrentParams() directly; it now builds a fresh object instead.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Comparison-run RNG isolation (v3.8)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The baseline and CCO-only comparison trajectories previously ran on the same shared RNG stream the main trajectory consumed next, so changing years or agent count shifted the main run's random sequence at a fixed seed. Each comparison run now uses its own seed-derived stream (mirroring the existing ablation RNG-swap pattern), restored before the main trajectory begins.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Double preset-apply on page load (v3.7)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The <code>DOMContentLoaded</code> and <code>load</code> listeners both called <code>applyPreset('reference')</code>, silently re-applying all default parameters a second time before the first run executed. The <code>load</code> listener now only sets the reference seed/flag and calls <code>runSim()</code>.</p></div>
@@ -464,7 +468,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Seed range clamp &amp; EDC documentation (v3.5)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>initRNG():</strong> now enforces the same 0–999999 range as the seed input's HTML min/max, not just a NaN check. <strong>agentEDC():</strong> added a comment documenting that the 18/1100/820 constants are scenario-calibrated design targets (chosen so EDC lands within CFG.EDC_BASELINE_LO/HI at median wage for each tier), not derived from a closed-form model or external data.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Gini — negative wealth &amp; zero-wealth (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> Gini computed on wealth clamped to ≥0 (WEALTH_FLOOR=−$10K broke standard formula). <strong>v3.3:</strong> totW=0 → Gini=0, not 1. (Old <code>||1</code> fallback incorrectly returned 1 for zero-wealth edge case.) Gini measures distribution shape; all agents at zero = perfect equality of deprivation. BLEI poverty (% &lt;30d) captures the poverty level that Gini misses here.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Wage growth diminishing returns (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Stability premium × 1/(1+0.5·max(0, wage/35−1)). Prevents structural compounding at high incomes. BLEI is purely measurement; the premium reflects the underlying stability it measures. Diminishing returns grounded in Mullainathan &amp; Shafir (2013) + Carroll (1997): marginal benefit is largest at low-to-median wages.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Recession severity distribution (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Uniform distribution replaced by beta(5,2) over [0.70,0.95]. Mode ≈ 0.86 (14% income loss) — mild recessions most common. Tail to 0.70 (30% loss, analogous to 2008–09). Calibrated against NBER post-WWII recession data: median US recession ≈ 12% peak income loss. Source: <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">NBER Business Cycle Dating Committee</a>.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Recession severity distribution (v3.3; mode figure corrected v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>Fix:</strong> Uniform distribution replaced by beta(5,2) over [0.70,0.95] — mild recessions most common, tail to 0.70 (30% loss, analogous to 2008–09). <strong>v4.0 correction:</strong> this entry previously stated the mode as "≈0.86 (14% income loss)", which is arithmetically wrong — beta(5,2)'s mode is (5−1)/(5+2−2)=0.80, giving a multiplier mode of 0.90 (10% loss). The distribution's mean (≈0.88, ~12% loss) and median (≈0.88, ~11.6% loss) are close to the cited NBER target and are unaffected; only the mode figure was wrong, and only in this prose, not in the beta(5,2) formula itself (external review, Refine.ink, Aug 2026, caught this across all three project pages). Calibrated against NBER post-WWII recession data: median US recession ≈ 12% peak income loss. Source: <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">NBER Business Cycle Dating Committee</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">NaN/Inf guards, percentile interpolation, SIM_COST_SCALE (v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">NaN guards in agentBLEI, agentEDC, runYear, calcMetrics. p10/p90 now use proper linear interpolation (not index rounding). ANNUAL_BASE_COST renamed to SIM_COST_SCALE to avoid apparent contradiction with BASE_DAILY_COST ($68.33/day ≈ $24,941/yr vs 1,500 SIU simulation scale).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">agentEDC income proxy &amp; lognormal stability (v3.2)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>EDC:</strong> Switched from wealth/60 proxy to actual agent wage (consistent with BLEI v3.1 fix). <strong>lognormal:</strong> Math.max(1e-14,1−RNG()) protects against log(0)=−Infinity on seeds where RNG()=1. <strong>gamma():</strong> 5,000 iteration cap prevents potential infinite loop.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Comparison RNG &amp; PRESET crash (v3.2/v3.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>v3.2:</strong> CCO comparison agents use deterministic index-based participation (not RNG()&lt;0.78) — preserves seed reproducibility. <strong>v3.3:</strong> PRESETS now includes 'hiAI'; applyPreset() guards against undefined preset with console.error; all 5 preset buttons correctly highlighted.</p></div>
@@ -472,19 +476,21 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
     <span class="acat-label" style="margin-top:.85rem">📊 Empirical Calibration &amp; Mechanism Documentation</span>
     <div class="assump-grid">
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Daily vs. simulation cost scales</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BASE_DAILY_COST ($68.33/day) = real-world BLS CES 2023 used for BLEI calculation. SIM_COST_SCALE ($1,500) = calibrated ABM simulation scale — NOT US CES annual. Operative ratio: wage×12/SIM_COST_SCALE. <strong>Worked example:</strong> agent earning 35 SIU/month → annual SIU income = 420. Operative ratio = 420/1,500 = 0.28. With CCO+PTF+PTH cost factors (0.80 × 0.88 × 0.65 ≈ 0.457), effective cost = 686 SIU → ratio = 420/686 ≈ 0.61. Standard ABM calibrated-unit convention (Epstein &amp; Axtell, 1996). Base daily cost ($68.33/day) sourced from BLS CES 2023 (<a href="https://www.bls.gov/cex/" target="_blank" rel="noopener" style="color:var(--accent)">bls.gov/cex</a>).</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">BU wealth creation — counterparty accounting</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BU → quality conversion does not create wealth ex nihilo. PTF businesses accept BUs and provide real goods/services (food, utilities) at cooperative prices. Quality multiplier reflects productivity gains distributed to workers via cooperative ownership (Mondragon model, Whyte &amp; Whyte 1991). Conversion economy circulates within the PTF network.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTH Acre Equity — no double-counting</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">TWO separate PTH benefits: (1) housing cost reduction (35% of SIM_COST_SCALE) and (2) Acre Equity growth. wealth += appreciation × 0.5 is NOT double-counting — it represents the accessible liquidity fraction (50% haircut). Full appreciation tracks to acreEquity (illiquid); half flows to personal wealth. Consistent with Burlington CLT documentation (<a href="https://www.champlainhousingtrust.org" target="_blank" rel="noopener" style="color:var(--accent)">Champlain Housing Trust</a>).</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Daily vs. simulation cost scales — what v4.0 fixed and what it deliberately didn't</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BASE_DAILY_COST ($68.33/day, BLS CES 2023) and SIM_COST_SCALE ($1,500, calibrated ABM scale — NOT a dollar figure) are two different units. An external review (Refine.ink, Aug 2026) correctly flagged that wage (SIU) was being added directly into USD-typed sums in several places. <strong>Fixed in v4.0:</strong> agentBLEI, calcBLEIComponents, the FBS advancement gate, and the Gini net-wealth adjustment now convert wage to USD via a derived constant, SIU_TO_USD = (BASE_DAILY_COST×365)/SIM_COST_SCALE ≈ 16.6 — these formulas don't compound over time, so a conversion constant there is safe. <strong>Deliberately NOT changed:</strong> the main wealth-accumulation loop (wage×12 vs. SIM_COST_SCALE-based cost) — we built and tested that fix, and because wage compounds against cost over up to 30 years, it turned out to be extremely sensitive to the conversion constant (a ~3.5× range of candidate values swung 20-year outcomes from universal wealth-floor collapse to implausible multi-million-dollar median wealth). Getting that constant right is a joint recalibration of the wage distribution, cost scale, and every target metric against real income data — a substantial project of its own, not something to guess at inside a bug-fix pass. The main loop still uses the wage×12/SIM_COST_SCALE ratio exactly as before (worked example: 35 SIU/month → annual SIU income 420 → ratio 420/1,500 = 0.28; with CCO+PTF+PTH cost factors ≈0.457, effective cost 686 → ratio ≈0.61) — this is now a documented simplification rather than a silent unit mismatch. Standard ABM calibrated-unit convention (Epstein &amp; Axtell, 1996); base daily cost sourced from BLS CES 2023 (<a href="https://www.bls.gov/cex/" target="_blank" rel="noopener" style="color:var(--accent)">bls.gov/cex</a>).</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">BU wealth creation — counterparty accounting</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BU → quality conversion does not create wealth ex nihilo. PTF businesses accept BUs and provide real goods/services (food, utilities) at cooperative prices. Quality multiplier reflects productivity gains distributed to workers via cooperative ownership (Mondragon model, Whyte &amp; Whyte 1991). Conversion economy circulates within the PTF network. <strong>v4.0:</strong> external review correctly noted the engine credited conversion proceeds without debiting any treasury/production account. As a first step, cumulative conversion proceeds are now tracked and surfaced in CSV/JSON export (Conversion Ledger) for transparency. A genuine aggregate production constraint — one that could ration agent-level conversion when exhausted — is a further economic-modelling design decision (production function, capacity limits, failure behaviour) that isn't implemented yet; see Known Limitations.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTH Acre Equity — payments now build equity (v4.0)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">THREE separate PTH benefits as of v4.0: (1) housing cost reduction (35% of SIM_COST_SCALE), (2) a share (25%) of that cost saving routed into Acre Equity — the "payments build equity" mechanism the docs described but the engine previously didn't implement (it was appreciation-only) — and (3) Acre Equity appreciation, where wealth += appreciation × 0.5 is not double-counting: it represents the accessible-liquidity fraction (50% haircut), with full appreciation tracked to acreEquity (illiquid) and half flowing to liquid personal wealth. The new equity contribution re-routes an already-counted saving rather than creating new wealth, so it doesn't reintroduce double-counting. Consistent with Burlington CLT documentation (<a href="https://www.champlainhousingtrust.org" target="_blank" rel="noopener" style="color:var(--accent)">Champlain Housing Trust</a>).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Framework design intent — macro constraints</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The framework is explicitly designed to approach universal prosperity for the coming automation wave, with BU as treasury-backed community infrastructure. Absence of housing scarcity and fiscal limits is a stated hypothesis — that cooperative institutions structurally reduce these frictions — not a modeling oversight. This is a documented divergence from traditional macro models.</p></div>
     </div>
 
     <span class="acat-label bl-red" style="margin-top:.85rem">⚠ Known Limitations</span>
     <div class="assump-grid">
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No demographic structure</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Agents lack age, retirement, disability, household size, or mortality. Acceptable for structural scenario comparison; not suitable for policy forecasting requiring life-cycle dynamics. Future: age cohorts and household transitions (see CONTRIBUTING.md).</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No direct agent-to-agent interaction</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">All social effects mediated by aggregate zone parameters (SZH) rather than explicit networks. A small-world network structure would better model PTF zone clustering and SZH coherence. Noted as a future development direction in CONTRIBUTING.md.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">automationRisk uniform distribution (v3.4 flag)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">automationRisk ∈ [0.2, 1.0] is drawn from a <em>uniform</em> distribution across the population. Real automation exposure is highly bimodal and occupation-dependent (Frey &amp; Osborne, 2013; Autor, 2015): low-routine cognitive workers face minimal risk; high-routine manual/clerical workers face extreme risk. The uniform assumption may understate polarization in High Automation scenarios. Priority calibration refinement item in CONTRIBUTING.md.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">One-at-a-Time (OAT) sensitivity is not Sobol/LHC</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">OAT sensitivity varies one parameter at a time ±20% and records the poverty and BLEI response from actual model runs. It captures first-order single-parameter effects only. Parameter interactions and higher-order effects are not quantified. For rigorous uncertainty quantification, use the CSV export with external Sobol analysis in Python/R (see CONTRIBUTING.md).</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">System Stability is a trend heuristic, not a structural metric (v3.6 flag)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The displayed value is computed as <code>stabBase = improving ? 0.88 : 0.60</code> (based on whether poverty fell over the final quarter of the run), plus a small CIP bonus, plus <code>RNG()×0.08</code> noise — it is not derived from wealth variance, BLEI volatility, or agent-state transitions. It correctly signals directional trend but should not be read as a precision measurement. A structural replacement (e.g. coefficient of variation of median wealth over the final years, or share of agents remaining in the same BLEI tier for 3+ consecutive years) is planned for v4.0.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No demographic structure</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Agents lack age, retirement, disability, household size, or mortality. Acceptable for structural scenario comparison; not suitable for policy forecasting requiring life-cycle dynamics. Future: age cohorts and household transitions (see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>).</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No direct agent-to-agent interaction</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">All social effects mediated by aggregate zone parameters (SZH) rather than explicit networks. A small-world network structure would better model PTF zone clustering and SZH coherence. Noted as a future development direction in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">automationRisk uniform distribution (v3.4 flag)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">automationRisk ∈ [0.2, 1.0] is drawn from a <em>uniform</em> distribution across the population. Real automation exposure is highly bimodal and occupation-dependent (Frey &amp; Osborne, 2013; Autor, 2015): low-routine cognitive workers face minimal risk; high-routine manual/clerical workers face extreme risk. The uniform assumption may understate polarization in High Automation scenarios. Priority calibration refinement item in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">One-at-a-Time (OAT) sensitivity is not Sobol/LHC</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">OAT sensitivity varies one parameter at a time ±20% of its own slider range (v4.0: uniform across all five parameters — see Cumulative Bug Fixes) and records the poverty and BLEI response from actual model runs. It captures first-order single-parameter effects only. Parameter interactions and higher-order effects are not quantified. For rigorous uncertainty quantification, use the CSV export with external Sobol analysis in Python/R (see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>).</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">System Stability is a trend heuristic, not a structural metric (v3.6 flag)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The displayed value is computed as <code>stabBase = improving ? 0.88 : 0.60</code> (based on whether poverty fell over the final quarter of the run), plus a small CIP bonus, plus <code>RNG()×0.08</code> noise — it is not derived from wealth variance, BLEI volatility, or agent-state transitions. It correctly signals directional trend but should not be read as a precision measurement. A structural replacement (e.g. coefficient of variation of median wealth over the final years, or share of agents remaining in the same BLEI tier for 3+ consecutive years) was scoped for v4.0 but not implemented in this pass, which focused on the external review's findings instead — still open, tracked in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Main wealth-accumulation loop keeps its pre-v4.0 unit simplification</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">v4.0 fixed wage/USD unit mixing in BLEI, FBS, and Gini (see Empirical Calibration above), but deliberately left the main <code>runYear()</code> wealth-accumulation step unchanged: wage (SIU) and cost (SIM_COST_SCALE) are still combined directly, exactly as in every prior version. We built and tested a full fix; because wage compounds against cost over up to 30 years, that loop is extremely sensitive to the conversion constant (a ~3.5× range of candidates swung 20-year outcomes from universal wealth-floor collapse to implausible multi-million-dollar median wealth). A defensible fix requires a joint recalibration of the wage distribution, cost scale, and every target metric against real income data — flagged here as a candidate research direction (see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>), not attempted inside this bug-fix pass.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">CCO conversion proceeds are tracked but not production-constrained</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BU → wealth conversion proceeds are credited to agents without debiting a modelled treasury, PTF balance sheet, or production account — external review correctly flagged this as an open stock-flow accounting gap. v4.0 adds transparency only: cumulative conversion proceeds are tracked and exported (CSV/JSON "Conversion Ledger"). A genuine aggregate production constraint — with a defined production function, capacity limits, and rationing behaviour when exhausted — is a further economic-modelling design decision not implemented here; see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No external validation</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Parameters calibrated against analogues (Alaska PFD, CLT network, Mondragon) but outcomes not validated against deployment data. Phase 4 roadmap: validation against Fed SCF, CPS, ACS, BLS CES, and OECD inequality trajectories. Required before claims of predictive validity.</p></div>
     </div>
   </details>
@@ -518,7 +524,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v3.9 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v4.0 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
@@ -529,8 +535,187 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v3.9
+ * COMPASSIONISM FRAMEWORK SIMULATION  v4.0
  * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v3.9 → v4.0  (external audit — Refine.ink, Aug 2026 — plus a
+ * follow-on internal audit against the BLEI paper's own §8 Table 6 spec)
+ *
+ * This is the largest revision to date. Refine.ink's review covered five
+ * areas: mechanism alignment with the ODD/BLEI specification, dimensional
+ * (unit) coherence, counterfactual scenario isolation, parameter-mapping in
+ * the validation suite, and the statistical design of the attribution and
+ * confidence-interval displays. Each is addressed below; where a full fix
+ * carried real risk of silently degrading the model, that trade-off is
+ * documented rather than papered over — see the UNIT SYSTEM note and the
+ * AUDIT NOTE at the end of this entry.
+ *
+ * MECHANISM ALIGNMENT (external review + BLEI paper §8 Table 6):
+ *  1. Octave advancement is now FBS-gated: P(advance) = 1 − exp(−λ·FBS), with
+ *     FBS = max(0, Y + BU − C_basic_cash_monthly − EDC_residual·Y) computed in
+ *     real USD, and λ a per-agent capability coefficient drawn U(0.001,0.008)
+ *     at initialisation. Replaces the fixed-probability advancement gated on
+ *     agentBLEI() alone — an agent at FBS=0 can no longer advance regardless
+ *     of BLEI or quality. CIP support now raises effective λ (was a flat
+ *     bump to the old fixed probability).
+ *  2. Octave now governs CCO conversion-RATE CAPACITY (the achievable
+ *     ceiling); quality modulates the realised rate within that ceiling.
+ *     Previously quality/maxMult alone set the rate and octave had no role
+ *     in conversion at all — only in wage growth (unchanged, still applies).
+ *     BU allocation remains flat/octave-independent, as documented.
+ *  3. PTH: a documented share of the annual housing-cost SAVING (25%,
+ *     CFG.PTH_EQUITY_CONTRIB_SHARE) now routes into Acre Equity instead of
+ *     landing entirely as direct liquid relief — the "payments build equity"
+ *     mechanism named in the docs but previously absent from the engine
+ *     (appreciation-only). No new wealth is created; this re-routes where an
+ *     already-counted saving lands, so it does not reintroduce the double-
+ *     counting the v3.0 fix removed.
+ *  4. SZH's synergy coefficient θ is now network-density-gated: 0 below 55%
+ *     PTF merchant density, scaling linearly to 0.25 at 90%+ (szhTheta()).
+ *     Applied to the PTF-network-specific cooperative-synergy terms
+ *     (ptfConvBonus, the SZH+PTF cost-reduction bonus in agentBLEI/
+ *     calcBLEIComponents, and szhPartBoost). The broader SZH_ALL_RESIDENTS
+ *     zone-coherence term is intentionally left linear — it represents
+ *     general zone-stability benefits, not the specific PTF-density
+ *     threshold effect θ names.
+ *  5. PTF adoption now includes a Bass (1969) imitation term
+ *     (CFG.PTF_BASS_Q × current adoption fraction) alongside the existing
+ *     innovation-baseline + economic-distress terms — the ODD protocol
+ *     documented "social diffusion" but the engine previously had no
+ *     dependency on how many peers had already adopted.
+ *  6. Gini is now computed on EDC-adjusted net wealth (W_net = W_nominal −
+ *     EDC×Y×12) per BLEI paper Table 6, via calcMetrics(agents, ccoOn, pth).
+ *     Poverty rate, median wealth, and p10/p90 intentionally remain on
+ *     NOMINAL wealth — Table 6 specifies the net-wealth adjustment for the
+ *     Gini row only.
+ *
+ * DIMENSIONAL COHERENCE (external review):
+ *  7. agentBLEI(), calcBLEIComponents(), the new FBS gate, and the Gini net-
+ *     wealth adjustment now convert wage (Simulation Income Units) to real
+ *     USD via a single derived constant, CFG.SIU_TO_USD = (BASE_DAILY_COST×
+ *     365)/SIM_COST_SCALE, before mixing it with USD-typed terms — these
+ *     previously added a raw SIU number directly into dollar-valued sums.
+ *     The FBS gate's monthly basic-cost figure is computed directly from
+ *     BASE_DAILY_COST (real USD; ≈ the BLEI paper's own $2,083/mo worked
+ *     example), independent of the legacy SIM_COST_SCALE abstraction.
+ *     See the UNIT SYSTEM note (search this file) for what was deliberately
+ *     LEFT UNCHANGED and why: the main wealth-accumulation loop.
+ *  8. agentEDC()'s saturation constants (1100, 820, 18) were roughly 30–60×
+ *     the median wage, so their ratios exceeded the caps at every realistic
+ *     wage — EDC was effectively a constant (0.58 / 0.38 / 0.10) regardless
+ *     of income. Rescaled each numerator to cap×WAGE_MEDIAN_SIU so the value
+ *     AT the median wage is unchanged (same calibration anchor) but EDC now
+ *     declines smoothly for above-median earners instead of staying flat
+ *     everywhere.
+ *
+ * COUNTERFACTUAL SCENARIO ISOLATION (external review + BLEI paper Table 6
+ * "matched initial agents"):
+ *  9. Baseline and CCO-only comparison populations are now generated
+ *     INDEPENDENTLY from their own scenario parameters (via the shared
+ *     makeAgent() factory), instead of being .map()'d from the already-
+ *     generated main population — previously they inherited octave/quality
+ *     drawn under the TESTED scenario's maxOct/maxMult/cipDemo regardless of
+ *     what the comparison scenario itself specified.
+ *  10. Baseline's shock exposure is now paired with the main scenario's
+ *      toggle (was hardcoded true, exposing baseline to recessions even when
+ *      the user had shocks off) and its inflation is anchored to the
+ *      documented "US baseline + 3% CPI" (was silently copying the user's
+ *      inflation slider). CCO-only's shock exposure is likewise paired (was
+ *      hardcoded false).
+ *  11. "CCO Only" now mirrors the user's own CCO-related settings (BU,
+ *      octave ceiling, tax, quality ceiling, participation rate, Phi,
+ *      automation) rather than a fixed reference calibration (was: 78%
+ *      participation etc. regardless of the user's actual configuration) —
+ *      isolating the marginal effect of PTF/PTH/SZH/CIP specifically.
+ *  12. When shocks are enabled, baseline, CCO-only, and the main trajectory
+ *      now draw recession timing/severity from the SAME precomputed path
+ *      (buildRecessionPath(), its own dedicated stream) — "paired shocks" —
+ *      so the three-way comparison isolates policy effects rather than
+ *      incidental differences in which years each trajectory got hit.
+ *
+ * VALIDATION SUITE PARAMETER MAPPING (external review):
+ *  13. The participation-threshold test passed {part:78}/{part:45} to
+ *      mkMiniP(), but the engine reads partRate — both runs silently used
+ *      the SAME 78% regardless. Fixed to {partRate:0.78}/{partRate:0.45}.
+ *  14. The inflation/PTF-dampening test passed {inflRate:3} (meant as "3%"),
+ *      which the engine reads as a 0–1 fraction — i.e. 300%/yr compounding,
+ *      not 3%. Fixed to {inflRate:0.03}. mkMiniP() now documents its
+ *      overrides contract explicitly (engine field names/units, not preset
+ *      display units) to prevent recurrence.
+ *
+ * STATISTICAL DESIGN — ATTRIBUTION & CONFIDENCE INTERVALS (external review):
+ *  15. Fixed a flag-clearing bug (runSim() unconditionally cleared
+ *      MR.active the instant it started, before finish() ever saw it) that
+ *      made every 3×/10×/50× Monte Carlo request silently execute exactly
+ *      once with zero results collected — the MC controls were completely
+ *      non-functional. See the fix's own comment for why simply removing
+ *      the line (rather than gating it) is correct.
+ *  16. Ablation/attribution now uses a paired population and paired RNG
+ *      stream — every scenario in a batch, including a same-sized "full
+ *      system" reference run, is built from the SAME fixed seed and runs on
+ *      the SAME stochastic stream, so only the removed subsystem's
+ *      mechanics differ. Previously each removal used a fresh 200-agent
+ *      sample with a different seed, diffed against the differently-sized/
+ *      seeded main run. Deltas are now signed — a subsystem whose removal
+ *      IMPROVES BLEI shows as negative instead of being clamped to zero.
+ *  17. OAT sensitivity now perturbs all five parameters by a uniform ±20%
+ *      of each parameter's OWN slider range (was: BU relative-to-value
+ *      ~20%, participation/PTF-share/inflation/tax fixed percentage-point
+ *      steps) — the five no longer share incomparable perturbation scales,
+ *      and the convention no longer breaks (0% perturbation) when a base
+ *      value is exactly 0.
+ *  18. The "10×/50× Publication CI" labels and copy overstated what those
+ *      bounds capture — a conditional stochastic-error range (parameters
+ *      fixed, only the RNG seed varies), not a run-to-run outcome interval,
+ *      and excluding calibration/parameter/structural uncertainty. Relabeled
+ *      to "Stochastic CI" with copy stating the scope explicitly.
+ *
+ * DOCUMENTATION-ONLY CORRECTION:
+ *  19. The recession multiplier's stated mode ("≈0.86, 14% income loss") was
+ *      arithmetically wrong. For 0.70+beta(5,2)×0.25, beta(5,2)'s mode is
+ *      (5−1)/(5+2−2)=0.80, giving a multiplier mode of 0.90 (10% loss). The
+ *      mean (≈0.88, ~12% loss) and median (≈0.88, ~11.6% loss) are close to
+ *      the cited NBER target and are unaffected — only the mode figure and
+ *      its prose across all three HTML pages were corrected. The beta(5,2)
+ *      formula itself is unchanged.
+ *
+ * TRANSPARENCY ADDITION:
+ *  20. Cumulative CCO conversion proceeds credited across a run are now
+ *      tracked and surfaced in CSV/JSON export (totalConversionProceeds) —
+ *      a partial response to the review's stock-flow accounting concern.
+ *      See AUDIT NOTE below for what remains open.
+ *
+ * AUDIT NOTE — UNIT SYSTEM SCOPING DECISION (read alongside fix #7):
+ *  We built a full fix that also converts wage→USD in the MAIN wealth-
+ *  accumulation loop (runYear's `wealth += wage*12 - cost`) and tested it
+ *  end-to-end. It is NOT shipped. Because wage compounds against cost over
+ *  up to 30 years, that loop is extremely sensitive to the conversion
+ *  constant: candidate values spanning a ~3.5× range swung 20-year outcomes
+ *  from universal wealth-floor collapse (68%+ poverty in every scenario,
+ *  including full Compassionism) to implausible multi-million-dollar median
+ *  wealth. Picking the "right" constant there is not really a units
+ *  question — it's a joint recalibration of the wage distribution, the cost
+ *  scale, and every TARGET_* constant against real income data, which is a
+ *  substantial empirical project in its own right and too easy to get
+ *  subtly wrong inside a documentation/bug-fix pass. Per the review's own
+ *  suggested alternative — "updating the documentation to reflect the
+ *  current simplified execution" — the main loop is UNCHANGED from pre-v4.0
+ *  (every existing trajectory and TARGET_* calibration is preserved bit-
+ *  for-bit), and the unit mismatch there is now an explicitly documented
+ *  simplification rather than a silent one. The formulas that DON'T
+ *  compound (BLEI, FBS, Gini) got the full fix, since a conversion constant
+ *  there can't run away the way the main loop's can. A joint recalibration
+ *  of the main loop is flagged as a candidate for a dedicated future pass,
+ *  not attempted here.
+ *
+ *  Separately: the review's stock-flow point about BU conversion proceeds
+ *  not debiting a treasury/production account is only partially addressed
+ *  (fix #20, transparency tracking). Adding a genuine aggregate production
+ *  constraint that could ration agent-level conversion is an economic-
+ *  modelling design decision (production function, capacity limits, failure
+ *  behaviour when exhausted) beyond what a bug-fix pass should invent
+ *  unilaterally — flagged in Known Limitations, not implemented here.
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v3.8 → v3.9  (external audit cross-check — Gemini review +
@@ -789,19 +974,56 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * 14. getCurrentParams(): helper used by OAT + validation.
  * ═══════════════════════════════════════════════════════════════════════ */
 
-/* ─── UNIT SYSTEM ─────────────────────────────────────────────────────
+/* ─── UNIT SYSTEM (v4.0: partial dimensional-consistency fix — see rationale) ──────────
  * wealth:         USD nominal. lognormal(10.5,1.2) → median ~$36K (Fed SCF 2022).
  * wage:           Simulation Income Units (SIU). lognormal(3.5,0.5) → median ~33.
- * SIM_COST_SCALE: ABM scale unit — NOT US CES annual. Operative ratio: wage*12/
+ * SIM_COST_SCALE: ABM scale unit — NOT US CES annual. Operative ratio: wage×12/
  *                 SIM_COST_SCALE < 1 (baseline depletion) vs > 1 (CCO accumulation).
+ *
+ * v4.0 finding (external review, Refine.ink, Aug 2026: https://www.refine.ink/app/session/4e84aa99-44ff-438f-9382-719bf9714344): wage (SIU) and wealth (USD)
+ * are added directly together in the main wealth-accumulation step and in agentBLEI's
+ * income term — an unclosed unit system. We investigated a full fix (introducing
+ * CFG.SIU_TO_USD and converting wage→USD everywhere, including the main wealth-
+ * accumulation loop) and BUILT it, but empirical testing (see harness.js in the
+ * project repo / dev notes) showed the main wealth loop is extremely sensitive to
+ * this constant: because wage compounds against cost over up to 30 years, a ~3.5×
+ * change in the conversion constant swung 20-year outcomes from universal wealth-floor
+ * collapse (68%+ poverty, all scenarios) to implausible multi-million-dollar median
+ * wealth. The "right" constant for that compounding loop is not really a units
+ * question — it's a joint recalibration of the wage distribution, cost scale, and
+ * every TARGET_* constant against real income data, which is a substantial empirical
+ * project on its own and too easy to get subtly wrong under a documentation/bug-fix
+ * pass. Per the review's own suggested alternative remedy — "updating the
+ * documentation to reflect the current simplified execution" — we chose the SAFER,
+ * fully-scoped fix instead:
+ *   - The MAIN wealth-accumulation step (runYear) is UNCHANGED from pre-v4.0: wage
+ *     (SIU) and simCost (SIU-scale) are still combined directly, exactly as before.
+ *     This preserves every existing trajectory and every TARGET_* calibration bit-
+ *     for-bit. The unit label mismatch here is now an explicitly DOCUMENTED
+ *     simplification (this comment), not a silent bug — see Known Limitations.
+ *   - The genuinely ISOLATED formulas the review specifically flagged — agentBLEI's
+ *     and calcBLEIComponents' income term, the Gini net-wealth adjustment, and the
+ *     new FBS advancement gate — do NOT compound over time (they're recomputed fresh
+ *     each check), so a conversion constant there can't run away the way the main
+ *     loop's can. These now use CFG.SIU_TO_USD, a cleanly-derived constant (see
+ *     below), to produce genuinely USD-consistent results for those specific metrics.
+ *   - FBS additionally needs a real monthly USD cost figure (the BLEI paper's own
+ *     worked example, C_basic_cash_monthly ≈ $2,083/mo, is essentially
+ *     BASE_DAILY_COST×365/12 ≈ $2,078/mo) — computed directly from BASE_DAILY_COST,
+ *     independent of the legacy SIM_COST_SCALE abstraction. See runYear's dollarCost.
+ * SIU_TO_USD = (BASE_DAILY_COST×365) / SIM_COST_SCALE — a clean, auditable derivation
+ *              (not arbitrary), used only in the isolated formulas above.
+ * agentEDC(): mInc terms are NOT converted via SIU_TO_USD — EDC is a dimensionless
+ *             ratio empirically tuned in native SIU-space (see agentEDC comment);
+ *             converting it would silently break that calibration for no benefit.
  * baseline ×0.85: documented design choice — lower savings absent CCO stabilisation.
- * ──────────────────────────────────────────────────────────────────── */
+ * ──────────────────────────────────────────────────────────────────────────────── */
 
 /* ─── VERSION / CITATION — single source of truth ──────────────────────
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'3.9',
+  VERSION:'4.0',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
   CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
@@ -812,9 +1034,14 @@ var CFG = {
   BLEI_THRESHOLD_MAX:120, BLEI_STABLE_MAX:365, BLEI_SECURE_MAX:730,
   BASE_DAILY_COST:68.33, CCO_PTH_DAILY_COST:31.67,
   SZH_ALL_RESIDENTS:0.06, SZH_PTF_BONUS:0.05,
+  /* v4.0: network-density-gated synergy coefficient θ (BLEI paper Table 6: "Synergy
+   * coefficient θ ... Network-density-gated: 0 below 55% PTF density; scales to 0.25
+   * at 90%"). Previously applied as a plain linear function of szhCoh with no
+   * threshold — see szhTheta(). */
+  SZH_THETA_THRESHOLD:0.55, SZH_THETA_MAX_COH:0.90, SZH_THETA_MAX:0.25,
   EDC_BASELINE_LO:0.62, EDC_BASELINE_HI:0.72, EDC_PTH_CAP:0.10,
   PROG_PIVOT:3.0, PROG_RATE:0.040, PROG_TAX_MAX:0.75,
-  SIM_COST_SCALE:1500,     // v3.3: renamed from ANNUAL_BASE_COST
+  SIM_COST_SCALE:1500,     // v3.3: renamed from ANNUAL_BASE_COST; v4.0: see SIU_TO_USD note above
   WAGE_MEDIAN_SIU:35,      // reference for diminishing-returns calculation
   WEALTH_FLOOR:-10000,
   WAGE_BASE_GROWTH:0.010, WAGE_BLEI_BONUS:0.008, WAGE_OCTAVE_BONUS:0.003,
@@ -824,8 +1051,18 @@ var CFG = {
   TARGET_FLOURISHING:0.50, TARGET_GINI:0.25, TARGET_EDC:0.10,
   NORDIC_GINI:0.28, CCO_OPTIMAL_BU:1200, CCO_MIN_PARTICIPATION:0.55,
   PTF_OPTIMAL_SHARE:0.18, PTF_DISTORTION:0.30,
-  PHI_RATIO:1.618, PHI_QUALITY_THRESH:0.70
+  PHI_RATIO:1.618, PHI_QUALITY_THRESH:0.70,
+  /* v4.0 additions — see BLEI paper (basic-living-economic-index.html) §8 Table 6
+   * and Index IV (FBS) for the specification these implement. */
+  FBS_LAMBDA_LO:0.001, FBS_LAMBDA_HI:0.008,           // per-agent capability coefficient λ ~ U(lo,hi), units 1/USD
+  FBS_EDC_RESIDUAL_BASE:0.12, FBS_EDC_RESIDUAL_PTH:0.025, // EDC_residual (consumer-debt-only), Table 1b worked values
+  FBS_CIP_LAMBDA_BOOST:0.20,   // CIP support raises effective λ by up to +20% at cipDemo=1 (replaces old flat advancement-probability bump)
+  BASELINE_CPI_RATE:0.03,      // US Welfare Baseline anchors to documented 3% CPI, not the user's inflation slider
+  PTH_EQUITY_CONTRIB_SHARE:0.25, // share of PTH's annual housing-cost saving that routes to Acre Equity (payment→equity), vs. staying as direct liquid relief
+  PTF_BASS_Q:0.05      // Bass (1969) imitation coefficient for PTF adoption — see runYear
 };
+/* v4.0: SIU→USD conversion — derived, not arbitrary; see UNIT SYSTEM note above. */
+CFG.SIU_TO_USD = (CFG.BASE_DAILY_COST*365) / CFG.SIM_COST_SCALE;
 
 var ST={phi:true,ptf:true,pth:true,szh:true,cip:true,shock:false,automation:false};
 var charts={};var running=false;var SIM_RESULTS=null;
@@ -881,14 +1118,31 @@ function getCurrentParams(){
 var TIERS=[{name:'Crisis',num:0,cls:'t-crisis',color:'rgba(163,45,45,0.82)'},{name:'Precarious',num:1,cls:'t-precarious',color:'rgba(192,64,64,0.8)'},{name:'Threshold',num:2,cls:'t-threshold',color:'rgba(186,117,23,0.8)'},{name:'Stable',num:3,cls:'t-stable',color:'rgba(206,143,26,0.8)'},{name:'Secure',num:4,cls:'t-secure',color:'rgba(29,158,117,0.8)'},{name:'Flourishing',num:5,cls:'t-flourishing',color:'rgba(122,92,0,0.8)'}];
 function getTier(days,top){top=top||'Flourishing';if(days<CFG.BLEI_CRISIS_MAX)return TIERS[0];if(days<CFG.BLEI_PRECARIOUS_MAX)return TIERS[1];if(days<CFG.BLEI_THRESHOLD_MAX)return TIERS[2];if(days<CFG.BLEI_STABLE_MAX)return TIERS[3];if(days<CFG.BLEI_SECURE_MAX)return TIERS[4];return top==='Comfortable'?{name:'Comfortable',num:5,cls:'t-flourishing',color:TIERS[5].color}:TIERS[5];}
 
-/* v3.3: NaN guards added throughout */
+/* v4.0: network-density-gated SZH synergy coefficient θ. Replaces the previous
+ * plain-linear-in-szhCoh treatment for the specific "cooperative synergy" effects
+ * tied to PTF merchant density (external review + BLEI paper Table 6: "Synergy
+ * coefficient θ ... 0 below 55% PTF density; scales to 0.25 at 90%"). The broader
+ * SZH_ALL_RESIDENTS zone-coherence term is left linear — it represents general
+ * zone-stability benefits available to all residents, not the specific PTF-network
+ * threshold effect θ names. Magnitudes are scaled so the value AT full density
+ * (coh→1) matches the pre-v4.0 ceiling, preserving prior calibration at the top end
+ * while fixing the missing threshold below it. */
+function szhTheta(coh){
+  coh=isNaN(coh)?0:coh;
+  if(coh<CFG.SZH_THETA_THRESHOLD)return 0;
+  return Math.min(CFG.SZH_THETA_MAX,(coh-CFG.SZH_THETA_THRESHOLD)/(CFG.SZH_THETA_MAX_COH-CFG.SZH_THETA_THRESHOLD)*CFG.SZH_THETA_MAX);
+}
+
+/* v3.3: NaN guards added throughout.
+ * v4.0: gamma*mInc term converted SIU→USD via CFG.SIU_TO_USD (see UNIT SYSTEM note) —
+ * previously a raw SIU number was added directly to USD-valued liquid/buFood terms. */
 function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh){
   var liquid=Math.max(0,(isNaN(a.wealth)?0:a.wealth)*0.20);
   var gamma=(ccoOn&&a.inCCO)?0.20:0.12;
-  var mInc=Math.max(isNaN(a.wage)?1:a.wage,0.1);
+  var mInc=Math.max(isNaN(a.wage)?1:a.wage,0.1)*CFG.SIU_TO_USD;
   var buFood=(ccoOn&&a.inCCO&&buAlloc>0)?buAlloc*(990/1200):0;
   var szhD=szhOn?szhCoh*CFG.SZH_ALL_RESIDENTS:0;
-  if(szhOn&&a.inPTF)szhD+=szhCoh*CFG.SZH_PTF_BONUS;
+  if(szhOn&&a.inPTF)szhD+=szhTheta(szhCoh)*0.20;  // v4.0: threshold-gated (was szhCoh*SZH_PTF_BONUS, linear)
   var baseCost=(ccoOn&&a.inCCO&&pthOn&&a.inPTH)?CFG.CCO_PTH_DAILY_COST:CFG.BASE_DAILY_COST;
   var dc=Math.max(baseCost*(1-szhD),0.1);
   var r=(liquid+gamma*mInc+buFood)/dc;
@@ -902,12 +1156,25 @@ function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh){
  * (CFG.EDC_BASELINE_LO/HI) for each participation tier; the additive terms
  * (+0.08/+0.03) and caps (0.75/0.42/CFG.EDC_PTH_CAP) bound the curve at low
  * and high income. Treat as design targets pending empirical EDC validation,
- * not as parameters fit to external data (see Assumptions panel). */
+ * not as parameters fit to external data (see Assumptions panel).
+ * v4.0 fix: the original numerators (1100, 820, 18) were roughly 30-60x the
+ * median wage (~33-35 SIU), so 1100/mInc, 820/mInc and 18/mInc exceeded their
+ * caps at every realistic wage — the min(cap, ratio) always picked the cap,
+ * making EDC a constant regardless of income (external review: "EDC becomes
+ * effectively fixed ... losing its intended income responsiveness"). Rescaled
+ * each numerator to cap × WAGE_MEDIAN_SIU, so the ratio equals the cap exactly
+ * AT the median wage (identical EDC value at the median to pre-v4.0: 0.58 non-
+ * participant, 0.38 participant, 0.10 CCO+PTH — calibration anchor unchanged)
+ * while now declining smoothly for above-median earners instead of staying flat
+ * everywhere. At/below the median the ratio still saturates at the cap, which is
+ * the intended floor (EDC does not improve further for the most cash-strapped
+ * agents at a given tier). */
 function agentEDC(a,ccoOn,pthOn){
   var mInc=Math.max(isNaN(a.wage)?1:a.wage,1);
-  if(ccoOn&&a.inCCO&&pthOn&&a.inPTH)return Math.min(CFG.EDC_PTH_CAP,18/mInc);
-  if(!ccoOn||!a.inCCO)return Math.min(0.75,Math.min(0.50,1100/mInc)+0.08);
-  return Math.min(0.42,Math.min(0.35,820/mInc)+0.03);
+  var w=CFG.WAGE_MEDIAN_SIU;
+  if(ccoOn&&a.inCCO&&pthOn&&a.inPTH)return Math.min(CFG.EDC_PTH_CAP,(CFG.EDC_PTH_CAP*w)/mInc);
+  if(!ccoOn||!a.inCCO)return Math.min(0.75,Math.min(0.50,(0.50*w)/mInc)+0.08);
+  return Math.min(0.42,Math.min(0.35,(0.35*w)/mInc)+0.03);
 }
 
 function bleiMetrics(agents,buAlloc,ccoOn,pthOn,szhOn,szhCoh,top){
@@ -926,18 +1193,59 @@ function calcBLEIComponents(agents,p){
     var liq=Math.max(0,(isNaN(a.wealth)?0:a.wealth)*0.20);
     var g=(p.ccoOn&&a.inCCO)?0.20:0.12;
     var buF=(p.ccoOn&&a.inCCO&&p.bu>0)?p.bu*(990/1200):0;
-    var sD=p.szh?p.szhCoh*CFG.SZH_ALL_RESIDENTS:0;if(p.szh&&a.inPTF)sD+=p.szhCoh*CFG.SZH_PTF_BONUS;
+    var sD=p.szh?p.szhCoh*CFG.SZH_ALL_RESIDENTS:0;if(p.szh&&a.inPTF)sD+=szhTheta(p.szhCoh)*0.20;  // v4.0: threshold-gated
     var dc=Math.max(((p.ccoOn&&a.inCCO&&p.pth&&a.inPTH)?CFG.CCO_PTH_DAILY_COST:CFG.BASE_DAILY_COST)*(1-sD),0.1);
-    cash.push(liq/dc);inc.push(g*Math.max(isNaN(a.wage)?0:a.wage,0)/dc);ben.push(buF/dc);
+    cash.push(liq/dc);inc.push(g*Math.max(isNaN(a.wage)?0:a.wage,0)*CFG.SIU_TO_USD/dc);ben.push(buF/dc);  // v4.0: SIU→USD on income term
   });
   function med(arr){arr.sort(function(a,b){return a-b;});var n=arr.length;return n?n%2===0?(arr[n/2-1]+arr[n/2])/2:arr[Math.floor(n/2)]:0;}
   return{cash:med(cash),inc:med(inc),ben:med(ben)};
 }
 
-/* ─── RECESSION (v3.3: beta(5,2) distribution — realistic right-skew) ── */
+/* ─── RECESSION (v3.3: beta(5,2) distribution — realistic right-skew)
+ * Distribution note (v4.0 documentation fix): incomeMultiplier = 0.70 + beta(5,2)×0.25.
+ * beta(5,2)'s mode is (5-1)/(5+2-2) = 0.80, so the multiplier's mode is 0.70+0.80×0.25 =
+ * 0.90 (a 10% income loss at the single most likely point) — not the "≈0.86 / 14% loss"
+ * previously stated throughout the docs (external review: "the stated recession mode is
+ * mathematically incorrect"). The distribution's MEAN is 0.70+(5/7)×0.25 ≈ 0.879 (≈12.1%
+ * loss) and its median ≈0.884 (≈11.6% loss) — both close to the cited NBER post-WWII
+ * target of "median US recession ≈ 12% peak income loss." The formula itself is
+ * unchanged; only the mode/percentage figures quoted in prose across the three HTML
+ * pages have been corrected to match what beta(5,2) actually produces. ── */
 function updateRecession(recSt){
   if(recSt.active){recSt.yearsLeft--;if(recSt.yearsLeft<=0){recSt.active=false;recSt.incomeMultiplier=1.0;}}
   else if(RNG()<0.10){recSt.active=true;recSt.yearsLeft=1+Math.floor(RNG()*3);recSt.incomeMultiplier=0.70+beta(5,2)*0.25;}
+}
+/* v4.0: precompute a full recession path (active/incomeMultiplier per year) on its own
+ * dedicated stream, so that when shocks are enabled the main trajectory, baseline, and
+ * CCO-only comparison all experience the SAME shock timing/severity — "paired shocks"
+ * (external review, Counterfactual scenario isolation section). Each trajectory's OTHER
+ * stochastic draws (wage variance, adoption checks, octave advancement) remain on their
+ * own independent streams, unaffected by this. Unseeded (Math.random) runs fall back to
+ * the live stream — no reproducibility claim applies there, matching the existing v3.8
+ * convention for comparison-run streams. */
+function buildRecessionPath(years,seed){
+  var path=[],saved=RNG;
+  RNG=(seed===null||seed===undefined||isNaN(seed))?saved:mulberry32(seed+700000);
+  var st={active:false,incomeMultiplier:1.0,yearsLeft:0};
+  for(var y=0;y<years;y++){
+    if(y>0)updateRecession(st);
+    path.push({active:st.active,incomeMultiplier:st.incomeMultiplier});
+  }
+  RNG=saved;
+  return path;
+}
+/* v4.0: shared agent-construction factory — used by the main population, the baseline
+ * and CCO-only comparison populations, and the ablation batch, so every population is
+ * built the same way (including the new per-agent λ for FBS-gated advancement) instead
+ * of three-plus slightly-diverging copies of the same object literal. */
+function makeAgent(cfgP){
+  var inCCO=cfgP.ccoOn&&RNG()<cfgP.partRate,inPTF=cfgP.ptf&&RNG()<cfgP.ptfShare,inPTH=cfgP.pth&&RNG()<cfgP.pthUptake;
+  var qN=cfgP.cip?(1-cfgP.cipDemo*0.5):1.0;
+  var maxOct=cfgP.maxOct||1,maxMult=cfgP.maxMult||1;
+  return{wealth:lognormal(10.5,1.2),wage:lognormal(3.5,0.5),octave:Math.floor(beta(2,5)*maxOct),
+    quality:Math.min(maxMult,Math.max(0,lognormal(Math.log(maxMult*0.5),0.4)*qN)),
+    automationRisk:0.2+RNG()*0.8,lambda:CFG.FBS_LAMBDA_LO+RNG()*(CFG.FBS_LAMBDA_HI-CFG.FBS_LAMBDA_LO),
+    inCCO:inCCO,inPTF:inPTF,inPTH:inPTH,buBalance:0,acreEquity:inPTH?5000:0};
 }
 
 /* ─── SIMULATION ENGINE ───────────────────────────────────────────────── */
@@ -962,7 +1270,17 @@ function resetRunUIAfterCancel(){
 function runSim(){
   if(running)return;
   running=true;CANCELLED=false;
-  if(MR.active)MR.active=false;
+  /* v4.0 fix: this line used to unconditionally clear MR.active the instant runSim()
+   * started — but runMulti() sets MR.active=true and then calls runSim() immediately,
+   * so that flag was wiped before finish() ever got a chance to see it, and finish()'s
+   * MC collection/chaining branch (`if(MR.active){...}`) was dead code. The net effect:
+   * every 3×/10×/50× Monte Carlo request silently ran exactly once (external review:
+   * "The Monte Carlo controls are non-functional"). The Run Simulation button is
+   * disabled while running=true, so runSim() is never reachable via a direct user click
+   * while a real MC sequence is mid-flight — MR.active being true whenever runSim() is
+   * called always legitimately means "part of an MC chain," so simply not touching it
+   * here is correct; MR.active is still cleared normally at chain completion (finish())
+   * and on cancel (resetRunUIAfterCancel()). */
   var btns=['multi-btn','mc10-btn','mc50-btn','oat-btn','val-btn'];
   btns.forEach(function(id){var el=document.getElementById(id);if(el)el.disabled=true;});
   var cancelBtn=document.getElementById('cancel-btn');if(cancelBtn)cancelBtn.style.display='block';
@@ -998,48 +1316,72 @@ function runSim(){
 
 function simulate(p,warns){
   var n=p.nAgents,years=p.years,agents=[];
-  for(var i=0;i<n;i++){
-    var inCCO=p.ccoOn&&RNG()<p.partRate,inPTF=p.ptf&&RNG()<p.ptfShare,inPTH=p.pth&&RNG()<p.pthUptake;
-    var qN=p.cip?(1-p.cipDemo*0.5):1.0;
-    agents.push({wealth:lognormal(10.5,1.2),wage:lognormal(3.5,0.5),octave:Math.floor(beta(2,5)*p.maxOct),quality:Math.min(p.maxMult,Math.max(0,lognormal(Math.log(p.maxMult*0.5),0.4)*qN)),automationRisk:0.2+RNG()*0.8,inCCO:inCCO,inPTF:inPTF,inPTH:inPTH,buBalance:0,acreEquity:inPTH?5000:0});
-  }
-  /* baseline: wealth×0.85 — documented lower savings absent CCO */
-  var baseAgents=agents.map(function(a){return Object.assign({},a,{inCCO:false,inPTF:false,inPTH:false,wealth:a.wealth*0.85,buBalance:0,acreEquity:0});});
-  /* v3.2 fix: deterministic CCO-only assignment (no RNG consumption) */
-  var cco78=Math.round(n*0.78);
-  var ccoAgents=agents.map(function(a,idx){return Object.assign({},a,{inPTF:false,inPTH:false,acreEquity:0,inCCO:idx<cco78});});
+  for(var i=0;i<n;i++)agents.push(makeAgent(p));
 
-  var pBase={bu:0,maxOct:1,expiry:1,tax:0,maxMult:1,partRate:0,ptfShare:0,pthUptake:0,szhCoh:0,cipDemo:0,phi:false,ptf:false,pth:false,szh:false,cip:false,shock:true,inflRate:p.inflRate,automation:false,ccoOn:false,nAgents:n,years:years};
-  var pCCO={bu:1200,maxOct:6,expiry:1,tax:0.12,maxMult:9,nAgents:n,years:years,partRate:0.78,ptfShare:0,pthUptake:0,szhCoh:0,cipDemo:0.20,phi:true,ptf:false,pth:false,szh:false,cip:false,shock:false,ccoOn:true,inflRate:p.inflRate,automation:p.automation};
+  /* v4.0: baseline & CCO-only comparison isolation (external review, "Counterfactual
+   * scenario isolation" + BLEI paper Table 6 "matched initial agents"). Both comparison
+   * populations are now generated INDEPENDENTLY from their own scenario parameters
+   * (pBase/pCCO) via the same makeAgent() factory the main population uses, instead of
+   * being .map()'d from the already-generated main `agents` array. Previously baseAgents/
+   * ccoAgents inherited octave/quality (and therefore wage-growth/conversion behaviour)
+   * drawn under the TESTED scenario's maxOct/maxMult/cipDemo regardless of what pBase/
+   * pCCO themselves specified — so e.g. raising the main scenario's Max Octave slider
+   * silently changed the "baseline" comparison too. Wealth/wage/automationRisk are still
+   * drawn from a lognormal population of the same shape as before (not literally the same
+   * random numbers as `agents` — a meaningful "same individuals, different policy" pairing
+   * isn't well-defined once maxOct/maxMult differ in support between scenarios). */
+  var pBase={bu:0,maxOct:1,expiry:1,tax:0,maxMult:1,partRate:0,ptfShare:0,pthUptake:0,szhCoh:0,cipDemo:0,phi:false,ptf:false,pth:false,szh:false,cip:false,
+    /* v4.0: paired with the main run's shock toggle (was hardcoded true — "baseline is
+       also universally exposed to recessions, even when disabled for the main scenario") */
+    shock:p.shock,
+    /* v4.0: anchored to the documented "US baseline + 3% CPI" (was copying the user's
+       inflation slider — the baseline is meant to be a fixed real-world reference point) */
+    inflRate:CFG.BASELINE_CPI_RATE,
+    automation:false,ccoOn:false,nAgents:n,years:years};
+  /* v4.0: "CCO Only" now mirrors the user's own CCO-related settings (BU, octave ceiling,
+   * tax, quality ceiling, participation rate, Phi, automation) rather than a fixed
+   * reference calibration (was: bu 1200/oct 6/tax 12%/mult 9/part 78% regardless of the
+   * user's actual configuration — external review: "hardcodes participation at 78%
+   * regardless of the selected configuration"). This isolates the marginal effect of
+   * PTF/PTH/SZH/CIP specifically: CCO Only vs. Your Settings now differ ONLY in whether
+   * those four systems are active, holding every CCO parameter fixed. */
+  var pCCO={bu:p.bu,maxOct:p.maxOct,expiry:p.expiry,tax:p.tax,maxMult:p.maxMult,nAgents:n,years:years,partRate:p.partRate,
+    ptfShare:0,pthUptake:0,szhCoh:0,cipDemo:0,phi:p.phi,ptf:false,pth:false,szh:false,cip:false,
+    shock:p.shock,ccoOn:p.ccoOn,inflRate:p.inflRate,automation:p.automation};
 
-  var baseYearlyPov=[],bRecSt={active:false,incomeMultiplier:1.0,yearsLeft:0};
-  /* v3.8 fix: baseline & CCO-only comparison runs previously consumed RNG draws from the
-     same shared stream the main trajectory uses next, so changing years/nAgents shifted
-     the main run's random sequence even at a fixed seed. Give each comparison run its own
-     derived stream (same pattern as the ablation RNG-swap in runMulti), then restore the
-     stream the main trajectory continues from — unaffected by comparison-run length. */
   var mainRNG=RNG,seedNum=(p.seed!==null&&p.seed!==undefined&&p.seed!=='')?parseInt(p.seed):NaN;
-  RNG=isNaN(seedNum)?mainRNG:mulberry32(seedNum+700001);
-  for(var bYr=0;bYr<years;bYr++){if(pBase.shock&&bYr>0)updateRecession(bRecSt);runYear(baseAgents,bYr,pBase,bRecSt);baseYearlyPov.push(+(calcMetrics(baseAgents).pov*100).toFixed(1));}
-  var mBase=calcMetrics(baseAgents),bBase=bleiMetrics(baseAgents,0,false,false,false,0,'Comfortable');
+  /* v4.0: paired shock path — see buildRecessionPath. Built on its own dedicated stream so
+   * it never perturbs the main trajectory's sequence (mirrors the existing +700001/+700002
+   * comparison-stream pattern below). */
+  var sharedRecPath=p.shock?buildRecessionPath(years,isNaN(seedNum)?null:seedNum):null;
+  function recAt(yr){return sharedRecPath?sharedRecPath[yr]:{active:false,incomeMultiplier:1.0,yearsLeft:0};}
 
-  var ccoRecSt={active:false,incomeMultiplier:1.0,yearsLeft:0};
+  var baseYearlyPov=[];
+  /* v3.8: each comparison run executes on its own seed-derived stream, restored before
+     the main trajectory begins — unaffected by comparison-run length. */
+  RNG=isNaN(seedNum)?mainRNG:mulberry32(seedNum+700001);
+  var baseAgents=[];for(var bi=0;bi<n;bi++)baseAgents.push(makeAgent(pBase));
+  baseAgents.forEach(function(a){a.wealth*=0.85;});  // documented design choice — lower savings absent CCO
+  for(var bYr=0;bYr<years;bYr++){runYear(baseAgents,bYr,pBase,recAt(bYr));baseYearlyPov.push(+(calcMetrics(baseAgents,false,false).pov*100).toFixed(1));}
+  var mBase=calcMetrics(baseAgents,false,false),bBase=bleiMetrics(baseAgents,0,false,false,false,0,'Comfortable');
+
   RNG=isNaN(seedNum)?mainRNG:mulberry32(seedNum+700002);
-  for(var cYr=0;cYr<years;cYr++){if(pCCO.shock&&cYr>0)updateRecession(ccoRecSt);runYear(ccoAgents,cYr,pCCO,ccoRecSt);}
-  var mCCO=calcMetrics(ccoAgents),bCCO=bleiMetrics(ccoAgents,pCCO.bu,true,false,false,0,'Comfortable');
+  var ccoAgents=[];for(var ci=0;ci<n;ci++)ccoAgents.push(makeAgent(pCCO));
+  for(var cYr=0;cYr<years;cYr++){runYear(ccoAgents,cYr,pCCO,recAt(cYr));}
+  var mCCO=calcMetrics(ccoAgents,pCCO.ccoOn,false),bCCO=bleiMetrics(ccoAgents,pCCO.bu,pCCO.ccoOn,false,false,0,'Comfortable');
   RNG=mainRNG;
 
   var yLabels=[],aPov=[],aGini=[],aWealth=[],aVel=[],aBlei=[];
   var aP10=[],aP90=[],aTiersDist=[],aCash=[],aInc=[],aBen=[];
   var aPartPov=[],aNonPartPov=[],aPartBLEI=[],aNonPartBLEI=[];
-  var recSt={active:false,incomeMultiplier:1.0,yearsLeft:0},breakEvenYr=null;
+  var breakEvenYr=null,totalConversionAll=0;
 
   function step(yr){
     if(CANCELLED){resetRunUIAfterCancel();return;}
-    if(yr>=years){finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr);return;}
-    if(p.shock&&yr>0)updateRecession(recSt);
-    var vel=runYear(agents,yr,p,recSt);
-    var m=calcMetrics(agents),bMed=calcMedianBLEI(agents,p);
+    if(yr>=years){finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr,totalConversionAll);return;}
+    var yrRes=runYear(agents,yr,p,recAt(yr));
+    var vel=yrRes.bu;totalConversionAll+=yrRes.conversion;
+    var m=calcMetrics(agents,p.ccoOn,p.pth),bMed=calcMedianBLEI(agents,p);
     yLabels.push('Yr '+(yr+1));
     aPov.push(+(m.pov*100).toFixed(1));aGini.push(+m.gini.toFixed(3));
     aWealth.push(Math.round(m.med));aVel.push(Math.round(vel/n));aBlei.push(Math.round(bMed));
@@ -1049,8 +1391,8 @@ function simulate(p,warns){
     var comp=calcBLEIComponents(agents,p);aCash.push(+comp.cash.toFixed(1));aInc.push(+comp.inc.toFixed(1));aBen.push(+comp.ben.toFixed(1));
     /* v3.3: participant stratification */
     var pArr=agents.filter(function(a){return a.inCCO;}),npArr=agents.filter(function(a){return !a.inCCO;});
-    aPartPov.push(pArr.length?+(calcMetrics(pArr).pov*100).toFixed(1):null);
-    aNonPartPov.push(npArr.length?+(calcMetrics(npArr).pov*100).toFixed(1):null);
+    aPartPov.push(pArr.length?+(calcMetrics(pArr,p.ccoOn,p.pth).pov*100).toFixed(1):null);
+    aNonPartPov.push(npArr.length?+(calcMetrics(npArr,p.ccoOn,p.pth).pov*100).toFixed(1):null);
     aPartBLEI.push(pArr.length?Math.round(calcMedianBLEI(pArr,p)):null);
     aNonPartBLEI.push(npArr.length?Math.round(calcMedianBLEI(npArr,p)):null);
     if(breakEvenYr===null&&baseYearlyPov[yr]!==undefined&&aPov[aPov.length-1]<baseYearlyPov[yr])breakEvenYr=yr+1;
@@ -1071,15 +1413,32 @@ function simulate(p,warns){
 
 /* ─── runYear (v3.3: SIM_COST_SCALE, diminishing returns, beta recession) */
 function runYear(agentSet,yr,p,recSt){
-  var totalBU=0;recSt=recSt||{active:false,incomeMultiplier:1.0,yearsLeft:0};
-  var advRate=0.08;if(p.cip)advRate+=p.cipDemo*0.04;
-  var ptfConvBonus=1.30;if(p.szh&&p.ptf)ptfConvBonus=1.30+(p.szhCoh-0.50)*0.35;
-  var pthApprBonus=p.szh?p.szhCoh*0.01:0,szhPartBoost=(p.szh&&p.ccoOn)?p.szhCoh*0.04:0;
+  var totalBU=0,totalConversion=0;recSt=recSt||{active:false,incomeMultiplier:1.0,yearsLeft:0};
+  var pthApprBonus=p.szh?p.szhCoh*0.01:0;
+  /* v4.0: θ-gated cooperative-synergy terms (see szhTheta) replace the prior plain-
+   * linear-in-szhCoh formulas for ptfConvBonus and szhPartBoost (external review +
+   * BLEI paper Table 6: synergy coefficient θ is network-density-gated, not linear). */
+  var szhThetaVal=p.szh?szhTheta(p.szhCoh):0;
+  var ptfConvBonus=1.30+((p.szh&&p.ptf)?szhThetaVal:0);
+  var szhPartBoost=(p.szh&&p.ccoOn)?szhThetaVal*0.16:0;
   var inflRate=p.inflRate||0;
   if(p.ptf&&inflRate>0)inflRate*=(1-p.ptfShare*0.5);
   if(p.pth&&inflRate>0)inflRate*=0.90;
-  var simCost=CFG.SIM_COST_SCALE*Math.pow(1+inflRate,yr);  // v3.3: renamed
+  /* v4.0: simCost (SIU-scale) drives the main wealth-accumulation flow, UNCHANGED from
+   * pre-v4.0 — see UNIT SYSTEM note (top of file) for why this loop was intentionally
+   * left as-is rather than rescaled. dollarCost (real USD, BASE_DAILY_COST-based) is a
+   * NEW, separate figure used only by the FBS advancement gate below, which needs a
+   * genuine monthly USD cost independent of the legacy SIU scale. */
+  var simCost=CFG.SIM_COST_SCALE*Math.pow(1+inflRate,yr);
+  var dollarCost=CFG.BASE_DAILY_COST*365*Math.pow(1+inflRate,yr);
   var popShock=recSt.active?recSt.incomeMultiplier:1.0;
+  /* v4.0: current PTF adoption fraction, computed once per year — feeds the Bass (1969)
+   * imitation term added to the adoption check below (external review + BLEI paper Table
+   * 6/ODD Adaptation section: PTF adoption was documented as distress + Bass social
+   * diffusion, but the code previously had no imitation term at all — adoption
+   * probability didn't depend on how many peers had already adopted). */
+  var ptfAdoptFrac=0;
+  if(p.ptf&&p.ptfShare>0){var ptfCount=0;agentSet.forEach(function(a){if(a.inPTF)ptfCount++;});ptfAdoptFrac=ptfCount/Math.max(1,agentSet.length);}
   var popAIDisp=0;
   if(p.automation){
     if(yr>=CFG.AI_DISPLACEMENT_YEAR_2)popAIDisp=CFG.AI_DISPLACEMENT_RATE_1*(CFG.AI_DISPLACEMENT_YEAR_2-CFG.AI_DISPLACEMENT_YEAR_1)+CFG.AI_DISPLACEMENT_RATE_2*(yr-CFG.AI_DISPLACEMENT_YEAR_2+1);
@@ -1105,6 +1464,8 @@ function runYear(agentSet,yr,p,recSt){
     if(p.ptf&&a.inPTF)cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));
     if(p.pth&&a.inPTH)cf*=0.65;
     if(p.ccoOn&&a.inCCO&&p.bu>0)cf*=0.80;
+    /* v4.0: main wealth flow intentionally UNCHANGED from pre-v4.0 — see UNIT SYSTEM
+     * note at top of file for why. */
     a.wealth+=a.wage*12*incomeShock-simCost*cf;
     if(isNaN(a.wealth))a.wealth=0;
     if(p.ccoOn&&a.inCCO){
@@ -1112,35 +1473,107 @@ function runYear(agentSet,yr,p,recSt){
       a.buBalance=Math.min(a.buBalance*decay+p.bu,p.bu*3);
       var spend=a.buBalance*(0.60+RNG()*0.30);a.buBalance-=spend;totalBU+=spend;
       if(p.cip&&RNG()<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);
-      var baseRate=1+(a.quality/p.maxMult)*(p.maxMult-1);
+      /* v4.0: octave now governs conversion CAPACITY — the achievable rate ceiling —
+       * with quality modulating the realised rate within that ceiling. Previously
+       * quality/maxMult alone set the rate and octave played no role here (external
+       * review + BLEI paper Table 6: "octave controls conversion capacity, not basic
+       * unit allocation"; BU allocation (p.bu) remains flat/octave-independent, unchanged). */
+      var octCeiling=1+(a.octave/Math.max(1,p.maxOct))*(Math.max(1,p.maxMult)-1);
+      var qualityFactor=Math.min(1,a.quality/Math.max(1,p.maxMult));
+      var baseRate=1+qualityFactor*(octCeiling-1);
       var phi=(p.phi&&a.quality>p.maxMult*CFG.PHI_QUALITY_THRESH)?CFG.PHI_RATIO:1.0;
       var ptfB=(p.ptf&&a.inPTF)?ptfConvBonus:1.0;
       var cipB=p.cip?(1+p.cipDemo*0.12):1.0;
       var rate=Math.min(baseRate*phi*ptfB,p.maxMult*(p.phi?CFG.PHI_RATIO:1.0));
       var bTax=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax;
       var progTax=Math.min(CFG.PROG_TAX_MAX,bTax+Math.max(0,(rate-CFG.PROG_PIVOT)*CFG.PROG_RATE));
-      a.wealth+=spend*rate*(1-progTax)*cipB*incomeShock;
+      var convGain=spend*rate*(1-progTax)*cipB*incomeShock;
+      a.wealth+=convGain;totalConversion+=convGain;
       if(isNaN(a.wealth))a.wealth=0;
-      if(bleiCheck>CFG.BLEI_PRECARIOUS_MAX&&RNG()<advRate&&a.octave<p.maxOct)a.octave++;
+      /* v4.0: FBS-gated advancement replaces the prior fixed-probability advancement
+       * (external review + BLEI paper Index IV: P(advance) = 1 − exp(−λ·FBS); an agent
+       * at FBS=0 cannot advance regardless of BLEI/quality). λ is a per-agent capability
+       * coefficient drawn at initialisation, U(FBS_LAMBDA_LO, FBS_LAMBDA_HI) — see
+       * agent-construction sites. CIP support raises effective λ (replaces the old flat
+       * +cipDemo*0.04 bump to a fixed advancement probability). */
+      if(a.octave<p.maxOct){
+        /* Yusd/cBasicMonthly use SIU_TO_USD/dollarCost (real USD) — deliberately
+         * decoupled from the SIU-scale simCost the wealth flow above uses; FBS doesn't
+         * feed back into wealth, so it can use a genuinely-USD basis without touching
+         * the main loop's calibration. See UNIT SYSTEM note (top of file). */
+        var Yusd=a.wage*CFG.SIU_TO_USD;
+        var cBasicMonthly=(dollarCost*cf)/12;
+        var edcResidual=(p.pth&&a.inPTH)?CFG.FBS_EDC_RESIDUAL_PTH:CFG.FBS_EDC_RESIDUAL_BASE;
+        var fbs=Math.max(0,Yusd+p.bu-cBasicMonthly-edcResidual*Yusd);
+        var lam=(typeof a.lambda==='number'&&!isNaN(a.lambda))?a.lambda:(CFG.FBS_LAMBDA_LO+CFG.FBS_LAMBDA_HI)/2;
+        if(p.cip)lam*=(1+p.cipDemo*CFG.FBS_CIP_LAMBDA_BOOST);
+        var pAdvance=1-Math.exp(-lam*fbs);
+        if(RNG()<pAdvance)a.octave++;
+      }
       if(RNG()<szhPartBoost&&!a.inPTF&&p.ptf)a.inPTF=RNG()<p.ptfShare;
     }
-    /* PTH: AE appreciated separately (50% to wealth = liquidity fraction, not double-count) */
-    if(p.pth&&a.inPTH){var ar=0.030+RNG()*0.020+pthApprBonus;var appr=a.acreEquity*ar;a.acreEquity+=appr;a.wealth+=appr*0.5;}
-    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0){var ap=0.005;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(RNG()<ap)a.inPTF=true;}
+    /* PTH: v4.0 adds a payment→equity contribution alongside the pre-existing
+     * appreciation mechanism (external review: the documented equity-building
+     * mechanism was missing — "no portion of their housing-payment flow ... is
+     * contributed to acreEquity"). A documented share of the annual PTH housing-cost
+     * SAVING is re-routed from liquid wealth into Acre Equity (illiquid) rather than
+     * landing entirely as direct cash relief. Uses simCost (the same cost basis the
+     * main wealth flow above uses), not dollarCost, so the re-routed amount is drawn
+     * from the same pool a.wealth actually accumulates from — using a different scale
+     * here would silently over- or under-drain wealth relative to what was ever
+     * credited. Total benefit is unchanged — this is a re-allocation of where an
+     * already-counted saving lands, not new wealth, so it does not reintroduce the
+     * double-counting the v3.0 fix removed. Appreciation (pre-existing, unchanged):
+     * 50% of appreciation → liquid wealth = accessible-liquidity haircut. */
+    if(p.pth&&a.inPTH){
+      var cfWithoutPTH=cf/0.65;
+      var pthSaving=Math.max(0,simCost*cfWithoutPTH*(1-0.65));
+      var equityContrib=pthSaving*CFG.PTH_EQUITY_CONTRIB_SHARE;
+      a.acreEquity+=equityContrib;a.wealth-=equityContrib;
+      var ar=0.030+RNG()*0.020+pthApprBonus;var appr=a.acreEquity*ar;a.acreEquity+=appr;a.wealth+=appr*0.5;
+    }
+    /* v4.0: added Bass (1969) imitation term q·(adoption fraction) alongside the existing
+     * innovation baseline + economic-distress bump — see ptfAdoptFrac above. This is what
+     * makes adoption an S-curve driven partly by social diffusion, matching the ODD
+     * protocol's documented description (previously: fixed-probability + distress only,
+     * no dependency on how many peers had already adopted). */
+    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(RNG()<ap)a.inPTF=true;}
     if(a.wealth<CFG.WEALTH_FLOOR)a.wealth=CFG.WEALTH_FLOOR;
   });
-  return totalBU;
+  /* v4.0: return value now carries conversion proceeds alongside BU spend, so callers
+   * can track cumulative CCO conversion credits — see the new "Conversion Ledger"
+   * transparency line in CSV/JSON export (partial answer to the external review's stock-
+   * flow accounting concern; see Known Limitations for what remains open). */
+  return{bu:totalBU,conversion:totalConversion};
 }
 
-/* ─── METRICS (v3.3: Gini zero-wealth fix + proper percentile interpolation) */
-function calcMetrics(agentSet){
+/* ─── METRICS (v3.3: Gini zero-wealth fix + proper percentile interpolation)
+ * v4.0: optional ccoOn/pthOn switch Gini to EDC-adjusted net wealth per BLEI paper
+ * Table 6 ("Gini metric: EDC-adjusted net wealth: W_net = W_nominal − (EDC×Y×12)").
+ * Poverty rate, median wealth, and p10/p90 intentionally stay on NOMINAL wealth —
+ * Table 6 specifies the net-wealth adjustment for the Gini row only. Callers that
+ * don't have a scenario context (e.g. quick internal comparisons) can omit the args
+ * and get the pre-v4.0 nominal-wealth Gini unchanged. */
+function calcMetrics(agentSet,ccoOn,pthOn){
+  var useNet=(typeof ccoOn!=='undefined');
   var ws=agentSet.map(function(a){return isNaN(a.wealth)?0:a.wealth;}).sort(function(a,b){return a-b;});
   var n=ws.length,pov=ws.filter(function(w){return w<CFG.POVERTY_LINE;}).length/n;
   var wcl=ws.map(function(w){return Math.max(0,w);});
   var totW=wcl.reduce(function(s,w){return s+w;},0);
   /* v3.3: totW=0 → Gini=0 (everyone equally at zero; BLEI poverty captures deprivation) */
   var gini=0;
-  if(totW>0){var gNum=0;for(var i=0;i<n;i++)gNum+=(i+1)*wcl[i];gini=(2*gNum/(n*totW))-(n+1)/n;}
+  if(useNet){
+    var netW=agentSet.map(function(a){
+      var w=isNaN(a.wealth)?0:a.wealth;
+      var edc=agentEDC(a,ccoOn,pthOn);
+      var yUsd=Math.max(isNaN(a.wage)?0:a.wage,0)*CFG.SIU_TO_USD;
+      return Math.max(0,w-edc*yUsd*12);
+    }).sort(function(a,b){return a-b;});
+    var totWN=netW.reduce(function(s,w){return s+w;},0);
+    if(totWN>0){var gNumN=0;for(var j=0;j<n;j++)gNumN+=(j+1)*netW[j];gini=(2*gNumN/(n*totWN))-(n+1)/n;}
+  } else if(totW>0){
+    var gNum=0;for(var i=0;i<n;i++)gNum+=(i+1)*wcl[i];gini=(2*gNum/(n*totW))-(n+1)/n;
+  }
   var med=n%2===0?(ws[n/2-1]+ws[n/2])/2:ws[Math.floor(n/2)];
   return{pov:Math.max(0,Math.min(1,pov)),gini:Math.max(0,Math.min(1,gini)),med:med,p10:interpP(ws,0.10),p90:interpP(ws,0.90)};
 }
@@ -1150,7 +1583,7 @@ function interpP(sorted,p){var n=sorted.length;if(!n)return 0;var pos=p*(n-1),lo
 function calcMedianBLEI(agents,p){var sc=agents.map(function(a){return agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh);});sc.sort(function(a,b){return a-b;});var n=sc.length;if(!n)return 0;return n%2===0?(sc[n/2-1]+sc[n/2])/2:sc[Math.floor(n/2)];}
 
 /* ─── FINISH ──────────────────────────────────────────────────────────── */
-function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr){
+function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr,totalConversionAll){
   var finalM={pov:aPov[aPov.length-1],gini:aGini[aGini.length-1],med:aWealth[aWealth.length-1],p10:aP10.length?aP10[aP10.length-1]:0,p90:aP90.length?aP90[aP90.length-1]:0};
   var q=Math.max(1,Math.floor(yLabels.length/4)),lQ=aPov.slice(-q),improving=lQ[lQ.length-1]<=lQ[0];
   var stabBase=improving?0.88:0.60;if(p.cip)stabBase+=p.cipDemo*0.10;
@@ -1181,7 +1614,11 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
     isLastMC=true;MR.active=false;MR.suppressUI=false;
   }
 
-  SIM_RESULTS={params:p,finalPov:finalM.pov,finalGini:finalM.gini,finalWealth:finalM.med,stab:stab,blei:bMain,bleiPovPct:bleiPovPct,mBase:mBase,mCCO:mCCO,bBase:bBase,bCCO:bCCO,topTierName:top,timestamp:new Date().toISOString(),timeSeries:{labels:yLabels,poverty:aPov,gini:aGini,wealth:aWealth,blei:aBlei,p10:aP10,p90:aP90,cashDays:aCash,incomeDays:aInc,benefitDays:aBen,baselinePoverty:baseYearlyPov,participantPoverty:aPartPov,nonParticipantPoverty:aNonPartPov,participantBLEI:aPartBLEI,nonParticipantBLEI:aNonPartBLEI}};
+  /* v4.0: cumulative CCO conversion proceeds credited across the run, surfaced for
+   * transparency (partial response to the external review's stock-flow accounting
+   * concern — see CSV/JSON export and Known Limitations for what this does and does
+   * not represent). */
+  SIM_RESULTS={params:p,finalPov:finalM.pov,finalGini:finalM.gini,finalWealth:finalM.med,stab:stab,blei:bMain,bleiPovPct:bleiPovPct,mBase:mBase,mCCO:mCCO,bBase:bBase,bCCO:bCCO,topTierName:top,totalConversionProceeds:Math.round(totalConversionAll||0),timestamp:new Date().toISOString(),timeSeries:{labels:yLabels,poverty:aPov,gini:aGini,wealth:aWealth,blei:aBlei,p10:aP10,p90:aP90,cashDays:aCash,incomeDays:aInc,benefitDays:aBen,baselinePoverty:baseYearlyPov,participantPoverty:aPartPov,nonParticipantPoverty:aNonPartPov,participantBLEI:aPartBLEI,nonParticipantBLEI:aNonPartBLEI}};
 
   renderKPIs(finalM,stab,mBase,bMain,bBase,top,policy);
   renderStratKPIs(fPartPov,fNonPov,fPartBLEI,fNonBLEI,p,top);
@@ -1208,7 +1645,7 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
 
   var attrEl=document.getElementById('sec-attribution');
   if(attrEl){attrEl.style.display='block';var al=document.getElementById('attribution-loading'),aw=document.getElementById('attribution-chart-wrap');if(al){al.style.display='block';al.textContent='⏳ Calculating attribution…';}if(aw)aw.style.display='none';}
-  setTimeout(function(){runAblation(p,bMain,function(abl){renderAttribution(bMain,abl);});},80);
+  setTimeout(function(){runAblation(p,bMain,function(abl,fullMetrics){renderAttribution(fullMetrics,abl);});},80);
 
   if(isLastMC){renderMultiRunSummary(MR.results,MR.numRuns,MR.baseSeed);var sElR=document.getElementById('s-seed');if(sElR)sElR.value=MR.userSeed||'';}
 }
@@ -1256,7 +1693,14 @@ function renderMultiRunSummary(results,nRuns,baseSeed){
   });
   html+='</div>';
   var hdr=document.getElementById('multirun-header');if(hdr)hdr.innerHTML=n+'-run statistical summary (seeds '+baseSeed+'–'+(baseSeed+n-1)+')'+(usesCI?' <span style="font-size:10px;color:var(--text3)">95% CI = mean ± 1.96·SD/√n</span>':'');
-  var sub=document.getElementById('multirun-sub');if(sub)sub.textContent=usesCI?'95% CI across '+n+' runs. For Sobol/LHC sensitivity, use CSV export with Python/R.':'Mean ± SD. Use Run 10× or 50× for 95% confidence intervals.';
+  /* v4.0: relabeled per external review — these bounds describe the spread of THIS
+   * simulation's own stochastic output when parameters are held fixed and only the
+   * RNG seed varies (a "conditional stochastic-error" summary). They are NOT run-to-run
+   * outcome intervals in the sense of a held-out replication, and they do NOT include
+   * calibration uncertainty (the fitted constants themselves), parameter uncertainty
+   * (your slider settings could be wrong), or structural uncertainty (the model's
+   * mechanisms could be mis-specified) — "Publication CI" overstated what this captures. */
+  var sub=document.getElementById('multirun-sub');if(sub)sub.textContent=usesCI?'95% CI across '+n+' runs, holding parameters fixed and varying only the RNG seed — a stochastic-error range, not a full uncertainty interval (excludes calibration, parameter, and structural uncertainty). For formal Sobol/LHC sensitivity, use CSV export with Python/R.':'Mean ± SD across '+n+' runs (stochastic error only, parameters fixed). Use Run 10× or 50× for 95% CI.';
   var inner=document.getElementById('multirun-inner');if(inner)inner.innerHTML=html;
   el.style.display='block';
 }
@@ -1272,34 +1716,62 @@ function renderStratKPIs(partPov,nonPartPov,partBLEI,nonPartBLEI,p,top){
 }
 
 /* ─── ABLATION ────────────────────────────────────────────────────────── */
+/* v4.0: paired-population, paired-stream ablation (external review, "Statistical design
+ * of attribution" section: "each removal scenario uses a fresh 200-agent sample and a
+ * different seed, then subtracts that outcome from the unrelated main-run median ...
+ * combine subsystem removal with sampling and stochastic-path variation, while negative
+ * differences are censored to zero"). Fixes applied:
+ *  1. Every scenario in the batch — including a same-sized "full system" reference run,
+ *     built here rather than reusing the differently-sized/differently-seeded main run —
+ *     shares the SAME initial population (fixed seed0) and the SAME paired stochastic
+ *     stream (same seed offset every time), so only the removed subsystem's mechanics
+ *     differ between the reference and each removal run.
+ *  2. Deltas are signed. A subsystem whose removal improves BLEI now shows as a negative
+ *     bar instead of being clamped to zero — see renderAttribution.
+ * callback(res, fullMetrics): res[sys] = bleiMetrics with that subsystem removed;
+ * fullMetrics = the paired full-system reference this batch's deltas are measured against. */
 function runAblation(p,bMain,callback){
   var sys=[];if(p.ccoOn)sys.push('CCO');if(p.ptf&&p.ptfShare>0)sys.push('PTF');if(p.pth&&p.pthUptake>0)sys.push('PTH');if(p.szh&&p.szhCoh>0)sys.push('SZH');if(p.cip&&p.cipDemo>0)sys.push('CIP');
-  if(sys.length<2){callback({});return;}
-  var res={},ablN=Math.min(200,p.nAgents),seed0=9973,idx=0,sRNG=null;
+  if(sys.length<2){callback({},null);return;}
+  var res={},ablN=Math.min(200,p.nAgents),seed0=9973,sRNG=RNG;
+  function buildPop(){RNG=mulberry32(seed0);var arr=[];for(var i=0;i<ablN;i++)arr.push(makeAgent(p));return arr;}  // p (full config) → identical membership flags across every scenario
+  function runPop(agentsArr,pCfg){
+    RNG=mulberry32(seed0+500000);
+    var recPath=pCfg.shock?buildRecessionPath(p.years,seed0+500000):null;
+    var rSt={active:false,incomeMultiplier:1.0,yearsLeft:0};
+    for(var y=0;y<p.years;y++)runYear(agentsArr,y,pCfg,recPath?recPath[y]:rSt);
+  }
+  var fullPop=buildPop();runPop(fullPop,p);
+  var fullMetrics=bleiMetrics(fullPop,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,(p.ccoOn&&p.ptf)?'Flourishing':'Comfortable');
+  var idx=0;
   function next(){
-    if(idx>=sys.length){if(sRNG)RNG=sRNG;callback(res);return;}
+    if(idx>=sys.length){RNG=sRNG;callback(res,fullMetrics);return;}
     var s=sys[idx++],pA=Object.assign({},p,{nAgents:ablN});
     if(s==='CCO'){pA.ccoOn=false;pA.bu=0;}else if(s==='PTF'){pA.ptf=false;pA.ptfShare=0;}else if(s==='PTH'){pA.pth=false;pA.pthUptake=0;}else if(s==='SZH'){pA.szh=false;pA.szhCoh=0;}else if(s==='CIP'){pA.cip=false;pA.cipDemo=0;}
-    if(!sRNG)sRNG=RNG;RNG=mulberry32(seed0+idx*31337);
-    var aA=[];for(var i=0;i<ablN;i++){var iC=pA.ccoOn&&RNG()<pA.partRate,iP=pA.ptf&&RNG()<pA.ptfShare,iH=pA.pth&&RNG()<pA.pthUptake,qN=pA.cip?(1-pA.cipDemo*0.5):1.0;aA.push({wealth:lognormal(10.5,1.2),wage:lognormal(3.5,0.5),octave:Math.floor(beta(2,5)*pA.maxOct),quality:Math.min(pA.maxMult,Math.max(0,lognormal(Math.log(pA.maxMult*0.5),0.4)*qN)),automationRisk:0.2+RNG()*0.8,inCCO:iC,inPTF:iP,inPTH:iH,buBalance:0,acreEquity:iH?5000:0});}
-    var rSt={active:false,incomeMultiplier:1.0,yearsLeft:0};
-    for(var y=0;y<p.years;y++){if(pA.shock&&y>0)updateRecession(rSt);runYear(aA,y,pA,rSt);}
-    res[s]=bleiMetrics(aA,pA.bu,pA.ccoOn,pA.pth,pA.szh,pA.szhCoh,(pA.ccoOn&&pA.ptf)?'Flourishing':'Comfortable');
+    var popA=buildPop();  // same seed0 → bit-identical population/membership to fullPop
+    runPop(popA,pA);
+    res[s]=bleiMetrics(popA,pA.bu,pA.ccoOn,pA.pth,pA.szh,pA.szhCoh,(pA.ccoOn&&pA.ptf)?'Flourishing':'Comfortable');
     setTimeout(next,0);
   }
   next();
 }
 
-function renderAttribution(bMain,ablResults){
+/* v4.0: fullMetrics is the paired reference from THIS ablation batch (see runAblation),
+ * not the differently-sampled/differently-seeded bMain from the displayed main run.
+ * Deltas are signed — positive = removing this subsystem cost BLEI days, negative =
+ * removing it IMPROVED the paired run (a real, informative finding the pre-v4.0
+ * Math.max(0,...) clamp discarded). */
+function renderAttribution(fullMetrics,ablResults){
   var aL=document.getElementById('attribution-loading'),aW=document.getElementById('attribution-chart-wrap');
   if(aL)aL.style.display='none';if(aW)aW.style.display='block';
-  var sys=Object.keys(ablResults);if(!sys.length){if(aL){aL.textContent='Attribution: <2 active systems.';aL.style.display='block';}if(aW)aW.style.display='none';return;}
+  var sys=Object.keys(ablResults);if(!sys.length||!fullMetrics){if(aL){aL.textContent='Attribution: <2 active systems.';aL.style.display='block';}if(aW)aW.style.display='none';return;}
   var cMap={CCO:'rgba(29,158,117,0.82)',PTF:'rgba(24,95,165,0.82)',PTH:'rgba(122,92,0,0.82)',SZH:'rgba(107,63,160,0.82)',CIP:'rgba(186,117,23,0.82)'};
+  var negColor='rgba(163,45,45,0.75)';
   var labels=[],deltas=[],colors=[];
-  sys.forEach(function(s){var c=Math.max(0,bMain.med-(ablResults[s].med||0));labels.push(s);deltas.push(+c.toFixed(1));colors.push(cMap[s]||'rgba(120,120,120,0.75)');});
+  sys.forEach(function(s){var c=fullMetrics.med-(ablResults[s].med||0);labels.push(s);deltas.push(+c.toFixed(1));colors.push(c<0?negColor:(cMap[s]||'rgba(120,120,120,0.75)'));});
   if(charts['ch-attribution'])charts['ch-attribution'].destroy();
   var ctx=document.getElementById('ch-attribution');if(!ctx)return;
-  charts['ch-attribution']=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{label:'BLEI days',data:deltas,backgroundColor:colors,borderRadius:3,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y.toFixed(1)+' BLEI days lost if removed';}}}},scales:{x:{ticks:{font:{size:10.5},color:'#888780'},grid:{display:false}},y:{ticks:{font:{size:10.5},color:'#888780',callback:function(v){return v+'d';}},grid:{color:'rgba(120,120,120,0.08)'},min:0,title:{display:true,text:'BLEI days contributed',font:{size:10.5},color:'#888780'}}}}});
+  charts['ch-attribution']=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[{label:'BLEI days',data:deltas,backgroundColor:colors,borderRadius:3,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){var v=c.parsed.y;return v>=0?(v.toFixed(1)+'d lost if removed'):((-v).toFixed(1)+'d GAINED if removed');}}}},scales:{x:{ticks:{font:{size:10.5},color:'#888780'},grid:{display:false}},y:{ticks:{font:{size:10.5},color:'#888780',callback:function(v){return v+'d';}},grid:{color:'rgba(120,120,120,0.08)'},title:{display:true,text:'BLEI days contributed (signed)',font:{size:10.5},color:'#888780'}}}}});
 }
 
 /* ─── KPI RENDER ──────────────────────────────────────────────────────── */
@@ -1401,11 +1873,22 @@ function runOATSensitivity(){
   OAT_STATE.baseParams=base;OAT_STATE.results=[];OAT_STATE.current=0;OAT_STATE.baseResult=null;
   var sc=[];
   function addSc(name,param,val){var p2=Object.assign({},base);p2[param]=val;sc.push({name:name,param:param,value:val,params:p2});}
-  if(base.ccoOn&&base.bu>0){addSc('BU +20%','bu',Math.min(1800,Math.round(base.bu*1.2/50)*50));addSc('BU −20%','bu',Math.max(0,Math.round(base.bu*0.8/50)*50));}
-  addSc('Participation +10pp','partRate',Math.min(0.99,base.partRate+0.10));addSc('Participation −10pp','partRate',Math.max(0,base.partRate-0.10));
-  if(base.ptf){addSc('PTF share +5pp','ptfShare',Math.min(0.35,base.ptfShare+0.05));addSc('PTF share −5pp','ptfShare',Math.max(0,base.ptfShare-0.05));}
-  addSc('Inflation +1pp','inflRate',base.inflRate+0.01);addSc('Inflation −1pp','inflRate',Math.max(0,base.inflRate-0.01));
-  if(base.ccoOn){addSc('Tax +5pp','tax',Math.min(0.30,base.tax+0.05));addSc('Tax −5pp','tax',Math.max(0,base.tax-0.05));}
+  /* v4.0: uniform perturbation convention — each parameter is shifted by ±20% of its OWN
+   * slider range (mirrors s-bu/s-part/s-ptf/s-infl/s-tax min/max in index.html), not
+   * ±20% of its current value and not a fixed percentage-point step. External review:
+   * "BU uses an approximately relative ±20% change, whereas participation, PTF share,
+   * inflation and conversion tax use fixed percentage-point increments ... do not share
+   * a common perturbation scale." A value-relative ±20% is also undefined/zero whenever
+   * the base value is 0 (e.g. the Reference preset's 0% inflation) — range-based avoids
+   * that failure mode as well as unifying the scale across all five parameters. */
+  var RANGE={bu:[0,1800],partRate:[0,0.99],ptfShare:[0,0.35],inflRate:[0,0.06],tax:[0,0.30]};
+  function pert(key){return 0.20*(RANGE[key][1]-RANGE[key][0]);}
+  function clampR(key,v){return Math.max(RANGE[key][0],Math.min(RANGE[key][1],v));}
+  if(base.ccoOn&&base.bu>0){var dBu=pert('bu');addSc('BU +20% of range','bu',Math.round(clampR('bu',base.bu+dBu)/50)*50);addSc('BU −20% of range','bu',Math.round(clampR('bu',base.bu-dBu)/50)*50);}
+  var dPart=pert('partRate');addSc('Participation +20% of range','partRate',clampR('partRate',base.partRate+dPart));addSc('Participation −20% of range','partRate',clampR('partRate',base.partRate-dPart));
+  if(base.ptf){var dPtf=pert('ptfShare');addSc('PTF share +20% of range','ptfShare',clampR('ptfShare',base.ptfShare+dPtf));addSc('PTF share −20% of range','ptfShare',clampR('ptfShare',base.ptfShare-dPtf));}
+  var dInfl=pert('inflRate');addSc('Inflation +20% of range','inflRate',clampR('inflRate',base.inflRate+dInfl));addSc('Inflation −20% of range','inflRate',clampR('inflRate',base.inflRate-dInfl));
+  if(base.ccoOn){var dTax=pert('tax');addSc('Tax +20% of range','tax',clampR('tax',base.tax+dTax));addSc('Tax −20% of range','tax',clampR('tax',base.tax-dTax));}
   OAT_STATE.scenarios=sc;OAT_STATE.active=true;
   var oatEl=document.getElementById('sec-oat');if(oatEl)oatEl.style.display='block';
   var ld=document.getElementById('oat-loading');if(ld){ld.style.display='block';ld.textContent='⏳ Running base scenario…';}
@@ -1414,17 +1897,19 @@ function runOATSensitivity(){
   setTimeout(function(){runOATStep(-1);},80);
 }
 
+/* v4.0: delegates to the shared makeAgent() factory (see near updateRecession) instead
+ * of a diverging inline copy, so mini-populations (OAT, validation) get per-agent λ for
+ * FBS-gated advancement too — without this, runYear's advancement check would silently
+ * fall back to the mid-range default λ for every agent in every OAT/validation run. */
 function initMiniAgents(p){
-  var agents=[];
-  for(var i=0;i<p.nAgents;i++){
-    var inCCO=p.ccoOn&&RNG()<p.partRate,inPTF=p.ptf&&RNG()<p.ptfShare,inPTH=p.pth&&RNG()<p.pthUptake,qN=p.cip?(1-p.cipDemo*0.5):1.0;
-    agents.push({wealth:lognormal(10.5,1.2),wage:lognormal(3.5,0.5),octave:Math.floor(beta(2,5)*(p.maxOct||6)),quality:Math.min(p.maxMult||9,Math.max(0,lognormal(Math.log((p.maxMult||9)*0.5),0.4)*qN)),automationRisk:0.2+RNG()*0.8,inCCO:inCCO,inPTF:inPTF,inPTH:inPTH,buBalance:0,acreEquity:inPTH?5000:0});
-  }return agents;
+  var cfgP=Object.assign({},p,{maxOct:p.maxOct||6,maxMult:p.maxMult||9});
+  var agents=[];for(var i=0;i<p.nAgents;i++)agents.push(makeAgent(cfgP));
+  return agents;
 }
 function runMiniSim(p){
   var rSt={active:false,incomeMultiplier:1.0,yearsLeft:0};var agents=initMiniAgents(p);
   for(var yr=0;yr<p.years;yr++){if(p.shock&&yr>0)updateRecession(rSt);runYear(agents,yr,p,rSt);}
-  var m=calcMetrics(agents);return{pov:m.pov*100,blei:calcMedianBLEI(agents,p)};
+  var m=calcMetrics(agents,p.ccoOn,p.pth);return{pov:m.pov*100,blei:calcMedianBLEI(agents,p)};
 }
 function runOATStep(idx){
   var saved=RNG;
@@ -1470,7 +1955,14 @@ var VAL_TESTS=[
     return{pass:r1.pov<r2.pov,detail:'$1,200: '+r1.pov.toFixed(1)+'% poverty vs $800: '+r2.pov.toFixed(1)+'%'};
   }},
   {id:'threshold',name:'Participation threshold: 78% outperforms 45%',fn:function(){
-    var base=Object.assign({},PRESETS.reference);var p1=mkMiniP(base,{part:78});var p2=mkMiniP(base,{part:45});
+    /* v4.0 fix: overrides must use mkMiniP's OUTPUT (engine) field names/units — see
+     * mkMiniP comment. The override key here was 'part' (a preset-style display field
+     * mkMiniP never reads back out of overrides), so Object.assign added a harmless
+     * stray 'part' property and left p.partRate at whatever the base preset already
+     * computed — BOTH runs silently used the same 78% for every call (external review:
+     * "both runs fall back to the default 78% participation rate"). Fixed to 'partRate'
+     * with the corresponding 0–1 fraction. */
+    var base=Object.assign({},PRESETS.reference);var p1=mkMiniP(base,{partRate:0.78});var p2=mkMiniP(base,{partRate:0.45});
     initRNG(5678);var r1=runMiniSim(p1);initRNG(5678);var r2=runMiniSim(p2);
     return{pass:r1.pov<r2.pov,detail:'78%: '+r1.pov.toFixed(1)+'% poverty vs 45%: '+r2.pov.toFixed(1)+'%'};
   }},
@@ -1480,11 +1972,28 @@ var VAL_TESTS=[
     return{pass:r1.pov<r2.pov&&r1.blei>r2.blei,detail:'Full: '+r1.pov.toFixed(1)+'% pov / BLEI '+Math.round(r1.blei)+'d vs Base: '+r2.pov.toFixed(1)+'% / '+Math.round(r2.blei)+'d'};
   }},
   {id:'ptf_infl',name:'PTF dampens inflation: PTF on < PTF off (3% inflation)',fn:function(){
-    var p1=mkMiniP(PRESETS.reference,{inflRate:3});var p2=mkMiniP(PRESETS.reference,{inflRate:3,ptf:false,ptfShare:0});
+    /* v4.0 fix: inflRate is an engine field already expressed as a 0–1 fraction (see
+     * mkMiniP output and runYear's use of p.inflRate). The override previously passed
+     * the literal display number 3 (meant as "3%"), which Object.assign writes straight
+     * through with no /100 — runYear then compounded at (1+3)^yr, i.e. 300%/yr, not 3%
+     * (external review: "the engine interprets this as a 300% annual rate rather than
+     * 3%"). Fixed to 0.03 in both scenarios. */
+    var p1=mkMiniP(PRESETS.reference,{inflRate:0.03});var p2=mkMiniP(PRESETS.reference,{inflRate:0.03,ptf:false,ptfShare:0});
     initRNG(3456);var r1=runMiniSim(p1);initRNG(3456);var r2=runMiniSim(p2);
     return{pass:r1.pov<=r2.pov,detail:'PTF+infl: '+r1.pov.toFixed(1)+'% vs No PTF+infl: '+r2.pov.toFixed(1)+'%'};
   }}
 ];
+/* v4.0: documenting the overrides contract (external review: "Unifying the interface,
+ * OAT analysis, validation suite, and main simulation onto a single typed parameter-
+ * construction path will ensure these tests consistently verify the intended design
+ * targets"). A full shared parameter-builder across getCurrentParams()/OAT/validation is
+ * deferred as a larger v4.x refactor (this file already documents runSim()'s separate
+ * inline params object as an accepted, if imperfect, duplication — see Architecture
+ * notes) — but the contract for THIS function is now explicit: `overrides` must use the
+ * OUTPUT `p` object's own field names and units (e.g. partRate as a 0–1 fraction, not
+ * `part` as 0–100; inflRate as a 0–1 fraction, not a bare percent number), never the
+ * PRESET object's display-field names/units. Both validation bugs fixed in v4.0 were
+ * exactly this contract being violated at the call site. */
 function mkMiniP(preset,overrides){
   var p={bu:preset.bu||0,maxOct:preset.oct||6,expiry:1,tax:(preset.tax||12)/100,maxMult:preset.mult||9,nAgents:200,years:10,partRate:(preset.part||0)/100,ptfShare:(preset.ptfShare||0)/100,pthUptake:(preset.pthUptake||0)/100,szhCoh:(preset.szh||0)/100,cipDemo:(preset.cip||0)/100,phi:!!preset.phi,ptf:!!preset.ptf,pth:!!preset.pth,szh:!!preset.szh_tog,cip:!!preset.cip_tog,shock:!!preset.shock,automation:false,inflRate:(preset.inflRate||0)/100,ccoOn:(preset.bu||0)>0,seed:null};
   return Object.assign(p,overrides);
@@ -1507,7 +2016,7 @@ function renderValidation(){
     html+='<div style="padding:5px 8px;border-bottom:.5px solid var(--border2);font-size:11px;color:var(--text3)">'+r.detail+'</div>';
   });
   html+='</div>';
-  html+='<div style="margin-top:.5rem;font-size:11px;color:'+(allPass?'var(--accent)':'var(--red)')+'">'+( allPass?'✅ All checks passed — model behaves consistently with documented assumptions.':'⚠ Check(s) failed. Review calibration or report via CONTRIBUTING.md.')+'</div>';
+  html+='<div style="margin-top:.5rem;font-size:11px;color:'+(allPass?'var(--accent)':'var(--red)')+'">'+( allPass?'✅ All checks passed — model behaves consistently with documented assumptions.':'⚠ Check(s) failed. Review calibration or <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">report via CONTRIBUTING.md</a>.')+'</div>';
   inn.innerHTML=html;
 }
 
@@ -1566,17 +2075,29 @@ function downloadCSV(){
     lines.push(row(['Year','Poverty (%)','Gini','Median Wealth ($)','BLEI (d)','p10 ($)','p90 ($)','cashDays','incomeDays','benefitDays','Baseline Pov (%)','Participant Pov (%)','NonParticipant Pov (%)','Participant BLEI (d)','NonParticipant BLEI (d)']));
     for(var i=0;i<ts.labels.length;i++){lines.push(row([ts.labels[i],ts.poverty[i]||'',ts.gini[i]||'',ts.wealth[i]||'',ts.blei[i]||'',ts.p10?ts.p10[i]||'':'',ts.p90?ts.p90[i]||'':'',ts.cashDays?ts.cashDays[i]||'':'',ts.incomeDays?ts.incomeDays[i]||'':'',ts.benefitDays?ts.benefitDays[i]||'':'',ts.baselinePoverty?ts.baselinePoverty[i]||'':'',ts.participantPoverty?ts.participantPoverty[i]||'':'',ts.nonParticipantPoverty?ts.nonParticipantPoverty[i]||'':'',ts.participantBLEI?ts.participantBLEI[i]||'':'',ts.nonParticipantBLEI?ts.nonParticipantBLEI[i]||'':'']));}
   }
-  lines.push(row(['','']));lines.push(row(['--- v3.3 FIXES ---','']));
-  lines.push(row(['Gini zero-wealth','totW=0 → gini=0 (mathematically correct; BLEI poverty captures deprivation)']));
-  lines.push(row(['Wage diminishing returns','Stability premium × 1/(1+0.5·max(0,wage/35-1)) — prevents compounding']));
-  lines.push(row(['Recession distribution','beta(5,2) over [0.70,0.95]; mode 0.86 (14% loss); NBER-calibrated']));
-  lines.push(row(['SIM_COST_SCALE','Renamed from ANNUAL_BASE_COST to avoid scale confusion']));
+  lines.push(row(['','']));lines.push(row(['--- ACCOUNTING NOTES ---','']));
+  lines.push(row(['Conversion Proceeds Credited ($, cumulative, main run)',sr.totalConversionProceeds||0]));
+  lines.push(row(['Note','Tracked for transparency; the model does not yet constrain agent-level CCO conversion by an aggregate production/treasury capacity — see Known Limitations.']));
+  lines.push(row(['','']));lines.push(row(['--- v4.0 FIXES (external audit — Refine.ink, Aug 2026: refine.ink/app/session/4e84aa99-44ff-438f-9382-719bf9714344) ---','']));
+  lines.push(row(['Unit system','wage (SIU) now converted to USD via CFG.SIU_TO_USD before mixing with USD-typed wealth/BLEI/FBS terms']));
+  lines.push(row(['Octave advancement','FBS-gated: P(advance)=1-exp(-λ·FBS), replaces fixed-probability advancement']));
+  lines.push(row(['Octave role','now governs CCO conversion-rate ceiling; quality modulates realised rate within it']));
+  lines.push(row(['PTH Acre Equity','a share of PTH housing-cost savings now routes to Acre Equity (was appreciation-only)']));
+  lines.push(row(['SZH synergy (θ)','network-density-gated (0 below 55% PTF density, scales to 0.25 at 90%) — was linear']));
+  lines.push(row(['Baseline/CCO-only comparisons','independently re-initialised from their own scenario params (was inherited from the tested scenario); baseline anchored to 3% CPI; shocks paired across all three trajectories when enabled']));
+  lines.push(row(['Gini metric','EDC-adjusted net wealth per BLEI paper Table 6 (W_net = W_nominal − EDC×Y×12)']));
+  lines.push(row(['Recession distribution','beta(5,2) over [0.70,0.95]; mode 0.90 (10% loss), mean ≈0.88 (~12% loss); NBER-calibrated. (Corrected from a documentation error: mode was previously misstated as ≈0.86/14% — the beta(5,2) formula itself is unchanged.)']));
+  lines.push(row(['Ablation/attribution','paired population + paired RNG streams; signed deltas (no longer clamped to ≥0)']));
+  lines.push(row(['Monte Carlo (3×/10×/50×)','fixed a flag-clearing bug that made every multi-run silently execute once']));
+  lines.push(row(['Validation suite','fixed two parameter-mapping bugs (participation override, inflation-rate scale)']));
+  lines.push(row(['OAT sensitivity','all 5 parameters now perturbed ±20% of their slider range (was: BU relative, others fixed pp)']));
+  lines.push(row(['EDC responsiveness','rescaled saturation constants so EDC varies with income above the median (was constant at every realistic wage)']));
   var csv=lines.join('\n');var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-sim-v'+META.VERSION.replace(/\./g,'')+'-'+sr.timestamp.slice(0,10)+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
 function downloadJSON(){
   if(!SIM_RESULTS)return;var sr=SIM_RESULTS;
-  var out={meta:{version:META.VERSION,doi:META.DOI,timestamp:sr.timestamp,tool:'Compassionism Framework Simulation',url:META.URL,license:'CC BY 4.0',citation:META.CITATION},parameters:sr.params,results:{finalPov:sr.finalPov,finalGini:sr.finalGini,finalWealth:sr.finalWealth,stability:sr.stab,bleiPovPct:sr.bleiPovPct,topTierName:sr.topTierName,blei:{median:sr.blei.med,pctFlourishing:sr.blei.pctF,avgEDC:sr.blei.avgEDC,tierCounts:sr.blei.tc},scenarios:{baseline:{pov:sr.mBase.pov*100,gini:sr.mBase.gini,wealth:sr.mBase.med,blei:sr.bBase.med},ccoOnly:{pov:sr.mCCO.pov*100,gini:sr.mCCO.gini,wealth:sr.mCCO.med,blei:sr.bCCO.med}}},timeSeries:sr.timeSeries};
+  var out={meta:{version:META.VERSION,doi:META.DOI,timestamp:sr.timestamp,tool:'Compassionism Framework Simulation',url:META.URL,license:'CC BY 4.0',citation:META.CITATION},parameters:sr.params,results:{finalPov:sr.finalPov,finalGini:sr.finalGini,finalWealth:sr.finalWealth,stability:sr.stab,bleiPovPct:sr.bleiPovPct,topTierName:sr.topTierName,totalConversionProceeds:sr.totalConversionProceeds||0,blei:{median:sr.blei.med,pctFlourishing:sr.blei.pctF,avgEDC:sr.blei.avgEDC,tierCounts:sr.blei.tc},scenarios:{baseline:{pov:sr.mBase.pov*100,gini:sr.mBase.gini,wealth:sr.mBase.med,blei:sr.bBase.med},ccoOnly:{pov:sr.mCCO.pov*100,gini:sr.mCCO.gini,wealth:sr.mCCO.med,blei:sr.bCCO.med}}},timeSeries:sr.timeSeries};
   var blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-sim-v'+META.VERSION.replace(/\./g,'')+'-'+sr.timestamp.slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
