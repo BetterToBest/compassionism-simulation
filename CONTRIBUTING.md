@@ -32,6 +32,16 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## v4.1 Release Notes
+
+v4.1 is an audit-driven bug-fix release (Claude/Anthropic chat audit, Aug 2026) — unlike v4.0, it does not change simulation mechanics, so the regression baseline and large-N figures below carry over from v4.0 unchanged (confirmed, not assumed — see the v4.1 regression check under Reproducibility Testing). Three fixes:
+
+- **PTF attribution leak in ablation.** `runAblation()`'s paired-population design (v4.0) intentionally builds every removal scenario's agents under the full config for RNG-pairing, but `agentBLEI()`'s SZH+PTF synergy term had no `ptfOn` parameter to gate on — unlike `ccoOn`/`pthOn`, which already gated the equivalent CCO/PTH terms. Result: the "Remove PTF" ablation result could retain a synergy bonus it shouldn't have whenever SZH was also active, understating PTF's contribution on the Attribution chart (~12 BLEI days per affected agent in testing). If you've cited or screenshotted Attribution-chart output from v4.0 or earlier with SZH active, it's worth a re-run under v4.1. Normal (non-ablation) runs are numerically unaffected.
+- **Illustrative reference-run label was never shown.** The `IS_REF_RUN` flag (added v3.4) was set but never read, so the "illustrative reference run" banner never actually displayed. Wired up; purely cosmetic.
+- **Several UI hint strings had drifted from the formulas they describe** — a recession-duration/severity hint, the Max Octave conversion-capacity hint, a stale default display value, a baseline-chart caption, and one OAT sensitivity range — none of these affect computed results, only what the UI *says* about them. Full detail in `index.html`'s own changelog (search "v4.1").
+
+---
+
 ## How to Contribute
 
 ### 1. Parameter Feedback & Scenario Testing
@@ -97,7 +107,11 @@ If results diverge under identical seed + parameters, open a bug report with bot
 
 These are for the exact seed that auto-loads on page open — a single run, not an average, so expect it to sit within (not exactly at) the large-N study's confidence intervals below. If you're tracking a regression baseline across versions, start a fresh one from v4.0 using this table.
 
-**v4.0 large-N study (new).** The companion replication document's headline statistics (BLEI Threshold/Stable/Secure/Flourishing rates, Gini, System Stability, wealth, and milestone-crossing times) were refreshed under v4.0 mechanics via 5,000 independent seeded runs each of Full Integration, CCO-Only, and Traditional Welfare Baseline (seeds 1–5,000, 500 agents, 20 years). Full methodology and results are in the replication document's Performance Comparison section. One finding worth flagging here specifically: the near-poverty cohort's *median* member does not reach the Flourishing tier (≥730 days) within the 20-year reference horizon in any of the 5,000 runs, now that advancement is genuinely FBS-gated — this superseded the pre-v4.0 "~33 months to Flourishing" figure, which was generated under the old fixed-probability advancement heuristic. If you re-run this study (e.g. to extend the horizon past 20 years and see whether/when the median near-poverty agent eventually crosses Flourishing), we'd welcome the data as a `data:`-labeled issue.
+**v4.1 regression check (confirmed unchanged from v4.0).** v4.1 is an audit-driven bug-fix release, not a mechanics release — see "v4.1 fixes" below. None of its three fixes touch `makeAgent()`, `runYear()`, or `calcMetrics()`, so the seed-42 table above and the large-N figures below should be numerically identical between v4.0 and v4.1. This was verified empirically, not just assumed: a spot-check re-run of the seed-42 configuration plus an independent N=1,000-seed sweep of all three scenarios landed within statistical noise of the v4.0 large-N figures in every metric (BLEI poverty, EDC-adjusted Gini, median wealth). If your own re-run of this table diverges from v4.0's values under v4.1, that's a real regression worth a `bug:` issue — the two should match exactly for the seed-42 configuration and land within CI for a large-N re-run.
+
+**v4.0 large-N study (done, Aug 2026).** The companion replication document's headline statistics (BLEI Threshold/Stable/Secure/Flourishing rates, Gini, System Stability, wealth, and milestone-crossing times) were refreshed under v4.0 mechanics via 5,000 independent seeded runs each of Full Integration, CCO-Only, and Traditional Welfare Baseline (seeds 1–5,000, 500 agents, 20 years). Full methodology and results are in the replication document's Performance Comparison section. One finding worth flagging here specifically: the near-poverty cohort's *median* member does not reach the Flourishing tier (≥730 days) within the 20-year reference horizon in any of the 5,000 runs, now that advancement is genuinely FBS-gated — this superseded the pre-v4.0 "~33 months to Flourishing" figure, which was generated under the old fixed-probability advancement heuristic.
+
+**v4.1 extended-horizon study (done, Aug 2026) — partially answers the follow-up above.** Re-ran the near-poverty cohort tracking out to a 40-year horizon (N=1,000 seeds, Full Integration, same cohort definition: year-0 wealth <$25,000, 37.7% of the population) to see whether/when the cohort's median member eventually reaches Flourishing. It does not, within 40 years either — 0 of 1,000 runs cross 730 days by year 40, though the trajectory keeps climbing (cohort median BLEI: ~135d at year 15 → ~182d at year 20 → ~428d at year 40, i.e. still fewer than 60% of the way to the threshold after doubling the horizon). The Threshold (~12 months) and Stable (~165 months / ~13.7 years) milestones reconfirmed exactly against the v4.0 figures, as expected per the regression check above. This closes the specific 30–40-year question flagged previously; whether the cohort median reaches Flourishing at all, and over what horizon that's still a meaningful question to ask of an agent-based model calibrated for working-age adults, remains open — a natural next contribution for anyone who re-runs this past 40 years (N=1,000, seeds 1–1,000; script available on request via a GitHub issue, same as the v4.0 large-N study).
 
 ### 4. Model Architecture Feedback
 
@@ -116,7 +130,7 @@ Areas currently open for discussion:
 - **Sobol/LHC sensitivity** — the simulation computes OAT sensitivity from mini-simulations (v4.0: uniformly ±20% of each parameter's own slider range). Contributions implementing Sobol indices or Latin hypercube sampling via CSV export are especially welcome.
 - **BLEI external validation** — Phase 4 roadmap: validate against Fed SCF, CPS, ACS, BLS CES, and OECD inequality trajectories.
 - **Participant stratification** — tracks CCO participant vs. non-participant welfare. Contributions testing whether non-participant poverty worsens under specific parameter combinations would strengthen the equity argument.
-- **Large-N study now v4.0-native (done, Aug 2026) — but only at a 20-year horizon.** The companion replication document's headline statistics were refreshed via 5,000 seeded runs under v4.0 mechanics (see the Reproducibility Testing section above). One open follow-up: the near-poverty cohort's median member doesn't reach Flourishing within that 20-year window — extending the study to a longer horizon (30–40 years) to see whether/when it eventually does, and whether that's a reasonable timeframe to expect in the first place, is a well-scoped, concrete contribution.
+- **Large-N study now v4.0-native (done, Aug 2026), extended to 40 years (done, v4.1, Aug 2026).** The companion replication document's headline statistics were refreshed via 5,000 seeded runs under v4.0 mechanics (see the Reproducibility Testing section above). The originally-flagged follow-up — extending the near-poverty cohort's Flourishing-tier tracking past the 20-year horizon to see whether/when it's eventually reached — was carried out under v4.1 (N=1,000 seeds, 40-year horizon; see Reproducibility Testing above for the numbers). It isn't reached within 40 years either, though the cohort median keeps climbing throughout, so this specific question is answered for the 20–40 year range without being fully closed. What remains open: whether it's reached at all beyond year 40, and separately, whether a 40+ year individual-level horizon is still a meaningful regime for a model calibrated around working-age adults with no demographic structure (see Known Limitations in the replication document) — re-running past year 40 only answers the first half of that.
 
 ### 5. Code Contributions
 
@@ -191,5 +205,5 @@ All contributions are released under **CC BY 4.0**. Attribution to the Better To
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v4.0*  
+*Better To Best Research Hub · Compassionism Framework Simulation v4.1*  
 *Principal Investigator: Duke Johnson (pseudonymous)*
