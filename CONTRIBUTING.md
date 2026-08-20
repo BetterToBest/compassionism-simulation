@@ -42,6 +42,21 @@ v4.1 is an audit-driven bug-fix release (Claude/Anthropic chat audit, Aug 2026) 
 
 ---
 
+## v4.2 Release Notes
+
+v4.2 is a mechanics-changing release (external audit + internal review, Aug 2026) — **unlike v4.1, it changes the RNG call sequence, so seed-42 output no longer reproduces v4.1's** (see the new regression table under Reproducibility Testing, below). This is allowed under this document's own rule that an intentionally mechanics-changing PR should say so explicitly (Code Contributions, below):
+
+- **Common-random-numbers population pairing.** `makeAgent()` is now a thin wrapper over `makeLatentAgent()` (draws pre-policy latent traits, no scenario-specific logic) and `instantiateAgent()` (pure, zero-RNG, scenario-specific mapping). The main run, CCO-Only, and baseline comparisons now share one canonically-drawn latent population instead of three independently-sampled ones — closing the item raised in the Aug 2026 external review ("the baseline and CCO-only populations are not actually the same individuals") and in Model Architecture Feedback, below. Verified with unit tests: agent *i*'s wealth/wage/automationRisk/λ are bit-identical across all three scenario instantiations, differing only in octave/quality (correctly, since those scale by scenario-specific `maxOct`/`maxMult`) and participation flags.
+- **Independently found while building the above.** `makeAgent()`'s three eligibility draws used short-circuit `&&`, so the number of RNG calls consumed during agent construction depended on which subsystems were toggled on. Two scenarios built from the "same" seed but different toggle states — e.g. the validation suite's own PTF-on vs PTF-off check — silently diverged in every draw after the first toggle difference, not just membership. Fixed by drawing all three eligibility uniforms unconditionally in `makeLatentAgent()`.
+- **Does not extend to full within-run trajectory pairing.** `runYear()` still consumes a variable number of RNG calls per agent depending on which of its *own* conditional branches fire that year, so two scenarios with different participation *composition* still decorrelate agent-level trajectories after year 0, even from an identical starting population. Population-level aggregates (poverty rate, median BLEI) are unaffected. This is the largest item this release opened rather than closed — see Model Architecture Feedback, below.
+- **Structural System Stability metric**, replacing the v3.6-flagged trend-plus-noise heuristic — resolves a good-first-issue below. `structuralStability()` is the inverse coefficient of variation of median wealth and median BLEI over the run's final quarter: no RNG call, no manual per-mechanism bonus. Baseline/CCO-Only comparison rows, previously hardcoded "~65%"/"~88%", now compute the same metric from their own trajectories.
+- **Validation suite → 6 checks.** The original four now run across 5 seeds (`VAL_SEEDS`) and require unanimous agreement, instead of one hardcoded seed each (all four are robust 5/5). Added a non-participant-poverty check (resolves a second good-first-issue, below) and a structural-invariants check (population conservation, octave/wealth-floor/participation bounds, Gini bounds). Renamed "Internal Validation Suite" → "Internal Consistency & Behavioral Test Suite," labeled against an ODD Level 1–5 hierarchy (this suite covers Levels 1–3 only).
+- **"Policy-grade" language tightened** to "research-oriented exploratory... for comparative policy analysis" throughout title/meta/social tags, matching framing already used elsewhere in the same file (CSV export, Known Limitations).
+
+The replication document was updated in parallel — a new Version History toggle, refreshed Known Limitations, and version numbers throughout — but its headline large-N figures have **not** yet been reconfirmed under v4.2 mechanics (see Reproducibility Testing, below). Full derivation in `index.html`'s own changelog comment (search "v4.1 → v4.2").
+
+---
+
 ## How to Contribute
 
 ### 1. Parameter Feedback & Scenario Testing
@@ -113,16 +128,36 @@ These are for the exact seed that auto-loads on page open — a single run, not 
 
 **v4.1 extended-horizon study (done, Aug 2026) — partially answers the follow-up above.** Re-ran the near-poverty cohort tracking out to a 40-year horizon (N=1,000 seeds, Full Integration, same cohort definition: year-0 wealth <$25,000, 37.7% of the population) to see whether/when the cohort's median member eventually reaches Flourishing. It does not, within 40 years either — 0 of 1,000 runs cross 730 days by year 40, though the trajectory keeps climbing (cohort median BLEI: ~135d at year 15 → ~182d at year 20 → ~428d at year 40, i.e. still fewer than 60% of the way to the threshold after doubling the horizon). The Threshold (~12 months) and Stable (~165 months / ~13.7 years) milestones reconfirmed exactly against the v4.0 figures, as expected per the regression check above. This closes the specific 30–40-year question flagged previously; whether the cohort median reaches Flourishing at all, and over what horizon that's still a meaningful question to ask of an agent-based model calibrated for working-age adults, remains open — a natural next contribution for anyone who re-runs this past 40 years (N=1,000, seeds 1–1,000; script available on request via a GitHub issue, same as the v4.0 large-N study).
 
+**v4.2 regression check — reproducibility intentionally broken vs. v4.1.** v4.2's common-random-numbers population-pairing fix (see v4.2 Release Notes, above) changes the RNG call sequence, so seed 42 no longer reproduces v4.1's output. Exact v4.2 seed-42 values, computed via `simulate()` + the real `finish()`, alongside the v4.1 figures documented above for comparison:
+
+| Metric | v4.1 (documented above) | v4.2 (new) |
+|---|---|---|
+| Median BLEI (final year) | 284 days | 280 days |
+| BLEI Poverty (% Crisis+Precarious) | 9.0% | 9.0% |
+| BLEI Threshold Rate (≥30d) | 91.0% | 91.0% |
+| BLEI Stable Rate (≥120d) | 78.2% | 78.2% |
+| BLEI Secure Rate (≥365d) | 35.4% | 36.2% |
+| BLEI Flourishing Rate (≥730d) | 13.0% | 13.2% |
+| Gini, EDC-adjusted | 0.482 | 0.479 |
+| Median Wealth (final year) | $78,813 | $80,008 |
+| Wealth Poverty Rate (<$25,000) | 16.2% | 14.4% |
+| System Stability | n/a (trend heuristic) | 94.3% (structural metric — not comparable to any prior number) |
+
+If you're tracking a regression baseline across versions, restart it from v4.2 using the right-hand column — same guidance as the v4.0 table above. Full derivation in `index.html`'s own changelog comment (search "v4.1 → v4.2").
+
+**v4.2 large-N reconfirmation — open, not yet done.** Unlike v4.1, which changed no simulation mechanics and could reuse the v4.0 large-N figures unchanged, v4.2's population-pairing fix touches `makeAgent()` directly, so the 5,000-seed large-N figures referenced above have not been reconfirmed under v4.2. A 300-seed spot-check landed close to the existing figures (see the replication document's Methodology Overview for exact numbers) but is explicitly not a substitute for the full study — see Model Architecture Feedback, below, and the replication document's Known Limitations.
+
 ### 4. Model Architecture Feedback
 
 Areas currently open for discussion:
 
 - **Main wealth-accumulation loop keeps its pre-v4.0 unit simplification (highest-priority open item).** v4.0 fixed a wage(SIU)/wealth(USD) unit mismatch in BLEI, FBS, and Gini, but deliberately left the core annual wealth update unchanged: wage and living cost are still combined in native SIU-scale terms via `SIM_COST_SCALE`, not real USD. We built and tested a version that also converts this loop to USD; because wage compounds against cost over up to 30 years, it turned out to be extremely sensitive to the conversion constant — a ~3.5× range of candidate values swung 20-year outcomes from universal wealth-floor collapse (68%+ poverty in every scenario) to implausible multi-million-dollar median wealth. A defensible fix needs a **joint recalibration** of the wage distribution (`lognormal(3.5, 0.5)`), the cost scale, and every `TARGET_*` constant against real income data — not a single conversion constant chosen in isolation. This is likely the single most valuable contribution area for anyone with income-distribution modeling experience.
+- **`runYear()`'s RNG coupling limits per-agent trajectory pairing across scenarios (found in v4.2, not yet fixed).** v4.2's common-random-numbers fix (see v4.2 Release Notes, above) gives the main/CCO-only/baseline comparisons an identical *initial* population, but `runYear()` still consumes a variable number of RNG calls per agent depending on which of its own conditional branches that agent takes each year (BU spend, octave advancement, SZH/PTF induction, PTH appreciation — participants trigger more draws than non-participants). Two scenarios whose agents end up on different branches — the normal case whenever participation *composition* differs, not an edge case — progressively decorrelate agent-level trajectories after year 0, even from an identical starting population. Population-level aggregates (poverty rate, median BLEI) are unaffected, and everything shipped in v4.2 is valid on that basis. A fix is mechanical but touches every RNG-consuming line in `runYear()` — draw every conditional quantity unconditionally (mirroring the v4.2 fix to agent construction), gate only the *use* of the drawn value on the condition — but it's a larger, more invasive change to a core function than anything shipped in v4.2, and would warrant its own dedicated, carefully-verified pass rather than being bundled with other changes. Concretely motivating: the non-participant-poverty validation check (Code Contributions, below) only agreed 2–3/10 seeds at n=200 before being loosened to a mean-across-5-seeds criterion at n=500 — a real fix here would let it go back to a stricter per-seed check at the original n=200.
 - **EDC-adjusted Gini vs. wealth-initialization spread (new in v4.0).** Now that EDC-adjusted Gini is actually computed (previously specified but unimplemented), measured output at the reference configuration (≈0.45–0.48 full deployment, ≈0.73–0.77 baseline) is meaningfully higher than the framework's earlier aspirational target (0.22 full / 0.44–0.46 baseline). The likely cause: `wealth ~ lognormal(10.5, 1.2)` alone has an inherent Gini coefficient of ≈0.60 *before any simulation dynamics or EDC adjustment* — already above the old baseline target. Two possible resolutions: narrow the wealth-initialization spread (lower σ), or revise the target. Either requires deciding what population the initialization is meant to represent and grounding σ in that choice — not just picking a number that hits the target.
 - **PTH liquidity haircut is flat, not tenure-cohort-varying.** v4.0 added the "payments build equity" contribution mechanism to Acre Equity, but the *withdrawal haircut* is still a flat 50%, not the tenure-varying schedule (~10–20% at 6 months rising to ~80–90% at 5+ years) sketched in the BLEI paper's Table 1a. Implementing a real tenure-tracking mechanism (agents don't currently record how long they've held PTH residency) would close this gap.
 - **PTH_EQUITY_CONTRIB_SHARE (25%) and PTF_BASS_Q (0.05) are internal design choices, not fitted values.** See the Calibration Validation table above — both are new in v4.0 and were chosen conservatively to implement the documented mechanism without over-tuning; neither is validated against real shared-equity-housing or cooperative-adoption data.
 - **CCO conversion proceeds are tracked but not production-constrained.** BU→wealth conversion credits agents without debiting a modelled treasury, PTF balance sheet, or production account — an external review correctly flagged this as an open stock-flow accounting gap. v4.0 adds transparency only (cumulative conversion proceeds are tracked and exported in CSV/JSON). Designing a genuine aggregate production constraint — a production function, capacity limits, and rationing behaviour when exhausted — is a substantial economic-modelling contribution we'd welcome help scoping, not just implementing.
-- **System Stability is still a trend heuristic, not a structural metric.** Flagged since v3.6, scoped for v4.0, not implemented in v4.0 (that release prioritised the external review's findings instead). The displayed value (`stabBase` by poverty-trend direction + CIP bonus + bounded noise) is not derived from wealth variance, BLEI volatility, or agent-state transitions. A structural replacement — e.g. coefficient of variation of median wealth over the final years, or share of agents remaining in the same BLEI tier for 3+ consecutive years — remains open.
+- **System Stability was a trend heuristic, not a structural metric — resolved in v4.2.** Flagged since v3.6, scoped for v4.0 but not implemented then (that release prioritised the external review's findings instead). Through v4.1 the displayed value (`stabBase` by poverty-trend direction + CIP bonus + bounded noise) was not derived from wealth variance, BLEI volatility, or agent-state transitions. As of v4.2, `structuralStability()` computes the inverse coefficient of variation of median wealth and median BLEI over the run's final quarter, with no RNG call and no manual per-mechanism bonus — see v4.2 Release Notes, above.
 - **Initial PTF share is not a hard cap.** The PTF slider sets the `t=0` adoption probability only; per-agent adoption checks each year (now including the v4.0 Bass-diffusion imitation term) mean the realised final share can exceed the slider value with no aggregate feedback loop constraining it. A quota-based or feedback-clamped adoption model remains open.
 - **EDC baseline** — Rent is the dominant extraction channel. Does this adequately represent consumer debt, healthcare, and other extraction vectors?
 - **PTF distortion threshold** — 30% market share. What empirical evidence exists for cooperative sector concentration limits?
@@ -148,10 +183,10 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 - Add a "Copy parameters as URL" feature so scenarios can be shared as links
 - Add i-buttons next to BLEI tier labels showing tier definitions inline
 - Add preset descriptions as tooltips on preset buttons
-- Extend the validation suite: fifth check — non-participant poverty does not worsen when CCO is enabled
+- **Done in v4.2** (see v4.2 Release Notes, above): a fifth validation check verifying non-participant poverty doesn't worsen when CCO is enabled — implemented as a mean-across-5-seeds check at n=500 rather than strict per-seed agreement, because of the `runYear()` RNG-coupling issue (Model Architecture Feedback, above). Remaining good-first-issue: tighten this to a per-seed check at the original n=200 once that issue is fixed.
 - Implement occupation-stratified automationRisk distribution (see architecture discussion above)
 - Add per-agent PTH tenure tracking as a first step toward the tenure-cohort liquidity haircut (see architecture discussion above)
-- Implement a structural System Stability metric to replace the current trend-plus-noise heuristic (see architecture discussion above)
+- **Done in v4.2** (see v4.2 Release Notes, above): a structural System Stability metric, `structuralStability()`, replacing the former trend-plus-noise heuristic
 
 ### 6. Academic Peer Review
 
@@ -205,5 +240,5 @@ All contributions are released under **CC BY 4.0**. Attribution to the Better To
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v4.1*  
+*Better To Best Research Hub · Compassionism Framework Simulation v4.2*  
 *Principal Investigator: Duke Johnson (pseudonymous)*
