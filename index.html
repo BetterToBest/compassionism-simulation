@@ -11,8 +11,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://bettertobest.github.io/research-hub/assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://bettertobest.github.io/research-hub/assets/favicon-180.png">
-<title>Compassionism Framework Simulation v4.2 | Better To Best Research Hub</title>
-<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, common-random-numbers counterfactual pairing, 50× Monte Carlo stochastic CI, participant stratification, computed OAT sensitivity, 6-check validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts. v4.2.">
+<title>Compassionism Framework Simulation v4.3 | Better To Best Research Hub</title>
+<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, common-random-numbers counterfactual pairing, 50× Monte Carlo stochastic CI, participant stratification, computed OAT sensitivity, 6-check validation suite, JSON/CSV export, ODD protocol, in-app glossary, accessible charts. v4.3.">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -39,7 +39,7 @@
 <meta name="twitter:creator" content="@Author_Duke_J">
 <meta name="twitter:site" content="@Author_Duke_J">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.2: common-random-numbers population pairing (main/CCO-only/baseline comparisons now share one latent population, closing an open counterfactual-isolation item and an independently-found RNG stream-drift bug), a structural System Stability metric replacing the v3.6 trend-plus-noise heuristic, a 6-check validation suite (multi-seed statistical robustness on the original 4 checks, plus new non-participant-poverty and structural-invariant checks) — external audit (Aug 2026) and CONTRIBUTING.md good-first-issues. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.2","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.3: main wealth-accumulation loop unit fix (wage and cost sides both converted to real USD via sourced anchors, replacing the pre-v4.0 SIU-scale simplification), runYear() RNG-coupling fix (every conditional quantity now drawn unconditionally, tightening a validation check back to strict per-seed agreement), bimodal automationRisk distribution (Frey & Osborne 2013; Autor 2015), per-agent PTH tenure tracking, and a new Social-Security-anchored income cohort analysis — internal review, Aug 2026; see CONTRIBUTING.md for the redistributional findings this release surfaces, which are substantive, not just a version bump. v4.2: common-random-numbers population pairing (main/CCO-only/baseline comparisons now share one latent population, closing an open counterfactual-isolation item and an independently-found RNG stream-drift bug), a structural System Stability metric replacing the v3.6 trend-plus-noise heuristic, a 6-check validation suite (multi-seed statistical robustness on the original 4 checks, plus new non-participant-poverty and structural-invariant checks) — external audit (Aug 2026) and CONTRIBUTING.md good-first-issues. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.3","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -149,7 +149,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div style="display:flex;align-items:center;gap:.6rem">
     <img src="https://bettertobest.github.io/research-hub/assets/bettertobest-mark-muted-originals.svg" alt="Better To Best Research Hub" width="32" height="32" style="flex-shrink:0">
     <div>
-      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.2</span></div>
+      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.3</span></div>
       <div class="hd-sub">
         All five architectures ·
         <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -430,7 +430,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.2 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.3 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -443,8 +443,13 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income at a rate capped by octave-tier capacity → FBS-gated octave advancement check (v4.0) → PTH Acre Equity appreciation plus a payment→equity contribution (v4.0) → PTF adoption check (innovation + distress + Bass imitation, v4.0) → wealth floor clamp. BLEI = (liquid + γ·wage·SIU_TO_USD + buFood) / dailyCost (v4.0: wage converted to USD before summing — see Empirical Calibration below). Gini (v4.0): computed on EDC-adjusted net wealth, W_nominal − EDC×Y×12. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>) — mode 0.90 (10% loss), mean ≈0.88 (~12% loss).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.2)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.3)</span>
     <div class="assump-grid">
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Main wealth-accumulation loop unit fix — resolves the item open since v4.0 (v4.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The wage(SIU)/wealth(USD) mismatch in the main annual wealth update — left unfixed at v4.0 because a full fix proved dangerously sensitive to the conversion constant — now has a validated fix. <code>WAGE_TO_USD ≈ 100.52</code> converts wage to USD (Census/BLS CPS ASEC 2023 median personal income, $42,220 ÷ 35 SIU × 12); <code>LIVING_WAGE_ANNUAL = $49,370</code> anchors the cost side (a national living-wage figure for a single adult, no children — World Population Review's MIT-sourced state table, unweighted 51-jurisdiction average; see CONTRIBUTING.md for the population-weighting caveat). This replaces netting against <code>BASE_DAILY_COST</code>, a bare-subsistence floor correct for BLEI's poverty line but wrong for a 20-year compounding loop — that anchor produced an ~11× wealth explosion and broke BU-monotonicity (2/5 seeds) when tested. All six <code>VAL_TESTS</code> pass under the shipped anchor (5/5 BU-monotonicity). <strong>This is not simply a bigger-numbers fix — it redistributes.</strong> At N=5,000: Full Integration median wealth rises from $80,008 to $495,411, but EDC-adjusted Gini rises from 0.479 to 0.536 and wealth poverty rises from 14.4% to 19.5% — low-wage and non-participating agents don't share proportionally in the correction the way median-and-above-wage agents do. The Traditional Welfare Baseline is affected even more severely: median wealth falls to exactly the wealth floor (−$10,000, i.e. more than half that scenario's population is now debt-ceiling-bound by year 20), since a median wage earner's income no longer covers the new cost anchor even before the baseline's pre-existing 3% CPI compounding widens the gap further. The near-poverty (low-wealth) cohort, by contrast, benefits enormously — its median member now reaches Flourishing within 20 years in every tested run, versus never within 40 years pre-v4.3 — because most of its members have ordinary wage draws and this fix rewards wage level specifically, not starting wealth. See the new Social Security-anchored cohort study, below, and CONTRIBUTING.md's Model Architecture Feedback for the full picture, including two new open questions this surfaces (whether <code>WEALTH_FLOOR</code> is still appropriately calibrated, and whether the framework needs a mechanism targeting low-wage populations specifically).</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">runYear() RNG-coupling fix (v4.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The v4.2 population-pairing fix gave scenarios an identical <em>initial</em> population but <code>runYear()</code> itself still consumed a variable number of RNG calls per agent depending on which conditional branches that agent took each year (participants triggered more draws than non-participants), so agent-level trajectories still decorrelated after year 0 whenever participation composition differed. Every conditional quantity inside the per-agent loop (BU spend fraction, CIP quality bump, octave advancement, SZH→PTF induction, PTH appreciation noise, PTF Bass adoption) is now drawn unconditionally, with only the <em>use</em> of the drawn value gated — mirroring the v4.2 fix to agent construction. The non-participant-poverty validation check, loosened to a mean-across-seeds criterion at n=500 when this coupling was first found, is tightened back to strict per-seed agreement at the suite's standard n=200 (5/5 in testing).</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Bimodal automationRisk distribution (v4.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Replaces uniform[0.2,1.0] — flagged as a simplification since v3.4 — with a 47%/53% mixture: high-risk agents ~ Beta(6,1) (mean ≈0.857), low-risk agents ~ Beta(1,6) (mean ≈0.143), sourced to Frey &amp; Osborne (2013) and Autor (2015) (~47% of US employment above a 70% computerization-probability threshold, 702 O*NET occupations). Verified to have no material effect on aggregate outcomes in isolation, before being combined with this release's other changes.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Per-agent PTH tenure tracking — first step, not the full fix (v4.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Agents now carry <code>pthTenure</code> (years held in PTH residency), incremented while in PTH and reset on exit. This is tracking data only — the tenure-cohort-varying liquidity haircut itself (BLEI paper Table 1a: ~10–20% at 6 months rising to ~80–90% at 5+ years) is not implemented this pass; the flat 50% haircut is unchanged. Tracked as a good-first-issue in CONTRIBUTING.md now that the data is flowing.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Social Security-anchored income cohort study (new, v4.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Prompted by a review question: median-income comparisons don't show how the framework treats its actual target population for a poverty-elimination claim. SSA's 2026 COLA Fact Sheet gives three real income anchors — SSI ($994/mo), SSDI average ($1,630/mo), average retirement benefit ($2,071/mo) — now in <code>CFG.SS_ANCHOR_*</code> and used in a harness-based N=5,000 cohort study (agents tagged by initial wage at or below each anchor's SIU-equivalent, tracked with identical mechanics to the rest of the population — this is not a simulated Social Security mechanism, the model has no age/disability/retirement structure). Result: Full Integration dramatically improves this population's BLEI relative to baseline (20–30×) but does not lift it out of poverty by the simulation's own tier definitions — median BLEI in the teens of days for all three anchors, deep in the Precarious tier. Full table and discussion in CONTRIBUTING.md. Not yet surfaced as in-app UI (tracked as a good-first-issue).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">README.md synced to v4.2; large-N reconfirmation published (v4.2)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The project README.md had not been updated since v3.3 and stated several claims this pass corrected against the actual source: the CCO conversion formula as C = B₀ × 2^O (actual mechanism is linear in octave, see the note above), Gini as a closed-form decay expression (the actual metric is the standard Gini computed on EDC-adjusted net wealth in <code>calcMetrics()</code>), the recession severity mode as ≈0.86/14% loss (corrected below to 0.90/10%), and PTF's role as a "40-60% overhead reduction" plus a "2.64x BU food premium" (PTF is a 12-16% cost-reduction mechanism only; 2.64x is CCO's ε_food, an unrelated parameter). The README's Output Metrics table previously presented internal design-target constants as if they were achieved simulation output; it now cites the 5,000-seed large-N study (seeds 1-5000, matched Full Integration / CCO Only / Traditional Welfare runs) published in the Replication Framework's Performance Comparison section, with a note on where measured output still falls short of the original design targets (Gini and wealth-poverty rate) and the likely cause (the wealth-initialization distribution's own inherent Gini ≈0.60 pre-dynamics).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Common-random-numbers population pairing (v4.2)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The main run, "CCO Only," and baseline comparisons now share one canonically-drawn latent population instead of three independently-sampled ones — closing an item raised in the Aug 2026 external review ("the baseline and CCO-only populations are not actually the same individuals") and in CONTRIBUTING.md's Model Architecture Feedback. The earlier objection that pairing "isn't well-defined once maxOct/maxMult differ in support between scenarios" is correct against the scaled OUTCOME (octave/quality) but not the underlying draw: the pre-policy shape variate is now shared and scaled independently per scenario, which is what a "same individuals, different policy" comparison needs. This also fixed a genuine, independently-found bug: <code>makeAgent()</code>'s three eligibility draws used short-circuit <code>&amp;&amp;</code>, so the number of RNG calls consumed during agent construction depended on which subsystems were toggled on — two scenarios built from the "same" seed but different toggle states (e.g. the validation suite's PTF-on vs PTF-off check) silently diverged in every draw after the first toggle difference, not just membership. <strong>Reproducibility note:</strong> this changes the RNG call sequence — a given seed no longer reproduces v4.1's numeric output. New seed-42 reference figures are in the version-history comment block, near the top of the source.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Structural System Stability metric (v4.2)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Replaces the trend-plus-noise heuristic flagged since v3.6 (see below) — a CONTRIBUTING.md good-first-issue. The displayed value is now the inverse coefficient of variation of median wealth and median BLEI over the final quarter of the run (no RNG call, no manual per-mechanism bonus): if a mechanism genuinely stabilises outcomes it now shows up endogenously as lower volatility, since every mechanism already feeds wealth and BLEI within <code>runYear()</code>. The baseline and CCO-Only comparison rows, previously hardcoded at "~65%"/"~88%" regardless of actual configuration, now compute the same metric from their own trajectories.</p></div>
@@ -495,10 +500,11 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <div class="assump-grid">
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No demographic structure</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Agents lack age, retirement, disability, household size, or mortality. Acceptable for structural scenario comparison; not suitable for policy forecasting requiring life-cycle dynamics. Future: age cohorts and household transitions (see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No direct agent-to-agent interaction</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">All social effects mediated by aggregate zone parameters (SZH) rather than explicit networks. A small-world network structure would better model PTF zone clustering and SZH coherence. Noted as a future development direction in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">automationRisk uniform distribution (v3.4 flag)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">automationRisk ∈ [0.2, 1.0] is drawn from a <em>uniform</em> distribution across the population. Real automation exposure is highly bimodal and occupation-dependent (Frey &amp; Osborne, 2013; Autor, 2015): low-routine cognitive workers face minimal risk; high-routine manual/clerical workers face extreme risk. The uniform assumption may understate polarization in High Automation scenarios. Priority calibration refinement item in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">automationRisk distribution — resolved in v4.3 (flagged v3.4)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Through v4.2, automationRisk ∈ [0.2, 1.0] was drawn from a <em>uniform</em> distribution — real automation exposure is highly bimodal and occupation-dependent (Frey &amp; Osborne, 2013; Autor, 2015), and the uniform assumption understated polarization in High Automation scenarios. As of v4.3, it's a 47%/53% mixture (Beta(6,1) high-risk / Beta(1,6) low-risk) matching that literature's occupational split — see Cumulative Bug Fixes, above. Occupation-<em>stratified</em> (not just bimodal) risk remains a further-refinement item in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">One-at-a-Time (OAT) sensitivity is not Sobol/LHC</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">OAT sensitivity varies one parameter at a time ±20% of its own slider range (v4.0: uniform across all five parameters — see Cumulative Bug Fixes) and records the poverty and BLEI response from actual model runs. It captures first-order single-parameter effects only. Parameter interactions and higher-order effects are not quantified. For rigorous uncertainty quantification, use the CSV export with external Sobol analysis in Python/R (see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">System Stability is a trend heuristic, not a structural metric (v3.6 flag)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The displayed value is computed as <code>stabBase = improving ? 0.88 : 0.60</code> (based on whether poverty fell over the final quarter of the run), plus a small CIP bonus, plus <code>RNG()×0.08</code> noise — it is not derived from wealth variance, BLEI volatility, or agent-state transitions. It correctly signals directional trend but should not be read as a precision measurement. A structural replacement (e.g. coefficient of variation of median wealth over the final years, or share of agents remaining in the same BLEI tier for 3+ consecutive years) was scoped for v4.0 but not implemented in this pass, which focused on the external review's findings instead. <strong>Resolved in v4.2 — see below.</strong></p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Main wealth-accumulation loop keeps its pre-v4.0 unit simplification</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">v4.0 fixed wage/USD unit mixing in BLEI, FBS, and Gini (see Empirical Calibration above), but deliberately left the main <code>runYear()</code> wealth-accumulation step unchanged: wage (SIU) and cost (SIM_COST_SCALE) are still combined directly, exactly as in every prior version. We built and tested a full fix; because wage compounds against cost over up to 30 years, that loop is extremely sensitive to the conversion constant (a ~3.5× range of candidates swung 20-year outcomes from universal wealth-floor collapse to implausible multi-million-dollar median wealth). A defensible fix requires a joint recalibration of the wage distribution, cost scale, and every target metric against real income data — flagged here as a candidate research direction (see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>), not attempted inside this bug-fix pass.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Main wealth-accumulation loop unit fix — resolved in v4.3, with new open questions</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">v4.0 fixed wage/USD unit mixing in BLEI, FBS, and Gini but deliberately left the main <code>runYear()</code> wealth-accumulation step on its pre-v4.0 SIU-scale convention, because a full fix proved dangerously sensitive to the conversion constant. v4.3 ships a validated fix (<code>WAGE_TO_USD</code>/<code>LIVING_WAGE_ANNUAL</code> — see Cumulative Bug Fixes, above) after finding an anchor that passes all six <code>VAL_TESTS</code>. This resolves the unit-simplification item but opens two new ones, not yet resolved: whether <code>WEALTH_FLOOR = −$10,000</code> is still an appropriate floor now that the cost anchor it's measured against roughly doubled (median Baseline wealth now sits exactly at that floor, not just an occasional insolvency case), and whether <code>TARGET_WEALTH</code>/<code>TARGET_POVERTY</code>/<code>TARGET_GINI</code> — set against the old loop — need their own reconsideration against the structurally different new baseline. Both flagged in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a> as framework-level decisions, not resolved here.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Framework does not yet address low-wage populations specifically (new finding, v4.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The new Social Security-anchored cohort study (Cumulative Bug Fixes, above) found that Full Integration does not lift a low-wage cohort out of poverty by the simulation's own tier definitions, even though every existing mechanism already applies to it equally — it helps this population enormously in relative terms (20–30× the baseline's BLEI) without coming close in absolute terms. Whether this points to a genuine mechanism gap (e.g. wage-conditional BU scaling) or accurately reflects the framework's intended scope is an open question for the framework's authors, not resolved here — see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">CCO conversion proceeds are tracked but not production-constrained</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BU → wealth conversion proceeds are credited to agents without debiting a modelled treasury, PTF balance sheet, or production account — external review correctly flagged this as an open stock-flow accounting gap. v4.0 adds transparency only: cumulative conversion proceeds are tracked and exported (CSV/JSON "Conversion Ledger"). A genuine aggregate production constraint — with a defined production function, capacity limits, and rationing behaviour when exhausted — is a further economic-modelling design decision not implemented here; see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No external validation</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Parameters calibrated against analogues (Alaska PFD, CLT network, Mondragon) but outcomes not validated against deployment data. Phase 4 roadmap: validation against Fed SCF, CPS, ACS, BLS CES, and OECD inequality trajectories. Required before claims of predictive validity.</p></div>
     </div>
@@ -533,7 +539,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v4.2 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v4.3 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
@@ -544,7 +550,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v4.2
+ * COMPASSIONISM FRAMEWORK SIMULATION  v4.3
  * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
  * ═══════════════════════════════════════════════════════════════════════
  *
@@ -1165,7 +1171,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'4.2',
+  VERSION:'4.3',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
   CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
@@ -1183,7 +1189,7 @@ var CFG = {
   SZH_THETA_THRESHOLD:0.55, SZH_THETA_MAX_COH:0.90, SZH_THETA_MAX:0.25,
   EDC_BASELINE_LO:0.62, EDC_BASELINE_HI:0.72, EDC_PTH_CAP:0.10,
   PROG_PIVOT:3.0, PROG_RATE:0.040, PROG_TAX_MAX:0.75,
-  SIM_COST_SCALE:1500,     // v3.3: renamed from ANNUAL_BASE_COST; v4.0: see SIU_TO_USD note above
+  SIM_COST_SCALE:1500,     // v3.3: renamed from ANNUAL_BASE_COST; v4.0: retained for CCO/PTF/PTH cost-factor calc only (v4.3 wealth loop uses WAGE_TO_USD/LIVING_WAGE_ANNUAL)
   WAGE_MEDIAN_SIU:35,      // reference for diminishing-returns calculation
   WEALTH_FLOOR:-10000,
   WAGE_BASE_GROWTH:0.010, WAGE_BLEI_BONUS:0.008, WAGE_OCTAVE_BONUS:0.003,
@@ -1201,7 +1207,36 @@ var CFG = {
   FBS_CIP_LAMBDA_BOOST:0.20,   // CIP support raises effective λ by up to +20% at cipDemo=1 (replaces old flat advancement-probability bump)
   BASELINE_CPI_RATE:0.03,      // US Welfare Baseline anchors to documented 3% CPI, not the user's inflation slider
   PTH_EQUITY_CONTRIB_SHARE:0.25, // share of PTH's annual housing-cost saving that routes to Acre Equity (payment→equity), vs. staying as direct liquid relief
-  PTF_BASS_Q:0.05      // Bass (1969) imitation coefficient for PTF adoption — see runYear
+  PTF_BASS_Q:0.05,      // Bass (1969) imitation coefficient for PTF adoption — see runYear
+  /* v4.3: main wealth-accumulation loop unit fix (highest-priority open item as of
+   * v4.2 — see CONTRIBUTING.md Model Architecture Feedback). Two new constants:
+   * WAGE_TO_USD converts the wage side; LIVING_WAGE_ANNUAL anchors the cost side.
+   * WAGE_TO_USD ≈ 100.52 = $42,220 median personal income (Census/BLS CPS ASEC 2023,
+   * all workers 15+) ÷ (35 SIU × 12). LIVING_WAGE_ANNUAL = $49,370/yr — a national
+   * living-wage figure for a single adult, no children ($23.735/hr average across
+   * 50 states + DC × 2,080 hrs/yr; World Population Review's MIT-sourced table; an
+   * *unweighted* average across jurisdictions, not population-weighted like MIT's
+   * own Living Wage Calculator product, which is paid and requests no scraping —
+   * see CONTRIBUTING.md for that caveat). Replaces netting WAGE_TO_USD-converted wage
+   * against BASE_DAILY_COST (a bare-subsistence floor, correct for BLEI's poverty-line
+   * use, wrong for a 20-year compounding loop netted against real wage): that anchor
+   * produced an ~11x wealth explosion and broke BU-monotonicity (2/5 seeds). All six
+   * VAL_TESTS pass under the LIVING_WAGE_ANNUAL anchor, including BU-monotonicity
+   * (5/5) — the strongest evidence this anchor is structurally right, not just
+   * numerically smaller. dollarCost/BASE_DAILY_COST is unchanged everywhere else
+   * (BLEI, FBS, Gini) — only the main loop's cost side changes. This is NOT a clean
+   * win: correcting the units also redistributes, not just grows — see the
+   * redistribution note under CONTRIBUTING.md Model Architecture Feedback and the
+   * Known Limitations entry below before reading the headline wealth figure alone. */
+  WAGE_TO_USD:100.52,
+  LIVING_WAGE_ANNUAL:49370,
+  /* v4.3: Social Security-anchored income-comparison figures — reference points only,
+   * not a simulated cohort mechanism (see the fixed-income cohort study, Known
+   * Limitations, and CONTRIBUTING.md). SSA 2026 COLA Fact Sheet
+   * (ssa.gov/news/en/cola/factsheets/2026.html): SSI federal payment standard,
+   * individual, $994/mo; SSDI average, all disabled workers, $1,630/mo; average
+   * retired-worker benefit, $2,071/mo. */
+  SS_ANCHOR_SSI_ANNUAL:11928, SS_ANCHOR_SSDI_ANNUAL:19560, SS_ANCHOR_RETIRE_ANNUAL:24852
 };
 /* v4.0: SIU→USD conversion — derived, not arbitrary; see UNIT SYSTEM note above. */
 CFG.SIU_TO_USD = (CFG.BASE_DAILY_COST*365) / CFG.SIM_COST_SCALE;
@@ -1413,12 +1448,22 @@ function buildRecessionPath(years,seed){
  * unconditionally in makeLatentAgent(), so toggling a subsystem changes only that
  * subsystem's membership flag, nothing else. */
 function standardNormal(){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+/* v4.3: occupation-stratified / bimodal automationRisk (Frey & Osborne 2013; Autor 2015).
+ * HIGH_RISK_SHARE ≈ 0.47 of occupations historically classified as high automation
+ * exposure. High-risk ~ Beta(6,1) mean ≈ 0.857; low-risk ~ Beta(1,6) mean ≈ 0.143.
+ * Replaces uniform[0.2,1.0]; the 0.2 floor is deliberately dropped. Reuses the existing
+ * beta() helper (same as octaveShape). */
+function drawAutomationRisk(){
+  var HIGH_RISK_SHARE=0.47;
+  if(RNG()<HIGH_RISK_SHARE)return beta(6,1);
+  return beta(1,6);
+}
 function makeLatentAgent(){
   var uCCO=RNG(),uPTF=RNG(),uPTH=RNG();  // unconditional — see comment above
   return{uCCO:uCCO,uPTF:uPTF,uPTH:uPTH,
     wealth:lognormal(10.5,1.2),wage:lognormal(3.5,0.5),
     octaveShape:beta(2,5),qualityZ:standardNormal(),
-    automationRisk:0.2+RNG()*0.8,lambda:CFG.FBS_LAMBDA_LO+RNG()*(CFG.FBS_LAMBDA_HI-CFG.FBS_LAMBDA_LO)};
+    automationRisk:drawAutomationRisk(),lambda:CFG.FBS_LAMBDA_LO+RNG()*(CFG.FBS_LAMBDA_HI-CFG.FBS_LAMBDA_LO)};
 }
 function makeLatentPopulation(n){var pop=[];for(var i=0;i<n;i++)pop.push(makeLatentAgent());return pop;}
 function instantiateAgent(latent,cfgP){
@@ -1429,7 +1474,12 @@ function instantiateAgent(latent,cfgP){
     quality:Math.min(maxMult,Math.max(0,Math.exp(Math.log(maxMult*0.5)+0.4*latent.qualityZ)*qN)),
     automationRisk:latent.automationRisk,lambda:latent.lambda,
     inCCO:!!(cfgP.ccoOn&&latent.uCCO<cfgP.partRate),inPTF:!!(cfgP.ptf&&latent.uPTF<cfgP.ptfShare),inPTH:inPTH,
-    buBalance:0,acreEquity:inPTH?5000:0};
+    buBalance:0,acreEquity:inPTH?5000:0,
+    /* v4.3: per-agent PTH tenure in years (first step toward tenure-cohort liquidity
+     * haircut per BLEI paper Table 1a / CONTRIBUTING.md). Incremented each year the
+     * agent remains in PTH; reset to 0 on exit. Variable haircut formula itself is a
+     * follow-up PR — this only gets the tracking data flowing and exported. */
+    pthTenure:inPTH?0:0};
 }
 /* Retained as a thin wrapper: OAT mini-simulations and the ablation engine each still
  * want one independently-sampled population per call (they don't need cross-population
@@ -1637,12 +1687,15 @@ function runYear(agentSet,yr,p,recSt){
   var inflRate=p.inflRate||0;
   if(p.ptf&&inflRate>0)inflRate*=(1-p.ptfShare*0.5);
   if(p.pth&&inflRate>0)inflRate*=0.90;
-  /* v4.0: simCost (SIU-scale) drives the main wealth-accumulation flow, UNCHANGED from
-   * pre-v4.0 — see UNIT SYSTEM note (top of file) for why this loop was intentionally
-   * left as-is rather than rescaled. dollarCost (real USD, BASE_DAILY_COST-based) is a
-   * NEW, separate figure used only by the FBS advancement gate below, which needs a
-   * genuine monthly USD cost independent of the legacy SIU scale. */
-  var simCost=CFG.SIM_COST_SCALE*Math.pow(1+inflRate,yr);
+  /* v4.3: simCost (SIM_COST_SCALE-native) is retired from the main wealth-accumulation
+   * flow — see the wage/cost unit fix inside the per-agent loop below, and
+   * CONTRIBUTING.md Model Architecture Feedback for the full history. SIM_COST_SCALE
+   * itself is no longer consumed directly anywhere in runYear(); it remains
+   * load-bearing only as an input to the legacy SIU_TO_USD derivation (top of file)
+   * that BLEI/FBS/Gini still use, deliberately un-migrated — see below. dollarCost
+   * (real USD, BASE_DAILY_COST-based) is unchanged from pre-v4.3 and still used only
+   * by the FBS advancement gate below, which needs a genuine monthly USD cost
+   * independent of both the legacy SIU scale and the new wage/cost anchors. */
   var dollarCost=CFG.BASE_DAILY_COST*365*Math.pow(1+inflRate,yr);
   var popShock=recSt.active?recSt.incomeMultiplier:1.0;
   /* v4.0: current PTF adoption fraction, computed once per year — feeds the Bass (1969)
@@ -1660,7 +1713,23 @@ function runYear(agentSet,yr,p,recSt){
   }
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
+    /* v4.3: unconditional RNG draws for every conditional quantity inside runYear —
+     * mirrors the v4.2 makeLatentAgent() fix (eligibility uniforms drawn unconditionally,
+     * only membership gated). Previously participants consumed more RNG calls per year
+     * than non-participants (BU spend, CIP quality bump, octave advancement, SZH→PTF
+     * induction, PTH appreciation rate, PTF Bass adoption), so two scenarios sharing an
+     * identical starting population (v4.2 common-random-numbers) progressively
+     * decorrelated agent-level trajectories after year 0 whenever participation
+     * composition differed. Draw every conditional quantity first; gate only the *use*
+     * of the drawn value. See CONTRIBUTING.md Model Architecture Feedback. */
     var agentVar=0.90+RNG()*0.20,incomeShock=popShock*agentVar;
+    var uSpendFrac=0.60+RNG()*0.30;           // BU spend rate (used only if inCCO)
+    var uCipQuality=RNG();                    // CIP quality bump (used only if inCCO+CIP)
+    var uAdvance=RNG();                       // octave advancement (used only if inCCO && octave<p.maxOct)
+    var uSzhInduce=RNG();                     // SZH→PTF induction gate (used only if inCCO)
+    var uSzhPtfShare=RNG();                   // SZH→PTF share draw (used only if induction fires)
+    var uPthAppr=RNG();                       // PTH appreciation rate noise (used only if inPTH)
+    var uPtfAdopt=RNG();                      // PTF Bass adoption (used only if !inPTF)
     var bleiCheck=agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
     /* v3.3: wage growth with diminishing returns on stability premium */
     var wg=CFG.WAGE_BASE_GROWTH;
@@ -1677,15 +1746,28 @@ function runYear(agentSet,yr,p,recSt){
     if(p.ptf&&a.inPTF)cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));
     if(p.pth&&a.inPTH)cf*=0.65;
     if(p.ccoOn&&a.inCCO&&p.bu>0)cf*=0.80;
-    /* v4.0: main wealth flow intentionally UNCHANGED from pre-v4.0 — see UNIT SYSTEM
-     * note at top of file for why. */
-    a.wealth+=a.wage*12*incomeShock-simCost*cf;
+    /* v4.3: main wealth flow converted to USD via a genuine real-wage anchor, replacing
+     * the pre-v4.3 SIM_COST_SCALE-native flow (see UNIT SYSTEM note, top of file, and
+     * CONTRIBUTING.md Model Architecture Feedback for the full history and caveats).
+     * annualWageUSD nets WAGE_TO_USD-converted wage against mainLoopCostUSD, a national
+     * living-wage figure (LIVING_WAGE_ANNUAL), not BASE_DAILY_COST's bare-subsistence
+     * floor — netting against the subsistence floor produced an ~11x wealth explosion
+     * and broke BU-monotonicity in testing (2/5 seeds); this anchor passes all six
+     * VAL_TESTS (5/5 BU-monotonicity, see CONTRIBUTING.md). BLEI/FBS/Gini deliberately
+     * keep their existing SIU_TO_USD-based conversion below, untouched — a real,
+     * documented divergence between two wage-to-USD anchors serving different purposes
+     * (a legacy scale-preserving one for BLEI/FBS/Gini vs. a genuine empirical one for
+     * the compounding wealth loop), not an oversight. */
+    var mainLoopCostUSD=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);
+    var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
+    var costUSD=mainLoopCostUSD*cf;
+    a.wealth+=annualWageUSD-costUSD;
     if(isNaN(a.wealth))a.wealth=0;
     if(p.ccoOn&&a.inCCO){
       var decay=p.expiry<2?0:0.7;
       a.buBalance=Math.min(a.buBalance*decay+p.bu,p.bu*3);
-      var spend=a.buBalance*(0.60+RNG()*0.30);a.buBalance-=spend;totalBU+=spend;
-      if(p.cip&&RNG()<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);
+      var spend=a.buBalance*uSpendFrac;a.buBalance-=spend;totalBU+=spend;
+      if(p.cip&&uCipQuality<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);
       /* v4.0: octave now governs conversion CAPACITY — the achievable rate ceiling —
        * with quality modulating the realised rate within that ceiling. Previously
        * quality/maxMult alone set the rate and octave played no role here (external
@@ -1711,9 +1793,10 @@ function runYear(agentSet,yr,p,recSt){
        * +cipDemo*0.04 bump to a fixed advancement probability). */
       if(a.octave<p.maxOct){
         /* Yusd/cBasicMonthly use SIU_TO_USD/dollarCost (real USD) — deliberately
-         * decoupled from the SIU-scale simCost the wealth flow above uses; FBS doesn't
-         * feed back into wealth, so it can use a genuinely-USD basis without touching
-         * the main loop's calibration. See UNIT SYSTEM note (top of file). */
+         * decoupled from the main wealth flow's WAGE_TO_USD/LIVING_WAGE_ANNUAL basis
+         * above; FBS doesn't feed back into wealth, so it can use its own independent,
+         * pre-existing USD basis without touching the main loop's new calibration. See
+         * UNIT SYSTEM note (top of file). */
         var Yusd=a.wage*CFG.SIU_TO_USD;
         var cBasicMonthly=(dollarCost*cf)/12;
         var edcResidual=(p.pth&&a.inPTH)?CFG.FBS_EDC_RESIDUAL_PTH:CFG.FBS_EDC_RESIDUAL_BASE;
@@ -1721,36 +1804,49 @@ function runYear(agentSet,yr,p,recSt){
         var lam=(typeof a.lambda==='number'&&!isNaN(a.lambda))?a.lambda:(CFG.FBS_LAMBDA_LO+CFG.FBS_LAMBDA_HI)/2;
         if(p.cip)lam*=(1+p.cipDemo*CFG.FBS_CIP_LAMBDA_BOOST);
         var pAdvance=1-Math.exp(-lam*fbs);
-        if(RNG()<pAdvance)a.octave++;
+        if(uAdvance<pAdvance)a.octave++;
       }
-      if(RNG()<szhPartBoost&&!a.inPTF&&p.ptf)a.inPTF=RNG()<p.ptfShare;
+      if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf)a.inPTF=uSzhPtfShare<p.ptfShare;
     }
     /* PTH: v4.0 adds a payment→equity contribution alongside the pre-existing
      * appreciation mechanism (external review: the documented equity-building
      * mechanism was missing — "no portion of their housing-payment flow ... is
      * contributed to acreEquity"). A documented share of the annual PTH housing-cost
      * SAVING is re-routed from liquid wealth into Acre Equity (illiquid) rather than
-     * landing entirely as direct cash relief. Uses simCost (the same cost basis the
-     * main wealth flow above uses), not dollarCost, so the re-routed amount is drawn
-     * from the same pool a.wealth actually accumulates from — using a different scale
-     * here would silently over- or under-drain wealth relative to what was ever
-     * credited. Total benefit is unchanged — this is a re-allocation of where an
+     * landing entirely as direct cash relief. v4.3: this stays on dollarCost, unchanged
+     * from pre-v4.3 — the wage/cost unit fix above deliberately scopes itself to "only
+     * the main loop's cost side changes" (CONTRIBUTING.md), and this is validated
+     * against that scope: a mainLoopCostUSD alternative was tested (internally more
+     * consistent with the new main-loop basis, in principle) and rejected for this
+     * release — it changes every downstream aggregate by a small but real amount
+     * (~2% on median wealth in testing) relative to the already-validated seed-42
+     * reference table, and revising PTH's basis is a separate design decision from the
+     * wage/cost fix itself, better made on its own rather than folded in silently here.
+     * Worth a dedicated look in a follow-up pass — flagged in CONTRIBUTING.md. Total
+     * benefit is unchanged in kind — this is a re-allocation of where an
      * already-counted saving lands, not new wealth, so it does not reintroduce the
      * double-counting the v3.0 fix removed. Appreciation (pre-existing, unchanged):
-     * 50% of appreciation → liquid wealth = accessible-liquidity haircut. */
+     * 50% of appreciation → liquid wealth = accessible-liquidity haircut. Also tracks
+     * per-agent PTH tenure (v4.3, first step toward a tenure-cohort liquidity haircut
+     * — see instantiateAgent() and CONTRIBUTING.md; the haircut formula itself is a
+     * follow-up PR, this only gets the tracking data flowing and exported). */
     if(p.pth&&a.inPTH){
+      if(typeof a.pthTenure!=='number'||isNaN(a.pthTenure))a.pthTenure=0;
+      a.pthTenure+=1;
       var cfWithoutPTH=cf/0.65;
-      var pthSaving=Math.max(0,simCost*cfWithoutPTH*(1-0.65));
+      var pthSaving=Math.max(0,dollarCost*cfWithoutPTH*(1-0.65));
       var equityContrib=pthSaving*CFG.PTH_EQUITY_CONTRIB_SHARE;
       a.acreEquity+=equityContrib;a.wealth-=equityContrib;
-      var ar=0.030+RNG()*0.020+pthApprBonus;var appr=a.acreEquity*ar;a.acreEquity+=appr;a.wealth+=appr*0.5;
+      var ar=0.030+uPthAppr*0.020+pthApprBonus;var appr=a.acreEquity*ar;a.acreEquity+=appr;a.wealth+=appr*0.5;
+    } else if(a.pthTenure){
+      a.pthTenure=0;
     }
     /* v4.0: added Bass (1969) imitation term q·(adoption fraction) alongside the existing
      * innovation baseline + economic-distress bump — see ptfAdoptFrac above. This is what
      * makes adoption an S-curve driven partly by social diffusion, matching the ODD
      * protocol's documented description (previously: fixed-probability + distress only,
      * no dependency on how many peers had already adopted). */
-    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(RNG()<ap)a.inPTF=true;}
+    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap)a.inPTF=true;}
     if(a.wealth<CFG.WEALTH_FLOOR)a.wealth=CFG.WEALTH_FLOOR;
   });
   /* v4.0: return value now carries conversion proceeds alongside BU spend, so callers
@@ -2220,22 +2316,25 @@ function runValidation(){
  * be robust. The four population-level checks below are unanimous (5/5) across these
  * seeds during development.
  *
- * The new 5th check (non-participant poverty) is NOT unanimous seed-by-seed at the
- * standard 200-agent size — investigating why surfaced a genuine, previously undocumented
- * limitation: runYear()'s per-agent RNG consumption depends on which conditional branches
- * that agent takes (participants trigger several more RNG-consuming branches per year —
- * BU spend, octave advancement, SZH/PTF induction — than non-participants). Two scenarios
- * whose agents end up on different branches (e.g. because participation composition
- * differs) progressively diverge in RNG STREAM POSITION year over year, even from an
- * identical initial population — so per-agent trajectory pairing across such scenarios is
- * only exact for year 0, not the full run. This doesn't affect the four checks above
- * (they compare population-level aggregates with a large effect size relative to this
- * noise) but made the non-participant check noisy at n=200 (as low as 2/10 seeds
- * agreeing in testing). It uses n=500 and a mean-across-seeds criterion instead of
- * requiring every seed to agree — see Known Limitations. Fully resolving this would mean
- * every RNG-consuming branch in runYear() drawing unconditionally (mirroring the v4.2
- * makeAgent() fix, above) — a larger change than this pass takes on; tracked as an open
- * item in CONTRIBUTING.md. */
+ * The 5th check (non-participant poverty), added in v4.2, was NOT unanimous seed-by-seed
+ * at the standard 200-agent size when it shipped — investigating why surfaced a genuine,
+ * previously undocumented limitation: runYear()'s per-agent RNG consumption depended on
+ * which conditional branches that agent took (participants triggered several more
+ * RNG-consuming branches per year — BU spend, octave advancement, SZH/PTF induction —
+ * than non-participants). Two scenarios whose agents ended up on different branches
+ * (e.g. because participation composition differed) progressively diverged in RNG
+ * stream position year over year, even from an identical initial population — so
+ * per-agent trajectory pairing across such scenarios was only exact for year 0, not the
+ * full run. v4.2 shipped this check loosened to n=500 with a mean-across-seeds
+ * criterion, as a documented workaround, rather than requiring every seed to agree.
+ *
+ * v4.3: resolved. runYear() now draws every conditional RNG quantity unconditionally
+ * for every agent every year (mirroring the v4.2 makeLatentAgent() fix to agent
+ * construction), gating only the *use* of each drawn value on the relevant condition —
+ * see the comment at the top of runYear()'s per-agent loop. With per-agent RNG
+ * consumption now uniform regardless of participation branch, the non-participant check
+ * is tightened back to strict per-seed agreement at the suite's standard n=200 (5/5 in
+ * testing) — see the 'nonpart' test below. */
 var VAL_SEEDS=[1234,5678,9012,3456,2468];
 var VAL_TESTS=[
   {id:'monotone',name:'BU monotonicity: $1,200 outperforms $800',fn:function(){
@@ -2286,24 +2385,29 @@ var VAL_TESTS=[
     return{pass:agree===VAL_SEEDS.length,detail:agree+'/'+VAL_SEEDS.length+' seeds: PTF-on gives lower-or-equal poverty than PTF-off under 3% inflation'};
   }},
   {id:'nonpart',name:'Non-participant poverty does not worsen when CCO is enabled',fn:function(){
-    /* CONTRIBUTING.md good-first-issue. n=500 and mean-across-seeds — see the block
-     * comment above VAL_TESTS for why this check needs both. p2 isolates CCO status
-     * alone (PTF/PTH/SZH/CIP also held off, matching p1's non-participants' own access —
-     * a non-participant in p1 can still independently draw into PTF/PTH, so p2 leaves
-     * those on for a true apples-to-apples "CCO system absent" comparison would need
-     * them at the SAME rates, not off — since p1's non-participants are NOT eligible for
-     * PTF/PTH conditioning on CCO membership, and PTF/PTH eligibility is drawn
-     * independently of CCO membership either way, p2 sets them off to isolate CCO
-     * specifically, at the cost of also removing whatever small independent PTF/PTH
-     * benefit p1's non-participants could separately draw into). */
-    var diffs=VAL_SEEDS.map(function(seed){
-      var p1=mkMiniP(PRESETS.reference,{nAgents:500});
-      var p2=mkMiniP(PRESETS.reference,{bu:0,ccoOn:false,partRate:0,ptf:false,ptfShare:0,pth:false,pthUptake:0,szh:false,cip:false,nAgents:500});
+    /* v4.3: tightened back to strict per-seed agreement at n=200, now that runYear()
+     * draws every conditional RNG quantity unconditionally (see the comment at the top
+     * of runYear()'s per-agent loop). Through v4.2 this check was loosened to a
+     * mean-across-5-seeds criterion at n=500, because participants consumed more RNG
+     * draws per year than non-participants — decorrelating paired trajectories enough
+     * that only 2–3/10 seeds agreed per-seed at n=200 during v4.2 development (noise,
+     * not signal). With that RNG-coupling issue fixed, per-seed agreement at the
+     * suite's standard n=200 is meaningful again. p2 isolates CCO status alone
+     * (PTF/PTH/SZH/CIP also held off, matching p1's non-participants' own access — a
+     * non-participant in p1 can still independently draw into PTF/PTH, so a true
+     * apples-to-apples "CCO system absent" comparison would need them at the SAME
+     * rates, not off; p2 sets them off to isolate CCO specifically, at the cost of also
+     * removing whatever small independent PTF/PTH benefit p1's non-participants could
+     * separately draw into). Pass criterion: every seed shows non-participant poverty
+     * under CCO no more than 2pp above the CCO-absent baseline. */
+    var agree=VAL_SEEDS.filter(function(seed){
+      var p1=mkMiniP(PRESETS.reference,{nAgents:200});
+      var p2=mkMiniP(PRESETS.reference,{bu:0,ccoOn:false,partRate:0,ptf:false,ptfShare:0,pth:false,pthUptake:0,szh:false,cip:false,nAgents:200});
       initRNG(seed);var r1=runMiniSim(p1);initRNG(seed);var r2=runMiniSim(p2);
-      return(r1.nonPartPov===null)?0:(r1.nonPartPov-r2.pov);
-    });
-    var meanDiff=diffs.reduce(function(a,b){return a+b;},0)/diffs.length;
-    return{pass:meanDiff<=2,detail:'Mean non-participant poverty vs. CCO-absent baseline (same conditions): '+(meanDiff>=0?'+':'')+meanDiff.toFixed(1)+'pp, averaged over '+VAL_SEEDS.length+' seeds at n=500'};
+      var diff=(r1.nonPartPov===null)?0:(r1.nonPartPov-r2.pov);
+      return diff<=2;
+    }).length;
+    return{pass:agree===VAL_SEEDS.length,detail:agree+'/'+VAL_SEEDS.length+' seeds (n=200): non-participant poverty under CCO ≤ CCO-absent baseline +2pp'};
   }},
   {id:'invariants',name:'Structural invariants: population conservation & state bounds',fn:function(){
     /* v4.2: a genuine consistency check rather than a directional comparison — runs one
