@@ -32,6 +32,36 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## v4.5 Release Notes
+
+v4.5 is a good-first-issues pass, not a mechanics-audit release like v4.3/v4.4 — five items pulled directly from this document's own Good First Issues list (below), all completable without new external data or a framework-author calibration call. Validation scope matches the smaller stakes: a moderate-N sanity check for the one item that changes simulation output, not a fresh N=5,000 study.
+
+- **PTH liquidity haircut implemented — tenure-cohort schedule replaces the flat 50%.** v4.3 added per-agent `pthTenure` tracking as a first step toward this; v4.5 implements the haircut itself via `pthLiquidShare(tenure)` — a linear ramp from 15% at tenure=1 (the closest available point to the BLEI paper Table 1a's "6 months" anchor, given tenure is tracked in whole years) to 85% at tenure≥5 (the paper's "5+ years" anchor), replacing the flat 50% share of annual Acre Equity appreciation counted as liquid wealth used through v4.4. Both anchors are the midpoint of the paper's cited range (10–20% / 80–90%) — the paper gives two qualitative points, not a closed-form curve, so the ramp between them is a documented interpretation choice, not a re-derivation. Since PTH membership doesn't change once assigned, most PTH agents spend the majority of a 20-year run at the mature 85% rate (16 of 20 years) — higher than the old flat 50% for most of the run, lower only in years 1–4.
+- **"Copy parameters as URL."** Serializes the current sliders/toggles/seed into a query string, copied via the Clipboard API. Loading a shared link applies its params on top of the Full Integration defaults before the page's own auto-run, so a link only needs to specify what differs from the reference config; the seed-42 "illustrative reference run" banner only fires when no recognized params are present in the URL.
+- **Social Security-anchored cohorts surfaced as in-app UI, not harness-only.** The N=5,000 study this document has carried since v4.3 (below) now also appears as a final-year table in the results panel — SSI-level, SSDI-level, and Retirement-level rows, computed from the same final agent state and `calcMetrics()`/`bleiMetrics()` calls the headline KPIs already use. Cross-sectional by design, matching this document's own method: cohort membership is fixed at year 0, not tracked over time. Single-run figures will vary seed-to-seed, especially for the small SSI-level cohort (≈0.8% of a 500-agent population) — this document's own N=5,000 table remains the citable figure.
+- **BLEI tier definitions and preset descriptions on hover** — two smaller good first issues, done together. An ⓘ next to the tier-distribution chart's title shows each tier's day-range; each of the five preset buttons shows a one-sentence description of what it actually configures, on hover.
+- **Cosmetic, no output effect:** `instantiateAgent()`'s `pthTenure:inPTH?0:0` ternary (identical branches — a copy-paste leftover, previously noted and left alone at v4.4) simplified to `pthTenure:0`.
+
+### Regression: seed 42 / Full Integration / 20yr, v4.4 → v4.5
+
+| Metric | v4.4 | v4.5 | Δ |
+|---|---|---|---|
+| Median BLEI | 1,951d | 1,965d | +14d |
+| BLEI poverty | 13.6% | 13.6% | — |
+| Median wealth | $558,001 | $559,223 | +$1,222 |
+| Wealth poverty | 16.6% | 16.6% | — |
+| Gini (EDC-adj.) | 0.535 | 0.534 | −0.001 |
+| System Stability | 88.6% | 88.5% | −0.1pp |
+| Avg EDC | 24.9% | 24.9% | — |
+
+All movement traces to the PTH liquidity haircut alone — the only item in this release that touches simulation output — confirmed with an isolated N=300 seed-paired comparison (same population/RNG per seed, only `pthLiquidShare()` toggled between the old flat 0.5 and the new schedule): median wealth $523,958→$526,941 (+0.6%), median BLEI 1,820.6d→1,826.0d (+0.3%), all other headline metrics unchanged to the precision reported. All six `VAL_TESTS` pass 5/5 post-change.
+
+### What did NOT get fixed, and why
+
+This was a good-first-issues pass by explicit scope, not an audit release. `WEALTH_FLOOR` and `TARGET_*` recalibration, the Sobol/LHC sensitivity export, occupation-*stratified* automationRisk, the near-poverty cohort's stale 40-year extension, and the framework-level low-wage-mechanism question all remain open, unchanged from v4.4 — see Model Architecture Feedback and the remaining Good First Issues, below.
+
+---
+
 ## v4.4 Release Notes
 
 v4.4 is a mechanics-changing release, and the first shipped only after putting the prior release through two independent adversarial code audits rather than trusting internal validation alone — this document's own account of the v4.0-v4.3 history is a record of real bugs slipping through multiple prior passes, so an audit step is now the default before further mechanics changes to a published research artifact, not a formality.
@@ -72,7 +102,7 @@ v4.3 is a mechanics-changing release — **it changes the RNG call sequence and 
 
 - **`runYear()` RNG coupling fixed (resolves the item found in v4.2).** Every conditional quantity inside the per-agent loop (BU spend fraction, CIP quality bump, octave advancement, SZH→PTF induction and share, PTH appreciation noise, PTF Bass adoption) is now drawn unconditionally every year for every agent; only the *use* of the drawn value is gated — mirroring the v4.2 `makeLatentAgent()` eligibility-draw fix. The non-participant-poverty validation check is tightened back to strict per-seed agreement at n=200 (was a mean-across-5-seeds workaround at n=500) and passes 5/5.
 
-- **Per-agent PTH tenure tracking (first step, not the full fix).** Agents now carry `pthTenure` (years held in PTH residency), incremented each year while in PTH and reset on exit. This is tracking data only — the variable tenure-cohort liquidity haircut itself (BLEI paper Table 1a) is not implemented this pass; the flat 50% haircut is unchanged. Tracked as a Good First Issue, below.
+- **Per-agent PTH tenure tracking (first step, not the full fix).** Agents now carry `pthTenure` (years held in PTH residency), incremented each year while in PTH and reset on exit. This is tracking data only — the variable tenure-cohort liquidity haircut itself (BLEI paper Table 1a) is not implemented this pass; the flat 50% haircut is unchanged. Tracked as a Good First Issue, below. **v4.5 update: implemented — see Release Notes, above.**
 
 - **Bimodal `automationRisk` distribution.** Replaces uniform[0.2,1.0] with a 47%/53% mixture — high-risk agents ~ Beta(6,1) (mean ≈0.857), low-risk agents ~ Beta(1,6) (mean ≈0.143) — sourced to Frey & Osborne (2013)/Autor (2015): ~47% of US employment sits above a 70% computerization-probability threshold across 702 O\*NET occupations. Verified to have no material effect on aggregate outcomes on its own (isolated in testing before the other three items were combined with it).
 
@@ -176,6 +206,7 @@ The simulation uses several empirically grounded constants defined in the `CFG` 
 | `FBS_LAMBDA_LO/HI` | **0.0001654 / 0.0013233 (v4.4)** — was 0.001 / 0.008 through v4.3 | BLEI paper §Index IV (λ ~ Uniform), rescaled v4.4 | **Rescaled ÷6.0456 (the `WAGE_TO_USD`/legacy-`SIU_TO_USD` ratio) as a *behavioral recalibration* to restore useful advancement-probability variation — not, as an earlier version of this document claimed, a dimensionally-forced conversion (FBS mixes scaled and unscaled terms, so it doesn't scale by a single clean factor). Open calibration status: the paper's original range already saturates (89.8–100% advancement probability) at the paper's own worked example; the v4.4 range is not itself externally validated. See v4.4 Release Notes for the full account and the recommended FBS₅₀ reparameterization.** |
 | `FBS_EDC_RESIDUAL_BASE/PTH` | 0.12 / 0.025 | BLEI paper Table 1b worked values | Used as a fixed proxy for "consumer debt interest only" — a separately-modelled consumer-debt submodel would be more accurate. |
 | `PTH_EQUITY_CONTRIB_SHARE` | 25% | Internal design choice, not externally sourced | Matches Champlain Housing Trust's real resale-appreciation share exactly, but that's a coincidental number match, not a mechanistic validation — CHT's 25% is a one-time resale split; the sim's is an ongoing annual savings-to-equity routing. Kept at 25%; code comment reflects this is coincidental, not sourced. |
+| `PTH_LIQUID_SHARE_YEAR1/YEAR5PLUS` | 15% / 85% (v4.5) — flat 50% through v4.4 | BLEI paper Table 1a ("~10-20% at 6 months rising to ~80-90% at 5+ years"), midpoints of each cited range | **New in v4.5.** The paper gives two qualitative anchor points, not a closed-form curve — v4.5's linear ramp between them (`pthLiquidShare()`) is a documented interpretation choice, not a re-derivation. Access to the paper's actual underlying curve (if one exists beyond the two cited points) would let this be tightened from an interpolation to a direct implementation. |
 | `SZH_THETA_THRESHOLD/MAX_COH/MAX` | 0.55 / 0.90 / 0.25 | BLEI paper Table 6 (synergy coefficient θ) | Direct from framework spec. |
 | `PTF_BASS_Q` | 0.05 | Internal design choice, not externally sourced | No cooperative-sector-specific citation exists (searched). General product-diffusion q typically 0.3–0.5, real-world q spans 0.05–0.47 across contexts in the literature. 0.05 isn't contradicted, isn't positively sourced either — kept, comment reflects the honest gap rather than implying a citation exists. |
 | `BASELINE_CPI_RATE` | 3% | Historic US CPI | Baseline scenario's inflation is anchored to this fixed rate instead of copying the user's inflation slider — see Model Architecture Feedback. |
@@ -210,6 +241,8 @@ If results diverge under identical seed + parameters, open a bug report with bot
 | Avg EDC | 25.4% | 24.9% |
 
 If you're tracking a regression baseline across versions, restart it from v4.4 using the right-hand column — same guidance as prior version tables. Full derivation in `index.html`'s own changelog comment (search "v4.4").
+
+**v4.5 update:** good-first-issues pass, not a mechanics-audit release — only one item (the PTH liquidity haircut) touches simulation output, and the movement is small. Seed-42 / Full Integration / 20yr: Median BLEI 1,951d→1,965d, Median wealth $558,001→$559,223, all other headline metrics unchanged to the precision reported — full table and the isolated-effect N=300 comparison in v4.5 Release Notes, above. If you're restarting a regression baseline from v4.5, use those v4.5 figures; the v4.3→v4.4 table above is retained for historical continuity, not as the current baseline.
 
 **v4.4 large-N study — complete (Aug 2026).** Like v4.0, v4.2, and v4.3, this release changes core mechanics, so a full N=5,000 study was run (same methodology as prior large-N studies: a Node.js harness driving `makeLatentPopulation()`/`instantiateAgent()`/`runYear()`/`calcMetrics()`/`bleiMetrics()`/`structuralStability()` directly, seeds 1–5,000, 500 agents, 20 years, shock disabled to match the Full Integration reference preset; script available on request via a GitHub issue). Headline figures, with v4.3's for comparison:
 
@@ -274,7 +307,7 @@ Areas currently open for discussion:
 - **PTF distortion threshold (30% market share)** — searched, no clean literature citation exists for a cooperative-sector market-concentration threshold specifically. Genuine literature gap, not a research gap on our end — kept at 30%, comment reflects the gap honestly.
 - **Sobol/LHC sensitivity** — implementation-ready spec exists (an "LHS Sensitivity Export" button: Latin Hypercube Sample design over the same 5 parameters OAT already varies, reusing the existing `mulberry32` RNG, exporting the design matrix + outcome metrics as CSV). Not yet implemented; a good next PR for someone comfortable with the existing OAT code path.
 - **BLEI external validation** — Phase 4 roadmap: validate against Fed SCF, CPS, ACS, BLS CES, and OECD inequality trajectories. Not started.
-- **PTH liquidity haircut is flat, not tenure-cohort-varying.** v4.3 added per-agent tenure *tracking* as a first step; the variable haircut formula itself (BLEI paper Table 1a: ~10–20% at 6 months rising to ~80–90% at 5+ years) is not implemented in v4.3 or v4.4. The tracking data is now flowing and exported, so this is closer to shippable than before.
+- **PTH liquidity haircut is flat, not tenure-cohort-varying.** v4.3 added per-agent tenure *tracking* as a first step; the variable haircut formula itself (BLEI paper Table 1a: ~10–20% at 6 months rising to ~80–90% at 5+ years) is not implemented in v4.3 or v4.4. The tracking data is now flowing and exported, so this is closer to shippable than before. **Resolved in v4.5 — see Release Notes, above.**
 
 - **λ Calibration Status — Open.** The BLEI paper's Index IV defines λ ~ U(0.001, 0.008), the FBS advancement-probability coefficient. Simulation v4.4 currently employs λ ~ U(0.0001654, 0.0013233), a behavioral recalibration adopted after the v4.4 wage-scale unification. **A dedicated sensitivity sweep** (N=500 seeds per variant, 500 agents/20 years, Full Integration reference config) tested the paper's original range against v4.4's range and 0.5×/2× variants:
 
@@ -306,14 +339,10 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 **Good first issues:**
 
-- Add a "Copy parameters as URL" feature so scenarios can be shared as links
-- Add i-buttons next to BLEI tier labels showing tier definitions inline
-- Add preset descriptions as tooltips on preset buttons
-- Implement the variable tenure-cohort PTH liquidity haircut now that per-agent tenure tracking is in place (v4.3) — see Model Architecture Feedback
 - Implement the Sobol/LHC sensitivity export (spec above)
-- Surface the Social-Security-anchored cohort study as an in-app stratification (analogous to the existing participant/non-participant charts), rather than harness-only — the constants and methodology are established (v4.3), this would make the finding visible to anyone using the interactive tool, not just readers of this file
 - Occupation-*stratified* (not just bimodal) automationRisk would be a further refinement beyond v4.3's fix
 - Rebuild the near-poverty cohort's v4.1 40-year extension study under current (v4.4) mechanics — unreconfirmed since v4.1, now three mechanics-changing releases stale, and the 20-year figures have moved enough that the 40-year result is very likely materially different
+- **Done in v4.5** (see Release Notes, above): implemented the variable tenure-cohort PTH liquidity haircut; "Copy parameters as URL"; surfaced the Social Security-anchored cohort study as an in-app stratification; i-buttons on BLEI tier labels; preset-button description tooltips
 - **Done in v4.4** (see Release Notes, above): unified wage/income scale across BLEI/FBS/Gini onto `WAGE_TO_USD`, with a compensating `FBS_LAMBDA` rescale; true common-random-numbers pairing across the Baseline/CCO-Only/Main trajectory comparison; removed the baseline's undocumented ×0.85 initial-wealth haircut; paired automation exposure across scenarios; fixed a `gamma(a=1)` sampler bug (silently returned a constant, ~200× population-construction speedup as a side effect); renamed the non-participant validation check for accuracy (string-only, logic unchanged); added in-app KPI-badge disclosures for the System Stability flat-outcome reading and the pending `TARGET_*` recalibration
 - **Done in v4.3** (see Release Notes, above): occupation-stratified/bimodal automationRisk; `runYear()` RNG-coupling fix, allowing the non-participant validation check to tighten back to strict per-seed agreement at n=200
 - **Done in v4.2** (see v4.2 Release Notes, above): a structural System Stability metric, `structuralStability()`, replacing the former trend-plus-noise heuristic
@@ -370,5 +399,5 @@ All contributions are released under **CC BY 4.0**. Attribution to the Better To
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v4.4*  
+*Better To Best Research Hub · Compassionism Framework Simulation v4.5*  
 *Principal Investigator: Duke Johnson (pseudonymous)*
