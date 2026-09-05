@@ -11,8 +11,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://bettertobest.github.io/research-hub/assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://bettertobest.github.io/research-hub/assets/favicon-180.png">
-<title>Compassionism Framework Simulation v4.5 | Better To Best Research Hub</title>
-<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, unified wage-scale accounting, true common-random-numbers counterfactual pairing, 50× Monte Carlo stochastic CI, participant and Social Security-anchored stratification, computed OAT sensitivity, 6-check validation suite, JSON/CSV export, shareable parameter URLs, ODD protocol, in-app glossary, accessible charts. v4.5.">
+<title>Compassionism Framework Simulation v4.6 | Better To Best Research Hub</title>
+<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, unified wage-scale accounting, true common-random-numbers counterfactual pairing, 50× Monte Carlo stochastic CI, participant and Social Security-anchored stratification, computed OAT sensitivity, Latin Hypercube sensitivity export, opt-in feedback-clamped PTF adoption, 6-check validation suite, JSON/CSV export, shareable parameter URLs, ODD protocol, in-app glossary, accessible charts. v4.6.">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -39,7 +39,7 @@
 <meta name="twitter:creator" content="@Author_Duke_J">
 <meta name="twitter:site" content="@Author_Duke_J">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.5: tenure-cohort PTH liquidity haircut replacing the flat 50% share (per-agent tenure tracked since v4.3), shareable \"Copy parameters as URL\" links, Social Security-anchored cohort stratification surfaced as in-app UI (harness-only since v4.3), and hover tooltips for BLEI tier definitions and preset descriptions — all CONTRIBUTING.md good-first-issues. v4.4: unified the wage/income scale across BLEI, FBS, and Gini onto the same real-dollar anchor the main wealth loop already used (previously ~6× apart at the median wage), a compensating FBS_LAMBDA recalibration, true common-random-numbers pairing across the Baseline/CCO-Only/Main comparison (previously population-only, not trajectory-level), removed an unexplained baseline initial-wealth haircut, paired automation exposure across scenarios, and fixed a gamma(1) sampler bug that silently returned a constant instead of a random draw (~200× population-construction speedup as a side effect) — internal review + external audit (Aug 2026), full N=5,000 re-study in CONTRIBUTING.md. v4.3: main wealth-accumulation loop unit fix (wage and cost sides both converted to real USD via sourced anchors, replacing the pre-v4.0 SIU-scale simplification), runYear() RNG-coupling fix (every conditional quantity now drawn unconditionally, tightening a validation check back to strict per-seed agreement), bimodal automationRisk distribution (Frey & Osborne 2013; Autor 2015), per-agent PTH tenure tracking, and a new Social-Security-anchored income cohort analysis — internal review, Aug 2026; see CONTRIBUTING.md for the redistributional findings this release surfaces, which are substantive, not just a version bump. v4.2: common-random-numbers population pairing (main/CCO-only/baseline comparisons now share one latent population, closing an open counterfactual-isolation item and an independently-found RNG stream-drift bug), a structural System Stability metric replacing the v3.6 trend-plus-noise heuristic, a 6-check validation suite (multi-seed statistical robustness on the original 4 checks, plus new non-participant-poverty and structural-invariant checks) — external audit (Aug 2026) and CONTRIBUTING.md good-first-issues. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.5","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.6: Latin Hypercube sensitivity export (design matrix + outcome metrics as CSV, implementing the CONTRIBUTING.md good-first-issue spec), an opt-in off-by-default feedback-clamped PTF adoption cap (Model Architecture Feedback item — realised PTF share can otherwise run well past the slider via organic adoption), FBS₅₀ half-saturation bandwidth exposed as a derived, named constant, and the near-poverty cohort's 40-year extension rebuilt under current mechanics (reconfirms the existing 20-year Flourishing milestone; surfaces a new finding that long-horizon wealth growth shows no plateau) — all CONTRIBUTING.md good-first-issues/Model Architecture Feedback items. v4.5: tenure-cohort PTH liquidity haircut replacing the flat 50% share (per-agent tenure tracked since v4.3), shareable \"Copy parameters as URL\" links, Social Security-anchored cohort stratification surfaced as in-app UI (harness-only since v4.3), and hover tooltips for BLEI tier definitions and preset descriptions — all CONTRIBUTING.md good-first-issues. v4.4: unified the wage/income scale across BLEI, FBS, and Gini onto the same real-dollar anchor the main wealth loop already used (previously ~6× apart at the median wage), a compensating FBS_LAMBDA recalibration, true common-random-numbers pairing across the Baseline/CCO-Only/Main comparison (previously population-only, not trajectory-level), removed an unexplained baseline initial-wealth haircut, paired automation exposure across scenarios, and fixed a gamma(1) sampler bug that silently returned a constant instead of a random draw (~200× population-construction speedup as a side effect) — internal review + external audit (Aug 2026), full N=5,000 re-study in CONTRIBUTING.md. v4.3: main wealth-accumulation loop unit fix (wage and cost sides both converted to real USD via sourced anchors, replacing the pre-v4.0 SIU-scale simplification), runYear() RNG-coupling fix (every conditional quantity now drawn unconditionally, tightening a validation check back to strict per-seed agreement), bimodal automationRisk distribution (Frey & Osborne 2013; Autor 2015), per-agent PTH tenure tracking, and a new Social-Security-anchored income cohort analysis — internal review, Aug 2026; see CONTRIBUTING.md for the redistributional findings this release surfaces, which are substantive, not just a version bump. v4.2: common-random-numbers population pairing (main/CCO-only/baseline comparisons now share one latent population, closing an open counterfactual-isolation item and an independently-found RNG stream-drift bug), a structural System Stability metric replacing the v3.6 trend-plus-noise heuristic, a 6-check validation suite (multi-seed statistical robustness on the original 4 checks, plus new non-participant-poverty and structural-invariant checks) — external audit (Aug 2026) and CONTRIBUTING.md good-first-issues. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.6","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -157,7 +157,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div style="display:flex;align-items:center;gap:.6rem">
     <img src="https://bettertobest.github.io/research-hub/assets/bettertobest-mark-muted-originals.svg" alt="Better To Best Research Hub" width="32" height="32" style="flex-shrink:0">
     <div>
-      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.5</span></div>
+      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.6</span></div>
       <div class="hd-sub">
         All five architectures ·
         <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -229,7 +229,8 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div class="ss">
     <div class="ss-head">PTF — Public Trust Foundations</div>
     <div class="cr"><div class="cl"><span class="cn">Enable PTF</span></div><div class="tg"><button class="tb on" id="ptf-on" onclick="tog('ptf',true)">On</button><button class="tb" id="ptf-off" onclick="tog('ptf',false)">Off</button></div><div class="ch">Cost reduction 12–16% (not a wealth bonus)</div></div>
-    <div class="cr"><div class="cl"><span class="cn">Initial PTF share (%)</span><span class="cv" id="v-ptf">18%</span></div><input type="range" min="5" max="35" step="1" value="18" id="s-ptf" oninput="sv('ptf',this.value)"><div class="ch">Sets initial adoption only — organic growth via annual adoption checks means the final share can exceed this value. Reference: ~18% · Distortion threshold: &gt;30% (efficiency losses from reducing market competition below viable threshold)</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Initial PTF share (%)</span><span class="cv" id="v-ptf">18%</span></div><input type="range" min="5" max="35" step="1" value="18" id="s-ptf" oninput="sv('ptf',this.value)"><div class="ch">Sets initial adoption only — organic growth via annual adoption checks means the final share can exceed this value, unless capped below. Reference: ~18% · Distortion threshold: &gt;30% (efficiency losses from reducing market competition below viable threshold)</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Cap adoption at slider value <span class="abbr-link" data-tip="Off = v4.5 and earlier behavior: the slider only sets the year-0 adoption probability, and organic per-agent adoption can carry realised share well past it (uncapped, seed 42 / 20yr Full Integration reaches 53.4% against an 18% slider). On = feedback-clamped: organic adoption (both pathways) pauses once realised share reaches the slider value, agent-by-agent, so the slider becomes a real ceiling on GROWTH beyond the year-0 draw — it doesn't retroactively correct sampling variance already present in that year-0 draw itself, so realised share can still land a little on either side of the slider from the same randomness the uncapped case has at year 0. Off by default — enabling this changes simulation output for PTF-active runs (see CONTRIBUTING.md Model Architecture Feedback and v4.6 Release Notes).">ⓘ</span></span></div><div class="tg"><button class="tb" id="ptfCap-on" onclick="tog('ptfCap',true)">On</button><button class="tb on" id="ptfCap-off" onclick="tog('ptfCap',false)">Off (default)</button></div><div class="ch">v4.6, opt-in — Model Architecture Feedback's "quota-based or feedback-clamped adoption" item</div></div>
   </div>
 
   <div class="ss">
@@ -270,6 +271,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <button class="btn-sm btn-blue" id="mc10-btn"  onclick="runMulti(10)">🎯 Run 10× · Stochastic CI</button>
     <button class="btn-sm btn-blue" id="mc50-btn"  onclick="runMulti(50)">🎯 Run 50× · Stochastic CI</button>
     <button class="btn-sm btn-amber" id="oat-btn"  onclick="runOATSensitivity()" style="display:none">📐 One-at-a-Time Sensitivity Analysis</button>
+    <button class="btn-sm btn-amber" id="lhs-btn"  onclick="runLHSSensitivity()" style="display:none">🧮 Export LHS Sensitivity Design (CSV)</button>
     <button class="btn-sm btn-purple" id="val-btn" onclick="runValidation()">✅ Run Validation Suite</button>
     <button class="reset-btn" onclick="applyPreset('reference')">Reset to Full Integration defaults</button>
     <button class="btn-sm btn-blue" id="copy-url-btn" onclick="copyParamsURL()">🔗 Copy parameters as URL</button>
@@ -445,7 +447,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.5 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.6 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -458,7 +460,10 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (SIM_COST_SCALE) → CCO conversion income at a rate capped by octave-tier capacity → FBS-gated octave advancement check (v4.0) → PTH Acre Equity appreciation plus a payment→equity contribution (v4.0) → PTF adoption check (innovation + distress + Bass imitation, v4.0) → wealth floor clamp. BLEI = (liquid + γ·wage·SIU_TO_USD + buFood) / dailyCost (v4.0: wage converted to USD before summing — see Empirical Calibration below). Gini (v4.0): computed on EDC-adjusted net wealth, W_nominal − EDC×Y×12. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>) — mode 0.90 (10% loss), mean ≈0.88 (~12% loss).</p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.5)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.6)</span>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">FBS₅₀ half-saturation bandwidth exposed as a derived constant (v4.6, CONTRIBUTING.md good-first-issue)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">CONTRIBUTING.md's "λ Calibration Status" note recommended reporting the FBS gate's λ coefficient via its half-saturation bandwidth, FBS₅₀=ln(2)/λ — "an explicit reference bandwidth at which a median-capability agent has even odds of advancing," easier for a reviewer to interrogate than a raw 1/USD coefficient — and had already hand-computed the resulting figure in prose (≈$524–$4,191/month). <code>CFG.FBS_HALF_SAT_LO/HI</code> now compute that range directly from <code>FBS_LAMBDA_HI/LO</code> (current values: $<span id="fbs50-lo">…</span>–$<span id="fbs50-hi">…</span>/month), so it can't silently drift out of sync if the λ range is ever revised again. <strong>This is a reporting change only</strong> — <code>makeLatentAgent()</code> still draws λ directly and uniformly from <code>FBS_LAMBDA_LO/HI</code> exactly as in v4.5; no per-agent λ value, RNG draw, or simulation output changes. A genuine reparameterization — sampling FBS₅₀ as uniform and deriving λ=ln(2)/FBS₅₀ from it, rather than the reverse — would change the shape of the λ distribution (a uniform-in-1/x transform isn't uniform in x) and is a distinct, larger design decision needing its own validation pass; tracked as a separate open item, not attempted here.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Feedback-clamped PTF adoption — opt-in, off by default (v4.6, Model Architecture Feedback good-first-issue)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Model Architecture Feedback flagged that "the PTF slider sets the t=0 adoption probability only... a quota-based or feedback-clamped adoption model remains open," since organic per-agent adoption (distress + Bass diffusion, plus a separate SZH→PTF induction pathway) has no ceiling and realised share can run past the slider indefinitely — confirmed directly: an uncapped 20-year Full Integration run at seed 42 reaches 53.4% realised PTF share against an 18% slider. A new "Cap adoption at slider value" toggle in the PTF section, <strong>off by default</strong>, makes the slider a genuine ceiling when enabled: both adoption pathways check a shared, continuously-updated live membership count and stop firing once realised share reaches the configured Initial PTF share, so the cap can overshoot by at most the single agent that tips it over the line within a given year (agent-granularity, not just year-granularity) — the same seed/config lands at 23.8% instead of 53.4%. Implemented as a use-side gate on RNG draws (<code>uPtfAdopt</code>, <code>uSzhInduce</code>, <code>uSzhPtfShare</code>) runYear() already draws unconditionally every year regardless of branch (the v4.3 RNG-coupling discipline) — enabling the cap adds no new RNG call and does not shift stream position, so every existing preset, the seed-42 regression baseline, and every OAT/validation/ablation mini-simulation (none of which set this flag) are byte-identical to v4.5. Only runs that explicitly opt in are affected. Surfaced in run-config, CSV export, and the run-warnings banner when active, so a capped run is never silently indistinguishable from an uncapped one in exported data.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Latin Hypercube sensitivity export (v4.6, CONTRIBUTING.md good-first-issue)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Implements the "LHS Sensitivity Export" spec from Good First Issues: a stratified Latin Hypercube design over the same five parameters and ranges OAT already perturbs (BU, participation, Initial PTF share, inflation, conversion tax — <code>LHS_RANGE</code>, shared in spirit with OAT's own <code>RANGE</code> so the two can't quietly diverge), reusing <code>mulberry32</code> for the design draw itself (seeded at a fixed value so the design's stratification is reproducible run-to-run, independent of the page's own seed field). Each of the <code>LHS_N</code> design points (100 by default) is run as its own 200-agent/10-year mini-simulation — all under the <em>same</em> fixed seed (7777, matching OAT's own convention of holding the stochastic realisation fixed so cross-row variation is attributable to parameters, not RNG noise) — and the design matrix plus outcome metrics (poverty, BLEI, participant/non-participant poverty) are exported as CSV. This is deliberately <strong>not</strong> a Sobol sampler: genuine Sobol indices need paired Saltelli-structured samples beyond a single LHS design; LHS gives well-stratified parameter-space coverage suited to the external Python/R analysis this button hands off to, which is exactly the gap CONTRIBUTING.md's spec described. A new "🧮 Export LHS Sensitivity Design" button appears in the sidebar alongside OAT after a run completes.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">PTH liquidity haircut: tenure-cohort schedule replaces the flat 50% (v4.5)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">v4.3 added per-agent <code>pthTenure</code> tracking as a first step toward this (see below); v4.5 implements the haircut itself via <code>pthLiquidShare(tenure)</code> — a linear ramp from 15% at tenure=1 (the closest available point to the BLEI paper Table 1a's "6 months" anchor, given tenure is tracked in whole years) to 85% at tenure≥5 (the paper's "5+ years" anchor), replacing the flat 50% share of annual Acre Equity appreciation counted as liquid wealth used through v4.4. Both anchors are the midpoint of the paper's cited range (10–20% / 80–90%); the paper gives two qualitative points, not a closed-form curve, so the ramp in between is a documented interpretation choice — see <code>CFG.PTH_LIQUID_SHARE_*</code>. Since PTH membership doesn't change once assigned, most PTH agents spend the majority of a 20-year run at the mature 85% rate (16 of 20 years) — higher than the old flat 50% for most of the run, lower only in years 1–4. Isolated effect at N=300 seed-paired runs (same population/RNG, only this mechanism toggled): median wealth $523,958→$526,941 (+0.6%), median BLEI 1,820.6d→1,826.0d (+0.3%); Gini, wealth poverty, BLEI poverty, and flourishing rate unchanged to the precision reported. Seed-42 Full Integration reference: median BLEI 1,951d→1,965d, median wealth $558,001→$559,223. All six <code>VAL_TESTS</code> pass 5/5 post-change. Also fixed in passing: <code>instantiateAgent()</code>'s <code>pthTenure:inPTH?0:0</code> ternary (identical branches, a cosmetic no-op noted but left alone at v4.4) simplified to <code>pthTenure:0</code> — no output effect.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">"Copy parameters as URL" (v4.5, CONTRIBUTING.md good-first-issue)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">A button next to the Run controls serializes the current sliders, toggles, and seed into a query string and copies the resulting URL via the Clipboard API (falls back to logging the URL to the console if the API is unavailable). Loading a shared URL applies its params on top of the Full Integration defaults — via <code>applyParamsFromURL()</code> — before the page's own auto-run, so a link only needs to specify what differs from the reference config, and unrecognised or malformed keys are silently ignored rather than erroring. The page-load "illustrative reference run" banner and forced seed-42 only fire when no recognised params were found in the URL, so a shared link runs with its own seed (or none) instead of being silently overridden by that default.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Social Security-anchored cohorts surfaced as in-app UI, not harness-only (v4.5, CONTRIBUTING.md good-first-issue)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The N=5,000 harness-based cohort study CONTRIBUTING.md has carried since v4.3 (see below) now also appears as a final-year table in the results panel — SSI-level, SSDI-level, and Retirement-level rows (agents tagged by year-0 wage at or below each anchor's SIU-equivalent, per <code>CFG.SS_ANCHOR_*</code>, unchanged methodology), each with population share, wealth poverty, BLEI poverty, median BLEI/tier, and top-tier rate. Cross-sectional by design, matching CONTRIBUTING.md's own method — cohort membership is fixed at year 0 and not tracked as a time series — computed via <code>ssAnchorCohorts()</code> from the same <code>calcMetrics()</code>/<code>bleiMetrics()</code> calls the headline KPIs already use, without threading new arrays through <code>step()</code>/<code>finish()</code>'s existing positional-parameter chain. Single-run figures shown here will naturally vary seed-to-seed, especially for the small SSI-level cohort (≈0.8% of a 500-agent population, roughly 4 agents at default settings) — CONTRIBUTING.md's own N=5,000 table remains the citable figure; this view is for exploration, not a replacement for it.</p></div>
@@ -565,7 +570,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v4.5 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v4.6 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
@@ -576,7 +581,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v4.5
+ * COMPASSIONISM FRAMEWORK SIMULATION  v4.6
  * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
  * ═══════════════════════════════════════════════════════════════════════
  *
@@ -1202,7 +1207,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'4.5',
+  VERSION:'4.6',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
   CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
@@ -1286,6 +1291,23 @@ var CFG = {
    * retired-worker benefit, $2,071/mo. */
   SS_ANCHOR_SSI_ANNUAL:11928, SS_ANCHOR_SSDI_ANNUAL:19560, SS_ANCHOR_RETIRE_ANNUAL:24852
 };
+/* v4.6: FBS₅₀ (half-saturation bandwidth) reporting constants — CONTRIBUTING.md's "λ
+ * Calibration Status — Open" note recommended this exact reparameterization ("reporting the
+ * half-saturation point FBS₅₀=ln(2)/λ instead of a raw 1/USD coefficient... far easier for a
+ * reviewer to interrogate directly") and had already hand-computed the resulting range in
+ * prose (≈$524–$4,191/month). Promoted here to a named, DERIVED constant so it can't drift out
+ * of sync with FBS_LAMBDA_LO/HI if those are ever revised again — computed from them, not
+ * independently set. Note the inversion: higher λ means faster saturation, i.e. LOWER FBS50,
+ * so FBS_HALF_SAT_LO derives from FBS_LAMBDA_HI and vice versa.
+ * This is a REPORTING/display change only — makeLatentAgent() still draws λ directly and
+ * uniformly from FBS_LAMBDA_LO/HI exactly as in v4.5, so every per-agent λ value, RNG stream
+ * position, and downstream simulation output is byte-identical to v4.5. A genuine
+ * reparameterization — sampling FBS50 as uniform and DERIVING λ=ln(2)/FBS50 from it, rather
+ * than the reverse — would change the shape of the λ distribution (a uniform-in-1/x transform
+ * is not uniform in x) and is a distinct, larger design decision needing its own validation
+ * pass; tracked as a separate open item in CONTRIBUTING.md, not attempted here. */
+CFG.FBS_HALF_SAT_LO=Math.log(2)/CFG.FBS_LAMBDA_HI;
+CFG.FBS_HALF_SAT_HI=Math.log(2)/CFG.FBS_LAMBDA_LO;
 /* v4.0-v4.3: CFG.SIU_TO_USD = (BASE_DAILY_COST×365)/SIM_COST_SCALE ≈ 16.63 lived here —
  * a cost-derived approximation for converting wage to USD in agentBLEI, calcBLEIComponents,
  * the FBS gate, and the Gini net-wealth adjustment, invented in v4.0 before any real
@@ -1300,7 +1322,7 @@ var CFG = {
  * own comment). Validated against all six VAL_TESTS and a fresh N=5,000 study — see
  * CONTRIBUTING.md Cumulative Bug Fixes, v4.4, for the before/after figures. */
 
-var ST={phi:true,ptf:true,pth:true,szh:true,cip:true,shock:false,automation:false};
+var ST={phi:true,ptf:true,pth:true,szh:true,cip:true,shock:false,automation:false,ptfCap:false};
 var charts={};var running=false;var SIM_RESULTS=null;
 /* v3.6: previously assigned without declaration inside the load listener at the
  * bottom of this file, creating an implicit global. Declared explicitly here. */
@@ -1352,7 +1374,7 @@ function applyPreset(name){
 
 function getCurrentParams(){
   var buVal=gp('s-bu');
-  return{bu:buVal,maxOct:gp('s-oct'),expiry:gp('s-exp'),tax:gp('s-tax')/100,maxMult:gp('s-mult'),nAgents:Math.round(gp('s-agents')),partRate:gp('s-part')/100,years:Math.round(gp('s-yrs')),ptfShare:gp('s-ptf')/100,pthUptake:gp('s-pth')/100,szhCoh:gp('s-szh')/100,cipDemo:gp('s-cip')/100,phi:ST.phi,ptf:ST.ptf,pth:ST.pth,szh:ST.szh,cip:ST.cip,shock:ST.shock,automation:ST.automation,inflRate:gp('s-infl')/100,ccoOn:buVal>0,seed:null};
+  return{bu:buVal,maxOct:gp('s-oct'),expiry:gp('s-exp'),tax:gp('s-tax')/100,maxMult:gp('s-mult'),nAgents:Math.round(gp('s-agents')),partRate:gp('s-part')/100,years:Math.round(gp('s-yrs')),ptfShare:gp('s-ptf')/100,pthUptake:gp('s-pth')/100,szhCoh:gp('s-szh')/100,cipDemo:gp('s-cip')/100,phi:ST.phi,ptf:ST.ptf,pth:ST.pth,szh:ST.szh,cip:ST.cip,shock:ST.shock,automation:ST.automation,inflRate:gp('s-infl')/100,ccoOn:buVal>0,ptfCap:ST.ptfCap,seed:null};
 }
 
 /* v4.5: "Copy parameters as URL" (CONTRIBUTING.md good-first-issue). Reuses the exact
@@ -1364,7 +1386,10 @@ function getCurrentParams(){
  * same base name (s-ptf is PTF's initial-share slider; ST.ptf is the PTF on/off toggle —
  * both legitimately called "ptf" elsewhere in this file, disambiguated here only). */
 var SLIDER_KEYS=['bu','oct','exp','tax','mult','agents','part','yrs','ptf','pth','szh','cip','infl'];
-var TOGGLE_URL_MAP={phi:'phi',ptfOn:'ptf',pthOn:'pth',szhOn:'szh',cipOn:'cip',shockOn:'shock',automationOn:'automation'};
+/* v4.6: ptfCapOn added for the new feedback-clamped-adoption toggle (see PTF section) —
+ * same "On" suffix disambiguation as the rest of this map, since ST.ptfCap doesn't collide
+ * with any slider key so the suffix isn't strictly needed here, but kept for consistency. */
+var TOGGLE_URL_MAP={phi:'phi',ptfOn:'ptf',pthOn:'pth',szhOn:'szh',cipOn:'cip',shockOn:'shock',automationOn:'automation',ptfCapOn:'ptfCap'};
 function getShareableParams(){
   var out={};
   SLIDER_KEYS.forEach(function(k){out[k]=gp('s-'+k);});
@@ -1646,7 +1671,7 @@ function resetRunUIAfterCancel(){
   document.getElementById('pbar').style.width='0%';
   document.getElementById('run-btn').disabled=false;document.getElementById('run-btn').textContent='▶ Run Simulation';
   var cancelBtn=document.getElementById('cancel-btn');if(cancelBtn)cancelBtn.style.display='none';
-  ['multi-btn','mc10-btn','mc50-btn','oat-btn','val-btn'].forEach(function(id){var el=document.getElementById(id);if(el)el.disabled=false;});
+  ['multi-btn','mc10-btn','mc50-btn','oat-btn','lhs-btn','val-btn'].forEach(function(id){var el=document.getElementById(id);if(el)el.disabled=false;});
 }
 function runSim(){
   if(running)return;
@@ -1662,19 +1687,20 @@ function runSim(){
    * called always legitimately means "part of an MC chain," so simply not touching it
    * here is correct; MR.active is still cleared normally at chain completion (finish())
    * and on cancel (resetRunUIAfterCancel()). */
-  var btns=['multi-btn','mc10-btn','mc50-btn','oat-btn','val-btn'];
+  var btns=['multi-btn','mc10-btn','mc50-btn','oat-btn','lhs-btn','val-btn'];
   btns.forEach(function(id){var el=document.getElementById(id);if(el)el.disabled=true;});
   var cancelBtn=document.getElementById('cancel-btn');if(cancelBtn)cancelBtn.style.display='block';
   var seedEl=document.getElementById('s-seed'),seedVal=seedEl?seedEl.value.trim():'';
   initRNG(seedVal);
   var buVal=gp('s-bu');
-  var p={bu:buVal,maxOct:gp('s-oct'),expiry:gp('s-exp'),tax:gp('s-tax')/100,maxMult:gp('s-mult'),nAgents:Math.round(gp('s-agents')),partRate:gp('s-part')/100,years:Math.round(gp('s-yrs')),ptfShare:gp('s-ptf')/100,pthUptake:gp('s-pth')/100,szhCoh:gp('s-szh')/100,cipDemo:gp('s-cip')/100,phi:ST.phi,ptf:ST.ptf,pth:ST.pth,szh:ST.szh,cip:ST.cip,shock:ST.shock,automation:ST.automation,inflRate:gp('s-infl')/100,ccoOn:buVal>0,seed:seedVal||null};
+  var p={bu:buVal,maxOct:gp('s-oct'),expiry:gp('s-exp'),tax:gp('s-tax')/100,maxMult:gp('s-mult'),nAgents:Math.round(gp('s-agents')),partRate:gp('s-part')/100,years:Math.round(gp('s-yrs')),ptfShare:gp('s-ptf')/100,pthUptake:gp('s-pth')/100,szhCoh:gp('s-szh')/100,cipDemo:gp('s-cip')/100,phi:ST.phi,ptf:ST.ptf,pth:ST.pth,szh:ST.szh,cip:ST.cip,shock:ST.shock,automation:ST.automation,inflRate:gp('s-infl')/100,ccoOn:buVal>0,ptfCap:ST.ptfCap,seed:seedVal||null};
   var warns=[];
   if(p.ccoOn&&p.partRate<CFG.CCO_MIN_PARTICIPATION)warns.push('CCO participation below '+Math.round(CFG.CCO_MIN_PARTICIPATION*100)+'% — network threshold not met');
   if(p.ptfShare>CFG.PTF_DISTORTION)warns.push('PTF share >'+Math.round(CFG.PTF_DISTORTION*100)+'% risks allocative distortion');
   if(p.ccoOn&&p.bu<800)warns.push('BU below $800 — poverty reduction targets unlikely');
   if(p.automation&&p.years>10)warns.push('AI automation active — heterogeneous wage displacement after yr 5');
   if(p.inflRate>0.04)warns.push('Inflation >4%/yr — cost compounding significant; PTF/PTH apply deflationary offset');
+  if(p.ptf&&p.ptfCap)warns.push('PTF adoption capped at the Initial PTF share slider (v4.6 opt-in) — non-default behavior, see CONTRIBUTING.md');
   if(!MR.suppressUI){
     document.getElementById('run-btn').disabled=true;document.getElementById('run-btn').textContent='⏳ Running…';
     document.getElementById('sdot').className='dot run';document.getElementById('stxt').textContent='Initialising agents…';
@@ -1870,6 +1896,20 @@ function runYear(agentSet,yr,p,recSt){
    * probability didn't depend on how many peers had already adopted). */
   var ptfAdoptFrac=0;
   if(p.ptf&&p.ptfShare>0){var ptfCount=0;agentSet.forEach(function(a){if(a.inPTF)ptfCount++;});ptfAdoptFrac=ptfCount/Math.max(1,agentSet.length);}
+  /* v4.6: live, continuously-updated membership count for the optional feedback-clamped
+   * adoption cap (see the two gate sites below) — deliberately separate from ptfAdoptFrac
+   * above, which stays a once-per-year snapshot feeding the unrelated, already-validated
+   * Bass-diffusion probability term and must not change when the cap is toggled. Only
+   * computed when the cap is actually in play (p.ptf&&p.ptfCap), so this is a complete
+   * no-op — zero extra iteration, zero RNG calls either way — when the feature is off,
+   * which is the default for every existing preset and every OAT/validation/ablation
+   * mini-simulation. ptfLiveCount is incremented immediately at each of the two admission
+   * gates below (SZH→PTF induction, Bass/distress adoption) as soon as an agent actually
+   * joins, so subsequent agents processed later in this same year's loop see the update —
+   * a per-agent-granularity cap, not just a per-year one. */
+  var ptfLiveCount=0,ptfLiveTotal=agentSet.length;
+  if(p.ptf&&p.ptfCap){agentSet.forEach(function(a){if(a.inPTF)ptfLiveCount++;});}
+  function ptfCapAllows(){return !p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare;}
   var popAIDisp=0;
   if(p.automation){
     if(yr>=CFG.AI_DISPLACEMENT_YEAR_2)popAIDisp=CFG.AI_DISPLACEMENT_RATE_1*(CFG.AI_DISPLACEMENT_YEAR_2-CFG.AI_DISPLACEMENT_YEAR_1)+CFG.AI_DISPLACEMENT_RATE_2*(yr-CFG.AI_DISPLACEMENT_YEAR_2+1);
@@ -1971,7 +2011,7 @@ function runYear(agentSet,yr,p,recSt){
         var pAdvance=1-Math.exp(-lam*fbs);
         if(uAdvance<pAdvance)a.octave++;
       }
-      if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf)a.inPTF=uSzhPtfShare<p.ptfShare;
+      if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&ptfCapAllows()){a.inPTF=uSzhPtfShare<p.ptfShare;if(a.inPTF&&p.ptfCap)ptfLiveCount++;}
     }
     /* PTH: v4.0 adds a payment→equity contribution alongside the pre-existing
      * appreciation mechanism (external review: the documented equity-building
@@ -2012,7 +2052,21 @@ function runYear(agentSet,yr,p,recSt){
      * makes adoption an S-curve driven partly by social diffusion, matching the ODD
      * protocol's documented description (previously: fixed-probability + distress only,
      * no dependency on how many peers had already adopted). */
-    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap)a.inPTF=true;}
+    /* v4.6: optional feedback-clamped adoption (Model Architecture Feedback good-first-issue:
+     * "the PTF slider sets the t=0 adoption probability only... a quota-based or
+     * feedback-clamped adoption model remains open"). p.ptfCap is false unless the user
+     * explicitly opts in via the PTF section's "Cap adoption at slider value" toggle — every
+     * existing preset and the default page load leave it false, so ptfCapAllows() (defined
+     * above, near ptfAdoptFrac) always returns true and this is a no-op gate around unchanged
+     * v4.5 logic in the default case. uPtfAdopt is drawn unconditionally above regardless of
+     * this gate (same RNG-stream-preservation discipline as the v4.3 runYear() fix), so
+     * enabling/disabling the cap never shifts RNG stream position — only whether the
+     * already-drawn value is allowed to flip a.inPTF this year. When enabled, the "Initial
+     * PTF share" slider becomes a real (per-agent-granularity, not just per-year) ceiling:
+     * organic adoption — both this Bass/distress check and the SZH→PTF induction path above,
+     * both gated on the same live ptfLiveCount — stops firing once realised share reaches
+     * p.ptfShare, so it can overshoot by at most the single agent that tips it over the line. */
+    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&ptfCapAllows()){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap){a.inPTF=true;if(p.ptfCap)ptfLiveCount++;}}
     if(a.wealth<CFG.WEALTH_FLOOR)a.wealth=CFG.WEALTH_FLOOR;
   });
   /* v4.0: return value now carries conversion proceeds alongside BU spend, so callers
@@ -2145,6 +2199,7 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
   var cancelBtnDone=document.getElementById('cancel-btn');if(cancelBtnDone)cancelBtnDone.style.display='none';
   ['multi-btn','mc10-btn','mc50-btn','val-btn'].forEach(function(id){var el=document.getElementById(id);if(el)el.disabled=false;});
   var oatBtn=document.getElementById('oat-btn');if(oatBtn){oatBtn.style.display='block';oatBtn.disabled=false;}
+  var lhsBtn=document.getElementById('lhs-btn');if(lhsBtn){lhsBtn.style.display='block';lhsBtn.disabled=false;}
   document.getElementById('sec-insights').style.display='block';
   document.getElementById('sec-export').style.display='block';
   running=false;
@@ -2160,7 +2215,7 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
 function showRunConfig(p){
   var el=document.getElementById('run-conf'),inn=document.getElementById('run-conf-inner');if(!el||!inn)return;
   el.style.display='block';
-  var sys=[];if(p.ccoOn)sys.push('CCO $'+p.bu+'/mo');if(p.ptf)sys.push('PTF '+Math.round(p.ptfShare*100)+'% init');if(p.pth)sys.push('PTH '+Math.round(p.pthUptake*100)+'%');if(p.szh)sys.push('SZH');if(p.cip)sys.push('CIP');
+  var sys=[];if(p.ccoOn)sys.push('CCO $'+p.bu+'/mo');if(p.ptf)sys.push('PTF '+Math.round(p.ptfShare*100)+'%'+(p.ptfShare>0?' init':'')+(p.ptfCap?' (capped)':''));if(p.pth)sys.push('PTH '+Math.round(p.pthUptake*100)+'%');if(p.szh)sys.push('SZH');if(p.cip)sys.push('CIP');
   var parts=['<strong>Agents:</strong> '+p.nAgents,'<strong>Years:</strong> '+p.years,'<strong>Systems:</strong> '+(sys.length?sys.join(', '):'Baseline only'),'<strong>Part.:</strong> '+(p.partRate*100).toFixed(0)+'%','<strong>Infl.:</strong> '+(p.inflRate*100).toFixed(1)+'%/yr'];
   if(p.automation)parts.push('<strong>AI:</strong> On');if(p.shock)parts.push('<strong>Recessions:</strong> On');
   parts.push('<strong>Seed:</strong> '+(p.seed||'random'));
@@ -2509,6 +2564,96 @@ function renderOATResults(){
   inn.innerHTML=html;
 }
 
+/* ─── LATIN HYPERCUBE SENSITIVITY EXPORT (v4.6) ────────────────────────
+ * CONTRIBUTING.md good-first-issue, spec quoted in full: "an 'LHS Sensitivity Export'
+ * button: Latin Hypercube Sample design over the same 5 parameters OAT already varies,
+ * reusing the existing mulberry32 RNG, exporting the design matrix + outcome metrics as
+ * CSV." Deliberately NOT a Sobol sampler — genuine Sobol total/first-order indices need
+ * paired Saltelli-structured sample sets beyond a single design; what this delivers is a
+ * well-stratified parameter-space design plus real model output, suited to Sobol, Morris,
+ * or any other external sensitivity method in Python/R (matching how the existing OAT
+ * panel and CSV/JSON export already point external-analysis users there). */
+var LHS_RANGE={bu:[0,1800],partRate:[0,0.99],ptfShare:[0.05,0.35],inflRate:[0,0.06],tax:[0,0.30]};
+var LHS_N=100;              // design points; each is one 200-agent/10-year mini-sim (same cost as ~9 OAT scenarios)
+var LHS_DESIGN_SEED=424242; // fixed seed for the DESIGN draw only — keeps the stratification reproducible run-to-run, independent of whatever seed is in the page's own seed field
+var LHS_RUN_SEED=7777;      // same fixed seed as OAT for every row's mini-sim — isolates parameter effects from RNG noise, matching OAT's own convention (see runOATStep)
+var LHS_STATE={active:false,rows:[],current:0};
+
+/* Standard Latin Hypercube: partition [0,1) into n equal strata per dimension, draw one
+ * jittered point per stratum, then independently (per dimension) permute which stratum
+ * index each of the n samples lands in — the permutation is what keeps every dimension
+ * marginally well-stratified while decorrelating dimensions from each other. Returns n
+ * objects mapping each key in `dims` to a unit-interval value; callers rescale to the
+ * parameter's actual range. rngFn is expected to be a mulberry32 closure per the spec. */
+function latinHypercubeDesign(n,dims,rngFn){
+  var strataByDim={};
+  dims.forEach(function(k){
+    var idx=[];for(var i=0;i<n;i++)idx.push(i);
+    for(var j=idx.length-1;j>0;j--){var r=Math.floor(rngFn()*(j+1));var tmp=idx[j];idx[j]=idx[r];idx[r]=tmp;}
+    strataByDim[k]=idx;
+  });
+  var rows=[];
+  for(var s=0;s<n;s++){
+    var row={};
+    dims.forEach(function(k){row[k]=(strataByDim[k][s]+rngFn())/n;});
+    rows.push(row);
+  }
+  return rows;
+}
+
+function runLHSSensitivity(){
+  if(running)return;
+  var base=Object.assign({},getCurrentParams(),{nAgents:200,years:10});
+  var dims=Object.keys(LHS_RANGE);
+  var designRNG=mulberry32(LHS_DESIGN_SEED);
+  var unitRows=latinHypercubeDesign(LHS_N,dims,designRNG);
+  var rows=unitRows.map(function(u){
+    var params=Object.assign({},base);
+    dims.forEach(function(k){var lo=LHS_RANGE[k][0],hi=LHS_RANGE[k][1];params[k]=lo+u[k]*(hi-lo);});
+    params.ccoOn=params.bu>0;   // mirrors getCurrentParams()'s own bu>0 convention
+    return{unit:u,params:params};
+  });
+  LHS_STATE.rows=rows;LHS_STATE.current=0;LHS_STATE.active=true;
+  var btnsOff=['lhs-btn','oat-btn','val-btn'];
+  btnsOff.forEach(function(id){var el=document.getElementById(id);if(el)el.disabled=true;});
+  var lhsBtn=document.getElementById('lhs-btn');if(lhsBtn)lhsBtn.textContent='⏳ Running LHS design (0/'+LHS_N+')…';
+  setTimeout(function(){runLHSStep(0);},0);
+}
+function runLHSStep(idx){
+  var saved=RNG;
+  if(idx>=LHS_STATE.rows.length){
+    LHS_STATE.active=false;
+    var lhsBtn=document.getElementById('lhs-btn');if(lhsBtn){lhsBtn.textContent='🧮 Export LHS Sensitivity Design (CSV)';lhsBtn.disabled=false;}
+    ['oat-btn','val-btn'].forEach(function(id){var el=document.getElementById(id);if(el)el.disabled=false;});
+    downloadLHSCSV(LHS_STATE.rows);
+    return;
+  }
+  initRNG(LHS_RUN_SEED);
+  var row=LHS_STATE.rows[idx];
+  row.result=runMiniSim(row.params);
+  RNG=saved;
+  var lhsBtn=document.getElementById('lhs-btn');if(lhsBtn)lhsBtn.textContent='⏳ Running LHS design ('+(idx+1)+'/'+LHS_STATE.rows.length+')…';
+  setTimeout(function(){runLHSStep(idx+1);},0);
+}
+function downloadLHSCSV(rows){
+  function fmt(v){var s=String(v===null||v===undefined?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.replace(/"/g,'""')+'"':s;}
+  function row(a){return a.map(fmt).join(',');}
+  var lines=[
+    row(['Latin Hypercube Sensitivity Design — v'+META.VERSION,'']),
+    row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),
+    row(['Note','Design matrix only (LHS, seed '+LHS_DESIGN_SEED+'), not Sobol indices. Each row is a 200-agent/10-year mini-simulation at fixed seed '+LHS_RUN_SEED+' (isolates parameter effects from RNG noise, matching the OAT convention used elsewhere in this tool). Import into Python (SALib) or R (sensitivity) for Sobol/Morris/regression-based sensitivity analysis.']),
+    row(['','']),
+    row(['SampleID','BU ($/mo)','ParticipationRate (%)','InitialPTFShare (%)','InflationRate (%/yr)','ConversionTax (%)','WealthPoverty (%)','MedianBLEI (days)','ParticipantPoverty (%)','NonParticipantPoverty (%)'])
+  ];
+  rows.forEach(function(r,i){
+    var p=r.params,res=r.result||{};
+    lines.push(row([i+1,Math.round(p.bu),(p.partRate*100).toFixed(1),(p.ptfShare*100).toFixed(1),(p.inflRate*100).toFixed(2),(p.tax*100).toFixed(1),
+      res.pov!==undefined?res.pov.toFixed(2):'',res.blei!==undefined?Math.round(res.blei):'',
+      res.partPov!==null&&res.partPov!==undefined?res.partPov.toFixed(2):'',res.nonPartPov!==null&&res.nonPartPov!==undefined?res.nonPartPov.toFixed(2):'']));
+  });
+  var csv=lines.join('\n');var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-lhs-sensitivity-v'+META.VERSION.replace(/\./g,'')+'-n'+LHS_N+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
 /* ─── VALIDATION SUITE (v3.3) ─────────────────────────────────────────── */
 function runValidation(){
   if(running)return;
@@ -2735,7 +2880,7 @@ function downloadCSV(){
   if(!SIM_RESULTS)return;var sr=SIM_RESULTS,p=sr.params;
   function fmt(v){var s=String(v===null||v===undefined?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.replace(/"/g,'""')+'"':s;}
   function row(a){return a.map(fmt).join(',');}
-  var lines=[row(['Compassionism Framework Simulation — Research Export v'+META.VERSION,'']),row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),row(['Simulation Version',META.VERSION]),row(['DOI',META.DOI]),row(['Timestamp',sr.timestamp]),row(['Citation',META.CITATION]),row(['','']),row(['Note','Exploratory ABM — not a forecast. See Assumptions & ODD Protocol for model specification.']),row(['','']),row(['--- PARAMETERS ---','']),row(['BU Monthly Allocation ($/month)',p.bu]),row(['CCO Enabled',p.ccoOn?'Yes':'No']),row(['CCO Participation Rate (%)',(p.partRate*100).toFixed(0)]),row(['Max Octave Level',p.maxOct]),row(['Phi Rate',p.phi?'On (1.618×)':'Off']),row(['Conversion Tax Rate (%)',(p.tax*100).toFixed(0)]),row(['Quality Multiplier Ceiling',p.maxMult]),row(['PTF Enabled',p.ptf?'Yes':'No']),row(['PTF Initial Share (%)',(p.ptfShare*100).toFixed(0)]),row(['PTH Enabled',p.pth?'Yes':'No']),row(['PTH Uptake Rate (%)',(p.pthUptake*100).toFixed(0)]),row(['SZH Enabled',p.szh?'Yes':'No']),row(['Zone Coherence Index',p.szhCoh.toFixed(2)]),row(['CIP Enabled',p.cip?'Yes':'No']),row(['CIP Participation (%)',(p.cipDemo*100).toFixed(0)]),row(['Economic Shocks',p.shock?'Yes':'No']),row(['AI Labor Automation',p.automation?'On':'Off']),row(['Inflation Rate (%/yr)',(p.inflRate*100).toFixed(1)]),row(['Agent Population',p.nAgents]),row(['Simulation Years',p.years]),row(['Random Seed',p.seed||'None (random MC)']),row(['Top BLEI Tier Label',sr.topTierName]),row(['','']),row(['--- FINAL-YEAR SUMMARY ---','']),row(['Wealth Poverty Rate (%)',sr.finalPov.toFixed(1)]),row(['BLEI Poverty (%)',sr.bleiPovPct.toFixed(1)]),row(['Gini Coefficient',sr.finalGini.toFixed(3)]),row(['Median Wealth ($)',Math.round(sr.finalWealth)]),row(['Median BLEI (days)',Math.round(sr.blei.med)]),row(['Agents at Top Tier (%)',sr.blei.pctF.toFixed(1)]),row(['Avg EDC (%)',(sr.blei.avgEDC*100).toFixed(1)]),row(['System Stability (%)',(sr.stab*100).toFixed(0)]),row(['','']),row(['--- SCENARIO COMPARISON ---','']),row(['Configuration','Wealth Pov (%)','BLEI Pov (%)','Median Wealth ($)','Gini','BLEI (days)','BLEI Tier','Avg EDC (%)']),row(['US Welfare Baseline',(sr.mBase.pov*100).toFixed(1),((sr.bBase.tc[0]+sr.bBase.tc[1])/sr.bBase.n*100).toFixed(1),Math.round(sr.mBase.med),sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),row(['CCO Only',(sr.mCCO.pov*100).toFixed(1),((sr.bCCO.tc[0]+sr.bCCO.tc[1])/sr.bCCO.n*100).toFixed(1),Math.round(sr.mCCO.med),sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),row(['Your Settings',sr.finalPov.toFixed(1),sr.bleiPovPct.toFixed(1),Math.round(sr.finalWealth),sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)])];
+  var lines=[row(['Compassionism Framework Simulation — Research Export v'+META.VERSION,'']),row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),row(['Simulation Version',META.VERSION]),row(['DOI',META.DOI]),row(['Timestamp',sr.timestamp]),row(['Citation',META.CITATION]),row(['','']),row(['Note','Exploratory ABM — not a forecast. See Assumptions & ODD Protocol for model specification.']),row(['','']),row(['--- PARAMETERS ---','']),row(['BU Monthly Allocation ($/month)',p.bu]),row(['CCO Enabled',p.ccoOn?'Yes':'No']),row(['CCO Participation Rate (%)',(p.partRate*100).toFixed(0)]),row(['Max Octave Level',p.maxOct]),row(['Phi Rate',p.phi?'On (1.618×)':'Off']),row(['Conversion Tax Rate (%)',(p.tax*100).toFixed(0)]),row(['Quality Multiplier Ceiling',p.maxMult]),row(['PTF Enabled',p.ptf?'Yes':'No']),row(['PTF Initial Share (%)',(p.ptfShare*100).toFixed(0)]),row(['PTF Adoption Capped at Slider (v4.6)',p.ptfCap?'Yes':'No (default)']),row(['PTH Enabled',p.pth?'Yes':'No']),row(['PTH Uptake Rate (%)',(p.pthUptake*100).toFixed(0)]),row(['SZH Enabled',p.szh?'Yes':'No']),row(['Zone Coherence Index',p.szhCoh.toFixed(2)]),row(['CIP Enabled',p.cip?'Yes':'No']),row(['CIP Participation (%)',(p.cipDemo*100).toFixed(0)]),row(['Economic Shocks',p.shock?'Yes':'No']),row(['AI Labor Automation',p.automation?'On':'Off']),row(['Inflation Rate (%/yr)',(p.inflRate*100).toFixed(1)]),row(['Agent Population',p.nAgents]),row(['Simulation Years',p.years]),row(['Random Seed',p.seed||'None (random MC)']),row(['Top BLEI Tier Label',sr.topTierName]),row(['','']),row(['--- FINAL-YEAR SUMMARY ---','']),row(['Wealth Poverty Rate (%)',sr.finalPov.toFixed(1)]),row(['BLEI Poverty (%)',sr.bleiPovPct.toFixed(1)]),row(['Gini Coefficient',sr.finalGini.toFixed(3)]),row(['Median Wealth ($)',Math.round(sr.finalWealth)]),row(['Median BLEI (days)',Math.round(sr.blei.med)]),row(['Agents at Top Tier (%)',sr.blei.pctF.toFixed(1)]),row(['Avg EDC (%)',(sr.blei.avgEDC*100).toFixed(1)]),row(['System Stability (%)',(sr.stab*100).toFixed(0)]),row(['','']),row(['--- SCENARIO COMPARISON ---','']),row(['Configuration','Wealth Pov (%)','BLEI Pov (%)','Median Wealth ($)','Gini','BLEI (days)','BLEI Tier','Avg EDC (%)']),row(['US Welfare Baseline',(sr.mBase.pov*100).toFixed(1),((sr.bBase.tc[0]+sr.bBase.tc[1])/sr.bBase.n*100).toFixed(1),Math.round(sr.mBase.med),sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),row(['CCO Only',(sr.mCCO.pov*100).toFixed(1),((sr.bCCO.tc[0]+sr.bCCO.tc[1])/sr.bCCO.n*100).toFixed(1),Math.round(sr.mCCO.med),sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),row(['Your Settings',sr.finalPov.toFixed(1),sr.bleiPovPct.toFixed(1),Math.round(sr.finalWealth),sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)])];
   var ts=sr.timeSeries;
   if(ts&&ts.labels&&ts.labels.length){
     lines.push(row(['','']));lines.push(row(['--- ANNUAL TIME SERIES ---','']));
@@ -2795,6 +2940,12 @@ window.addEventListener('DOMContentLoaded',function(){
    * that differ from Full Integration; anything unspecified keeps the reference value
    * just applied above. */
   URL_PARAMS_APPLIED=applyParamsFromURL();
+  /* v4.6: populate the FBS₅₀ half-saturation figures in the Assumptions panel from the
+   * derived CFG constants, so the displayed range can never drift out of sync with
+   * FBS_LAMBDA_LO/HI even if those are revised again — see the Cumulative Bug Fixes entry. */
+  var fLo=document.getElementById('fbs50-lo'),fHi=document.getElementById('fbs50-hi');
+  if(fLo)fLo.textContent=Math.round(CFG.FBS_HALF_SAT_LO).toLocaleString();
+  if(fHi)fHi.textContent=Math.round(CFG.FBS_HALF_SAT_HI).toLocaleString();
 });
 /* v3.4: auto-load illustrative reference run on page load */
 /* audit fix: this handler previously called applyPreset('reference') a second time —
