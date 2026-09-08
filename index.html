@@ -11,8 +11,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://bettertobest.github.io/research-hub/assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://bettertobest.github.io/research-hub/assets/favicon-180.png">
-<title>Compassionism Framework Simulation v4.7 | Better To Best Research Hub</title>
-<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, unified wage-scale accounting, true common-random-numbers counterfactual pairing, 50× Monte Carlo stochastic CI, participant and Social Security-anchored stratification, computed OAT sensitivity, Latin Hypercube sensitivity export, opt-in feedback-clamped PTF adoption, 6-check validation suite, JSON/CSV export, shareable parameter URLs, ODD protocol, in-app glossary, accessible charts, pinned dependency integrity. v4.7.">
+<title>Compassionism Framework Simulation v4.8 | Better To Best Research Hub</title>
+<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, unified wage-scale accounting, true common-random-numbers counterfactual pairing, 50× Monte Carlo stochastic CI, participant and Social Security-anchored stratification, computed OAT sensitivity, Latin Hypercube sensitivity export, opt-in feedback-clamped PTF adoption, 6-check validation suite, JSON/CSV export, shareable parameter URLs, ODD protocol, in-app glossary, accessible charts, pinned dependency integrity. v4.8.">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -39,7 +39,7 @@
 <meta name="twitter:creator" content="@Author_Duke_J">
 <meta name="twitter:site" content="@Author_Duke_J">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.7: Chart.js now loaded from a version-pinned jsDelivr npm mirror with a verified Subresource Integrity hash (closes an item open since v3.8, when two independently-supplied SRI hashes both proved invalid), a quick in-app scatter preview (poverty vs. BU) after a Latin Hypercube export completes, a Key Concepts/JSON-appendix wording fix on the replication page distinguishing PTF's Mondragon-analogy 40-60% internal-overhead figure from the 12-16% consumer-facing cost-reduction rate the engine actually implements, and a new open calibration: item logged (not fixed) noting the wealth-initialization lognormal's ~$36K median diverges roughly 5x from 2022 Survey of Consumer Finances household net worth (~$193K) — see CONTRIBUTING.md's Model Architecture Feedback. No simulation-output changes. v4.6: Latin Hypercube sensitivity export (design matrix + outcome metrics as CSV, implementing the CONTRIBUTING.md good-first-issue spec), an opt-in off-by-default feedback-clamped PTF adoption cap (Model Architecture Feedback item — realised PTF share can otherwise run well past the slider via organic adoption), FBS₅₀ half-saturation bandwidth exposed as a derived, named constant, and the near-poverty cohort's 40-year extension rebuilt under current mechanics (reconfirms the existing 20-year Flourishing milestone; surfaces a new finding that long-horizon wealth growth shows no plateau) — all CONTRIBUTING.md good-first-issues/Model Architecture Feedback items. v4.5: tenure-cohort PTH liquidity haircut replacing the flat 50% share (per-agent tenure tracked since v4.3), shareable \"Copy parameters as URL\" links, Social Security-anchored cohort stratification surfaced as in-app UI (harness-only since v4.3), and hover tooltips for BLEI tier definitions and preset descriptions — all CONTRIBUTING.md good-first-issues. v4.4: unified the wage/income scale across BLEI, FBS, and Gini onto the same real-dollar anchor the main wealth loop already used (previously ~6× apart at the median wage), a compensating FBS_LAMBDA recalibration, true common-random-numbers pairing across the Baseline/CCO-Only/Main comparison (previously population-only, not trajectory-level), removed an unexplained baseline initial-wealth haircut, paired automation exposure across scenarios, and fixed a gamma(1) sampler bug that silently returned a constant instead of a random draw (~200× population-construction speedup as a side effect) — internal review + external audit (Aug 2026), full N=5,000 re-study in CONTRIBUTING.md. v4.3: main wealth-accumulation loop unit fix (wage and cost sides both converted to real USD via sourced anchors, replacing the pre-v4.0 SIU-scale simplification), runYear() RNG-coupling fix (every conditional quantity now drawn unconditionally, tightening a validation check back to strict per-seed agreement), bimodal automationRisk distribution (Frey & Osborne 2013; Autor 2015), per-agent PTH tenure tracking, and a new Social-Security-anchored income cohort analysis — internal review, Aug 2026; see CONTRIBUTING.md for the redistributional findings this release surfaces, which are substantive, not just a version bump. v4.2: common-random-numbers population pairing (main/CCO-only/baseline comparisons now share one latent population, closing an open counterfactual-isolation item and an independently-found RNG stream-drift bug), a structural System Stability metric replacing the v3.6 trend-plus-noise heuristic, a 6-check validation suite (multi-seed statistical robustness on the original 4 checks, plus new non-participant-poverty and structural-invariant checks) — external audit (Aug 2026) and CONTRIBUTING.md good-first-issues. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.7","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.8: source code relicensed from CC BY 4.0 to Apache License 2.0 (papers/documentation remain CC BY 4.0 — see CONTRIBUTING.md's License section); five UI fixes from direct user testing — tooltip text overflowing the viewport on long ⓘ explanations and the narrow Scenario Presets grid, chart-grid CSS that could overflow at non-default zoom levels, and a dual-axis fix for the BLEI-components chart where incomeDays/benefitDays were visually squashed to invisibility by cashDays' much larger scale (confirmed via harness: not a computation bug — benefitDays is genuinely near-flat since BU is a fixed allocation); a validated Node.js harness (built fresh this session, confirmed to reproduce the seed-42/Full Integration/20yr regression figures exactly before being trusted) used to run the WEALTH_FLOOR sensitivity sweep flagged as blocked since v4.7 — no change to the shipped WEALTH_FLOOR default, see CONTRIBUTING.md for the full N=500 findings; and further verification of the occupation-risk Kaggle dataset lead from v4.7. No simulation-mechanics changes. v4.7: Chart.js now loaded from a version-pinned jsDelivr npm mirror with a verified Subresource Integrity hash (closes an item open since v3.8, when two independently-supplied SRI hashes both proved invalid), a quick in-app scatter preview (poverty vs. BU) after a Latin Hypercube export completes, a Key Concepts/JSON-appendix wording fix on the replication page distinguishing PTF's Mondragon-analogy 40-60% internal-overhead figure from the 12-16% consumer-facing cost-reduction rate the engine actually implements, and a new open calibration: item logged (not fixed) noting the wealth-initialization lognormal's ~$36K median diverges roughly 5x from 2022 Survey of Consumer Finances household net worth (~$193K) — see CONTRIBUTING.md's Model Architecture Feedback. No simulation-output changes. v4.6: Latin Hypercube sensitivity export (design matrix + outcome metrics as CSV, implementing the CONTRIBUTING.md good-first-issue spec), an opt-in off-by-default feedback-clamped PTF adoption cap (Model Architecture Feedback item — realised PTF share can otherwise run well past the slider via organic adoption), FBS₅₀ half-saturation bandwidth exposed as a derived, named constant, and the near-poverty cohort's 40-year extension rebuilt under current mechanics (reconfirms the existing 20-year Flourishing milestone; surfaces a new finding that long-horizon wealth growth shows no plateau) — all CONTRIBUTING.md good-first-issues/Model Architecture Feedback items. v4.5: tenure-cohort PTH liquidity haircut replacing the flat 50% share (per-agent tenure tracked since v4.3), shareable \"Copy parameters as URL\" links, Social Security-anchored cohort stratification surfaced as in-app UI (harness-only since v4.3), and hover tooltips for BLEI tier definitions and preset descriptions — all CONTRIBUTING.md good-first-issues. v4.4: unified the wage/income scale across BLEI, FBS, and Gini onto the same real-dollar anchor the main wealth loop already used (previously ~6× apart at the median wage), a compensating FBS_LAMBDA recalibration, true common-random-numbers pairing across the Baseline/CCO-Only/Main comparison (previously population-only, not trajectory-level), removed an unexplained baseline initial-wealth haircut, paired automation exposure across scenarios, and fixed a gamma(1) sampler bug that silently returned a constant instead of a random draw (~200× population-construction speedup as a side effect) — internal review + external audit (Aug 2026), full N=5,000 re-study in CONTRIBUTING.md. v4.3: main wealth-accumulation loop unit fix (wage and cost sides both converted to real USD via sourced anchors, replacing the pre-v4.0 SIU-scale simplification), runYear() RNG-coupling fix (every conditional quantity now drawn unconditionally, tightening a validation check back to strict per-seed agreement), bimodal automationRisk distribution (Frey & Osborne 2013; Autor 2015), per-agent PTH tenure tracking, and a new Social-Security-anchored income cohort analysis — internal review, Aug 2026; see CONTRIBUTING.md for the redistributional findings this release surfaces, which are substantive, not just a version bump. v4.2: common-random-numbers population pairing (main/CCO-only/baseline comparisons now share one latent population, closing an open counterfactual-isolation item and an independently-found RNG stream-drift bug), a structural System Stability metric replacing the v3.6 trend-plus-noise heuristic, a 6-check validation suite (multi-seed statistical robustness on the original 4 checks, plus new non-participant-poverty and structural-invariant checks) — external audit (Aug 2026) and CONTRIBUTING.md good-first-issues. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.8","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://www.apache.org/licenses/LICENSE-2.0","isAccessibleForFree":true}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js" integrity="sha384-dug+JxfBvklEQdJ4AYuBBAIScUz0bVN73xpy273gcAwHjb3qI0fXmuYNaNfdyYJG" crossorigin="anonymous"></script>
 <style>
@@ -51,16 +51,48 @@ header{background:var(--bg);border-bottom:.5px solid var(--border);padding:.9rem
 .hd-title{font-size:16px;font-weight:600;color:var(--text)}.hd-sub{font-size:12px;color:var(--text3);margin-top:2px}
 .hd-links{display:flex;gap:.4rem;flex-wrap:wrap}
 .hlink{font-size:11px;text-decoration:none;padding:3px 9px;border-radius:var(--rs);border:.5px solid var(--border);color:var(--text2);white-space:nowrap}.hlink:hover{background:var(--bg2)}.hlink.primary{color:var(--accent);border-color:var(--accent)}.hlink.primary:hover{background:var(--accent-bg)}
-.abbr-link{color:var(--text2);text-decoration:none;border-bottom:1px dotted var(--text3);position:relative;cursor:help;display:inline-block}.abbr-link:hover{color:var(--accent)}.abbr-link::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#1a1a18;color:#e8e7e0;font-size:10.5px;padding:4px 9px;border-radius:4px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200}.abbr-link::before{content:'';position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:#1a1a18;pointer-events:none;opacity:0;transition:opacity .15s;z-index:201}.abbr-link:hover::after,.abbr-link:hover::before{opacity:1}
+.abbr-link{color:var(--text2);text-decoration:none;border-bottom:1px dotted var(--text3);position:relative;cursor:help;display:inline-block}.abbr-link:hover{color:var(--accent)}
+/* v4.8 fix: this rule was written for short (2-4 word) header acronym tips and used
+ * white-space:nowrap with no width cap — fine for those, but several data-tip values
+ * added since (KPI-badge ⓘ icons, the PTF-cap toggle's multi-sentence explanation) are
+ * full sentences or paragraphs. Rendered nowrap, a long tip becomes one very wide line
+ * that runs off the edge of the viewport regardless of centering — the root cause of
+ * "tooltip text is off screen." width:max-content + max-width lets short tips stay
+ * compact (unchanged visually) while long ones wrap at a sane width instead of
+ * overflowing. See also the .tip-host rule below, which already had this. */
+.abbr-link::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#1a1a18;color:#e8e7e0;font-size:10.5px;line-height:1.4;padding:4px 9px;border-radius:4px;white-space:normal;width:max-content;max-width:min(240px,calc(100vw - 20px));pointer-events:none;opacity:0;transition:opacity .15s;z-index:200}.abbr-link::before{content:'';position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:#1a1a18;pointer-events:none;opacity:0;transition:opacity .15s;z-index:201}.abbr-link:hover::after,.abbr-link:hover::before{opacity:1}
 /* v4.5: generic hover-tooltip for elements that aren't inline text links (abbr-link above
  * assumes short nowrap tips) — same visual technique, wider + wraps, for preset-button
  * descriptions (CONTRIBUTING.md good-first-issue). Any element with data-tip + this class
  * gets the tooltip; .pbtn doesn't need its own position:relative rule since this sets it. */
 .tip-host{position:relative}
-.tip-host[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#1a1a18;color:#e8e7e0;font-size:10.5px;font-weight:400;line-height:1.4;padding:6px 9px;border-radius:4px;white-space:normal;width:190px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200}
+/* v4.8 fix: width was a fixed 190px regardless of viewport — on a narrow phone screen a
+ * 190px tooltip centered near a page edge could still overflow. max-width clamps it to
+ * whatever's actually available. */
+.tip-host[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#1a1a18;color:#e8e7e0;font-size:10.5px;font-weight:400;line-height:1.4;padding:6px 9px;border-radius:4px;white-space:normal;width:180px;max-width:calc(100vw - 20px);pointer-events:none;opacity:0;transition:opacity .15s;z-index:200}
 .tip-host[data-tip]::before{content:'';position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:#1a1a18;pointer-events:none;opacity:0;transition:opacity .15s;z-index:201}
 .tip-host[data-tip]:hover::after,.tip-host[data-tip]:hover::before{opacity:1}
-.layout{display:grid;grid-template-columns:290px 1fr;align-items:start}@media(max-width:760px){.layout{grid-template-columns:1fr}}
+/* v4.8 fix: the Scenario Presets grid is two ~130px-wide columns inside a 290px sidebar —
+ * a tooltip centered on a button in either column needs ~85-95px of clearance on BOTH
+ * sides, which the sidebar doesn't have, so it ran off the left edge of the browser
+ * window for left-column buttons (Traditional Welfare, Full Integration, High Automation)
+ * and risked the right edge for right-column ones (CCO Only, Stress Test). Anchoring each
+ * column's tooltip to that column's own outer edge instead of centering removes the
+ * systematic overflow without a JS positioning library. nth-child(odd) = left column,
+ * nth-child(even) = right column, matching the 5-button grid's actual row layout. */
+.preset-grid .pbtn.tip-host:nth-child(odd)[data-tip]::after{left:0;transform:none}
+.preset-grid .pbtn.tip-host:nth-child(odd)[data-tip]::before{left:16px;transform:none}
+.preset-grid .pbtn.tip-host:nth-child(even)[data-tip]::after{left:auto;right:0;transform:none}
+.preset-grid .pbtn.tip-host:nth-child(even)[data-tip]::before{left:auto;right:16px;transform:none}
+/* v4.8 fix: bare "1fr" grid tracks default to a minimum width of the content's own
+ * intrinsic size (auto), not 0 — so a wide chart canvas or table could keep a track from
+ * shrinking below that width, which is what "charts not visible at certain zoom %, boxes
+ * not fitting their content" was: at some viewport widths the grid item was forced wider
+ * than the visible page, effectively pushing content off-screen instead of wrapping/
+ * shrinking. minmax(0,1fr) — used on every grid definition below — tells the track it's
+ * allowed to shrink to 0 before growing, which combined with min-width:0 on the actual
+ * card/kpi elements (added further down) is the standard fix for this class of bug. */
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);align-items:start}@media(max-width:760px){.layout{grid-template-columns:minmax(0,1fr)}}
 .sidebar{background:var(--bg);border-right:.5px solid var(--border);padding:1.1rem}
 .ss{margin-bottom:1.4rem}.ss-head{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding-bottom:.35rem;border-bottom:.5px solid var(--border2);margin-bottom:.7rem}
 .cr{margin-bottom:.8rem}.cl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}.cn{font-size:12.5px;color:var(--text2)}.cv{font-size:12.5px;font-weight:600;color:var(--text);min-width:44px;text-align:right}
@@ -84,15 +116,21 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 .st{color:var(--text2);flex:1}.sp{font-weight:600;color:var(--text);font-size:12px}
 .prog{height:3px;background:var(--border2);border-radius:2px;overflow:hidden;margin-bottom:.65rem}.prog-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .08s;width:0}
 .slabel{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:.9rem 0 .5rem;display:flex;align-items:center;gap:.5rem}.slabel::after{content:'';flex:1;height:.5px;background:var(--border2)}.slabel a{font-size:10px;color:var(--accent);text-transform:none;letter-spacing:0;text-decoration:none;margin-left:4px}.slabel a:hover{text-decoration:underline}
-.kgrid{display:grid;gap:9px;margin-bottom:9px}.kgrid-4{grid-template-columns:repeat(4,1fr)}.kgrid-3{grid-template-columns:repeat(3,1fr)}
-@media(max-width:950px){.kgrid-4{grid-template-columns:repeat(2,1fr)}.kgrid-3{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.kgrid-3{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:var(--bg2);border-radius:var(--rs);padding:.65rem .9rem;border:.5px solid var(--border2)}.kpi.hi{border-color:var(--accent);background:var(--accent-bg)}.kpi.hi2{border-color:var(--gold);background:var(--gold-bg)}.kpi.hi3{border-color:var(--purple);background:var(--purple-bg)}.kpi.hi4{border-color:var(--red);background:var(--red-bg)}.kpi.hi-blue{border-color:var(--blue);background:var(--blue-bg)}
+.kgrid{display:grid;gap:9px;margin-bottom:9px}.kgrid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.kgrid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.kgrid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:950px){.kgrid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.kgrid-3{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.kgrid-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--bg2);border-radius:var(--rs);padding:.65rem .9rem;border:.5px solid var(--border2);min-width:0}.kpi.hi{border-color:var(--accent);background:var(--accent-bg)}.kpi.hi2{border-color:var(--gold);background:var(--gold-bg)}.kpi.hi3{border-color:var(--purple);background:var(--purple-bg)}.kpi.hi4{border-color:var(--red);background:var(--red-bg)}.kpi.hi-blue{border-color:var(--blue);background:var(--blue-bg)}
 .klabel{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}.kval{font-size:20px;font-weight:600;color:var(--text);line-height:1.2}.kdelta{font-size:11px;margin-top:2px;line-height:1.4}
 .good{color:var(--accent)}.warn{color:var(--amber)}.bad{color:var(--red)}
 .tbadge{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:var(--rs);font-weight:600}
 .t-crisis{background:var(--red-bg);color:var(--red)}.t-precarious{background:var(--red-bg);color:#c04040}.t-threshold{background:var(--amber-bg);color:var(--amber)}.t-stable{background:var(--amber-bg);color:#9a6010}.t-secure{background:var(--accent-bg);color:var(--accent2)}.t-flourishing{background:var(--gold-bg);color:var(--gold);border:.5px solid var(--gold)}
-.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}@media(max-width:850px){.cgrid{grid-template-columns:1fr}}
-.ccard{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem}.ctitle{font-size:12.5px;font-weight:500;color:var(--text2);margin-bottom:.6rem}.csub{font-size:10.5px;color:var(--text3);margin-top:4px}
+.cgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-bottom:9px}@media(max-width:850px){.cgrid{grid-template-columns:minmax(0,1fr)}}
+.ccard{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem;min-width:0}
+/* v4.8 fix: Chart.js sizes the canvas to its parent, but without an explicit cap the
+ * canvas element itself can occasionally render wider than that parent during a resize
+ * (a timing/rounding issue between Chart.js's ResizeObserver and the grid re-layout),
+ * pushing the surrounding card and page wider than the viewport. This is a hard backstop
+ * regardless of what's driving any individual case. */
+canvas{max-width:100%;display:block}.ctitle{font-size:12.5px;font-weight:500;color:var(--text2);margin-bottom:.6rem}.csub{font-size:10.5px;color:var(--text3);margin-top:4px}
 .ctable{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem;margin-bottom:9px;overflow-x:auto}.ctable h3{font-size:12.5px;font-weight:500;color:var(--text2);margin-bottom:.65rem}
 table{width:100%;font-size:12.5px;border-collapse:collapse}th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);font-weight:500;padding:6px 9px;border-bottom:.5px solid var(--border);white-space:nowrap}td{padding:7px 9px;border-bottom:.5px solid var(--border2);vertical-align:middle}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
 /* v3.6: table overflow fix — min-width:640px previously forced horizontal scroll on all mobile viewports regardless of content; tables now shrink with available width and only scroll if content genuinely exceeds it */
@@ -114,19 +152,19 @@ details.ccard>summary{list-style:none;cursor:pointer;user-select:none}details.cc
 /* v3.7: glossary panel */
 .gloss-item{padding:.45rem 0;border-bottom:.5px solid var(--border2)}.gloss-item:last-child{border-bottom:none}
 .gloss-term{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}.gloss-def{font-size:11px;color:var(--text2);line-height:1.5;margin:0}
-.assump-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}@media(max-width:700px){.assump-grid{grid-template-columns:1fr}}
+.assump-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.9rem}@media(max-width:700px){.assump-grid{grid-template-columns:minmax(0,1fr)}}
 .acat-label{font-size:11px;font-weight:600;color:var(--text);padding:.3rem .6rem;background:var(--bg2);border-radius:var(--rs);margin-bottom:.55rem;border-left:2.5px solid var(--accent);display:block}
 /* ── v3.2 additions ── */
 .run-conf{background:var(--bg);border:.5px solid var(--border2);border-radius:var(--rs);padding:.5rem .9rem;margin-bottom:.65rem;display:none}
 .run-conf-label{font-size:9.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
 .run-conf-row{display:flex;flex-wrap:wrap;gap:.2rem .65rem;font-size:11px;color:var(--text3)}
 .run-conf-row strong{color:var(--text2);font-weight:500}
-.ms-grid{display:grid;grid-template-columns:1fr auto auto;gap:0}
+.ms-grid{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:0}
 .ms-hdr{font-size:10px;color:var(--text3);padding:4px 7px;border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.04em}
 .ms-cell{font-size:12.5px;padding:5px 7px;border-bottom:.5px solid var(--border2);color:var(--text)}
 .ms-yr{font-weight:600;color:var(--accent);text-align:right;white-space:nowrap}
 .ms-val{color:var(--text3);font-size:11px;text-align:right;white-space:nowrap}
-.sens-grid{display:grid;grid-template-columns:auto auto 1fr;gap:0}
+.sens-grid{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:0}
 .sens-hdr{font-size:10px;color:var(--text3);padding:4px 8px;border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.04em}
 .sens-cell{padding:5px 8px;border-bottom:.5px solid var(--border2);font-size:12px}
 /* v3.3 additions */
@@ -134,14 +172,16 @@ details.ccard>summary{list-style:none;cursor:pointer;user-select:none}details.cc
 .btn-blue{border-color:var(--blue);color:var(--blue)}.btn-blue:hover{background:var(--blue-bg)}
 .btn-amber{border-color:var(--amber);color:var(--amber)}.btn-amber:hover{background:var(--amber-bg)}
 .btn-purple{border-color:var(--purple);color:var(--purple)}.btn-purple:hover{background:var(--purple-bg)}
-.kgrid-2{grid-template-columns:repeat(2,1fr)}
+/* v4.8: .kgrid-2's real definition now lives up with .kgrid-4/.kgrid-3 (minmax(0,1fr)
+ * fix) — this used to be a second, later-cascading definition without that fix, which
+ * silently overrode it since an identical-specificity rule later in the file always wins. */
 .dl-btn-sec{padding:8px 14px;background:transparent;color:var(--accent);border:.5px solid var(--accent);border-radius:var(--rs);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}.dl-btn-sec:hover{background:var(--accent-bg)}.dl-btn-sec:disabled{opacity:.5;cursor:not-allowed}
 .export-btns{display:flex;gap:.4rem;flex-wrap:wrap;flex-shrink:0}
 .ci-card{background:var(--bg2);border-radius:var(--rs);padding:.5rem .75rem;border:.5px solid var(--border2)}
 .ci-label{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
 .ci-mean{font-size:15px;font-weight:600;color:var(--text)}
 .ci-range{font-size:10.5px;color:var(--text3);margin-top:2px;line-height:1.4}
-.oat-grid{display:grid;grid-template-columns:1fr auto auto auto;gap:0;font-size:12px}
+.oat-grid{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:0;font-size:12px}
 .oat-hdr{font-size:10px;color:var(--text3);padding:4px 7px;border-bottom:.5px solid var(--border);text-transform:uppercase;letter-spacing:.04em}
 .oat-cell{padding:5px 7px;border-bottom:.5px solid var(--border2)}
 .val-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:3px;font-weight:700;margin-right:5px}
@@ -157,7 +197,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div style="display:flex;align-items:center;gap:.6rem">
     <img src="https://bettertobest.github.io/research-hub/assets/bettertobest-mark-muted-originals.svg" alt="Better To Best Research Hub" width="32" height="32" style="flex-shrink:0">
     <div>
-      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.7</span></div>
+      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.8</span></div>
       <div class="hd-sub">
         All five architectures ·
         <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -391,7 +431,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div class="slabel" id="label-dist" style="display:none">Distribution Trajectories</div>
   <div class="cgrid" id="sec-dist-charts" style="display:none">
     <div class="ccard"><div class="ctitle">BLEI tier composition over time</div><div style="position:relative;height:200px"><canvas id="ch-tiers-time" role="img" aria-label="Stacked bar chart of BLEI tier composition over time"></canvas></div><div class="csub">Stacked bars show share of agents in each tier per year — welfare trajectory across the full simulation</div></div>
-    <div class="ccard"><div class="ctitle">BLEI component medians — cashDays · incomeDays · benefitDays</div><div style="position:relative;height:200px"><canvas id="ch-blei-comp" role="img" aria-label="Line chart of BLEI component medians: cash days, income days, benefit days"></canvas></div><div class="csub">Three-component decomposition: savings buffer · income flow · BU food basket (Johnson &amp; Claude, 2026 §3)</div></div>
+    <div class="ccard"><div class="ctitle">BLEI component medians — cashDays · incomeDays · benefitDays</div><div style="position:relative;height:200px"><canvas id="ch-blei-comp" role="img" aria-label="Line chart of BLEI component medians: cash days on the left axis, income days and benefit days on the right axis"></canvas></div><div class="csub">Three-component decomposition: savings buffer · income flow · BU food basket (Johnson &amp; Claude, 2026 §3). cashDays (left axis) typically dominates by 60-100x as wealth compounds — incomeDays and benefitDays (right axis, a much smaller scale) would otherwise be squashed flat against it. benefitDays is close to flat by design: BU is a fixed monthly allocation, so its BLEI contribution barely moves year to year.</div></div>
   </div>
 
   <!-- Participant Analysis charts (v3.3, shown when CCO active) -->
@@ -457,7 +497,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.7 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.8 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -544,7 +584,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">automationRisk distribution — resolved in v4.3 (flagged v3.4)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Through v4.2, automationRisk ∈ [0.2, 1.0] was drawn from a <em>uniform</em> distribution — real automation exposure is highly bimodal and occupation-dependent (Frey &amp; Osborne, 2013; Autor, 2015), and the uniform assumption understated polarization in High Automation scenarios. As of v4.3, it's a 47%/53% mixture (Beta(6,1) high-risk / Beta(1,6) low-risk) matching that literature's occupational split — see Cumulative Bug Fixes, above. Occupation-<em>stratified</em> (not just bimodal) risk remains a further-refinement item in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">One-at-a-Time (OAT) sensitivity is not Sobol/LHC</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">OAT sensitivity varies one parameter at a time ±20% of its own slider range (v4.0: uniform across all five parameters — see Cumulative Bug Fixes) and records the poverty and BLEI response from actual model runs. It captures first-order single-parameter effects only. Parameter interactions and higher-order effects are not quantified. For rigorous uncertainty quantification, use the CSV export with external Sobol analysis in Python/R (see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">System Stability rewards a stagnant floor as much as a thriving population (updated v4.4)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Historical note: through v4.1 the displayed value was a heuristic, <code>stabBase = improving ? 0.88 : 0.60</code> plus <code>RNG()×0.08</code> noise — not derived from wealth variance, BLEI volatility, or agent-state transitions (v3.6 flag). <strong>Resolved in v4.2</strong>: <code>structuralStability()</code> is the inverse coefficient of variation of median wealth and median BLEI over the run's final quarter — no RNG call, no manual per-mechanism bonus. This formula has its own honest limitation, not previously disclosed here: a population with genuinely <em>flat, unchanging</em> outcomes scores as maximally stable, whether that flatness reflects a thriving equilibrium or a population pinned at a floor with nowhere left to fall — coefficient of variation can't distinguish the two. In the v4.4 N=5,000 study, the Traditional Welfare Baseline — median wealth pinned exactly at <code>WEALTH_FLOOR</code> in 100% of runs by year 20 — scores 99.0% stability, higher than Full Integration's 88.6%, precisely because a hard floor has near-zero variance left to measure. Read this metric as trajectory steadiness, not as an endorsement of the outcome it describes, and always alongside the poverty and BLEI figures next to it, never in isolation. Full N=5,000 comparison in CONTRIBUTING.md.</p></div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Main wealth-accumulation loop unit fix — resolved in v4.3, with new open questions</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">v4.0 fixed wage/USD unit mixing in BLEI, FBS, and Gini but deliberately left the main <code>runYear()</code> wealth-accumulation step on its pre-v4.0 SIU-scale convention, because a full fix proved dangerously sensitive to the conversion constant. v4.3 ships a validated fix (<code>WAGE_TO_USD</code>/<code>LIVING_WAGE_ANNUAL</code> — see Cumulative Bug Fixes, above) after finding an anchor that passes all six <code>VAL_TESTS</code>. This resolves the unit-simplification item but opens two new ones, not yet resolved: whether <code>WEALTH_FLOOR = −$10,000</code> is still an appropriate floor now that the cost anchor it's measured against roughly doubled (median Baseline wealth now sits exactly at that floor, not just an occasional insolvency case), and whether <code>TARGET_WEALTH</code>/<code>TARGET_POVERTY</code>/<code>TARGET_GINI</code> — set against the old loop — need their own reconsideration against the structurally different new baseline. Both flagged in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a> as framework-level decisions, not resolved here — v4.4 adds an in-app pointer to this caveat directly on the affected KPI badges (Gini, Wealth, Stability, Flourishing, EDC — the ⓘ icons), but does not pick new target values. (Separately: BLEI/FBS/Gini's own wage-to-USD conversion, left on the older <code>SIU_TO_USD</code> approximation since v4.0, is unified onto <code>WAGE_TO_USD</code> in v4.4 — see Cumulative Bug Fixes, above. That's a different unit issue from the one this entry covers.)</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Main wealth-accumulation loop unit fix — resolved in v4.3, with new open questions</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">v4.0 fixed wage/USD unit mixing in BLEI, FBS, and Gini but deliberately left the main <code>runYear()</code> wealth-accumulation step on its pre-v4.0 SIU-scale convention, because a full fix proved dangerously sensitive to the conversion constant. v4.3 ships a validated fix (<code>WAGE_TO_USD</code>/<code>LIVING_WAGE_ANNUAL</code> — see Cumulative Bug Fixes, above) after finding an anchor that passes all six <code>VAL_TESTS</code>. This resolves the unit-simplification item but opens two new ones, not yet resolved: whether <code>WEALTH_FLOOR = −$10,000</code> is still an appropriate floor now that the cost anchor it's measured against roughly doubled (median Baseline wealth now sits exactly at that floor, not just an occasional insolvency case), and whether <code>TARGET_WEALTH</code>/<code>TARGET_POVERTY</code>/<code>TARGET_GINI</code> — set against the old loop — need their own reconsideration against the structurally different new baseline. Both flagged in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a> as framework-level decisions, not resolved here — v4.4 adds an in-app pointer to this caveat directly on the affected KPI badges (Gini, Wealth, Stability, Flourishing, EDC — the ⓘ icons), but does not pick new target values. <strong>v4.8:</strong> a validated N=500-seed sweep across four candidate <code>WEALTH_FLOOR</code> values now exists (see CONTRIBUTING.md) — headline finding: Traditional Welfare Baseline is completely invariant to the floor's exact value on every metric except the raw wealth number itself, while Full Integration shows a real but modest sensitivity (Gini and poverty rate both move a few points as the floor deepens) via agents who dip negative and later recover spending longer at BLEI-liquid-zero the deeper they're allowed to fall first. This is data for a decision, not a decision — the shipped default is unchanged. (Separately: BLEI/FBS/Gini's own wage-to-USD conversion, left on the older <code>SIU_TO_USD</code> approximation since v4.0, is unified onto <code>WAGE_TO_USD</code> in v4.4 — see Cumulative Bug Fixes, above. That's a different unit issue from the one this entry covers.)</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Framework does not yet address low-wage populations specifically (new finding, v4.3)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The new Social Security-anchored cohort study (Cumulative Bug Fixes, above) found that Full Integration does not lift a low-wage cohort out of poverty by the simulation's own tier definitions, even though every existing mechanism already applies to it equally — it helps this population enormously in relative terms (originally measured at 20–30× the baseline's BLEI; recomputed at ~7–10× under v4.4's wage-scale unification, since Baseline's own BLEI moved too — see that entry) without coming close in absolute terms. Whether this points to a genuine mechanism gap (e.g. wage-conditional BU scaling) or accurately reflects the framework's intended scope is an open question for the framework's authors, not resolved here — see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">CCO conversion proceeds are tracked but not production-constrained</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">BU → wealth conversion proceeds are credited to agents without debiting a modelled treasury, PTF balance sheet, or production account — external review correctly flagged this as an open stock-flow accounting gap. v4.0 adds transparency only: cumulative conversion proceeds are tracked and exported (CSV/JSON "Conversion Ledger"). A genuine aggregate production constraint — with a defined production function, capacity limits, and rationing behaviour when exhausted — is a further economic-modelling design decision not implemented here; see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No external validation</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Parameters calibrated against analogues (Alaska PFD, CLT network, Mondragon) but outcomes not validated against deployment data. Phase 4 roadmap: validation against Fed SCF, CPS, ACS, BLS CES, and OECD inequality trajectories. Required before claims of predictive validity.</p></div>
@@ -567,7 +607,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div class="ref-item">Frey, C.B. &amp; Osborne, M.A. (2013). <em>The Future of Employment: How Susceptible Are Jobs to Computerisation?</em> University of Oxford. <em>[automationRisk calibration]</em></div>
       <div class="ref-item">Grimm, V., et al. (2010). The ODD protocol: A review and first update. <em>Ecological Modelling</em>, 221(23), 2760–2768. <em>[ABM documentation standard]</em></div>
       <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Basic Living Economic Index (BLEI). Better To Best Research Hub. CC BY 4.0. <a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html" target="_blank" rel="noopener">↗ paper</a></div>
-      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a>. <em>[archived version of this tool]</em></div>
+      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. Source code: Apache License 2.0 (as of v4.8); the archived DOI snapshot below predates the relicensing and its own OSF metadata still reads CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a>. <em>[archived version of this tool]</em></div>
       <div class="ref-item">Jones, D. &amp; Marinescu, I. (2018). The labor market impacts of universal and permanent cash transfers. NBER Working Paper 24312. <em>[Alaska PFD analogue]</em></div>
       <div class="ref-item">Mullainathan, S. &amp; Shafir, E. (2013). <em>Scarcity: Why Having Too Little Means So Much.</em> Times Books. <em>[FBS bandwidth constraint, wage growth]</em></div>
       <div class="ref-item">NBER Business Cycle Dating Committee. <em>U.S. Business Cycle Expansions and Contractions.</em> <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener">nber.org</a>. <em>[beta(5,2) recession calibration]</em></div>
@@ -581,20 +621,117 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v4.7 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · CC BY 4.0</span>
+    <span>Compassionism Simulation v4.8 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · Code: Apache License 2.0 · Content: CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
     <div style="font-size:10.5px;color:var(--text3);margin-bottom:3px">Suggested citation:</div>
-    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener" style="color:inherit">https://doi.org/10.17605/OSF.IO/QWTE2</a></span>
+    <span class="cite-note">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener" style="color:inherit">https://doi.org/10.17605/OSF.IO/QWTE2</a></span>
+    <div style="font-size:10px;color:var(--text3);margin-top:4px">Source code: Apache License 2.0 (v4.8+) · Content/documentation: CC BY 4.0</div>
   </div>
 </footer>
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v4.7
- * Better To Best Research Hub · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * COMPASSIONISM FRAMEWORK SIMULATION  v4.8
+ * Better To Best Research Hub · Source code: Apache License 2.0 (as of this
+ * release — see the LICENSE-CODE note below); content/documentation
+ * elsewhere in this project remains CC BY 4.0. Authors: Duke Johnson &
+ * Claude (Anthropic)
  * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v4.7 → v4.8 (UI fixes from direct user testing, a relicensing
+ * decision, and a validated sensitivity sweep — no simulation-mechanics
+ * changes; regression baseline below is unchanged from v4.7):
+ *
+ * LICENSING:
+ *  1. Source code (this file, and the harness/tooling scripts referenced
+ *     from CONTRIBUTING.md) relicensed from CC BY 4.0 to the Apache License
+ *     2.0, per explicit author authorization this session. Both external
+ *     v4.7 audits independently flagged CC BY 4.0 as unconventional for
+ *     software (no source-distribution or patent terms) and suggested an
+ *     OSI license for code specifically while papers stay CC BY 4.0 — this
+ *     had been logged as an open governance question since v4.7 (see
+ *     CONTRIBUTING.md Model Architecture Feedback) and is now resolved.
+ *     Content/documentation — this project's papers, CONTRIBUTING.md, the
+ *     replication page's prose — is UNCHANGED, still CC BY 4.0. See
+ *     CONTRIBUTING.md's License section for the full split and LICENSE-CODE
+ *     for the license text.
+ *
+ * UI FIXES (found via direct user testing of the deployed page, not a code
+ * audit — five concrete reports, addressed here):
+ *  2. Tooltip text overflowing the viewport. Root cause: .abbr-link was
+ *     originally written for short (2-4 word) header acronym tips —
+ *     white-space:nowrap, no width cap — but got reused for several
+ *     multi-sentence ⓘ explanations (the longest, on the PTF adoption cap
+ *     toggle, is ~500 characters rendered as a single nowrap line). Fixed
+ *     by giving .abbr-link the same width:max-content + max-width wrapping
+ *     .tip-host already had. Separately, the Scenario Presets grid (two
+ *     ~130px columns in a 290px sidebar) centered its tooltips on each
+ *     button, which needs ~85-95px of clearance on both sides that a
+ *     130px-wide column doesn't have — left-column tooltips ran off the
+ *     browser's left edge. Fixed with nth-child-based left/right edge
+ *     anchoring for that specific grid instead of centering.
+ *  3. Chart-grid CSS that could overflow at non-default browser zoom.
+ *     Several grid-template-columns used a bare "1fr" (.cgrid, .kgrid-4/3/2,
+ *     .assump-grid, .ms-grid, .sens-grid, .oat-grid, .layout's main column)
+ *     — a bare 1fr track's minimum width defaults to the content's own
+ *     intrinsic size, not 0, so a wide canvas or table could keep a track
+ *     from shrinking below that width at some viewport widths, effectively
+ *     pushing content off-screen instead of wrapping. Changed every one to
+ *     minmax(0,1fr) (the standard fix for this class of CSS Grid bug), added
+ *     min-width:0 to .ccard/.kpi, and added canvas{max-width:100%} as a
+ *     backstop. Also found and fixed in passing: a second, later-cascading
+ *     .kgrid-2 definition without the fix that was silently overriding the
+ *     first one — a real, separate bug this pass would have missed if it
+ *     had only patched the first definition.
+ *  4. BLEI-components chart: the benefitDays line looked like it was
+ *     missing. Verified via a fresh Node.js harness (see below) that this
+ *     is NOT a computation bug — seed 42/Full Integration/20yr: cashDays
+ *     runs 201d→1,915d (compounding wealth) while incomeDays runs
+ *     10.8d→20.1d and benefitDays sits flat at 15.14d throughout (BU is a
+ *     fixed monthly allocation, so its BLEI contribution doesn't grow) —
+ *     cashDays' ~100x-larger scale was squashing both smaller series into a
+ *     few indistinguishable pixels on one shared linear axis. Fixed by
+ *     moving incomeDays/benefitDays onto their own right-hand axis (y1),
+ *     which now shows their actual shape, including the crossover around
+ *     year 11-12 where incomeDays overtakes the flat benefitDays line.
+ *  5. System Stability showing Baseline higher than Full Integration was
+ *     reported as possibly a bug — it is not; this is the already-disclosed
+ *     coefficient-of-variation behavior (a population pinned at a hard
+ *     floor has near-zero variance left to measure, hence scores as
+ *     "stable" — see Known Limitations). No code change; the tooltip fix
+ *     above should make this explanation easier to actually read in place.
+ *
+ * SENSITIVITY SWEEP:
+ *  6. Built a standalone Node.js harness this session (pure functions
+ *     extracted verbatim from this file) and validated it by reproducing
+ *     the documented seed-42/Full Integration/20yr regression figures
+ *     exactly (median wealth $559,223 to the dollar; Gini, BLEI, poverty,
+ *     stability, and EDC all matching too) before trusting it for anything
+ *     further — the same discipline CONTRIBUTING.md's large-N studies have
+ *     always used. Ran the WEALTH_FLOOR sensitivity sweep flagged as
+ *     blocked-on-a-harness since v4.7 (N=500 seeds, 4 candidate floor
+ *     values, Full Integration and Traditional Welfare Baseline). Finding:
+ *     Baseline is completely floor-invariant on every metric except the raw
+ *     wealth number itself (agents who start declining never recover, so
+ *     how deep the floor goes literally doesn't matter); Full Integration
+ *     shows a real, modest, monotonic sensitivity (Gini 0.515→0.520, wealth
+ *     poverty 14.1%→17.5% as the floor deepens from $0 to -$50,000) because
+ *     agents who dip negative and later recover spend longer with
+ *     BLEI-liquid-wealth pinned at zero the deeper they're allowed to fall
+ *     first. Full table and mechanism discussion in CONTRIBUTING.md. Not
+ *     acted on — WEALTH_FLOOR stays at the shipped -$10,000 default; this
+ *     is data for the framework's authors to weigh, not a code fix.
+ *  7. Followed up on the v4.7-flagged Kaggle automation-risk dataset lead:
+ *     found independent, non-Kaggle corroboration (a separate write-up
+ *     confirming the same 702-occupation row count) and a third-party
+ *     dataset card naming the license (MIT) and exact columns — stronger
+ *     evidence than v4.7 had, but still short of pulling the actual CSV and
+ *     diffing it against the paper's own appendix, which needs Kaggle
+ *     access this session's sandboxed network didn't have. See
+ *     CONTRIBUTING.md Good First Issues for the precise state of
+ *     verification and what's still needed.
  *
  * NOTE ON A GAP IN THIS COMMENT BLOCK ITSELF (found while preparing v4.7):
  *  This header historically got a full dated entry for every release, newest
@@ -1177,7 +1314,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * NO SIMULATION MATH CHANGES: engine, calibration constants, and formulas identical
  * to v3.4. Regression baseline (seed 42, Full Integration, 20 yr) produces identical
  * numerical output to v3.4.
- * ═══════════════════════════════════════════════════════════════════════ · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════ · Code: Apache License 2.0 (v4.8+) · Authors: Duke Johnson & Claude (Anthropic)
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v3.3 → v3.4  (audit-driven transparency — framing, citations, UI fixes)
@@ -1207,7 +1344,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * NO SIMULATION MATH CHANGES: engine, calibration constants, and formulas identical
  * to v3.3. Regression baseline (seed 42, Full Integration, 20 yr) produces identical
  * numerical output to v3.3.
- * ═══════════════════════════════════════════════════════════════════════ · CC BY 4.0 · Authors: Duke Johnson & Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════ · Code: Apache License 2.0 (v4.8+) · Authors: Duke Johnson & Claude (Anthropic)
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v3.2 → v3.3  (peer-review hardening — Grok + ChatGPT audits)
@@ -1300,9 +1437,9 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'4.7',
+  VERSION:'4.8',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
-  CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. CC BY 4.0. https://doi.org/10.17605/OSF.IO/QWTE2',
+  CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. https://doi.org/10.17605/OSF.IO/QWTE2 (source code: Apache License 2.0 as of v4.8; content/documentation: CC BY 4.0)',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
 };
 
@@ -1340,7 +1477,7 @@ var CFG = {
   PROG_PIVOT:3.0, PROG_RATE:0.040, PROG_TAX_MAX:0.75,
   SIM_COST_SCALE:1500,     // v3.3: renamed from ANNUAL_BASE_COST; v4.0: retained for CCO/PTF/PTH cost-factor calc only (v4.3 wealth loop uses WAGE_TO_USD/LIVING_WAGE_ANNUAL)
   WAGE_MEDIAN_SIU:35,      // reference for diminishing-returns calculation
-  WEALTH_FLOOR:-10000,
+  WEALTH_FLOOR:-10000,     // v4.8: N=500-seed sweep across 4 candidate values run and validated — see CONTRIBUTING.md; default unchanged, this is data for a decision not a decision itself
   WAGE_BASE_GROWTH:0.010, WAGE_BLEI_BONUS:0.008, WAGE_OCTAVE_BONUS:0.003,
   AI_DISPLACEMENT_YEAR_1:5, AI_DISPLACEMENT_YEAR_2:15,
   AI_DISPLACEMENT_RATE_1:0.012, AI_DISPLACEMENT_RATE_2:0.022,
@@ -2557,9 +2694,20 @@ function renderTierTimeChart(yl,tiersDist,top){
   charts['ch-tiers-time']=new Chart(ctx,{type:'bar',data:{labels:yl,datasets:TIERS.map(function(t,i){return{label:i===5?top:t.name,data:tiersDist.map(function(d){return d[i];}),backgroundColor:t.color,borderWidth:0};})},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:8,font:{size:10.5},color:'#888780'}},tooltip:{mode:'index',callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(1)+'%';}}}},scales:{x:{stacked:true,ticks:{font:{size:10.5},color:'#888780',maxTicksLimit:8},grid:{display:false}},y:{stacked:true,min:0,max:100,ticks:{font:{size:10.5},color:'#888780',callback:function(v){return v+'%';}},grid:{color:GA}}}}});
 }
 
+/* v4.8 fix: cashDays (a compounding wealth buffer) legitimately runs 60-100x larger than
+ * incomeDays or benefitDays by the later years of a run — e.g. seed 42/Full Integration/
+ * 20yr: cashDays 201d→1,915d, incomeDays 10.8d→20.1d, benefitDays a flat 15.14d throughout
+ * (BU is a flat monthly allocation, so its BLEI contribution doesn't grow — confirmed via
+ * harness, not a display bug: reported "benefitDays line missing" was cashDays' scale
+ * squashing both smaller series into indistinguishable slivers a few pixels tall on a
+ * shared 0-2000d linear axis, not a computation issue). Moving incomeDays/benefitDays onto
+ * their own right-hand axis (y1) gives them room to show their actual shape — including
+ * the crossover around year 11-12 where incomeDays overtakes the flat benefitDays line —
+ * without touching cashDays' own values or axis.
+ */
 function renderBLEICompChart(yl,cash,inc,ben){
   if(charts['ch-blei-comp'])charts['ch-blei-comp'].destroy();var ctx=document.getElementById('ch-blei-comp');if(!ctx)return;
-  charts['ch-blei-comp']=new Chart(ctx,{type:'line',data:{labels:yl,datasets:[{label:'cashDays',data:cash,borderColor:C.blue,backgroundColor:'rgba(24,95,165,0.07)',tension:.35,pointRadius:0,fill:true,borderWidth:2},{label:'incomeDays',data:inc,borderColor:C.teal,backgroundColor:'rgba(29,158,117,0.07)',tension:.35,pointRadius:0,fill:true,borderWidth:2},{label:'benefitDays',data:ben,borderColor:C.amber,backgroundColor:'rgba(186,117,23,0.07)',tension:.35,pointRadius:0,fill:true,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:9,font:{size:10.5},color:'#888780'}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(1)+'d';}}}},scales:{x:{ticks:{font:{size:10.5},color:'#888780',maxTicksLimit:10},grid:{display:false}},y:{min:0,ticks:{font:{size:10.5},color:'#888780',callback:function(v){return Math.round(v)+'d';}},grid:{color:GA}}}}});
+  charts['ch-blei-comp']=new Chart(ctx,{type:'line',data:{labels:yl,datasets:[{label:'cashDays',data:cash,borderColor:C.blue,backgroundColor:'rgba(24,95,165,0.07)',tension:.35,pointRadius:0,fill:true,borderWidth:2,yAxisID:'y'},{label:'incomeDays',data:inc,borderColor:C.teal,backgroundColor:'rgba(29,158,117,0.10)',tension:.35,pointRadius:0,fill:true,borderWidth:2,yAxisID:'y1'},{label:'benefitDays',data:ben,borderColor:C.amber,backgroundColor:'rgba(186,117,23,0.10)',tension:.35,pointRadius:0,fill:true,borderWidth:2.5,yAxisID:'y1'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{boxWidth:9,font:{size:10.5},color:'#888780'}},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toFixed(1)+'d';}}}},scales:{x:{ticks:{font:{size:10.5},color:'#888780',maxTicksLimit:10},grid:{display:false}},y:{min:0,position:'left',ticks:{font:{size:10.5},color:C.blue,callback:function(v){return Math.round(v)+'d';}},grid:{color:GA},title:{display:true,text:'cashDays',font:{size:9.5,weight:'600'},color:C.blue}},y1:{min:0,position:'right',ticks:{font:{size:10.5},color:'#888780',callback:function(v){return Math.round(v)+'d';}},grid:{drawOnChartArea:false},title:{display:true,text:'incomeDays / benefitDays',font:{size:9.5,weight:'600'},color:'#888780'}}}}});
 }
 
 /* ─── TABLE ───────────────────────────────────────────────────────────── */
