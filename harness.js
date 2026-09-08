@@ -1,6 +1,6 @@
 'use strict';
 /* ═══════════════════════════════════════════════════════════════════════
-// Apache License 2.0 — see LICENSE-CODE.txt
+ * Apache License 2.0 — see LICENSE-CODE.txt
  * Standalone Node.js harness — pure functions extracted verbatim from
  * index.html (Compassionism Framework Simulation, pre-harness version v4.7)
  * for out-of-browser verification and sensitivity analysis.
