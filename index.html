@@ -11,8 +11,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://bettertobest.github.io/research-hub/assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://bettertobest.github.io/research-hub/assets/favicon-180.png">
-<title>Compassionism Framework Simulation v4.8 | Better To Best Research Hub</title>
-<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, unified wage-scale accounting, true common-random-numbers counterfactual pairing, 50× Monte Carlo stochastic CI, participant and Social Security-anchored stratification, computed OAT sensitivity, Latin Hypercube sensitivity export, opt-in feedback-clamped PTF adoption, 6-check validation suite, JSON/CSV export, shareable parameter URLs, ODD protocol, in-app glossary, accessible charts, pinned dependency integrity. v4.8.">
+<title>Compassionism Framework Simulation v4.9 | Better To Best Research Hub</title>
+<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, unified wage-scale accounting, true common-random-numbers counterfactual pairing, 50× Monte Carlo stochastic CI, participant and Social Security-anchored stratification, computed OAT sensitivity, Latin Hypercube sensitivity export, opt-in feedback-clamped PTF adoption, 6-check validation suite, JSON/CSV export, shareable parameter URLs, ODD protocol, in-app glossary, accessible charts, pinned dependency integrity. v4.9.">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -39,7 +39,7 @@
 <meta name="twitter:creator" content="@Author_Duke_J">
 <meta name="twitter:site" content="@Author_Duke_J">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.8: source code relicensed from CC BY 4.0 to Apache License 2.0 (papers/documentation remain CC BY 4.0 — see CONTRIBUTING.md's License section); five UI fixes from direct user testing — tooltip text overflowing the viewport on long ⓘ explanations and the narrow Scenario Presets grid, chart-grid CSS that could overflow at non-default zoom levels, and a dual-axis fix for the BLEI-components chart where incomeDays/benefitDays were visually squashed to invisibility by cashDays' much larger scale (confirmed via harness: not a computation bug — benefitDays is genuinely near-flat since BU is a fixed allocation); a validated Node.js harness (built fresh this session, confirmed to reproduce the seed-42/Full Integration/20yr regression figures exactly before being trusted) used to run the WEALTH_FLOOR sensitivity sweep flagged as blocked since v4.7 — no change to the shipped WEALTH_FLOOR default, see CONTRIBUTING.md for the full N=500 findings; and further verification of the occupation-risk Kaggle dataset lead from v4.7. No simulation-mechanics changes. v4.7: Chart.js now loaded from a version-pinned jsDelivr npm mirror with a verified Subresource Integrity hash (closes an item open since v3.8, when two independently-supplied SRI hashes both proved invalid), a quick in-app scatter preview (poverty vs. BU) after a Latin Hypercube export completes, a Key Concepts/JSON-appendix wording fix on the replication page distinguishing PTF's Mondragon-analogy 40-60% internal-overhead figure from the 12-16% consumer-facing cost-reduction rate the engine actually implements, and a new open calibration: item logged (not fixed) noting the wealth-initialization lognormal's ~$36K median diverges roughly 5x from 2022 Survey of Consumer Finances household net worth (~$193K) — see CONTRIBUTING.md's Model Architecture Feedback. No simulation-output changes. v4.6: Latin Hypercube sensitivity export (design matrix + outcome metrics as CSV, implementing the CONTRIBUTING.md good-first-issue spec), an opt-in off-by-default feedback-clamped PTF adoption cap (Model Architecture Feedback item — realised PTF share can otherwise run well past the slider via organic adoption), FBS₅₀ half-saturation bandwidth exposed as a derived, named constant, and the near-poverty cohort's 40-year extension rebuilt under current mechanics (reconfirms the existing 20-year Flourishing milestone; surfaces a new finding that long-horizon wealth growth shows no plateau) — all CONTRIBUTING.md good-first-issues/Model Architecture Feedback items. v4.5: tenure-cohort PTH liquidity haircut replacing the flat 50% share (per-agent tenure tracked since v4.3), shareable \"Copy parameters as URL\" links, Social Security-anchored cohort stratification surfaced as in-app UI (harness-only since v4.3), and hover tooltips for BLEI tier definitions and preset descriptions — all CONTRIBUTING.md good-first-issues. v4.4: unified the wage/income scale across BLEI, FBS, and Gini onto the same real-dollar anchor the main wealth loop already used (previously ~6× apart at the median wage), a compensating FBS_LAMBDA recalibration, true common-random-numbers pairing across the Baseline/CCO-Only/Main comparison (previously population-only, not trajectory-level), removed an unexplained baseline initial-wealth haircut, paired automation exposure across scenarios, and fixed a gamma(1) sampler bug that silently returned a constant instead of a random draw (~200× population-construction speedup as a side effect) — internal review + external audit (Aug 2026), full N=5,000 re-study in CONTRIBUTING.md. v4.3: main wealth-accumulation loop unit fix (wage and cost sides both converted to real USD via sourced anchors, replacing the pre-v4.0 SIU-scale simplification), runYear() RNG-coupling fix (every conditional quantity now drawn unconditionally, tightening a validation check back to strict per-seed agreement), bimodal automationRisk distribution (Frey & Osborne 2013; Autor 2015), per-agent PTH tenure tracking, and a new Social-Security-anchored income cohort analysis — internal review, Aug 2026; see CONTRIBUTING.md for the redistributional findings this release surfaces, which are substantive, not just a version bump. v4.2: common-random-numbers population pairing (main/CCO-only/baseline comparisons now share one latent population, closing an open counterfactual-isolation item and an independently-found RNG stream-drift bug), a structural System Stability metric replacing the v3.6 trend-plus-noise heuristic, a 6-check validation suite (multi-seed statistical robustness on the original 4 checks, plus new non-participant-poverty and structural-invariant checks) — external audit (Aug 2026) and CONTRIBUTING.md good-first-issues. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.8","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://www.apache.org/licenses/LICENSE-2.0","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.9: fixed a table-overflow bug (Social Security-Anchored Cohorts table clipped at 100% browser zoom, confirmed via a live screenshot pair at 80%/100%) with the same scoped overflow-x:auto pattern already used by the System comparison table; verified two Meta AI contributions against source rather than trusting them at face value \u2014 a modular ES-module rewrite of the v4.8 Node.js harness (confirmed to reproduce the seed-42/Full Integration/20yr regression exactly and the WEALTH_FLOOR sweep's direction/magnitude) and a proposed population-weighted LIVING_WAGE_ANNUAL recalculation, which turned out to rest on a stale (2024-vintage) MIT Living Wage Calculator snapshot \u2014 current MIT data (Feb 2026 build, checked directly against livingwage.mit.edu) shows every spot-checked state well above that snapshot's figures, so the proposed cut was not applied; the DOI-archived OSF snapshot's metadata has been updated by the author to reflect the Apache 2.0/CC BY 4.0 split, closing an item open since v4.8. No simulation-mechanics changes. v4.8: source code relicensed from CC BY 4.0 to Apache License 2.0 (papers/documentation remain CC BY 4.0 — see CONTRIBUTING.md's License section); five UI fixes from direct user testing — tooltip text overflowing the viewport on long ⓘ explanations and the narrow Scenario Presets grid, chart-grid CSS that could overflow at non-default zoom levels, and a dual-axis fix for the BLEI-components chart where incomeDays/benefitDays were visually squashed to invisibility by cashDays' much larger scale (confirmed via harness: not a computation bug — benefitDays is genuinely near-flat since BU is a fixed allocation); a validated Node.js harness (built fresh this session, confirmed to reproduce the seed-42/Full Integration/20yr regression figures exactly before being trusted) used to run the WEALTH_FLOOR sensitivity sweep flagged as blocked since v4.7 — no change to the shipped WEALTH_FLOOR default, see CONTRIBUTING.md for the full N=500 findings; and further verification of the occupation-risk Kaggle dataset lead from v4.7. No simulation-mechanics changes. v4.7: Chart.js now loaded from a version-pinned jsDelivr npm mirror with a verified Subresource Integrity hash (closes an item open since v3.8, when two independently-supplied SRI hashes both proved invalid), a quick in-app scatter preview (poverty vs. BU) after a Latin Hypercube export completes, a Key Concepts/JSON-appendix wording fix on the replication page distinguishing PTF's Mondragon-analogy 40-60% internal-overhead figure from the 12-16% consumer-facing cost-reduction rate the engine actually implements, and a new open calibration: item logged (not fixed) noting the wealth-initialization lognormal's ~$36K median diverges roughly 5x from 2022 Survey of Consumer Finances household net worth (~$193K) — see CONTRIBUTING.md's Model Architecture Feedback. No simulation-output changes. v4.6: Latin Hypercube sensitivity export (design matrix + outcome metrics as CSV, implementing the CONTRIBUTING.md good-first-issue spec), an opt-in off-by-default feedback-clamped PTF adoption cap (Model Architecture Feedback item — realised PTF share can otherwise run well past the slider via organic adoption), FBS₅₀ half-saturation bandwidth exposed as a derived, named constant, and the near-poverty cohort's 40-year extension rebuilt under current mechanics (reconfirms the existing 20-year Flourishing milestone; surfaces a new finding that long-horizon wealth growth shows no plateau) — all CONTRIBUTING.md good-first-issues/Model Architecture Feedback items. v4.5: tenure-cohort PTH liquidity haircut replacing the flat 50% share (per-agent tenure tracked since v4.3), shareable \"Copy parameters as URL\" links, Social Security-anchored cohort stratification surfaced as in-app UI (harness-only since v4.3), and hover tooltips for BLEI tier definitions and preset descriptions — all CONTRIBUTING.md good-first-issues. v4.4: unified the wage/income scale across BLEI, FBS, and Gini onto the same real-dollar anchor the main wealth loop already used (previously ~6× apart at the median wage), a compensating FBS_LAMBDA recalibration, true common-random-numbers pairing across the Baseline/CCO-Only/Main comparison (previously population-only, not trajectory-level), removed an unexplained baseline initial-wealth haircut, paired automation exposure across scenarios, and fixed a gamma(1) sampler bug that silently returned a constant instead of a random draw (~200× population-construction speedup as a side effect) — internal review + external audit (Aug 2026), full N=5,000 re-study in CONTRIBUTING.md. v4.3: main wealth-accumulation loop unit fix (wage and cost sides both converted to real USD via sourced anchors, replacing the pre-v4.0 SIU-scale simplification), runYear() RNG-coupling fix (every conditional quantity now drawn unconditionally, tightening a validation check back to strict per-seed agreement), bimodal automationRisk distribution (Frey & Osborne 2013; Autor 2015), per-agent PTH tenure tracking, and a new Social-Security-anchored income cohort analysis — internal review, Aug 2026; see CONTRIBUTING.md for the redistributional findings this release surfaces, which are substantive, not just a version bump. v4.2: common-random-numbers population pairing (main/CCO-only/baseline comparisons now share one latent population, closing an open counterfactual-isolation item and an independently-found RNG stream-drift bug), a structural System Stability metric replacing the v3.6 trend-plus-noise heuristic, a 6-check validation suite (multi-seed statistical robustness on the original 4 checks, plus new non-participant-poverty and structural-invariant checks) — external audit (Aug 2026) and CONTRIBUTING.md good-first-issues. v4.1: fixed a paired-population ablation leak that let the SZH+PTF synergy bonus survive PTF removal in the Attribution chart, wired up the dormant illustrative-reference-run label, and corrected several UI/hint strings left stale by earlier revisions (recession duration/severity range, octave conversion-capacity description, effective-max-multiplier default, baseline chart caption, OAT sensitivity range). v4.0: FBS-gated octave advancement, dimensionally-consistent BLEI/FBS/Gini calculations, network-density-gated SZH synergy, paired-population baseline/CCO-only comparisons, and fixes to the Monte Carlo, ablation, OAT, and validation-suite statistics — external audit (Refine.ink, Aug 2026).","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.9","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://www.apache.org/licenses/LICENSE-2.0","isAccessibleForFree":true}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js" integrity="sha384-dug+JxfBvklEQdJ4AYuBBAIScUz0bVN73xpy273gcAwHjb3qI0fXmuYNaNfdyYJG" crossorigin="anonymous"></script>
 <style>
@@ -133,6 +133,19 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 canvas{max-width:100%;display:block}.ctitle{font-size:12.5px;font-weight:500;color:var(--text2);margin-bottom:.6rem}.csub{font-size:10.5px;color:var(--text3);margin-top:4px}
 .ctable{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:.9rem;margin-bottom:9px;overflow-x:auto}.ctable h3{font-size:12.5px;font-weight:500;color:var(--text2);margin-bottom:.65rem}
 table{width:100%;font-size:12.5px;border-collapse:collapse}th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);font-weight:500;padding:6px 9px;border-bottom:.5px solid var(--border);white-space:nowrap}td{padding:7px 9px;border-bottom:.5px solid var(--border2);vertical-align:middle}tr:last-child td{border-bottom:none}tr:hover td{background:var(--bg2)}
+/* v4.9 fix: a plain <table> dropped into a .ccard (rather than the dedicated .ctable,
+ * which already carries its own overflow-x:auto) has no local place for its overflow to
+ * go once th{white-space:nowrap} needs more width than the column has — .main's own
+ * overflow-x:hidden further up the tree (a defensive rule so no single wide element can
+ * blow out the whole page) intercepts it before a scrollbar could ever appear, so the
+ * content is silently clipped rather than scrollable. Confirmed with a live screenshot
+ * at two zoom levels: the Social Security-Anchored Cohorts table's rightmost column
+ * ("Top-tier rate") was cut off entirely at 100% browser zoom (less available CSS-pixel
+ * width), while the same table at 80% zoom (more available width) fit and rendered fine.
+ * Same root cause as v4.8's grid-track fix — content that needs more room than its box
+ * has — just surfacing in a table instead of a grid this time. Reusable class, applied
+ * to whichever div directly wraps a JS-injected <table> outside of .ctable itself. */
+.tbl-scroll{overflow-x:auto}
 /* v3.6: table overflow fix — min-width:640px previously forced horizontal scroll on all mobile viewports regardless of content; tables now shrink with available width and only scroll if content genuinely exceeds it */
 @media(max-width:600px){table{font-size:11px}th,td{padding:5px 6px}}
 .sbadge{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:var(--rs);font-weight:500}.sb-base{background:var(--red-bg);color:var(--red)}.sb-cco{background:var(--blue-bg);color:var(--blue)}.sb-user{background:var(--gold-bg);color:var(--gold);border:.5px solid var(--gold)}
@@ -197,7 +210,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div style="display:flex;align-items:center;gap:.6rem">
     <img src="https://bettertobest.github.io/research-hub/assets/bettertobest-mark-muted-originals.svg" alt="Better To Best Research Hub" width="32" height="32" style="flex-shrink:0">
     <div>
-      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.8</span></div>
+      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.9</span></div>
       <div class="hd-sub">
         All five architectures ·
         <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -450,7 +463,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <!-- v4.5: Social Security-anchored cohorts (hidden until run) -->
   <div id="sec-ss-cohorts" style="display:none;margin-bottom:9px">
     <div class="slabel">Social Security-Anchored Cohorts</div>
-    <div class="ccard"><div class="ctitle">Outcomes for agents whose year-0 wage sits at real-world SSI / SSDI / retirement benefit levels</div><div id="ss-cohorts-inner"></div><div class="csub" style="margin-top:.5rem">Reference points only, not a simulated Social Security mechanism — the model has no age/disability/retirement structure. Cohorts are cross-sectional (tagged by initial wage, not tracked over time) from this single run; see CONTRIBUTING.md for the full N=5,000 harness study these figures cross-check against, especially for the small SSI-level cohort.</div></div>
+    <div class="ccard"><div class="ctitle">Outcomes for agents whose year-0 wage sits at real-world SSI / SSDI / retirement benefit levels</div><div id="ss-cohorts-inner" class="tbl-scroll"></div><div class="csub" style="margin-top:.5rem">Reference points only, not a simulated Social Security mechanism — the model has no age/disability/retirement structure. Cohorts are cross-sectional (tagged by initial wage, not tracked over time) from this single run; see CONTRIBUTING.md for the full N=5,000 harness study these figures cross-check against, especially for the small SSI-level cohort.</div></div>
   </div>
 
   <!-- v3.4: illustrative reference run label -->
@@ -497,7 +510,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.8 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.9 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -607,7 +620,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div class="ref-item">Frey, C.B. &amp; Osborne, M.A. (2013). <em>The Future of Employment: How Susceptible Are Jobs to Computerisation?</em> University of Oxford. <em>[automationRisk calibration]</em></div>
       <div class="ref-item">Grimm, V., et al. (2010). The ODD protocol: A review and first update. <em>Ecological Modelling</em>, 221(23), 2760–2768. <em>[ABM documentation standard]</em></div>
       <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Basic Living Economic Index (BLEI). Better To Best Research Hub. CC BY 4.0. <a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html" target="_blank" rel="noopener">↗ paper</a></div>
-      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. Source code: Apache License 2.0 (as of v4.8); the archived DOI snapshot below predates the relicensing and its own OSF metadata still reads CC BY 4.0. <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a>. <em>[archived version of this tool]</em></div>
+      <div class="ref-item">Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. Source code: Apache License 2.0 (as of v4.8). <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">↗ DOI: 10.17605/OSF.IO/QWTE2</a> — OSF metadata updated (v4.9) to reflect the Apache 2.0/CC BY 4.0 split; see CONTRIBUTING.md's License section. <em>[archived version of this tool]</em></div>
       <div class="ref-item">Jones, D. &amp; Marinescu, I. (2018). The labor market impacts of universal and permanent cash transfers. NBER Working Paper 24312. <em>[Alaska PFD analogue]</em></div>
       <div class="ref-item">Mullainathan, S. &amp; Shafir, E. (2013). <em>Scarcity: Why Having Too Little Means So Much.</em> Times Books. <em>[FBS bandwidth constraint, wage growth]</em></div>
       <div class="ref-item">NBER Business Cycle Dating Committee. <em>U.S. Business Cycle Expansions and Contractions.</em> <a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener">nber.org</a>. <em>[beta(5,2) recession calibration]</em></div>
@@ -621,7 +634,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v4.8 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · Code: Apache License 2.0 · Content: CC BY 4.0</span>
+    <span>Compassionism Simulation v4.9 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · Code: Apache License 2.0 · Content: CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
@@ -633,11 +646,68 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v4.8
- * Better To Best Research Hub · Source code: Apache License 2.0 (as of this
- * release — see the LICENSE-CODE note below); content/documentation
+ * COMPASSIONISM FRAMEWORK SIMULATION  v4.9
+ * Better To Best Research Hub · Source code: Apache License 2.0 (as of
+ * v4.8 — see the LICENSE-CODE note below); content/documentation
  * elsewhere in this project remains CC BY 4.0. Authors: Duke Johnson &
  * Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v4.8 → v4.9 (one UI fix plus a verified external-audit pass —
+ * no simulation-mechanics changes; regression baseline below is unchanged
+ * from v4.8):
+ *
+ * UI FIX:
+ *  1. Social Security-Anchored Cohorts table clipped at 100% browser zoom
+ *     (its rightmost column cut off with no way to scroll to it), confirmed
+ *     via a live screenshot pair at 80%/100% zoom supplied by Duke. Root
+ *     cause: unlike the System comparison table (which sits in a container
+ *     with its own overflow-x:auto), this table is a plain <table> inside a
+ *     .ccard with no local overflow handling — with six white-space:nowrap
+ *     column headers needing more width than a typical 100%-zoom viewport
+ *     has left after the sidebar, the overflow ran into .main's own
+ *     overflow-x:hidden (a defensive rule so no single wide element can
+ *     blow out the page) and got clipped instead of scrolled. At 80% zoom
+ *     there's simply more CSS-pixel width available, so the same table
+ *     never hit that ceiling. Fixed with a new .tbl-scroll{overflow-x:auto}
+ *     utility class — the same technique .ctable already uses — applied to
+ *     ss-cohorts-inner's wrapper div. Not verified in an actual browser
+ *     (same sandbox limitation as v4.8's own CSS fixes). Separately: the
+ *     v4.8 tooltip fix is now confirmed working correctly in production.
+ *
+ * EXTERNAL AUDIT (Meta AI, verified against source before acting on any of
+ * it — the same discipline already applied to two rounds of ChatGPT review
+ * in v4.7):
+ *  2. A modular (ES-module) rewrite of the v4.8 Node.js harness was
+ *     supplied alongside the audit text. Actually run, not just read: it
+ *     reproduces the documented seed-42/Full Integration/20yr regression
+ *     figures exactly, and a quick reproduction of the v4.8 WEALTH_FLOOR
+ *     sweep through the same modular code matches the documented direction
+ *     and approximate magnitude. A genuine, working contribution — not
+ *     adopted as the project's harness layout in this pass, since that's a
+ *     decision for the framework's authors, not something a verification
+ *     pass should decide unilaterally.
+ *  3. A proposed cut to LIVING_WAGE_ANNUAL (from $49,370 to a population-
+ *     weighted $35,021) was checked and NOT applied. The proposal's own
+ *     arithmetic on its 51-state dataset was correct, but the dataset was a
+ *     2024 snapshot of MIT's Living Wage Calculator. Fetching MIT's own
+ *     site directly for its current (Feb 2026) data build found every
+ *     spot-checked state running well above the cited 2024 figures for the
+ *     same state — California $30.48/hr (was $19.41), DC $26.72/hr (was
+ *     $20.80), Mississippi $20.69/hr (was $14.20) — meaning the existing
+ *     $23.735/hr figure is considerably more plausible against current data
+ *     than the proposed replacement, which would have been a real
+ *     regression dressed up as a correction. Not changed. Full comparison
+ *     and a properly-scoped future good-first-issue in CONTRIBUTING.md.
+ *  4. The DOI-archived OSF snapshot's metadata, flagged as an open loose
+ *     end since v4.8 (it still read CC BY 4.0 for the whole bundle after
+ *     the code moved to Apache 2.0), has been updated by Duke directly at
+ *     OSF to reflect the split. See the References section, below, and
+ *     CONTRIBUTING.md's License section.
+ *
+ * Full detail on the audit findings, including what in it was already-
+ * documented restatement rather than new information, is in CONTRIBUTING.md's
+ * v4.9 Release Notes.
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v4.7 → v4.8 (UI fixes from direct user testing, a relicensing
@@ -1437,7 +1507,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'4.8',
+  VERSION:'4.9',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
   CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. https://doi.org/10.17605/OSF.IO/QWTE2 (source code: Apache License 2.0 as of v4.8; content/documentation: CC BY 4.0)',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
