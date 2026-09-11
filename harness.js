@@ -1,6 +1,5 @@
 'use strict';
 /* ═══════════════════════════════════════════════════════════════════════
- * Apache License 2.0 — see LICENSE-CODE.txt
  * Standalone Node.js harness — pure functions extracted verbatim from
  * index.html (Compassionism Framework Simulation, pre-harness version v4.7)
  * for out-of-browser verification and sensitivity analysis.
@@ -350,7 +349,21 @@ var BASELINE = {
   shock:false, automation:false, inflRate:0.03, ccoOn:false, ptfCap:false
 };
 
-module.exports = { CFG, mulberry32, runScenario, FULL_INTEGRATION, BASELINE };
+/* Bug fix (found during a Claude session's v4.10 audit, Sep 2026): this line previously
+ * read `module.exports = { CFG, mulberry32, runScenario, FULL_INTEGRATION, BASELINE };` —
+ * a full reassignment of module.exports, which silently discarded the
+ * calcBLEIComponents/runScenarioWithComponents properties set on it near the top of this
+ * file (lines ~279-280). Confirmed via `require('./harness.js').calcBLEIComponents` ===
+ * undefined before this fix. The CLI's own `blei-components` mode was unaffected (it calls
+ * runScenarioWithComponents() as a local function reference within this same file, not via
+ * module.exports), so this bug was invisible to anyone only ever running harness.js
+ * directly — it would only have bitten a future session or contributor trying to
+ * `require()` this file's BLEI-components-checking capability from another script, exactly
+ * as this file's own top-of-file comment describes it being "added post-hoc to check the
+ * 'benefitDays line invisible in the chart' report." Object.assign onto the existing
+ * exports object, rather than replacing it, so both assignment styles compose correctly
+ * regardless of which comes first in the file. */
+Object.assign(module.exports, { CFG, mulberry32, runScenario, FULL_INTEGRATION, BASELINE });
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
