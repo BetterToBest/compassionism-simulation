@@ -11,8 +11,8 @@
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="https://bettertobest.github.io/research-hub/assets/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="https://bettertobest.github.io/research-hub/assets/favicon-180.png">
-<title>Compassionism Framework Simulation v4.12 | Better To Best Research Hub</title>
-<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, unified wage-scale accounting, true common-random-numbers counterfactual pairing, poverty/wealth threshold sensitivity curves (headcount rate, poverty-gap depth, and stochastic-dominance checks), 50× Monte Carlo stochastic CI, participant and Social Security-anchored stratification, computed OAT sensitivity, Latin Hypercube sensitivity export, opt-in feedback-clamped PTF adoption, 6-check internal consistency suite, JSON/CSV export, shareable parameter URLs, ODD protocol, in-app glossary, accessible charts, pinned dependency integrity. v4.12.">
+<title>Compassionism Framework Simulation v4.13 | Better To Best Research Hub</title>
+<meta name="description" content="Research-oriented exploratory agent-based simulation of all five Compassionism architectures, for comparative policy analysis. BLEI welfare metrics, FBS-gated advancement, unified wage-scale accounting, true common-random-numbers counterfactual pairing, poverty/wealth threshold sensitivity curves (headcount rate, poverty-gap depth, and stochastic-dominance checks), 50× Monte Carlo stochastic CI, participant and Social Security-anchored stratification, computed OAT sensitivity, Latin Hypercube sensitivity export, opt-in feedback-clamped PTF adoption, 6-check internal consistency suite, JSON/CSV export, shareable parameter URLs, ODD protocol, in-app glossary, accessible charts, cumulative poverty-exposure metrics, pinned dependency integrity. v4.13.">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -39,7 +39,7 @@
 <meta name="twitter:creator" content="@Author_Duke_J">
 <meta name="twitter:site" content="@Author_Duke_J">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.12: a documentation-and-verification pass prompted by an external audit, plus one small feature addition — no simulation-mechanics changes. Corrected an in-app documentation error (the PTF adoption-cap panel cited 23.8% as the seed-42 capped result; a direct Node.js re-run this session confirmed the correct figure, already stated in CONTRIBUTING.md, is 19.0%, and explains why). Fixed several places where the ODD Protocol and Empirical Calibration panels still described pre-v4.3/pre-v4.4 mechanics (SIM_COST_SCALE-driven costs, SIU_TO_USD wage conversion, uniform[0.2,1.0] automation risk) as if they were current, three releases after those mechanics changed. Softened the Traditional Welfare Baseline's framing so it isn't mistaken for a calibrated model of actual transfer programs. Added a dominance check to the v4.10/v4.11 Threshold Sensitivity charts, stating explicitly whether Your Settings sits at-or-below Baseline and CCO-Only at every threshold shown or whether the curves cross, prompted by the same audit. Every fixable claim in the audit was checked against source before acting on it, per this project's standing practice; several of the audit's other findings restated already-tracked open items or described already-documented, deliberate design choices (e.g. the Comfortable/Flourishing tier-label split) and were not treated as new defects. v4.11: added a poverty-gap (depth-of-poverty) view to the v4.10 Threshold Sensitivity charts \u2014 a toggle switches both charts between the existing headcount-ratio view (% of the population below a threshold, FGT-0) and a new view showing the average per-capita shortfall below that threshold in the same dollars/days as the axis (FGT-1), so two scenarios with similar headcount curves but different poverty depth are no longer indistinguishable. Prompted by an external methodology review of the v4.10 feature (which reconfirmed its Atkinson 1987 citation and recommended exactly this headcount+depth pairing, citing Foster, Greer & Thorbecke 1984). Purely a reporting-transform addition \u2014 no simulation-mechanics changes, validated against a naive brute-force reference across 22,210 random trials plus a full end-to-end Node.js integration test against the engine's own real simulated output, including an independent cross-check via numerical integration of the already-validated headcount curve. v4.10: added Poverty & Wealth Threshold Sensitivity charts \u2014 rather than reporting poverty at one committed dollar figure or BLEI-day cutoff, two new charts show the population's full cumulative distribution across a range of thresholds at once (the \"poverty dominance\" approach from the poverty-measurement literature: Atkinson 1987; the World Bank's practice of reporting multiple poverty lines), compared across Baseline/CCO-Only/Your Settings, plus a labeled comparison to the 2026 HHS federal poverty guideline verified directly against a primary source this session. Purely a reporting transform of already-simulated final-year values \u2014 no simulation-mechanics changes, confirmed via a full end-to-end Node.js integration test cross-checking the new function's output against the engine's own existing calcMetrics()/bleiMetrics() figures at matching thresholds (exact match). v4.9: fixed a table-overflow bug (Social Security-Anchored Cohorts table clipped at 100% browser zoom, confirmed via a live screenshot pair at 80%/100%) with the same scoped overflow-x:auto pattern already used by the System comparison table; verified two Meta AI contributions against source rather than trusting them at face value \u2014 a modular ES-module rewrite of the v4.8 Node.js harness (confirmed to reproduce the seed-42/Full Integration/20yr regression exactly and the WEALTH_FLOOR sweep's direction/magnitude) and a proposed population-weighted LIVING_WAGE_ANNUAL recalculation, which turned out to rest on a stale (2024-vintage) MIT Living Wage Calculator snapshot \u2014 current MIT data (Feb 2026 build, checked directly against livingwage.mit.edu) shows every spot-checked state well above that snapshot's figures, so the proposed cut was not applied; the DOI-archived OSF snapshot's metadata has been updated by the author to reflect the Apache 2.0/CC BY 4.0 split, closing an item open since v4.8. No simulation-mechanics changes.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.12","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://www.apache.org/licenses/LICENSE-2.0","isAccessibleForFree":true}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Compassionism Framework Simulation","description":"Research-oriented exploratory ABM of CCO, PTF, PTH, SZH, CIP for comparative policy analysis. v4.13: an independent-audit pass that found and fixed two live UI defects invisible to every prior code review because neither is reachable by reading the code alone \u2014 a shared-link (\"Copy parameters as URL\") load silently stripped the hover-tooltip class from all five preset buttons, and the parameter-sensitivity panel appended a duplicate tip box on every run, stacking up N copies after N simulations. Both were reproduced and then regression-tested in a real DOM (jsdom), a validation capability this project did not previously have. Also: System Stability returned a degenerate constant 0.99 for any 5-7 year run (a one-point variance window); several in-engine comments inside runYear() itself still described retired v4.2-era mechanics, the same staleness class v4.12 fixed in the surrounding documentation panels but missed in the code; and two new reporting additions \u2014 Cumulative Poverty Exposure (mean years an agent spends below each poverty line across the whole run, answering the \"final-year snapshot only\" gap the v4.12 audit raised) and export of the v4.12 dominance check, previously screen-only. v4.12: a documentation-and-verification pass prompted by an external audit, plus one small feature addition — no simulation-mechanics changes. Corrected an in-app documentation error (the PTF adoption-cap panel cited 23.8% as the seed-42 capped result; a direct Node.js re-run this session confirmed the correct figure, already stated in CONTRIBUTING.md, is 19.0%, and explains why). Fixed several places where the ODD Protocol and Empirical Calibration panels still described pre-v4.3/pre-v4.4 mechanics (SIM_COST_SCALE-driven costs, SIU_TO_USD wage conversion, uniform[0.2,1.0] automation risk) as if they were current, three releases after those mechanics changed. Softened the Traditional Welfare Baseline's framing so it isn't mistaken for a calibrated model of actual transfer programs. Added a dominance check to the v4.10/v4.11 Threshold Sensitivity charts, stating explicitly whether Your Settings sits at-or-below Baseline and CCO-Only at every threshold shown or whether the curves cross, prompted by the same audit. Every fixable claim in the audit was checked against source before acting on it, per this project's standing practice; several of the audit's other findings restated already-tracked open items or described already-documented, deliberate design choices (e.g. the Comfortable/Flourishing tier-label split) and were not treated as new defects. v4.11: added a poverty-gap (depth-of-poverty) view to the v4.10 Threshold Sensitivity charts \u2014 a toggle switches both charts between the existing headcount-ratio view (% of the population below a threshold, FGT-0) and a new view showing the average per-capita shortfall below that threshold in the same dollars/days as the axis (FGT-1), so two scenarios with similar headcount curves but different poverty depth are no longer indistinguishable. Prompted by an external methodology review of the v4.10 feature (which reconfirmed its Atkinson 1987 citation and recommended exactly this headcount+depth pairing, citing Foster, Greer & Thorbecke 1984). Purely a reporting-transform addition \u2014 no simulation-mechanics changes, validated against a naive brute-force reference across 22,210 random trials plus a full end-to-end Node.js integration test against the engine's own real simulated output, including an independent cross-check via numerical integration of the already-validated headcount curve. v4.10: added Poverty & Wealth Threshold Sensitivity charts \u2014 rather than reporting poverty at one committed dollar figure or BLEI-day cutoff, two new charts show the population's full cumulative distribution across a range of thresholds at once (the \"poverty dominance\" approach from the poverty-measurement literature: Atkinson 1987; the World Bank's practice of reporting multiple poverty lines), compared across Baseline/CCO-Only/Your Settings, plus a labeled comparison to the 2026 HHS federal poverty guideline verified directly against a primary source this session. Purely a reporting transform of already-simulated final-year values \u2014 no simulation-mechanics changes, confirmed via a full end-to-end Node.js integration test cross-checking the new function's output against the engine's own existing calcMetrics()/bleiMetrics() figures at matching thresholds (exact match). v4.9: fixed a table-overflow bug (Social Security-Anchored Cohorts table clipped at 100% browser zoom, confirmed via a live screenshot pair at 80%/100%) with the same scoped overflow-x:auto pattern already used by the System comparison table; verified two Meta AI contributions against source rather than trusting them at face value \u2014 a modular ES-module rewrite of the v4.8 Node.js harness (confirmed to reproduce the seed-42/Full Integration/20yr regression exactly and the WEALTH_FLOOR sweep's direction/magnitude) and a proposed population-weighted LIVING_WAGE_ANNUAL recalculation, which turned out to rest on a stale (2024-vintage) MIT Living Wage Calculator snapshot \u2014 current MIT data (Feb 2026 build, checked directly against livingwage.mit.edu) shows every spot-checked state well above that snapshot's figures, so the proposed cut was not applied; the DOI-archived OSF snapshot's metadata has been updated by the author to reflect the Apache 2.0/CC BY 4.0 split, closing an item open since v4.8. No simulation-mechanics changes.","url":"https://bettertobest.github.io/compassionism-simulation/","softwareVersion":"4.13","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2","author":{"@type":"Organization","name":"Better To Best Research Hub","url":"https://bettertobest.github.io/research-hub/"},"license":"https://www.apache.org/licenses/LICENSE-2.0","isAccessibleForFree":true}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js" integrity="sha384-dug+JxfBvklEQdJ4AYuBBAIScUz0bVN73xpy273gcAwHjb3qI0fXmuYNaNfdyYJG" crossorigin="anonymous"></script>
 <style>
@@ -190,7 +190,7 @@ details.ccard>summary{list-style:none;cursor:pointer;user-select:none}details.cc
  * silently overrode it since an identical-specificity rule later in the file always wins. */
 .dl-btn-sec{padding:8px 14px;background:transparent;color:var(--accent);border:.5px solid var(--accent);border-radius:var(--rs);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}.dl-btn-sec:hover{background:var(--accent-bg)}.dl-btn-sec:disabled{opacity:.5;cursor:not-allowed}
 .export-btns{display:flex;gap:.4rem;flex-wrap:wrap;flex-shrink:0}
-.ci-card{background:var(--bg2);border-radius:var(--rs);padding:.5rem .75rem;border:.5px solid var(--border2)}
+.ci-card{background:var(--bg2);border-radius:var(--rs);padding:.5rem .75rem;border:.5px solid var(--border2);min-width:0}
 .ci-label{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
 .ci-mean{font-size:15px;font-weight:600;color:var(--text)}
 .ci-range{font-size:10.5px;color:var(--text3);margin-top:2px;line-height:1.4}
@@ -210,7 +210,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div style="display:flex;align-items:center;gap:.6rem">
     <img src="https://bettertobest.github.io/research-hub/assets/bettertobest-mark-muted-originals.svg" alt="Better To Best Research Hub" width="32" height="32" style="flex-shrink:0">
     <div>
-      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.12</span></div>
+      <div class="hd-title">Compassionism Framework Simulation <span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:4px">v4.13</span></div>
       <div class="hd-sub">
         All five architectures ·
         <a class="abbr-link" href="https://bettertobest.github.io/research-hub/wiki/glossary.html#cco" target="_blank" rel="noopener" data-tip="Creative Currency Octaves">CCO</a> ·
@@ -267,7 +267,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <div class="cr"><div class="cl"><span class="cn">Monthly BU allocation ($/month)</span><span class="cv" id="v-bu">$1,200</span></div><input type="range" min="0" max="1800" step="50" value="1200" id="s-bu" oninput="sv('bu',this.value)"><div class="ch">$0 = no CCO · Reference: $1,200/month</div></div>
     <div class="cr"><div class="cl"><span class="cn">Max octave level</span><span class="cv" id="v-oct">6</span></div><input type="range" min="1" max="9" step="1" value="6" id="s-oct" oninput="sv('oct',this.value)"><div class="ch">Governs CCO conversion-rate ceiling — scales from 1× toward the quality multiplier cap as an agent's octave rises (v4.0)</div></div>
     <div class="cr"><div class="cl"><span class="cn">BU expiry (months)</span><span class="cv" id="v-exp">1 mo</span></div><input type="range" min="1" max="6" step="1" value="1" id="s-exp" oninput="sv('exp',this.value)"><div class="ch">1 = standard monthly cycle</div></div>
-    <div class="cr"><div class="cl"><span class="cn">Phi Φ rate (1.618× beauty bonus)</span><span class="cv" id="v-phi">On</span></div><div class="tg"><button class="tb on" id="phi-on" onclick="tog('phi',true)">On (1.618×)</button><button class="tb" id="phi-off" onclick="tog('phi',false)">Off</button></div><div class="ch">Phi On: effective max ≈ ceiling × 1.618 (e.g., 9× → ≈14.56×) · Phi Off: max = quality ceiling only</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Phi Φ rate (1.618× beauty bonus)</span><span class="cv" id="v-phi">On</span></div><div class="tg"><button class="tb on" id="phi-on" aria-pressed="true" onclick="tog('phi',true)">On (1.618×)</button><button class="tb" id="phi-off" aria-pressed="false" onclick="tog('phi',false)">Off</button></div><div class="ch">Phi On: effective max ≈ ceiling × 1.618 (e.g., 9× → ≈14.56×) · Phi Off: max = quality ceiling only</div></div>
     <div class="cr"><div class="cl"><span class="cn">Conversion tax rate (%)</span><span class="cv" id="v-tax">12%</span></div><input type="range" min="0" max="30" step="1" value="12" id="s-tax" oninput="sv('tax',this.value)"><div class="ch">BU→primary currency levy (progressive taper)</div></div>
     <div class="cr"><div class="cl"><span class="cn">Quality multiplier ceiling</span><span class="cv" id="v-mult">9×</span></div><input type="range" min="1" max="9" step="1" value="9" id="s-mult" oninput="sv('mult',this.value)"><div class="ch" id="v-mult-eff">Effective max with Phi: 14.56×</div></div>
   </div>
@@ -281,33 +281,33 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
   <div class="ss">
     <div class="ss-head">PTF — Public Trust Foundations</div>
-    <div class="cr"><div class="cl"><span class="cn">Enable PTF</span></div><div class="tg"><button class="tb on" id="ptf-on" onclick="tog('ptf',true)">On</button><button class="tb" id="ptf-off" onclick="tog('ptf',false)">Off</button></div><div class="ch">Cost reduction 12–16% (not a wealth bonus)</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Enable PTF</span></div><div class="tg"><button class="tb on" id="ptf-on" aria-pressed="true" onclick="tog('ptf',true)">On</button><button class="tb" id="ptf-off" aria-pressed="false" onclick="tog('ptf',false)">Off</button></div><div class="ch">Cost reduction 12–16% (not a wealth bonus)</div></div>
     <div class="cr"><div class="cl"><span class="cn">Initial PTF share (%)</span><span class="cv" id="v-ptf">18%</span></div><input type="range" min="5" max="35" step="1" value="18" id="s-ptf" oninput="sv('ptf',this.value)"><div class="ch">Sets initial adoption only — organic growth via annual adoption checks means the final share can exceed this value, unless capped below. Reference: ~18% · Distortion threshold: &gt;30% (efficiency losses from reducing market competition below viable threshold)</div></div>
-    <div class="cr"><div class="cl"><span class="cn">Cap adoption at slider value <span class="abbr-link" data-tip="Off = v4.5 and earlier behavior: the slider only sets the year-0 adoption probability, and organic per-agent adoption can carry realised share well past it (uncapped, seed 42 / 20yr Full Integration reaches 53.4% against an 18% slider). On = feedback-clamped: organic adoption (both pathways) pauses once realised share reaches the slider value, agent-by-agent, so the slider becomes a real ceiling on GROWTH beyond the year-0 draw — it doesn't retroactively correct sampling variance already present in that year-0 draw itself, so realised share can still land a little on either side of the slider from the same randomness the uncapped case has at year 0. Off by default — enabling this changes simulation output for PTF-active runs (see CONTRIBUTING.md Model Architecture Feedback and v4.6 Release Notes).">ⓘ</span></span></div><div class="tg"><button class="tb" id="ptfCap-on" onclick="tog('ptfCap',true)">On</button><button class="tb on" id="ptfCap-off" onclick="tog('ptfCap',false)">Off (default)</button></div><div class="ch">v4.6, opt-in — Model Architecture Feedback's "quota-based or feedback-clamped adoption" item</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Cap adoption at slider value <span class="abbr-link" data-tip="Off = v4.5 and earlier behavior: the slider only sets the year-0 adoption probability, and organic per-agent adoption can carry realised share well past it (uncapped, seed 42 / 20yr Full Integration reaches 53.4% against an 18% slider). On = feedback-clamped: organic adoption (both pathways) pauses once realised share reaches the slider value, agent-by-agent, so the slider becomes a real ceiling on GROWTH beyond the year-0 draw — it doesn't retroactively correct sampling variance already present in that year-0 draw itself, so realised share can still land a little on either side of the slider from the same randomness the uncapped case has at year 0. Off by default — enabling this changes simulation output for PTF-active runs (see CONTRIBUTING.md Model Architecture Feedback and v4.6 Release Notes).">ⓘ</span></span></div><div class="tg"><button class="tb" id="ptfCap-on" aria-pressed="false" onclick="tog('ptfCap',true)">On</button><button class="tb on" id="ptfCap-off" aria-pressed="true" onclick="tog('ptfCap',false)">Off (default)</button></div><div class="ch">v4.6, opt-in — Model Architecture Feedback's "quota-based or feedback-clamped adoption" item</div></div>
   </div>
 
   <div class="ss">
     <div class="ss-head">PTH — Public Trust Housing</div>
-    <div class="cr"><div class="cl"><span class="cn">Enable PTH</span></div><div class="tg"><button class="tb on" id="pth-on" onclick="tog('pth',true)">On</button><button class="tb" id="pth-off" onclick="tog('pth',false)">Off</button></div><div class="ch">Covers 35% of costs + builds Acre Equity</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Enable PTH</span></div><div class="tg"><button class="tb on" id="pth-on" aria-pressed="true" onclick="tog('pth',true)">On</button><button class="tb" id="pth-off" aria-pressed="false" onclick="tog('pth',false)">Off</button></div><div class="ch">Covers 35% of costs + builds Acre Equity</div></div>
     <div class="cr"><div class="cl"><span class="cn">PTH uptake rate (%)</span><span class="cv" id="v-pth">20%</span></div><input type="range" min="5" max="50" step="1" value="20" id="s-pth" oninput="sv('pth',this.value)"></div>
   </div>
 
   <div class="ss">
     <div class="ss-head">SZH — Social Zone Harmonization</div>
-    <div class="cr"><div class="cl"><span class="cn">Enable SZH</span></div><div class="tg"><button class="tb on on-blue" id="szh-on" onclick="tog('szh',true)">On</button><button class="tb" id="szh-off" onclick="tog('szh',false)">Off</button></div></div>
+    <div class="cr"><div class="cl"><span class="cn">Enable SZH</span></div><div class="tg"><button class="tb on on-blue" id="szh-on" aria-pressed="true" onclick="tog('szh',true)">On</button><button class="tb" id="szh-off" aria-pressed="false" onclick="tog('szh',false)">Off</button></div></div>
     <div class="cr"><div class="cl"><span class="cn">Zone coherence index</span><span class="cv" id="v-szh">0.72</span></div><input type="range" min="0" max="95" step="1" value="72" id="s-szh" oninput="sv('szh',this.value)"></div>
   </div>
 
   <div class="ss">
     <div class="ss-head">CIP — Citizens Internet Portal</div>
-    <div class="cr"><div class="cl"><span class="cn">Enable CIP</span></div><div class="tg"><button class="tb on on-purple" id="cip-on" onclick="tog('cip',true)">On</button><button class="tb" id="cip-off" onclick="tog('cip',false)">Off</button></div></div>
+    <div class="cr"><div class="cl"><span class="cn">Enable CIP</span></div><div class="tg"><button class="tb on on-purple" id="cip-on" aria-pressed="true" onclick="tog('cip',true)">On</button><button class="tb" id="cip-off" aria-pressed="false" onclick="tog('cip',false)">Off</button></div></div>
     <div class="cr"><div class="cl"><span class="cn">Democratic participation rate (%)</span><span class="cv" id="v-cip">65%</span></div><input type="range" min="0" max="95" step="1" value="65" id="s-cip" oninput="sv('cip',this.value)"></div>
   </div>
 
   <div class="ss">
     <div class="ss-head">Economic Environment</div>
-    <div class="cr"><div class="cl"><span class="cn">Stochastic recession events</span></div><div class="tg"><button class="tb" id="shock-on" onclick="tog('shock',true)">Include</button><button class="tb on" id="shock-off" onclick="tog('shock',false)">Off</button></div><div class="ch">Population-level (10% annual prob.; 1–3 yr, 70–95% income multiplier)</div></div>
-    <div class="cr"><div class="cl"><span class="cn">AI labor automation</span></div><div class="tg"><button class="tb" id="automation-on" onclick="tog('automation',true)">On</button><button class="tb on" id="automation-off" onclick="tog('automation',false)">Off</button></div><div class="ch">Assumes 2025 simulation start. Heterogeneous risk per agent; displacement yr 5+ (≈2030), accelerates yr 15+ (≈2040)</div></div>
+    <div class="cr"><div class="cl"><span class="cn">Stochastic recession events</span></div><div class="tg"><button class="tb" id="shock-on" aria-pressed="false" onclick="tog('shock',true)">Include</button><button class="tb on" id="shock-off" aria-pressed="true" onclick="tog('shock',false)">Off</button></div><div class="ch">Population-level (10% annual prob.; 1–3 yr, 70–95% income multiplier)</div></div>
+    <div class="cr"><div class="cl"><span class="cn">AI labor automation</span></div><div class="tg"><button class="tb" id="automation-on" aria-pressed="false" onclick="tog('automation',true)">On</button><button class="tb on" id="automation-off" aria-pressed="true" onclick="tog('automation',false)">Off</button></div><div class="ch">Assumes 2025 simulation start. Heterogeneous risk per agent; displacement yr 5+ (≈2030), accelerates yr 15+ (≈2040)</div></div>
     <div class="cr"><div class="cl"><span class="cn">Inflation rate (% / yr)</span><span class="cv" id="v-infl">0.0%</span></div><input type="range" min="0" max="6" step="0.5" value="0" id="s-infl" oninput="sv('infl',this.value)"><div class="ch">0 = stable prices · 3% = US CPI · PTF/PTH dampen inflation</div></div>
   </div>
 
@@ -363,6 +363,13 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <div class="kpi hi-blue"><div class="klabel">Wealth p90 / p10 Ratio</div><div class="kval" id="k-ratio">—</div><div class="kdelta" id="k-ratio-d"></div></div>
     <div class="kpi hi-blue"><div class="klabel">Bottom Decile Wealth (p10)</div><div class="kval" id="k-p10">—</div><div class="kdelta" id="k-p10-d"></div></div>
     <div class="kpi hi-blue"><div class="klabel">Median BLEI at Year 5</div><div class="kval" id="k-blei5">—</div><div class="kdelta" id="k-blei5-d"></div></div>
+  </div>
+
+  <!-- v4.13: Cumulative Poverty Exposure (hidden until run) -->
+  <div class="slabel" id="label-exposure" style="display:none">Cumulative Poverty Exposure <span style="font-size:9px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--text3);margin-left:4px">how long the average agent spends below each line over the whole run — not just where they end up</span></div>
+  <div class="kgrid kgrid-2" id="sec-exposure-kpis" style="display:none">
+    <div class="kpi"><div class="klabel">Years in Wealth Poverty, per agent <span class="abbr-link" data-tip="Sum across simulated years of the share of the population below the wealth poverty line that year. Because each year's share is a fraction of the same population, the sum is exactly the mean number of years an agent spends below the line. A run can show a low FINAL-year poverty rate while still having put most agents through many poor years to get there; this number shows that, the final-year rate can't. Reporting transform of already-computed annual figures — no new simulation, no RNG.">ⓘ</span></div><div class="kval" id="k-py-wealth">—</div><div class="kdelta" id="k-py-wealth-d"></div></div>
+    <div class="kpi hi"><div class="klabel">Years in BLEI Poverty, per agent <span class="abbr-link" data-tip="Same measure, applied to BLEI poverty (Crisis + Precarious, &lt;30 days) rather than the wealth line. Summed from the same per-year tier distribution the tier-composition chart already plots.">ⓘ</span></div><div class="kval" id="k-py-blei">—</div><div class="kdelta" id="k-py-blei-d"></div></div>
   </div>
 
   <div class="slabel">Temporal Stability · BLEI Framework<a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html" target="_blank" rel="noopener">↗ paper</a></div>
@@ -445,14 +452,14 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
   <div class="slabel" id="label-threshold-sens" style="display:none">Poverty &amp; Wealth Threshold Sensitivity <span style="font-size:9px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--text3);margin-left:4px">every possible threshold at once, not just this model's own defaults</span></div>
   <div id="sec-threshold-sens" style="display:none;margin-bottom:9px">
     <div class="tg" style="margin-bottom:.55rem" role="group" aria-label="Threshold sensitivity view">
-      <button class="tb tip-host on" id="thresh-view-headcount" data-tip="How many people are below this line — the % curves already shown since v4.10 (the 'headcount ratio,' FGT-0 in the poverty-measurement literature)." onclick="setThreshView('headcount')">% below line</button>
-      <button class="tb tip-host" id="thresh-view-gap" data-tip="How far below the line, on average, across the WHOLE population — agents above the line count as zero shortfall. Related to the 'poverty gap' family, FGT-1 (Foster, Greer &amp; Thorbecke 1984) — reported here as an absolute $/day figure, not the textbook normalized ratio (see Cumulative Bug Fixes for why). Added v4.11." onclick="setThreshView('gap')">Avg. shortfall</button>
+      <button class="tb tip-host on" id="thresh-view-headcount" aria-pressed="true" data-tip="How many people are below this line — the % curves already shown since v4.10 (the 'headcount ratio,' FGT-0 in the poverty-measurement literature)." onclick="setThreshView('headcount')">% below line</button>
+      <button class="tb tip-host" id="thresh-view-gap" aria-pressed="false" data-tip="How far below the line, on average, across the WHOLE population — agents above the line count as zero shortfall. Related to the 'poverty gap' family, FGT-1 (Foster, Greer &amp; Thorbecke 1984) — reported here as an absolute $/day figure, not the textbook normalized ratio (see Cumulative Bug Fixes for why). Added v4.11." onclick="setThreshView('gap')">Avg. shortfall</button>
     </div>
     <div class="cgrid">
       <div class="ccard"><div class="ctitle" id="thresh-wealth-title">Wealth poverty rate, by threshold — final year</div><div style="position:relative;height:200px"><canvas id="ch-thresh-wealth" role="img" aria-label="Line chart of the percentage of the population below a given wealth threshold, across a range of possible thresholds, compared across baseline, CCO-only, and your settings"></canvas></div><div class="csub" id="thresh-wealth-callout">Computing…</div></div>
       <div class="ccard"><div class="ctitle" id="thresh-blei-title">BLEI poverty rate, by threshold — final year</div><div style="position:relative;height:200px"><canvas id="ch-thresh-blei" role="img" aria-label="Line chart of the percentage of the population below a given BLEI-day threshold, across a range of possible thresholds, compared across baseline, CCO-only, and your settings"></canvas></div><div class="csub" id="thresh-blei-callout">Computing…</div></div>
     </div>
-    <div class="csub" style="margin:0 0 9px;padding:0 2px">Rather than reporting poverty at one fixed dollar or day cutoff, these curves show a full range of thresholds at once — the "poverty dominance" approach used in the poverty-measurement literature (Atkinson 1987; the World Bank's own practice of reporting multiple poverty lines) to avoid resting a claim on any single contested figure. If a scenario's line sits below another's across the whole range shown, it reduces poverty no matter where the "true" line is drawn. <strong>"Avg. shortfall"</strong> (v4.11) answers a different question the headcount view can't: two scenarios can show identical % curves while differing a lot in how deep the remaining poverty runs — the poverty-gap view shows that depth directly, in the same dollars/days as the axis itself. See the Assumptions panel below for the full rationale, including why <code>LIVING_WAGE_ANNUAL</code> is a separate question from what's shown here.</div>
+    <div class="csub" style="margin:0 0 9px;padding:0 2px">Rather than reporting poverty at one fixed dollar or day cutoff, these curves show a full range of thresholds at once — the "poverty dominance" approach used in the poverty-measurement literature (Atkinson 1987; the World Bank's own practice of reporting multiple poverty lines) to avoid resting a claim on any single contested figure. If a scenario's line sits below another's across the whole range shown, it reduces poverty no matter where the "true" line is drawn. <strong>"Avg. shortfall"</strong> (v4.11) answers a different question the headcount view can't: two scenarios can show identical % curves while differing a lot in how deep the remaining poverty runs — the poverty-gap view shows that depth directly, in the same dollars/days as the axis itself. See the Assumptions panel below for the full rationale, including why <code>LIVING_WAGE_ANNUAL</code> is a separate question from what's shown here. <strong>Reading the dominance check (v4.12, caveated v4.13):</strong> it is evaluated at the thresholds actually plotted, not continuously, so a crossing narrower than one grid step would not be reported; and it describes <em>this single stochastic run</em>, not a confidence statement — re-run with several seeds (or use Run 10×/50×) before treating a dominance result as a property of the configuration rather than of the draw.</div>
   </div>
 
   <!-- Distribution trajectories (hidden until run) -->
@@ -525,7 +532,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
     <summary style="font-size:12.5px;font-weight:500;color:var(--text2);display:flex;align-items:center;gap:.5rem">
       <span style="font-size:9px;color:var(--text3)">▶</span>
       📋 Assumptions, ODD Protocol &amp; Known Limitations
-      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.12 — click to expand</span>
+      <span style="font-size:10.5px;font-weight:400;color:var(--text3);margin-left:auto">v4.13 — click to expand</span>
     </summary>
 
     <span class="acat-label bl-purple">📐 ODD Protocol — Grimm et al. (2010) standard ABM description</span>
@@ -538,9 +545,12 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Details: Submodels</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Annual update (runYear): wage growth with diminishing returns → living cost subtraction (<code>LIVING_WAGE_ANNUAL</code>, inflation-adjusted, times the agent's PTF/PTH/CCO cost-reduction factor) → CCO conversion income at a rate capped by octave-tier capacity → FBS-gated octave advancement check (v4.0) → PTH Acre Equity appreciation plus a payment→equity contribution (v4.0) → PTF adoption check (innovation + distress + Bass imitation, v4.0) → wealth floor clamp. BLEI = (liquid + γ·wage·<code>WAGE_TO_USD</code> + buFood) / dailyCost (v4.0: wage converted to USD before summing; v4.4: onto the same real-dollar anchor the main loop uses — see Empirical Calibration below). Gini (v4.0): computed on EDC-adjusted net wealth, W_nominal − EDC×Y×12. Recession: beta(5,2) incomeMultiplier ∈ [0.70,0.95], NBER-calibrated (<a href="https://www.nber.org/research/business-cycle-dating" target="_blank" rel="noopener" style="color:var(--accent)">nber.org</a>) — mode 0.90 (10% loss), mean ≈0.88 (~12% loss). <span style="font-size:10px;color:var(--text3)">(v4.12 fix: this card described the main wealth loop as SIM_COST_SCALE-driven and BLEI's wage term as SIU_TO_USD-converted — both accurate for v4.0-v4.2 but superseded by v4.3's wealth-loop unit fix and v4.4's SIU_TO_USD retirement respectively; an external audit caught this ODD panel had never been updated for either change, even though the "Cumulative Bug Fixes" entries for both releases, further down this same panel, were.)</span></p></div>
     </div>
 
-    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.12)</span>
+    <span class="acat-label" style="margin-top:.85rem">🔧 Cumulative Bug Fixes (v3.1 → v4.13)</span>
       <div style="font-size:10.5px;color:var(--text3);font-style:italic;margin-bottom:8px">v4.7 through v4.9 don't appear as their own entries below — that work was documentation, dependency-pinning, licensing, and external-audit verification with no new mechanism to document here (it's fully covered in CONTRIBUTING.md's own Release Notes and this file's top-of-script changelog); the one partial exception, v4.8's WEALTH_FLOOR sweep, is folded as a footnote onto the existing v4.3 entry below rather than getting its own. Caught while adding the v4.10 entry, since the header had stayed at "v4.6" for three releases without saying why.</div>
-      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Dominance check added to the Threshold Sensitivity charts (v4.12, prompted by an external audit)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">An external audit of v4.11 suggested the Threshold Sensitivity charts "test for first-order stochastic dominance over the displayed range... a clear statement when curves cross... do not imply a universal welfare ordering when curves cross." Both callouts underneath the charts now end with a <strong>"Dominance check"</strong> line, computed by <code>checkDominance()</code>, stating plainly whether Your Settings sits at-or-below Baseline (and separately, CCO Only) at <em>every</em> threshold shown, or whether the curves cross — and if they cross, roughly where. This makes exact and explicit a comparison the charts already implied but left to the reader to eyeball; it reports honestly in both directions, not only when the expected scenario wins. At the seed-42 Full Integration reference configuration, Your Settings dominates both comparisons on both charts in both views (headcount and gap) — a genuine, checked finding, not an assumption baked into the feature, confirmed this session via a Node.js harness reproducing the documented regression figures exactly before the dominance check was run against them. A crossing case was also confirmed reachable by the same code path against a hand-built adversarial curve pair (not real simulation output) during unit testing, and a Stress Test preset re-run (seed 42, 40% participation, lower BU, higher tax, automation and shocks conceptually enabled — though this specific harness re-run held shocks off, since the harness's simplified recession handling is a documented limitation, see harness.js's own scope note) still showed dominance rather than a crossing, meaning readers should not expect this feature to manufacture drama that isn't in the model — it reports what the curves actually do, which for this model's mechanics is usually (not always, by construction) a clean win for whichever scenario has more active systems. <strong>Purely a reporting-transform addition</strong> — computes no new agent state, draws no RNG, and reads only the same sorted/prefix-summed arrays every other part of this feature already built; cannot affect the Main run, Baseline, or CCO-Only trajectories. Validated against 9 constructed test cases (both dominance directions, identical curves, a single crossing with its location correctly identified, weak dominance with tied values, and floating-point-noise edge cases correctly NOT flagged as spurious crossings) before being run against real seed-42 curve data. See CONTRIBUTING.md's v4.12 Release Notes for the full validation trail.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Two live UI defects, found by running the page rather than reading it (v4.13)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><strong>(1) A shared "Copy parameters as URL" link silently disabled every preset tooltip.</strong> <code>applyParamsFromURL()</code> reset each preset button's class to a bare <code>pbtn</code> to clear the "active" highlight — which also stripped <code>.tip-host</code>, the class the v4.5 preset-description tooltips are attached to. Any visitor arriving through a shared link therefore lost all five preset hover descriptions for the entire session, with no error and nothing visibly wrong. This is the same bug v4.5's own entry below records catching in <code>applyPreset()</code>; the identical pattern was introduced in <code>applyParamsFromURL()</code> in that same release and survived seven subsequent audits, because the shared-link entry point is the one path none of them exercised. <strong>(2) The parameter-sensitivity panel duplicated its tip box on every run.</strong> <code>renderSens()</code> wrote the "💡 One-at-a-Time (OAT) Sensitivity" note with <code>insertAdjacentHTML('afterend', …)</code> — which inserts a <em>sibling</em> of <code>#sens-inner</code>, so the function's own <code>innerHTML</code> reset never cleared it, and <code>renderSens()</code> runs once per completed simulation. Three runs in one session left three stacked copies. Now a single stable-id node, created once and updated in place. <strong>Neither defect is visible from reading the source</strong> — both were found by loading the actual page into a headless DOM and exercising it, then kept fixed by automated checks in that same harness (before: 3 tip boxes after 3 renders, <code>pbtn tip-host</code> → <code>pbtn</code>; after: 1 and 1, class preserved). That harness is new in v4.13 and is the first time this project has been able to verify DOM behaviour at all, rather than carrying the standing "not verified in an actual browser" caveat every UI change since v4.8 has had to. It does not verify CSS layout or Chart.js pixel output, which still need a human look.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">System Stability reported a perfect score for 5–7 year runs regardless of what happened in them (v4.13)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0"><code>structuralStability()</code> measures the inverse coefficient of variation of median wealth and median BLEI over the run's final quarter, with the window floored at <em>one</em> data point. The Simulation-years slider's own minimum is 5 — and for any run of 5, 6 or 7 years, <code>Math.floor(years/4)</code> is 1, so the window held a single value. <code>coeffVar()</code> correctly returns 0 for a single sample (the variance of one observation is undefined), giving <code>1/(1+0)=1</code> for both series and a final score of exactly <strong>0.99 — the metric's own clamp ceiling — for every 5–7 year run ever executed by this tool</strong>, whatever the underlying trajectory. Verified directly rather than inferred: a strictly-increasing five-point series scored 0.990000, as did every other short series tried. This is the same failure the Known Limitations panel already describes for a floor-pinned population ("flat outcomes score as maximally stable"), but arising from having no data in the window rather than from the data being flat — and it was reporting a <em>maximum</em> where the honest answer is "not enough of the run to measure." The window floor is now 2. <strong>Scope, checked rather than assumed:</strong> a sweep across every supported run length confirms lengths 8–30 are bit-identical to v4.12 (at 8 years <code>floor(8/4)</code> is already 2), so every preset, the seed-42/20yr regression baseline, and every OAT/LHS/ablation/validation mini-run at 10 or 20 years is unaffected; only 5–7 year runs change, and only in this one displayed number.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Cumulative Poverty Exposure — how long, not just how many at the end (v4.13)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Every poverty figure this tool reported was a final-year snapshot. Two runs can end with the same headline poverty rate while having put wildly different numbers of agents through wildly different numbers of poor years to get there, and nothing on the page showed that — a gap the v4.12 external audit raised directly (its "person-years in poverty / time-to-tier-attainment" suggestion). Two new KPIs report the <strong>mean number of years an agent spends below the wealth-poverty line, and below the BLEI poverty line, across the whole run</strong>, for Your Settings against the Traditional Welfare Baseline. The derivation is exact, not an approximation: each year's figure is a share of the same population, so <code>Σ<sub>t</sub> share<sub>t</sub> = (1/N)·Σ<sub>t</sub>Σ<sub>i</sub> 1[poor<sub>i,t</sub>]</code> — the average years-poor per agent. At the seed-42 reference configuration the final-year wealth-poverty rate is 16.6%, but the average agent spends <strong>4.8 of 20 years</strong> below that line (Baseline: 11.8); BLEI-poverty exposure is 3.7 years against the Baseline's 11.1. <strong>Purely a reporting transform</strong> of arrays the engine already computes — the only new computation anywhere is one extra <code>bleiMetrics()</code> call per baseline year to get the baseline's annual poverty <em>share</em> (its annual <em>median</em> was already tracked, and a median cannot give a headcount); <code>bleiMetrics()</code> is a pure function that draws no RNG and mutates nothing, confirmed by the unchanged regression. <strong>One honest limit, also stated in Known Limitations:</strong> this is aggregate exposure, not a spell-length distribution — it cannot distinguish "everyone poor for 3 years" from "30% of agents poor for 10 years," which would need per-agent longitudinal tracking this engine does not keep.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Dominance check added to the Threshold Sensitivity charts (v4.12, prompted by an external audit; exported and caveated v4.13)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">An external audit of v4.11 suggested the Threshold Sensitivity charts "test for first-order stochastic dominance over the displayed range... a clear statement when curves cross... do not imply a universal welfare ordering when curves cross." Both callouts underneath the charts now end with a <strong>"Dominance check"</strong> line, computed by <code>checkDominance()</code>, stating plainly whether Your Settings sits at-or-below Baseline (and separately, CCO Only) at <em>every</em> threshold shown, or whether the curves cross — and if they cross, roughly where. This makes exact and explicit a comparison the charts already implied but left to the reader to eyeball; it reports honestly in both directions, not only when the expected scenario wins. At the seed-42 Full Integration reference configuration, Your Settings dominates both comparisons on both charts in both views (headcount and gap) — a genuine, checked finding, not an assumption baked into the feature, confirmed this session via a Node.js harness reproducing the documented regression figures exactly before the dominance check was run against them. A crossing case was also confirmed reachable by the same code path against a hand-built adversarial curve pair (not real simulation output) during unit testing, and a Stress Test preset re-run (seed 42, 40% participation, lower BU, higher tax, automation and shocks conceptually enabled — though this specific harness re-run held shocks off, since the harness's simplified recession handling is a documented limitation, see harness.js's own scope note) still showed dominance rather than a crossing, meaning readers should not expect this feature to manufacture drama that isn't in the model — it reports what the curves actually do, which for this model's mechanics is usually (not always, by construction) a clean win for whichever scenario has more active systems. <strong>Purely a reporting-transform addition</strong> — computes no new agent state, draws no RNG, and reads only the same sorted/prefix-summed arrays every other part of this feature already built; cannot affect the Main run, Baseline, or CCO-Only trajectories. Validated against 9 constructed test cases (both dominance directions, identical curves, a single crossing with its location correctly identified, weak dominance with tied values, and floating-point-noise edge cases correctly NOT flagged as spurious crossings) before being run against real seed-42 curve data. See CONTRIBUTING.md's v4.12 Release Notes for the full validation trail.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Poverty-gap ("avg. shortfall") view added to the v4.10 Threshold Sensitivity charts (v4.11, prompted by an external methodology review)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Duke relayed the v4.10 feature to an external AI system for a methodology critique (see CONTRIBUTING.md's v4.11 Release Notes for the full exchange and this project's now-standard verify-before-acting treatment of it). The review reconfirmed the Atkinson (1987) citation as correctly used, confirmed the World Bank multi-line comparison as apt, and recommended one concrete addition: "two distributions can have identical headcounts at every line yet one can have systematically larger gaps" — the existing % curves (the headcount ratio, FGT-0 in the poverty-measurement literature) can't distinguish a scenario where the poor are barely below the line from one where they're far below it. A new <strong>"Avg. shortfall"</strong> toggle (<code>setThreshView()</code>) switches both existing charts to a poverty-GAP view (FGT-1: Foster, Greer &amp; Thorbecke, 1984, "A Class of Decomposable Poverty Measures," <em>Econometrica</em> 52(3), 761-766) — the mean per-capita shortfall below each threshold, in the same dollars/days as the axis itself (agents at or above the threshold contribute zero). Deliberately reports the <em>absolute</em> gap, not the textbook-standard threshold-normalized ratio: normalizing by the threshold breaks down at threshold≤0, which the wealth chart's own range deliberately includes (WMIN=-$20,000, so Baseline's WEALTH_FLOOR-pinned distribution renders as a real step rather than an off-chart flat line — an existing v4.10 design choice, unaffected here) — the absolute-dollar/day framing sidesteps that division problem entirely while staying at least as interpretable ("the average dollar short, per person, if the line were drawn here" reads as a direct "cost to close the gap" figure). <code>buildPrefixSum()</code>/<code>povertyGapAvg()</code> (defined alongside <code>povertyCDF()</code>, above) keep the same O(log n)-per-threshold-query complexity budget via a one-time O(n) prefix-sum pass per distribution — not a linear scan per point on the curve. <strong>Validation:</strong> the core function was checked against a naive brute-force reference (literal <code>sum(max(0,threshold-x_i))/N</code>, no indexing tricks) across 22,210 random trials — random continuous distributions, duplicate-heavy arrays specifically mimicking <code>WEALTH_FLOOR</code> pinning (Baseline's actual shape), BLEI-shaped right-skewed arrays, and degenerate edge cases — zero mismatches beyond ordinary floating-point rounding, before this ever touched the shipped file. After integration, a full end-to-end Node.js test evaluated the actual edited script against the documented seed-42/Full Integration/20yr configuration and independently cross-checked <code>povertyGapAvg()</code>'s output against a discretized numerical integral of the already-validated <code>povertyCDF()</code> curve (mean absolute gap at z equals the integral of the CDF from -∞ to z — a genuine mathematical identity, not an approximation of the production code itself); the one point where this cross-check initially disagreed (immediately adjacent to <code>WEALTH_FLOOR</code>, where 68.6% of a Baseline population sample sits at one exact value) was tracked to a discretization artifact in the CROSS-CHECK's own coarse numerical integration near a sharp jump discontinuity, confirmed by refining that check's resolution (error shrank 0.171→0.017→0.0016 as the check's own step count increased 20,000→200,000→2,000,000) and by an independent direct per-agent sum matching <code>povertyGapAvg()</code>'s output exactly — the production function was correct throughout; only the auxiliary cross-check's resolution needed refining to see it agree. <strong>Purely a reporting-transform addition</strong>, same guarantee as v4.10: computes no new agent state, draws no RNG, cannot affect the Main run, Baseline, or CCO-Only trajectories. Chart.js rendering/DOM behavior itself is not verified in an actual browser — same sandbox limitation as every CSS/UI change since v4.8.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Poverty &amp; Wealth Threshold Sensitivity (v4.10, prompted directly by Duke)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Rather than reporting poverty at one committed dollar figure (<code>CFG.POVERTY_LINE</code>) or BLEI-day cutoff, two new charts (<code>renderThresholdSensitivity()</code>) show the population's full cumulative distribution across a RANGE of thresholds at once, for Baseline/CCO-Only/Your Settings simultaneously — the "poverty dominance" approach from the poverty-measurement literature (Atkinson, A.B. (1987). On the measurement of poverty. <em>Econometrica</em>, 55(4), 749-764; also the World Bank's own practice of reporting global poverty at several lines at once, e.g. $2.15/$3.65/$6.85/day). If one scenario's curve sits below another's across the whole range shown, it reduces poverty regardless of exactly where a reader believes the "true" line sits — directly responding to two calibration disputes this project has already had over a single committed dollar figure (see <code>LIVING_WAGE_ANNUAL</code>'s history, v4.3 and v4.9) without resolving either one. A new <code>CFG.FED_POVERTY_LINE_1P</code> constant ($15,960/yr, the 2026 HHS ASPE guideline for a one-person household) is shown as labeled callout text for external comparison — same "reference only, not a simulation parameter" category as <code>CFG.NORDIC_GINI</code> elsewhere in this file; verified this session directly against a primary source after a first fetch attempt returned a stale cached 2017 snapshot of the ASPE page (caught and cross-checked against an independently-dated PDF rather than used — see CONTRIBUTING.md's v4.10 Release Notes for the full trail). <strong>Purely a reporting transform</strong> of already-simulated final-year wealth/BLEI values — computes no new agent state and draws no RNG, so it cannot affect the Main run, Baseline, or CCO-Only trajectories; confirmed via a full end-to-end Node.js integration test (not just a syntax check) that drives the actual <code>makeLatentPopulation()</code>/<code>instantiateAgent()</code>/<code>runYear()</code> functions against the documented seed-42/Full Integration/20yr configuration and cross-checks the new <code>povertyCDF()</code> function's output against <code>calcMetrics()</code>/<code>bleiMetrics()</code>'s own existing figures at the model's default thresholds — exact match (16.6% wealth poverty, 13.6% BLEI poverty). <strong>Deliberately NOT in scope: <code>CFG.LIVING_WAGE_ANNUAL</code></strong> — unlike <code>POVERTY_LINE</code> (a pure post-hoc reporting threshold, exactly one call site, inside <code>calcMetrics()</code>), <code>LIVING_WAGE_ANNUAL</code> is genuinely baked into <code>runYear()</code>'s wealth-accumulation trajectory; exploring it this way would mean re-running the simulation per value, not re-reading an already-computed array, and is scoped as separate, larger, mechanics-adjacent follow-up work — see CONTRIBUTING.md's Model Architecture Feedback. Chart.js rendering/DOM behavior itself is not verified in an actual browser — same sandbox limitation as every CSS/UI change since v4.8.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">FBS₅₀ half-saturation bandwidth exposed as a derived constant (v4.6, CONTRIBUTING.md good-first-issue)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">CONTRIBUTING.md's "λ Calibration Status" note recommended reporting the FBS gate's λ coefficient via its half-saturation bandwidth, FBS₅₀=ln(2)/λ — "an explicit reference bandwidth at which a median-capability agent has even odds of advancing," easier for a reviewer to interrogate than a raw 1/USD coefficient — and had already hand-computed the resulting figure in prose (≈$524–$4,191/month). <code>CFG.FBS_HALF_SAT_LO/HI</code> now compute that range directly from <code>FBS_LAMBDA_HI/LO</code> (current values: $<span id="fbs50-lo">…</span>–$<span id="fbs50-hi">…</span>/month), so it can't silently drift out of sync if the λ range is ever revised again. <strong>This is a reporting change only</strong> — <code>makeLatentAgent()</code> still draws λ directly and uniformly from <code>FBS_LAMBDA_LO/HI</code> exactly as in v4.5; no per-agent λ value, RNG draw, or simulation output changes. A genuine reparameterization — sampling FBS₅₀ as uniform and deriving λ=ln(2)/FBS₅₀ from it, rather than the reverse — would change the shape of the λ distribution (a uniform-in-1/x transform isn't uniform in x) and is a distinct, larger design decision needing its own validation pass; tracked as a separate open item, not attempted here.</p></div>
@@ -615,6 +625,8 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">No direct agent-to-agent interaction</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">All social effects mediated by aggregate zone parameters (SZH) rather than explicit networks. A small-world network structure would better model PTF zone clustering and SZH coherence. Noted as a future development direction in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">"Traditional Welfare Baseline" is a no-intervention counterfactual, not a calibrated model of the actual U.S. safety net (new clarification, v4.12)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">An external audit flagged that the baseline's name and its "real-world reference point" framing (now softened, see the preset tooltip) can read as a claim this scenario reproduces actual U.S. welfare institutions. It doesn't: <code>pBase</code> sets every architecture off and applies a flat 3% CPI, with no SNAP/EITC/TANF/SSI-SSDI benefit receipt, Medicaid, housing assistance, or unemployment insurance modelled as income to any agent. (The Social Security-Anchored Cohorts table tags agents by wage <em>relative to</em> real 2026 SSI/SSDI/retirement benefit levels for comparison purposes — it does not credit those benefits to baseline agents as income.) This scenario is best read as "what happens with none of these five architectures and no other offsetting mechanism," a deliberately clean no-intervention counterfactual — not as a calibrated stand-in for the current U.S. policy mix, which a rigorous comparison would need to model separately. Adding a genuinely calibrated current-policy benchmark alongside this counterfactual is a real, substantive future scenario, not attempted here; see CONTRIBUTING.md's Model Architecture Feedback.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">automationRisk distribution — resolved in v4.3 (flagged v3.4)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Through v4.2, automationRisk ∈ [0.2, 1.0] was drawn from a <em>uniform</em> distribution — real automation exposure is highly bimodal and occupation-dependent (Frey &amp; Osborne, 2013; Autor, 2015), and the uniform assumption understated polarization in High Automation scenarios. As of v4.3, it's a 47%/53% mixture (Beta(6,1) high-risk / Beta(1,6) low-risk) matching that literature's occupational split — see Cumulative Bug Fixes, above. Occupation-<em>stratified</em> (not just bimodal) risk remains a further-refinement item in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">System Stability needs at least 8 simulated years to mean anything (found and partially fixed, v4.13)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The metric is the inverse coefficient of variation over the run's final quarter. At the slider's 5-year minimum that quarter is barely two years, and before v4.13 it was rounded down to a single point, which made the score a constant 0.99 for every 5–7 year run (see Cumulative Bug Fixes). The window floor is now 2, which is enough to compute a real variance but is still a very small sample: <strong>treat System Stability on any run shorter than ~8–10 years as indicative at best</strong>, and prefer a 20-year run (the reference configuration) when the number matters. This is a limitation of the window, on top of the separate, already-documented limitation of the CV formula itself (below), which cannot tell a thriving equilibrium from a population pinned at a floor.</p></div>
+      <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Cumulative Poverty Exposure is aggregate, not longitudinal (new metric, v4.13)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">The two Cumulative Poverty Exposure KPIs sum each year's population poverty share, which gives the mean years-poor per agent exactly — but says nothing about how those years are distributed across agents. "Every agent poor for 3 years" and "30% of agents poor for 10 years" produce the same number, and they are very different policy situations. Distinguishing them needs per-agent poverty spells tracked over time, which this engine does not currently keep (agents carry no poverty history, only current state). The related metrics the v4.12 audit also suggested — time-to-tier-attainment per agent, wealth-floor recovery rates, spell-length distributions — all need that same longitudinal layer and remain open; see CONTRIBUTING.md. Note also that the wealth-poverty figure inherits <code>POVERTY_LINE</code>'s own undocumented provenance (see Cumulative Bug Fixes and the note at that constant), so it is best read comparatively — Your Settings against Baseline — rather than as an absolute count.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">One-at-a-Time (OAT) sensitivity is not Sobol/LHC</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">OAT sensitivity varies one parameter at a time ±20% of its own slider range (v4.0: uniform across all five parameters — see Cumulative Bug Fixes) and records the poverty and BLEI response from actual model runs. It captures first-order single-parameter effects only. Parameter interactions and higher-order effects are not quantified. For rigorous uncertainty quantification, use the CSV export with external Sobol analysis in Python/R (see <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a>).</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">System Stability rewards a stagnant floor as much as a thriving population (updated v4.4)</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">Historical note: through v4.1 the displayed value was a heuristic, <code>stabBase = improving ? 0.88 : 0.60</code> plus <code>RNG()×0.08</code> noise — not derived from wealth variance, BLEI volatility, or agent-state transitions (v3.6 flag). <strong>Resolved in v4.2</strong>: <code>structuralStability()</code> is the inverse coefficient of variation of median wealth and median BLEI over the run's final quarter — no RNG call, no manual per-mechanism bonus. This formula has its own honest limitation, not previously disclosed here: a population with genuinely <em>flat, unchanging</em> outcomes scores as maximally stable, whether that flatness reflects a thriving equilibrium or a population pinned at a floor with nowhere left to fall — coefficient of variation can't distinguish the two. In the v4.4 N=5,000 study, the Traditional Welfare Baseline — median wealth pinned exactly at <code>WEALTH_FLOOR</code> in 100% of runs by year 20 — scores 99.0% stability, higher than Full Integration's 88.6%, precisely because a hard floor has near-zero variance left to measure. Read this metric as trajectory steadiness, not as an endorsement of the outcome it describes, and always alongside the poverty and BLEI figures next to it, never in isolation. Full N=5,000 comparison in CONTRIBUTING.md.</p></div>
       <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Main wealth-accumulation loop unit fix — resolved in v4.3, with new open questions</div><p style="font-size:11px;color:var(--text2);line-height:1.55;margin:0">v4.0 fixed wage/USD unit mixing in BLEI, FBS, and Gini but deliberately left the main <code>runYear()</code> wealth-accumulation step on its pre-v4.0 SIU-scale convention, because a full fix proved dangerously sensitive to the conversion constant. v4.3 ships a validated fix (<code>WAGE_TO_USD</code>/<code>LIVING_WAGE_ANNUAL</code> — see Cumulative Bug Fixes, above) after finding an anchor that passes all six <code>VAL_TESTS</code>. This resolves the unit-simplification item but opens two new ones, not yet resolved: whether <code>WEALTH_FLOOR = −$10,000</code> is still an appropriate floor now that the cost anchor it's measured against roughly doubled (median Baseline wealth now sits exactly at that floor, not just an occasional insolvency case), and whether <code>TARGET_WEALTH</code>/<code>TARGET_POVERTY</code>/<code>TARGET_GINI</code> — set against the old loop — need their own reconsideration against the structurally different new baseline. Both flagged in <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="color:var(--accent)">CONTRIBUTING.md</a> as framework-level decisions, not resolved here — v4.4 adds an in-app pointer to this caveat directly on the affected KPI badges (Gini, Wealth, Stability, Flourishing, EDC — the ⓘ icons), but does not pick new target values. <strong>v4.8:</strong> a validated N=500-seed sweep across four candidate <code>WEALTH_FLOOR</code> values now exists (see CONTRIBUTING.md) — headline finding: Traditional Welfare Baseline is completely invariant to the floor's exact value on every metric except the raw wealth number itself, while Full Integration shows a real but modest sensitivity (Gini and poverty rate both move a few points as the floor deepens) via agents who dip negative and later recover spending longer at BLEI-liquid-zero the deeper they're allowed to fall first. This is data for a decision, not a decision — the shipped default is unchanged. (Separately: BLEI/FBS/Gini's own wage-to-USD conversion, left on the older <code>SIU_TO_USD</code> approximation since v4.0, is unified onto <code>WAGE_TO_USD</code> in v4.4 — see Cumulative Bug Fixes, above. That's a different unit issue from the one this entry covers.)</p></div>
@@ -654,7 +666,7 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <footer>
   <div>
-    <span>Compassionism Simulation v4.12 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · Code: Apache License 2.0 · Content: CC BY 4.0</span>
+    <span>Compassionism Simulation v4.13 · <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> · Code: Apache License 2.0 · Content: CC BY 4.0</span>
     <span style="display:block;margin-top:3px"><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI Paper</a> · <a href="https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html">Replication</a> · <a href="https://bettertobest.github.io/research-hub/wiki/">Wiki &amp; Docs</a> · <a href="https://doi.org/10.17605/OSF.IO/QWTE2" target="_blank" rel="noopener">DOI: 10.17605/OSF.IO/QWTE2</a></span>
   </div>
   <div style="text-align:right">
@@ -666,11 +678,111 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
- * COMPASSIONISM FRAMEWORK SIMULATION  v4.12
+ * COMPASSIONISM FRAMEWORK SIMULATION  v4.13
  * Better To Best Research Hub · Source code: Apache License 2.0 (as of
  * v4.8 — see the LICENSE-CODE note below); content/documentation
  * elsewhere in this project remains CC BY 4.0. Authors: Duke Johnson &
  * Claude (Anthropic)
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Changelog v4.12 → v4.13 (an independent audit pass — two live UI defects fixed,
+ * one degenerate metric window fixed, stale in-engine comments corrected, plus two
+ * reporting additions. No change to any simulation mechanism; the seed-42 regression
+ * below is unchanged and was re-confirmed three ways, one of them new this release):
+ *
+ * TWO LIVE UI DEFECTS, FOUND BY RUNNING THE PAGE RATHER THAN READING IT:
+ *  1. A shared "Copy parameters as URL" link silently disabled every preset tooltip.
+ *     applyParamsFromURL() reset each preset button to a bare 'pbtn' class, stripping
+ *     the .tip-host class those buttons' v4.5 hover descriptions depend on — so any
+ *     visitor arriving via a shared link lost all five preset tooltips for the whole
+ *     session. This is the SAME bug v4.5's changelog records catching in applyPreset()
+ *     ("would have silently stripped the new tooltip class"); the identical pattern was
+ *     introduced in applyParamsFromURL() in that same release and never caught, because
+ *     the shared-link path is the one entry point no prior audit had exercised.
+ *  2. The parameter-sensitivity panel duplicated its "💡 One-at-a-Time (OAT)" tip box on
+ *     every run. renderSens() wrote it with insertAdjacentHTML('afterend', …), inserting
+ *     a SIBLING of #sens-inner, which the function's own innerHTML reset never clears —
+ *     so N simulation runs in one page session left N stacked copies. Now a single
+ *     stable-id node, created once and updated in place.
+ *     Neither defect is visible from reading the code in isolation; both were found by
+ *     loading the actual page in jsdom and exercising it. That harness is new this
+ *     release and is described in CONTRIBUTING.md's v4.13 Release Notes — it is the
+ *     first time this project has been able to verify DOM behaviour rather than flagging
+ *     it "not verified in a browser," the standing caveat on every UI change since v4.8.
+ *
+ * A METRIC THAT REPORTED A PERFECT SCORE WHERE IT HAD NO DATA:
+ *  3. structuralStability() took its coefficient of variation over the run's final
+ *     quarter, floored at ONE data point — so every 5-7 year run (the slider's own
+ *     minimum is 5) produced q=1, coeffVar() correctly returned 0 for a single sample,
+ *     and the metric returned exactly 0.99 — its clamp ceiling — no matter what happened
+ *     in the run. Verified directly: a strictly-increasing 5-point series scored 0.990000,
+ *     as did every other 5-7 point series tried. Floor raised to 2. Affects ONLY runs of
+ *     5-7 years; lengths 8-30 were confirmed bit-identical to v4.12 across a sweep, and
+ *     the 20-year regression is unchanged.
+ *
+ * STALE COMMENTS INSIDE THE ENGINE ITSELF (the class v4.12 fixed around it, not in it):
+ *  4. v4.12 corrected the ODD panel, the Empirical Calibration panel and the top-of-file
+ *     UNIT SYSTEM block for describing pre-v4.3/pre-v4.4 mechanics as current. The same
+ *     staleness sat inside runYear() the whole time — the function all three of those
+ *     panels describe, and the copy a contributor editing the engine actually reads:
+ *       · a comment claiming SIM_COST_SCALE "remains load-bearing" via the SIU_TO_USD
+ *         derivation "that BLEI/FBS/Gini still use" (SIU_TO_USD was retired in v4.4;
+ *         grep confirms SIM_COST_SCALE now has zero read sites anywhere in this file);
+ *       · the same comment claiming dollarCost is used "only by the FBS advancement
+ *         gate" (it has two consumers — the FBS gate AND the PTH equity block);
+ *       · the FBS gate's own comment claiming Yusd uses SIU_TO_USD (the line directly
+ *         beneath it reads CFG.WAGE_TO_USD) and that "FBS doesn't feed back into wealth"
+ *         (it does, through octave advancement → conversion capacity and wage growth —
+ *         exactly the feedback path v4.4's notes give as the reason FBS_LAMBDA needed a
+ *         compensating rescale);
+ *       · CFG.SIM_COST_SCALE's own inline comment claiming it is "retained for CCO/PTF/
+ *         PTH cost-factor calc only" (the cost factor is a product of dimensionless
+ *         multipliers and never reads it).
+ *     All corrected in place, each with a short note saying what was wrong — this
+ *     project's established practice, rather than a silent swap.
+ *
+ * TWO REPORTING ADDITIONS (no new agent state, no RNG, no mechanics):
+ *  5. Cumulative Poverty Exposure — the mean number of years an agent spends below the
+ *     wealth-poverty line and below the BLEI poverty line across the WHOLE run, for Your
+ *     Settings and the Traditional Welfare Baseline. Directly answers the "final-year
+ *     snapshot only" gap the v4.12 external audit raised (its person-years-in-poverty
+ *     suggestion). Computed by summing per-year population shares the engine already
+ *     produces: because each year's figure is a share of the same population, the sum is
+ *     exactly the average years-poor per agent. At the seed-42 reference configuration
+ *     the final-year wealth-poverty rate is 16.6%, but the average agent spends 4.8 of
+ *     20 years below that line (Baseline: 11.8) — a materially different and previously
+ *     invisible picture of the same run. Its one honest limit (aggregate exposure, not
+ *     spell lengths) is stated in Known Limitations, not just here.
+ *  6. The v4.12 dominance check is now exported. It was screen-only: a reader could see
+ *     the finding but not archive or cite it with the run that produced it. Now captured
+ *     into the run snapshot and written to both CSV and JSON, together with the view it
+ *     was computed in and the number of threshold grid points it was evaluated at — and
+ *     the on-page caption now says plainly that dominance is checked at the plotted
+ *     thresholds only, and describes one stochastic run rather than a confidence claim.
+ *
+ * SMALLER FIXES:
+ *  7. The Wealth Poverty KPI prefixed a hardcoded "▼" to a signed delta, so a scenario
+ *     doing WORSE than baseline rendered as "▼ -3.2pp". Arrow now follows the sign.
+ *  8. Two grids built in JS template strings still used a bare "1fr" track — the exact
+ *     CSS Grid overflow pattern v4.8 swept out of the stylesheet, missed because that
+ *     sweep grepped CSS and these are inline strings. The Monte Carlo summary also never
+ *     reflowed on a phone; it is now auto-fit with a real minimum.
+ *  9. Toggle buttons now expose aria-pressed. Until now every On/Off pair communicated
+ *     its state through colour alone — a screen reader heard two identically-labelled
+ *     buttons with no indication of which was active. Same class of gap v3.7 closed for
+ *     the charts. Set statically in the markup (so the attribute is already correct
+ *     before any script runs) and kept in sync by tog() thereafter — the DOM harness
+ *     caught the JS-only version leaving the PTF-cap pair unlabelled, since no preset
+ *     calls tog() for it.
+ * 10. Exported JSON asserted a flat "CC BY 4.0" license, unchanged since before the v4.8
+ *     relicensing split, and the CSV's mechanics list was still headed "--- v4.0 FIXES
+ *     ---" nine releases later. Both corrected.
+ * 11. CFG.POVERTY_LINE now carries a note at the constant itself recording that it has no
+ *     citation anywhere in this codebase — an open item in CONTRIBUTING.md since v4.10
+ *     with nothing at the code to warn a reader who never opens that file.
+ *
+ * Full detail, including what was checked and deliberately NOT changed, is in
+ * CONTRIBUTING.md's v4.13 Release Notes.
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Changelog v4.11 → v4.12 (a documentation-and-verification pass prompted by
@@ -1789,13 +1901,22 @@ footer{background:var(--bg);border-top:.5px solid var(--border);padding:.85rem 1
  * Update here only; all exports, headers, and citation strings reference
  * this object instead of hardcoding version/DOI strings. */
 var META = {
-  VERSION:'4.12',
+  VERSION:'4.13',
   DOI:'https://doi.org/10.17605/OSF.IO/QWTE2',
   CITATION:'Johnson, D. & Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. https://doi.org/10.17605/OSF.IO/QWTE2 (source code: Apache License 2.0 as of v4.8; content/documentation: CC BY 4.0)',
   URL:'https://bettertobest.github.io/compassionism-simulation/'
 };
 
 var CFG = {
+  /* v4.13: POVERTY_LINE carries no citation anywhere in this codebase — flagged as an open
+   * `calibration:` item in CONTRIBUTING.md's Calibration Validation table since v4.10, but
+   * with nothing at the constant itself to warn a reader who only ever looks at the code.
+   * Noted here so the gap is visible where the number lives. It is a pure post-hoc
+   * reporting threshold with exactly one read site (calcMetrics()), never touching RNG or
+   * dynamics — which is why the v4.10 Threshold Sensitivity charts can sweep across it
+   * freely, and why an uncited value here is a reporting-clarity problem rather than a
+   * mechanics one. For reference, the 2026 HHS one-person federal guideline is $15,960
+   * (FED_POVERTY_LINE_1P, below); $25,000 is noticeably higher and its basis is unknown. */
   POVERTY_LINE:25000, BLEI_CRISIS_MAX:7, BLEI_PRECARIOUS_MAX:30,
   BLEI_THRESHOLD_MAX:120, BLEI_STABLE_MAX:365, BLEI_SECURE_MAX:730,
   BASE_DAILY_COST:68.33, CCO_PTH_DAILY_COST:31.67,
@@ -1827,7 +1948,14 @@ var CFG = {
   SZH_THETA_THRESHOLD:0.55, SZH_THETA_MAX_COH:0.90, SZH_THETA_MAX:0.25,
   EDC_BASELINE_LO:0.62, EDC_BASELINE_HI:0.72, EDC_PTH_CAP:0.10,
   PROG_PIVOT:3.0, PROG_RATE:0.040, PROG_TAX_MAX:0.75,
-  SIM_COST_SCALE:1500,     // v3.3: renamed from ANNUAL_BASE_COST; v4.0: retained for CCO/PTF/PTH cost-factor calc only (v4.3 wealth loop uses WAGE_TO_USD/LIVING_WAGE_ANNUAL)
+  /* v4.13: corrected comment. This previously read "retained for CCO/PTF/PTH cost-factor
+   * calc only" — not true: the cost factor (cf) in runYear() is a product of dimensionless
+   * multipliers (0.88 / 0.65 / 0.80) and never touches this constant. Grep confirms
+   * CFG.SIM_COST_SCALE has ZERO read sites in the live code today; it appears only here and
+   * in prose. Kept rather than deleted so pre-v4.3 exported CSV/JSON files and this file's
+   * own historical worked examples (which quote a wage×12/SIM_COST_SCALE ratio) stay
+   * interpretable — that is now its entire remaining purpose. */
+  SIM_COST_SCALE:1500,     // historical constant only — read by no function in this file (v4.3 wealth loop uses WAGE_TO_USD/LIVING_WAGE_ANNUAL; v4.4 retired SIU_TO_USD, its last consumer)
   WAGE_MEDIAN_SIU:35,      // reference for diminishing-returns calculation
   WEALTH_FLOOR:-10000,     // v4.8: N=500-seed sweep across 4 candidate values run and validated — see CONTRIBUTING.md; default unchanged, this is data for a decision not a decision itself
   WAGE_BASE_GROWTH:0.010, WAGE_BLEI_BONUS:0.008, WAGE_OCTAVE_BONUS:0.003,
@@ -1966,7 +2094,15 @@ function initRNG(v){var n=parseInt(v);RNG=(!isNaN(n)&&v!==''&&v!==null&&n>=0&&n<
 /* ─── SLIDERS ─────────────────────────────────────────────────────────── */
 var FMT={bu:function(v){return v==0?'$0 (off)':'$'+parseInt(v).toLocaleString();},oct:function(v){return v;},exp:function(v){return v+' mo';},phi:function(v){return v?'On':'Off';},tax:function(v){return v+'%';},mult:function(v){return v+'×';},agents:function(v){return parseInt(v).toLocaleString();},part:function(v){return v+'%';},yrs:function(v){return v+' yr';},ptf:function(v){return v+'%';},pth:function(v){return v+'%';},szh:function(v){return(v/100).toFixed(2);},cip:function(v){return v+'%';},infl:function(v){return parseFloat(v).toFixed(1)+'%';}};
 function sv(key,raw){var el=document.getElementById('v-'+key);if(el)el.textContent=FMT[key]?FMT[key](raw):raw;if(key==='mult')updateEffMax();updatePills();}
-function tog(key,val){ST[key]=val;var on=document.getElementById(key+'-on'),off=document.getElementById(key+'-off');if(on)on.className='tb'+(val?(' on'+(key==='szh'?' on-blue':key==='cip'?' on-purple':'')):'');if(off)off.className='tb'+(!val?' on':'');if(key==='phi'){var el=document.getElementById('v-phi');if(el)el.textContent=val?'On':'Off';updateEffMax();}updatePills();}
+/* v4.13: toggle state is now also exposed via aria-pressed. Before this, every On/Off pair
+ * in the sidebar communicated its state through colour and a CSS class alone — a screen
+ * reader heard two identically-labelled buttons with no indication of which was active,
+ * the same class of gap v3.7 closed for the charts (which had no accessible name at all).
+ * Purely an attribute; no visual, class, or behavioural change. */
+function tog(key,val){ST[key]=val;var on=document.getElementById(key+'-on'),off=document.getElementById(key+'-off');
+  if(on){on.className='tb'+(val?(' on'+(key==='szh'?' on-blue':key==='cip'?' on-purple':'')):'');on.setAttribute('aria-pressed',val?'true':'false');}
+  if(off){off.className='tb'+(!val?' on':'');off.setAttribute('aria-pressed',val?'false':'true');}
+  if(key==='phi'){var el=document.getElementById('v-phi');if(el)el.textContent=val?'On':'Off';updateEffMax();}updatePills();}
 /* v3.5: effective max quality multiplier when Phi is active (maxMult × 1.618) */
 function updateEffMax(){var el=document.getElementById('v-mult-eff');if(!el)return;var m=gp('s-mult');var eff=(m*CFG.PHI_RATIO).toFixed(2);el.textContent=ST.phi?('Effective max with Phi: '+eff+'×'):('Phi off — effective max: '+m+'×');}
 function gp(id){return parseFloat(document.getElementById(id).value);}
@@ -2050,7 +2186,17 @@ function applyParamsFromURL(){
     var seedEl=document.getElementById('s-seed');
     if(seedEl){seedEl.value=qs.get('seed');var vEl=document.getElementById('v-seed');if(vEl)vEl.textContent=qs.get('seed')?parseInt(qs.get('seed')):'variable';applied=true;}
   }
-  PRESET_IDS.forEach(function(n){var btn=document.getElementById('pb-'+n);if(btn)btn.className='pbtn';});  // no preset "active" once URL params applied — may not match any preset exactly
+  /* v4.13 fix: this wrote a bare 'pbtn', silently stripping the .tip-host class the v4.5
+   * preset-description tooltips depend on — so every preset button lost its hover tooltip
+   * for the whole session whenever the page was opened from a shared "Copy parameters as
+   * URL" link. Exactly the bug v4.5's own changelog records catching and fixing in
+   * applyPreset() ("applyPreset()'s active-button styling directly overwrote className on
+   * every preset click, which would have silently stripped the new tooltip class") — the
+   * identical pattern was introduced HERE in the same release and never caught, because
+   * this path only runs for shared-link loads, which no prior audit exercised. Confirmed
+   * and now regression-tested in a real DOM (jsdom); see CONTRIBUTING.md v4.13. The
+   * no-preset-is-active intent is preserved: pbtn-active is simply never added. */
+  PRESET_IDS.forEach(function(n){var btn=document.getElementById('pb-'+n);if(btn)btn.className='pbtn tip-host';});  // no preset "active" once URL params applied — may not match any preset exactly
   return applied;
 }
 
@@ -2324,7 +2470,7 @@ function runSim(){
     document.getElementById('sdot').className='dot run';document.getElementById('stxt').textContent='Initialising agents…';
     document.getElementById('pbar').style.width='0%';
     ['warn-note','sec-insights','sec-sens','sec-export','sec-attribution','uncertainty-notice','run-conf'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
-    ['sec-policy-kpis','label-policy','sec-dist-charts','label-dist','sec-milestones','sec-ss-cohorts','sec-strat-kpis','label-strat','sec-strat-charts','label-strat-chart','sec-threshold-sens','label-threshold-sens'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+    ['sec-policy-kpis','label-policy','sec-dist-charts','label-dist','sec-milestones','sec-ss-cohorts','sec-strat-kpis','label-strat','sec-strat-charts','label-strat-chart','sec-threshold-sens','label-threshold-sens','sec-exposure-kpis','label-exposure'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
   }
   setTimeout(function(){
     try{simulate(p,warns);}
@@ -2404,7 +2550,7 @@ function simulate(p,warns){
   var sharedRecPath=p.shock?buildRecessionPath(years,isNaN(seedNum)?null:seedNum):null;
   function recAt(yr){return sharedRecPath?sharedRecPath[yr]:{active:false,incomeMultiplier:1.0,yearsLeft:0};}
 
-  var baseYearlyPov=[],baseYearlyWealth=[],baseYearlyBLEI=[];
+  var baseYearlyPov=[],baseYearlyWealth=[],baseYearlyBLEI=[],baseYearlyBleiPov=[];
   /* v4.4: true common-random-numbers (CRN) pairing across all three scenarios' annual
    * trajectories (external audit, "Counterfactual pairing is improved, but not yet full
    * CRN pairing": baseline/CCO-only previously ran on their own +700001/+700002 offset
@@ -2428,6 +2574,14 @@ function simulate(p,warns){
     runYear(baseAgents,bYr,pBase,recAt(bYr));
     var mBYr=calcMetrics(baseAgents,false,false);
     baseYearlyPov.push(+(mBYr.pov*100).toFixed(1));baseYearlyWealth.push(mBYr.med);baseYearlyBLEI.push(calcMedianBLEI(baseAgents,pBase));
+    /* v4.13: baseline's per-year BLEI-poverty SHARE, for the new Cumulative Poverty
+     * Exposure comparison. Baseline's per-year MEDIAN BLEI was already tracked (line
+     * above) but a median can't give a poverty headcount. bleiMetrics() is a pure
+     * function of current agent state — no RNG draw, no mutation — so adding this call
+     * cannot shift the stream position or change any trajectory; confirmed by the
+     * unchanged seed-42 regression. */
+    var bBYr=bleiMetrics(baseAgents,0,false,false,false,0,false,'Comfortable');
+    baseYearlyBleiPov.push(+((bBYr.tc[0]+bBYr.tc[1])/bBYr.n*100).toFixed(1));
   }
   var mBase=calcMetrics(baseAgents,false,false),bBase=bleiMetrics(baseAgents,0,false,false,false,0,false,'Comfortable');
   var stabBase=structuralStability(baseYearlyWealth,baseYearlyBLEI);
@@ -2451,8 +2605,15 @@ function simulate(p,warns){
   /* v4.10: bundles Baseline's and CCO-Only's distributions (Main's own is computed inside
    * finish() itself, where the already-final `agents` array is in scope) into one object so
    * only a single new parameter needs threading through the step()/finish() call below,
-   * rather than four more positional ones on an already-27-parameter function. */
-  var threshDist={wealth:{base:wDistBase,cco:wDistCCO},blei:{base:bDistBase,cco:bDistCCO}};
+   * rather than four more positional ones on an already-27-parameter function.
+   * v4.13: renamed to `extras` and given a second key, so this release adds NO new
+   * positional parameter at all. A partial, deliberately minimal nod to the external
+   * audit's "replace positional arguments with a context object" suggestion — the full
+   * refactor across agentBLEI()/bleiMetrics()/runYear() remains open (see CONTRIBUTING.md
+   * Good First Issues) because it touches the mechanics engine's own signatures and needs
+   * its own regression pass; changing the shape of one already-bundled reporting argument
+   * does not. */
+  var extras={thresh:{wealth:{base:wDistBase,cco:wDistCCO},blei:{base:bDistBase,cco:bDistCCO}},baseBleiPovYearly:baseYearlyBleiPov};
   RNG=mainRNG;
 
   var yLabels=[],aPov=[],aGini=[],aWealth=[],aVel=[],aBlei=[];
@@ -2462,7 +2623,7 @@ function simulate(p,warns){
 
   function step(yr){
     if(CANCELLED){resetRunUIAfterCancel();return;}
-    if(yr>=years){finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr,totalConversionAll,stabBase,stabCCO,threshDist);return;}
+    if(yr>=years){finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr,totalConversionAll,stabBase,stabCCO,extras);return;}
     var yrRes=runYear(agents,yr,p,recAt(yr));
     var vel=yrRes.bu;totalConversionAll+=yrRes.conversion;
     var m=calcMetrics(agents,p.ccoOn,p.pth),bMed=calcMedianBLEI(agents,p);
@@ -2510,13 +2671,24 @@ function runYear(agentSet,yr,p,recSt){
   if(p.pth&&inflRate>0)inflRate*=0.90;
   /* v4.3: simCost (SIM_COST_SCALE-native) is retired from the main wealth-accumulation
    * flow — see the wage/cost unit fix inside the per-agent loop below, and
-   * CONTRIBUTING.md Model Architecture Feedback for the full history. SIM_COST_SCALE
-   * itself is no longer consumed directly anywhere in runYear(); it remains
-   * load-bearing only as an input to the legacy SIU_TO_USD derivation (top of file)
-   * that BLEI/FBS/Gini still use, deliberately un-migrated — see below. dollarCost
-   * (real USD, BASE_DAILY_COST-based) is unchanged from pre-v4.3 and still used only
-   * by the FBS advancement gate below, which needs a genuine monthly USD cost
-   * independent of both the legacy SIU scale and the new wage/cost anchors. */
+   * CONTRIBUTING.md Model Architecture Feedback for the full history.
+   * (v4.13 correction: this comment previously went on to claim SIM_COST_SCALE "remains
+   * load-bearing only as an input to the legacy SIU_TO_USD derivation … that BLEI/FBS/Gini
+   * still use, deliberately un-migrated," and that dollarCost is "used only by the FBS
+   * advancement gate below." BOTH were false. SIU_TO_USD was retired in v4.4 and
+   * BLEI/FBS/Gini moved onto WAGE_TO_USD, so SIM_COST_SCALE is read by nothing in this
+   * file — verified by grep, it appears only in CFG's own definition and in prose. And
+   * dollarCost has TWO consumers, not one: the FBS gate's cBasicMonthly AND the PTH
+   * equity-contribution block's pthSaving. v4.12 rewrote the equivalent claims in the ODD
+   * and Empirical Calibration panels and in the top-of-file UNIT SYSTEM block, but missed
+   * this one — inside runYear() itself, the function all three of those panels describe,
+   * and the copy a contributor editing the engine is most likely to read. Corrected here.)
+   * Current, accurate statement: SIM_COST_SCALE is a historical constant, read nowhere.
+   * dollarCost (real USD, BASE_DAILY_COST-based) is unchanged from pre-v4.3 and feeds the
+   * FBS advancement gate's monthly basic-cost term and the PTH housing-cost-saving term —
+   * both deliberately on a poverty-line-appropriate anchor rather than the compounding
+   * loop's LIVING_WAGE_ANNUAL; see the PTH block's own comment for why that was tested
+   * against the alternative and kept. */
   var dollarCost=CFG.BASE_DAILY_COST*365*Math.pow(1+inflRate,yr);
   var popShock=recSt.active?recSt.incomeMultiplier:1.0;
   /* v4.0: current PTF adoption fraction, computed once per year — feeds the Bass (1969)
@@ -2627,11 +2799,21 @@ function runYear(agentSet,yr,p,recSt){
        * agent-construction sites. CIP support raises effective λ (replaces the old flat
        * +cipDemo*0.04 bump to a fixed advancement probability). */
       if(a.octave<p.maxOct){
-        /* Yusd/cBasicMonthly use SIU_TO_USD/dollarCost (real USD) — deliberately
-         * decoupled from the main wealth flow's WAGE_TO_USD/LIVING_WAGE_ANNUAL basis
-         * above; FBS doesn't feed back into wealth, so it can use its own independent,
-         * pre-existing USD basis without touching the main loop's new calibration. See
-         * UNIT SYSTEM note (top of file). */
+        /* v4.13 correction — this comment carried two errors, both contradicted by the
+         * line directly beneath it and by v4.4's own documented findings:
+         *   (a) it said Yusd uses SIU_TO_USD. It does not, and has not since v4.4 — the
+         *       code below reads CFG.WAGE_TO_USD, and SIU_TO_USD no longer exists.
+         *   (b) it said "FBS doesn't feed back into wealth." It does, indirectly but
+         *       materially: FBS gates octave advancement, octave sets CCO conversion
+         *       capacity and adds a wage-growth bonus, and both feed wealth. This is
+         *       precisely the feedback path v4.4's release notes describe as the reason
+         *       FBS_LAMBDA needed a compensating recalibration once Yusd's scale changed.
+         * Accurate statement: Yusd is WAGE_TO_USD-converted (the same anchor the main loop
+         * uses since v4.4); cBasicMonthly resolves through dollarCost, a BASE_DAILY_COST-
+         * derived poverty-line figure (≈$2,078/mo, close to the BLEI paper's own $2,083/mo
+         * worked example) rather than LIVING_WAGE_ANNUAL. That cost-side divergence is the
+         * real, deliberate, still-current one — two cost anchors for two different jobs —
+         * not a wage-side one. See the UNIT SYSTEM note at the top of this file. */
         var Yusd=a.wage*CFG.WAGE_TO_USD;
         var cBasicMonthly=(dollarCost*cf)/12;
         var edcResidual=(p.pth&&a.inPTH)?CFG.FBS_EDC_RESIDUAL_PTH:CFG.FBS_EDC_RESIDUAL_BASE;
@@ -2885,14 +3067,27 @@ function coeffVar(arr){
   var variance=arr.reduce(function(s,x){return s+(x-mean)*(x-mean);},0)/n;
   return Math.sqrt(variance)/Math.abs(mean);
 }
+/* v4.13 fix: the final-quarter window was Math.max(1,…), so any run of 5-7 years gave
+ * q=1 — a single data point. coeffVar() returns 0 for n<2 by design (a variance of one
+ * sample is undefined), so 1/(1+0)=1 for both series and the metric returned exactly 0.99
+ * (its own clamp ceiling) for EVERY 5-7 year run, regardless of what actually happened in
+ * it. Confirmed directly in a DOM harness against the unedited v4.12 file: a 5-point
+ * strictly-increasing series returned 0.9900. That is not a stability finding, it is the
+ * absence of one being reported as a perfect score — the same failure mode in miniature as
+ * the already-documented "a stagnant floor scores as maximally stable" limitation, but
+ * arising from window size rather than from the CV formula itself. Floor raised to 2 so
+ * there is always a real pair to take a variance over. AFFECTS ONLY RUNS OF 5-7 YEARS:
+ * at 8 years floor(8/4)=2 already, and every longer run (including every preset, the
+ * seed-42/20yr regression baseline, and every VAL_TEST/OAT/LHS/ablation mini-run at 10 or
+ * 20 years) is bit-identical to v4.12 — verified by re-running the full regression. */
 function structuralStability(wealthSeries,bleiSeries){
-  var q=Math.max(1,Math.floor(wealthSeries.length/4));
+  var q=Math.max(2,Math.floor(wealthSeries.length/4));
   var wStab=1/(1+coeffVar(wealthSeries.slice(-q))),bStab=1/(1+coeffVar(bleiSeries.slice(-q)));
   return Math.max(0,Math.min(0.99,(wStab+bStab)/2));
 }
 
 /* ─── FINISH ──────────────────────────────────────────────────────────── */
-function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr,totalConversionAll,stabBase,stabCCO,threshDist){
+function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,mBase,mCCO,bBase,bCCO,baseYearlyPov,breakEvenYr,totalConversionAll,stabBase,stabCCO,extras){
   /* v4.1 fix: IS_REF_RUN was set true on the page-load auto-run (see bottom of file,
    * "v3.4: auto-load illustrative reference run") but nothing ever read it — #ref-run-
    * label ("📊 Illustrative reference run — seed 42...") stayed display:none permanently
@@ -2928,19 +3123,44 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
     isLastMC=true;MR.active=false;MR.suppressUI=false;
   }
 
+  /* v4.13: Cumulative Poverty Exposure. Directly answers the "final-year snapshot only"
+   * gap the v4.12 external audit raised (its "person-years in poverty" suggestion), using
+   * arrays this function already receives — aPov (annual wealth-poverty %), aTiersDist
+   * (annual BLEI tier shares), baseYearlyPov, and the new baseBleiPovYearly. Because each
+   * year's figure is a share of the SAME population, summing the shares gives exactly the
+   * mean number of years an agent spends below that line:
+   *     Σ_t share_t = (1/N)·Σ_t Σ_i 1[poor_{i,t}] = average years poor per agent.
+   * Pure reporting transform — no new agent state, no RNG, cannot affect any trajectory.
+   * One honest limitation, stated in the Known Limitations panel rather than only here:
+   * this is an aggregate exposure count, not a spell-length distribution. It cannot
+   * distinguish "everyone poor for 3 years" from "30% of agents poor for 10 years" —
+   * that needs per-agent longitudinal tracking, which this engine does not keep. */
+  function sumShare(arr){return (arr||[]).reduce(function(a,v){return a+(typeof v==='number'&&isFinite(v)?v:0);},0)/100;}
+  var exposure={years:yLabels.length,
+    pyWealthMain:sumShare(aPov),
+    pyWealthBase:sumShare(baseYearlyPov),
+    pyBleiMain:(aTiersDist||[]).reduce(function(a,d){return a+((d&&d[0]||0)+(d&&d[1]||0));},0)/100,
+    pyBleiBase:sumShare(extras&&extras.baseBleiPovYearly)};
+
   /* v4.0: cumulative CCO conversion proceeds credited across the run, surfaced for
    * transparency (partial response to the external review's stock-flow accounting
    * concern — see CSV/JSON export and Known Limitations for what this does and does
    * not represent). */
-  SIM_RESULTS={params:p,finalPov:finalM.pov,finalGini:finalM.gini,finalWealth:finalM.med,stab:stab,blei:bMain,bleiPovPct:bleiPovPct,mBase:mBase,mCCO:mCCO,bBase:bBase,bCCO:bCCO,topTierName:top,totalConversionProceeds:Math.round(totalConversionAll||0),timestamp:new Date().toISOString(),timeSeries:{labels:yLabels,poverty:aPov,gini:aGini,wealth:aWealth,blei:aBlei,p10:aP10,p90:aP90,cashDays:aCash,incomeDays:aInc,benefitDays:aBen,baselinePoverty:baseYearlyPov,participantPoverty:aPartPov,nonParticipantPoverty:aNonPartPov,participantBLEI:aPartBLEI,nonParticipantBLEI:aNonPartBLEI}};
+  SIM_RESULTS={params:p,exposure:exposure,thresholdDominance:null,finalPov:finalM.pov,finalGini:finalM.gini,finalWealth:finalM.med,stab:stab,blei:bMain,bleiPovPct:bleiPovPct,mBase:mBase,mCCO:mCCO,bBase:bBase,bCCO:bCCO,topTierName:top,totalConversionProceeds:Math.round(totalConversionAll||0),timestamp:new Date().toISOString(),timeSeries:{labels:yLabels,poverty:aPov,gini:aGini,wealth:aWealth,blei:aBlei,p10:aP10,p90:aP90,cashDays:aCash,incomeDays:aInc,benefitDays:aBen,baselinePoverty:baseYearlyPov,participantPoverty:aPartPov,nonParticipantPoverty:aNonPartPov,participantBLEI:aPartBLEI,nonParticipantBLEI:aNonPartBLEI}};
 
   renderKPIs(finalM,stab,mBase,bMain,bBase,top,policy);
   renderStratKPIs(fPartPov,fNonPov,fPartBLEI,fNonBLEI,p,top);
   renderSSCohorts(ssAnchorCohorts(agents,p,top),top);
   /* v4.10: Main's own final-year distributions are computed HERE, not in simulate(), since
    * `agents`/p/top are already in scope at this exact point (mirrors how bMain itself is
-   * computed above) — threshDist (Baseline+CCO-Only) was threaded in from simulate(). */
-  renderThresholdSensitivity({wealth:{main:sortedWealthArr(agents),base:threshDist.wealth.base,cco:threshDist.wealth.cco},blei:{main:sortedBLEIArr(agents,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf),base:threshDist.blei.base,cco:threshDist.blei.cco}},top);
+   * computed above) — extras.thresh (Baseline+CCO-Only) was threaded in from simulate(). */
+  renderThresholdSensitivity({wealth:{main:sortedWealthArr(agents),base:extras.thresh.wealth.base,cco:extras.thresh.wealth.cco},blei:{main:sortedBLEIArr(agents,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf),base:extras.thresh.blei.base,cco:extras.thresh.blei.cco}},top);
+  /* v4.13: SIM_RESULTS is assembled above, BEFORE the threshold charts are drawn, so the
+   * dominance result has to be attached here instead — otherwise an export would carry the
+   * PREVIOUS run's finding. setThreshView() refreshes it too, so an export always matches
+   * whichever view is on screen at the time. */
+  SIM_RESULTS.thresholdDominance=THRESH_DOMINANCE;
+  renderExposure(exposure);
   renderCharts(yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,baseYearlyPov,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,top,p);
   renderTable(finalM,stab,mBase,mCCO,bMain,bBase,bCCO,p,top,stabBase,stabCCO);
   renderInsights(finalM,stab,bMain,p,top);
@@ -3004,7 +3224,13 @@ function renderMultiRunSummary(results,nRuns,baseSeed){
   function mm(k){var v=results.map(function(r){return r[k];});return{lo:Math.min.apply(null,v),hi:Math.max.apply(null,v)};}
   var usesCI=(n>=10);
   var metrics=[{key:'pov',label:'Wealth Poverty',fmt:function(v){return v.toFixed(1)+'%';}},{key:'bleiPov',label:'BLEI Poverty',fmt:function(v){return v.toFixed(1)+'%';}},{key:'gini',label:'Gini',fmt:function(v){return v.toFixed(3);}},{key:'wealth',label:'Median Wealth',fmt:function(v){return '$'+Math.round(v/1000)+'K';}},{key:'blei',label:'Median BLEI',fmt:function(v){return Math.round(v)+'d';}},{key:'flour',label:'Top Tier %',fmt:function(v){return v.toFixed(1)+'%';}}];
-  var html='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:.5rem">';
+  /* v4.13: was repeat(3,1fr) — a bare 1fr track, exactly the CSS Grid overflow pattern
+   * v4.8 swept out of the stylesheet, but missed here because this grid is built in a JS
+   * template string rather than declared in CSS. Three fixed columns also meant the Monte
+   * Carlo summary never reflowed on a phone. auto-fit + a real 140px minimum fixes both:
+   * the track can shrink to its minimum instead of its intrinsic content width, and the
+   * cards wrap to 2-up / 1-up on narrow viewports. .ci-card gets min-width:0 alongside. */
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:7px;margin-top:.5rem">';
   metrics.forEach(function(m){
     var avg=mean(m.key),s=sd(m.key,avg),r=mm(m.key),ci=1.96*s/Math.sqrt(n);
     html+='<div class="ci-card"><div class="ci-label">'+m.label+'</div><div class="ci-mean">'+m.fmt(avg)+'</div>';
@@ -3034,6 +3260,24 @@ function renderStratKPIs(partPov,nonPartPov,partBLEI,nonPartBLEI,p,top){
   if(nonPartPov!==null){set('k-nonpart-pov',nonPartPov.toFixed(1)+'%');setD('k-nonpart-pov-d','Non-participant households — check for worsening',nonPartPov<40?'good':nonPartPov<60?'warn':'bad');}
   if(partBLEI!==null){var t=getTier(partBLEI,top);set('k-part-blei',partBLEI+'d');document.getElementById('k-part-blei-d').innerHTML='<span class="tbadge '+t.cls+'">'+t.name+'</span> participant median';}
   if(nonPartBLEI!==null){var t2=getTier(nonPartBLEI,top);set('k-nonpart-blei',nonPartBLEI+'d');document.getElementById('k-nonpart-blei-d').innerHTML='<span class="tbadge '+t2.cls+'">'+t2.name+'</span> non-participant median';}
+}
+
+/* ─── CUMULATIVE POVERTY EXPOSURE (v4.13) ────────────────────────────────
+ * See the computation comment in finish() for the derivation and its one honest
+ * limitation. Display only; every value is already computed before this is called. */
+function renderExposure(e){
+  if(!e||!e.years)return;
+  var lbl=document.getElementById('label-exposure'),sec=document.getElementById('sec-exposure-kpis');
+  if(lbl)lbl.style.display='flex';if(sec)sec.style.display='grid';
+  function pair(valId,delId,mainV,baseV,noun){
+    set(valId,mainV.toFixed(1)+' yr');
+    var gap=baseV-mainV;
+    var cls=gap>0.05?'good':gap<-0.05?'bad':'warn';
+    var arrow=gap>0.05?'▼ ':gap<-0.05?'▲ ':'≈ ';
+    setD(delId,arrow+Math.abs(gap).toFixed(1)+' yr vs baseline ('+baseV.toFixed(1)+' of '+e.years+') · '+noun,cls);
+  }
+  pair('k-py-wealth','k-py-wealth-d',e.pyWealthMain,e.pyWealthBase,'below $'+CFG.POVERTY_LINE.toLocaleString());
+  pair('k-py-blei','k-py-blei-d',e.pyBleiMain,e.pyBleiBase,'below '+CFG.BLEI_PRECARIOUS_MAX+' BLEI days');
 }
 
 /* ─── SOCIAL SECURITY-ANCHORED COHORTS (v4.5) ────────────────────────────
@@ -3121,17 +3365,24 @@ function renderSSCohorts(cohorts,top){
  * guarantee as the rest of this feature, never re-runs the simulation or touches RNG. */
 var THRESH_VIEW='headcount';
 var THRESH_CACHE=null;
+/* v4.13: the v4.12 dominance check was screen-only — a reader could see the finding but
+ * had no way to export, archive, or cite it alongside the run that produced it, unlike
+ * every other figure this tool computes. Captured here as the charts are drawn, then
+ * carried into SIM_RESULTS and both export formats. Null until a run has drawn the
+ * charts; reset whenever the section is hidden for want of data. */
+var THRESH_DOMINANCE=null;
 function setThreshView(view){
   if(!THRESH_CACHE||(view!=='headcount'&&view!=='gap')||view===THRESH_VIEW)return;
   THRESH_VIEW=view;
   var hBtn=document.getElementById('thresh-view-headcount'),gBtn=document.getElementById('thresh-view-gap');
-  if(hBtn)hBtn.className='tb tip-host'+(view==='headcount'?' on':'');
-  if(gBtn)gBtn.className='tb tip-host'+(view==='gap'?' on':'');
+  if(hBtn){hBtn.className='tb tip-host'+(view==='headcount'?' on':'');hBtn.setAttribute('aria-pressed',view==='headcount'?'true':'false');}  // v4.13: a11y, see tog()
+  if(gBtn){gBtn.className='tb tip-host'+(view==='gap'?' on':'');gBtn.setAttribute('aria-pressed',view==='gap'?'true':'false');}
   drawThresholdCharts(THRESH_CACHE.dist,THRESH_CACHE.top);
+  if(SIM_RESULTS)SIM_RESULTS.thresholdDominance=THRESH_DOMINANCE;  // v4.13: keep exports in step with the displayed view
 }
 function renderThresholdSensitivity(dist,top){
   var sec=document.getElementById('sec-threshold-sens'),lbl=document.getElementById('label-threshold-sens');
-  if(!dist||!dist.wealth||!dist.wealth.main||!dist.wealth.main.length){if(sec)sec.style.display='none';if(lbl)lbl.style.display='none';THRESH_CACHE=null;return;}
+  if(!dist||!dist.wealth||!dist.wealth.main||!dist.wealth.main.length){if(sec)sec.style.display='none';if(lbl)lbl.style.display='none';THRESH_CACHE=null;THRESH_DOMINANCE=null;return;}
   if(lbl)lbl.style.display='flex';if(sec)sec.style.display='block';
   THRESH_CACHE={dist:dist,top:top};
   drawThresholdCharts(dist,top);
@@ -3196,6 +3447,12 @@ function drawThresholdCharts(dist,top){
   var wDomBase=checkDominance(wMain.labels,wMain.ys,wBase.ys),wDomCCO=checkDominance(wMain.labels,wMain.ys,wCCO.ys);
   var bDomBase=checkDominance(bMain.labels,bMain.ys,bBase.ys),bDomCCO=checkDominance(bMain.labels,bMain.ys,bCCO.ys);
   var wNoun=isGap?'wealth shortfall':'wealth poverty', bNoun=isGap?'BLEI shortfall':'BLEI poverty';
+  /* v4.13: record the result for export (see THRESH_DOMINANCE's declaration). gridPoints
+   * is included deliberately — dominance is only ever checked at the thresholds actually
+   * plotted, so anyone citing this should know the resolution it was established at. */
+  THRESH_DOMINANCE={view:THRESH_VIEW,gridPoints:{wealth:wMain.ys.length,blei:bMain.ys.length},
+    wealth:{vsBaseline:wDomBase.relation,vsBaselineCrossAt:wDomBase.crossLabel||null,vsCCOOnly:wDomCCO.relation,vsCCOOnlyCrossAt:wDomCCO.crossLabel||null},
+    blei:{vsBaseline:bDomBase.relation,vsBaselineCrossAt:bDomBase.crossLabel||null,vsCCOOnly:bDomCCO.relation,vsCCOOnlyCrossAt:bDomCCO.crossLabel||null}};
   var wDomHTML='<br><strong>Dominance check:</strong> Your Settings '+dominanceClause(wDomBase,'Baseline',wNoun)+'; Your Settings '+dominanceClause(wDomCCO,'CCO Only',wNoun)+'.';
   var bDomHTML='<br><strong>Dominance check:</strong> Your Settings '+dominanceClause(bDomBase,'Baseline',bNoun)+'; Your Settings '+dominanceClause(bDomCCO,'CCO Only',bNoun)+'.';
   var wCallout=document.getElementById('thresh-wealth-callout');
@@ -3294,7 +3551,13 @@ function renderAttribution(fullMetrics,ablResults){
 /* ─── KPI RENDER ──────────────────────────────────────────────────────── */
 function renderKPIs(m,stab,base,bMain,bBase,top,policy){
   top=top||'Flourishing';var pov=m.pov;
-  set('k-pov',pov.toFixed(1)+'%');setD('k-pov-d','▼ '+(base.pov*100-pov).toFixed(1)+'pp vs baseline ('+(base.pov*100).toFixed(1)+'%)',pov<5?'good':pov<15?'warn':'bad');
+  /* v4.13: the arrow was hardcoded '▼' while the number it prefixes is signed, so any
+   * configuration that does WORSE than the baseline rendered as "▼ -3.2pp" — a down-arrow
+   * attached to a worsening. Reachable in normal use (e.g. selecting the Traditional
+   * Welfare preset, where Your Settings and Baseline are near-identical and the delta can
+   * land either side of zero). Arrow now follows the sign and the magnitude is unsigned. */
+  var povGap=base.pov*100-pov;
+  set('k-pov',pov.toFixed(1)+'%');setD('k-pov-d',(povGap>0.05?'▼ ':povGap<-0.05?'▲ ':'≈ ')+Math.abs(povGap).toFixed(1)+'pp vs baseline ('+(base.pov*100).toFixed(1)+'%)',pov<5?'good':pov<15?'warn':'bad');
   set('k-gini',m.gini.toFixed(3));setD('k-gini-d','Baseline: '+base.gini.toFixed(3)+' · Target ≤'+CFG.TARGET_GINI,m.gini<=CFG.TARGET_GINI?'good':m.gini<=0.35?'warn':'bad');
   set('k-wealth','$'+Math.round(m.med/1000)+'K');setD('k-wealth-d','Baseline: $'+Math.round(base.med/1000)+'K · Target $'+Math.round(CFG.TARGET_WEALTH/1000)+'K',m.med>=75000?'good':m.med>=40000?'warn':'bad');
   set('k-stab',Math.round(stab*100)+'%');setD('k-stab-d','Target ≥'+Math.round(CFG.TARGET_STABILITY*100)+'%',stab>=CFG.TARGET_STABILITY?'good':stab>=0.75?'warn':'bad');
@@ -3754,7 +4017,7 @@ function renderValidation(){
   var ld=document.getElementById('val-loading');if(ld)ld.style.display='none';
   document.getElementById('val-btn').disabled=false;
   var inn=document.getElementById('val-inner');if(!inn)return;
-  var allPass=true,html='<div style="display:grid;grid-template-columns:auto 1fr;gap:0">';
+  var allPass=true,html='<div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:0">';  // v4.13: bare 1fr → minmax(0,1fr), same class of fix as v4.8's CSS sweep (missed here: inline style in a JS string)
   VAL_TESTS.forEach(function(t){
     var r=VAL_STATE.results[t.id]||{pass:false,detail:'Not run'};
     if(!r.pass)allPass=false;
@@ -3782,7 +4045,16 @@ function renderSens(){
   items.forEach(function(item,i){var bd=i===items.length-1?'border-bottom:none':'';h+='<div class="sens-cell" style="'+bd+';font-weight:500">'+item.p+'</div><div class="sens-cell" style="'+bd+';font-weight:600;color:'+iC[item.i]+'">'+item.i+'</div><div class="sens-cell" style="'+bd+';color:var(--text2)">'+item.n+'</div>';});
   h+='</div>';
   inn.innerHTML=h;
-  inn.insertAdjacentHTML('afterend','<div style="font-size:11px;color:var(--accent);margin-top:.4rem;padding:5px 8px;background:var(--accent-bg);border-radius:var(--rs)">💡 <strong>One-at-a-Time (OAT) Sensitivity</strong> varies each parameter ±20% of its own slider range and measures the poverty &amp; BLEI response from actual model runs. After running the simulation, the <strong>📐 One-at-a-Time Sensitivity Analysis</strong> button appears in the sidebar Run panel.</div>');
+  /* v4.13 fix: this used insertAdjacentHTML('afterend', …), which inserts a SIBLING of
+   * #sens-inner — so the preceding `inn.innerHTML=h` (which only clears #sens-inner's own
+   * children) never removed it, and renderSens() runs once per finish(). Result: the 💡 OAT
+   * tip box was duplicated on every run, stacking up N copies after N simulations in the
+   * same page session. Verified in a real DOM before and after this fix (jsdom: 3 boxes
+   * after 3 renderSens() calls before, 1 after). Now written into a single stable-id node,
+   * created once and updated in place — idempotent however many times it is called. */
+  var tipId='sens-oat-tip',tip=document.getElementById(tipId);
+  if(!tip){tip=document.createElement('div');tip.id=tipId;tip.style.cssText='font-size:11px;color:var(--accent);margin-top:.4rem;padding:5px 8px;background:var(--accent-bg);border-radius:var(--rs)';inn.insertAdjacentElement('afterend',tip);}
+  tip.innerHTML='💡 <strong>One-at-a-Time (OAT) Sensitivity</strong> varies each parameter ±20% of its own slider range and measures the poverty &amp; BLEI response from actual model runs. After running the simulation, the <strong>📐 One-at-a-Time Sensitivity Analysis</strong> button appears in the sidebar Run panel.';
 }
 
 /* ─── INSIGHTS ────────────────────────────────────────────────────────── */
@@ -3815,7 +4087,15 @@ function downloadCSV(){
   if(!SIM_RESULTS)return;var sr=SIM_RESULTS,p=sr.params;
   function fmt(v){var s=String(v===null||v===undefined?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)?'"'+s.replace(/"/g,'""')+'"':s;}
   function row(a){return a.map(fmt).join(',');}
-  var lines=[row(['Compassionism Framework Simulation — Research Export v'+META.VERSION,'']),row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),row(['Simulation Version',META.VERSION]),row(['DOI',META.DOI]),row(['Timestamp',sr.timestamp]),row(['Citation',META.CITATION]),row(['','']),row(['Note','Exploratory ABM — not a forecast. See Assumptions & ODD Protocol for model specification.']),row(['','']),row(['--- PARAMETERS ---','']),row(['BU Monthly Allocation ($/month)',p.bu]),row(['CCO Enabled',p.ccoOn?'Yes':'No']),row(['CCO Participation Rate (%)',(p.partRate*100).toFixed(0)]),row(['Max Octave Level',p.maxOct]),row(['Phi Rate',p.phi?'On (1.618×)':'Off']),row(['Conversion Tax Rate (%)',(p.tax*100).toFixed(0)]),row(['Quality Multiplier Ceiling',p.maxMult]),row(['PTF Enabled',p.ptf?'Yes':'No']),row(['PTF Initial Share (%)',(p.ptfShare*100).toFixed(0)]),row(['PTF Adoption Capped at Slider (v4.6)',p.ptfCap?'Yes':'No (default)']),row(['PTH Enabled',p.pth?'Yes':'No']),row(['PTH Uptake Rate (%)',(p.pthUptake*100).toFixed(0)]),row(['SZH Enabled',p.szh?'Yes':'No']),row(['Zone Coherence Index',p.szhCoh.toFixed(2)]),row(['CIP Enabled',p.cip?'Yes':'No']),row(['CIP Participation (%)',(p.cipDemo*100).toFixed(0)]),row(['Economic Shocks',p.shock?'Yes':'No']),row(['AI Labor Automation',p.automation?'On':'Off']),row(['Inflation Rate (%/yr)',(p.inflRate*100).toFixed(1)]),row(['Agent Population',p.nAgents]),row(['Simulation Years',p.years]),row(['Random Seed',p.seed||'None (random MC)']),row(['Top BLEI Tier Label',sr.topTierName]),row(['','']),row(['--- FINAL-YEAR SUMMARY ---','']),row(['Wealth Poverty Rate (%)',sr.finalPov.toFixed(1)]),row(['BLEI Poverty (%)',sr.bleiPovPct.toFixed(1)]),row(['Gini Coefficient',sr.finalGini.toFixed(3)]),row(['Median Wealth ($)',Math.round(sr.finalWealth)]),row(['Median BLEI (days)',Math.round(sr.blei.med)]),row(['Agents at Top Tier (%)',sr.blei.pctF.toFixed(1)]),row(['Avg EDC (%)',(sr.blei.avgEDC*100).toFixed(1)]),row(['System Stability (%)',(sr.stab*100).toFixed(0)]),row(['','']),row(['--- SCENARIO COMPARISON ---','']),row(['Configuration','Wealth Pov (%)','BLEI Pov (%)','Median Wealth ($)','Gini','BLEI (days)','BLEI Tier','Avg EDC (%)']),row(['US Welfare Baseline',(sr.mBase.pov*100).toFixed(1),((sr.bBase.tc[0]+sr.bBase.tc[1])/sr.bBase.n*100).toFixed(1),Math.round(sr.mBase.med),sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),row(['CCO Only',(sr.mCCO.pov*100).toFixed(1),((sr.bCCO.tc[0]+sr.bCCO.tc[1])/sr.bCCO.n*100).toFixed(1),Math.round(sr.mCCO.med),sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),row(['Your Settings',sr.finalPov.toFixed(1),sr.bleiPovPct.toFixed(1),Math.round(sr.finalWealth),sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)])];
+  var lines=[row(['Compassionism Framework Simulation — Research Export v'+META.VERSION,'']),row(['Better To Best Research Hub','https://bettertobest.github.io/research-hub/']),row(['Simulation Version',META.VERSION]),row(['DOI',META.DOI]),row(['Timestamp',sr.timestamp]),row(['Citation',META.CITATION]),row(['','']),row(['Note','Exploratory ABM — not a forecast. See Assumptions & ODD Protocol for model specification.']),row(['','']),row(['--- PARAMETERS ---','']),row(['BU Monthly Allocation ($/month)',p.bu]),row(['CCO Enabled',p.ccoOn?'Yes':'No']),row(['CCO Participation Rate (%)',(p.partRate*100).toFixed(0)]),row(['Max Octave Level',p.maxOct]),row(['Phi Rate',p.phi?'On (1.618×)':'Off']),row(['Conversion Tax Rate (%)',(p.tax*100).toFixed(0)]),row(['Quality Multiplier Ceiling',p.maxMult]),row(['PTF Enabled',p.ptf?'Yes':'No']),row(['PTF Initial Share (%)',(p.ptfShare*100).toFixed(0)]),row(['PTF Adoption Capped at Slider (v4.6)',p.ptfCap?'Yes':'No (default)']),row(['PTH Enabled',p.pth?'Yes':'No']),row(['PTH Uptake Rate (%)',(p.pthUptake*100).toFixed(0)]),row(['SZH Enabled',p.szh?'Yes':'No']),row(['Zone Coherence Index',p.szhCoh.toFixed(2)]),row(['CIP Enabled',p.cip?'Yes':'No']),row(['CIP Participation (%)',(p.cipDemo*100).toFixed(0)]),row(['Economic Shocks',p.shock?'Yes':'No']),row(['AI Labor Automation',p.automation?'On':'Off']),row(['Inflation Rate (%/yr)',(p.inflRate*100).toFixed(1)]),row(['Agent Population',p.nAgents]),row(['Simulation Years',p.years]),row(['Random Seed',p.seed||'None (random MC)']),row(['Top BLEI Tier Label',sr.topTierName]),row(['','']),row(['--- FINAL-YEAR SUMMARY ---','']),row(['Wealth Poverty Rate (%)',sr.finalPov.toFixed(1)]),row(['BLEI Poverty (%)',sr.bleiPovPct.toFixed(1)]),row(['Gini Coefficient',sr.finalGini.toFixed(3)]),row(['Median Wealth ($)',Math.round(sr.finalWealth)]),row(['Median BLEI (days)',Math.round(sr.blei.med)]),row(['Agents at Top Tier (%)',sr.blei.pctF.toFixed(1)]),row(['Avg EDC (%)',(sr.blei.avgEDC*100).toFixed(1)]),row(['System Stability (%)',(sr.stab*100).toFixed(0)]),
+    row(['','']),row(['--- CUMULATIVE POVERTY EXPOSURE (v4.13) ---','']),
+    row(['Note','Mean years an agent spends below each line across the whole run (sum of the annual population shares). Aggregate exposure, not a spell-length distribution — see Known Limitations.']),
+    row(['Years in Wealth Poverty per agent — Your Settings',sr.exposure?sr.exposure.pyWealthMain.toFixed(2):'']),
+    row(['Years in Wealth Poverty per agent — Traditional Welfare Baseline',sr.exposure?sr.exposure.pyWealthBase.toFixed(2):'']),
+    row(['Years in BLEI Poverty per agent — Your Settings',sr.exposure?sr.exposure.pyBleiMain.toFixed(2):'']),
+    row(['Years in BLEI Poverty per agent — Traditional Welfare Baseline',sr.exposure?sr.exposure.pyBleiBase.toFixed(2):'']),
+    row(['Simulated years',sr.exposure?sr.exposure.years:'']),
+    row(['','']),row(['--- SCENARIO COMPARISON ---','']),row(['Configuration','Wealth Pov (%)','BLEI Pov (%)','Median Wealth ($)','Gini','BLEI (days)','BLEI Tier','Avg EDC (%)']),row(['US Welfare Baseline',(sr.mBase.pov*100).toFixed(1),((sr.bBase.tc[0]+sr.bBase.tc[1])/sr.bBase.n*100).toFixed(1),Math.round(sr.mBase.med),sr.mBase.gini.toFixed(3),Math.round(sr.bBase.med),getTier(Math.round(sr.bBase.med),'Comfortable').name,(sr.bBase.avgEDC*100).toFixed(1)]),row(['CCO Only',(sr.mCCO.pov*100).toFixed(1),((sr.bCCO.tc[0]+sr.bCCO.tc[1])/sr.bCCO.n*100).toFixed(1),Math.round(sr.mCCO.med),sr.mCCO.gini.toFixed(3),Math.round(sr.bCCO.med),getTier(Math.round(sr.bCCO.med),'Comfortable').name,(sr.bCCO.avgEDC*100).toFixed(1)]),row(['Your Settings',sr.finalPov.toFixed(1),sr.bleiPovPct.toFixed(1),Math.round(sr.finalWealth),sr.finalGini.toFixed(3),Math.round(sr.blei.med),getTier(Math.round(sr.blei.med),sr.topTierName).name,(sr.blei.avgEDC*100).toFixed(1)])];
   var ts=sr.timeSeries;
   if(ts&&ts.labels&&ts.labels.length){
     lines.push(row(['','']));lines.push(row(['--- ANNUAL TIME SERIES ---','']));
@@ -3825,7 +4105,28 @@ function downloadCSV(){
   lines.push(row(['','']));lines.push(row(['--- ACCOUNTING NOTES ---','']));
   lines.push(row(['Conversion Proceeds Credited ($, cumulative, main run)',sr.totalConversionProceeds||0]));
   lines.push(row(['Note','Tracked for transparency; the model does not yet constrain agent-level CCO conversion by an aggregate production/treasury capacity — see Known Limitations.']));
-  lines.push(row(['','']));lines.push(row(['--- v4.0 FIXES (external audit — Refine.ink, Aug 2026: refine.ink/app/session/4e84aa99-44ff-438f-9382-719bf9714344) ---','']));
+  /* v4.13: the threshold-sensitivity dominance check (v4.12) was screen-only until now.
+   * Exported with its view and grid resolution so the claim can be reproduced, not just
+   * screenshotted. Reflects whichever view was displayed when the export was taken. */
+  var td=sr.thresholdDominance;
+  lines.push(row(['','']));lines.push(row(['--- THRESHOLD DOMINANCE CHECK (v4.12; exported since v4.13) ---','']));
+  if(td){
+    lines.push(row(['View',td.view==='gap'?'Average shortfall (FGT-1)':'Headcount, % below line (FGT-0)']));
+    lines.push(row(['Threshold grid points evaluated (wealth / BLEI)',td.gridPoints.wealth+' / '+td.gridPoints.blei]));
+    lines.push(row(['Wealth curve — Your Settings vs Baseline',td.wealth.vsBaseline+(td.wealth.vsBaselineCrossAt?' (crosses near '+td.wealth.vsBaselineCrossAt+')':'')]));
+    lines.push(row(['Wealth curve — Your Settings vs CCO Only',td.wealth.vsCCOOnly+(td.wealth.vsCCOOnlyCrossAt?' (crosses near '+td.wealth.vsCCOOnlyCrossAt+')':'')]));
+    lines.push(row(['BLEI curve — Your Settings vs Baseline',td.blei.vsBaseline+(td.blei.vsBaselineCrossAt?' (crosses near '+td.blei.vsBaselineCrossAt+')':'')]));
+    lines.push(row(['BLEI curve — Your Settings vs CCO Only',td.blei.vsCCOOnly+(td.blei.vsCCOOnlyCrossAt?' (crosses near '+td.blei.vsCCOOnlyCrossAt+')':'')]));
+    lines.push(row(['Caveat','Checked only at the plotted thresholds, and for this single stochastic run — not a confidence statement. Re-run across seeds before treating a result as a property of the configuration.']));
+  } else {lines.push(row(['(not computed for this run)','']));}
+  /* v4.13: this block's header read "--- v4.0 FIXES ---" in every CSV this tool has ever
+   * exported, including at v4.12, listing a hand-picked selection that stopped being
+   * "the fixes" nine releases ago. Relabelled to say what it actually is — a short
+   * orientation list of the mechanics changes that most affect how an exported number
+   * should be read — and pointed at the canonical, maintained account rather than trying
+   * to grow an enumerated changelog inside a CSV. */
+  lines.push(row(['','']));lines.push(row(['--- KEY MECHANICS CHANGES AFFECTING HOW THESE FIGURES READ (v4.0 → v'+META.VERSION+') ---','']));
+  lines.push(row(['Canonical changelog','CONTRIBUTING.md Release Notes — github.com/BetterToBest/compassionism-simulation. The rows below are an orientation subset, not a complete list.']));
   lines.push(row(['Unit system (v4.0)','wage (SIU) converted to USD via CFG.SIU_TO_USD before mixing with USD-typed wealth/BLEI/FBS terms — SUPERSEDED v4.4, see below']));
   lines.push(row(['Unit system (v4.4)','BLEI/FBS/Gini wage→USD conversion unified onto CFG.WAGE_TO_USD (the same Census/BLS-sourced anchor the main wealth loop already used) — CFG.SIU_TO_USD retired']));
   lines.push(row(['Octave advancement','FBS-gated: P(advance)=1-exp(-λ·FBS), replaces fixed-probability advancement']));
@@ -3845,7 +4146,12 @@ function downloadCSV(){
 
 function downloadJSON(){
   if(!SIM_RESULTS)return;var sr=SIM_RESULTS;
-  var out={meta:{version:META.VERSION,doi:META.DOI,timestamp:sr.timestamp,tool:'Compassionism Framework Simulation',url:META.URL,license:'CC BY 4.0',citation:META.CITATION},parameters:sr.params,results:{finalPov:sr.finalPov,finalGini:sr.finalGini,finalWealth:sr.finalWealth,stability:sr.stab,bleiPovPct:sr.bleiPovPct,topTierName:sr.topTierName,totalConversionProceeds:sr.totalConversionProceeds||0,blei:{median:sr.blei.med,pctFlourishing:sr.blei.pctF,avgEDC:sr.blei.avgEDC,tierCounts:sr.blei.tc},scenarios:{baseline:{pov:sr.mBase.pov*100,gini:sr.mBase.gini,wealth:sr.mBase.med,blei:sr.bBase.med},ccoOnly:{pov:sr.mCCO.pov*100,gini:sr.mCCO.gini,wealth:sr.mCCO.med,blei:sr.bCCO.med}}},timeSeries:sr.timeSeries};
+  /* v4.13: the license field read a flat 'CC BY 4.0', unchanged since before the v4.8
+   * relicensing split — so every exported JSON has been quietly asserting a single license
+   * for a project that has had two since v4.8. The exported data itself is content (CC BY
+   * 4.0); the simulation that produced it is Apache 2.0. Both are now stated explicitly
+   * rather than one standing in for both. */
+  var out={meta:{version:META.VERSION,doi:META.DOI,timestamp:sr.timestamp,tool:'Compassionism Framework Simulation',url:META.URL,license:'Exported data/content: CC BY 4.0. Simulation source code: Apache License 2.0 (as of v4.8).',citation:META.CITATION},parameters:sr.params,results:{finalPov:sr.finalPov,finalGini:sr.finalGini,finalWealth:sr.finalWealth,stability:sr.stab,bleiPovPct:sr.bleiPovPct,topTierName:sr.topTierName,totalConversionProceeds:sr.totalConversionProceeds||0,cumulativePovertyExposure:sr.exposure||null,thresholdDominance:sr.thresholdDominance||null,blei:{median:sr.blei.med,pctFlourishing:sr.blei.pctF,avgEDC:sr.blei.avgEDC,tierCounts:sr.blei.tc},scenarios:{baseline:{pov:sr.mBase.pov*100,gini:sr.mBase.gini,wealth:sr.mBase.med,blei:sr.bBase.med},ccoOnly:{pov:sr.mCCO.pov*100,gini:sr.mCCO.gini,wealth:sr.mCCO.med,blei:sr.bCCO.med}}},timeSeries:sr.timeSeries};
   var blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='compassionism-sim-v'+META.VERSION.replace(/\./g,'')+'-'+sr.timestamp.slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
 }
 
@@ -3869,6 +4175,11 @@ function gamma(a){if(a===1)return -Math.log(Math.max(1e-14,RNG()));if(a<1)return
 
 window.addEventListener('DOMContentLoaded',function(){
   applyPreset('reference');
+  /* v4.13: applyPreset() calls tog() for every toggle EXCEPT ptfCap (no preset sets it),
+   * so that one pair would have kept its markup classes but never received the new
+   * aria-pressed attribute until a user clicked it. Idempotent — it re-asserts the state
+   * ST.ptfCap already holds and the classes the markup already carries. */
+  tog('ptfCap',ST.ptfCap);
   /* v4.5: apply any ?bu=…&ptfOn=1… query params on top of the reference defaults — see
    * applyParamsFromURL()/getShareableParams() for the shared "Copy parameters as URL"
    * good-first-issue this implements. A shared link only needs to specify the params
