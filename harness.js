@@ -130,13 +130,21 @@ function runYear(agentSet,yr,p,recSt){
   var szhThetaVal=p.szh?szhTheta(p.szhCoh):0;
   var ptfConvBonus=1.30+((p.szh&&p.ptf)?szhThetaVal:0);
   var szhPartBoost=(p.szh&&p.ccoOn)?szhThetaVal*0.16:0;
+  /* v4.14 parity fix — ported from index.html: PTF's inflation-damping term used to read
+   * the static initial-share slider (p.ptfShare) rather than the population's actual
+   * current PTF membership, which this same function already computes a few lines later
+   * (for the Bass-diffusion adoption term) but never reused here. ptfAdoptFrac is moved up
+   * and reused for both purposes — it draws no RNG, so this reordering shifts no draw
+   * anywhere in the function. Verified inert on the documented seed-42/Full Integration
+   * regression (inflRate=0 there, so the guard never fires); see CONTRIBUTING.md's v4.14
+   * Release Notes for the full trail and measured effect size on configs it does touch. */
+  var ptfAdoptFrac=0;
+  if(p.ptf&&p.ptfShare>0){var ptfCount0=0;agentSet.forEach(function(a){if(a.inPTF)ptfCount0++;});ptfAdoptFrac=ptfCount0/Math.max(1,agentSet.length);}
   var inflRate=p.inflRate||0;
-  if(p.ptf&&inflRate>0)inflRate*=(1-p.ptfShare*0.5);
+  if(p.ptf&&inflRate>0)inflRate*=(1-ptfAdoptFrac*0.5);
   if(p.pth&&inflRate>0)inflRate*=0.90;
   var dollarCost=CFG.BASE_DAILY_COST*365*Math.pow(1+inflRate,yr);
   var popShock=recSt.active?recSt.incomeMultiplier:1.0;
-  var ptfAdoptFrac=0;
-  if(p.ptf&&p.ptfShare>0){var ptfCount=0;agentSet.forEach(function(a){if(a.inPTF)ptfCount++;});ptfAdoptFrac=ptfCount/Math.max(1,agentSet.length);}
   var ptfLiveCount=0,ptfLiveTotal=agentSet.length;
   if(p.ptf&&p.ptfCap){agentSet.forEach(function(a){if(a.inPTF)ptfLiveCount++;});}
   function ptfCapAllows(){return !p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare;}
@@ -177,7 +185,14 @@ function runYear(agentSet,yr,p,recSt){
     a.wealth+=annualWageUSD-costUSD;
     if(isNaN(a.wealth))a.wealth=0;
     if(p.ccoOn&&a.inCCO){
-      var decay=p.expiry<2?0:0.7;
+      /* v4.14 parity fix — ported from index.html: this was a step function (decay=0 at
+       * expiry=1, decay=0.7 at every other slider value, 2-6 all identical) rather than a
+       * continuous function of the slider. Replaced with decay=1-1/expiry, a documented
+       * annual-approximation interpretation. At expiry=1 (used by every shipped preset and
+       * this harness's own FULL_INTEGRATION/BASELINE configs) decay=0, identical to the
+       * prior behaviour — zero effect on any documented regression figure. See
+       * CONTRIBUTING.md's v4.14 Release Notes. */
+      var decay=Math.max(0,1-1/Math.max(1,p.expiry));
       a.buBalance=Math.min(a.buBalance*decay+p.bu,p.bu*3);
       var spend=a.buBalance*uSpendFrac;a.buBalance-=spend;totalBU+=spend;
       if(p.cip&&uCipQuality<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);
