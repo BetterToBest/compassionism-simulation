@@ -41,6 +41,12 @@
  * The page is loaded with runScripts:'outside-only' so DOMContentLoaded and
  * load have already fired before the script is evaluated — the page's own
  * auto-run never triggers, and every function is exercised deliberately.
+ *
+ * v4.14 additions: regression guards for two mechanics bugs an external audit
+ * found in runYear() — the BU-expiry slider collapsing every value 2-6 into
+ * one behaviour, and PTF's inflation-damping term reading a static slider
+ * instead of actual adoption — plus checks on the new Wealth Floor Diagnostic
+ * KPI and its CSV/JSON export. See CONTRIBUTING.md's v4.14 Release Notes.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 const fs = require('fs');
@@ -158,15 +164,44 @@ const iv = setInterval(() => {
     !!e && e.pyWealthMain > r.finalPov / 100, 'final-year wealth poverty ' + r.finalPov + '% vs ' + (e ? e.pyWealthMain.toFixed(2) : '?') + ' mean years poor');
   check('dominance result attached to the run snapshot', !!r.thresholdDominance);
 
+  const fd = r.floorDiagnostic;
+  check('Wealth Floor Diagnostic computed and bounded to [0,1]',
+    !!fd && fd.main >= 0 && fd.main <= 1 && fd.base >= 0 && fd.base <= 1 && fd.floor === -10000,
+    fd ? 'main=' + (fd.main * 100).toFixed(1) + '% base=' + (fd.base * 100).toFixed(1) + '%' : 'missing');
+  check('Baseline is pinned at the floor at least as much as Your Settings (no cost-reduction mechanism to keep it off the floor)',
+    !!fd && fd.base >= fd.main, fd ? fd.base + ' vs ' + fd.main : '');
+
+  // Regression guard for the v4.14 BU-expiry fix: expiry=3 and expiry=6 must no longer
+  // collapse to the same value (the exact bug this release fixed).
+  const pBase = { bu: 1200, maxOct: 6, tax: 0.12, maxMult: 9, nAgents: 200, partRate: 0.78, years: 10,
+    ptfShare: 0, pthUptake: 0, szhCoh: 0, cipDemo: 0, phi: true, ptf: false, pth: false, szh: false,
+    cip: false, shock: false, automation: false, inflRate: 0, ccoOn: true };
+  function runIsolated(expiry, seed) {
+    const mainRNG = w2.RNG; w2.RNG = w2.mulberry32(seed + 700003);
+    const latentPop = w2.makeLatentPopulation(pBase.nAgents);
+    w2.RNG = w2.mulberry32(seed);
+    const p = Object.assign({}, pBase, { expiry: expiry, bu: pBase.bu });
+    const agents = latentPop.map(lat => w2.instantiateAgent(lat, p));
+    for (let yr = 0; yr < p.years; yr++) w2.runYear(agents, yr, p, { active: false, incomeMultiplier: 1.0, yearsLeft: 0 });
+    w2.RNG = mainRNG;
+    return Math.round(w2.calcMetrics(agents, p.ccoOn, p.pth).med);
+  }
+  const w3 = runIsolated(3, 7), w6 = runIsolated(6, 7), w1 = runIsolated(1, 7);
+  check('BU expiry: slider values 3 and 6 no longer collapse to the same behaviour',
+    w3 !== w6, 'expiry=3 → $' + w3 + '   expiry=6 → $' + w6);
+  check('BU expiry: the shipped default (1) is untouched by this fix', typeof w1 === 'number' && isFinite(w1));
+
   w2.downloadCSV(); w2.downloadJSON();
   const csv = (Object.entries(captured).find(([k]) => k && k.endsWith('.csv')) || [])[1] || '';
   const jsonTxt = (Object.entries(captured).find(([k]) => k && k.endsWith('.json')) || [])[1] || '';
   check('CSV export carries the exposure and dominance blocks',
     /CUMULATIVE POVERTY EXPOSURE/.test(csv) && /THRESHOLD DOMINANCE CHECK/.test(csv));
+  check('CSV export carries the Wealth Floor Diagnostic block', /WEALTH FLOOR DIAGNOSTIC/.test(csv));
   check('CSV no longer heads its mechanics list "v4.0 FIXES"', !/--- v4\.0 FIXES/.test(csv) && /KEY MECHANICS CHANGES/.test(csv));
   let parsed = null; try { parsed = JSON.parse(jsonTxt); } catch (err) { /* handled below */ }
   check('JSON export parses and carries exposure + dominance',
     !!parsed && !!parsed.results.cumulativePovertyExposure && !!parsed.results.thresholdDominance);
+  check('JSON export carries the Wealth Floor Diagnostic', !!parsed && !!parsed.results.wealthFloorDiagnostic);
   check('JSON export states the v4.8 split licence',
     !!parsed && /Apache License 2\.0/.test(parsed.meta.license) && /CC BY 4\.0/.test(parsed.meta.license));
   check('exported version matches META.VERSION', !!parsed && parsed.meta.version === w2.META.VERSION,
