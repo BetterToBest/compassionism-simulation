@@ -47,6 +47,15 @@
  * one behaviour, and PTF's inflation-damping term reading a static slider
  * instead of actual adoption — plus checks on the new Wealth Floor Diagnostic
  * KPI and its CSV/JSON export. See CONTRIBUTING.md's v4.14 Release Notes.
+ *
+ * v4.15 additions: four more checks (25 -> 29), all written to FAIL GRACEFULLY rather than
+ * throw against a v4.14 page, so they double as demonstrably-real regression guards — run
+ * this file against an unmodified v4.14 index.html and the four new ones fail. They cover:
+ * PTH's inflation damping being scaled by realised membership (PTH switched on with zero
+ * members must be bit-identical to PTH off — pre-v4.15 the flat 0.90 fired anyway), a
+ * missing BU-expiry parameter behaving as the default rather than propagating NaN, the
+ * Monte Carlo CI multiplier being Student's t rather than a fixed 1.96, and the rendered
+ * CI actually using it. See CONTRIBUTING.md's v4.15 Release Notes.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 const fs = require('fs');
@@ -190,6 +199,57 @@ const iv = setInterval(() => {
   check('BU expiry: slider values 3 and 6 no longer collapse to the same behaviour',
     w3 !== w6, 'expiry=3 → $' + w3 + '   expiry=6 → $' + w6);
   check('BU expiry: the shipped default (1) is untouched by this fix', typeof w1 === 'number' && isFinite(w1));
+
+  // ── v4.15 regression guards ───────────────────────────────────────────────
+  // Same isolated-run pattern as runIsolated() above, but returns every agent's final wealth
+  // and the BU/conversion totals so a check can assert BIT-IDENTICAL behaviour, not just a
+  // similar median. pBase (above) has no expiry/pth keys — each check supplies what it needs.
+  function runIsolatedFull(overrides, seed) {
+    const mainRNG = w2.RNG; w2.RNG = w2.mulberry32(seed + 700003);
+    const latentPop = w2.makeLatentPopulation(pBase.nAgents);
+    w2.RNG = w2.mulberry32(seed);
+    const p = Object.assign({}, pBase, overrides);
+    const agents = latentPop.map(lat => w2.instantiateAgent(lat, p));
+    let bu = 0, conv = 0;
+    for (let yr = 0; yr < p.years; yr++) {
+      const r = w2.runYear(agents, yr, p, { active: false, incomeMultiplier: 1.0, yearsLeft: 0 });
+      bu += r.bu; conv += r.conversion;
+    }
+    w2.RNG = mainRNG;
+    return { wealth: JSON.stringify(agents.map(a => a.wealth)), bu: bu, conv: conv, med: Math.round(w2.calcMetrics(agents, p.ccoOn, p.pth).med) };
+  }
+  // (1) PTH inflation damping must scale with realised membership. With PTH toggled on but
+  // pthUptake=0 nobody is in PTH, and nothing else in runYear() reads p.pth without also
+  // requiring a.inPTH — so the run must be bit-identical to PTH off. Pre-v4.15 the flat
+  // `inflRate*=0.90` fired on the bare toggle and the two diverged.
+  const pthInfl = { expiry: 1, inflRate: 0.04, pth: true, pthUptake: 0 };
+  const pthZeroOn = runIsolatedFull(pthInfl, 7), pthZeroOff = runIsolatedFull(Object.assign({}, pthInfl, { pth: false }), 7);
+  check('PTH inflation damping: PTH on with zero members is inert (bit-identical to PTH off)',
+    pthZeroOn.wealth === pthZeroOff.wealth && pthZeroOn.bu === pthZeroOff.bu,
+    'median wealth PTH-on/zero-members $' + pthZeroOn.med + ' vs PTH-off $' + pthZeroOff.med + '  (pre-v4.15: flat 0.90 damped regardless of membership)');
+  // (2) A missing expiry must behave as the default (1), not propagate NaN. Pre-v4.15,
+  // Math.max(1,undefined) was NaN: BU/conversion totals went NaN and the isNaN rescue on
+  // a.wealth silently zeroed every CCO participant's wealth each year.
+  const expUndef = runIsolatedFull({ expiry: undefined }, 7), expOne = runIsolatedFull({ expiry: 1 }, 7);
+  check('BU expiry: a missing expiry parameter behaves as the default (no NaN propagation)',
+    Number.isFinite(expUndef.bu) && Number.isFinite(expUndef.conv) && expUndef.wealth === expOne.wealth && expUndef.bu === expOne.bu,
+    'totalBU=' + expUndef.bu + ' median wealth $' + expUndef.med + '  (pre-v4.15: NaN totals, median $0)');
+  // (3) + (4) The Monte Carlo CI multiplier is Student's t, and the rendered summary uses it.
+  const hasT = typeof w2.tCritical95 === 'function';
+  check("Monte Carlo CI: tCritical95 gives Student's t (df=9 -> 2.262, df=49 ~ 2.010, large df -> 1.96)",
+    hasT && Math.abs(w2.tCritical95(9) - 2.262) < 1e-9 && Math.abs(w2.tCritical95(49) - 2.0096) < 0.002 && w2.tCritical95(1) === 12.706 && w2.tCritical95(500) === 1.96,
+    hasT ? 't(9)=' + w2.tCritical95(9) + ' t(49)=' + w2.tCritical95(49).toFixed(4) + ' t(500)=' + w2.tCritical95(500) : 'tCritical95 not defined (pre-v4.15: fixed z=1.96)');
+  let ciOK = false, ciDetail = 'tCritical95 not defined (pre-v4.15: fixed z=1.96)';
+  if (hasT) {
+    const fake = Array.from({ length: 10 }, (_, i) => ({ pov: 10 + i, bleiPov: 10 + i, gini: 0.5, wealth: 100000, blei: 500, flour: 50 }));
+    w2.renderMultiRunSummary(fake, 10, 1);
+    const shown = $2('multirun-inner').textContent, hdr = $2('multirun-header').textContent;
+    const mean = 14.5, sd = Math.sqrt(fake.reduce((s, r) => s + (r.pov - mean) * (r.pov - mean), 0) / 9), ci = 2.262 * sd / Math.sqrt(10);
+    const want = '95% CI: ' + (mean - ci).toFixed(1) + '% \u2013 ' + (mean + ci).toFixed(1) + '%';
+    ciOK = shown.indexOf(want) >= 0 && /t=2\.262/.test(hdr) && /df=9/.test(hdr);
+    ciDetail = 'expected "' + want + '" (z=1.96 would show 12.6% - 16.4%); header: "' + hdr.slice(-45) + '"';
+  }
+  check('Monte Carlo CI: the rendered 95% interval uses the t multiplier and states t and df', ciOK, ciDetail);
 
   w2.downloadCSV(); w2.downloadJSON();
   const csv = (Object.entries(captured).find(([k]) => k && k.endsWith('.csv')) || [])[1] || '';

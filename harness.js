@@ -140,9 +140,22 @@ function runYear(agentSet,yr,p,recSt){
    * Release Notes for the full trail and measured effect size on configs it does touch. */
   var ptfAdoptFrac=0;
   if(p.ptf&&p.ptfShare>0){var ptfCount0=0;agentSet.forEach(function(a){if(a.inPTF)ptfCount0++;});ptfAdoptFrac=ptfCount0/Math.max(1,agentSet.length);}
+  /* v4.15 parity fix — ported from index.html: PTH's inflation damping used to be the flat,
+   * toggle-triggered `inflRate*=0.90` below — the same defect class the v4.14 PTF fix closed
+   * one line above it, in a coarser form (it referenced no adoption-scale quantity at all,
+   * so 5% PTH uptake got the identical 10% population-wide reduction as 50%). Unlike PTF,
+   * PTH membership is drawn once at construction and never changes during a run, so
+   * pthMemberFrac is simply the population's fixed realised PTH share — counted the same
+   * no-RNG way as ptfAdoptFrac (existing a.inPTH flags only), so no draw shifts anywhere.
+   * Verified inert on the documented seed-42/Full Integration regression (inflRate=0 there)
+   * and on Baseline (pth=false); see CONTRIBUTING.md's v4.15 Release Notes. */
+  var pthMemberFrac=0;
+  if(p.pth){var pthCount0=0;agentSet.forEach(function(a){if(a.inPTH)pthCount0++;});pthMemberFrac=pthCount0/Math.max(1,agentSet.length);}
   var inflRate=p.inflRate||0;
   if(p.ptf&&inflRate>0)inflRate*=(1-ptfAdoptFrac*0.5);
-  if(p.pth&&inflRate>0)inflRate*=0.90;
+  /* v4.15: (1-pthMemberFrac*0.10) replaces the flat *0.90. The 0.10 coefficient (=1-0.90) is
+   * unchanged from the historical value and is now the ceiling reached at 100% membership. */
+  if(p.pth&&inflRate>0)inflRate*=(1-pthMemberFrac*0.10);
   var dollarCost=CFG.BASE_DAILY_COST*365*Math.pow(1+inflRate,yr);
   var popShock=recSt.active?recSt.incomeMultiplier:1.0;
   var ptfLiveCount=0,ptfLiveTotal=agentSet.length;
@@ -192,7 +205,7 @@ function runYear(agentSet,yr,p,recSt){
        * this harness's own FULL_INTEGRATION/BASELINE configs) decay=0, identical to the
        * prior behaviour — zero effect on any documented regression figure. See
        * CONTRIBUTING.md's v4.14 Release Notes. */
-      var decay=Math.max(0,1-1/Math.max(1,p.expiry));
+      var decay=Math.max(0,1-1/Math.max(1,p.expiry||1));  /* v4.15 parity: || 1 guards a missing expiry — Math.max(1,undefined) is NaN */
       a.buBalance=Math.min(a.buBalance*decay+p.bu,p.bu*3);
       var spend=a.buBalance*uSpendFrac;a.buBalance-=spend;totalBU+=spend;
       if(p.cip&&uCipQuality<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);

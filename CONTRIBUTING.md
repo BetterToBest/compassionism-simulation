@@ -32,6 +32,152 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## v4.15 Release Notes
+
+v4.15 responds to two independent external audits of v4.14, forwarded by Duke together: **MuseAI**, a focused code-level audit, and **Grok**, a broad clarity-and-rigor review. Per this project's standing practice, every claim was checked against source — and, where it made an empirical claim, by direct computation — before anything was acted on. Four items shipped: one genuine mechanics bug, one robustness fix, one statistical correction, and one documentation correction. **Zero effect on the documented seed-42/Full Integration/20yr regression** (Median BLEI 1,965d, Median wealth $559,223, Gini 0.534, Wealth poverty 16.6%) — confirmed by `harness.js validate` reproducing every figure bit-for-bit, and by `domtest.js` driving the fixed engine through a real DOM.
+
+### How these audits differed from prior ones
+
+Two things changed the shape of the verification work this time, and both are worth naming because they affect how much of it this document has to show.
+
+- **MuseAI ran this project's own tooling before reporting** — `harness.js validate` and `domtest.js` — which no external audit had done before. Every earlier audit's claims were verified afterwards by a Claude session that first had to build a harness from scratch. Here the findings arrived already grounded in the project's own regression machinery, so verification meant reproducing them and then *extending* them (scope sweeps, negative controls) rather than establishing them from nothing.
+- **Grok's review deliberately avoided re-flagging items already logged in this file**, and reached its own conclusion that it found no additional mechanics bugs on the default or documented paths that would move the seed-42 regression or the shipped presets. That is independent corroboration of the same thing MuseAI's harness run showed: the four fixes below are the whole story for the documented configurations.
+
+### Bug found and fixed: PTH's inflation damping was a flat toggle-triggered discount, not scaled by realised membership
+
+The line directly beneath the v4.14 PTF fix:
+
+```js
+if(p.pth&&inflRate>0)inflRate*=0.90;
+```
+
+applied a flat 10% reduction to the whole population's cost inflation whenever PTH was toggled on and inflation was nonzero — **regardless of `p.pthUptake`**. This is the v4.14 defect class again, in a coarser form: the PTF line at least read a slider (the wrong one); this one referenced no adoption-scale quantity at all. Confirmed by isolating the two-line computation from every downstream mechanism: at `inflRate=0.02` the factor was bit-identically 0.90× whether 5%, 20%, or 50% of a 500-agent population was in PTH. A stronger form of the same fact turned up while verifying: **PTH switched on with zero members still damped inflation.** `domtest.js` now reproduces this live against an unmodified v4.14 page (otherwise-identical runs, PTH-on/zero-members vs PTH-off: median wealth $54,147 vs $45,444; on v4.15 they are bit-identical).
+
+**Fix.** Same shape as the PTF fix — count existing membership flags, reuse the count:
+
+```js
+var pthMemberFrac=0;
+if(p.pth){var pthCount0=0;agentSet.forEach(function(a){if(a.inPTH)pthCount0++;});pthMemberFrac=pthCount0/Math.max(1,agentSet.length);}
+...
+if(p.pth&&inflRate>0)inflRate*=(1-pthMemberFrac*0.10);
+```
+
+The 0.10 coefficient is `1−0.90`, unchanged from the historical value; it is now the ceiling, reached at 100% membership — exactly as the v4.14 PTF fix kept its own 0.5 and replaced only the input variable. Two design notes:
+
+- **Why not track adoption over time, as `ptfAdoptFrac` does for PTF?** PTH membership is drawn once, at construction (`instantiateAgent()`), and never changes during a run — there is no Bass/distress adoption path for PTH. `pthMemberFrac` is therefore the population's fixed *realised* share, which carries Bernoulli sampling variance around the slider exactly as the PTF year-0 draw does (see the v4.6 PTF-cap notes): at seed 42 with 500 agents, a 5% slider realises 6.4%. The damping now tracks who is actually in PTH, not the dial. Modelling PTH entry/exit is a separate design question, subsumed by the rollout/transition-path item under Good First Issues.
+- **It draws no RNG** — it counts already-set `a.inPTH` flags — so it shifts no stream position anywhere in the function.
+
+**Verified inert on every documented figure — proven by sweep, not argued.** Full Integration and hiAI have `inflRate=0`; Baseline and CCO-Only have `pth=false`. Rather than stop at reading that off the configs, all five shipped presets were run under the v4.14 and v4.15 engines at seed 42 and every agent's final wealth compared: **four of five are bit-for-bit identical (hiAI included, with AI automation on); only Stress Test differs** — the only preset combining `pth:true` with nonzero inflation. `harness.js validate` reproduces the regression JSON exactly:
+
+```
+{"pov":16.6,"gini":0.534,"wealth":559223,"p10":-10000,"p90":1616445,"bleiMed":1965,"bleiPovPct":13.6,"pctFlourishing":69.8,"avgEDC":24.9,"stab":88.5,"fracAtFloor":0.106,"medianPinned":false}
+```
+
+A PTH-uptake sweep on a synthetic isolate (CCO + PTH + 4% inflation, no PTF/SZH/CIP; seed 42, 20yr, 500 agents) maps where the fix does and doesn't apply. It is identical at every uptake when inflation is 0, identical at 100% uptake for any inflation (the new formula equals the old flat one at full membership), and diverges most at low uptake:
+
+| PTH uptake (realised) | v4.14 median wealth / poverty | v4.15 median wealth / poverty |
+|---|---|---|
+| 5% (6.4%) | $84,783 / 47.0% | $45,595 / 49.4% |
+| 10% (10.8%) | $93,195 / 46.2% | $52,474 / 48.6% |
+| 20% (19.6%) | $157,016 / 43.4% | $118,888 / 45.2% |
+| 30% (31.0%) | $213,780 / 41.2% | $183,659 / 42.8% |
+| 50% (53.0%) | $297,073 / 35.4% | $280,106 / 36.6% |
+| 75% (78.2%) | $366,914 / 27.2% | $358,858 / 28.0% |
+| 100% (100.0%) | $429,231 / 21.6% | identical |
+
+The only `VAL_TEST` that reaches this line is `ptf_infl`; both its arms share the same reference PTH uptake, so the fix scales them identically. Re-verified 5/5 seeds (1234, 5678, 9012, 3456, 2468) under both engines in the harness, and through the live page in `domtest.js`'s Phase 3.
+
+**Effect size where the fix does apply** (harness-computed, seed 42/20yr, recession shocks and AI automation held off — the harness's simplified recession handling does not reproduce the in-app preset's stochastic-shock path, a documented scope limit of `harness.js`, so these are effect-size illustrations of the fix, not the in-app Stress Test run's own output):
+
+| Config | Metric | Before (v4.14) | After (v4.15) |
+|---|---|---|---|
+| Stress Test preset | Poverty | 41.8% | 43.2% |
+| | Gini (EDC-adj.) | 0.696 | 0.702 |
+| | Median wealth | $158,155 | $143,494 |
+| | Median BLEI | 482d | 436d |
+| Synthetic isolate (PTH + 4% inflation, no PTF/SZH/CIP) | Poverty | 43.4% | 45.2% |
+| | Gini (EDC-adj.) | 0.688 | 0.701 |
+| | Median wealth | $157,016 | $118,888 |
+| | Median BLEI | 568d | 456d |
+
+**The direction is the opposite of the v4.14 PTF fix, and that is worth stating plainly.** The PTF fix *strengthened* damping, because real PTF adoption ran above its slider. This one *weakens* it, because at a 10–20% realised uptake the flat 0.90 overstated what a small PTH-participating minority should do to population-wide inflation. A reader should not infer that "fixing a damping bug" always points one way.
+
+**A sweep for the same defect class.** Every population-level `p.*` read in `runYear()` was enumerated and classified. No further instance of "a scalar or bare toggle standing in for realised membership" exists. The remaining reads are SZH's zone-coherence scalar (by design — coherence *is* the zone-level quantity the θ gate is defined on), CIP's participation scalar (applied uniformly by design; CIP has no per-agent membership flag — agents carry only `inCCO`/`inPTF`/`inPTH`), and the PTF-cap comparison (where the slider *is* the intended ceiling). `runYear()` never reads `p.partRate` or `p.pthUptake` at all — both are consumed once, at construction.
+
+Ported into `harness.js` for parity, with the same reasoning recorded in its own comment.
+
+### Robustness fix: a missing `expiry` would have resolved to NaN
+
+`Math.max(1,p.expiry)` returns `NaN`, not 1, if `p.expiry` is `undefined` — `Math.max` propagates `NaN` from any argument rather than ignoring it. **This was never a live defect**: every current caller supplies `expiry` explicitly (the slider, `pBase`/`pCCO` in `simulate()`, `mkMiniP()`'s hardcoded default), so no documented or shipped figure was ever affected. But it sat one un-set object key away from a quiet failure for anyone hand-building a test or mini-scenario object. Measured, the failure is worse than a NaN total: `decay` becomes `NaN`, `totalBU`/`totalConversion` become `NaN`, and — because the pre-existing `isNaN` rescue on `a.wealth` resets it to 0 — **every CCO participant's wealth is silently zeroed each year** (median wealth $0 in a 200-agent check), with no error thrown.
+
+Fixed to `var decay=Math.max(0,1-1/Math.max(1,p.expiry||1));`. `p.expiry||1` is a no-op for every value the UI can produce: decay at expiry=1 and expiry=6 is bit-identical before and after; expiry=0 (never UI-reachable) already resolved to `decay=0` via the existing floor and still does; a missing value now behaves as expiry=1 (verified bit-identical to an explicit 1). Ported into `harness.js`.
+
+### Statistical correction: Monte Carlo 95% CIs now use Student's t, not a fixed z
+
+`renderMultiRunSummary()` computed `ci=1.96*s/Math.sqrt(n)` for every n, which is correct only in the large-sample limit. The correct two-tailed multiplier is Student's t with n−1 degrees of freedom:
+
+| Button | n | df | correct t | interval too narrow by (fixed z=1.96) | actual coverage of the nominal 95% |
+|---|---|---|---|---|---|
+| Run 10× | 10 | 9 | 2.262 | 13.4% | 91.8% |
+| Run 50× | 50 | 49 | 2.010 | 2.5% | 94.4% |
+
+(Coverage assumes an approximately normal run-level statistic. **A correction to the audit handoff's own arithmetic:** it described t(9)=2.262 as "~13% larger than 1.96." It is 15.4% larger; it is the fixed-z *interval* that was 13.4% too narrow. Both statements are true and are now stated correctly here and in `index.html`.) The 3× button does not display a CI and is unaffected.
+
+New `tCritical95(df)`: the standard two-tailed-95% table (df 1–30, then 40/50/60/80/100/120), linearly interpolated between listed df, converging to 1.96 beyond df=120. **All 36 table entries were checked against an independent implementation of the t quantile function** (agreement to within rounding); linear interpolation between listed entries errs by at most 0.0014 over df 1–120; beyond df=120 the 1.96 asymptote is within ~1% (max 0.02, at df=121). The summary header now states the t and df actually used, e.g. `t=2.262, df=9`, so the displayed interval is checkable rather than asserted. Display-only: it reads already-computed `MR.results`, draws no RNG, touches no agent state, and cannot affect any simulation output or the documented regression table.
+
+**Scope, checked:** `harness.js`'s own sweep summary keeps `ci95=1.96*sd/√n` — it is used with N≥100 seeds there (N=500 for the documented `WEALTH_FLOOR` table), where t and z differ by at most 1.2%, so it is left as is. The N=5,000 and N=500 large-N tables in this file report CIs on the mean across runs at sample sizes where t≈z; they are unaffected.
+
+### Documentation correction: a fourth stale PTH card, missed by the v4.12 sweep
+
+v4.12 corrected three places where the interactive tool's panels described pre-v4.3/pre-v4.4 mechanics as current. MuseAI found a fourth instance the same sweep missed: the **Empirical Calibration** panel's "PTH Acre Equity — payments now build equity" card still described housing-cost reduction as "35% of `SIM_COST_SCALE`" (which no function in the file reads — the actual mechanic is a dimensionless `cf*=0.65` applied to the main loop's `LIVING_WAGE_ANNUAL`-based cost) and appreciation as a flat "× 0.5" 50% haircut (superseded in v4.5 by `pthLiquidShare()`'s 15%→85% tenure ramp). Its third sub-claim — the 25% equity-contribution share — was and remains accurate. Corrected in place with a note recording what was wrong, per this project's established practice.
+
+One precision on the finding itself: the audit placed this in the "ODD panel." The stale card lives in the **Empirical Calibration** panel (third of its four cards). The ODD panel's own "Details: Submodels" card was a separate, adjacent place that needed one accurate sentence added — that population-wide inflation damping now scales with realised PTF and PTH shares — and got it. This project is careful to distinguish the two panels (see the v4.12 fixes), so the distinction is kept.
+
+### What the audits confirmed or restated, and the one item logged for Duke
+
+Checked against source and found already addressed or already logged, not treated as new:
+
+- **A monolithic single-file `index.html`, the BU-expiry annual approximation, and `harness.js`'s documented coverage limits** — all already logged (single-file is an explicit standing constraint; the approximation's scope is stated in the v4.14 notes; the harness's scope limits are stated in the v4.8 and v4.9 notes).
+- **"`SIM_COST_SCALE` should carry a historical-only marker."** It already does, inline at the constant's own definition in `CFG` (`// historical constant only — read by no function in this file …`), and again in the Empirical Calibration panel's cost-scales card. Arguably better-placed than a summary at the top of `CFG`, since it sits where a reader editing the constant will see it. Checked; no change.
+- **Formal Git tags or GitHub Releases per version** — genuinely new, and a repository action rather than a code change; logged below under Model Architecture Feedback for Duke.
+
+### What checking the handoff itself turned up
+
+This release's own working documents were verified with the same discipline as the audits, and the verification found errors in them — recorded here because catching them is the point of the practice:
+
+1. **The "13% larger" figure** (above) was really 15.4%.
+2. **The partially-built v4.15 `index.html` carried forward from the previous session was not a faithful copy of v4.14.** It had silently dropped many CSS comment blocks (all the `/* v4.8 fix: … */` explanations, among others) and rewritten the JSON-LD escape sequences. Rather than complete it, `index.html` was rebuilt from the untouched v4.14 source with assertion-checked edits (every replacement asserts it matched exactly the expected number of times), and the draft was used only as a source for new prose. A line-by-line diff of the shipped file against v4.14 shows only intended hunks.
+3. **The draft's description of the missing-`expiry` failure understated it** (it mentioned only the NaN totals, not the zeroed participant wealth). Measured and corrected above.
+4. **A draft note in the Empirical Calibration card described Grok as approving the existing `SIM_COST_SCALE` marker**, when the audit had suggested adding one. The marker already exists (above), so no change was needed — but the note mischaracterised the audit and was dropped rather than shipped.
+
+### Found in passing: the replication page's header toggle was clipping its own content
+
+Adding a v4.15 paragraph to the replication page's collapsible "Version highlights" block (in its header) turned up an existing defect: `.hdr-toggle-body.open` capped the block at `max-height:700px` with `overflow:hidden`, but its content was already about 5,800 visible characters — roughly 900px on desktop by estimate, considerably more on a phone. The oldest lines were therefore being silently clipped before this release, and every release since v4.8 that prepended text made it worse. The cap is raised to 8000px, the same technique `.changelog-body` already uses (20000px). **This is an estimate from character counts, not a browser measurement** — `domtest.js`/jsdom has no layout engine — so it warrants a visual look at a couple of widths after deploying. It is the only CSS change in this release.
+
+### What did NOT get done, and why
+
+- **PTH entry/exit dynamics.** PTH membership remains a one-time draw. This is a design simplification present since v4.0 (housing transitions are slow relative to a model year, and PTH construction capacity is not modelled), not something this release changes; it belongs with the rollout/transition-path item under Good First Issues.
+- **Everything logged at v4.14 remains open and unchanged:** the full flow-of-funds ledger, monthly BU tranches, CCO/PTH pathway decomposition, λ heterogeneity beyond fixed-and-independent, AI automation as an employment-transition model and a fuller macro-recession model, the explicit enumeration of `runYear()`'s annual state-transition schedule, and the expanded invariant/mechanism/calibration test taxonomy.
+- **No fresh N=5,000 study.** None is needed: the mechanics fix is provably inert on every documented configuration, so no documented large-N figure moves. This is the second consecutive release where that is true, and the reason is the same — the fix was proven inert *before* being written, on every shipped preset and every `VAL_TEST`.
+- **No CSS, markup, or layout change to the interactive tool (`index.html`).** The only CSS change in the release is the replication page's header-toggle cap, above; `domtest.js` does not verify layout.
+
+### Regression: seed 42 / Full Integration / 20yr, v4.14 → v4.15
+
+| Metric | v4.14 | v4.15 | Δ |
+|---|---|---|---|
+| Median BLEI | 1,965d | 1,965d | — |
+| Median wealth | $559,223 | $559,223 | — |
+| Gini (EDC-adj.) | 0.534 | 0.534 | — |
+| Wealth poverty | 16.6% | 16.6% | — |
+| System Stability | 88.5% | 88.5% | — |
+| Pinned at Wealth Floor | 10.6% | 10.6% | — |
+
+Confirmed three ways: `harness.js validate` (both fixes ported for parity; JSON above reproduced exactly, including `fracAtFloor` matching the documented 10.6% Wealth Floor Diagnostic); `domtest.js` driving the actual edited `index.html` end-to-end through a real DOM — **29 checks now, four new this release** — reproducing the regression exactly through the live page; and the old-vs-new preset comparison (every agent's final wealth identical in four of five presets, Stress Test the sole exception by construction).
+
+**`domtest.js` gained four checks this release, and they are demonstrably real guards.** Each is written to fail gracefully rather than throw, and the same file run against an unmodified v4.14 `index.html` fails exactly these four and passes the other 25: PTH-on with zero members must be bit-identical to PTH-off; a missing `expiry` must behave as the default; `tCritical95` must return Student's t; and the rendered CI must use it and state t and df. A regression guard that has never been seen to fail is a claim, not a guard — these have been seen to fail.
+
+---
+
 ## v4.14 Release Notes
 
 v4.14 responds to a two-pass external ChatGPT audit — a general review of `index.html` and `CONTRIBUTING.md`, followed by a second pass focused exclusively on the economic mathematics and causal structure of `runYear()`. Duke forwarded both passes together. Per this project's standing practice, every claim was checked against source before acting on it. The second pass earned that discipline: it found two genuine mechanics bugs that seven prior audits and this project's own six-check validation suite had missed, both now fixed. **Zero effect on the documented seed-42/Full Integration/20yr regression** (Median BLEI 1,965d, Median wealth $559,223, Gini 0.534, Wealth poverty 16.6%) — confirmed by re-running `harness.js`, by driving the fixed engine through `domtest.js` end-to-end, and by isolated before/after checks on every configuration either fix actually touches.
@@ -885,6 +1031,8 @@ The simulation supports seeded runs (Mulberry32 PRNG). To verify a result:
 
 If results diverge under identical seed + parameters, open a bug report with both exports. This should not happen — if it does, it indicates a browser environment difference worth documenting.
 
+**v4.15 update:** another genuine `runYear()` mechanics bug (PTH's inflation damping — the coarser sibling of v4.14's PTF fix), a NaN guard on a missing `expiry`, and a display-only Student's-t correction to the Monte Carlo CI — see the v4.15 Release Notes' own regression table and preset comparison, above. The seed-42/Full Integration/20yr figures below and everywhere else in this document are unchanged; of the five shipped presets only Stress Test's output moves, by construction (it is the only one combining PTH with nonzero inflation). Reproducibility routine: `node domtest.js` now runs 29 checks (four new this release, each verified to fail against an unmodified v4.14 page).
+
 **v4.14 update:** two genuine `runYear()` mechanics bugs, found and fixed — see the v4.14 Release Notes' own regression table, above, and the before/after tables within it, for exactly which configurations move and by how much (nothing documented does). Both fixes are ported into `harness.js` for parity. `domtest.js` gains six new checks this release, two of which are direct regression guards against the specific bugs just fixed — if either is ever reintroduced, `node domtest.js` fails immediately rather than requiring another audit to rediscover it.
 
 **v4.13 update:** an independent-audit pass. Nothing in `index.html` touches `makeAgent()`/`instantiateAgent()`, `runYear()`, or any metric function except `structuralStability()`, whose window fix is provably inert at every run length of 8+ years (swept directly, 8–30) — so the v4.12 seed-42/Full Integration/20yr figures below still apply unchanged, confirmed by `harness.js`, by `domtest.js` driving the live page, and by that sweep. Reproducibility routine gains a step: run `node domtest.js` alongside `node harness.js validate`. See the v4.13 Release Notes' own regression table, above.
@@ -966,6 +1114,8 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 
 Areas currently open for discussion:
 
+- **New in v4.15: tag and release each version (a repository action, for Duke).** An external audit suggested formal Git tags or GitHub Releases per version, so "exactly v4.15" can be cited or archived without relying on the live `main` branch. This is not something a chat session can do from inside pasted files — the same category as the v4.9 OSF-metadata update. It would also give this file's per-release regression tables a citable code state to point at, since the DOI-archived OSF snapshot predates most of this history. Suggested minimal form: an annotated tag `v4.15` on the commit that ships these files, with `index.html` attached as a release asset. Not decided here — a repository-hosting choice for Duke.
+- **Noted in v4.15: PTH membership is a one-time draw.** The v4.15 PTH-inflation fix (see Release Notes) scales damping by PTH's *realised* share, which never changes after construction — there is no PTH analogue of PTF's Bass/distress adoption path, and no exit. That is a design simplification present since v4.0, not something the fix introduced; a rollout/transition-path model (Good First Issues, v4.12 item (d)) is where PTH entry and exit would naturally be modelled, and would make the realised-share input to this damping time-varying the way PTF's already is.
 - **New in v4.14: a fuller flow-of-funds ledger, scoped by an external audit's specific proposed schema.** The stock-flow accounting gap has been an open Known Limitation since v4.0 ("CCO conversion proceeds are tracked but not production-constrained"); a v4.14 audit elaborated it with a concrete schema worth recording rather than re-deriving later: BU issued, BU redeemed, BU expired, BU converted, conversion-tax receipts, treasury balance, PTF operating surplus/deficit, PTH equity inflows/outflows, aggregate production/output, aggregate household income, aggregate household consumption, aggregate transfers — enforced against explicit accounting identities (e.g. total household financial assets + treasury liabilities + institutional balances = system-wide monetary claims, with the precise identity depending on how BU and the primary currency are defined). A substantial economic-modelling undertaking in its own right, not a bug fix; logged here so a future session building this doesn't have to re-derive the schema from scratch.
 - **New in v4.14: monthly BU tranches, as the "proper" fix for BU expiry that v4.14 deliberately did not attempt.** v4.14 fixed a genuine bug — the expiry slider collapsed six values into two behaviours (see v4.14 Release Notes) — with a continuous annual-approximation `decay=1-1/expiry`, not a full rebuild. The fuller mechanism an audit suggested: track individual monthly BU allocations as separate tranches and expire each one on its own schedule, rather than approximating monthly expiry inside an annual-cadence loop. A real, scoped enhancement — not attempted because it's a materially larger rearchitecture than an audit-response release should take on unilaterally, and because the annual approximation actually shipped is honestly documented as an approximation rather than presented as the real thing.
 - **New in v4.14: CCO/PTH pathway decomposition.** An audit's focused review of `runYear()`'s causal structure found (and this project's ODD panel now documents explicitly, see v4.14 Release Notes) that CCO and PTH each drive wealth through more than one coupled channel — CCO through direct cost reduction *and* conversion proceeds *and* octave-mediated wage growth *and* octave-mediated conversion-rate capacity; PTH through direct cost reduction *and* octave-mediated wage growth via the same FBS gate. A headline "CCO effect" or "PTH effect" is therefore a compound of several mechanisms, and a reader currently has no way to see how much of it comes from which channel. A structured ablation decomposition (Model A: full mechanism; B: no conversion proceeds; C: no octave advancement; D: no octave→wage bonus; E: no direct cost reduction; then `ΔW_A = ΔW_direct + ΔW_wage + ΔW_octave + ΔW_conversion`) would answer this without needing formal causal mediation analysis. A genuine extension of the existing ablation engine (`runAblation()`), not a quick toggle — scoped here for whoever picks it up.
@@ -1027,6 +1177,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 **Good first issues:**
 
+- **Done in v4.15** (see Release Notes, above): fixed another genuine `runYear()` mechanics bug an external audit found — PTH's inflation damping was a flat toggle-triggered 10% reduction independent of realised uptake (PTH on with zero members still damped inflation), the coarser sibling of v4.14's PTF fix — now scaled by the population's realised PTH share, proven inert on four of five shipped presets and every documented figure by direct old-vs-new comparison of every agent's final wealth (only Stress Test moves); guarded the BU-expiry decay against NaN if `expiry` were ever missing (never a live defect, but the failure mode zeroed all CCO-participant wealth silently); replaced the Monte Carlo CI's fixed z=1.96 with Student's t (the 10× interval was ~13% too narrow); corrected a fourth stale PTH documentation card the v4.12 sweep missed. `domtest.js` gained four checks (29 total), each verified to fail against an unmodified v4.14 page.
 - **Done in v4.14** (see Release Notes, above): fixed two genuine `runYear()` mechanics bugs an external audit's focused review found — the BU-expiry slider collapsing six values into two identical behaviours, and PTF's inflation-damping term reading a static slider instead of actual current adoption (both proven inert on every documented figure, both ported to `harness.js` for parity); added the Wealth Floor Diagnostic (in-app companion to the offline `WEALTH_FLOOR` sweep) with CSV/JSON export; reframed EDC-adjusted Gini as a constructed stock-minus-flow index rather than conventional net worth; added a dual-cost-anchor (`LIVING_WAGE_ANNUAL` vs `BASE_DAILY_COST`) table; documented the CCO/PTH feedback loops through FBS and octave explicitly in the ODD panel and inline in `runYear()`; added a Known Limitations entry naming recession and AI automation as reduced-form mechanisms; extended the "not a forecast" banner with an explicit interpretive caveat. `domtest.js` gained six regression-guard checks — two that fail immediately if either mechanics bug is reintroduced.
 - **New in v4.14 (external audit suggestions, not attempted this session — each is a real, separable task, most already scoped in Model Architecture Feedback above):** (a) **Monthly BU tranches** — the "proper" fix for BU expiry, vs. the annual-approximation `decay=1-1/expiry` actually shipped; individual monthly allocations tracked and expired on their own schedule inside the annual-cadence loop. (b) **CCO/PTH pathway decomposition** — a structured ablation splitting a headline effect into direct-cost-reduction / conversion-proceeds / octave-mediated-wage / octave-mediated-conversion components; extends the existing `runAblation()` engine. (c) **λ heterogeneity beyond fixed-and-independent** — time-varying λ, or λ correlated with initial wage/other latent traits, as alternatives to the current persistent-and-independent draw; a sensitivity-testing task, not a recalibration. (d) **A fuller macro-recession model** (asset prices, employment, transfers, interest rates) and **AI automation as an employment-transition model** (displacement → job search → re-employment), replacing the current income-shock-only and wage-growth-penalty reduced forms respectively — both substantial modelling undertakings. (e) **`runYear()`'s full annual state-transition schedule, enumerated explicitly** — deliberately not attempted this session despite being genuinely valuable and genuinely undocumented, because re-deriving a 15-20-step ordered sequence correctly from the actual code, accurately, alongside everything else in this release, carried real risk of shipping an inaccurate sequence; a future session with the bandwidth to verify each step against the code line-by-line should do this properly rather than transcribe an audit's own attempt at it. (f) **An expanded invariant/mechanism/calibration test taxonomy** — same-seed-reproduces-identical-output, different-seed-changes-output, PTF-cap-never-exceeded, and probability-bounds-in-[0,1] as explicit assertions (the `invariants` `VAL_TEST` and scattered NaN/Inf guards already cover some of this implicitly, but not as named, itemized checks); a legitimate extension of `VAL_TESTS`, not attempted this session given the two mechanics fixes already carried it. (g) **A full aggregate flow-of-funds ledger** — see Model Architecture Feedback, above, for the audit's specific proposed schema (BU issuance/redemption/expiry/conversion, treasury, PTF/PTH balance sheets, aggregate production/consumption identities).
 - **Done in v4.13** (see Release Notes, above): fixed two live UI defects found by running the page in a headless DOM rather than reading it (shared-link tooltip stripping; duplicated sensitivity tip box); fixed a `structuralStability()` window that returned a constant 0.99 for every 5–7 year run; corrected four stale claims in `runYear()`'s own comments plus `CFG.SIM_COST_SCALE`'s; added Cumulative Poverty Exposure KPIs and exports; made the v4.12 dominance check exportable and added its two missing caveats; fixed the Wealth Poverty KPI's arrow direction, two inline bare-`1fr` grids, the JSON export's pre-v4.8 license string, and the CSV's "v4.0 FIXES" header; added `aria-pressed` to every toggle; surfaced `POVERTY_LINE`'s missing provenance at the constant; restored this file's missing `## v4.11 Release Notes` heading; corrected two four-release-stale version labels on the replication page. **Committed `domtest.js`** — the jsdom DOM-behaviour harness that found the first two items.
@@ -1107,7 +1258,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v4.14*
+*Better To Best Research Hub · Compassionism Framework Simulation v4.15*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
@@ -1124,4 +1275,9 @@ If you're contributing code (a pull request touching `index.html` or a harness s
      v4.14: bumped cleanly again — this release's own contribution to the "verify, don't
      assume" pattern was catching two mechanics bugs (BU expiry, PTF inflation damping)
      that seven prior audits and this project's own validation suite had all missed,
-     by reading runYear() as a causal system rather than a checklist. -->
+     by reading runYear() as a causal system rather than a checklist.
+     v4.15: bumped cleanly again. This release's own contribution to the "verify, don't
+     assume" pattern was applying it to the handoff document itself — a "13% larger" figure
+     that was really 15.4%, a partially-built draft that had silently dropped CSS comments
+     and understated a failure mode — and to two external audits, one of which ran this
+     project's own validation tooling directly for the first time. -->
