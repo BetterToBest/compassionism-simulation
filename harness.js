@@ -47,6 +47,12 @@ CFG.FBS_HALF_SAT_LO = Math.log(2) / CFG.FBS_LAMBDA_HI;
 CFG.FBS_HALF_SAT_HI = Math.log(2) / CFG.FBS_LAMBDA_LO;
 
 var RNG = Math.random;
+/* v4.16: counterfactual switch for the PTH appreciation-accounting question logged in
+ * CONTRIBUTING.md's v4.16 notes. false (the default, and the only value any validated mode
+ * uses) reproduces index.html exactly: the FULL appreciation is added to acreEquity AND the
+ * tenure-based liquid share is credited to wealth. true is the value-conserving alternative
+ * (acreEquity keeps only the non-liquid remainder). Read only by the `pth-accounting` mode. */
+var PTH_APPR_CONSERVE = false;
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 
 function lognormal(mu,sigma){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.exp(mu+sigma*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v));}
@@ -240,7 +246,7 @@ function runYear(agentSet,yr,p,recSt){
       var pthSaving=Math.max(0,dollarCost*cfWithoutPTH*(1-0.65));
       var equityContrib=pthSaving*CFG.PTH_EQUITY_CONTRIB_SHARE;
       a.acreEquity+=equityContrib;a.wealth-=equityContrib;
-      var ar=0.030+uPthAppr*0.020+pthApprBonus;var appr=a.acreEquity*ar;a.acreEquity+=appr;a.wealth+=appr*pthLiquidShare(a.pthTenure);
+      var ar=0.030+uPthAppr*0.020+pthApprBonus;var appr=a.acreEquity*ar,lqs=pthLiquidShare(a.pthTenure);a.acreEquity+=PTH_APPR_CONSERVE?appr*(1-lqs):appr;a.wealth+=appr*lqs;  /* v4.16: PTH_APPR_CONSERVE=false is bit-identical to index.html */
     } else if(a.pthTenure){
       a.pthTenure=0;
     }
@@ -474,5 +480,49 @@ if (require.main === module) {
     console.log('=== calcBLEIComponents() per year, seed 42, Full Integration, 20yr ===');
     console.log('yr\tcashDays\tincomeDays\tbenefitDays\tCCO participation frac');
     rows.forEach(function(r){ console.log(r.yr+'\t'+r.cash+'\t\t'+r.inc+'\t\t'+r.ben+'\t\t'+r.partFrac); });
+  }
+
+  /* v4.16: the two studies behind CONTRIBUTING.md's v4.16 Release Notes, so their tables can be
+   * regenerated rather than taken on trust. Both hold shocks and automation off (the harness's
+   * documented scope) and aggregate seeds 1..N at 500 agents / 20 years. */
+  function aggregate(p, N){
+    var keys = ['pov','gini','wealth','bleiMed','bleiPovPct','fracAtFloor'], s = {}, pinned = 0, medW = [];
+    keys.forEach(function(k){ s[k] = 0; });
+    for (var seed = 1; seed <= N; seed++){
+      var r = runScenario(p, seed);
+      keys.forEach(function(k){ s[k] += r[k]; });
+      if (r.medianPinned) pinned++;
+      medW.push(r.wealth);
+    }
+    keys.forEach(function(k){ s[k] = +(s[k]/N).toFixed(3); });
+    medW.sort(function(a,b){ return a-b; });
+    s.medianOfMedianWealth = medW[Math.floor(N/2)];
+    s.runsMedianPinned = +(pinned/N).toFixed(3);
+    return s;
+  }
+  if (mode === 'infl-match') {
+    CFG.WEALTH_FLOOR = -10000;
+    var nI = parseInt(process.argv[3] || '500', 10);
+    console.log('=== Baseline inflation asymmetry (v4.16): seeds 1-' + nI + ', 500 agents, 20yr, shocks off ===');
+    [['Baseline @ 3% (shipped default)', BASELINE],
+     ['Baseline @ 0% (matched to Full Integration)', Object.assign({}, BASELINE, {inflRate:0})],
+     ['Full Integration @ 0% (shipped default)', FULL_INTEGRATION],
+     ['Full Integration @ 3% (matched to Baseline)', Object.assign({}, FULL_INTEGRATION, {inflRate:0.03})]
+    ].forEach(function(c){ console.log(c[0] + '\n  ' + JSON.stringify(aggregate(c[1], nI))); });
+    console.log('seed 42, Baseline @ 0%: ' + JSON.stringify(runScenario(Object.assign({}, BASELINE, {inflRate:0}), 42)));
+  }
+  if (mode === 'pth-accounting') {
+    CFG.WEALTH_FLOOR = -10000;
+    var nP = parseInt(process.argv[3] || '500', 10);
+    var P50 = Object.assign({}, FULL_INTEGRATION, {pthUptake:0.5});
+    console.log('=== PTH appreciation accounting (v4.16): current (full appr -> acreEquity) vs value-conserving ===');
+    [false, true].forEach(function(cons){
+      PTH_APPR_CONSERVE = cons;
+      var lbl = cons ? 'conserving' : 'current   ';
+      console.log(lbl + ' seed 42:  ' + JSON.stringify(runScenario(FULL_INTEGRATION, 42)));
+      console.log(lbl + ' N=' + nP + ' FI: ' + JSON.stringify(aggregate(FULL_INTEGRATION, nP)));
+      console.log(lbl + ' N=' + nP + ' FI, PTH 50%: ' + JSON.stringify(aggregate(P50, nP)));
+    });
+    PTH_APPR_CONSERVE = false;
   }
 }
