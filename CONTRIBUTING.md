@@ -20,7 +20,7 @@ The **Full Integration** preset (seed 42, 20 years) serves as the illustrative r
 | Parameter | Reference value | Rationale |
 |---|---|---|
 | Monthly BU allocation | $1,200/month | Approximates US median rent/basic-needs floor |
-| CCO participation rate | 78% | Above min-viable 55% network threshold |
+| CCO participation rate | 78% | Above the papers' 55% minimum-viable level. **v4.17:** a design reference only — no dynamic in the engine reads aggregate participation, and outcomes change smoothly through 55% (see v4.17 Release Notes) |
 | Initial PTF share | 18% | Below 30% distortion threshold (slider sets year-0 adoption only; relabeled from "PTF market share" in v3.6 — this table caught up in v4.16) |
 | PTH uptake | 20% | Conservative housing transition rate |
 | SZH zone coherence | 0.72 | Mid-range cooperative zone coherence |
@@ -29,7 +29,179 @@ The **Full Integration** preset (seed 42, 20 years) serves as the illustrative r
 | Simulation years | 20 | Two decades captures full automation wave |
 | Seed | 42 | Fixed for reproducibility; labeled "illustrative reference" |
 
+**v4.17:** a sixth preset, **Adverse Environment**, runs these settings unchanged under recessions, 2% inflation and AI automation — the environment the Stress Test preset uses, without its weaker settings.
+
 The label "Reference" (not "Optimal") reflects that these are calibrated starting points for exploration — the solution space around them is what the simulation is designed to map.
+
+---
+
+## v4.17 Release Notes
+
+v4.17 responds to three sources, each checked by direct computation before anything was acted on:
+
+- this session's own audit of v4.16;
+- ten notes from the independent NEEC maintainers, found while running the pinned v4.15 engine (`cd0ceec`) in their Sessions 38 and 40;
+- an external Claude Sonnet audit of v4.15.
+
+It ships:
+
+- three bug fixes and one harness parity fix;
+- two new poverty measures, each reported against year 0 as well as the Baseline;
+- a new preset that separates environmental stress from weaker settings;
+- recessions in `harness.js`;
+- four disclosures that change how the project's headline claims should be read.
+
+**The seed-42/Full Integration/20yr regression is unchanged** (1,965d · $559,223 · 0.534 · 16.6% · 88.5%). Nothing in this release draws RNG or feeds back into the dynamics. The regression is confirmed by `harness.js validate` and by `domtest.js`, now 48 checks, all passing. The ten new checks were each confirmed to fail against an unmodified v4.16 page, while the original 38 still pass there.
+
+**Five items need a decision from Duke** and are logged under Model Architecture Feedback rather than applied:
+
+- how to reconcile the papers' 98% / $82,000 headline with the engine;
+- whether to recalibrate the wage distribution or the living-wage basket;
+- whether θ should read realised PTF density;
+- whether to build the 55% participation threshold as a dynamic;
+- an endogenous price channel.
+
+### Bugs fixed
+
+1. **The page said v4.15.** v4.16 updated `META.VERSION` but not the header or footer, which were hardcoded. The single-source-of-truth rule `META` was created for in v3.5 had never been applied to the page's own markup. Every visible label (header, footer, Assumptions panel) now carries `class="meta-ver"` and is filled from `META.VERSION` at load. `domtest.js` checks it.
+2. **BU Expiry was missing from every CSV export** (Claude Sonnet audit). It was the only run parameter absent from an export that exists for reproducibility. It has been added.
+3. **The LHS Sensitivity export had a dead dimension** (Claude Sonnet audit). `ptfShare` is sampled in every design row, but PTF's on/off toggle was inherited from the page. With PTF off, the column was inert in all 100 rows. Nothing in the CSV said so. The fix follows the convention CCO already used: `params.ptf = params.ptfShare > 0`. The sampled range is [0.05, 0.35], so PTF is on in every row; with the toggle already on, the line is a no-op. The CSV now also records every fixed setting the rows inherit. Checked: 100/100 rows have PTF on, versus 0/100 before.
+4. **Harness parity drift** (NEEC note 8). `harness.js`'s `structuralStability()` still used `Math.max(1, …)`, the window v4.13 fixed in `index.html` (it returned 0.99 for every 5–7 year run). It now uses `Math.max(2, …)`. Runs of 8 or more years are unaffected.
+
+**Claude Sonnet's third finding, a race condition, was already fixed in v4.16.** A seeded run could be corrupted by overlapping background work. That is the reproducibility fix in v4.16's notes, and `domtest.js` Phase 4 passes against v4.16.
+
+**Polish from v4.16's list, done:** `(a.automationRisk||0.5)` would read a draw of exactly 0 as 0.5. It is now an explicit guard, in both files. No figure moves.
+
+### Four poverty measures, against year 0 and against the Baseline (NEEC notes 2 and 3)
+
+Every headcount through v4.16 was a **stock** measure: net wealth below `POVERTY_LINE`, or BLEI below 30 days. BLEI is itself built mostly from 20% of wealth. The papers, and NEEC's C1.1, use an **income** measure.
+
+`runYear()` now records four quantities it already computed: wage income after the income shock, CCO conversion proceeds, the agent's own basket cost, and the gross basket. It uses no RNG and nothing reads them back. A new **Poverty by Four Measures** card reports each measure's year-0 value, the final Baseline, CCO Only and Your Settings values, and the change against year 0 and against the Baseline. The same block is in the CSV and JSON exports. The definitions:
+
+- **Cash income** = wage income + CCO conversion proceeds. PTH appreciation is excluded: it is a capital gain, which the OECD/EU income convention excludes.
+- **Relative income poverty** = cash income < 60% of that scenario's own median. Agents are single adults with no taxes or transfers, so there is no equivalence scale and nothing to net out. A variant adds the in-kind value of the agent's CCO/PTF/PTH cost reductions to income first.
+- **Basket poverty (net)** = cash income < the agent's own inflation-adjusted `LIVING_WAGE_ANNUAL` after cost reductions. It asks: can this year's income buy the living-wage basket at the prices this agent faces? **Gross** uses the undiscounted basket.
+- **Year 0** is measured on the initial population before any year runs. Wealth and income measures are identical across scenarios there, because every scenario starts from the same latent population. BLEI is not: `agentBLEI()` credits BU, γ = 0.20 and a reduced daily cost the moment an agent enrols. So the card shows BLEI at year 0 under Baseline rules (policy-neutral), with the figure under the scenario's own rules beneath it.
+
+`node harness.js headline 500` (Full Integration, seeds 1–500, 500 agents, 20 years, shocks off):
+
+| Measure | Year 0 | Baseline @3% (shipped) | Baseline @0% (matched) | Full Integration | vs shipped Baseline | vs matched Baseline | vs year 0 |
+|---|---|---|---|---|---|---|---|
+| Wealth poverty | 37.8% | 71.8% | 50.5% | 15.3% | −78.7% | −69.7% | −59.5% |
+| BLEI poverty | 10.3% | 70.8% | 49.1% | 12.6% | −82.2% | −74.4% | **+22%** |
+| Relative income poverty (cash) | 15.3% | 16.3% | 17.7% | 18.0% | **+10%** | +2% | +18% |
+| … incl. in-kind cost relief | 15.3% | 16.3% | 17.7% | 14.8% | −9.4% | −16.2% | −3.5% |
+| Basket poverty (net) | 66.6% | 82.1% | 47.0% | 10.0% | −87.8% | −78.7% | −84.9% |
+| Basket poverty (gross) | 66.6% | 82.1% | 47.0% | 19.7% | −76.0% | −58.1% | −70.4% |
+
+**On relative income poverty, Full Integration shows no reduction.** The relative line moves with the median, and Full Integration raises median cash income from $50.7k to $79.6k, mostly through octave-driven wage growth. Participants with low base wages and all non-participants stay below the higher line. Counting in-kind cost relief as income gives a modest reduction. On the absolute basket measure the reduction is large. This is the familiar behaviour of relative measures under broad-based growth, but it matters here because it is the papers' own measure. How to present it is Duke's call.
+
+### NEEC note 1: the 98% / $82,000 headline is not produced by this engine
+
+The maintainers' 78.5% and 82.1% are reductions against the shipped Baseline. The harness gives 78.7% and 82.2% at N=500, agreeing within sampling. The table above shows the full picture:
+
+- No measure and comparator reaches 98%. The largest is 87.8%: net basket poverty against the shipped Baseline.
+- Against the inflation-matched Baseline, wealth poverty falls 69.7%.
+- Against year 0, wealth poverty falls 59.5%.
+- **BLEI poverty ends above its policy-neutral year-0 level**, 12.6% against 10.3%.
+- Median wealth is $526,629, not $82,000.
+
+`TARGET_WEALTH`, `TARGET_POVERTY` and `TARGET_GINI` are paper targets carried as constants, not engine outputs. The KPI badges have said so since v4.4. A Known Limitations entry now says it plainly. The model behind 98% is not in this repository, so this release cannot reproduce it. Publishing that model or restating the papers against the current engine is the decision logged below.
+
+### NEEC notes 3 and 4: why the Baseline deteriorates, and Full Integration's early BLEI rise
+
+Both trace to one calibration fact. **The median year-0 wage income is $39,945 (`exp(3.5) × 12 × WAGE_TO_USD`), against a $49,370 `LIVING_WAGE_ANNUAL` basket, so 66.6% of agents start in basket poverty.** The Baseline has no transfers, so those agents run an annual deficit from year 1 and draw down their wealth. The deficit then evolves differently at each inflation rate:
+
+- At 3% CPI, costs outgrow wages, which grow about 1–1.8% a year. Wealth poverty climbs from 37.8% to 71.8%, and basket poverty from 66.6% to 82.1%.
+- At 0%, wage growth slowly closes the gap. Basket poverty falls to 47.0%, while wealth poverty rises to about 50% and plateaus as stocks run down.
+
+Neither is a code defect. Whether the wage distribution or the basket should be recalibrated is logged as a decision.
+
+`node harness.js year0 500` (means over seeds):
+
+| Full Integration, year | 0 | 1 | 2 | 3 | 5 | 10 | 20 |
+|---|---|---|---|---|---|---|---|
+| BLEI poverty (scenario rules) | 2.6% | 9.4% | 14.1% | 16.9% | 19.8% | 20.1% | 12.6% |
+| … CCO participants | 0.6% | 6.4% | 10.4% | 12.9% | 15.2% | 15.0% | 7.2% |
+| … non-participants | 9.6% | 20.2% | 27.3% | 31.5% | 35.9% | 38.3% | 31.7% |
+| Basket poverty (net) | 66.6% | 40.6% | 38.2% | 35.7% | 30.7% | 21.1% | 10.0% |
+
+The early rise (note 4) has two parts:
+
+1. **About 7.7 points of it is measurement.** At year 0, BLEI already credits participants' BU and cost relief: 2.6% under Full Integration rules, but 10.3% for the same agents under Baseline rules. Measured from the policy-neutral 10.3%, BLEI poverty rises about 9.5 points, not 17.
+2. **The rest is a genuine transient, not an initialisation bug.** Basket poverty falls steadily from year 1, so flows improve at once. But initial wealth is drawn independently of wage, and 40.6% of agents still run deficits in year 1. They draw down a stock the flow model would not have given them. BLEI is mostly 20% of wealth, so it tracks that run-down before flows turn positive.
+
+A wage-conditional initial wealth draw would shrink the transient, but it would change the regression. That is a calibration decision, not something to apply here.
+
+### NEEC notes 5 and 6: recessions in the harness, and an Adverse Environment preset
+
+`harness.js` now carries `updateRecession()` and `buildRecessionPath()` verbatim, and `runScenario()` honours `p.shock`. Until now the harness silently ignored `p.shock`. The path draws on its own stream (seed + 700000) and restores `RNG`, so enabling shocks moves no agent draw, the same paired-shock design `simulate()` uses. Checked against the page: the seed-42 Adverse Environment run is **bit-identical** through `domtest.js` and `harness.js` (37.4% wealth poverty, $258,045, 950d, Gini 0.639).
+
+The **Stress Test** preset changes the environment (recessions, 2% inflation, AI automation) and the settings (40% participation, $900 BU, lower PTF/PTH/SZH/CIP) at once. A new **Adverse Environment** preset applies the same environment to the unchanged reference settings. `harness.js` mirrors both as `STRESS_TEST` and `ADVERSE_REFERENCE`. `node harness.js stress 500`:
+
+| Scenario (seeds 1–500) | Wealth poverty | BLEI poverty | Basket poverty (net) | Median wealth (mean of run medians) |
+|---|---|---|---|---|
+| Full Integration | 15.3% | 12.6% | 10.0% | $526,629 |
+| Adverse environment @ reference settings | 35.9% | 32.6% | 50.5% | $206,930 |
+| Weaker settings @ reference environment | 32.0% | 29.3% | 25.7% | $269,562 |
+| Stress Test (both) | 56.8% | 54.9% | 72.3% | −$9,407 |
+| Baseline under the adverse environment (3% CPI) | 81.9% | 81.2% | 94.4% | −$10,000 |
+
+The environment and the settings each roughly double wealth poverty, and together they compound. A stress criterion that means "does the reference design hold up under adverse conditions" should be tested against Adverse Environment, not Stress Test.
+
+### NEEC note 7, and a related finding: two thresholds described as dynamics are not
+
+- **55% CCO participation.** Three documents described this as a network threshold below which effects collapse:
+  - the reference table above;
+  - the page's sensitivity table ("network effects collapse");
+  - the replication page ("minimum viable 55%").
+
+  It is only a run warning: no line of `runYear()` reads aggregate CCO participation. `node harness.js participation 200` shows a smooth response: 23.2% wealth poverty at 45%, 20.9% at 55%, 18.4% at 65%, about −0.24 points per point of participation. The warning, sensitivity row, `CFG` comment and replication page now describe it as the papers' design reference.
+- **SZH synergy θ.** Found in this audit. The BLEI paper gates θ on *PTF merchant density* (0 below 55%, 0.25 at 90%). The code applies that threshold to `szhCoh`, the zone-coherence slider, and realised PTF density never enters. The reference run's θ is 0.121 whether realised PTF membership is 18% or 53%. The comments, CSV mechanics line, Assumptions card and replication page now say it is a proxy.
+
+  Measured for the decision: gating θ on realised PTF share would move seed 42 to 16.8% / $556,503 / 1,897d. At N=200 it would raise wealth poverty 15.28% → 15.50% and lower median wealth 0.7%.
+
+### NEEC notes 9 and 10
+
+- **Note 9 (exogenous prices)** is logged, not built. Inflation is an input rate, damped only by realised PTF/PTH membership. No price responds to demand, BU issuance, conversion volume, recession or automation. A Known Limitations entry says so, and the item below explains why it bears on any claim that the framework is non-inflationary.
+- **Note 10:** the regression is unchanged, as stated at the top and in the table below. New pinned figures for NEEC's checks are listed there too.
+
+### What checking this session's own work turned up
+
+1. **A units error caught before shipping.** The new card's wealth-poverty cell first multiplied `SIM_RESULTS.finalPov`, already a percentage, by 100. The harness cross-check (`domtest.js` Phase 5 compares every panel figure with `runScenario()`) was written to catch exactly this class of error.
+2. **The relative income result was not what the brief expected.** It is reported as found, with an in-kind variant for fairness, rather than dropped or redefined.
+3. **The maintainers' year-0 Baseline BLEI figure (2.7%) matches Full Integration's year-0 figure under Full Integration's own rules** (2.6% here). The Baseline's own year-0 BLEI poverty is about 10.3%. Their conclusion that the Baseline deteriorates sharply stands; the starting point is higher than stated.
+
+### What did NOT get done, and why
+
+- **None of the five decisions was applied** (see Model Architecture Feedback).
+- **No layout verification.** The new card uses the existing table markup and the sixth preset button fills the preset grid's empty slot, but `domtest.js` verifies behaviour, not appearance. Both warrant the usual visual check after deploying.
+- **Everything else logged at v4.14–v4.16 remains open:** the flow-of-funds ledger, monthly BU tranches, CCO/PTH pathway decomposition, λ heterogeneity, the fuller recession and automation models, PTH entry/exit, PTH appreciation accounting, the Baseline inflation default, and Git tags.
+
+### Regression: seed 42 / Full Integration / 20yr, v4.16 → v4.17
+
+| Metric | v4.16 | v4.17 | Δ |
+|---|---|---|---|
+| Median BLEI | 1,965d | 1,965d | — |
+| Median wealth | $559,223 | $559,223 | — |
+| Gini (EDC-adj.) | 0.534 | 0.534 | — |
+| Wealth poverty | 16.6% | 16.6% | — |
+| System Stability | 88.5% | 88.5% | — |
+| Pinned at Wealth Floor | 10.6% | 10.6% | — |
+
+New figures at the same seed, for pinned checks:
+
+| Figure | Value |
+|---|---|
+| Relative income poverty | 19.8% (17.4% incl. in-kind) |
+| Basket poverty | 11.6% net, 22.4% gross |
+| Year 0: wealth poverty | 35.2% |
+| Year 0: BLEI poverty | 10.0% (2.0% under Full Integration rules) |
+| Year 0: relative income poverty | 17.0% |
+| Year 0: basket poverty | 65.6% |
+| Adverse Environment (seed 42) | 37.4% wealth poverty, $258,045, 950d, Gini 0.639 |
+
+**`harness.js` gains four modes:** `headline`, `year0`, `stress` and `participation` print every figure in the tables above. `domtest.js` gains Phase 5 (ten checks).
 
 ---
 
@@ -1229,6 +1401,18 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 
 Areas currently open for discussion:
 
+- **Decision needed, v4.17: reconcile the papers' headline with the engine.** The papers report a 98% poverty reduction and an $82,000 median wealth. This engine produces 78.7% (wealth) / 82.2% (BLEI) against the shipped Baseline, 69.7% / 74.4% against the inflation-matched Baseline, and 59.5% for wealth poverty against year 0. BLEI poverty ends *above* its policy-neutral year-0 level (12.6% vs 10.3%). Median wealth is $526,629. No measure and comparator reaches 98%; the highest is 87.8%, net basket poverty against the shipped Baseline. The options: **(A)** publish the model that produced 98% alongside this one; **(B)** restate the papers against the current engine, naming the comparator; **(C)** keep both and state the gap explicitly in the papers. Regenerate every figure with `node harness.js headline 500`. The `TARGET_*` constants would follow whichever is chosen.
+- **Decision needed, v4.17: the wage distribution versus the living-wage basket.** The median year-0 wage income ($39,945) is 81% of `LIVING_WAGE_ANNUAL` ($49,370), so 66.6% of agents start in basket poverty. This single fact drives the Baseline's deterioration and Full Integration's early BLEI rise (v4.17 Release Notes). The options:
+  - **(A)** keep it, documented, as a deliberately harsh starting population;
+  - **(B)** recalibrate the wage lognormal's μ against a sourced earnings distribution;
+  - **(C)** recalibrate the basket;
+  - **(D)** draw initial wealth conditional on wage, so the starting population is consistent with the flow model. This removes most of the early transient without changing the steady-state gap.
+
+  Every option except (A) moves the regression and needs its own large-N restudy.
+- **Decision needed, v4.17: should SZH synergy θ read realised PTF density?** The BLEI paper gates θ on PTF merchant density; the code gates it on the zone-coherence slider as a proxy. Gating on realised PTF share would move seed 42 to 16.8% / $556,503 / 1,897d. At N=200 wealth poverty would rise 15.28% → 15.50% and median wealth fall 0.7%. It is small, but it would make θ respond to the adoption dynamics it is meant to describe.
+- **Decision needed, v4.17: should the 55% CCO participation threshold be a dynamic?** Three documents described a network collapse below 55%; the engine has none, and v4.17 relabels it. Building one would mean a participation-dependent term in `runYear()`, for example conversion rate or cost relief scaled by aggregate participation. Its functional form would need a source.
+- **New in v4.17: an endogenous price channel** (NEEC note 9). Prices are an exogenous input rate, damped only by realised PTF/PTH membership. No price responds to demand, BU issuance, conversion volume, recession or automation; recession scales income only, and automation slows wage growth only. NEEC's maintainers note this bears on their CCO criterion C3.4. As long as prices are exogenous, the model assumes the framework is non-inflationary rather than testing it. This is a substantial modelling task, the same class as the flow-of-funds ledger below, with which it would naturally be built.
+
 - **Decision needed, v4.16: should the Baseline comparison match the tested scenario's inflation by default?** Since v4.0 it has not: Baseline runs at `BASELINE_CPI_RATE` (3%) while Full Integration, CCO Only and High AI run at 0%. Measured at N=500 (v4.16 Release Notes): Baseline wealth poverty 71.8% at 3% vs 50.5% at 0%; roughly 24–38% of the headline gap is inflation, and "Baseline pinned at the floor in 100% of runs" becomes 0.6% when matched. v4.16 ships an opt-in toggle and a run warning, changing no documented figure. The options: **(A)** keep the fixed-3% default with the warning (status quo as of v4.16); **(B)** make matching the default — every vs-Baseline figure in this document moves (Baseline poverty ~72% → ~51% at the reference settings), Your Settings' figures do not; **(C)** run the reference presets at 3% so both sides share it — the documented seed-42 regression itself moves (wealth poverty 16.6% → 30.6% at seed 42), since Full Integration at 3% is a different run; **(D)** keep 3% as a "real-world" Baseline and report matched and unmatched gaps side by side. (B) is the smallest change that makes the headline a clean counterfactual; (C) is the most realistic if the model is meant to be read in nominal terms. Either needs a dedicated release with a large-N re-study of the Baseline tables.
 - **Decision needed, v4.16: PTH appreciation accounting.** The code credits the *full* appreciation to `acreEquity` and *also* credits the tenure-based liquid share to wealth, so the liquid share is counted in both stocks and compounds. `acreEquity` is read by no metric (every wealth figure excludes PTH equity). A value-conserving alternative (`acreEquity` keeps only the non-liquid remainder) is measured in the v4.16 Release Notes: −0.3% median wealth at the reference 20% uptake, and it would move seed 42 to $558,001 / 1,951d. A related, larger question it raises: should reported wealth include some share of `acreEquity` at all, given members' own equity contributions currently vanish from every metric? Both are design questions about what "wealth" means for a PTH member, not code fixes.
 - **New in v4.15: tag and release each version (a repository action, for Duke).** *(v4.16: still open; an annotated `v4.16` tag would now give the reproducibility fix above a citable before/after.)* An external audit suggested formal Git tags or GitHub Releases per version, so "exactly v4.15" can be cited or archived without relying on the live `main` branch. This is not something a chat session can do from inside pasted files — the same category as the v4.9 OSF-metadata update. It would also give this file's per-release regression tables a citable code state to point at, since the DOI-archived OSF snapshot predates most of this history. Suggested minimal form: an annotated tag `v4.15` on the commit that ships these files, with `index.html` attached as a release asset. Not decided here — a repository-hosting choice for Duke.
@@ -1239,8 +1423,8 @@ Areas currently open for discussion:
 - **New in v4.14: λ heterogeneity beyond a fixed, persistent per-agent draw.** `makeLatentAgent()` draws λ once per agent and holds it fixed for the agent's lifetime — a coherent heterogeneity assumption (persistent individual capability), but one worth testing against alternatives: time-varying λ (capability that itself evolves), λ correlated with initial wage or other latent traits (capability isn't independent of starting position), or confirming the current independent-and-fixed assumption is actually the right one to have made implicitly. Extends the existing λ Calibration Status note, below, which already treats the magnitude of λ as open; this is about its *structure* (fixed vs. varying, independent vs. correlated) rather than its calibrated range.
 - **New in v4.14: AI automation as an employment-transition model, and a fuller macro-recession model.** Both mechanisms are real and calibrated but implement a reduced-form slice of what their names evoke — see the matching Known Limitations entry in `index.html`, added this release. AI automation subtracts directly from wage *growth*; there's no explicit job-loss event, unemployment spell, job search, or re-employment transition an agent passes through. A fuller model — displacement probability → employment state → wage, with re-employment dynamics — would capture the labour-market reallocation the current linear-drag mechanism can't. Recession, similarly, only ever multiplies income — earned wage income and, via the same `incomeShock`, CCO conversion proceeds (v4.16 correction: this item said wage income only); a fuller model would touch asset prices, employment status, housing costs, government transfers, and interest rates. Both are substantial modelling undertakings, not quick fixes.
 
-- **`WEALTH_FLOOR = −$10,000` needs reconsideration more urgently than when this was first flagged in v4.3.** The Traditional Welfare Baseline's median wealth now sits exactly at the wealth floor in **100% of N=5,000 runs** (v4.4 study, up from "more than half" at v4.3) — the floor is not an occasional insolvency case, it is the population's typical outcome. v4.4 confirmed removing an unrelated ×0.85 initial-wealth haircut (see v4.4 Release Notes) does not change this — the binding constraint is the ongoing annual cost/wage gap under 20 years of 3% CPI compounding, not the starting point, which rules out "fix the starting conditions" as a solution. Whether −$10,000 is still the right floor for a scenario with no offsetting mechanisms is a design decision for the framework's authors, not a code fix; this document cannot resolve it by further code changes alone. **v4.8 update: the sensitivity sweep this item called for has now been run** (N=500 seeds, 4 candidate floor values, validated harness — see v4.8 Release Notes) — Baseline turns out to be completely invariant to the floor's exact value on everything except the raw wealth number itself, while Full Integration shows a real but modest sensitivity (Gini and poverty move a few points across the tested range) via a specific, verified mechanism (agents recovering from a negative-wealth episode spend longer at BLEI-liquid-zero the deeper the floor let them fall first). This gives the authors concrete numbers to weigh; the shipped default is unchanged pending that decision. **v4.10 note:** the new Threshold Sensitivity charts (Release Notes, above) are a genuinely different kind of answer to a *related* but distinct question — they show how the poverty-rate headline moves as the reporting/classification threshold moves, not how it moves as `WEALTH_FLOOR` itself changes (that's still the v4.8 sweep's job, and still a separate finding). Worth doing eventually: layering `WEALTH_FLOOR`'s sweep values onto the same threshold-sensitivity curve, so a reader could see both dimensions — "where's the line drawn" and "how deep can debt go" — on one chart. Not attempted this session; noted as a natural extension, not a requirement. **v4.11 note:** the new poverty-gap ("avg. shortfall") view sharpens this connection further, since it's the FIRST place this constant's downstream effect on poverty *depth* (not just headcount) is shown directly and quantitatively for a reader to see — at the shipped $25,000 poverty line, Baseline's average per-capita shortfall is ≈$24,400 in a representative run, a number that would shift directly and legibly if `WEALTH_FLOOR` were ever revised, without needing the layered-sweep chart described above to see the effect qualitatively. Still not a reason to change the floor unilaterally — same framework-author decision as before. **v4.16 note — read this item's premise alongside the new Baseline-inflation decision, above.** Its central evidence (Baseline's median pinned at the floor in 100% of runs, "the binding constraint is … 20 years of 3% CPI compounding") is accurate, but the 3% applies to the Baseline side of the comparison only; Full Integration runs at 0%. Matched at 0%, the Baseline's median is pinned in 0.6% of runs (N=500). The floor's status as the Baseline's *typical* outcome is therefore mostly a product of that asymmetry, and this question is better revisited after that decision than before it.
-- **`TARGET_WEALTH` ($82,000), `TARGET_POVERTY` (5%), and `TARGET_GINI` (0.25) are now considerably further from the model's actual output than when v4.3 first flagged them.** Full Integration's measured median wealth ($526,120 under v4.4) is now more than 6× the original target — a widening gap across two consecutive mechanics-changing releases, both legitimate unit-correctness fixes rather than the model drifting. v4.4 added a direct in-app disclosure on the affected KPI badges (Gini, Wealth, Stability, Flourishing, EDC) pointing back to this document, without picking new target values — that remains a framework-level decision for the authors, not something to update silently alongside a mechanics fix.
+- *(v4.17: the driver of Baseline floor-pinning is now identified as the year-0 basket gap — 66.6% of agents start with wage income below `LIVING_WAGE_ANNUAL` — compounded by the 3% CPI v4.16 disclosed. See the wage-versus-basket decision above.)* **`WEALTH_FLOOR = −$10,000` needs reconsideration more urgently than when this was first flagged in v4.3.** The Traditional Welfare Baseline's median wealth now sits exactly at the wealth floor in **100% of N=5,000 runs** (v4.4 study, up from "more than half" at v4.3) — the floor is not an occasional insolvency case, it is the population's typical outcome. v4.4 confirmed removing an unrelated ×0.85 initial-wealth haircut (see v4.4 Release Notes) does not change this — the binding constraint is the ongoing annual cost/wage gap under 20 years of 3% CPI compounding, not the starting point, which rules out "fix the starting conditions" as a solution. Whether −$10,000 is still the right floor for a scenario with no offsetting mechanisms is a design decision for the framework's authors, not a code fix; this document cannot resolve it by further code changes alone. **v4.8 update: the sensitivity sweep this item called for has now been run** (N=500 seeds, 4 candidate floor values, validated harness — see v4.8 Release Notes) — Baseline turns out to be completely invariant to the floor's exact value on everything except the raw wealth number itself, while Full Integration shows a real but modest sensitivity (Gini and poverty move a few points across the tested range) via a specific, verified mechanism (agents recovering from a negative-wealth episode spend longer at BLEI-liquid-zero the deeper the floor let them fall first). This gives the authors concrete numbers to weigh; the shipped default is unchanged pending that decision. **v4.10 note:** the new Threshold Sensitivity charts (Release Notes, above) are a genuinely different kind of answer to a *related* but distinct question — they show how the poverty-rate headline moves as the reporting/classification threshold moves, not how it moves as `WEALTH_FLOOR` itself changes (that's still the v4.8 sweep's job, and still a separate finding). Worth doing eventually: layering `WEALTH_FLOOR`'s sweep values onto the same threshold-sensitivity curve, so a reader could see both dimensions — "where's the line drawn" and "how deep can debt go" — on one chart. Not attempted this session; noted as a natural extension, not a requirement. **v4.11 note:** the new poverty-gap ("avg. shortfall") view sharpens this connection further, since it's the FIRST place this constant's downstream effect on poverty *depth* (not just headcount) is shown directly and quantitatively for a reader to see — at the shipped $25,000 poverty line, Baseline's average per-capita shortfall is ≈$24,400 in a representative run, a number that would shift directly and legibly if `WEALTH_FLOOR` were ever revised, without needing the layered-sweep chart described above to see the effect qualitatively. Still not a reason to change the floor unilaterally — same framework-author decision as before. **v4.16 note — read this item's premise alongside the new Baseline-inflation decision, above.** Its central evidence (Baseline's median pinned at the floor in 100% of runs, "the binding constraint is … 20 years of 3% CPI compounding") is accurate, but the 3% applies to the Baseline side of the comparison only; Full Integration runs at 0%. Matched at 0%, the Baseline's median is pinned in 0.6% of runs (N=500). The floor's status as the Baseline's *typical* outcome is therefore mostly a product of that asymmetry, and this question is better revisited after that decision than before it.
+- *(v4.17: see the headline-reconciliation decision at the top of this list, which now carries this item's substance.)* **`TARGET_WEALTH` ($82,000), `TARGET_POVERTY` (5%), and `TARGET_GINI` (0.25) are now considerably further from the model's actual output than when v4.3 first flagged them.** Full Integration's measured median wealth ($526,120 under v4.4) is now more than 6× the original target — a widening gap across two consecutive mechanics-changing releases, both legitimate unit-correctness fixes rather than the model drifting. v4.4 added a direct in-app disclosure on the affected KPI badges (Gini, Wealth, Stability, Flourishing, EDC) pointing back to this document, without picking new target values — that remains a framework-level decision for the authors, not something to update silently alongside a mechanics fix.
 - **Wealth-initialization median cites Fed SCF 2022 but sits roughly 5.3× below it — new, found in v4.7, not corrected.** `WEALTH_INIT_MU`/`WEALTH_INIT_SIGMA` (new named constants this pass, same values as always: 10.5/1.2) give a lognormal median of e^10.5 ≈ $36,316; the actual 2022 SCF reports median household net worth at ≈$193,000 (Kuhn & Ríos-Rull, NBER working paper, 2025). Genuinely independent of the `TARGET_WEALTH`/Gini items above — Gini of a lognormal is 2Φ(σ/√2)−1, a function of σ alone, so this is purely about the *level* (μ) the population starts at, not its dispersion or the main wealth-loop's own separately-documented calibration issues. One caveat worth naming: it's conceivable $36K was meant to anchor something narrower than total net worth (e.g. liquid financial assets) rather than being a plain miscalibration, but no comment anywhere in this codebase says so — as written, it reads as an uncorrected citation mismatch. Given how foundational this draw is, correcting it is a candidate for its own mechanics-audit-plus-large-N-restudy release, not a value swap alongside a hygiene pass; see the v4.7 Release Notes and the Calibration Validation table entry, above, for the full derivation.
 - **A mechanism specifically targeting low-*wage* (not just low-wealth) populations may be a gap the framework doesn't currently address.** The Social-Security-anchored cohort study (see v4.3/v4.4 Release Notes) found that Full Integration does not lift a low-wage cohort out of poverty by the model's own tier definitions in the typical case, for any of the three anchors, even though every existing mechanism (CCO, PTF, PTH) already applies to them equally — a finding that sharpened, not softened, under v4.4's more careful median-of-medians reading. Whether this points to a genuine mechanism gap (e.g., wage-conditional BU scaling, a floor-topping mechanism) or is an accurate reflection of the framework's actual design scope remains a substantive question for the framework's authors.
 - **EDC-adjusted Gini vs. wealth-init spread — needs real Fed SCF *distributional* data** (not just the median already used for wealth init). Unresolved, unrelated to v4.3/v4.4's changes.
@@ -1287,7 +1471,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 **Before submitting a pull request:**
 
 - Test in Chrome, Firefox, and Safari
-- **New in v4.13:** run `node domtest.js` (after a one-time `npm install jsdom`) for any change touching markup, CSS classes, or a render function. It takes ~2 minutes and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` (after a one-time `npm install jsdom`) for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (48 checks as of v4.17) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -1295,6 +1479,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 **Good first issues:**
 
+- **Done in v4.17** (see Release Notes, above): fixed three bugs — hardcoded v4.15 version labels (now read from `META.VERSION`), BU Expiry missing from every CSV export, and an inert PTF column in the LHS design whenever the page's PTF toggle was off — and restored `harness.js`'s `structuralStability()` parity. Added relative income and living-wage basket poverty, each reported against year 0 as well as the Baseline, in a new card and both exports. Added an Adverse Environment preset separating environmental stress from weaker settings. Ported recessions to `harness.js` (bit-identical to the page at seed 42) with `headline`, `year0`, `stress` and `participation` modes. Disclosed that the papers' 98% headline is not produced by the engine and that two-thirds of agents start below the living-wage basket. Relabelled the 55% participation threshold and θ's density gate as a design reference and a proxy. `domtest.js` gained ten checks (48 total), each confirmed to fail against v4.16.
 - **Done in v4.16** (see Release Notes, above): fixed a reproducibility bug — a seeded run started while the previous run's attribution ablation or the validation suite was still computing drew from the wrong stream (seed 42: $545,506 / $555,354 vs $559,223), now isolated at every asynchronous boundary; disclosed and measured the Baseline comparison's inflation mismatch (fixed 3% vs the slider's 0%; ~24–38% of the headline poverty gap) and added an opt-in, off-by-default toggle to match them, with the default logged as a decision; enumerated `runYear()`'s annual schedule (v4.14 item (e)) into a new ODD Process Overview & Scheduling card; paired the validation suite's benefit check and extended its invariants check with determinism, eight-draws-per-agent-year, BU/equity/λ bounds and PTF-cap assertions (item (f)); corrected three documentation claims against the code (a stale `SIU_TO_USD` comment in `runYear()`, recession's scope, the PTH appreciation accounting) and measured the PTH alternative as a second decision; added `infl-match` and `pth-accounting` modes to `harness.js`. `domtest.js` gained nine checks (38 total), each verified to fail against an unmodified v4.15 page.
 - **Done in v4.15** (see Release Notes, above): fixed another genuine `runYear()` mechanics bug an external audit found — PTH's inflation damping was a flat toggle-triggered 10% reduction independent of realised uptake (PTH on with zero members still damped inflation), the coarser sibling of v4.14's PTF fix — now scaled by the population's realised PTH share, proven inert on four of five shipped presets and every documented figure by direct old-vs-new comparison of every agent's final wealth (only Stress Test moves); guarded the BU-expiry decay against NaN if `expiry` were ever missing (never a live defect, but the failure mode zeroed all CCO-participant wealth silently); replaced the Monte Carlo CI's fixed z=1.96 with Student's t (the 10× interval was ~13% too narrow); corrected a fourth stale PTH documentation card the v4.12 sweep missed. `domtest.js` gained four checks (29 total), each verified to fail against an unmodified v4.14 page.
 - **Done in v4.14** (see Release Notes, above): fixed two genuine `runYear()` mechanics bugs an external audit's focused review found — the BU-expiry slider collapsing six values into two identical behaviours, and PTF's inflation-damping term reading a static slider instead of actual current adoption (both proven inert on every documented figure, both ported to `harness.js` for parity); added the Wealth Floor Diagnostic (in-app companion to the offline `WEALTH_FLOOR` sweep) with CSV/JSON export; reframed EDC-adjusted Gini as a constructed stock-minus-flow index rather than conventional net worth; added a dual-cost-anchor (`LIVING_WAGE_ANNUAL` vs `BASE_DAILY_COST`) table; documented the CCO/PTH feedback loops through FBS and octave explicitly in the ODD panel and inline in `runYear()`; added a Known Limitations entry naming recession and AI automation as reduced-form mechanisms; extended the "not a forecast" banner with an explicit interpretive caveat. `domtest.js` gained six regression-guard checks — two that fail immediately if either mechanics bug is reintroduced.
