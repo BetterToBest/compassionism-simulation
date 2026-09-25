@@ -59,7 +59,9 @@
  *
  * v4.16 additions: nine more checks (29 -> 38), again written to fail gracefully against the
  * previous release — run this file against an unmodified v4.15 index.html and all nine fail.
- * Phase 4 (new) reproduces a reproducibility bug the v4.16 audit found: a seed-42 run started
+ * Phase 5 (v4.17) checks version labels, export completeness, the four-measure poverty panel,
+ * the Adverse Environment preset against harness.js's recession port, and the 55%/θ relabels.
+ * Phase 4 (v4.16) reproduces a reproducibility bug the v4.16 audit found: a seed-42 run started
  * while the previous run's attribution ablation, or the validation suite, was still computing
  * drew from the wrong RNG stream (v4.15 gave $545,506 / $555,354 instead of $559,223). It also
  * cross-checks the new opt-in inflation-matched Baseline against harness.js's independent
@@ -368,7 +370,79 @@ function phase4() {
     });
   });
 }
-function finish4() {
+function finish4() { phase5(function () {
   console.log('\n' + checks + ' checks, ' + (fails ? fails + ' FAILED' : 'all passed'));
   process.exit(fails ? 1 : 0);
+}); }
+
+/* ── Phase 5 (v4.17): version labels, export completeness, the four-measure poverty panel,
+ * the Adverse Environment preset (checked against harness.js's independent recession port),
+ * and the 55%/θ relabels. Run against an unmodified v4.16 index.html, all of these fail. */
+function phase5(done) {
+  console.log('\n--- Phase 5: v4.17 ---');
+  const H = require('./harness.js');
+  const wv = makeWindow();
+  wv.document.dispatchEvent(new wv.Event('DOMContentLoaded'));
+  const labels = [...wv.document.querySelectorAll('.meta-ver')].map(e => e.textContent);
+  const hd = (wv.document.querySelector('.hd-title') || {}).textContent || '';
+  check('v4.17: every visible version label reads META.VERSION (header, footer, assumptions panel)',
+    labels.length >= 3 && labels.every(t => t === 'v' + wv.META.VERSION) && hd.indexOf('v' + wv.META.VERSION) >= 0 && wv.document.title.indexOf('v' + wv.META.VERSION) >= 0,
+    'labels=' + JSON.stringify(labels) + ' header="' + hd.trim().slice(-12) + '" (v4.16: header/footer hardcoded v4.15)');
+  check('v4.17: the 55% participation warning and sensitivity row no longer claim a network collapse',
+    !/network threshold not met/.test(html) && !/network effects collapse/.test(html));
+  check('v4.17: θ is no longer described as gated on PTF density in the exported mechanics line',
+    !/network-density-gated \(0 below 55% PTF density/.test(html));
+
+  const w5 = makeWindow();
+  const cap = {};
+  w5.Blob = function (parts) { this.parts = parts; };
+  w5.URL.createObjectURL = function (b) { cap.last = b.parts.join(''); return 'blob:stub'; };
+  w5.URL.revokeObjectURL = function () {};
+  w5.HTMLAnchorElement.prototype.click = function () { cap[this.download] = cap.last; };
+  // LHS: with the page's PTF toggle OFF, the sampled ptfShare column must still be live.
+  w5.applyPreset('reference'); w5.tog('ptf', false);
+  const rng0 = w5.RNG; w5.runLHSSensitivity();
+  const rows = w5.LHS_STATE.rows || [];
+  const livePTF = rows.filter(r => r.params.ptf === true).length;
+  check('v4.17: LHS design keeps PTF live in every row when the page toggle is off (was 0/100)',
+    rows.length === 100 && livePTF === 100, livePTF + '/' + rows.length + ' rows with PTF on');
+  w5.LHS_STATE.active = false; w5.LHS_STATE.rows = []; w5.RNG = rng0;
+  const waitLHS = setInterval(() => {
+    if (w5.document.getElementById('lhs-btn').disabled) return;
+    clearInterval(waitLHS);
+    const lhsCsv = (Object.entries(cap).find(([k]) => k && /lhs/.test(k)) || [])[1] || '';
+    check('v4.17: LHS CSV records the fixed settings every row inherits', /Fixed settings \(v4\.17\)/.test(lhsCsv) && /PTF on in every row/.test(lhsCsv));
+    // Adverse Environment preset, seed 42, through the page vs harness.js (independent recession port).
+    w5.applyPreset('adverse'); w5.document.getElementById('s-seed').value = '42'; w5.SIM_RESULTS = null; w5.runSim();
+    const t5 = Date.now();
+    const iv5 = setInterval(() => {
+      if (Date.now() - t5 > 300000) { clearInterval(iv5); check('v4.17 adverse run finished', false, 'timeout'); return done(); }
+      if (!w5.SIM_RESULTS || w5.running) return;
+      clearInterval(iv5);
+      const r = w5.SIM_RESULTS, hr = H.runScenario(H.ADVERSE_REFERENCE, 42);
+      const got = { pov: +r.finalPov.toFixed(1), wealth: Math.round(r.finalWealth), blei: Math.round(r.blei.med), gini: +r.finalGini.toFixed(3) };
+      const want = { pov: hr.pov, wealth: hr.wealth, blei: hr.bleiMed, gini: hr.gini };
+      check('v4.17: Adverse Environment preset exists and matches harness.js with recessions ported (seed 42)',
+        !!w5.PRESETS.adverse && w5.PRESET_IDS.indexOf('adverse') >= 0 && JSON.stringify(got) === JSON.stringify(want),
+        'page ' + JSON.stringify(got) + '\n           harness ' + JSON.stringify(want));
+      const pp = r.povertyPanel, byK = {}; (pp ? pp.rows : []).forEach(x => { byK[x.k] = x; });
+      const hy = hr.yearZero;
+      check('v4.17: four-measure panel matches harness.js (final year and year 0)',
+        !!pp && pp.rows.length === 6 && Math.abs(byK.inc.main - hr.incPov) < 0.05 && Math.abs(byK.basket.main - hr.basketPov) < 0.05 &&
+        Math.abs(byK.incExt.main - hr.incPovExt) < 0.05 && Math.abs(byK.basketGross.main - hr.basketPovGross) < 0.05 &&
+        Math.abs(byK.wealth.y0 - hy.pov) < 0.05 && Math.abs(byK.blei.y0 - hy.bleiPovNeutral) < 0.05 && Math.abs(byK.blei.y0Scenario - hy.bleiPovScenario) < 0.05 &&
+        Math.abs(byK.basket.y0 - hy.basketPov) < 0.05,
+        pp ? 'page inc ' + byK.inc.main.toFixed(1) + ' basket ' + byK.basket.main.toFixed(1) + ' y0 basket ' + byK.basket.y0.toFixed(1) + ' | harness ' + hr.incPov + ' / ' + hr.basketPov + ' / ' + hy.basketPov : 'panel missing (pre-v4.17)');
+      check('v4.17: four-measure card renders a six-row table',
+        !!w5.document.getElementById('sec-poverty4') && w5.document.getElementById('sec-poverty4').style.display === 'block' && w5.document.querySelectorAll('#poverty4-inner tbody tr').length === 6);
+      w5.downloadCSV(); w5.downloadJSON();
+      const csv = (Object.entries(cap).find(([k]) => k && k.endsWith('.csv') && !/lhs/.test(k)) || [])[1] || '';
+      const js = (Object.entries(cap).find(([k]) => k && k.endsWith('.json')) || [])[1] || '';
+      let pj = null; try { pj = JSON.parse(js); } catch (e) { /* below */ }
+      check('v4.17: CSV export carries BU Expiry (the one run parameter it omitted)', /BU Expiry \(months\)/.test(csv));
+      check('v4.17: CSV and JSON exports carry the four-measure poverty block',
+        /POVERTY BY FOUR MEASURES/.test(csv) && !!pj && !!pj.results.povertyByFourMeasures && pj.results.povertyByFourMeasures.rows.length === 6);
+      done();
+    }, 200);
+  }, 200);
 }
