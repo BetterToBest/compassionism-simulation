@@ -54,7 +54,11 @@ var CFG = {
   LIVING_WAGE_ANNUAL:49370,
   SS_ANCHOR_SSI_ANNUAL:11928, SS_ANCHOR_SSDI_ANNUAL:19560, SS_ANCHOR_RETIRE_ANNUAL:24852,
   /* v4.18: extreme-poverty overlay constants — sources in index.html's CFG. */
-  EP_Y0_RATE:0.0022, EP_SMI_SHARE:0.25, EP_VOL_SHARE:0.02, EP_WZ_EFFECT:0.50
+  EP_Y0_RATE:0.0022, EP_SMI_SHARE:0.25, EP_VOL_SHARE:0.02, EP_WZ_EFFECT:0.50,
+  /* v4.19: automatic-stabilizer reference values — sources and conditions in index.html's CFG. */
+  CCO_RELIEF_AT_REF:0.20, CCO_RELIEF_REF_BU:1200, CCO_RELIEF_CAP:0.50,
+  STAB_HUB_MULT:1.20, STAB_HUB_THRESH:0.02, STAB_NEUTRAL_MULT:1.35, STAB_NEUTRAL_K:2.8, STAB_MULT_MAX:4,
+  STAB_EMERG_TAKEUP:0.50, COLA_HUB_THRESH:0.05, STAB_STUDY_SEEDS:30
 };
 CFG.FBS_HALF_SAT_LO = Math.log(2) / CFG.FBS_LAMBDA_HI;
 CFG.FBS_HALF_SAT_HI = Math.log(2) / CFG.FBS_LAMBDA_LO;
@@ -66,6 +70,17 @@ var RNG = Math.random;
  * tenure-based liquid share is credited to wealth. true is the value-conserving alternative
  * (acreEquity keeps only the non-liquid remainder). Read only by the `pth-accounting` mode. */
 var PTH_APPR_CONSERVE = false;
+/* v4.19: two harness-only switches recording the decision on how the BU amount reaches a
+ * household (CONTRIBUTING.md v4.19; Duke chose Option B, which index.html now ships). Both
+ * default to index.html's behaviour, bit-identically.
+ *  BU_ALLOCATIONS_PER_YEAR — BU allocations credited per simulated year (index.html: 1). 12
+ *    approximates monthly tranches at expiry=1: each month's allocation is spent at the year's
+ *    spend fraction and the remainder expires. The 3x cap scales with it.
+ *    (Option A, not adopted.)
+ *  CCO_RELIEF_FLAT — true restores v4.18's flat 0.80 CCO cost relief (index.html: false, i.e.
+ *    Option B: relief scales with the effective BU). For before/after comparisons only. */
+var BU_ALLOCATIONS_PER_YEAR = 1;
+var CCO_RELIEF_FLAT = false;
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 
 function lognormal(mu,sigma){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.exp(mu+sigma*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v));}
@@ -95,6 +110,7 @@ function instantiateAgent(latent,cfgP){
     octave:Math.floor(latent.octaveShape*maxOct),
     quality:Math.min(maxMult,Math.max(0,Math.exp(Math.log(maxMult*0.5)+0.4*latent.qualityZ)*qN)),
     automationRisk:latent.automationRisk,lambda:latent.lambda,
+    uCCO:latent.uCCO,  // v4.19: kept for deterministic emergency take-up (no RNG)
     inCCO:!!(cfgP.ccoOn&&latent.uCCO<cfgP.partRate),inPTF:!!(cfgP.ptf&&latent.uPTF<cfgP.ptfShare),inPTH:inPTH,
     buBalance:0,acreEquity:inPTH?5000:0,
     pthTenure:0};
@@ -186,6 +202,43 @@ function runYear(agentSet,yr,p,recSt){
     else if(yr>=CFG.AI_DISPLACEMENT_YEAR_1)popAIDisp=CFG.AI_DISPLACEMENT_RATE_1*(yr-CFG.AI_DISPLACEMENT_YEAR_1+1);
     popAIDisp=Math.min(0.10,popAIDisp);
   }
+  /* v4.19: automatic stabilizers (Research Hub Integrated Implementation Roadmap, Appendix G).
+   * All off by default: with p.stab and p.cola unset, buEff===p.bu exactly (a multiply by 1),
+   * emergLine is -1 and decay is untouched, so every documented figure is bit-identical.
+   *  - Recession trigger: the year's recession is active and its population income loss
+   *    (1 - incomeMultiplier) is at least p.stabThresh. The engine has no GDP or unemployment
+   *    rate, so the hub's ">2% GDP decline" is read as a >=2% income loss; every engine
+   *    recession (5-30%) clears it. The trigger reads the CURRENT year's shock (a timely
+   *    trigger); harness.js measures what a one-year data lag costs.
+   *  - Increase: fixed multiplier p.stabMult, or scaled 1 + p.stabK x loss (p.stabSev).
+   *  - COLA: BU indexed by the same cost index mainLoopCostUSD uses, (1+inflRate)^yr, when the
+   *    headline rate p.inflRate is above p.colaThresh (Inflation Surge Protocol: 5%).
+   *    Inflation is a constant input rate here, so the threshold acts for the whole run.
+   *  - buEff replaces p.bu at every read below: allocation, the 3x cap, FBS, and the BLEI
+   *    check that gates the wage-growth bonus.
+   *  - Suspended expiry (p.stabSusp, hub Natural Disaster Response): unspent BU carries over
+   *    while triggered, up to the 3x cap.
+   *  - Emergency enrollment (p.emerg, hub "relax requirements"): while triggered, a
+   *    non-participant whose latent CCO uniform lies in [partRate, partRate + take-up x
+   *    (1 - partRate)) gets the CCO cost relief for that year only. Deterministic: it reads
+   *    a.uCCO, drawn at construction, so no RNG draw is added and CRN pairing holds.
+   *    Enrollees do not enter octave advancement or conversion.
+   * No RNG is drawn here. */
+  var stabLoss=recSt.active?Math.max(0,1-recSt.incomeMultiplier):0;
+  var stabOn=!!(p.stab&&p.ccoOn&&recSt.active&&stabLoss>=(p.stabThresh||0));
+  var stabM=stabOn?(p.stabSev?1+Math.max(0,p.stabK||0)*stabLoss:Math.max(1,p.stabMult||1)):1;
+  var colaF=(p.cola&&(p.inflRate||0)>(p.colaThresh||0))?Math.pow(1+inflRate,yr):1;
+  var buEff=p.bu*stabM*colaF;
+  var emergLine=(stabOn&&p.emerg)?p.partRate+Math.max(0,Math.min(1,p.emergTakeup||0))*(1-p.partRate):-1;
+  var emergN=0;
+  /* v4.19, Duke's decision (Option B): CCO's cost relief scales with the effective BU. Through
+   * v4.18 it was a flat 0.80 whenever BU > 0, so the BU amount reached a household only through
+   * conversion proceeds, credited once a year. BU is "redeemable at PTF businesses for essential
+   * goods" (Research Hub glossary), so the amount now moves the relief directly: 20% of the
+   * basket at the $1,200 reference, in proportion above and below it, capped at 50%. At $1,200
+   * this is exactly 0.80, so every $1,200 preset and the seed-42 regression are bit-identical;
+   * Stress Test ($900) and any run at another BU amount move. The 50% cap is a placeholder. */
+  var ccoReliefF=CCO_RELIEF_FLAT?0.80:1-Math.min(CFG.CCO_RELIEF_CAP,CFG.CCO_RELIEF_AT_REF*buEff/CFG.CCO_RELIEF_REF_BU);
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
@@ -197,7 +250,7 @@ function runYear(agentSet,yr,p,recSt){
     var uSzhPtfShare=RNG();
     var uPthAppr=RNG();
     var uPtfAdopt=RNG();
-    var bleiCheck=agentBLEI(a,p.bu,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
+    var bleiCheck=agentBLEI(a,buEff,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
     var wg=CFG.WAGE_BASE_GROWTH;
     if(bleiCheck>CFG.BLEI_PRECARIOUS_MAX){
       var drFactor=1/(1+0.5*Math.max(0,a.wage/CFG.WAGE_MEDIAN_SIU-1));
@@ -211,7 +264,8 @@ function runYear(agentSet,yr,p,recSt){
     var cf=1.0;
     if(p.ptf&&a.inPTF)cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));
     if(p.pth&&a.inPTH)cf*=0.65;
-    if(p.ccoOn&&a.inCCO&&p.bu>0)cf*=0.80;
+    if(p.ccoOn&&a.inCCO&&p.bu>0)cf*=ccoReliefF;  // v4.19: was a flat 0.80 (see ccoReliefF)
+    else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf*=ccoReliefF;emergN++;}  // v4.19: emergency enrollment
     var mainLoopCostUSD=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);
     var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
     var costUSD=mainLoopCostUSD*cf;
@@ -226,8 +280,9 @@ function runYear(agentSet,yr,p,recSt){
        * this harness's own FULL_INTEGRATION/BASELINE configs) decay=0, identical to the
        * prior behaviour — zero effect on any documented regression figure. See
        * CONTRIBUTING.md's v4.14 Release Notes. */
-      var decay=Math.max(0,1-1/Math.max(1,p.expiry||1));  /* v4.15 parity: || 1 guards a missing expiry — Math.max(1,undefined) is NaN */
-      a.buBalance=Math.min(a.buBalance*decay+p.bu,p.bu*3);
+      var decay=Math.max(0,1-1/Math.max(1,p.expiry||1));
+      if(stabOn&&p.stabSusp)decay=1;  // v4.19: expiry suspended while triggered  /* v4.15 parity: || 1 guards a missing expiry — Math.max(1,undefined) is NaN */
+      a.buBalance=Math.min(a.buBalance*decay+buEff*BU_ALLOCATIONS_PER_YEAR,buEff*3*BU_ALLOCATIONS_PER_YEAR);  // v4.19: buEff; allocations/yr is a harness-only switch (index.html: 1)
       var spend=a.buBalance*uSpendFrac;a.buBalance-=spend;totalBU+=spend;
       if(p.cip&&uCipQuality<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);
       var octCeiling=1+(a.octave/Math.max(1,p.maxOct))*(Math.max(1,p.maxMult)-1);
@@ -246,7 +301,7 @@ function runYear(agentSet,yr,p,recSt){
         var Yusd=a.wage*CFG.WAGE_TO_USD;
         var cBasicMonthly=(dollarCost*cf)/12;
         var edcResidual=(p.pth&&a.inPTH)?CFG.FBS_EDC_RESIDUAL_PTH:CFG.FBS_EDC_RESIDUAL_BASE;
-        var fbs=Math.max(0,Yusd+p.bu-cBasicMonthly-edcResidual*Yusd);
+        var fbs=Math.max(0,Yusd+buEff-cBasicMonthly-edcResidual*Yusd);
         var lam=(typeof a.lambda==='number'&&!isNaN(a.lambda))?a.lambda:(CFG.FBS_LAMBDA_LO+CFG.FBS_LAMBDA_HI)/2;
         if(p.cip)lam*=(1+p.cipDemo*CFG.FBS_CIP_LAMBDA_BOOST);
         var pAdvance=1-Math.exp(-lam*fbs);
@@ -268,7 +323,7 @@ function runYear(agentSet,yr,p,recSt){
     if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&ptfCapAllows()){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap){a.inPTF=true;if(p.ptfCap)ptfLiveCount++;}}
     if(a.wealth<CFG.WEALTH_FLOOR)a.wealth=CFG.WEALTH_FLOOR;
   });
-  return{bu:totalBU,conversion:totalConversion};
+  return{bu:totalBU,conversion:totalConversion,stabOn:stabOn,stabM:stabM,colaF:colaF,buEff:buEff,emergN:emergN};  // v4.19
 }
 
 /* v4.17: income and basket poverty — ported verbatim to/from index.html (see its comment on
@@ -548,7 +603,105 @@ function trajectory(p, seed, marks){
   return out;
 }
 
-Object.assign(module.exports, { CFG, mulberry32, runScenario, trajectory, baselineFor, ccoOnlyFor, extremePovertyOf, FULL_INTEGRATION, BASELINE, CCO_ONLY, STRESS_TEST, ADVERSE_REFERENCE });
+Object.assign(module.exports, { shockRun, shockStudy, stabRuleText, setStabSwitches:function(n,flat){BU_ALLOCATIONS_PER_YEAR=n;CCO_RELIEF_FLAT=flat;}, CFG, mulberry32, runScenario, trajectory, baselineFor, ccoOnlyFor, extremePovertyOf, FULL_INTEGRATION, BASELINE, CCO_ONLY, STRESS_TEST, ADVERSE_REFERENCE });
+
+function stabRuleText(p){
+  if(!p.stab)return 'off';
+  return (p.stabSev?'+'+(+p.stabK).toFixed(1)+'% BU per 1% income loss':'×'+(+p.stabMult).toFixed(2)+' BU')+' when income falls ≥'+Math.round((p.stabThresh||0)*100)+'%'+
+    (p.stabSusp?', expiry suspended':'')+(p.emerg?', emergency enrollment '+Math.round((p.emergTakeup||0)*100)+'%':'');
+}
+/* One paired run: distress by group and year, recession flags, BU issued. */
+function shockRun(p,seed){
+  RNG=mulberry32(seed+700003);
+  var ag=makeLatentPopulation(p.nAgents).map(function(l){return instantiateAgent(l,p);});
+  var d0=housingDistressYear0(ag);
+  var rp=p.shock?buildRecessionPath(p.years,seed):null;
+  RNG=mulberry32(seed);
+  var part=ag.filter(function(a){return a.inCCO;}),non=ag.filter(function(a){return !a.inCCO;});
+  var o={dPart:[],dNon:[],dAll:[],rec:[],d0:d0,base:0,extra:0};
+  for(var y=0;y<p.years;y++){
+    var rs=rp?rp[y]:{active:false,incomeMultiplier:1.0,yearsLeft:0};
+    var r=runYear(ag,y,p,rs);
+    o.rec.push(!!rs.active);
+    o.dPart.push(part.length?housingDistressOf(part):0);o.dNon.push(non.length?housingDistressOf(non):0);o.dAll.push(housingDistressOf(ag));
+    if(p.ccoOn&&p.bu>0){o.base+=p.bu*part.length;o.extra+=p.bu*r.colaF*(r.stabM-1)*part.length;}
+    o.extra+=(r.emergN||0)*(r.buEff||0);
+  }
+  return o;
+}
+function newShockAcc(){return{xp:0,xn:0,xa:0,xEP:0,n:0,base:0,extra:0};}
+function addShockAcc(A,calm,r){
+  r.rec.forEach(function(on,y){
+    if(!on)return;
+    var da=r.dAll[y]-calm.dAll[y];
+    A.xp+=r.dPart[y]-calm.dPart[y];A.xn+=r.dNon[y]-calm.dNon[y];A.xa+=da;
+    A.xEP+=calm.d0>0?CFG.EP_Y0_RATE*(1-CFG.EP_SMI_SHARE-CFG.EP_VOL_SHARE)*da/calm.d0:0;
+    A.n++;
+  });
+  A.base+=r.base;A.extra+=r.extra;
+}
+/* Means per recession-year: excess housing distress (pp) and excess expected extreme poverty
+ * (per 10,000; the v4.18 overlay's economic pathway, which scales with distress). */
+function shockSummary(A){
+  var n=Math.max(1,A.n);
+  return{partPP:A.xp/n*100,nonPartPP:A.xn/n*100,allPP:A.xa/n*100,extremePer10k:A.xEP/n*1e4,
+    extraPctOfBase:A.base>0?A.extra/A.base*100:0,recessionYears:A.n};
+}
+function shockArmNone(P){return Object.assign({},P,{stab:false});}
+function shockArmHub(P){return Object.assign({},P,{stab:true,stabSev:false,stabMult:CFG.STAB_HUB_MULT,stabThresh:CFG.STAB_HUB_THRESH,stabSusp:false,emerg:false});}
+function shockArmFixed(P,m){return Object.assign({},P,{stab:true,stabSev:false,stabMult:m,stabSusp:false,emerg:false});}
+/* Shock-neutral search (participants): false position on the multiplier, starting from
+ * ×1 (no stabilizer) and ×2, widening to ×3 and then ×4 (the slider's maximum) if needed,
+ * then up to five refinement passes, bisecting whenever two land on the same side, until the
+ * bracket is within ×0.025. The result is rounded to the slider's ×0.05 step. Returns the next
+ * multiplier to evaluate, or null when done. */
+function shockNextM(S){
+  var pts=S.pts;
+  if(pts[0].f<=0){S.result={m:1,reached:true};return null;}
+  var hi=null,lo=null;pts.forEach(function(q){if(q.f<=0){if(!hi||q.m<hi.m)hi=q;}else{if(!lo||q.m>lo.m)lo=q;}});
+  if(!hi){if(lo.m>=CFG.STAB_MULT_MAX){S.result={m:CFG.STAB_MULT_MAX,reached:false};return null;}return lo.m<2?2:lo.m<3?3:CFG.STAB_MULT_MAX;}
+  var est=lo.m+(hi.m-lo.m)*lo.f/(lo.f-hi.f);
+  if(pts.length>=7||hi.m-lo.m<=0.025){S.result={m:Math.round(est*20)/20,reached:true};return null;}
+  var n=pts.length;
+  if(n>=4&&(pts[n-1].f>0)===(pts[n-2].f>0))est=(lo.m+hi.m)/2;  // two refinements on one side: bisect so the bracket keeps shrinking
+  return Math.round(est*1000)/1000;
+}
+/* Synchronous twin of index.html's runShockStudy(): same arms, same seeds, same search. */
+function shockStudy(P,N){
+  var calm=[],acc={none:newShockAcc(),hub:newShockAcc(),yours:P.stab?newShockAcc():null},S={pts:[]},s;
+  for(s=1;s<=N;s++){
+    var c=shockRun(Object.assign({},P,{shock:false}),s);calm[s]=c;
+    addShockAcc(acc.none,c,shockRun(shockArmNone(P),s));
+    addShockAcc(acc.hub,c,shockRun(shockArmHub(P),s));
+    if(acc.yours)addShockAcc(acc.yours,c,shockRun(P,s));
+  }
+  S.pts.push({m:1,f:shockSummary(acc.none).partPP});
+  for(var m=shockNextM(S);m!==null;m=shockNextM(S)){
+    var accm=newShockAcc();
+    for(s=1;s<=N;s++)addShockAcc(accm,calm[s],shockRun(shockArmFixed(P,m),s));
+    S.pts.push({m:m,f:shockSummary(accm).partPP});
+  }
+  return{N:N,rule:stabRuleText(P),none:shockSummary(acc.none),hub:shockSummary(acc.hub),yours:acc.yours?shockSummary(acc.yours):null,
+    neutral:S.result,points:S.pts.map(function(q){return{m:q.m,partPP:q.f};})};
+}
+/* Study-only rules the engine does not ship (timing variants, a matched-budget permanent
+ * raise): p.bu is multiplied outside runYear(), which the engine's declared rule reproduces
+ * exactly (checked in the stabilizer mode). */
+function shockRunWith(p,seed,multFor){
+  RNG=mulberry32(seed+700003);
+  var ag=makeLatentPopulation(p.nAgents).map(function(l){return instantiateAgent(l,p);});
+  var d0=housingDistressYear0(ag),rp=p.shock?buildRecessionPath(p.years,seed):null;
+  RNG=mulberry32(seed);
+  var part=ag.filter(function(a){return a.inCCO;}),non=ag.filter(function(a){return !a.inCCO;});
+  var o={dPart:[],dNon:[],dAll:[],rec:[],d0:d0,base:0,extra:0};
+  for(var y=0;y<p.years;y++){
+    var rs=rp?rp[y]:{active:false,incomeMultiplier:1.0,yearsLeft:0},m=multFor(y,rp);
+    runYear(ag,y,m===1?p:Object.assign({},p,{bu:p.bu*m}),rs);
+    o.rec.push(!!rs.active);o.dPart.push(housingDistressOf(part));o.dNon.push(housingDistressOf(non));o.dAll.push(housingDistressOf(ag));
+    o.base+=p.bu*part.length;o.extra+=p.bu*(m-1)*part.length;
+  }
+  return o;
+}
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
@@ -780,5 +933,86 @@ if (require.main === module) {
       k[1].forEach(function(v){ var o = {}; o[k[0]] = v; var a = recompute(fi, FULL_INTEGRATION, o), b = recompute(RUNS['CCO Only'], CCO_ONLY, o);
         console.log(k[0] + '\t' + v + '\t' + f2(a) + '\t' + red(a, Y0) + '\t' + f2(b) + '\t' + red(b, Y0)); });
     });
+  }
+
+  if (mode === 'stabilizer') {
+    /* v4.19: the studies behind CONTRIBUTING.md's v4.19 Release Notes. Excess = recession years
+     * minus the same seed with recessions off (CRN-paired). Sections: rules | neutral | decision
+     * | cola | all (default). */
+    CFG.WEALTH_FLOOR = -10000;
+    var nS = parseInt(process.argv[3] || '300', 10), sec = process.argv[4] || 'all';
+    var REC = Object.assign({}, FULL_INTEGRATION, {shock:true});
+    function f2(x){ return (x < 0 ? '-' : '') + Math.abs(x).toFixed(2); }
+    function line(lbl, a){ console.log([lbl, f2(a.partPP), f2(a.nonPartPP), f2(a.allPP), a.extremePer10k.toFixed(2), a.extraPctOfBase.toFixed(1) + '%'].join(' | ')); }
+    var HDR = 'rule | participants: excess distress (pp) | non-participants (pp) | all (pp) | excess extreme poverty (per 10,000) | extra BU (% of base)';
+    function arm(P, st){ return Object.assign({}, P, {stab:true, stabSev:false, stabMult:1, stabK:0, stabThresh:0, stabSusp:false, emerg:false, emergTakeup:0}, st); }
+    function table(P, rules, N){
+      var calm = [], acc = rules.map(function(){ return newShockAcc(); });
+      for (var s = 1; s <= N; s++){
+        var c = shockRun(Object.assign({}, P, {shock:false}), s), ref3 = null; calm[s] = c;
+        rules.forEach(function(r, i){
+          var o;
+          if (r.p) o = shockRun(r.p, s);
+          else if (r.budgetOf){ var b = ref3; o = shockRunWith(P, s, function(){ return 1 + b.extra/b.base; }); }
+          else o = shockRunWith(P, s, r.mult);
+          if (r.keep) ref3 = o;
+          addShockAcc(acc[i], c, o);
+        });
+      }
+      return acc.map(shockSummary);
+    }
+    if (sec === 'rules' || sec === 'all'){
+      var lagFirst = function(m, lag){ return function(y, rp){ if(!rp[y].active) return 1; return (y > 0 && rp[y-1].active) ? m : 1 + (m-1)*(1-lag); }; };
+      var R = [
+        {l:'no stabilizer', p:Object.assign({}, REC, {stab:false})},
+        {l:'hub protocol: x1.20 when income falls >=2%', p:arm(REC, {stabMult:1.2, stabThresh:0.02})},
+        {l:'hub x1.20, 2-quarter detection lag (study only)', mult:lagFirst(1.2, 0.5)},
+        {l:'fixed x1.1', p:arm(REC, {stabMult:1.1})}, {l:'fixed x1.3', p:arm(REC, {stabMult:1.3})}, {l:'fixed x1.35', p:arm(REC, {stabMult:1.35})},
+        {l:'fixed x1.4', p:arm(REC, {stabMult:1.4})}, {l:'fixed x1.5', p:arm(REC, {stabMult:1.5}), keep:true}, {l:'fixed x2', p:arm(REC, {stabMult:2})},
+        {l:'x1.35, one-year data lag (study only)', mult:function(y, rp){ return (y > 0 && rp[y-1].active) ? 1.35 : 1; }},
+        {l:'x1.35, held one year after (study only)', mult:function(y, rp){ return (rp[y].active || (y > 0 && rp[y-1].active)) ? 1.35 : 1; }},
+        {l:'x1.5 when income loss >=10%', p:arm(REC, {stabMult:1.5, stabThresh:0.10})}, {l:'x1.5 when income loss >=15%', p:arm(REC, {stabMult:1.5, stabThresh:0.15})},
+        {l:'scaled, +2.5% per 1% loss', p:arm(REC, {stabSev:true, stabK:2.5})}, {l:'scaled, +2.75% per 1% loss', p:arm(REC, {stabSev:true, stabK:2.75})},
+        {l:'scaled, +3% per 1% loss', p:arm(REC, {stabSev:true, stabK:3})},
+        {l:'x1.35 + expiry suspended', p:arm(REC, {stabMult:1.35, stabSusp:true})},
+        {l:'x1.35 + emergency enrollment, 50% take-up', p:arm(REC, {stabMult:1.35, emerg:true, emergTakeup:0.5})},
+        {l:'x1.35 + emergency enrollment, 100% take-up', p:arm(REC, {stabMult:1.35, emerg:true, emergTakeup:1})},
+        {l:'always-on raise, same 20-yr budget as x1.5 (study only)', budgetOf:true}];
+      /* the engine's declared rule and the outside-runYear multiplier must agree exactly */
+      var e1 = shockRun(arm(REC, {stabMult:1.35}), 7), e2 = shockRunWith(REC, 7, function(y, rp){ return rp[y].active ? 1.35 : 1; });
+      console.log('engine rule = outside multiplier (seed 7, x1.35): ' + (JSON.stringify(e1.dAll) === JSON.stringify(e2.dAll) ? 'identical' : 'DIFFERENT'));
+      console.log('=== Rules at the reference settings: Full Integration + recessions, seeds 1-' + nS + ', 500 agents, 20yr ===');
+      console.log(HDR);
+      table(REC, R, nS).forEach(function(a, i){ line(R[i].l, a); });
+    }
+    if (sec === 'neutral' || sec === 'all'){
+      console.log('=== Shock-neutral multiplier (in-page search algorithm), seeds 1-' + nS + ' ===');
+      [['Full Integration + recessions', REC], ['Adverse Environment', ADVERSE_REFERENCE], ['CCO Only + recessions', Object.assign({}, CCO_ONLY, {shock:true})], ['Stress Test', STRESS_TEST]].forEach(function(c){
+        var st = shockStudy(Object.assign({}, c[1], {stab:false}), nS);
+        console.log(c[0] + ': no stabilizer ' + f2(st.none.partPP) + ' pp (participants), ' + f2(st.none.nonPartPP) + ' pp (non-participants); hub ' + f2(st.hub.partPP) +
+          ' pp; neutral ' + (st.neutral.reached ? 'x' : '>x') + st.neutral.m.toFixed(2) + '  [points ' + st.points.map(function(q){ return 'x' + q.m.toFixed(2) + ':' + f2(q.partPP); }).join(', ') + ']');
+      });
+    }
+    if (sec === 'decision' || sec === 'all'){
+      console.log('=== Pending decision: how the BU amount reaches a household. Seed-42 regression and shock-neutral multiplier under each option (seeds 1-' + nS + ') ===');
+      [['v4.18 engine (1 allocation/yr, flat 20% relief)', 1, true], ['A: 12 allocations/yr, flat relief (not adopted)', 12, true], ['B: relief scales with BU (shipped in v4.19)', 1, false]].forEach(function(o){
+        BU_ALLOCATIONS_PER_YEAR = o[1]; CCO_RELIEF_FLAT = o[2];
+        var r = runScenario(FULL_INTEGRATION, 42), st = shockStudy(Object.assign({}, REC, {stab:false}), nS);
+        var so = runScenario(STRESS_TEST, 42);
+        console.log(o[0] + ': seed 42 ' + r.pov + '% / $' + r.wealth.toLocaleString() + ' / ' + r.bleiMed + 'd / Gini ' + r.gini + ' (Stress Test ' + so.pov + '% / $' + so.wealth.toLocaleString() + ')' +
+          '; recessions, no stabilizer: ' + f2(st.none.partPP) + ' pp; hub x1.2: ' + f2(st.hub.partPP) + ' pp; neutral ' + (st.neutral.reached ? 'x' : '>x') + st.neutral.m.toFixed(2));
+      });
+      BU_ALLOCATIONS_PER_YEAR = 1; CCO_RELIEF_FLAT = false;
+    }
+    if (sec === 'cola' || sec === 'all'){
+      console.log('=== COLA: Adverse Environment (2% inflation) and 5% inflation, seeds 1-' + nS + ' (final year) ===');
+      console.log('scenario | wealth poverty % | basket poverty (net) % | housing distress % | extreme poverty per 10,000 | median wealth');
+      [['Adverse Environment', ADVERSE_REFERENCE], ['Adverse Environment at 5% inflation', Object.assign({}, ADVERSE_REFERENCE, {inflRate:0.05})], ['Full Integration at 5.5% inflation', Object.assign({}, FULL_INTEGRATION, {inflRate:0.055})]].forEach(function(c){
+        [['no COLA', {}], ['COLA, always (threshold 0)', {cola:true, colaThresh:0}], ['COLA, hub trigger (>5%)', {cola:true, colaThresh:0.05}]].forEach(function(v){
+          var rs = runMany(Object.assign({}, c[1], v[1]), nS);
+          console.log(c[0] + ', ' + v[0] + ' | ' + mean(col(rs,'pov')).toFixed(2) + ' | ' + mean(col(rs,'basketPov')).toFixed(2) + ' | ' + mean(col(rs,'distress')).toFixed(2) + ' | ' + (mean(col(rs,'epTotal'))*100).toFixed(1) + ' | $' + Math.round(mean(col(rs,'wealth'))).toLocaleString());
+        });
+      });
+    }
   }
 }

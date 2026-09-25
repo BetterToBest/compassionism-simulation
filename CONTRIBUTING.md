@@ -29,9 +29,193 @@ The **Full Integration** preset (seed 42, 20 years) serves as the illustrative r
 | Simulation years | 20 | Two decades captures full automation wave |
 | Seed | 42 | Fixed for reproducibility; labeled "illustrative reference" |
 
+**v4.19:** the automatic stabilizers (recession BU increase, suspended expiry, emergency enrollment, COLA) are off in every preset. CCO's cost relief now scales with BU; at the $1,200 reference it is the same 20% as before.
+
 **v4.17:** a sixth preset, **Adverse Environment**, runs these settings unchanged under recessions, 2% inflation and AI automation — the environment the Stress Test preset uses, without its weaker settings.
 
 The label "Reference" (not "Optimal") reflects that these are calibrated starting points for exploration — the solution space around them is what the simulation is designed to map.
+
+---
+
+## v4.19 Release Notes
+
+v4.19 adds **automatic stabilizers**, requested by Duke: the Research Hub's crisis protocols, built as opt-in levers and calibrated for poverty reduction. It also changes one engine rule at Duke's decision, so that **CCO's cost relief scales with the BU issued**, and it rewords the **Poverty by Five Measures** card for clarity.
+
+**The seed-42/Full Integration/20yr regression is unchanged** (1,965d · $559,223 · 0.534 · 16.6% · 88.5%). Every new lever is off by default and draws no random number. The new relief rule equals the old flat 0.80 exactly at the $1,200 reference, so every $1,200 preset is bit-identical. **Stress Test ($900 BU) moves**; its figures are below. `harness.js validate` reproduces the regression, and `domtest.js`, now 68 checks, passes in full. Against an unmodified v4.18 page, Phase 7 fails (it exits early and reports eight failures) while the 56 earlier checks still pass.
+
+### Where the design comes from
+
+Appendix G of the Research Hub's Integrated Implementation Roadmap sets out crisis protocols. Each maps onto the engine as follows:
+
+| Protocol | Research Hub text | In the engine |
+|---|---|---|
+| Recession | GDP decline >2% for two quarters → increase basic units 20% within 72 hours, relax requirements | Trigger: a recession year whose population income loss is at least a threshold (default 2%; the engine has no GDP, and every engine recession cuts income 5–30%). Increase: a fixed multiplier, or one scaled to the income loss. "Relax requirements": emergency enrollment of non-participants |
+| Natural disaster | Preload emergency units, suspend expiration | Suspended BU expiry while triggered. Disasters themselves are not modelled |
+| Inflation surge | CPI >5% → COLA adjustments to basic units | BU indexed to the basket's price index above an inflation trigger (default 0%, i.e. always; the hub's 5% is marked on the slider) |
+
+### A decision that changed on closer reading, and what Duke chose
+
+The scoping study recommended settling "monthly BU tranches" before calibrating, because `runYear()` annualises wages (×12) but credits one allocation of the BU setting per simulated year. Building it showed that was not the right fix on its own. Through v4.18, BU reached a household two ways: conversion proceeds, credited once a year, and a flat 20% cost relief whenever BU > 0. So **the BU amount mattered only through conversion.** The Research Hub glossary describes BU as redeemable at PTF businesses for essential goods, which is a cost-relief effect.
+
+`node harness.js stabilizer 300 decision`:
+
+| Option | Seed 42: wealth poverty / median wealth / BLEI / Gini | Stress Test, seed 42 | Participants' excess distress, no stabilizer / hub ×1.20 | Shock-neutral multiplier |
+|---|---|---|---|---|
+| v4.18 engine (flat relief) | 16.6% / $559,223 / 1,965d / 0.534 | 53.2% / −$10,000 | 2.99 / 2.61 pp | ×2.35 |
+| A: 12 allocations a year (not adopted) | 9.2% / $1,190,066 / 4,077d / 0.388 | 41.6% / $150,307 | 0.29 / 0.06 pp | ×1.25 |
+| **B: relief scales with BU (shipped)** | **16.6% / $559,223 / 1,965d / 0.534** | **56.0% / −$10,000** | **2.99 / 1.45 pp** | **×1.35** |
+
+Option A more than doubles median wealth and scales twelvefold the conversion channel, which has had no production or treasury constraint since v4.0. **Duke chose Option B.** CCO's cost factor is now `1 − min(CCO_RELIEF_CAP, CCO_RELIEF_AT_REF × effective BU / CCO_RELIEF_REF_BU)`, i.e. 20% of the basket at $1,200, proportional above and below it. `CCO_RELIEF_CAP` = 0.50 is a placeholder with no source; it binds only from $3,000 of effective BU (the BU slider tops out at $1,800). Conversion is still credited once a year. `harness.js` keeps `CCO_RELIEF_FLAT` and `BU_ALLOCATIONS_PER_YEAR` as harness-only switches for before/after comparison; both default to the shipped engine.
+
+### The levers
+
+All act through a per-year **effective BU** inside `runYear()`, which replaces `p.bu` at every read: allocation, the 3× cap, FBS, the BLEI check behind the wage-growth bonus, and now the cost relief.
+
+- **Recession BU increase** (`p.stab`): fixed multiplier `p.stabMult`, or scaled, 1 + `p.stabK` × income loss (`p.stabSev`), in any recession year whose loss is at least `p.stabThresh`. The trigger reads the current year's shock; what a data lag costs is measured below, in the harness only.
+- **Suspended expiry** (`p.stabSusp`): unspent BU carries over while triggered, up to the 3× cap.
+- **Emergency enrollment** (`p.emerg`, `p.emergTakeup`): while triggered, a non-participant whose latent CCO uniform lies below partRate + take-up × (1 − partRate) receives the CCO cost relief for that year. The uniform is drawn at construction and now kept on the agent (`a.uCCO`), so take-up is deterministic. Enrollees do not enter octave advancement or conversion. **The 50% take-up default is a placeholder with no source.**
+- **COLA** (`p.cola`, `p.colaThresh`): BU × (1 + inflation)^year, the index `mainLoopCostUSD` uses, when the inflation slider is above the trigger. Inflation is a constant rate in this engine, so the trigger applies to the whole run.
+
+None draws a random number; `domtest.js` checks that every lever on draws exactly as many as every lever off, so stabilizer arms stay common-random-number paired. CCO Only mirrors all of them, because they are CCO settings.
+
+**Reporting.** A new **Shock Response** card shows this run's recession years, the years the stabilizer fired, and the extra BU as a share of the base allocation. Its button runs a **30-seed paired study**:
+- each seed is run with recessions off and on, under no stabilizer, the hub's ×1.20 and your settings;
+- the measure is excess housing distress in recession years (the v4.18 measure), for participants and non-participants, plus the excess expected extreme poverty it implies;
+- it then searches for the shock-neutral multiplier for your settings (false position from ×1 and ×2, widening to ×3 and ×4, bisecting when refinements stall, to a ±×0.025 bracket), with a button that sets the slider to it.
+
+`harness.js shockStudy()` is the same code; domtest checks the two agree exactly. BU amounts are reported only as shares of the base allocation, not dollars, because of the once-a-year crediting above.
+
+### "Optimal" is a target, not the peak of a curve
+
+Returns to a larger increase are close to linear, and the engine has no price response to BU issuance (NEEC note 9) and no budget constraint. So a larger increase never looks worse, and the model cannot test whether it is inflationary. The default is therefore defined, as Duke settled, as **shock-neutral for participants**: the smallest multiplier that brings CCO participants' excess housing distress in recession years to zero.
+
+### Results at the reference settings
+
+`node harness.js stabilizer 300 rules` (Full Integration + recessions, seeds 1–300, 500 agents, 20 years; excess = recession years minus the same seed with recessions off):
+
+| Rule | Participants (pp) | Non-participants (pp) | Excess extreme poverty (/10k) | Extra BU (% of base) |
+|---|---|---|---|---|
+| No stabilizer | 2.99 | 4.29 | 3.11 | — |
+| Hub: ×1.20 when income falls ≥2% | 1.45 | 4.29 | 1.97 | 3.0% |
+| Hub ×1.20, 2-quarter detection lag (study only) | 1.87 | 4.29 | 2.28 | 2.2% |
+| ×1.30 | 0.58 | 4.29 | 1.33 | 4.5% |
+| **×1.35 (default)** | **0.11** | 4.29 | 0.98 | **5.2%** |
+| ×1.40 | −0.37 | 4.29 | 0.62 | 6.0% |
+| ×1.50 | −1.43 | 4.29 | −0.17 | 7.5% |
+| ×1.35, one-year data lag (study only) | 1.44 | 4.29 | 1.96 | 4.9% |
+| ×1.35, held one year after (study only) | 0.04 | 4.29 | 0.92 | 7.7% |
+| ×1.50 when income loss ≥10% | −0.02 | 4.29 | 0.88 | 5.1% |
+| ×1.50 when income loss ≥15% | 1.85 | 4.29 | 2.26 | 2.1% |
+| Scaled, +2.75% per 1% loss (default +2.8%) | 0.09 | 4.29 | 0.96 | 5.2% |
+| Scaled, +3% per 1% loss | −0.22 | 4.29 | 0.73 | 5.7% |
+| ×1.35 + expiry suspended | −0.58 | 4.29 | 0.46 | 5.2%* |
+| ×1.35 + emergency enrollment, 50% take-up | 0.11 | −1.93 | −0.32 | 8.1% |
+| ×1.35 + emergency enrollment, 100% take-up | 0.11 | −8.38 | −1.66 | 10.9% |
+| Always-on raise, same 20-year budget as ×1.50 (study only) | 1.37 | 4.30 | 1.91 | 7.5% |
+
+\*Carried-over BU is not counted as new issuance, which flatters this row. The shock-neutral point is ×1.36 unrounded (×1.35 on the slider) and +2.8% per 1% income loss, at about 5% of the 20-year BU budget.
+
+`node harness.js stabilizer 300 neutral` (the in-page search):
+
+| Environment | Participants' excess, no stabilizer | After the hub's ×1.20 | Shock-neutral multiplier |
+|---|---|---|---|
+| Full Integration + recessions | 2.99 pp | 1.45 pp | ×1.35 |
+| Adverse Environment | 2.40 pp | 1.09 pp | ×1.35 |
+| CCO Only + recessions | 3.83 pp | 1.83 pp | ×1.35 |
+| Stress Test | 2.59 pp | 1.65 pp | ×1.50 (×1.52 unrounded) |
+
+**What this tells a reader:**
+
+1. **The hub's +20% is in the right range.** It offsets about half of a recession's rise in housing distress for participants; about +35% offsets all of it at the reference settings, and about +50% under the weaker Stress Test settings.
+2. **Timeliness matters for the trough.** A trigger on annual data (one-year lag) leaves 1.44 pp of excess distress, against 0.11 for a timely one at the same multiplier. A two-quarter detection lag on the hub rule costs about a quarter of its effect.
+3. **A stabilizer protects the trough; a permanent raise protects the level.** With the same 20-year budget as ×1.50, an always-on raise leaves 1.37 pp of excess distress in recession years, against −1.43 for the triggered rule.
+4. **Thresholds can target cost.** ×1.50 only when income falls ≥10% reaches neutrality at about the same cost as ×1.35 in every recession, because it concentrates the money on deeper recessions.
+5. **Non-participants are out of reach of a BU increase.** Their 4.29 pp is untouched by every multiplier. Emergency enrollment reaches them through the cost relief; at 50% take-up it more than offsets their rise, because the relief at ×1.35 (27% of the basket) exceeds a typical recession's income loss.
+
+### COLA
+
+`node harness.js stabilizer 300 cola` (final year, seeds 1–300):
+
+| Scenario | Wealth poverty | Basket poverty (net) | Housing distress | Extreme poverty (/10k) | Median wealth |
+|---|---|---|---|---|---|
+| Adverse Environment (2%), no COLA | 35.8% | 50.6% | 32.9% | 35.4 | $206,713 |
+| … COLA, always | 32.7% | 45.6% | 29.6% | 32.2 | $246,261 |
+| … COLA, hub trigger (>5%) | unchanged: the trigger never fires at 2% | | | | |
+| Adverse Environment at 5%, no COLA | 52.7% | 71.7% | 50.7% | 52.5 | $3,239 |
+| … COLA, always | 41.9% | 55.6% | 38.5% | 40.8 | $132,273 |
+| Full Integration at 5.5%, no COLA | 42.2% | 45.7% | 39.6% | 41.9 | $144,093 |
+| … COLA, always or hub trigger | 30.2% | 27.3% | 24.5% | 27.4 | $314,017 |
+
+The hub's trigger is strict (>5%), so at exactly 5% it does not fire. An unindexed BU loses about a third of its real value over 20 years at 2% inflation.
+
+### What moved
+
+Only runs at a BU other than $1,200. Of the documented figures, that is the Stress Test rows (N=500, `node harness.js stress 500` and `extreme 500`):
+
+| Stress Test, seeds 1–500 | v4.18 | v4.19 |
+|---|---|---|
+| Wealth poverty | 56.8% | 58.7% |
+| BLEI poverty | 54.9% | 56.6% |
+| Basket poverty (net) | 72.3% | 73.7% |
+| Median wealth (mean of run medians) | −$9,407 | −$9,948 |
+| Extreme poverty (/10k) | 57.4 | 59.2 |
+| Housing distress | 54.6% | 56.5% |
+
+The v4.17 stress decomposition's "weaker settings @ reference environment" row uses the same $900 BU and moves too: wealth poverty 32.0% → 33.3%, BLEI poverty 29.3% → 30.4%, basket poverty 25.7% → 26.8%, median wealth $269,562 → $249,105. Every other row of the v4.17 and v4.18 tables reproduces unchanged. OAT and LHS runs that vary BU also move, since BU now moves the relief as well as conversion.
+
+### Poverty by Five Measures, reworded
+
+Display text only. Row keys, CSV labels and the JSON key (`povertyByFourMeasures`) are unchanged, so existing parsers keep working.
+
+- **Headings:**
+  - the title asks one plain question: the share of people in poverty at year 0 and in the final year, and how Your Settings compares;
+  - the columns read "Change since year 0" and "Difference from Baseline".
+- **Definitions** use words rather than symbols, e.g. "net wealth below $25,000", and "savings, income and BU cover fewer than 30 days of basic living costs".
+- **Notes:**
+  - a new opening says what each group of measures asks;
+  - the flow notes explain why relative income poverty can rise when most incomes rise together;
+  - the extreme-poverty notes are split into shorter sentences.
+
+**Flagged as a decision rather than polish:** none of the figures, definitions or constants changed.
+
+### Checks
+
+`domtest.js` Phase 7 (12 checks):
+- controls and defaults (all off; ×1.35 and +2.8%);
+- URL round-trip;
+- inertness when off or unable to fire;
+- an unchanged RNG draw count with every lever on;
+- page/harness agreement on every lever;
+- the relief rule bit-identical to v4.18 at $1,200 and different at $900;
+- emergency enrollment only in triggered years, for exactly the expected agents;
+- a seed-42 Adverse Environment run with every lever on against `harness.js`, for Your Settings and CCO Only;
+- the card, warnings and run-configuration line;
+- the in-page study against `harness.shockStudy()`;
+- the "set slider" button;
+- both exports.
+
+The Phase 3 internal-consistency suite, including BU-monotonicity, still passes 6/6.
+
+### What did NOT get done, and why
+
+- **Disasters are not modelled.** They are localized, larger and shorter than recessions, and often destroy assets. A disaster shock needs sourced incidence and loss data. The suspended-expiry lever is ready for it.
+- **The zone premium is a reader note, not a result.** The engine has no geography, and there is little evidence on how residency payments move people. The note sits in the Shock Response card.
+- **Four figures remain placeholders or inherited:** the 50% emergency take-up, the 50% relief cap, the 20%-at-$1,200 relief carried over from earlier releases, and once-a-year conversion crediting.
+- **Timing variants (lag, hold) are harness-only.** The page ships the timely trigger.
+- **No browser layout check this session.** The new sidebar panel and card reuse existing classes and styles, and `domtest.js` verifies behaviour, not appearance.
+
+### Regression: seed 42 / Full Integration / 20yr, v4.18 → v4.19
+
+| Metric | v4.18 | v4.19 | Δ |
+|---|---|---|---|
+| Median BLEI | 1,965d | 1,965d | — |
+| Median wealth | $559,223 | $559,223 | — |
+| Gini (EDC-adj.) | 0.534 | 0.534 | — |
+| Wealth poverty | 16.6% | 16.6% | — |
+| System Stability | 88.5% | 88.5% | — |
+| Pinned at Wealth Floor | 10.6% | 10.6% | — |
+
+New pinned figure: seed 42 Stress Test, 56.0% wealth poverty (v4.18: 53.2%). The seed-42 Adverse Environment run is unchanged (37.4%, $258,045).
 
 ---
 
@@ -1413,6 +1597,10 @@ The simulation uses several empirically grounded constants defined in the `CFG` 
 | `SS_ANCHOR_SSI_ANNUAL` / `SS_ANCHOR_SSDI_ANNUAL` / `SS_ANCHOR_RETIRE_ANNUAL` | $11,928 / $19,560 / $24,852 | SSA 2026 COLA Fact Sheet (ssa.gov/news/en/cola/factsheets/2026.html) | **New in v4.3.** Reference points for the Social-Security-anchored cohort study (see v4.3 Release Notes). Annual figures; update on each year's COLA Fact Sheet publication to keep current. Cohort tagging now uses `WAGE_TO_USD` for the SIU conversion as of v4.4 (unchanged in practice — the SS-anchor cohorts already used `WAGE_TO_USD` for this purpose since their v4.3 introduction; only BLEI/FBS/Gini's *own* internal formulas changed anchor in v4.4). |
 | `POVERTY_LINE` | $25,000 | **None documented anywhere in this codebase** — found while building v4.10 | Unlike almost every other constant in this table, `POVERTY_LINE` has never carried a citation, a "Framework spec" label, or even a code comment explaining where $25,000 came from, despite being the sole classification threshold behind the "Wealth Poverty Rate" KPI and the `pov` figure in every large-N study this document reports. Not corrected here (this table documents provenance, it doesn't invent it retroactively) — genuinely open: is this meant to approximate the US federal poverty guideline (currently $15,960 for one person, per `FED_POVERTY_LINE_1P` below — noticeably lower), some other reference point, or a round-number placeholder never revisited since an early version? Worth a `calibration:`-prefixed issue. **v4.13 note:** a comment recording this gap now sits at the constant itself in `index.html`, so a reader who never opens this file is still warned — and the stake rose slightly, since `POVERTY_LINE` is now also the denominator of the new Cumulative Poverty Exposure metric. Still uncorrected, because inventing a provenance retroactively would be worse than documenting its absence. |
 | `FED_POVERTY_LINE_1P` / `FED_POVERTY_LINE_YEAR` | $15,960 / 2026 | 2026 HHS ASPE federal poverty guideline, one-person household, 48 contiguous states + DC. Verified directly this session: a first fetch against `aspe.hhs.gov/poverty-guidelines` returned a stale cached 2017 snapshot (caught, not used); cross-checked against an independently-dated primary-source PDF (Lifeline Safe Connections Act eligibility table, dated January 15, 2026, HHS-sourced) plus three further independent citations, all converging on $15,960 | **New in v4.10.** External reference only — never read by any simulation-mechanics function, used solely as labeled callout text in the new Threshold Sensitivity charts. Update annually when HHS publishes a fresh guideline (typically late January), same discipline as `SS_ANCHOR_*` above. |
+| `CCO_RELIEF_AT_REF` / `CCO_RELIEF_REF_BU` / `CCO_RELIEF_CAP` | 0.20 / $1,200 / 0.50 | 0.20 is the flat relief carried from earlier releases; the cap is a placeholder | **New in v4.19 (Option B, Duke's decision).** CCO cost relief = min(cap, 0.20 × effective BU / $1,200). A source for how much essential spending a BU of a given size displaces would replace both the proportional form and the cap. |
+| `STAB_HUB_MULT` / `STAB_HUB_THRESH` / `COLA_HUB_THRESH` | 1.20 / 2% / 5% | Research Hub, Integrated Implementation Roadmap, Appendix G | **New in v4.19.** The hub's own crisis-protocol values; the recession trigger reads population income loss because the engine has no GDP. |
+| `STAB_NEUTRAL_MULT` / `STAB_NEUTRAL_K` | ×1.35 / 2.8 | `node harness.js stabilizer 300` | **New in v4.19.** Shock-neutral for CCO participants at the reference settings (×1.36 unrounded). Recalibrate with the same command after any change to how BU enters the model. |
+| `STAB_EMERG_TAKEUP` | 50% | None — placeholder | **New in v4.19.** Default take-up of emergency enrollment. |
 | `WAGE_MEDIAN_SIU` | 35 SIU | Framework spec | Cross-scenario calibration; also the anchor point for `agentEDC()`'s rescaled saturation constants (v4.0) |
 | `FBS_LAMBDA_LO/HI` | **0.0001654 / 0.0013233 (v4.4)** — was 0.001 / 0.008 through v4.3 | BLEI paper §Index IV (λ ~ Uniform), rescaled v4.4 | **Rescaled ÷6.0456 (the `WAGE_TO_USD`/legacy-`SIU_TO_USD` ratio) as a *behavioral recalibration* to restore useful advancement-probability variation — not, as an earlier version of this document claimed, a dimensionally-forced conversion (FBS mixes scaled and unscaled terms, so it doesn't scale by a single clean factor). Open calibration status: the paper's original range already saturates (89.8–100% advancement probability) at the paper's own worked example; the v4.4 range is not itself externally validated. See v4.4 Release Notes for the full account and the recommended FBS₅₀ reparameterization.** |
 | `FBS_EDC_RESIDUAL_BASE/PTH` | 0.12 / 0.025 | BLEI paper Table 1b worked values | Used as a fixed proxy for "consumer debt interest only" — a separately-modelled consumer-debt submodel would be more accurate. |
@@ -1437,6 +1625,8 @@ The simulation supports seeded runs (Mulberry32 PRNG). To verify a result:
 3. Confirm the output matches
 
 If results diverge under identical seed + parameters, open a bug report with both exports. This should not happen — if it does, it indicates a browser environment difference worth documenting.
+
+**v4.19 update:** the seed-42 figures are unchanged. Runs at a BU other than $1,200 (Stress Test, OAT and LHS rows) move, because CCO cost relief now scales with BU. Record the stabilizer settings, which are exported in CSV and JSON, alongside the seed. The shock-response study is seeded (1–30) and reproduces exactly.
 
 **v4.16 update — a reproducibility bug in exactly the sense this section describes, found and fixed.** A seeded run started while the previous run's attribution ablation, or the validation suite, was still computing drew from the wrong random stream: seed 42 gave $545,506 or $555,354 instead of $559,223. Fixed by isolating every asynchronous task's stream (see the v4.16 Release Notes). If you reported a non-reproducing run before v4.16, this is the likely cause — not a browser difference. The seed-42 figures below are unchanged; `node domtest.js` now runs 38 checks, including three that re-run seed 42 under each interleaving that used to break it. Separately: the new opt-in "Match Baseline inflation" toggle changes the Baseline comparison when on, so record its state (exported in CSV/JSON) alongside the seed when comparing Baseline figures.
 
@@ -1523,6 +1713,20 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 
 Areas currently open for discussion:
 
+- **Settled in v4.19 (Duke):**
+  - CCO cost relief scales with the BU issued (Option B), not monthly tranches;
+  - the stabilizer default is shock-neutral for CCO participants;
+  - the page ships a timely trigger, as a fixed or a scaled rule;
+  - emergency enrollment, suspended expiry and COLA are included;
+  - the zone premium is a reader note only.
+- **New in v4.19: stabilizer and relief inputs, to be replaced as sources become available.**
+  - `STAB_EMERG_TAKEUP` (50%) has no source.
+  - `CCO_RELIEF_CAP` (50%) has no source.
+  - The 20% relief at $1,200 is inherited from earlier releases.
+
+  Useful sources would be: take-up rates for emergency cash or benefit enrollment when requirements are relaxed; the share of essential spending a basic-income payment of a given size displaces; and how local rents respond to place-based payments, for a future two-zone model.
+- **New in v4.19: a disaster shock.** It would be localized, larger and shorter than a recession, possibly with asset loss, and needs sourced incidence and loss data. Suspended expiry is ready for it.
+- **New in v4.19: conversion is still credited once per simulated year.** Wages are annualised ×12. Changing this would scale the unconstrained conversion channel (see the flow-of-funds ledger item below); it belongs with that ledger.
 - **New in v4.18: the extreme-poverty overlay's inputs, to be updated as data sources become available.** Duke adopted all of them for v4.18 (see Release Notes). None is an estimate this project made. The voluntary share (`EP_VOL_SHARE`, 2%) has no US source. The two structural assumptions are that economic homelessness is proportional to housing distress, and that the SMI pathway does not worsen with the economy. Useful new sources would be: a national count or survey of voluntary or religious mendicancy; panel data linking income shortfall to entry into homelessness, which would replace the elasticity-1 assumption with an estimate; and evidence on how SMI homelessness responds to housing costs. The SMI share and the wellness-zone effect are sourced, but each is a single study or meta-analysis. `node harness.js extreme` shows how far each moves the result.
 - **Settled in v4.18 (Duke):** the measure keeps the name "extreme poverty," with its difference from the World Bank's income-based definition stated wherever it appears; wellness zones require both PTH and SZH.
 

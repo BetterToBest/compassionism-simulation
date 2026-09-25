@@ -68,6 +68,11 @@
  * reaches the page's `window` listener, so it compared static markup with META and never ran the
  * fill it was written to guard; and two checks pinned the panel at exactly six rows, which any new
  * measure breaks. Each still checks what it was written for. See CONTRIBUTING.md v4.18.
+ * Phase 7 (v4.19) checks the automatic stabilizers: controls and defaults (all off), URL round-trip,
+ * inertness when off or unable to fire, an unchanged RNG draw count with every lever on, page/harness
+ * agreement on every lever, emergency enrollment only in triggered years, a seed-42 Adverse Environment
+ * run with every lever on against harness.js (Your Settings and CCO Only), the Shock Response card and
+ * warnings, the in-page study against harness.shockStudy, and both exports. See CONTRIBUTING.md v4.19.
  * Phase 4 (v4.16) reproduces a reproducibility bug the v4.16 audit found: a seed-42 run started
  * while the previous run's attribution ablation, or the validation suite, was still computing
  * drew from the wrong RNG stream (v4.15 gave $545,506 / $555,354 instead of $559,223). It also
@@ -503,5 +508,131 @@ function phase6(w5, r, csv, pj, H, done) {
   check('v4.18: CSV and JSON exports carry the extreme-poverty rows, constants and housing distress',
     /Extreme poverty \(v4\.18\)/.test(csv) && /EP_Y0_RATE/.test(csv) && /Housing distress/.test(csv) && !!pj && !!pj.results.extremePoverty &&
     !!pj.results.extremePoverty.main && pj.results.povertyByFourMeasures.rows.some(x => x.k === 'extreme'));
-  done();
+  phase7(done);  // v4.19
+}
+
+/* ── Phase 7 (v4.19): automatic stabilizers and the Shock Response card.
+ * Every check is written to fail gracefully, not throw, against an unmodified v4.18 page. */
+function phase7(done) {
+  console.log('\n--- Phase 7: v4.19 ---');
+  const H = require('./harness.js');
+  const has = w => typeof w.shockRun === 'function' && typeof w.stabParamsFromUI === 'function';
+
+  // 7a. controls, defaults, URL round-trip
+  const wu = makeWindow('?stabOn=1&stabm=1.75&stabSevOn=0&emergOn=1&emtk=80&colaOn=1&colath=2.5&stabSuspOn=1');
+  wu.applyParamsFromURL();
+  const $u = id => wu.document.getElementById(id);
+  const d0 = makeWindow(), $0 = id => d0.document.getElementById(id);
+  const defaultsOff = has(d0) && ['stab', 'stabSev', 'stabSusp', 'emerg', 'cola'].every(k => d0.ST[k] === false) &&
+    !!$0('stab-off') && $0('stab-off').getAttribute('aria-pressed') === 'true' && $0('s-stabm').value === '1.35' && $0('s-stabk').value === '2.8';
+  check('v4.19: stabilizer controls exist and every lever is off by default (multiplier default x1.35, scaled gain 2.8)', defaultsOff);
+  check('v4.19: stabilizer settings round-trip through a shared URL',
+    has(wu) && wu.ST.stab === true && wu.ST.emerg === true && wu.ST.cola === true && wu.ST.stabSusp === true && wu.ST.stabSev === false &&
+    $u('s-stabm').value === '1.75' && $u('s-emtk').value === '80' && $u('s-colath').value === '2.5' && $u('stab-on').getAttribute('aria-pressed') === 'true',
+    has(wu) ? 'ST.stab=' + wu.ST.stab + ' s-stabm=' + $u('s-stabm').value : 'no stabilizer controls (pre-v4.19)');
+
+  // 7b. engine: inert when off, inert when it cannot fire, RNG schedule unchanged
+  if (!has(d0)) {
+    ['inert when off or unable to fire', 'no RNG draw added', 'page and harness agree on every lever', 'emergency enrollment only in triggered years',
+     'in-page study matches harness', 'card, warnings, exports and CCO Only'].forEach(n => check('v4.19: ' + n, false, 'pre-v4.19 page'));
+    return done();
+  }
+  const FI = Object.assign({}, H.FULL_INTEGRATION);
+  const off = Object.assign({}, FI, {shock: true, stab: false});
+  const onNoShock = Object.assign({}, FI, {shock: false, stab: true, stabMult: 3, stabSusp: true, emerg: true, emergTakeup: 1, stabThresh: 0});
+  const offNoShock = Object.assign({}, FI, {shock: false, stab: false});
+  const x1 = Object.assign({}, off, {stab: true, stabMult: 1, stabThresh: 0});
+  const colaNoInfl = Object.assign({}, off, {cola: true, colaThresh: 0});   // inflation 0: nothing to index
+  const same = (a, b) => JSON.stringify(a.dAll) === JSON.stringify(b.dAll) && JSON.stringify(a.dPart) === JSON.stringify(b.dPart);
+  check('v4.19: inert when off or unable to fire (recessions off; x1.00; COLA at 0% inflation) — bit-identical to off',
+    same(d0.shockRun(onNoShock, 42), d0.shockRun(offNoShock, 42)) && same(d0.shockRun(x1, 42), d0.shockRun(off, 42)) && same(d0.shockRun(colaNoInfl, 42), d0.shockRun(off, 42)));
+  let cnt = 0; const orig = d0.mulberry32;
+  d0.mulberry32 = function (s) { const f = orig(s); return function () { cnt++; return f(); }; };
+  d0.shockRun(off, 11); const cOff = cnt; cnt = 0;
+  const all = Object.assign({}, FI, {shock: true, stab: true, stabSev: true, stabK: 11, stabSusp: true, emerg: true, emergTakeup: 0.5, cola: true, colaThresh: 0, inflRate: 0.02});
+  d0.shockRun(Object.assign({}, all, {stab: false, cola: false}), 11); const cBase2 = cnt; cnt = 0;
+  d0.shockRun(all, 11); const cAll = cnt;
+  d0.mulberry32 = orig;
+  check('v4.19: no RNG draw added — every lever on draws exactly as many random numbers as every lever off',
+    cOff > 0 && cAll === cBase2 && cOff === cBase2, 'off ' + cOff + ', off at 2% inflation ' + cBase2 + ', all levers on ' + cAll);
+  const pairs = [off, Object.assign({}, off, {stab: true, stabMult: 2.35, stabThresh: 0.02}), all,
+    Object.assign({}, H.STRESS_TEST, {stab: true, stabSev: true, stabK: 15, emerg: true, emergTakeup: 0.3, cola: true, colaThresh: 0.01})];
+  const agree = pairs.every(p => { const a = d0.shockRun(p, 5), b = H.shockRun(p, 5); return same(a, b) && a.extra === b.extra && a.base === b.base; });
+  check('v4.19: page and harness agree on every lever (fixed, scaled, expiry, emergency, COLA; seed 5)', agree);
+  // Option B: relief scales with BU — identical to the old flat 0.80 at $1,200, different elsewhere
+  const at = (bu, w) => { const p = Object.assign({}, FI, {shock: false, bu: bu}); return JSON.stringify(w.shockRun(p, 9).dPart); };
+  H.setStabSwitches(1, true);
+  const flat1200 = JSON.stringify(H.shockRun(Object.assign({}, FI, {shock: false, bu: 1200}), 9).dPart), flat900 = JSON.stringify(H.shockRun(Object.assign({}, FI, {shock: false, bu: 900}), 9).dPart);
+  H.setStabSwitches(1, false);
+  check('v4.19: CCO cost relief scales with BU — bit-identical to the v4.18 flat rule at $1,200, different at $900',
+    typeof d0.CFG.CCO_RELIEF_CAP === 'number' && at(1200, d0) === flat1200 && at(900, d0) !== flat900);
+  // emergency enrollment: count from runYear's return, triggered vs not
+  d0.RNG = d0.mulberry32(3);
+  const pE = Object.assign({}, FI, {stab: true, stabMult: 1, stabThresh: 0, emerg: true, emergTakeup: 0.5});
+  const pop = d0.makeLatentPopulation(500).map(l => d0.instantiateAgent(l, pE));
+  const line = pE.partRate + 0.5 * (1 - pE.partRate);
+  const expect = pop.filter(a => !a.inCCO && a.uCCO < line).length;
+  const rOn = d0.runYear(pop, 0, pE, {active: true, incomeMultiplier: 0.88, yearsLeft: 1});
+  const rOff = d0.runYear(pop, 1, pE, {active: false, incomeMultiplier: 1, yearsLeft: 0});
+  check('v4.19: emergency enrollment only in triggered years, and exactly the non-participants below the take-up line',
+    rOn.stabOn === true && rOn.emergN === expect && expect > 0 && rOff.stabOn === false && rOff.emergN === 0,
+    'triggered ' + rOn.emergN + ' (expected ' + expect + '), untriggered ' + rOff.emergN);
+
+  // 7c. a full run through the live page with every lever on, then the in-page study
+  const w7 = makeWindow(), $7 = id => w7.document.getElementById(id);
+  const cap = {};
+  w7.Blob = function (parts) { this.parts = parts; };
+  w7.URL.createObjectURL = function (b) { cap.last = b.parts.join(''); return 'blob:stub'; };
+  w7.URL.revokeObjectURL = function () {};
+  w7.HTMLAnchorElement.prototype.click = function () { cap[this.download] = cap.last; };
+  w7.applyPreset('adverse');
+  w7.tog('stab', true); w7.tog('stabSusp', true); w7.tog('emerg', true); w7.tog('cola', true);
+  $7('s-seed').value = '42';
+  w7.SIM_RESULTS = null; w7.runSim();
+  const t7 = Date.now();
+  const iv7 = setInterval(() => {
+    if (Date.now() - t7 > 300000) { clearInterval(iv7); check('v4.19 run finished', false, 'timeout'); return done(); }
+    if (!w7.SIM_RESULTS || w7.running) return;
+    clearInterval(iv7);
+    const r = w7.SIM_RESULTS, P = r.params;
+    const hp = Object.assign({}, H.ADVERSE_REFERENCE, {stab: true, stabSev: false, stabMult: 1.35, stabK: 2.8, stabThresh: 0.02, stabSusp: true, emerg: true, emergTakeup: 0.5, cola: true, colaThresh: 0});
+    const hr = H.runScenario(hp, 42), hc = H.runScenario(H.ccoOnlyFor(hp), 42);
+    const got = {pov: +r.finalPov.toFixed(1), wealth: Math.round(r.finalWealth), blei: Math.round(r.blei.med), gini: +r.finalGini.toFixed(3), cco: Math.round(r.mCCO.med)};
+    const want = {pov: hr.pov, wealth: hr.wealth, blei: hr.bleiMed, gini: hr.gini, cco: hc.wealth};
+    const sr = r.shockResponse || {};
+    check('v4.19: card, warnings, exports and CCO Only — a seed-42 Adverse Environment run with every lever on matches harness.js (Your Settings and CCO Only)',
+      JSON.stringify(got) === JSON.stringify(want) && !!sr.run && sr.run.recYears > 0 && sr.run.firedYears === sr.run.recYears && sr.run.colaExtra > 0 && sr.run.emergAgentYears > 0,
+      'page ' + JSON.stringify(got) + '\n           harness ' + JSON.stringify(want));
+    const warn = ($7('warn-note') || {}).textContent || '';
+    check('v4.19: the run warns that the stabilizer and COLA are on, and the Shock Response card and run-config line show them',
+      /Automatic BU increase on/.test(warn) && /BU indexed to inflation/.test(warn) && $7('sec-shock').style.display === 'block' &&
+      /fired in/.test($7('shock-run-inner').textContent) && /Stabilizers:/.test(($7('run-conf-inner') || {}).innerHTML || ''));
+    // in-page study, reduced to 3 seeds, against harness.shockStudy on the same parameters
+    w7.CFG.STAB_STUDY_SEEDS = 3;
+    const Pst = w7.shockStudyParams();
+    w7.runShockStudy();
+    const ivS = setInterval(() => {
+      if (w7.SHOCK_STATE.active) return;
+      clearInterval(ivS);
+      const ps = r.shockResponse.study, hs = H.shockStudy(JSON.parse(JSON.stringify(Pst)), 3);
+      const near = (a, b) => Math.abs(a - b) < 1e-9;
+      const keys = ['partPP', 'nonPartPP', 'allPP', 'extremePer10k', 'extraPctOfBase'];
+      const ok = !!ps && !ps.error && ['none', 'hub', 'yours'].every(k => keys.every(q => near(ps[k][q], hs[k][q]))) &&
+        ps.neutral.m === hs.neutral.m && ps.neutral.reached === hs.neutral.reached;
+      check('v4.19: the in-page shock-response study matches harness.shockStudy exactly (3 seeds: every arm, and the shock-neutral multiplier)', ok,
+        ps && !ps.error ? 'page neutral x' + ps.neutral.m + ', harness x' + hs.neutral.m : 'no study result');
+      const rows = w7.document.querySelectorAll('#shock-study-inner tbody tr').length;
+      w7.setStabToNeutral();
+      check('v4.19: the study table renders three rules and "Set the multiplier slider" applies the neutral value',
+        rows === 3 && Math.abs(parseFloat($7('s-stabm').value) - ps.neutral.m) < 1e-9, rows + ' rows; slider ' + $7('s-stabm').value);
+      w7.downloadCSV(); w7.downloadJSON();
+      const csv = (Object.entries(cap).find(([k]) => k && k.endsWith('.csv')) || [])[1] || '';
+      const js = (Object.entries(cap).find(([k]) => k && k.endsWith('.json')) || [])[1] || '';
+      let pj = null; try { pj = JSON.parse(js); } catch (e) { /* below */ }
+      check('v4.19: CSV and JSON exports carry the stabilizer settings, this run\'s tally and the study',
+        /Auto BU Increase in Recessions \(v4\.19\)/.test(csv) && /SHOCK RESPONSE/.test(csv) && /Shock-neutral multiplier/.test(csv) &&
+        !!pj && pj.parameters.stab === true && !!pj.results.shockResponse && !!pj.results.shockResponse.study && pj.results.shockResponse.run.firedYears > 0);
+      done();
+    }, 200);
+  }, 200);
 }
