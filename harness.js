@@ -10,6 +10,11 @@
  * the documented seed-42/Full Integration/20yr regression figures (see
  * `validate` mode) BEFORE being trusted for the WEALTH_FLOOR sweep — this
  * mirrors HANDOFF.md's explicit instruction for whoever builds this.
+ *
+ * v4.17: recessions ported (updateRecession/buildRecessionPath; runScenario honours
+ * p.shock), structuralStability() parity with index.html restored, income/basket poverty
+ * and year-0 reference figures added to runScenario()'s result, and four new modes:
+ * headline, year0, stress, participation. `validate` is unchanged in every figure.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -191,7 +196,7 @@ function runYear(agentSet,yr,p,recSt){
     }
     wg+=a.octave*CFG.WAGE_OCTAVE_BONUS;
     if(p.cip)wg+=p.cipDemo*0.005;
-    wg-=popAIDisp*(a.automationRisk||0.5);
+    wg-=popAIDisp*((typeof a.automationRisk==='number'&&!isNaN(a.automationRisk))?a.automationRisk:0.5);  /* v4.17 parity: `||0.5` read a draw of exactly 0 as 0.5 */
     a.wage=Math.max(a.wage*0.80,a.wage*(1+wg));
     if(isNaN(a.wage))a.wage=1;
     var cf=1.0;
@@ -202,6 +207,7 @@ function runYear(agentSet,yr,p,recSt){
     var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
     var costUSD=mainLoopCostUSD*cf;
     a.wealth+=annualWageUSD-costUSD;
+    a.yrWageUSD=annualWageUSD;a.yrCostUSD=costUSD;a.yrBasketUSD=mainLoopCostUSD;a.yrConvUSD=0;  /* v4.17: income/basket poverty inputs (no RNG) */
     if(isNaN(a.wealth))a.wealth=0;
     if(p.ccoOn&&a.inCCO){
       /* v4.14 parity fix — ported from index.html: this was a step function (decay=0 at
@@ -225,7 +231,7 @@ function runYear(agentSet,yr,p,recSt){
       var bTax=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax;
       var progTax=Math.min(CFG.PROG_TAX_MAX,bTax+Math.max(0,(rate-CFG.PROG_PIVOT)*CFG.PROG_RATE));
       var convGain=spend*rate*(1-progTax)*cipB*incomeShock;
-      a.wealth+=convGain;totalConversion+=convGain;
+      a.wealth+=convGain;totalConversion+=convGain;a.yrConvUSD=convGain;
       if(isNaN(a.wealth))a.wealth=0;
       if(a.octave<p.maxOct){
         var Yusd=a.wage*CFG.WAGE_TO_USD;
@@ -254,6 +260,49 @@ function runYear(agentSet,yr,p,recSt){
     if(a.wealth<CFG.WEALTH_FLOOR)a.wealth=CFG.WEALTH_FLOOR;
   });
   return{bu:totalBU,conversion:totalConversion};
+}
+
+/* v4.17: income and basket poverty — ported verbatim to/from index.html (see its comment on
+ * incomeBasketMetrics for definitions). Cash income = this year's wage income (after the
+ * income shock) + CCO conversion proceeds; PTH appreciation is excluded (a capital gain,
+ * excluded from disposable income in the OECD/EU convention). Relative income poverty: cash
+ * income below 60% of the same population's median. Basket poverty: cash income below the
+ * agent's own inflation-adjusted LIVING_WAGE_ANNUAL basket after its CCO/PTF/PTH cost
+ * reductions (net) or before them (gross). incPovExt adds the in-kind value of those cost
+ * reductions (gross basket − own cost) to income before applying the 60%-of-median line. */
+function medianOf(arr){var s=arr.slice().sort(function(a,b){return a-b;}),n=s.length;return n?(n%2===0?(s[n/2-1]+s[n/2])/2:s[Math.floor(n/2)]):0;}
+function incomeBasketMetrics(agents){
+  var inc=agents.map(function(a){var w=+a.yrWageUSD,c=+a.yrConvUSD;return (isNaN(w)?0:w)+(isNaN(c)?0:c);});
+  var n=inc.length;if(!n||agents[0].yrBasketUSD===undefined)return null;
+  var ext=agents.map(function(a,i){return inc[i]+Math.max(0,(+a.yrBasketUSD||0)-(+a.yrCostUSD||0));});
+  var med=medianOf(inc),line=0.6*med,medX=medianOf(ext),rel=0,relX=0,net=0,gross=0;
+  agents.forEach(function(a,i){if(inc[i]<line)rel++;if(ext[i]<0.6*medX)relX++;if(inc[i]<a.yrCostUSD)net++;if(inc[i]<a.yrBasketUSD)gross++;});
+  return{medianIncome:med,incPov:rel/n*100,incPovExt:relX/n*100,basketPov:net/n*100,basketPovGross:gross/n*100};
+}
+function incomeBasketYear0(agents){
+  var inc=agents.map(function(a){return Math.max(isNaN(a.wage)?0:a.wage,0)*12*CFG.WAGE_TO_USD;});
+  var n=inc.length;if(!n)return null;var med=medianOf(inc),rel=0,bsk=0;
+  inc.forEach(function(v){if(v<0.6*med)rel++;if(v<CFG.LIVING_WAGE_ANNUAL)bsk++;});
+  return{medianIncome:med,incPov:rel/n*100,incPovExt:rel/n*100,basketPov:bsk/n*100,basketPovGross:bsk/n*100};
+}
+/* v4.17: recessions, ported verbatim from index.html (NEEC maintainers' note 5), so stress
+ * runs need nothing from the page. buildRecessionPath() draws on its own stream
+ * (seed+700000) and restores RNG, so enabling shocks moves no agent draw — the same
+ * paired-shock design simulate() uses for Main/Baseline/CCO-Only. */
+function updateRecession(recSt){
+  if(recSt.active){recSt.yearsLeft--;if(recSt.yearsLeft<=0){recSt.active=false;recSt.incomeMultiplier=1.0;}}
+  else if(RNG()<0.10){recSt.active=true;recSt.yearsLeft=1+Math.floor(RNG()*3);recSt.incomeMultiplier=0.70+beta(5,2)*0.25;}
+}
+function buildRecessionPath(years,seed){
+  var path=[],saved=RNG;
+  RNG=(seed===null||seed===undefined||isNaN(seed))?saved:mulberry32(seed+700000);
+  var st={active:false,incomeMultiplier:1.0,yearsLeft:0};
+  for(var y=0;y<years;y++){
+    if(y>0)updateRecession(st);
+    path.push({active:st.active,incomeMultiplier:st.incomeMultiplier});
+  }
+  RNG=saved;
+  return path;
 }
 
 function interpP(sorted,p){var n=sorted.length;if(!n)return 0;var pos=p*(n-1),lo=Math.floor(pos),hi=Math.ceil(pos);return lo===hi?sorted[lo]:sorted[lo]+(pos-lo)*(sorted[hi]-sorted[lo]);}
@@ -320,8 +369,13 @@ function coeffVar(arr){
   var variance=arr.reduce(function(s,x){return s+(x-mean)*(x-mean);},0)/n;
   return Math.sqrt(variance)/Math.abs(mean);
 }
+/* v4.17 parity fix — ported from index.html's v4.13 fix, which this harness never received:
+ * the final-quarter window was Math.max(1,…), so any 5-7 year run used a single point, for
+ * which coeffVar() returns 0 and the metric returns its 0.99 ceiling regardless of the run.
+ * index.html has used Math.max(2,…) since v4.13. Runs of 8+ years (every documented figure)
+ * are unaffected: floor(8/4)=2 already. Reported by the NEEC maintainers (Sessions 38/40). */
 function structuralStability(wealthSeries,bleiSeries){
-  var q=Math.max(1,Math.floor(wealthSeries.length/4));
+  var q=Math.max(2,Math.floor(wealthSeries.length/4));
   var wStab=1/(1+coeffVar(wealthSeries.slice(-q))),bStab=1/(1+coeffVar(bleiSeries.slice(-q)));
   return Math.max(0,Math.min(0.99,(wStab+bStab)/2));
 }
@@ -337,10 +391,21 @@ function runScenario(p, seed){
   RNG = mulberry32(seed + 700003);
   var latentPop = makeLatentPopulation(p.nAgents);
   var agents = latentPop.map(function(lat){ return instantiateAgent(lat, p); });
+  /* v4.17: year-0 reference (before any year runs; draws no RNG). Wealth poverty and the
+   * income measures are policy-neutral (same latent population in every scenario); BLEI is
+   * not — agentBLEI() credits BU, γ=0.20 and reduced daily cost to participants — so the
+   * policy-neutral BLEI figure evaluates the same agents under Baseline rules. */
+  var m0 = calcMetrics(agents);
+  var bN0 = bleiMetrics(agents, 0, false, false, false, 0, false), bY0 = bleiMetrics(agents, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf);
+  var ib0 = incomeBasketYear0(agents);
+  var yearZero = {pov:+(m0.pov*100).toFixed(1), bleiPovNeutral:+((bN0.tc[0]+bN0.tc[1])/bN0.n*100).toFixed(1),
+    bleiPovScenario:+((bY0.tc[0]+bY0.tc[1])/bY0.n*100).toFixed(1), incPov:+ib0.incPov.toFixed(1), incPovExt:+ib0.incPovExt.toFixed(1), basketPov:+ib0.basketPov.toFixed(1), basketPovGross:+ib0.basketPovGross.toFixed(1)};
+  /* v4.17: recessions (NEEC note 5). p.shock was silently ignored before this release. */
+  var recPath = p.shock ? buildRecessionPath(p.years, seed) : null;
   RNG = mulberry32(seed);
   var aWealth = [], aBlei = [];
   for (var yr = 0; yr < p.years; yr++){
-    runYear(agents, yr, p, {active:false, incomeMultiplier:1.0, yearsLeft:0});
+    runYear(agents, yr, p, recPath ? recPath[yr] : {active:false, incomeMultiplier:1.0, yearsLeft:0});
     var m = calcMetrics(agents, p.ccoOn, p.pth);
     var bMed = calcMedianBLEI(agents, p);
     aWealth.push(Math.round(m.med));
@@ -352,6 +417,7 @@ function runScenario(p, seed){
   var bMain = bleiMetrics(agents, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf, top);
   var floor = CFG.WEALTH_FLOOR;
   var atFloor = agents.filter(function(a){ return a.wealth <= floor + 1e-6; }).length;
+  var ib = incomeBasketMetrics(agents);
   return {
     pov: +(finalM.pov*100).toFixed(1),
     gini: +finalM.gini.toFixed(3),
@@ -364,7 +430,13 @@ function runScenario(p, seed){
     avgEDC: +(bMain.avgEDC*100).toFixed(1),
     stab: +(stab*100).toFixed(1),
     fracAtFloor: atFloor/agents.length,
-    medianPinned: Math.round(finalM.med) === floor
+    medianPinned: Math.round(finalM.med) === floor,
+    incPov: +ib.incPov.toFixed(1),            /* v4.17 */
+    incPovExt: +ib.incPovExt.toFixed(1),
+    basketPov: +ib.basketPov.toFixed(1),      /* v4.17 */
+    basketPovGross: +ib.basketPovGross.toFixed(1),
+    yearZero: yearZero,                       /* v4.17 */
+    recessionYears: recPath ? recPath.filter(function(r){ return r.active; }).length : 0
   };
 }
 
@@ -397,7 +469,45 @@ var BASELINE = {
  * 'benefitDays line invisible in the chart' report." Object.assign onto the existing
  * exports object, rather than replacing it, so both assignment styles compose correctly
  * regardless of which comes first in the file. */
-Object.assign(module.exports, { CFG, mulberry32, runScenario, FULL_INTEGRATION, BASELINE });
+/* v4.17: the two stress presets, mirroring index.html's PRESETS.stress and the new
+ * PRESETS.adverse (NEEC maintainers' note 6). STRESS_TEST mixes an adverse environment
+ * (recessions, 2% inflation, AI automation) with weaker settings (40% participation, $900 BU,
+ * lower PTF/PTH/SZH/CIP); ADVERSE_REFERENCE applies the same environment to the unchanged
+ * Full Integration settings, which is what a stress criterion should test. */
+var STRESS_TEST = {
+  bu:900, maxOct:4, expiry:1, tax:0.18, maxMult:6,
+  nAgents:500, partRate:0.40, years:20,
+  ptfShare:0.08, pthUptake:0.10, szhCoh:0.35, cipDemo:0.30,
+  phi:true, ptf:true, pth:true, szh:true, cip:true,
+  shock:true, automation:true, inflRate:0.02, ccoOn:true, ptfCap:false
+};
+var ADVERSE_REFERENCE = Object.assign({}, FULL_INTEGRATION, {shock:true, automation:true, inflRate:0.02});
+/* The Baseline as simulate() builds it for a given scenario's comparison: shocks and
+ * automation follow the scenario, inflation stays at BASELINE_CPI_RATE unless matched. */
+function baselineFor(p, matchInfl){ return Object.assign({}, BASELINE, {shock:!!p.shock, automation:!!p.automation, inflRate: matchInfl ? p.inflRate : CFG.BASELINE_CPI_RATE}); }
+
+/* v4.17: per-year trajectory including year 0 and the participant split (NEEC note 4). */
+function trajectory(p, seed, marks){
+  RNG = mulberry32(seed + 700003);
+  var agents = makeLatentPopulation(p.nAgents).map(function(lat){ return instantiateAgent(lat, p); });
+  var recPath = p.shock ? buildRecessionPath(p.years, seed) : null;
+  RNG = mulberry32(seed);
+  function bp(ag){ if(!ag.length) return null; var b = bleiMetrics(ag, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf); return (b.tc[0]+b.tc[1])/b.n*100; }
+  var out = {};
+  function rec(y){
+    var part = agents.filter(function(a){ return a.inCCO; }), np = agents.filter(function(a){ return !a.inCCO; });
+    var ib = y === 0 ? incomeBasketYear0(agents) : incomeBasketMetrics(agents);
+    out[y] = {pov: calcMetrics(agents).pov*100, bleiPov: bp(agents), bleiPovPart: bp(part), bleiPovNonPart: bp(np), basketPov: ib.basketPov, incPov: ib.incPov};
+  }
+  rec(0);
+  for (var yr = 0; yr < p.years; yr++){
+    runYear(agents, yr, p, recPath ? recPath[yr] : {active:false, incomeMultiplier:1.0, yearsLeft:0});
+    if (marks.indexOf(yr+1) >= 0) rec(yr+1);
+  }
+  return out;
+}
+
+Object.assign(module.exports, { CFG, mulberry32, runScenario, trajectory, baselineFor, FULL_INTEGRATION, BASELINE, STRESS_TEST, ADVERSE_REFERENCE });
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
@@ -486,7 +596,7 @@ if (require.main === module) {
    * regenerated rather than taken on trust. Both hold shocks and automation off (the harness's
    * documented scope) and aggregate seeds 1..N at 500 agents / 20 years. */
   function aggregate(p, N){
-    var keys = ['pov','gini','wealth','bleiMed','bleiPovPct','fracAtFloor'], s = {}, pinned = 0, medW = [];
+    var keys = ['pov','gini','wealth','bleiMed','bleiPovPct','fracAtFloor','incPov','incPovExt','basketPov','basketPovGross','stab','recessionYears'], s = {}, pinned = 0, medW = [];  // v4.17: +incPov, basketPov, stab, recessionYears
     keys.forEach(function(k){ s[k] = 0; });
     for (var seed = 1; seed <= N; seed++){
       var r = runScenario(p, seed);
@@ -524,5 +634,75 @@ if (require.main === module) {
       console.log(lbl + ' N=' + nP + ' FI, PTH 50%: ' + JSON.stringify(aggregate(P50, nP)));
     });
     PTH_APPR_CONSERVE = false;
+  }
+
+  /* ─── v4.17 modes: the studies behind CONTRIBUTING.md's v4.17 Release Notes ─── */
+  function mean(arr){ return arr.reduce(function(a,b){ return a+b; }, 0)/arr.length; }
+  function runMany(p, N){ var r = []; for (var sd = 1; sd <= N; sd++) r.push(runScenario(p, sd)); return r; }
+  function col(runs, k){ return runs.map(function(r){ return r[k]; }); }
+  function col0(runs, k){ return runs.map(function(r){ return r.yearZero[k]; }); }
+  function f1(x){ return (x === null || x === undefined || isNaN(x)) ? '-' : x.toFixed(1); }
+
+  if (mode === 'headline') {
+    /* NEEC note 1: what poverty REDUCTION does the engine produce, against which comparator?
+     * Reports ratio-of-means and mean-of-per-run reductions, since the two differ slightly. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nH = parseInt(process.argv[3] || '500', 10);
+    var FI = runMany(FULL_INTEGRATION, nH), FI3 = runMany(Object.assign({}, FULL_INTEGRATION, {inflRate:0.03}), nH);
+    var B3 = runMany(BASELINE, nH), B0 = runMany(Object.assign({}, BASELINE, {inflRate:0}), nH);
+    console.log('=== Poverty reduction by comparator (v4.17): seeds 1-' + nH + ', 500 agents, 20yr, shocks off ===');
+    console.log('comparator\tmeasure\tcomparator %\tFull Integration %\treduction (ratio of means)\treduction (mean of per-run)');
+    [['pov','wealth poverty'],['bleiPovPct','BLEI poverty'],['incPov','relative income poverty (cash)'],['incPovExt','relative income poverty (incl. in-kind)'],['basketPov','basket poverty (net)'],['basketPovGross','basket poverty (gross)']].forEach(function(m){
+      [['Baseline @3% (shipped)', B3, FI, false],['Baseline @0% (inflation-matched)', B0, FI, false],['Baseline @3% vs FI @3%', B3, FI3, false],['Year 0 (policy-neutral)', FI, FI, true]].forEach(function(c){
+        var k0 = m[0] === 'pov' ? 'pov' : m[0] === 'bleiPovPct' ? 'bleiPovNeutral' : m[0];
+        var cmp = c[3] ? col0(c[1], k0) : col(c[1], m[0]), fi = col(c[2], m[0]);
+        var rm = (1 - mean(fi)/mean(cmp))*100;
+        var pr = mean(cmp.map(function(v, i){ return v > 0 ? (1 - fi[i]/v)*100 : 0; }));
+        console.log(c[0] + '\t' + m[1] + '\t' + f1(mean(cmp)) + '\t' + f1(mean(fi)) + '\t' + f1(rm) + '%\t' + f1(pr) + '%');
+      });
+    });
+    console.log('FI median wealth (mean of run medians): $' + Math.round(mean(col(FI, 'wealth'))) + '; TARGET_WEALTH $' + CFG.TARGET_WEALTH + ', TARGET_POVERTY ' + (CFG.TARGET_POVERTY*100) + '%');
+  }
+
+  if (mode === 'year0') {
+    /* NEEC notes 3 and 4: the Baseline's deterioration and Full Integration's early rise. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nY = parseInt(process.argv[3] || '500', 10), marks = [1,2,3,5,10,15,20];
+    [['Baseline @3% (shipped)', BASELINE], ['Baseline @0%', Object.assign({}, BASELINE, {inflRate:0})], ['Full Integration', FULL_INTEGRATION]].forEach(function(c){
+      var acc = {};
+      for (var sd = 1; sd <= nY; sd++){
+        var t = trajectory(c[1], sd, marks);
+        Object.keys(t).forEach(function(y){ acc[y] = acc[y] || {}; Object.keys(t[y]).forEach(function(k){ if (t[y][k] !== null){ acc[y][k] = (acc[y][k] || 0) + t[y][k]/nY; } }); });
+      }
+      console.log('=== ' + c[0] + ': seeds 1-' + nY + ' (means). yr / wealthPov / BLEIpov (scenario rules) / BLEIpov CCO participants / BLEIpov non-participants / basketPov (net) / incomePov ===');
+      Object.keys(acc).sort(function(a,b){ return a-b; }).forEach(function(y){ var r = acc[y]; console.log('  ' + y + '\t' + f1(r.pov) + '\t' + f1(r.bleiPov) + '\t' + f1(r.bleiPovPart) + '\t' + f1(r.bleiPovNonPart) + '\t' + f1(r.basketPov) + '\t' + f1(r.incPov)); });
+    });
+    var y0 = runScenario(FULL_INTEGRATION, 42).yearZero;
+    console.log('seed 42 year 0: ' + JSON.stringify(y0));
+    console.log('median year-0 wage income $' + Math.round(Math.exp(3.5)*12*CFG.WAGE_TO_USD) + ' vs LIVING_WAGE_ANNUAL $' + CFG.LIVING_WAGE_ANNUAL);
+  }
+
+  if (mode === 'stress') {
+    /* NEEC notes 5 and 6: recessions in the harness; environment vs settings stress. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nS = parseInt(process.argv[3] || '500', 10);
+    console.log('=== Stress decomposition (v4.17): seeds 1-' + nS + ', 500 agents, 20yr ===');
+    [['Full Integration (reference environment)', FULL_INTEGRATION],
+     ['Adverse Environment @ reference settings', ADVERSE_REFERENCE],
+     ['Weaker settings @ reference environment', Object.assign({}, STRESS_TEST, {shock:false, automation:false, inflRate:0})],
+     ['Stress Test (adverse environment + weaker settings)', STRESS_TEST],
+     ['Baseline as compared with the adverse presets (shocks+AI, 3%)', baselineFor(ADVERSE_REFERENCE, false)]
+    ].forEach(function(c){ var a = aggregate(c[1], nS); console.log(c[0] + '\n  ' + JSON.stringify(a)); });
+    console.log('seed 42, Adverse Environment: ' + JSON.stringify(runScenario(ADVERSE_REFERENCE, 42)));
+    console.log('seed 42, Stress Test:         ' + JSON.stringify(runScenario(STRESS_TEST, 42)));
+  }
+
+  if (mode === 'participation') {
+    /* NEEC note 7: no dynamic in runYear() reads aggregate CCO participation, so nothing
+     * happens at the papers' 55% "minimum viable" level. This sweep shows it directly. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nPp = parseInt(process.argv[3] || '200', 10);
+    console.log('=== CCO participation sweep, Full Integration otherwise: seeds 1-' + nPp + ' ===\npartRate\twealthPov\tBLEIpov');
+    [0.45,0.50,0.54,0.55,0.56,0.60,0.65].forEach(function(pr){ var r = runMany(Object.assign({}, FULL_INTEGRATION, {partRate:pr}), nPp); console.log(pr.toFixed(2) + '\t\t' + f1(mean(col(r,'pov'))) + '\t\t' + f1(mean(col(r,'bleiPovPct')))); });
   }
 }
