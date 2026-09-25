@@ -61,6 +61,13 @@
  * previous release — run this file against an unmodified v4.15 index.html and all nine fail.
  * Phase 5 (v4.17) checks version labels, export completeness, the four-measure poverty panel,
  * the Adverse Environment preset against harness.js's recession port, and the 55%/θ relabels.
+ * Phase 6 (v4.18) checks the extreme-poverty overlay against harness.js (every component, every
+ * scenario, year 0), its structural invariants (year 0 = EP_Y0_RATE; voluntary identical in every
+ * scenario; SMI reduced only by PTH+SZH), the restyled card, and both exports. v4.18 also repaired
+ * three v4.17 checks: the version-label check dispatched DOMContentLoaded on `document`, which never
+ * reaches the page's `window` listener, so it compared static markup with META and never ran the
+ * fill it was written to guard; and two checks pinned the panel at exactly six rows, which any new
+ * measure breaks. Each still checks what it was written for. See CONTRIBUTING.md v4.18.
  * Phase 4 (v4.16) reproduces a reproducibility bug the v4.16 audit found: a seed-42 run started
  * while the previous run's attribution ablation, or the validation suite, was still computing
  * drew from the wrong RNG stream (v4.15 gave $545,506 / $555,354 instead of $559,223). It also
@@ -382,7 +389,11 @@ function phase5(done) {
   console.log('\n--- Phase 5: v4.17 ---');
   const H = require('./harness.js');
   const wv = makeWindow();
-  wv.document.dispatchEvent(new wv.Event('DOMContentLoaded'));
+  /* v4.18 repair: stale every label first, then fire the event where the page listens (window).
+   * Through v4.17 this dispatched on `document`; a non-bubbling event there never reaches a window
+   * listener, so the check only compared static markup with META and never exercised the fill. */
+  [...wv.document.querySelectorAll('.meta-ver')].forEach(e => { e.textContent = 'stale'; });
+  wv.dispatchEvent(new wv.Event('DOMContentLoaded'));
   const labels = [...wv.document.querySelectorAll('.meta-ver')].map(e => e.textContent);
   const hd = (wv.document.querySelector('.hd-title') || {}).textContent || '';
   check('v4.17: every visible version label reads META.VERSION (header, footer, assumptions panel)',
@@ -428,21 +439,69 @@ function phase5(done) {
       const pp = r.povertyPanel, byK = {}; (pp ? pp.rows : []).forEach(x => { byK[x.k] = x; });
       const hy = hr.yearZero;
       check('v4.17: four-measure panel matches harness.js (final year and year 0)',
-        !!pp && pp.rows.length === 6 && Math.abs(byK.inc.main - hr.incPov) < 0.05 && Math.abs(byK.basket.main - hr.basketPov) < 0.05 &&
+        !!pp && ['wealth','blei','inc','incExt','basket','basketGross'].every(k => !!byK[k]) && Math.abs(byK.inc.main - hr.incPov) < 0.05 && Math.abs(byK.basket.main - hr.basketPov) < 0.05 &&
         Math.abs(byK.incExt.main - hr.incPovExt) < 0.05 && Math.abs(byK.basketGross.main - hr.basketPovGross) < 0.05 &&
         Math.abs(byK.wealth.y0 - hy.pov) < 0.05 && Math.abs(byK.blei.y0 - hy.bleiPovNeutral) < 0.05 && Math.abs(byK.blei.y0Scenario - hy.bleiPovScenario) < 0.05 &&
         Math.abs(byK.basket.y0 - hy.basketPov) < 0.05,
         pp ? 'page inc ' + byK.inc.main.toFixed(1) + ' basket ' + byK.basket.main.toFixed(1) + ' y0 basket ' + byK.basket.y0.toFixed(1) + ' | harness ' + hr.incPov + ' / ' + hr.basketPov + ' / ' + hy.basketPov : 'panel missing (pre-v4.17)');
-      check('v4.17: four-measure card renders a six-row table',
-        !!w5.document.getElementById('sec-poverty4') && w5.document.getElementById('sec-poverty4').style.display === 'block' && w5.document.querySelectorAll('#poverty4-inner tbody tr').length === 6);
+      /* v4.18: was "=== 6 rows"; now every panel row renders once (group-header rows aside). */
+      check('v4.17: poverty card renders one table row per panel row',
+        !!w5.document.getElementById('sec-poverty4') && w5.document.getElementById('sec-poverty4').style.display === 'block' && !!pp &&
+        w5.document.querySelectorAll('#poverty4-inner tbody tr:not(.p5-grp)').length === pp.rows.length && pp.rows.length >= 6,
+        (pp ? pp.rows.length : 0) + ' panel rows, ' + w5.document.querySelectorAll('#poverty4-inner tbody tr:not(.p5-grp)').length + ' rendered');
       w5.downloadCSV(); w5.downloadJSON();
       const csv = (Object.entries(cap).find(([k]) => k && k.endsWith('.csv') && !/lhs/.test(k)) || [])[1] || '';
       const js = (Object.entries(cap).find(([k]) => k && k.endsWith('.json')) || [])[1] || '';
       let pj = null; try { pj = JSON.parse(js); } catch (e) { /* below */ }
       check('v4.17: CSV export carries BU Expiry (the one run parameter it omitted)', /BU Expiry \(months\)/.test(csv));
       check('v4.17: CSV and JSON exports carry the four-measure poverty block',
-        /POVERTY BY FOUR MEASURES/.test(csv) && !!pj && !!pj.results.povertyByFourMeasures && pj.results.povertyByFourMeasures.rows.length === 6);
-      done();
+        /POVERTY BY (FOUR|FIVE) MEASURES/.test(csv) && !!pj && !!pj.results.povertyByFourMeasures && pj.results.povertyByFourMeasures.rows.length >= 6);
+      phase6(w5, r, csv, pj, H, done);
     }, 200);
   }, 200);
+}
+
+/* ── Phase 6 (v4.18): the extreme-poverty overlay, the restyled card, and the exports.
+ * Reuses Phase 5's completed seed-42 Adverse Environment run (PTH and SZH on, so the SMI
+ * pathway's wellness-zone term is exercised; recessions on, so the economic pathway sees them).
+ * Written to fail gracefully against an unmodified v4.17 page, where every check below fails. */
+function phase6(w5, r, csv, pj, H, done) {
+  console.log('\n--- Phase 6: v4.18 ---');
+  const ep = r.extremePoverty || null, C = w5.CFG, near = (a, b) => a !== null && a !== undefined && b !== null && b !== undefined && Math.abs(a - b) < 1e-9;
+  const hA = H.runScenario(H.ADVERSE_REFERENCE, 42), hB = H.runScenario(H.baselineFor(H.ADVERSE_REFERENCE, false), 42), hC = H.runScenario(H.ccoOnlyFor(H.ADVERSE_REFERENCE), 42);
+  const g = (o, k) => o && o[k] !== undefined ? o[k] : null;
+  const parity = !!ep && ['total', 'econ', 'smi', 'vol'].every(k => {
+    const hk = 'ep' + k[0].toUpperCase() + k.slice(1);
+    return near(g(ep.main, k), hA[hk]) && near(g(ep.base, k), hB[hk]) && near(g(ep.cco, k), hC[hk]);
+  }) && near(g(ep.main, 'distress'), hA.distress) && near(g(ep.base, 'distress'), hB.distress) && near(g(ep.cco, 'distress'), hC.distress);
+  check('v4.18: extreme-poverty overlay matches harness.js in every component and scenario (seed 42, Adverse Environment)', parity,
+    ep ? 'page total ' + [ep.base, ep.cco, ep.main].map(o => g(o, 'total').toFixed(4)).join(' / ') + ' | harness ' + [hB, hC, hA].map(o => o.epTotal.toFixed(4)).join(' / ') + '  (Baseline / CCO Only / Your Settings)' : 'no extremePoverty in SIM_RESULTS (pre-v4.18)');
+  const R = C.EP_Y0_RATE * 100;
+  check('v4.18: year 0 equals EP_Y0_RATE by construction, and housing distress at year 0 matches harness.js',
+    !!ep && near(g(ep.y0, 'total'), R) && near(g(ep.y0, 'distress'), hA.distressY0), ep ? 'year 0 ' + g(ep.y0, 'total') + '%, distress ' + g(ep.y0, 'distress') : '');
+  const vol = ep ? [ep.y0, ep.base, ep.cco, ep.main].map(o => g(o, 'vol')) : [];
+  check('v4.18: the voluntary pathway is identical in every scenario (policy-invariant by construction)',
+    vol.length === 4 && vol.every(v => near(v, R * C.EP_VOL_SHARE)));
+  const smi0 = R * (C.EP_SMI_SHARE || 0);
+  check('v4.18: SMI pathway — unchanged by Baseline and CCO Only, reduced by PTH+SZH wellness zones in proportion to zone coherence',
+    !!ep && near(g(ep.base, 'smi'), smi0) && near(g(ep.cco, 'smi'), smi0) && near(g(ep.y0, 'smi'), smi0) &&
+    near(g(ep.main, 'smi'), smi0 * (1 - C.EP_WZ_EFFECT * r.params.szhCoh)) && g(ep.main, 'smi') < smi0,
+    ep ? 'Baseline ' + g(ep.base, 'smi').toFixed(4) + ', CCO Only ' + g(ep.cco, 'smi').toFixed(4) + ', Your Settings ' + g(ep.main, 'smi').toFixed(4) + ' (szhCoh ' + r.params.szhCoh + ')' : '');
+  const f = w5.extremePovertyOf, base = { pth: true, szh: true, szhCoh: 0.72 };
+  check('v4.18: wellness zones need both PTH and SZH; income alone never moves the SMI pathway',
+    typeof f === 'function' && near(f(0.1, 0.2, Object.assign({}, base, { szh: false })).smi, smi0) && near(f(0.1, 0.2, Object.assign({}, base, { pth: false })).smi, smi0) &&
+    near(f(0.05, 0.2, { pth: false, szh: false }).smi, f(0.4, 0.2, { pth: false, szh: false }).smi) && f(0.05, 0.2, {}).econ < f(0.4, 0.2, {}).econ && f(0.1, 0, {}) === null);
+  const doc = w5.document, th = doc.querySelector('#poverty4-inner thead');
+  const extRows = ['extreme', 'extremeEcon', 'extremeSmi', 'extremeVol'].every(k => !!doc.querySelector('#poverty4-inner tr[data-k="' + k + '"]'));
+  check('v4.18: card restyled — scenario badges in the header, three row groups, coloured change cells, extreme rows present',
+    !!th && ['sb-y0', 'sb-base', 'sb-cco', 'sb-user'].every(c => !!th.querySelector('.' + c)) && doc.querySelectorAll('#poverty4-inner tr.p5-grp').length === 3 &&
+    doc.querySelectorAll('#poverty4-inner td.p5-chg.good').length > 0 && extRows && /Five Measures/.test((doc.querySelector('#sec-poverty4 .slabel') || {}).textContent || ''));
+  const wt = makeWindow();
+  wt.document.title = wt.document.title.replace(/v\d+\.\d+/, 'v0.0');
+  wt.dispatchEvent(new wt.Event('DOMContentLoaded'));
+  check('v4.18: the tab title is filled from META.VERSION as well', wt.document.title.indexOf('v' + wt.META.VERSION) >= 0, 'title="' + wt.document.title.slice(0, 44) + '…"');
+  check('v4.18: CSV and JSON exports carry the extreme-poverty rows, constants and housing distress',
+    /Extreme poverty \(v4\.18\)/.test(csv) && /EP_Y0_RATE/.test(csv) && /Housing distress/.test(csv) && !!pj && !!pj.results.extremePoverty &&
+    !!pj.results.extremePoverty.main && pj.results.povertyByFourMeasures.rows.some(x => x.k === 'extreme'));
+  done();
 }

@@ -35,6 +35,128 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## v4.18 Release Notes
+
+v4.18 adds a fifth poverty measure, **extreme poverty**, and restyles the poverty card to match the rest of the page. Both were requested by Duke. It also repairs three `domtest.js` checks from v4.17 and verifies v4.17's unverified layout.
+
+**The seed-42/Full Integration/20yr regression is unchanged** (1,965d · $559,223 · 0.534 · 16.6% · 88.5%). Nothing in this release draws RNG or feeds back into the dynamics. `harness.js validate` reproduces it, and `domtest.js`, now 56 checks, passes in full. The 8 new checks each fail against an unmodified v4.17 page, while all 48 earlier checks still pass there.
+
+### Extreme poverty: definition and construction
+
+**Definition (the framework author's):** homeless, with necessities provided by charity, if at all. It includes people unhoused because of serious mental illness, and people who live this way by choice: ascetics, shamans, yogis, itinerant monastics, and others who subsist on the goodwill of others.
+
+**This differs from the World Bank's definition.** The World Bank's "extreme poverty" is an income line ($3.00 a day). This one is housing-based. Both the card and the exports state the definition beside the figure.
+
+**Why it is an overlay, not an engine output.** The engine models no housing tenure, mental illness or vocation. At US scale, about 22 per 10,000, the measure is about one agent in a 500-agent run, so a headcount would be sampling noise. It is therefore an **expected share**, built from three pathways on top of engine state:
+
+| Pathway | Share at year 0 | Rule | What moves it |
+|---|---|---|---|
+| Economic | 73% | scales with **housing distress** (D) relative to year 0 (D0) | everything the engine models: CCO income, PTF/PTH cost relief, inflation, recessions, automation |
+| Serious mental illness (SMI) | 25% | × (1 − wellness-zone reach) | only PTH **and** SZH together (wellness zones): reach = `EP_WZ_EFFECT` × zone coherence. Income does not reach it, so CCO Only leaves it unchanged |
+| Voluntary | 2% | constant | nothing: identical in every scenario by construction |
+
+**Housing distress** means this year's cash income plus all savings on hand at the start of the year cannot cover this year's living-wage basket at the prices the agent faces. At year 0 the same test uses year-0 wage income, initial wealth and the undiscounted basket. Year 0 equals `EP_Y0_RATE` in every scenario by construction.
+
+The constants, all in `CFG`:
+
+| Constant | Value | Source |
+|---|---|---|
+| `EP_Y0_RATE` | 0.0022 | HUD, *2025 AHAR Part 1*: 745,652 people homeless on a single night in January 2025, nearly 22 per 10,000 |
+| `EP_SMI_SHARE` | 0.25 | Gutwinski et al. (2021), *PLOS Medicine* meta-analysis: schizophrenia spectrum 12.4%, major depression 12.6% |
+| `EP_VOL_SHARE` | 0.02 | Set by Duke. No US source located; the true share may vary and should be updated as data sources become available |
+| `EP_WZ_EFFECT` | 0.50 | At Home/Chez Soi RCT (Goering et al., 2014), final six months: housed all of the time 62% (Housing First) vs 31% (usual care); none of the time 16% vs 46% |
+
+**Two assumptions, adopted by Duke and open to revision as data sources become available:**
+- economic homelessness moves in proportion to housing distress (elasticity 1);
+- the SMI pathway does not worsen as the economy does; it responds only to wellness zones.
+
+Duke also confirmed that wellness zones require both PTH and SZH.
+
+### Results
+
+`node harness.js extreme 500` (seeds 1–500, 500 agents, 20 years, shocks off unless stated). Per 10,000 people; housing distress in percent.
+
+| Scenario | Extreme poverty | Economic | SMI | Voluntary | Housing distress |
+|---|---|---|---|---|---|
+| Year 0 (every scenario) | 22.0 | 16.1 | 5.5 | 0.4 | 16.9% |
+| Baseline @3% (shipped) | 73.6 | 67.6 | 5.5 | 0.4 | 70.4% |
+| Baseline @0% (matched) | 49.3 | 43.3 | 5.5 | 0.4 | 45.2% |
+| CCO Only | 22.5 | 16.5 | 5.5 | 0.4 | 17.3% |
+| Full Integration | 13.2 | 9.3 | 3.5 | 0.4 | 9.7% |
+| Adverse Environment | 35.5 | 31.5 | 3.5 | 0.4 | 32.9% |
+| Stress Test | 57.4 | 52.4 | 4.5 | 0.4 | 54.6% |
+
+Reductions (ratio of means):
+
+- **Full Integration:** 39.8% below year 0, 82.0% below the shipped Baseline, 73.1% below the matched Baseline.
+- **CCO Only:** 2.1% *above* year 0, but 69.5% below the shipped Baseline and 54.4% below the matched one.
+
+**CCO Only holds extreme poverty at its year-0 level while the Baseline more than triples it.** Among participants it falls as the framework intends: housing distress drops from 16.9% to 10.7%. The 22% of agents outside CCO rise to 40.6%, because they inherit the Baseline's deterioration. That traces to the wage-versus-basket calibration logged in v4.17, not to anything in the new measure. Under Full Integration, participants' distress ends at 5.1% and non-participants' at 26.2%.
+
+**The result is driven by the engine, not the constants.** Each constant varied alone, Full Integration against year 0:
+
+| Constant | Values tested | FI vs year 0 | CCO Only vs year 0 |
+|---|---|---|---|
+| `EP_SMI_SHARE` | 0.15 / 0.25 / 0.35 | −40.5% / −39.8% / −39.2% | +2.4% / +2.1% / +1.8% |
+| `EP_VOL_SHARE` | 0 / 0.02 / 0.05 | −40.7% / −39.8% / −38.6% | +2.2% / +2.1% / +2.0% |
+| `EP_WZ_EFFECT` | 0.30 / 0.50 / 0.65 | −36.2% / −39.8% / −42.5% | +2.1% (unchanged) |
+
+### The card, restyled
+
+Now **Poverty by Five Measures**:
+- scenario columns carry the same badges as the System Comparison table (Baseline red, CCO Only blue, Your Settings gold, which is also tinted);
+- rows are grouped Stock / Flow / Extreme;
+- each value has a bar in its scenario's chart colour, scaled within its row;
+- change cells are green ▼ or red ▲, like the KPI deltas.
+
+Definitions are visible sub-lines rather than hover tips, because a tip inside the table's horizontal-scroll wrapper would be clipped at the top rows. The long caption moved into a "How these are measured" expander. Extreme rows read per 10,000 people, HUD's convention: as a percentage, the voluntary pathway rounds to 0.00% at two decimals. On narrow screens the measure column stays pinned while the numbers scroll.
+
+**Exports.** The CSV section is renamed POVERTY BY FIVE MEASURES and adds:
+- the extreme rows (in percent, four decimals);
+- the constants;
+- housing distress per scenario;
+- the wellness-zone reach.
+
+JSON adds `results.extremePoverty`. **The JSON key `povertyByFourMeasures` is kept** so existing parsers keep working; it now also carries the extreme rows, keyed `extreme`, `extremeEcon`, `extremeSmi` and `extremeVol`.
+
+### Found and fixed along the way
+
+1. **A v4.17 check never exercised the code it guarded.** The version-label check dispatched `DOMContentLoaded` on `document`. The page listens on `window`, and a non-bubbling event never reaches it. The check compared static markup with `META` and passed only because both said v4.17. It now stales every label first and fires the event where the page listens.
+2. **Two v4.17 checks pinned the poverty panel at exactly six rows**, which any new measure breaks. They now check that the six v4.17 measures are present and that every panel row renders.
+3. **The tab title is now filled from `META.VERSION`**, and the static copy is kept current for crawlers.
+4. **The page's structured-data description still described v4.16.** It is updated.
+5. **v4.17's layout caveat is closed.** The poverty card and the sixth preset button were checked in headless Chromium at 1,400px and 390px, in light and dark schemes. The Adverse Environment tooltip stays on screen. This was a one-off check in this session: no browser dependency is added to the repository, so the v4.13 question of how far to take automated layout testing stays open.
+
+### What did NOT get done, and why
+
+- **None of the five v4.17 decisions was applied.** Each moves the seed-42 regression and the papers' headline figures, and should not ride along with a reporting release.
+- **Everything else logged at v4.14–v4.17 remains open** (see Model Architecture Feedback).
+
+### Regression: seed 42 / Full Integration / 20yr, v4.17 → v4.18
+
+| Metric | v4.17 | v4.18 | Δ |
+|---|---|---|---|
+| Median BLEI | 1,965d | 1,965d | — |
+| Median wealth | $559,223 | $559,223 | — |
+| Gini (EDC-adj.) | 0.534 | 0.534 | — |
+| Wealth poverty | 16.6% | 16.6% | — |
+| System Stability | 88.5% | 88.5% | — |
+| Pinned at Wealth Floor | 10.6% | 10.6% | — |
+
+New figures at seed 42, for pinned checks (per 10,000: total / economic / SMI / voluntary; housing distress):
+
+| Scenario | Extreme poverty | Housing distress |
+|---|---|---|
+| Year 0 | 22.00 | 18.0% |
+| Full Integration | 13.95 / 9.99 / 3.52 / 0.44 | 11.2% |
+| Its Baseline (3%) | 67.32 / 61.38 / 5.50 / 0.44 | 68.8% |
+| Its CCO Only | 21.64 / 15.70 / 5.50 / 0.44 | 17.6% |
+| Adverse Environment | 35.19 / 31.23 / 3.52 / 0.44 | 35.0% |
+
+**`harness.js`** mirrors the overlay verbatim, adds `CCO_ONLY` and `ccoOnlyFor()`, returns the overlay from `runScenario()`, and gains an `extreme` mode that prints every table above. **`domtest.js`** gains Phase 6 (8 checks): harness parity in every component and scenario, and the structural invariants (year 0 = `EP_Y0_RATE`; voluntary identical everywhere; SMI moved only by PTH + SZH). It also checks the restyled card, the title fill, and both exports.
+
+---
+
 ## v4.17 Release Notes
 
 v4.17 responds to three sources, each checked by direct computation before anything was acted on:
@@ -1401,6 +1523,9 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 
 Areas currently open for discussion:
 
+- **New in v4.18: the extreme-poverty overlay's inputs, to be updated as data sources become available.** Duke adopted all of them for v4.18 (see Release Notes). None is an estimate this project made. The voluntary share (`EP_VOL_SHARE`, 2%) has no US source. The two structural assumptions are that economic homelessness is proportional to housing distress, and that the SMI pathway does not worsen with the economy. Useful new sources would be: a national count or survey of voluntary or religious mendicancy; panel data linking income shortfall to entry into homelessness, which would replace the elasticity-1 assumption with an estimate; and evidence on how SMI homelessness responds to housing costs. The SMI share and the wellness-zone effect are sourced, but each is a single study or meta-analysis. `node harness.js extreme` shows how far each moves the result.
+- **Settled in v4.18 (Duke):** the measure keeps the name "extreme poverty," with its difference from the World Bank's income-based definition stated wherever it appears; wellness zones require both PTH and SZH.
+
 - **Decision needed, v4.17: reconcile the papers' headline with the engine.** The papers report a 98% poverty reduction and an $82,000 median wealth. This engine produces 78.7% (wealth) / 82.2% (BLEI) against the shipped Baseline, 69.7% / 74.4% against the inflation-matched Baseline, and 59.5% for wealth poverty against year 0. BLEI poverty ends *above* its policy-neutral year-0 level (12.6% vs 10.3%). Median wealth is $526,629. No measure and comparator reaches 98%; the highest is 87.8%, net basket poverty against the shipped Baseline. The options: **(A)** publish the model that produced 98% alongside this one; **(B)** restate the papers against the current engine, naming the comparator; **(C)** keep both and state the gap explicitly in the papers. Regenerate every figure with `node harness.js headline 500`. The `TARGET_*` constants would follow whichever is chosen.
 - **Decision needed, v4.17: the wage distribution versus the living-wage basket.** The median year-0 wage income ($39,945) is 81% of `LIVING_WAGE_ANNUAL` ($49,370), so 66.6% of agents start in basket poverty. This single fact drives the Baseline's deterioration and Full Integration's early BLEI rise (v4.17 Release Notes). The options:
   - **(A)** keep it, documented, as a deliberately harsh starting population;
@@ -1471,7 +1596,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 **Before submitting a pull request:**
 
 - Test in Chrome, Firefox, and Safari
-- **New in v4.13:** run `node domtest.js` (after a one-time `npm install jsdom`) for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (48 checks as of v4.17) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` (after a one-time `npm install jsdom`) for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (56 checks as of v4.18) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -1479,6 +1604,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 **Good first issues:**
 
+- **Done in v4.18** (see Release Notes, above): added extreme poverty (homeless; necessities via charity, if at all) as a fifth poverty measure, an expected-share overlay from economic, serious-mental-illness and voluntary pathways, reported per 10,000 against year 0 and the Baseline in the card, both exports and a new `harness.js extreme` mode; restyled the poverty card to the page's scenario colours; repaired three v4.17 `domtest.js` checks, one of which had never exercised the version-label fill it guarded; filled the tab title from `META`; verified v4.17's poverty-card and preset-grid layout in headless Chromium.
 - **Done in v4.17** (see Release Notes, above): fixed three bugs — hardcoded v4.15 version labels (now read from `META.VERSION`), BU Expiry missing from every CSV export, and an inert PTF column in the LHS design whenever the page's PTF toggle was off — and restored `harness.js`'s `structuralStability()` parity. Added relative income and living-wage basket poverty, each reported against year 0 as well as the Baseline, in a new card and both exports. Added an Adverse Environment preset separating environmental stress from weaker settings. Ported recessions to `harness.js` (bit-identical to the page at seed 42) with `headline`, `year0`, `stress` and `participation` modes. Disclosed that the papers' 98% headline is not produced by the engine and that two-thirds of agents start below the living-wage basket. Relabelled the 55% participation threshold and θ's density gate as a design reference and a proxy. `domtest.js` gained ten checks (48 total), each confirmed to fail against v4.16.
 - **Done in v4.16** (see Release Notes, above): fixed a reproducibility bug — a seeded run started while the previous run's attribution ablation or the validation suite was still computing drew from the wrong stream (seed 42: $545,506 / $555,354 vs $559,223), now isolated at every asynchronous boundary; disclosed and measured the Baseline comparison's inflation mismatch (fixed 3% vs the slider's 0%; ~24–38% of the headline poverty gap) and added an opt-in, off-by-default toggle to match them, with the default logged as a decision; enumerated `runYear()`'s annual schedule (v4.14 item (e)) into a new ODD Process Overview & Scheduling card; paired the validation suite's benefit check and extended its invariants check with determinism, eight-draws-per-agent-year, BU/equity/λ bounds and PTF-cap assertions (item (f)); corrected three documentation claims against the code (a stale `SIU_TO_USD` comment in `runYear()`, recession's scope, the PTH appreciation accounting) and measured the PTH alternative as a second decision; added `infl-match` and `pth-accounting` modes to `harness.js`. `domtest.js` gained nine checks (38 total), each verified to fail against an unmodified v4.15 page.
 - **Done in v4.15** (see Release Notes, above): fixed another genuine `runYear()` mechanics bug an external audit found — PTH's inflation damping was a flat toggle-triggered 10% reduction independent of realised uptake (PTH on with zero members still damped inflation), the coarser sibling of v4.14's PTF fix — now scaled by the population's realised PTH share, proven inert on four of five shipped presets and every documented figure by direct old-vs-new comparison of every agent's final wealth (only Stress Test moves); guarded the BU-expiry decay against NaN if `expiry` were ever missing (never a live defect, but the failure mode zeroed all CCO-participant wealth silently); replaced the Monte Carlo CI's fixed z=1.96 with Student's t (the 10× interval was ~13% too narrow); corrected a fourth stale PTH documentation card the v4.12 sweep missed. `domtest.js` gained four checks (29 total), each verified to fail against an unmodified v4.14 page.

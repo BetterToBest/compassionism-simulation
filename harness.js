@@ -15,6 +15,12 @@
  * p.shock), structuralStability() parity with index.html restored, income/basket poverty
  * and year-0 reference figures added to runScenario()'s result, and four new modes:
  * headline, year0, stress, participation. `validate` is unchanged in every figure.
+ *
+ * v4.18: the extreme-poverty overlay (housingDistressOf/housingDistressYear0/extremePovertyOf,
+ * CFG.EP_*) ported verbatim; runYear() records start-of-year wealth (reporting only, no RNG);
+ * runScenario() returns the overlay and its components; CCO_ONLY mirrors simulate()'s pCCO; and
+ * a new `extreme` mode prints the v4.18 tables and the constants' sensitivity. `validate` is
+ * unchanged in every pre-v4.18 figure.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -46,7 +52,9 @@ var CFG = {
   PTF_BASS_Q:0.05,
   WAGE_TO_USD:100.52,
   LIVING_WAGE_ANNUAL:49370,
-  SS_ANCHOR_SSI_ANNUAL:11928, SS_ANCHOR_SSDI_ANNUAL:19560, SS_ANCHOR_RETIRE_ANNUAL:24852
+  SS_ANCHOR_SSI_ANNUAL:11928, SS_ANCHOR_SSDI_ANNUAL:19560, SS_ANCHOR_RETIRE_ANNUAL:24852,
+  /* v4.18: extreme-poverty overlay constants — sources in index.html's CFG. */
+  EP_Y0_RATE:0.0022, EP_SMI_SHARE:0.25, EP_VOL_SHARE:0.02, EP_WZ_EFFECT:0.50
 };
 CFG.FBS_HALF_SAT_LO = Math.log(2) / CFG.FBS_LAMBDA_HI;
 CFG.FBS_HALF_SAT_HI = Math.log(2) / CFG.FBS_LAMBDA_LO;
@@ -180,6 +188,7 @@ function runYear(agentSet,yr,p,recSt){
   }
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
+    a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
     var agentVar=0.90+RNG()*0.20,incomeShock=popShock*agentVar;
     var uSpendFrac=0.60+RNG()*0.30;
     var uCipQuality=RNG();
@@ -284,6 +293,27 @@ function incomeBasketYear0(agents){
   var n=inc.length;if(!n)return null;var med=medianOf(inc),rel=0,bsk=0;
   inc.forEach(function(v){if(v<0.6*med)rel++;if(v<CFG.LIVING_WAGE_ANNUAL)bsk++;});
   return{medianIncome:med,incPov:rel/n*100,incPovExt:rel/n*100,basketPov:bsk/n*100,basketPovGross:bsk/n*100};
+}
+/* v4.18: extreme-poverty overlay, verbatim from index.html (see its comment block there).
+ * Expected share from three pathways; draws no RNG and feeds nothing back. */
+function housingDistressOf(agents){
+  if(!agents||!agents.length||agents[0].yrWealthStartUSD===undefined)return null;
+  var n=0;
+  agents.forEach(function(a){var inc=(+a.yrWageUSD||0)+(+a.yrConvUSD||0),w=+a.yrWealthStartUSD||0;if(inc+Math.max(0,w)<(+a.yrCostUSD||0))n++;});
+  return n/agents.length;
+}
+function housingDistressYear0(agents){
+  if(!agents||!agents.length)return null;
+  var n=0;
+  agents.forEach(function(a){var inc=Math.max(isNaN(a.wage)?0:a.wage,0)*12*CFG.WAGE_TO_USD,w=isNaN(a.wealth)?0:a.wealth;if(inc+Math.max(0,w)<CFG.LIVING_WAGE_ANNUAL)n++;});
+  return n/agents.length;
+}
+function wellnessZoneReach(p){return(p&&p.pth&&p.szh)?CFG.EP_WZ_EFFECT*Math.max(0,Math.min(1,+p.szhCoh||0)):0;}
+function extremePovertyOf(d,d0,p){
+  if(d===null||d===undefined||isNaN(d)||!(d0>0))return null;
+  var R=CFG.EP_Y0_RATE,s=CFG.EP_SMI_SHARE,v=CFG.EP_VOL_SHARE,wz=p==='year0'?0:wellnessZoneReach(p);
+  var econ=R*(1-s-v)*d/d0,smi=R*s*(1-wz),vol=R*v;
+  return{total:(econ+smi+vol)*100,econ:econ*100,smi:smi*100,vol:vol*100,distress:d*100,wz:wz};
 }
 /* v4.17: recessions, ported verbatim from index.html (NEEC maintainers' note 5), so stress
  * runs need nothing from the page. buildRecessionPath() draws on its own stream
@@ -398,8 +428,10 @@ function runScenario(p, seed){
   var m0 = calcMetrics(agents);
   var bN0 = bleiMetrics(agents, 0, false, false, false, 0, false), bY0 = bleiMetrics(agents, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf);
   var ib0 = incomeBasketYear0(agents);
+  var d0 = housingDistressYear0(agents);  /* v4.18 */
   var yearZero = {pov:+(m0.pov*100).toFixed(1), bleiPovNeutral:+((bN0.tc[0]+bN0.tc[1])/bN0.n*100).toFixed(1),
-    bleiPovScenario:+((bY0.tc[0]+bY0.tc[1])/bY0.n*100).toFixed(1), incPov:+ib0.incPov.toFixed(1), incPovExt:+ib0.incPovExt.toFixed(1), basketPov:+ib0.basketPov.toFixed(1), basketPovGross:+ib0.basketPovGross.toFixed(1)};
+    bleiPovScenario:+((bY0.tc[0]+bY0.tc[1])/bY0.n*100).toFixed(1), incPov:+ib0.incPov.toFixed(1), incPovExt:+ib0.incPovExt.toFixed(1), basketPov:+ib0.basketPov.toFixed(1), basketPovGross:+ib0.basketPovGross.toFixed(1),
+    distress:d0*100, ep:extremePovertyOf(d0,d0,'year0').total};  /* v4.18: unrounded, for the overlay's parity checks */
   /* v4.17: recessions (NEEC note 5). p.shock was silently ignored before this release. */
   var recPath = p.shock ? buildRecessionPath(p.years, seed) : null;
   RNG = mulberry32(seed);
@@ -418,6 +450,8 @@ function runScenario(p, seed){
   var floor = CFG.WEALTH_FLOOR;
   var atFloor = agents.filter(function(a){ return a.wealth <= floor + 1e-6; }).length;
   var ib = incomeBasketMetrics(agents);
+  var dEnd = housingDistressOf(agents), ep = extremePovertyOf(dEnd, d0, p);  /* v4.18 */
+  function dShare(ag){ return ag.length ? housingDistressOf(ag)*100 : null; }
   return {
     pov: +(finalM.pov*100).toFixed(1),
     gini: +finalM.gini.toFixed(3),
@@ -436,6 +470,9 @@ function runScenario(p, seed){
     basketPov: +ib.basketPov.toFixed(1),      /* v4.17 */
     basketPovGross: +ib.basketPovGross.toFixed(1),
     yearZero: yearZero,                       /* v4.17 */
+    epTotal: ep.total, epEcon: ep.econ, epSmi: ep.smi, epVol: ep.vol,   /* v4.18: percentages, unrounded */
+    distress: dEnd*100, distressY0: d0*100, wz: ep.wz,
+    distressPart: dShare(agents.filter(function(a){ return a.inCCO; })), distressNonPart: dShare(agents.filter(function(a){ return !a.inCCO; })),
     recessionYears: recPath ? recPath.filter(function(r){ return r.active; }).length : 0
   };
 }
@@ -482,6 +519,10 @@ var STRESS_TEST = {
   shock:true, automation:true, inflRate:0.02, ccoOn:true, ptfCap:false
 };
 var ADVERSE_REFERENCE = Object.assign({}, FULL_INTEGRATION, {shock:true, automation:true, inflRate:0.02});
+/* v4.18: CCO Only exactly as simulate() builds pCCO for a given scenario — every CCO setting kept,
+ * PTF/PTH/SZH/CIP off. */
+function ccoOnlyFor(p){ return Object.assign({}, p, {ptfShare:0, pthUptake:0, szhCoh:0, cipDemo:0, ptf:false, pth:false, szh:false, cip:false}); }
+var CCO_ONLY = ccoOnlyFor(FULL_INTEGRATION);
 /* The Baseline as simulate() builds it for a given scenario's comparison: shocks and
  * automation follow the scenario, inflation stays at BASELINE_CPI_RATE unless matched. */
 function baselineFor(p, matchInfl){ return Object.assign({}, BASELINE, {shock:!!p.shock, automation:!!p.automation, inflRate: matchInfl ? p.inflRate : CFG.BASELINE_CPI_RATE}); }
@@ -507,7 +548,7 @@ function trajectory(p, seed, marks){
   return out;
 }
 
-Object.assign(module.exports, { CFG, mulberry32, runScenario, trajectory, baselineFor, FULL_INTEGRATION, BASELINE, STRESS_TEST, ADVERSE_REFERENCE });
+Object.assign(module.exports, { CFG, mulberry32, runScenario, trajectory, baselineFor, ccoOnlyFor, extremePovertyOf, FULL_INTEGRATION, BASELINE, CCO_ONLY, STRESS_TEST, ADVERSE_REFERENCE });
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
@@ -704,5 +745,40 @@ if (require.main === module) {
     var nPp = parseInt(process.argv[3] || '200', 10);
     console.log('=== CCO participation sweep, Full Integration otherwise: seeds 1-' + nPp + ' ===\npartRate\twealthPov\tBLEIpov');
     [0.45,0.50,0.54,0.55,0.56,0.60,0.65].forEach(function(pr){ var r = runMany(Object.assign({}, FULL_INTEGRATION, {partRate:pr}), nPp); console.log(pr.toFixed(2) + '\t\t' + f1(mean(col(r,'pov'))) + '\t\t' + f1(mean(col(r,'bleiPovPct')))); });
+  }
+
+  if (mode === 'extreme') {
+    /* v4.18: extreme poverty (homeless; necessities via charity, if at all). Expected share,
+     * an overlay on engine state — see extremePovertyOf(). Prints the release-notes tables and
+     * how the constants move the result (the overlay is analytic, so this re-weights the same
+     * runs rather than re-simulating). */
+    CFG.WEALTH_FLOOR = -10000;
+    var nE = parseInt(process.argv[3] || '500', 10);
+    function f2(x){ return (x === null || x === undefined || isNaN(x)) ? '-' : (x*100).toFixed(1); }  /* percent -> per 10,000 */
+    var SC = [['Baseline @3% (shipped)', BASELINE], ['Baseline @0% (inflation-matched)', Object.assign({}, BASELINE, {inflRate:0})],
+      ['CCO Only', CCO_ONLY], ['Full Integration', FULL_INTEGRATION], ['Adverse Environment', ADVERSE_REFERENCE],
+      ['Baseline under the adverse environment (3%)', baselineFor(ADVERSE_REFERENCE, false)], ['Stress Test', STRESS_TEST], ['CCO Only under the adverse environment', ccoOnlyFor(ADVERSE_REFERENCE)]];
+    var RUNS = {};
+    console.log('=== Extreme poverty overlay (v4.18): seeds 1-' + nE + ', 500 agents, 20yr. Per 10,000 people (housing distress in %) ===');
+    console.log('scenario\ttotal\teconomic\tSMI\tvoluntary\thousing distress\tdistress, CCO participants\tdistress, non-participants');
+    SC.forEach(function(c){
+      var r = runMany(c[1], nE); RUNS[c[0]] = r;
+      console.log(c[0] + '\t' + f2(mean(col(r,'epTotal'))) + '\t' + f2(mean(col(r,'epEcon'))) + '\t' + f2(mean(col(r,'epSmi'))) + '\t' + f2(mean(col(r,'epVol'))) + '\t' + f1(mean(col(r,'distress'))) + '\t' + f1(mean(col(r,'distressPart').filter(function(v){return v!==null;}))) + '\t' + f1(mean(col(r,'distressNonPart').filter(function(v){return v!==null;}))));
+    });
+    var fi = RUNS['Full Integration'];
+    console.log('year 0 (every scenario): total ' + f2(CFG.EP_Y0_RATE*100) + ' by construction, housing distress ' + f1(mean(col(fi,'distressY0'))));
+    function red(a, b){ return f1((1 - a/b)*100) + '%'; }
+    var FIt = mean(col(fi,'epTotal')), CCt = mean(col(RUNS['CCO Only'],'epTotal')), B3 = mean(col(RUNS['Baseline @3% (shipped)'],'epTotal')), B0 = mean(col(RUNS['Baseline @0% (inflation-matched)'],'epTotal')), Y0 = CFG.EP_Y0_RATE*100;
+    console.log('reductions (ratio of means): FI vs year 0 ' + red(FIt, Y0) + ', vs Baseline@3% ' + red(FIt, B3) + ', vs Baseline@0% ' + red(FIt, B0) + ' | CCO Only vs year 0 ' + red(CCt, Y0) + ', vs Baseline@3% ' + red(CCt, B3) + ', vs Baseline@0% ' + red(CCt, B0));
+    var s42 = runScenario(FULL_INTEGRATION, 42);
+    console.log('seed 42, Full Integration, per 10,000: total ' + (s42.epTotal*100).toFixed(2) + ' econ ' + (s42.epEcon*100).toFixed(2) + ' smi ' + (s42.epSmi*100).toFixed(2) + ' vol ' + (s42.epVol*100).toFixed(2) + ' | housing distress %: ' + s42.distress.toFixed(1) + ' (year 0 ' + s42.distressY0.toFixed(1) + ') wz ' + s42.wz.toFixed(3));
+    /* Sensitivity: each constant varied alone; same runs, re-weighted. */
+    function recompute(runs, p, k){ return mean(runs.map(function(r){ var saved = {s:CFG.EP_SMI_SHARE, v:CFG.EP_VOL_SHARE, w:CFG.EP_WZ_EFFECT}; Object.assign(CFG, k); var e = extremePovertyOf(r.distress/100, r.distressY0/100, p).total; CFG.EP_SMI_SHARE = saved.s; CFG.EP_VOL_SHARE = saved.v; CFG.EP_WZ_EFFECT = saved.w; return e; })); }
+    console.log('--- sensitivity (Full Integration and CCO Only final; year 0 is EP_Y0_RATE by construction) ---');
+    console.log('constant\tvalue\tFI total\tFI vs year 0\tCCO Only total\tCCO Only vs year 0');
+    [['EP_SMI_SHARE',[0.15,0.25,0.35]],['EP_VOL_SHARE',[0,0.02,0.05]],['EP_WZ_EFFECT',[0.30,0.50,0.65]]].forEach(function(k){
+      k[1].forEach(function(v){ var o = {}; o[k[0]] = v; var a = recompute(fi, FULL_INTEGRATION, o), b = recompute(RUNS['CCO Only'], CCO_ONLY, o);
+        console.log(k[0] + '\t' + v + '\t' + f2(a) + '\t' + red(a, Y0) + '\t' + f2(b) + '\t' + red(b, Y0)); });
+    });
   }
 }
