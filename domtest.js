@@ -56,6 +56,16 @@
  * missing BU-expiry parameter behaving as the default rather than propagating NaN, the
  * Monte Carlo CI multiplier being Student's t rather than a fixed 1.96, and the rendered
  * CI actually using it. See CONTRIBUTING.md's v4.15 Release Notes.
+ *
+ * v4.16 additions: nine more checks (29 -> 38), again written to fail gracefully against the
+ * previous release — run this file against an unmodified v4.15 index.html and all nine fail.
+ * Phase 4 (new) reproduces a reproducibility bug the v4.16 audit found: a seed-42 run started
+ * while the previous run's attribution ablation, or the validation suite, was still computing
+ * drew from the wrong RNG stream (v4.15 gave $545,506 / $555,354 instead of $559,223). It also
+ * cross-checks the new opt-in inflation-matched Baseline against harness.js's independent
+ * computation of the same scenario (seed 42, Baseline at 0%: median wealth $13,612, poverty
+ * 50.8%). Phases 1-3 gain checks on the new toggle's URL round-trip, its disclosure warning and
+ * export fields, and the validation suite's new invariants. See CONTRIBUTING.md v4.16.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 const fs = require('fs');
@@ -91,7 +101,7 @@ function makeWindow(query) {
 
 /* ── Phase 1: synchronous DOM-behaviour checks ─────────────────────────── */
 console.log('=== domtest.js — ' + FILE + ' ===\n--- Phase 1: DOM behaviour ---');
-const w1 = makeWindow('?bu=900&part=55&ptfOn=1&seed=42');
+const w1 = makeWindow('?bu=900&part=55&ptfOn=1&seed=42&baseInflMatchOn=1');
 const $1 = id => w1.document.getElementById(id);
 
 w1.applyPreset('reference');
@@ -112,6 +122,10 @@ check('applyParamsFromURL() preserves .tip-host on every preset button',
 check('applyParamsFromURL() applied the query string',
   $1('s-bu').value === '900' && $1('s-part').value === '55' && $1('s-seed').value === '42',
   'bu=' + $1('s-bu').value + ' part=' + $1('s-part').value + ' seed=' + $1('s-seed').value);
+check('v4.16: the Match-Baseline-inflation toggle round-trips through a shared URL',
+  w1.ST.baseInflMatch === true && !!$1('baseInflMatch-on') && $1('baseInflMatch-on').getAttribute('aria-pressed') === 'true',
+  'ST.baseInflMatch=' + w1.ST.baseInflMatch + '  (pre-v4.16: no such toggle)');
+w1.tog('baseInflMatch', false);
 
 w1.tog('phi', true);
 check('toggle buttons expose aria-pressed (a11y)',
@@ -266,6 +280,14 @@ const iv = setInterval(() => {
     !!parsed && /Apache License 2\.0/.test(parsed.meta.license) && /CC BY 4\.0/.test(parsed.meta.license));
   check('exported version matches META.VERSION', !!parsed && parsed.meta.version === w2.META.VERSION,
     'META.VERSION=' + w2.META.VERSION);
+  // v4.16: the default run keeps the fixed 3% Baseline (so every documented figure is unchanged)
+  // but must now disclose the mismatch and record it in both exports.
+  const bi = r.baselineInflation;
+  check('v4.16: default run records Baseline inflation (fixed 3%, unmatched) and warns about the mismatch',
+    !!bi && Math.abs(bi.rate - 0.03) < 1e-12 && bi.matched === false && /Baseline comparison runs at a fixed 3\.0% CPI/.test($2('warn-note').textContent),
+    bi ? 'rate=' + bi.rate + ' matched=' + bi.matched + ' warn="' + $2('warn-note').textContent.slice(0, 70) + '…"' : 'SIM_RESULTS.baselineInflation missing (pre-v4.16)');
+  check('v4.16: CSV and JSON exports carry the Baseline inflation rate',
+    /Baseline Inflation Rate/.test(csv) && !!parsed && !!parsed.results.baselineInflation && parsed.parameters.baseInflMatch === false);
 
   console.log('\n--- Phase 3: internal consistency suite through the live page ---');
   w2.runValidation();
@@ -273,7 +295,80 @@ const iv = setInterval(() => {
     const vt = $2('val-inner').textContent;
     const p = (vt.match(/PASS/g) || []).length, f = (vt.match(/FAIL/g) || []).length;
     check('all six internal consistency & behavioural checks pass', p === 6 && f === 0, p + ' pass / ' + f + ' fail');
-    console.log('\n' + checks + ' checks, ' + (fails ? fails + ' FAILED' : 'all passed'));
-    process.exit(fails ? 1 : 0);
+    const inv = w2.VAL_STATE.results.invariants, ben = w2.VAL_STATE.results.benefit;
+    check('v4.16: invariants check asserts determinism, the 8-draw RNG schedule, bounds and the PTF cap — all OK',
+      !!inv && inv.pass && /8 RNG draws\/agent-year OK/.test(inv.detail) && /same seed identical OK/.test(inv.detail) && /new seed differs OK/.test(inv.detail) && /PTF cap \d+\/300 OK/.test(inv.detail),
+      inv ? inv.detail : 'missing');
+    check('v4.16: benefit check is paired (shocks and inflation matched) and still passes 5/5',
+      !!ben && ben.pass && /matched/.test(ben.detail), ben ? ben.detail : 'missing');
+    phase4();
   }, 90000);
 }, 250);
+
+/* ── Phase 4 (v4.16): reproducibility under interleaved background work ──── */
+function phase4() {
+  console.log('\n--- Phase 4: seeded runs must reproduce while other work is in flight ---');
+  const WANT = 559223;
+  function waitDone(w, cb) { const t0 = Date.now(); const iv = setInterval(() => {
+    if (Date.now() - t0 > 300000) { clearInterval(iv); console.log('  TIMEOUT'); process.exit(2); }
+    if (w.SIM_RESULTS && !w.running) { clearInterval(iv); cb(); } }, 5); }
+  function fresh() { const w = makeWindow(); w.applyPreset('reference'); w.document.getElementById('s-seed').value = '42'; return w; }
+  const wa = fresh();
+  wa.runSim();
+  waitDone(wa, () => {
+    wa.SIM_RESULTS = null; wa.runSim();          // (a) immediately: the 80ms ablation timer is still pending
+    waitDone(wa, () => {
+      const ra = Math.round(wa.SIM_RESULTS.finalWealth);
+      check('seed 42 reproduces when re-run the instant a run finishes (ablation pending)', ra === WANT,
+        'got $' + ra + '  (v4.15: $545,506)');
+      // (b) mid-flight, triggered deterministically rather than by a delay: a first draft of this
+      // check waited 120ms, by which time the ablation had already finished — so it passed on
+      // v4.15 too and guarded nothing. The ablation's buildPop() is the only caller of
+      // mulberry32(9973); hooking that call queues the rerun behind the ablation's FIRST chunk,
+      // so the remaining chunks are genuinely pending when the new run starts.
+      const origM = wa.mulberry32; let hooked = false;
+      wa.mulberry32 = function (s) {
+        if (!hooked && s === 9973) { hooked = true; wa.setTimeout(() => { wa.SIM_RESULTS = null; wa.runSim(); }, 0); }
+        return origM(s);
+      };
+      wa.SIM_RESULTS = null; wa.runSim();          // run 3: its finish() launches the hooked ablation
+      waitDone(wa, () => { setTimeout(() => {
+        waitDone(wa, () => {
+          wa.mulberry32 = origM;
+          const rb = Math.round(wa.SIM_RESULTS.finalWealth);
+          check('seed 42 reproduces when re-run while the attribution ablation is mid-flight', hooked && rb === WANT,
+            hooked ? 'got $' + rb + '  (rerun queued inside the ablation\'s first chunk)' : 'ablation hook never fired');
+          const wv = fresh();                        // (c) during the validation suite
+          wv.runValidation();
+          setTimeout(() => {
+            wv.SIM_RESULTS = null; wv.runSim();
+            waitDone(wv, () => {
+              const rc = Math.round(wv.SIM_RESULTS.finalWealth);
+              check('seed 42 reproduces when run while the validation suite is computing', rc === WANT,
+                'got $' + rc + '  (v4.15: $555,354)');
+              // (d) opt-in inflation matching: Your Settings untouched, Baseline equals harness.js's
+              // independent computation of Baseline at 0% inflation, seed 42 (wealth $13,612, poverty 50.8%).
+              const wm = fresh();
+              if (typeof wm.ST.baseInflMatch === 'undefined') {
+                check('Match-Baseline-inflation: Your Settings unchanged, Baseline matches harness.js (seed 42, 0%)', false, 'toggle missing (pre-v4.16)');
+                return finish4();
+              }
+              wm.tog('baseInflMatch', true); wm.runSim();
+              waitDone(wm, () => {
+                const r = wm.SIM_RESULTS, mainW = Math.round(r.finalWealth), bw = Math.round(r.mBase.med), bp = +(r.mBase.pov * 100).toFixed(1);
+                check('Match-Baseline-inflation: Your Settings unchanged, Baseline matches harness.js (seed 42, 0%)',
+                  mainW === WANT && bw === 13612 && bp === 50.8 && r.baselineInflation.matched === true && r.baselineInflation.rate === 0,
+                  'Your Settings $' + mainW + ' · Baseline median $' + bw + ', poverty ' + bp + '%  (fixed-3% Baseline: −$10,000, 71.0%)');
+                finish4();
+              });
+            });
+          }, 150);
+        });
+      }, 400); });
+    });
+  });
+}
+function finish4() {
+  console.log('\n' + checks + ' checks, ' + (fails ? fails + ' FAILED' : 'all passed'));
+  process.exit(fails ? 1 : 0);
+}
