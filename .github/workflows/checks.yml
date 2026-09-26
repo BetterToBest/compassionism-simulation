@@ -1,0 +1,27 @@
+# v4.20: runs the project's three checks on every push and pull request. Duke signed off on
+# jsdom as a dev-only dependency (open since v4.12). Nothing here builds or changes index.html;
+# the simulation still runs by opening that one file. See CONTRIBUTING.md, Code Contributions.
+name: checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Install jsdom (the only dev dependency; see package.json)
+        run: npm install --no-audit --no-fund
+      - name: Engine regression (seed 42; and the legacy switch against v4.19)
+        run: node harness.js validate
+      - name: Pure-function tests (harness.js)
+        run: node harness.js unit
+      - name: Page behaviour, and the unit suite and source parity against the page (jsdom)
+        run: node domtest.js
