@@ -4,6 +4,8 @@ A research-oriented, browser-based agent-based simulation exploring all five [Co
 
 **[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 
+[![checks](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml/badge.svg)](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml)
+
 This file covers what the project is and how to run it. For everything version-specific — the full changelog, current output metrics, methodology, and formulas — see the **[Replication Framework](https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html)**, which is kept current with each release. For open questions, known limitations, and how to contribute, see **[CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md)**.
 
 ---
@@ -53,12 +55,30 @@ This README intentionally stays stable across releases. For anything tied to a s
 
 ---
 
+## Checking a copy
+
+The simulation needs nothing installed. The checks that keep it honest need Node.js (22 or later) and one development dependency:
+
+```
+npm install              # installs jsdom, used only by domtest.js
+node harness.js validate # the seed-42 reference run, asserted against the documented figures
+node harness.js unit     # pure-function tests
+node domtest.js          # drives index.html in a headless DOM (a few minutes)
+```
+
+The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see.
+
+---
+
 ## License & attribution
 
-Released under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+Split licensing, since v4.8:
+
+- **Source code** (`index.html`, `harness.js`, `domtest.js`) — [Apache License 2.0](LICENSE-CODE.txt).
+- **Documentation and papers** (this README, CONTRIBUTING.md, the Replication Framework, and the Research Hub papers) — [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
 **Cite as:**
-> Johnson, D. & Claude (Anthropic). *Compassionism Framework Simulation*. Better To Best Research Hub. CC BY 4.0. <https://doi.org/10.17605/OSF.IO/QWTE2>
+> Johnson, D. & Claude (Anthropic). (2026). *Compassionism Framework Simulation*. Better To Best Research Hub. <https://doi.org/10.17605/OSF.IO/QWTE2> (source code: Apache License 2.0; content and documentation: CC BY 4.0)
 
 The DOI resolves to the archived record; cite the specific version and date you used alongside it if that matters for your purposes (the simulation's own footer and export files record the version and timestamp of any given run).
 

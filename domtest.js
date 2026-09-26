@@ -4,7 +4,7 @@
  * Compassionism Framework Simulation · Better To Best Research Hub
  * Source code: Apache License 2.0 (as of v4.8)
  *
- *   Usage:  npm install jsdom      (one dependency, dev-only)
+ *   Usage:  npm install            (v4.20: installs jsdom, pinned in package.json; dev-only)
  *           node domtest.js                 # defaults to ./index.html
  *           node domtest.js path/to/index.html
  *
@@ -73,6 +73,15 @@
  * agreement on every lever, emergency enrollment only in triggered years, a seed-42 Adverse Environment
  * run with every lever on against harness.js (Your Settings and CCO Only), the Shock Response card and
  * warnings, the in-page study against harness.shockStudy, and both exports. See CONTRIBUTING.md v4.19.
+ * Phase 8 (v4.20) checks keyboard and screen-reader access (every slider, the seed field and every
+ * On/Off group has an accessible name; every tooltip is focusable or described, and opens on
+ * keyboard focus; sliders announce their formatted value and show a focus ring), the shared-link
+ * seed readout, the extreme-poverty JSON basis label, harness.unitSuite() run against the PAGE's
+ * own functions (including the five that exist only in the page), source parity between the page
+ * and harness.js for every function they share, the recalibrated automationRisk sampler (two
+ * draws, and agent construction no longer depending on the high-risk share), and the paired
+ * non-participant validation check. v4.20 also moved the seed-42 regression once (automationRisk
+ * sampler and share; see CONTRIBUTING.md v4.20), so Phase 2 and Phase 4's pinned figures moved.
  * Phase 4 (v4.16) reproduces a reproducibility bug the v4.16 audit found: a seed-42 run started
  * while the previous run's attribution ablation, or the validation suite, was still computing
  * drew from the wrong RNG stream (v4.15 gave $545,506 / $555,354 instead of $559,223). It also
@@ -181,7 +190,7 @@ const iv = setInterval(() => {
   clearInterval(iv);
   const r = w2.SIM_RESULTS;
   const got = { blei: Math.round(r.blei.med), wealth: Math.round(r.finalWealth), gini: +r.finalGini.toFixed(3), pov: +r.finalPov.toFixed(1), bpov: +r.bleiPovPct.toFixed(1) };
-  const want = { blei: 1965, wealth: 559223, gini: 0.534, pov: 16.6, bpov: 13.6 };
+  const want = { blei: 1975, wealth: 570661, gini: 0.518, pov: 15.8, bpov: 13.2 };  // v4.20 (v4.19: 1965, 559223, 0.534, 16.6, 13.6)
   check('seed-42 regression reproduces exactly through the live page',
     JSON.stringify(got) === JSON.stringify(want), 'got ' + JSON.stringify(got) + '\n           want ' + JSON.stringify(want));
 
@@ -322,7 +331,7 @@ const iv = setInterval(() => {
 /* ── Phase 4 (v4.16): reproducibility under interleaved background work ──── */
 function phase4() {
   console.log('\n--- Phase 4: seeded runs must reproduce while other work is in flight ---');
-  const WANT = 559223;
+  const WANT = 570661;  // v4.20 (v4.19: 559223)
   function waitDone(w, cb) { const t0 = Date.now(); const iv = setInterval(() => {
     if (Date.now() - t0 > 300000) { clearInterval(iv); console.log('  TIMEOUT'); process.exit(2); }
     if (w.SIM_RESULTS && !w.running) { clearInterval(iv); cb(); } }, 5); }
@@ -361,7 +370,8 @@ function phase4() {
               check('seed 42 reproduces when run while the validation suite is computing', rc === WANT,
                 'got $' + rc + '  (v4.15: $555,354)');
               // (d) opt-in inflation matching: Your Settings untouched, Baseline equals harness.js's
-              // independent computation of Baseline at 0% inflation, seed 42 (wealth $13,612, poverty 50.8%).
+              // independent computation of Baseline at 0% inflation, seed 42 (v4.20: wealth $49,876, poverty 48.2%;
+              // v4.19: $13,612, 50.8%).
               const wm = fresh();
               if (typeof wm.ST.baseInflMatch === 'undefined') {
                 check('Match-Baseline-inflation: Your Settings unchanged, Baseline matches harness.js (seed 42, 0%)', false, 'toggle missing (pre-v4.16)');
@@ -371,8 +381,8 @@ function phase4() {
               waitDone(wm, () => {
                 const r = wm.SIM_RESULTS, mainW = Math.round(r.finalWealth), bw = Math.round(r.mBase.med), bp = +(r.mBase.pov * 100).toFixed(1);
                 check('Match-Baseline-inflation: Your Settings unchanged, Baseline matches harness.js (seed 42, 0%)',
-                  mainW === WANT && bw === 13612 && bp === 50.8 && r.baselineInflation.matched === true && r.baselineInflation.rate === 0,
-                  'Your Settings $' + mainW + ' · Baseline median $' + bw + ', poverty ' + bp + '%  (fixed-3% Baseline: −$10,000, 71.0%)');
+                  mainW === WANT && bw === 49876 && bp === 48.2 && r.baselineInflation.matched === true && r.baselineInflation.rate === 0,
+                  'Your Settings $' + mainW + ' · Baseline median $' + bw + ', poverty ' + bp + '%  (fixed-3% Baseline: −$10,000, 68.8%)');
                 finish4();
               });
             });
@@ -508,7 +518,7 @@ function phase6(w5, r, csv, pj, H, done) {
   check('v4.18: CSV and JSON exports carry the extreme-poverty rows, constants and housing distress',
     /Extreme poverty \(v4\.18\)/.test(csv) && /EP_Y0_RATE/.test(csv) && /Housing distress/.test(csv) && !!pj && !!pj.results.extremePoverty &&
     !!pj.results.extremePoverty.main && pj.results.povertyByFourMeasures.rows.some(x => x.k === 'extreme'));
-  phase7(done);  // v4.19
+  phase7(function () { phase8(done); });  // v4.19; v4.20 adds Phase 8
 }
 
 /* ── Phase 7 (v4.19): automatic stabilizers and the Shock Response card.
@@ -635,4 +645,108 @@ function phase7(done) {
       done();
     }, 200);
   }, 200);
+}
+
+/* ── Phase 8 (v4.20): accessibility, the shared-link seed readout, the JSON basis label, the
+ * unit suite against the page, page/harness source parity, the automationRisk sampler, and the
+ * paired non-participant check. Every check here fails against an unmodified v4.19 page. jsdom
+ * renders nothing, so the focus-visible checks confirm the CSS rules exist, not how they look. */
+function phase8(done) {
+  console.log('\n--- Phase 8: v4.20 ---');
+  const H = require('./harness.js');
+  const w = makeWindow(), d = w.document, $ = id => d.getElementById(id);
+  w.applyPreset('reference');
+  w.dispatchEvent(new w.Event('DOMContentLoaded'));   // where the page listens (see the v4.18 repair)
+  const txt = el => (el ? el.textContent : '').replace(/\s+/g, ' ').trim();
+  const nameOf = el => { const ids = (el.getAttribute('aria-labelledby') || '').split(/\s+/).filter(Boolean);
+    return ids.map(id => txt($(id))).join(' ').trim() || (el.getAttribute('aria-label') || '').trim(); };
+
+  // 8a. accessible names
+  const sliders = [...d.querySelectorAll('input[type="range"]')], groups = [...d.querySelectorAll('.tg')];
+  const cnOf = el => { const cr = el.closest('.cr'); const cn = cr && cr.querySelector('.cn'); if (!cn) return '';
+    const c = cn.cloneNode(true); c.querySelectorAll('.abbr-link').forEach(x => x.remove()); return txt(c); };
+  const badS = sliders.concat([$('s-seed')]).filter(el => !nameOf(el) || nameOf(el) !== cnOf(el) || /ⓘ/.test(nameOf(el)));
+  const badG = groups.filter(g => g.getAttribute('role') !== 'group' || !nameOf(g) || (g.closest('.cr') && nameOf(g) !== cnOf(g)));  // groups outside a sidebar row (the threshold-view pair) carry their own aria-label
+  const lblIds = [...d.querySelectorAll('[id^="lbl-"]')].map(e => e.id);
+  check('v4.20: every slider, the seed field and every On/Off group is named by its visible label (a11y)',
+    sliders.length >= 18 && groups.length >= 14 && !badS.length && !badG.length && new Set(lblIds).size === lblIds.length,
+    sliders.length + ' sliders, ' + groups.length + ' groups; unnamed or mismatched: ' + (badS.concat(badG).map(e => e.id || e.className).join(', ') || 'none') +
+    '; e.g. s-bu "' + nameOf($('s-bu')) + '", PTF cap group "' + (groups.find(g => /ptfCap/.test(g.innerHTML)) ? nameOf(groups.find(g => /ptfCap/.test(g.innerHTML))) : '') + '"');
+
+  // 8b. tooltips reachable by keyboard and exposed to assistive technology
+  const tips = [...d.querySelectorAll('[data-tip]')];
+  const icons = tips.filter(el => el.tagName !== 'A' && el.tagName !== 'BUTTON'), hosts = tips.filter(el => el.tagName === 'A' || el.tagName === 'BUTTON');
+  const iconsOK = icons.length >= 15 && icons.every(el => el.getAttribute('tabindex') === '0' && el.getAttribute('role') === 'img' && el.getAttribute('aria-label') === el.getAttribute('data-tip'));
+  const hostsOK = hosts.length >= 14 && hosts.every(el => { const dd = $(el.getAttribute('aria-describedby') || ''); return !!dd && dd.textContent === el.getAttribute('data-tip'); });
+  const nDesc = $('tip-desc') ? $('tip-desc').children.length : -1;
+  if (typeof w.initA11y === 'function') w.initA11y();
+  const nDesc2 = $('tip-desc') ? $('tip-desc').children.length : -1;
+  const css = [...d.querySelectorAll('style')].map(x => x.textContent).join('\n');
+  const cssOK = /\.abbr-link:focus-visible::after/.test(css) && /\.tip-host\[data-tip\]:focus-visible::after/.test(css) && /input\[type=range\]:focus-visible\{outline:/.test(css);
+  check('v4.20: every tooltip is keyboard-reachable and exposed (ⓘ focusable and named, buttons and links described), opens on focus, and init is idempotent',
+    iconsOK && hostsOK && nDesc === hosts.length && nDesc2 === hosts.length && cssOK,
+    icons.length + ' ⓘ icons ' + (iconsOK ? 'OK' : 'NOT OK') + ', ' + hosts.length + ' buttons/links ' + (hostsOK ? 'OK' : 'NOT OK') + ', descriptions ' + nDesc + ' then ' + nDesc2 + ', focus CSS ' + (cssOK ? 'present' : 'missing'));
+
+  // 8c. sliders announce their formatted value
+  const vt0 = $('s-bu').getAttribute('aria-valuetext');
+  $('s-bu').value = '900'; w.sv('bu', '900');
+  const vt1 = $('s-bu').getAttribute('aria-valuetext');
+  const allVT = w.SLIDER_KEYS.every(k => $('s-' + k).getAttribute('aria-valuetext') === $('v-' + k).textContent);
+  check('v4.20: sliders carry aria-valuetext equal to the displayed value, kept current by sv()',
+    vt0 === '$1,200' && vt1 === $('v-bu').textContent && vt1 !== vt0 && allVT, 's-bu "' + vt0 + '" then "' + vt1 + '"');
+
+  // 8d. shared-link seed readout
+  const seedCase = q => { const ws = makeWindow(q); ws.applyParamsFromURL(); return [ws.document.getElementById('s-seed').value, ws.document.getElementById('v-seed').textContent]; };
+  const sA = seedCase('?seed=abc'), sB = seedCase('?seed=12abc'), sC = seedCase('?seed=17');
+  check('v4.20: a shared link\'s seed readout shows the seed the run will use (malformed seeds read "variable", not "NaN" or a partial number)',
+    sA[0] === '' && sA[1] === 'variable' && sB[0] === '' && sB[1] === 'variable' && sC[0] === '17' && sC[1] === '17',
+    '?seed=abc -> "' + sA[1] + '", ?seed=12abc -> "' + sB[1] + '", ?seed=17 -> "' + sC[1] + '"  (v4.19: "NaN", "12", "17")');
+
+  // 8e. the extreme-poverty block of the JSON export says what it is
+  const pp = w.buildPovertyPanel({}, {});
+  check('v4.20: the JSON export\'s extreme-poverty block carries an explicit "overlay" basis',
+    !!pp && !!pp.extremePoverty && /overlay/.test(pp.extremePoverty.basis || '') && /no random number/.test(pp.extremePoverty.basis || ''), pp && pp.extremePoverty ? String(pp.extremePoverty.basis) : 'missing');
+
+  // 8f. the shared unit suite, against the page's own functions
+  const T = {CFG: w.CFG, getRNG: () => w.RNG, setRNG: r => { w.RNG = r; }};
+  ['mulberry32', 'gamma', 'beta', 'lognormal', 'drawAutomationRisk', 'szhTheta', 'pthLiquidShare', 'getTier', 'medianOf', 'coeffVar', 'structuralStability',
+   'povertyCDF', 'buildPrefixSum', 'povertyGapAvg', 'checkDominance', 'tCritical95'].forEach(n => { if (typeof w[n] === 'function') T[n] = w[n]; });
+  const U = H.unitSuite(T), uf = U.filter(x => !x.pass), us = U.filter(x => x.skipped);
+  check('v4.20: harness.unitSuite() passes against the page\'s own functions, none skipped (' + U.length + ' tests)',
+    U.length === 15 && !uf.length && !us.length, uf.length ? 'failed: ' + uf.map(x => x.name + ' [' + x.detail + ']').join('; ') : U.find(x => /drawAutomationRisk/.test(x.name)).detail);
+
+  // 8g. source parity: every function the page and harness.js share is the same code, apart from
+  // five known, intentional differences (each covered by a behavioural check elsewhere).
+  const src = fs.readFileSync(path.join(__dirname, 'harness.js'), 'utf8');
+  const names = [...src.matchAll(/^function ([A-Za-z0-9_]+)\(/gm)].map(m => m[1]);
+  const hf = new Function('module', 'require', src + ';return {' + names.join(',') + '};')({exports: {}}, require);
+  const norm = f => f.toString().replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '').replace(/\s+/g, '');
+  const KNOWN = {runYear: 'harness-only before/after switches (BU_ALLOCATIONS_PER_YEAR, CCO_RELIEF_FLAT, PTH_APPR_CONSERVE); checked by the seed-42 page/harness runs',
+    drawAutomationRisk: 'harness-only AUTOMATION_SAMPLER_LEGACY switch; checked by the draw-sequence comparison below',
+    getTier: 'display fields (class, colour) in the page', agentBLEI: 'a local renamed gammaV in the harness, where it would shadow gamma()',
+    incomeBasketMetrics: 'guard order only'};
+  const shared = names.filter(n => typeof w[n] === 'function');
+  const drift = shared.filter(n => !KNOWN[n] && norm(w[n]) !== norm(hf[n]));
+  const seqP = [], seqH = [];
+  w.RNG = w.mulberry32(77); for (let i = 0; i < 1000; i++) seqP.push(w.drawAutomationRisk());
+  const HT = H.unitTargets(), savedH = HT.getRNG(); HT.setRNG(H.mulberry32(77)); for (let i = 0; i < 1000; i++) seqH.push(HT.drawAutomationRisk()); HT.setRNG(savedH);
+  check('v4.20: every function shared by the page and harness.js is identical source (' + (shared.length - Object.keys(KNOWN).length) + ' functions), and drawAutomationRisk() draws identical sequences',
+    shared.length >= 40 && !drift.length && seqP.every((x, i) => x === seqH[i]), drift.length ? 'DRIFTED: ' + drift.join(', ') : shared.length + ' shared; 5 known differences: ' + Object.keys(KNOWN).join(', '));
+
+  // 8h. agent construction no longer depends on the high-risk share
+  const latent = share => { w.CFG.AUTO_HIGH_SHARE = share; w.RNG = w.mulberry32(42 + 700003); const L = w.makeLatentPopulation(500); return L; };
+  const saveShare = w.CFG.AUTO_HIGH_SHARE, La = latent(0.47), Lb = latent(0.63); w.CFG.AUTO_HIGH_SHARE = saveShare;
+  const sameRest = La.every((a, i) => ['wealth', 'wage', 'octaveShape', 'qualityZ', 'lambda', 'uCCO', 'uPTF', 'uPTH'].every(k => a[k] === Lb[i][k]));
+  const hiShare = Lb.filter(a => a.automationRisk >= 0.5).length / Lb.length;
+  check('v4.20: changing the automation high-risk share changes automationRisk and nothing else in agent construction',
+    sameRest && La.some((a, i) => a.automationRisk !== Lb[i].automationRisk) && w.CFG.AUTO_HIGH_SHARE === 0.63,
+    'every other latent trait identical across shares 0.47 and 0.63: ' + sameRest + '; share of agents at or above 0.5 at 0.63: ' + (hiShare * 100).toFixed(1) + '%  (v4.19: construction re-streamed)');
+
+  // 8i. the paired non-participant validation check
+  const np = w.VAL_TESTS.find(t => t.id === 'nonpart');
+  const saved = w.RNG; const rnp = np ? np.fn() : null; w.RNG = saved;
+  const worst = rnp ? parseFloat((rnp.detail.match(/largest difference ([+-]?[\d.]+)pp/) || [])[1]) : NaN;
+  check('v4.20: the non-participant check compares the same people in both arms, and passes with room',
+    !!rnp && rnp.pass && /paired/.test(rnp.detail) && worst <= 0, rnp ? rnp.detail : 'missing');
+  done();
 }

@@ -21,6 +21,24 @@
  * runScenario() returns the overlay and its components; CCO_ONLY mirrors simulate()'s pCCO; and
  * a new `extreme` mode prints the v4.18 tables and the constants' sensitivity. `validate` is
  * unchanged in every pre-v4.18 figure.
+ *
+ * v4.19: the automatic stabilizers (effective BU per year: recession multiplier, fixed or scaled;
+ * suspended expiry; emergency enrollment via the stored latent a.uCCO; COLA) and Option B's
+ * BU-scaled CCO cost relief (CFG.CCO_RELIEF_*), ported from index.html; shockRun/shockStudy
+ * (the in-page Shock Response study, exported so domtest.js can check the two agree exactly);
+ * two harness-only switches, BU_ALLOCATIONS_PER_YEAR and CCO_RELIEF_FLAT, kept for before/after
+ * comparison; and a `stabilizer` mode. `validate` was unchanged in every figure.
+ * (Added in v4.20: this header had no v4.19 entry, though the code below was current.)
+ *
+ * v4.20: drawAutomationRisk() samples both mixture components by inverse CDF (exact for
+ * Beta(a,1) and Beta(1,b)), so it always takes two RNG draws, and the high-risk share is
+ * recalibrated from 0.47 to 0.63 (CFG.AUTO_*), which matches the employment-weighted mean
+ * probability of Frey & Osborne's 702 occupations (0.592). Both move the seed-42 regression, once. A harness-only switch,
+ * AUTOMATION_SAMPLER_LEGACY, restores v4.3-v4.19's rejection-sampled draw for before/after
+ * comparison. `validate` now asserts its figures and exits non-zero on a mismatch, and also
+ * checks that the legacy switch reproduces v4.19. New: unitSuite() (pure-function and
+ * property tests, run here by `unit` and against the page by domtest.js), and an `automation`
+ * mode (the calibration sweep behind the new share).
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -58,7 +76,9 @@ var CFG = {
   /* v4.19: automatic-stabilizer reference values — sources and conditions in index.html's CFG. */
   CCO_RELIEF_AT_REF:0.20, CCO_RELIEF_REF_BU:1200, CCO_RELIEF_CAP:0.50,
   STAB_HUB_MULT:1.20, STAB_HUB_THRESH:0.02, STAB_NEUTRAL_MULT:1.35, STAB_NEUTRAL_K:2.8, STAB_MULT_MAX:4,
-  STAB_EMERG_TAKEUP:0.50, COLA_HUB_THRESH:0.05, STAB_STUDY_SEEDS:30
+  STAB_EMERG_TAKEUP:0.50, COLA_HUB_THRESH:0.05, STAB_STUDY_SEEDS:30,
+  /* v4.20: automationRisk mixture — sources in index.html's CFG. */
+  AUTO_HIGH_SHARE:0.63, AUTO_HIGH_A:6, AUTO_LOW_B:6
 };
 CFG.FBS_HALF_SAT_LO = Math.log(2) / CFG.FBS_LAMBDA_HI;
 CFG.FBS_HALF_SAT_HI = Math.log(2) / CFG.FBS_LAMBDA_LO;
@@ -81,6 +101,12 @@ var PTH_APPR_CONSERVE = false;
  *    Option B: relief scales with the effective BU). For before/after comparisons only. */
 var BU_ALLOCATIONS_PER_YEAR = 1;
 var CCO_RELIEF_FLAT = false;
+/* v4.20: harness-only switch. true restores v4.3-v4.19's drawAutomationRisk(): the mixture
+ * components drawn by beta() (gamma rejection sampling, a variable number of RNG draws), with
+ * the share read from CFG.AUTO_HIGH_SHARE and the shapes fixed at Beta(6,1)/Beta(1,6). With
+ * AUTO_HIGH_SHARE set back to 0.47 it reproduces v4.19 exactly (checked by `validate`).
+ * index.html: false. */
+var AUTOMATION_SAMPLER_LEGACY = false;
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 
 function lognormal(mu,sigma){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.exp(mu+sigma*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v));}
@@ -88,9 +114,12 @@ function beta(a,b){var x=gamma(a);return x/(x+gamma(b));}
 function gamma(a){if(a===1)return -Math.log(Math.max(1e-14,RNG()));if(a<1)return gamma(1+a)*Math.pow(Math.max(1e-14,RNG()),1/a);for(var i=0;i<5000;i++){var u=RNG(),v=RNG(),y=Math.tan(Math.PI*u),x=Math.sqrt(2*a-1)*y+a-1;if(x>0&&v<=(1+y*y)*Math.exp((a-1)*Math.log(x/(a-1))-Math.sqrt(2*a-1)*y))return x;}return a;}
 function standardNormal(){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
 function drawAutomationRisk(){
-  var HIGH_RISK_SHARE=0.47;
-  if(RNG()<HIGH_RISK_SHARE)return beta(6,1);
-  return beta(1,6);
+  if(AUTOMATION_SAMPLER_LEGACY){
+    if(RNG()<CFG.AUTO_HIGH_SHARE)return beta(6,1);
+    return beta(1,6);
+  }
+  var c=RNG(),v=RNG();
+  return c<CFG.AUTO_HIGH_SHARE?Math.pow(v,1/CFG.AUTO_HIGH_A):1-Math.pow(1-v,1/CFG.AUTO_LOW_B);
 }
 
 function makeLatentAgent(){
@@ -574,6 +603,14 @@ var STRESS_TEST = {
   shock:true, automation:true, inflRate:0.02, ccoOn:true, ptfCap:false
 };
 var ADVERSE_REFERENCE = Object.assign({}, FULL_INTEGRATION, {shock:true, automation:true, inflRate:0.02});
+/* v4.20: index.html's PRESETS.hiAI — Full Integration over 25 years with AI automation. */
+var HIGH_AUTOMATION = Object.assign({}, FULL_INTEGRATION, {years:25, automation:true});
+/* v4.20: this file's functions, in the shape unitSuite() expects. */
+function unitTargets(){
+  return {CFG:CFG, mulberry32:mulberry32, gamma:gamma, beta:beta, lognormal:lognormal, drawAutomationRisk:drawAutomationRisk,
+    szhTheta:szhTheta, pthLiquidShare:pthLiquidShare, getTier:getTier, medianOf:medianOf, coeffVar:coeffVar, structuralStability:structuralStability,
+    getRNG:function(){ return RNG; }, setRNG:function(r){ RNG = r; }};
+}
 /* v4.18: CCO Only exactly as simulate() builds pCCO for a given scenario — every CCO setting kept,
  * PTF/PTH/SZH/CIP off. */
 function ccoOnlyFor(p){ return Object.assign({}, p, {ptfShare:0, pthUptake:0, szhCoh:0, cipDemo:0, ptf:false, pth:false, szh:false, cip:false}); }
@@ -603,7 +640,144 @@ function trajectory(p, seed, marks){
   return out;
 }
 
-Object.assign(module.exports, { shockRun, shockStudy, stabRuleText, setStabSwitches:function(n,flat){BU_ALLOCATIONS_PER_YEAR=n;CCO_RELIEF_FLAT=flat;}, CFG, mulberry32, runScenario, trajectory, baselineFor, ccoOnlyFor, extremePovertyOf, FULL_INTEGRATION, BASELINE, CCO_ONLY, STRESS_TEST, ADVERSE_REFERENCE });
+/* ─── v4.20: PURE-FUNCTION AND PROPERTY TESTS ─────────────────────────────
+ * One suite, two targets. `node harness.js unit` runs it against this file's functions;
+ * domtest.js Phase 8 runs the SAME suite against index.html's own functions inside the page.
+ * This is the "pure-function tests" layer of CONTRIBUTING.md's v4.12 good-first-issue (a).
+ *
+ * F supplies the functions under test plus CFG and an RNG getter/setter (the samplers read a
+ * global RNG). Functions F lacks are reported as skipped: povertyCDF, buildPrefixSum,
+ * povertyGapAvg, checkDominance and tCritical95 exist only in index.html. Every sampler test
+ * seeds its own mulberry32 stream and restores the caller's RNG before returning (the v4.16
+ * rule for anything that reassigns the global). Tolerances are several standard errors wide;
+ * the seeds are fixed, so the suite is deterministic. Returns [{name, pass, skipped, detail}].
+ */
+function unitSuite(F){
+  var out = [], C = F.CFG, saved = F.getRNG();
+  function t(name, needs, fn){
+    for (var i = 0; i < needs.length; i++) if (typeof F[needs[i]] !== 'function'){ out.push({name:name, pass:true, skipped:true, detail:'skipped: ' + needs[i] + ' not supplied'}); return; }
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, skipped:false, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, skipped:false, detail:'threw: ' + e.message}); }
+    finally { F.setRNG(saved); }
+  }
+  function seeded(s){ F.setRNG(F.mulberry32(s)); }
+  function sample(fn, n){ var a = new Array(n); for (var i = 0; i < n; i++) a[i] = fn(); return a; }
+  function mean(a){ var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return s/a.length; }
+  function vari(a){ var m = mean(a), s = 0; for (var i = 0; i < a.length; i++) s += (a[i]-m)*(a[i]-m); return s/(a.length-1); }
+  function near(x, y, tol){ return Math.abs(x - y) <= tol; }
+  function r4(x){ return (+x).toFixed(4); }
+  var N = 20000;
+
+  t('mulberry32: golden values, reproducible, seed-dependent, in [0,1)', ['mulberry32'], function(){
+    var a = F.mulberry32(42), b = F.mulberry32(42), c = F.mulberry32(43), gold = [0.6011037519201636, 0.44829055899754167, 0.8524657934904099];
+    var g = [a(), a(), a()], same = true, diff = false, inRange = true, sum = 0;
+    b(); b(); b();
+    for (var i = 0; i < 100000; i++){ var x = a(), y = b(), z = c(); if (x !== y) same = false; if (x !== z) diff = true; if (!(x >= 0 && x < 1)) inRange = false; sum += x; }
+    var goldOk = g[0] === gold[0] && g[1] === gold[1] && g[2] === gold[2];
+    return {pass: goldOk && same && diff && inRange && near(sum/100000, 0.5, 0.005), detail:'first three (seed 42) ' + g.map(r4).join(', ') + '; mean of 100,000 ' + r4(sum/100000)};
+  });
+  t('gamma(1) is Exponential(1): mean and variance 1, not a constant (the v4.4 bug)', ['gamma','mulberry32'], function(){
+    seeded(101); var a = sample(function(){ return F.gamma(1); }, N), m = mean(a), v = vari(a), distinct = {}, k = 0;
+    for (var i = 0; i < 1000; i++){ if (!distinct[a[i]]){ distinct[a[i]] = 1; k++; } }
+    return {pass: near(m, 1, 0.03) && near(v, 1, 0.06) && k > 990, detail:'mean ' + r4(m) + ', variance ' + r4(v) + ', distinct values in first 1,000: ' + k};
+  });
+  t('gamma(a): mean and variance a, for a = 6 and 0.5', ['gamma','mulberry32'], function(){
+    seeded(102); var a6 = sample(function(){ return F.gamma(6); }, N); seeded(103); var ah = sample(function(){ return F.gamma(0.5); }, N);
+    return {pass: near(mean(a6), 6, 0.12) && near(vari(a6), 6, 0.36) && near(mean(ah), 0.5, 0.02) && near(vari(ah), 0.5, 0.04),
+      detail:'a=6: mean ' + r4(mean(a6)) + ' var ' + r4(vari(a6)) + '; a=0.5: mean ' + r4(mean(ah)) + ' var ' + r4(vari(ah))};
+  });
+  t('beta(a,b): mean a/(a+b) and support (0,1), for (2,5), (6,1), (1,6)', ['beta','mulberry32'], function(){
+    var ok = true, d = [];
+    [[2,5],[6,1],[1,6]].forEach(function(ab, j){
+      seeded(110 + j); var s = sample(function(){ return F.beta(ab[0], ab[1]); }, N), m = mean(s), inS = s.every(function(x){ return x > 0 && x < 1; });
+      if (!near(m, ab[0]/(ab[0]+ab[1]), 0.006) || !inS) ok = false; d.push('(' + ab + ') ' + r4(m));
+    });
+    return {pass: ok, detail: d.join('; ')};
+  });
+  t('lognormal(mu, sigma): median e^mu (wealth and wage draws)', ['lognormal','mulberry32'], function(){
+    seeded(120); var w = sample(function(){ return F.lognormal(C.WEALTH_INIT_MU, C.WEALTH_INIT_SIGMA); }, N).sort(function(x,y){ return x-y; });
+    seeded(121); var g = sample(function(){ return F.lognormal(3.5, 0.5); }, N).sort(function(x,y){ return x-y; });
+    var mw = w[N/2], mg = g[N/2], ew = Math.exp(C.WEALTH_INIT_MU), eg = Math.exp(3.5);
+    return {pass: Math.abs(mw/ew - 1) < 0.04 && Math.abs(mg/eg - 1) < 0.02, detail:'wealth median $' + Math.round(mw).toLocaleString() + ' (e^mu $' + Math.round(ew).toLocaleString() + '); wage median ' + mg.toFixed(2) + ' SIU (e^3.5 ' + eg.toFixed(2) + ')'};
+  });
+  t('drawAutomationRisk: two RNG draws per call (v4.20), in [0,1], mixture mean and share as CFG specifies', ['drawAutomationRisk','mulberry32'], function(){
+    var calls = 0, base = F.mulberry32(130); F.setRNG(function(){ calls++; return base(); });
+    var counts = {}, s = [];
+    for (var i = 0; i < N; i++){ var before = calls; s.push(F.drawAutomationRisk()); counts[calls - before] = (counts[calls - before] || 0) + 1; }
+    var pi = C.AUTO_HIGH_SHARE, a = C.AUTO_HIGH_A, b = C.AUTO_LOW_B;
+    var mExp = pi*a/(a+1) + (1-pi)/(b+1), hiExp = pi*(1 - Math.pow(0.5, a)) + (1-pi)*Math.pow(0.5, b);
+    var m = mean(s), hi = s.filter(function(x){ return x >= 0.5; }).length/N, inR = s.every(function(x){ return x >= 0 && x <= 1; });
+    var two = Object.keys(counts).length === 1 && counts[2] === N;
+    return {pass: two && inR && near(m, mExp, 0.008) && near(hi, hiExp, 0.012),
+      detail:'draws per call ' + JSON.stringify(counts) + '; mean ' + r4(m) + ' (expected ' + r4(mExp) + '); share >= 0.5 ' + r4(hi) + ' (expected ' + r4(hiExp) + ')'};
+  });
+  t('szhTheta: zero below the threshold, linear to the cap, capped, monotone, NaN-safe', ['szhTheta'], function(){
+    var mono = true, prev = -1;
+    for (var c = 0; c <= 1.0001; c += 0.01){ var v = F.szhTheta(c); if (v < prev - 1e-12 || v < 0 || v > C.SZH_THETA_MAX + 1e-12) mono = false; prev = v; }
+    var ok = F.szhTheta(NaN) === 0 && F.szhTheta(C.SZH_THETA_THRESHOLD - 0.01) === 0 && F.szhTheta(C.SZH_THETA_THRESHOLD) === 0 &&
+      near(F.szhTheta(C.SZH_THETA_MAX_COH), C.SZH_THETA_MAX, 1e-12) && F.szhTheta(0.99) === C.SZH_THETA_MAX &&
+      near(F.szhTheta((C.SZH_THETA_THRESHOLD + C.SZH_THETA_MAX_COH)/2), C.SZH_THETA_MAX/2, 1e-12);
+    return {pass: ok && mono, detail:'theta(0.72) ' + r4(F.szhTheta(0.72)) + ', theta(0.90) ' + r4(F.szhTheta(0.90))};
+  });
+  t('pthLiquidShare: year-1 and mature endpoints, linear between, clamped, NaN-safe', ['pthLiquidShare'], function(){
+    var Y = C.PTH_LIQUID_SHARE_MATURE_YR, mono = true, prev = -1;
+    for (var k = 0; k <= 12; k += 0.5){ var v = F.pthLiquidShare(k); if (v < prev - 1e-12) mono = false; prev = v; }
+    var ok = F.pthLiquidShare(1) === C.PTH_LIQUID_SHARE_YEAR1 && near(F.pthLiquidShare(Y), C.PTH_LIQUID_SHARE_YEAR5PLUS, 1e-12) && near(F.pthLiquidShare(40), C.PTH_LIQUID_SHARE_YEAR5PLUS, 1e-12) &&
+      F.pthLiquidShare(0) === C.PTH_LIQUID_SHARE_YEAR1 && F.pthLiquidShare(NaN) === C.PTH_LIQUID_SHARE_YEAR1 &&
+      near(F.pthLiquidShare((1 + Y)/2), (C.PTH_LIQUID_SHARE_YEAR1 + C.PTH_LIQUID_SHARE_YEAR5PLUS)/2, 1e-12);
+    return {pass: ok && mono, detail:'1y ' + F.pthLiquidShare(1) + ', 3y ' + r4(F.pthLiquidShare(3)) + ', 5y+ ' + F.pthLiquidShare(5)};
+  });
+  t('getTier: every BLEI tier boundary is inclusive at its lower edge', ['getTier'], function(){
+    var edges = [[0,'Crisis'],[C.BLEI_CRISIS_MAX - 1e-9,'Crisis'],[C.BLEI_CRISIS_MAX,'Precarious'],[C.BLEI_PRECARIOUS_MAX,'Threshold'],[C.BLEI_THRESHOLD_MAX,'Stable'],[C.BLEI_STABLE_MAX,'Secure'],[C.BLEI_SECURE_MAX,'Flourishing'],[1e6,'Flourishing']];
+    var bad = edges.filter(function(e){ return F.getTier(e[0]).name !== e[1]; });
+    return {pass: bad.length === 0 && F.getTier(1e6, 'Comfortable').name === 'Comfortable', detail: bad.length ? 'wrong at ' + bad.map(function(e){ return e[0]; }).join(', ') : edges.length + ' boundaries checked'};
+  });
+  t('medianOf: empty, odd, even, and the input left unsorted', ['medianOf'], function(){
+    var arr = [4, 1, 3, 2], copy = arr.slice();
+    return {pass: F.medianOf([]) === 0 && F.medianOf([3, 1, 2]) === 2 && F.medianOf(arr) === 2.5 && arr.join() === copy.join(), detail:'[] 0, [3,1,2] 2, [4,1,3,2] 2.5'};
+  });
+  t('coeffVar and structuralStability: degenerate cases, bounds, and ordering', ['coeffVar','structuralStability'], function(){
+    var flat = [5,5,5,5,5,5,5,5], steady = [100,101,102,103,104,105,106,107], wild = [100,300,50,400,20,500,10,600];
+    var sFlat = F.structuralStability(flat, flat), sSteady = F.structuralStability(steady, steady), sWild = F.structuralStability(wild, wild);
+    var ok = F.coeffVar([7]) === 0 && F.coeffVar([-1, 1]) === 0 && F.coeffVar(flat) === 0 && sFlat === 0.99 && sWild >= 0 && sWild < sSteady && sSteady <= 0.99;
+    return {pass: ok, detail:'flat ' + sFlat + ', steady ' + r4(sSteady) + ', volatile ' + r4(sWild)};
+  });
+  t('povertyCDF: strict "below" count, empty and out-of-range thresholds', ['povertyCDF'], function(){
+    var s = [1, 2, 3, 4];
+    return {pass: F.povertyCDF([], 5) === 0 && F.povertyCDF(s, 3) === 50 && F.povertyCDF(s, 0) === 0 && F.povertyCDF(s, 99) === 100 && F.povertyCDF([2,2,2,2], 2) === 0, detail:'[1,2,3,4] below 3 = 50%'};
+  });
+  t('povertyGapAvg: equals a brute-force mean shortfall on 400 random arrays (duplicates, negative lines)', ['buildPrefixSum','povertyGapAvg','mulberry32'], function(){
+    var R = F.mulberry32(140), worst = 0;
+    for (var k = 0; k < 400; k++){
+      var n = 1 + Math.floor(R()*60), a = [];
+      for (var i = 0; i < n; i++) a.push(R() < 0.3 ? -10000 : Math.round((R() - 0.2)*100000));
+      a.sort(function(x,y){ return x-y; });
+      var P = F.buildPrefixSum(a);
+      [-20000, -10000, 0, 25000, 60000, R()*80000 - 20000].forEach(function(th){
+        var brute = 0; for (var j = 0; j < n; j++) brute += Math.max(0, th - a[j]); brute /= n;
+        worst = Math.max(worst, Math.abs(brute - F.povertyGapAvg(a, P, th)));
+      });
+    }
+    return {pass: worst < 1e-6 && F.povertyGapAvg([], [0], 5) === 0, detail:'largest absolute difference ' + worst.toExponential(2)};
+  });
+  t('checkDominance: identical, each direction, a crossing, and sub-epsilon noise', ['checkDominance'], function(){
+    var L = ['a','b','c','d'];
+    var cases = [[[1,2,3,4],[1,2,3,4],'identical'],[[1,1,2,3],[1,2,3,4],'a_dominates'],[[2,3,4,5],[1,2,3,4],'b_dominates'],[[1,3,2,5],[2,2,3,4],'cross'],[[1,2,3,4+1e-12],[1,2,3,4],'identical']];
+    var bad = cases.filter(function(c){ return F.checkDominance(L, c[0], c[1]).relation !== c[2]; });
+    var cross = F.checkDominance(L, [1,3,2,5], [2,2,3,4]);
+    return {pass: bad.length === 0 && cross.crossLabel === 'b', detail: bad.length ? bad.length + ' wrong' : '5 cases; crossing found at "' + cross.crossLabel + '"'};
+  });
+  t('tCritical95: table values, interpolation, the 1.96 limit, non-increasing in df', ['tCritical95'], function(){
+    var mono = true, prev = Infinity;
+    for (var df = 1; df <= 200; df++){ var v = F.tCritical95(df); if (v > prev + 1e-12) mono = false; prev = v; }
+    return {pass: F.tCritical95(1) === 12.706 && F.tCritical95(9) === 2.262 && near(F.tCritical95(49), 2.021 + (2.009 - 2.021)*0.9, 1e-9) && F.tCritical95(500) === 1.96 && F.tCritical95(0) === 12.706 && mono,
+      detail:'df 9 (Run 10x) ' + F.tCritical95(9) + ', df 49 (Run 50x) ' + r4(F.tCritical95(49)) + ', df 500 ' + F.tCritical95(500)};
+  });
+  F.setRNG(saved);
+  return out;
+}
+
+Object.assign(module.exports, { unitSuite, unitTargets, HIGH_AUTOMATION, setAutomationSampler:function(legacy){AUTOMATION_SAMPLER_LEGACY=!!legacy;}, shockRun, shockStudy, stabRuleText, setStabSwitches:function(n,flat){BU_ALLOCATIONS_PER_YEAR=n;CCO_RELIEF_FLAT=flat;}, CFG, mulberry32, runScenario, trajectory, baselineFor, ccoOnlyFor, extremePovertyOf, FULL_INTEGRATION, BASELINE, CCO_ONLY, STRESS_TEST, ADVERSE_REFERENCE });
 
 function stabRuleText(p){
   if(!p.stab)return 'off';
@@ -708,18 +882,89 @@ if (require.main === module) {
   var mode = process.argv[2] || 'validate';
 
   if (mode === 'validate') {
+    /* v4.20: asserts, and exits 1 on any mismatch, so a CI job (see .github/workflows) fails on
+     * a regression instead of printing it for someone to read. Checks the shipped engine against
+     * the v4.20 figures, then the legacy automation sampler at the old 0.47 share against v4.19's,
+     * which proves the before/after switch reproduces the previous release exactly. */
     CFG.WEALTH_FLOOR = -10000; // shipped default
     var r = runScenario(FULL_INTEGRATION, 42);
     console.log('=== Validation: seed 42, Full Integration, 20yr, WEALTH_FLOOR=-10000 (shipped default) ===');
     console.log(JSON.stringify(r, null, 2));
-    console.log('\nDocumented (CONTRIBUTING.md v4.5/v4.6/v4.7 regression tables, unchanged across all three):');
-    console.log('  Median BLEI:      1965 d');
-    console.log('  BLEI poverty:     13.6 %');
-    console.log('  Median wealth:    $559223');
-    console.log('  Wealth poverty:   16.6 %');
-    console.log('  Gini (EDC-adj):   0.534');
-    console.log('  System Stability: 88.5 %');
-    console.log('  Avg EDC:          24.9 %');
+    var KEYS = [['bleiMed','Median BLEI (d)'],['bleiPovPct','BLEI poverty (%)'],['wealth','Median wealth ($)'],['pov','Wealth poverty (%)'],
+      ['gini','Gini, EDC-adj.'],['stab','System Stability (%)'],['avgEDC','Avg EDC (%)'],['fracAtFloor','Pinned at the floor (share)']];
+    var DOC = {
+      'v4.20 (shipped)': {bleiMed:1975, bleiPovPct:13.2, wealth:570661, pov:15.8, gini:0.518, stab:88.8, avgEDC:24.2, fracAtFloor:0.088},
+      'v4.19 (legacy automation sampler, share 0.47)': {bleiMed:1965, bleiPovPct:13.6, wealth:559223, pov:16.6, gini:0.534, stab:88.5, avgEDC:24.9, fracAtFloor:0.106}
+    };
+    function check(label, got){
+      var want = DOC[label], bad = [];
+      console.log('\n' + label + ' (CONTRIBUTING.md regression table):');
+      KEYS.forEach(function(k){ var ok = got[k[0]] === want[k[0]]; if (!ok) bad.push(label.split(' ')[0] + ' ' + k[1]);
+        console.log('  ' + (ok ? 'ok  ' : 'FAIL') + '  ' + k[1] + ': ' + got[k[0]] + (ok ? '' : '  (documented ' + want[k[0]] + ')')); });
+      return bad;
+    }
+    var fails = check('v4.20 (shipped)', r);
+    var savedShare = CFG.AUTO_HIGH_SHARE; AUTOMATION_SAMPLER_LEGACY = true; CFG.AUTO_HIGH_SHARE = 0.47;
+    var rl = runScenario(FULL_INTEGRATION, 42);
+    AUTOMATION_SAMPLER_LEGACY = false; CFG.AUTO_HIGH_SHARE = savedShare;
+    fails = fails.concat(check('v4.19 (legacy automation sampler, share 0.47)', rl));
+    console.log(fails.length ? '\nVALIDATION FAILED: ' + fails.join(', ') : '\nVALIDATION PASSED: both documented regressions reproduce exactly.');
+    if (fails.length) process.exitCode = 1;
+  }
+
+  if (mode === 'unit') {
+    /* v4.20: the pure-function suite against this file. domtest.js Phase 8 runs the same suite
+     * against index.html, including the five page-only functions skipped here. */
+    var U = unitSuite(unitTargets()), nf = 0;
+    console.log('=== unitSuite() against harness.js ===');
+    U.forEach(function(x){ if (!x.pass) nf++; console.log('  ' + (x.skipped ? 'SKIP' : x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + U.filter(function(x){ return !x.skipped; }).length + ' run, ' + U.filter(function(x){ return x.skipped; }).length + ' skipped (page-only), ' + nf + ' failed');
+    if (nf) process.exitCode = 1;
+  }
+
+  if (mode === 'automation') {
+    /* v4.20: the calibration behind CFG.AUTO_*. Sections: fit | sweep (default: both).
+     * Data: plotly/datasets job-automation-probability.csv — Frey & Osborne (2013)'s 702
+     * occupations with May-2016 BLS OES employment (numbEmployed column); every row checked
+     * against the paper's appendix (pp. 57-72) in v4.20 and matching on SOC code, rank and
+     * probability. The distribution below is that file's employment-weighted histogram of
+     * probabilities in tenths, so this mode needs no network access. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nA = parseInt(process.argv[3] || '500', 10), secA = process.argv[4] || 'all';
+    var EMP_HIST = [0.200, 0.059, 0.034, 0.033, 0.014, 0.050, 0.106, 0.066, 0.110, 0.328];
+    var DATA = {mean:0.592, gt07:0.501, lt03:0.293, ge05:0.660};
+    function mixCDF(x, pi, a, b){ return pi*Math.pow(x, a) + (1-pi)*(1 - Math.pow(1-x, b)); }
+    var VARIANTS = [
+      {l:'v4.19: share 0.47, rejection-sampled Beta(6,1)/Beta(1,6)', legacy:true, pi:0.47, a:6, b:6},
+      {l:'share 0.47, inverse-CDF (isolates the sampler change)', pi:0.47, a:6, b:6},
+      {l:'share 0.50 (F&O >0.7 band at 2016 employment)', pi:0.50, a:6, b:6},
+      {l:'v4.20: share 0.63 (mean-matched)', pi:0.63, a:6, b:6},
+      {l:'share 0.66 (employment-weighted MLE, shapes fixed)', pi:0.66, a:6, b:6},
+      {l:'free-shape MLE: 0.706 Beta(4.02,1) / Beta(1,11.03)', pi:0.706, a:4.017, b:11.028}];
+    if (secA === 'fit' || secA === 'all'){
+      console.log('=== automationRisk mixture vs Frey & Osborne, employment-weighted (data: mean ' + DATA.mean + ', >0.7 ' + DATA.gt07 + ', <0.3 ' + DATA.lt03 + ', >=0.5 ' + DATA.ge05 + ') ===');
+      console.log('variant | mean | >0.7 | <0.3 | >=0.5 | max gap to the data CDF at tenths');
+      VARIANTS.forEach(function(v){
+        var cum = 0, gap = 0;
+        for (var i = 0; i < 10; i++){ cum += EMP_HIST[i]; gap = Math.max(gap, Math.abs(mixCDF((i+1)/10, v.pi, v.a, v.b) - cum)); }
+        var m = v.pi*v.a/(v.a+1) + (1-v.pi)/(v.b+1);
+        console.log(v.l + ' | ' + m.toFixed(3) + ' | ' + (1-mixCDF(0.7, v.pi, v.a, v.b)).toFixed(3) + ' | ' + mixCDF(0.3, v.pi, v.a, v.b).toFixed(3) + ' | ' + (1-mixCDF(0.5, v.pi, v.a, v.b)).toFixed(3) + ' | ' + gap.toFixed(3));
+      });
+    }
+    if (secA === 'sweep' || secA === 'all'){
+      var saveA = [CFG.AUTO_HIGH_SHARE, CFG.AUTO_HIGH_A, CFG.AUTO_LOW_B];
+      console.log('=== Outcomes by variant: seeds 1-' + nA + ', 500 agents (mean across runs, final year) ===');
+      console.log('variant | scenario | wealth poverty % | BLEI poverty % | median wealth | median BLEI (d) | seed 42 wealth poverty % / median wealth');
+      [['High Automation (25yr)', HIGH_AUTOMATION], ['Adverse Environment', ADVERSE_REFERENCE], ['Stress Test', STRESS_TEST], ['Full Integration (automation off)', FULL_INTEGRATION]].forEach(function(sc){
+        VARIANTS.forEach(function(v){
+          AUTOMATION_SAMPLER_LEGACY = !!v.legacy; CFG.AUTO_HIGH_SHARE = v.pi; CFG.AUTO_HIGH_A = v.a; CFG.AUTO_LOW_B = v.b;
+          var rs = runMany(sc[1], nA), s42 = runScenario(sc[1], 42);
+          console.log(v.l + ' | ' + sc[0] + ' | ' + mean(col(rs,'pov')).toFixed(2) + ' | ' + mean(col(rs,'bleiPovPct')).toFixed(2) + ' | $' + Math.round(mean(col(rs,'wealth'))).toLocaleString() +
+            ' | ' + Math.round(mean(col(rs,'bleiMed'))) + ' | ' + s42.pov + '% / $' + s42.wealth.toLocaleString());
+        });
+      });
+      AUTOMATION_SAMPLER_LEGACY = false; CFG.AUTO_HIGH_SHARE = saveA[0]; CFG.AUTO_HIGH_A = saveA[1]; CFG.AUTO_LOW_B = saveA[2];
+    }
   }
 
   if (mode === 'sweep') {

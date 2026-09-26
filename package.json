@@ -1,0 +1,15 @@
+{
+  "name": "compassionism-simulation",
+  "private": true,
+  "description": "Checks for the Compassionism Framework Simulation. The simulation itself is index.html and needs no install; this file only pins the one dev dependency (jsdom) that domtest.js uses.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "validate": "node harness.js validate",
+    "unit": "node harness.js unit",
+    "domtest": "node domtest.js",
+    "test": "node harness.js validate && node harness.js unit && node domtest.js"
+  },
+  "devDependencies": {
+    "jsdom": "30.1.1"
+  }
+}
