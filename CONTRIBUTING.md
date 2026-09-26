@@ -41,6 +41,34 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: issuance ledger and a consumption-base switch (harness-only)
+
+Next-round session 1 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate`, `unit` and `domtest` (82 checks) pass.
+
+### What was added to `harness.js`
+
+- **`LEDGER`** (reporting only, off by default). When set, `runYear()` adds each money flow it already computes to a per-year tally: BU credited, spent and expired; CCO relief; conversion gross, tax and net, by rate tier; PTF and PTH cost reductions; PTH equity routing and appreciation; wealth-floor absorption; wage income and basket cost. It draws no random number and writes nothing a dynamic reads.
+- **`node harness.js ledger <seeds> [section]`**, the A1 issuance ledger of the Next Round Plan. Sections: `identity` (the ledger on and off give identical `runScenario()` output on every scenario), `scenarios`, `tiers`, `years`, `deciles`, `framework` (derived arithmetic, labeled as such), `all`, and `consume` (not in `all`).
+- **`SURPLUS_CONSUMPTION_BASE`** (`'wage'` by default, v4.21's behaviour). `'cash'` applies `SURPLUS_CONSUMPTION_SHARE` to all cash surplus: wage + net conversion + PTH liquid appreciation − basket − PTH equity routing, taken at the end of the agent's year. Inert while the share is 0.
+
+### Headline results (`node harness.js ledger 500`)
+
+Full Integration, per participant per year, year-0 dollars: CCO relief $8,723, conversion net of tax $3,249 (mean rate 4.21×), conversion tax $838, BU expired $285. As shares of cash income: relief and conversion 14.2%, PTF and PTH cost reductions 8.7%, wealth-floor absorption 2.5%. The floor absorbs 13.3% of cash income in the matched Baseline and 32.8% in the shipped Baseline @3%. Bottom-decile floor absorption in Full Integration is $257,338 per agent over 20 years (v4.21: about $259,000 at 200 seeds).
+
+### A correction to the v4.21 notes
+
+v4.21 found that "the poverty findings are robust to" the consumption rule. That held because conversion proceeds were always saved: the switch consumed a share of wage surplus only. Applied to all cash surplus (`node harness.js ledger 200 consume`):
+
+| Rule | FI wealth poverty | FI BLEI poverty | Reduction vs matched Baseline (wealth / BLEI) |
+|---|---|---|---|
+| Shipped (save everything above the basket) | 15.3% | 12.5% | 69.6% / 74.4% |
+| 0.9 of wage surplus (v4.21's option B) | 19.6% | 14.7% | 64.2% / 71.7% |
+| 0.9 of all cash surplus | 25.0% | 19.9% | 54.3% / 61.7% |
+
+Near-poverty participants whom conversion lifts just above the basket spend most of that margin under the second rule. The wealth levels and the headline reductions both depend on the consumption rule. See `session-1-handoff.md` for the rule adopted for the next round and the alternatives.
+
+---
+
 ## v4.21 Release Notes
 
 v4.21 investigates the v4.19–v4.20 figures that read counter-intuitively, fixes the one bug that turned up, and reruns the headline figures with ten times the population per run. It also closes three open items.

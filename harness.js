@@ -47,6 +47,11 @@
  * headline, preset and population-size study), `pathways` (the v4.14 pathway decomposition),
  * `saving` (where the wealth comes from, and a consumption sweep) and `v421` (the investigation
  * behind CONTRIBUTING.md's v4.21 Release Notes).
+ *
+ * Unreleased (next-round session 1, Sep 26 2026; Duke assigns the version): LEDGER, a reporting-only tally
+ * of every money flow runYear() computes, and the `ledger` mode (the A1 issuance ledger); and
+ * SURPLUS_CONSUMPTION_BASE, which lets SURPLUS_CONSUMPTION_SHARE apply to all cash surplus. Both are inert
+ * by default, and `ledger identity` checks that the tally changes no output. index.html is unchanged.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -131,6 +136,23 @@ var RELIEF_PRICE_LEGACY = false;
  *    agent consumes. The engine consumes exactly the basket (0), so every dollar above it is saved. */
 var PATHWAY_OFF = {relief:false, conversion:false, octave:false, octaveWage:false, bleiWage:false, pthCost:false, pthEquity:false};
 var SURPLUS_CONSUMPTION_SHARE = 0;
+/* Session 1 of the Sep 26 plan: which income SURPLUS_CONSUMPTION_SHARE applies to. 'wage' (the v4.21
+ * behaviour): the share of wage income above the agent's basket, taken right after the wage step, so
+ * conversion proceeds and PTH liquid appreciation are always saved in full. 'cash': the share of ALL cash
+ * surplus that year (wage + net conversion + liquid PTH appreciation − basket − PTH equity routing), taken at the end of the
+ * agent's year, before the floor clamp; conversion proceeds first offset any wage deficit. Inert when the
+ * share is 0 (the default), so every shipped figure is bit-identical. For the consumption-rule decision. */
+var SURPLUS_CONSUMPTION_BASE = 'wage';
+/* A1 issuance ledger (Next Round Plan, Sep 26 2026): harness-only and reporting-only. When LEDGER is
+ * an object, runYear() adds each money flow it already computes to it, by year. It draws no random
+ * number and writes nothing any dynamic reads (the one per-agent field, _ledFloor, is read only by the
+ * `ledger` mode), so a run is bit-identical with it on or off; `ledger` checks this on every scenario.
+ * null (the default, and index.html's behaviour) skips every ledger line. Flows are nominal dollars;
+ * each year also records its price index so the report can deflate to year-0 dollars. */
+var LEDGER = null;
+var LEDGER_RATE_TIERS = [1.5, 3, 6, 9];  /* conversion-rate tier upper bounds: <1.5, 1.5-3, 3-6, 6-9, >=9 (3 = PROG_PIVOT, 9 = maxMult) */
+function newLedger(){ return {tot:{}, real:{}, idx:1, y:[], tiers:[0,1,2,3,4].map(function(){ return {bu:0, gross:0, tax:0, net:0, n:0}; })}; }
+function ledAdd(yr, k, v){ var L = LEDGER, Y = L.y[yr] || (L.y[yr] = {}); L.tot[k] = (L.tot[k] || 0) + v; L.real[k] = (L.real[k] || 0) + v/L.idx; Y[k] = (Y[k] || 0) + v; }
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 
 function lognormal(mu,sigma){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.exp(mu+sigma*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v));}
@@ -295,6 +317,7 @@ function runYear(agentSet,yr,p,recSt){
    * year-0 dollars, buEff / priceIdx. RELIEF_PRICE_LEGACY (harness-only) restores v4.19-v4.20. */
   var priceIdx=RELIEF_PRICE_LEGACY?1:Math.pow(1+inflRate,yr);
   var ccoReliefF=CCO_RELIEF_FLAT?0.80:1-Math.min(CFG.CCO_RELIEF_CAP,CFG.CCO_RELIEF_AT_REF*buEff/(CFG.CCO_RELIEF_REF_BU*priceIdx));
+  if(LEDGER){LEDGER.idx=Math.pow(1+inflRate,yr);var LY0=LEDGER.y[yr]||(LEDGER.y[yr]={});LY0.pIdx=LEDGER.idx;}  // A1 ledger (reporting only): this year's price index, the one mainLoopCostUSD uses
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
@@ -319,14 +342,24 @@ function runYear(agentSet,yr,p,recSt){
     if(isNaN(a.wage))a.wage=1;
     var cf=1.0;
     if(p.ptf&&a.inPTF)cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));
+    var cfPTF=cf;  // A1 ledger (reporting only)
     if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost)cf*=0.65;  // v4.21: harness-only pathway switch
+    var cfPreCCO=cf;  // A1 ledger (reporting only)
     if(p.ccoOn&&a.inCCO&&p.bu>0){if(!PATHWAY_OFF.relief)cf*=ccoReliefF;}  // v4.19: was a flat 0.80 (see ccoReliefF). v4.21: pathway switch
     else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf*=ccoReliefF;emergN++;}  // v4.19: emergency enrollment
     var mainLoopCostUSD=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);
     var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
     var costUSD=mainLoopCostUSD*cf;
     a.wealth+=annualWageUSD-costUSD;
-    if(SURPLUS_CONSUMPTION_SHARE>0)a.wealth-=SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD);  // v4.21: harness-only (saving mode)
+    if(SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='wage')a.wealth-=SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD);  // v4.21: harness-only (saving mode)
+    var yrCashSurplus=annualWageUSD-costUSD;  // session 1: for SURPLUS_CONSUMPTION_BASE 'cash' (harness-only; no RNG)
+    if(LEDGER){  // A1 ledger (reporting only): no RNG, no state read by any dynamic
+      ledAdd(yr,'agentYears',1);if(a.inCCO)ledAdd(yr,'partYears',1);
+      ledAdd(yr,'wage',annualWageUSD);ledAdd(yr,'cost',costUSD);ledAdd(yr,'basket',mainLoopCostUSD);
+      if(SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='wage')ledAdd(yr,'surplusConsumed',SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD));
+      ledAdd(yr,'ptfRelief',mainLoopCostUSD*(1-cfPTF));ledAdd(yr,'pthRelief',mainLoopCostUSD*(cfPTF-cfPreCCO));
+      ledAdd(yr,a.inCCO?'ccoRelief':'emergRelief',mainLoopCostUSD*(cfPreCCO-cf));
+    }
     a.yrWageUSD=annualWageUSD;a.yrCostUSD=costUSD;a.yrBasketUSD=mainLoopCostUSD;a.yrConvUSD=0;  /* v4.17: income/basket poverty inputs (no RNG) */
     if(isNaN(a.wealth))a.wealth=0;
     if(p.ccoOn&&a.inCCO){
@@ -339,6 +372,7 @@ function runYear(agentSet,yr,p,recSt){
        * CONTRIBUTING.md's v4.14 Release Notes. */
       var decay=Math.max(0,1-1/Math.max(1,p.expiry||1));
       if(stabOn&&p.stabSusp)decay=1;  // v4.19: expiry suspended while triggered  /* v4.15 parity: || 1 guards a missing expiry — Math.max(1,undefined) is NaN */
+      if(LEDGER){var lbK=a.buBalance*decay,lbI=buEff*BU_ALLOCATIONS_PER_YEAR,lbC=buEff*3*BU_ALLOCATIONS_PER_YEAR;ledAdd(yr,'buIssued',lbI);ledAdd(yr,'buExpired',(a.buBalance-lbK)+Math.max(0,lbK+lbI-lbC));}  // A1 ledger
       a.buBalance=Math.min(a.buBalance*decay+buEff*BU_ALLOCATIONS_PER_YEAR,buEff*3*BU_ALLOCATIONS_PER_YEAR);  // v4.19: buEff; allocations/yr is a harness-only switch (index.html: 1)
       var spend=a.buBalance*uSpendFrac;a.buBalance-=spend;totalBU+=spend;
       if(p.cip&&uCipQuality<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);
@@ -352,7 +386,10 @@ function runYear(agentSet,yr,p,recSt){
       var bTax=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax;
       var progTax=Math.min(CFG.PROG_TAX_MAX,bTax+Math.max(0,(rate-CFG.PROG_PIVOT)*CFG.PROG_RATE));
       var convGain=PATHWAY_OFF.conversion?0:spend*rate*(1-progTax)*cipB*incomeShock;  // v4.21: pathway switch
-      a.wealth+=convGain;totalConversion+=convGain;a.yrConvUSD=convGain;
+      a.wealth+=convGain;totalConversion+=convGain;a.yrConvUSD=convGain;yrCashSurplus+=convGain;
+      if(LEDGER){var lcG=PATHWAY_OFF.conversion?0:spend*rate*cipB*incomeShock,lcT=lcG*progTax,lcI=0;while(lcI<LEDGER_RATE_TIERS.length&&rate>=LEDGER_RATE_TIERS[lcI])lcI++;
+        var lcTier=LEDGER.tiers[lcI];lcTier.bu+=spend;lcTier.gross+=lcG;lcTier.tax+=lcT;lcTier.net+=convGain;lcTier.n++;
+        ledAdd(yr,'buSpent',spend);ledAdd(yr,'convGross',lcG);ledAdd(yr,'convTax',lcT);ledAdd(yr,'convNet',convGain);ledAdd(yr,'convRateXspend',rate*spend);}  // A1 ledger
       if(isNaN(a.wealth))a.wealth=0;
       if(a.octave<p.maxOct){
         var Yusd=a.wage*CFG.WAGE_TO_USD;
@@ -372,13 +409,15 @@ function runYear(agentSet,yr,p,recSt){
       var cfWithoutPTH=cf/0.65;
       var pthSaving=Math.max(0,dollarCost*cfWithoutPTH*(1-0.65));
       var equityContrib=pthSaving*CFG.PTH_EQUITY_CONTRIB_SHARE;
-      a.acreEquity+=equityContrib;a.wealth-=equityContrib;
-      var ar=0.030+uPthAppr*0.020+pthApprBonus;var appr=a.acreEquity*ar,lqs=pthLiquidShare(a.pthTenure);a.acreEquity+=PTH_APPR_CONSERVE?appr*(1-lqs):appr;a.wealth+=appr*lqs;  /* v4.16: PTH_APPR_CONSERVE=false is bit-identical to index.html */
+      a.acreEquity+=equityContrib;a.wealth-=equityContrib;yrCashSurplus-=equityContrib;  // session 1: equity routing is not discretionary cash
+      var ar=0.030+uPthAppr*0.020+pthApprBonus;var appr=a.acreEquity*ar,lqs=pthLiquidShare(a.pthTenure);a.acreEquity+=PTH_APPR_CONSERVE?appr*(1-lqs):appr;a.wealth+=appr*lqs;yrCashSurplus+=appr*lqs;  /* v4.16: PTH_APPR_CONSERVE=false is bit-identical to index.html */
+      if(LEDGER){ledAdd(yr,'pthEquityContrib',equityContrib);ledAdd(yr,'pthAppr',appr);ledAdd(yr,'pthApprLiquid',appr*lqs);}  // A1 ledger
     } else if(a.pthTenure){
       a.pthTenure=0;
     }
     if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&ptfCapAllows()){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap){a.inPTF=true;if(p.ptfCap)ptfLiveCount++;}}
-    if(a.wealth<CFG.WEALTH_FLOOR)a.wealth=CFG.WEALTH_FLOOR;
+    if(SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='cash'){var scC=SURPLUS_CONSUMPTION_SHARE*Math.max(0,yrCashSurplus);a.wealth-=scC;if(LEDGER)ledAdd(yr,'surplusConsumed',scC);}  // session 1: harness-only
+    if(a.wealth<CFG.WEALTH_FLOOR){if(LEDGER){var lfA=CFG.WEALTH_FLOOR-a.wealth;ledAdd(yr,'floor',lfA);ledAdd(yr,'floorHits',1);a._ledFloor=(a._ledFloor||0)+lfA;}a.wealth=CFG.WEALTH_FLOOR;}  // A1 ledger inside the clamp
   });
   return{bu:totalBU,conversion:totalConversion,stabOn:stabOn,stabM:stabM,colaF:colaF,buEff:buEff,emergN:emergN};  // v4.19
 }
@@ -1445,6 +1484,151 @@ if (require.main === module) {
         console.log('   reduction vs matched Baseline at share ' + sh + ': wealth poverty ' + f1((1 - mean(col(fi,'pov'))/mean(col(b0,'pov')))*100) + '%, BLEI poverty ' + f1((1 - mean(col(fi,'bleiPov'))/mean(col(b0,'bleiPov')))*100) + '%');
       });
       SURPLUS_CONSUMPTION_SHARE = 0;
+    }
+  }
+
+  if (mode === 'ledger') {
+    /* A1 issuance ledger (Next Round Plan, Sep 26 2026): `node harness.js ledger <seeds> [section]`.
+     * Reporting only. Sums the money flows runYear() already computes (LEDGER, above) for every current
+     * scenario: per person per year, per participant per year, 20-year cumulative per person, and as a
+     * share of aggregate cash income (wage income + net conversion proceeds, the engine's own income
+     * definition since v4.17). Dollar figures are in year-0 dollars (each year's flow divided by that
+     * year's price index); shares are ratios of nominal sums. Sections: identity (LEDGER on vs off is
+     * bit-identical on every scenario), scenarios, tiers, years, deciles, framework, all. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nLd = parseInt(process.argv[3] || '500', 10), secLd = process.argv[4] || 'all';
+    var SCN = [['Full Integration', FULL_INTEGRATION], ['CCO Only', CCO_ONLY], ['Baseline @3% (shipped comparator)', BASELINE],
+      ['Baseline @0% (matched)', Object.assign({}, BASELINE, {inflRate:0})], ['High Automation (25 yr)', HIGH_AUTOMATION],
+      ['Adverse Environment', ADVERSE_REFERENCE], ['Stress Test', STRESS_TEST]];
+    function ledgerRun(p, seed){  /* draws exactly as runScenario() does; returns the agents for end-of-run stocks */
+      RNG = mulberry32(seed + 700003);
+      var ag = makeLatentPopulation(p.nAgents).map(function(l){ return instantiateAgent(l, p); });
+      var nPTH0 = ag.filter(function(a){ return a.inPTH; }).length;
+      var rp = p.shock ? buildRecessionPath(p.years, seed) : null;
+      RNG = mulberry32(seed);
+      for (var y = 0; y < p.years; y++) runYear(ag, y, p, rp ? rp[y] : {active:false, incomeMultiplier:1.0, yearsLeft:0});
+      return {agents:ag, nPTH0:nPTH0};
+    }
+    function ledgerScenario(p, N){
+      var L = newLedger(), outBU = 0, acre0 = 0, dec = []; for (var q = 0; q < 10; q++) dec.push({floor:0, n:0, w:0, hit:0});
+      LEDGER = L;
+      for (var sd = 1; sd <= N; sd++){
+        var r = ledgerRun(p, sd), ag = r.agents;
+        acre0 += 5000*r.nPTH0;
+        ag.forEach(function(a){ outBU += a.buBalance || 0; });
+        ag.map(function(a, i){ return i; }).sort(function(i, j){ return ag[i].wealth - ag[j].wealth; }).forEach(function(i, rk){
+          var b = dec[Math.min(9, Math.floor(rk/ag.length*10))]; b.floor += ag[i]._ledFloor || 0; b.w += ag[i].wealth; b.n++; if (ag[i]._ledFloor) b.hit++; });
+      }
+      LEDGER = null;
+      return {L:L, real:L.real, outBU:outBU, acre0:acre0, dec:dec, N:N, p:p};
+    }
+    function g(o, k){ return o[k] || 0; }
+    function usd(x){ return (x < 0 ? '−$' : '$') + Math.round(Math.abs(x)).toLocaleString('en-US'); }
+    function pct(x){ return (x*100).toFixed(1) + '%'; }
+    var FLOWS = [
+      ['buIssued', 'BU credited to the balance (engine: one allocation a year)', 'created'],
+      ['buSpent', 'BU spent from the balance (= BU converted)', 'memo'],
+      ['buExpired', 'BU expired unspent (destroyed)', 'memo'],
+      ['ccoRelief', 'CCO cost relief (the engine\'s proxy for BU spent on essentials)', 'created'],
+      ['emergRelief', 'Emergency-enrollment relief (stabilizer; off in every preset)', 'created'],
+      ['convGross', 'Conversion, gross (BU × rate × CIP bonus × income shock)', 'memo'],
+      ['convTax', 'Conversion-tax leakage (credited to no one)', 'memo'],
+      ['convNet', 'Primary currency created by conversion (net of leakage)', 'created'],
+      ['ptfRelief', 'PTF cost reduction (no balance sheet or capital cost in the engine)', 'unfunded'],
+      ['pthRelief', 'PTH cost reduction (no balance sheet or capital cost in the engine)', 'unfunded'],
+      ['pthEquityContrib', 'PTH equity routing (wealth → Acre Equity; an internal transfer)', 'transfer'],
+      ['pthAppr', 'PTH appreciation, total (added to Acre Equity)', 'asset'],
+      ['pthApprLiquid', '… of which credited to liquid wealth', 'asset'],
+      ['floor', 'Wealth-floor absorption (deficits below −$10,000 written off)', 'created'],
+      ['surplusConsumed', 'Memo: surplus consumed (only when SURPLUS_CONSUMPTION_SHARE > 0)', 'memo'],
+      ['wage', 'Memo: wage income', 'memo'],
+      ['cost', 'Memo: basket cost actually paid (after reductions)', 'memo']];
+
+    if (secLd === 'identity' || secLd === 'all'){
+      console.log('=== Ledger on vs off: runScenario() output compared field by field, seeds 1-5, every scenario ===');
+      var allSame = true;
+      SCN.forEach(function(c){ for (var sd = 1; sd <= 5; sd++){ LEDGER = null; var a0 = JSON.stringify(runScenario(c[1], sd)); LEDGER = newLedger(); var a1 = JSON.stringify(runScenario(c[1], sd)); LEDGER = null; if (a0 !== a1){ allSame = false; console.log('  DIFFERS: ' + c[0] + ' seed ' + sd); } } });
+      console.log(allSame ? '  identical in all ' + SCN.length*5 + ' runs' : '  NOT IDENTICAL');
+      if (!allSame) process.exitCode = 1;
+    }
+    var RES = {};
+    function res(c){ return RES[c[0]] || (RES[c[0]] = ledgerScenario(c[1], nLd)); }
+
+    if (secLd === 'scenarios' || secLd === 'all'){
+      SCN.forEach(function(c){
+        var R = res(c), T = R.L.tot, rl = R.real, ay = g(T,'agentYears'), py = g(T,'partYears'), nAg = ay/c[1].years, inc = g(T,'wage') + g(T,'convNet');
+        console.log('\n=== Issuance ledger: ' + c[0] + ' — seeds 1-' + nLd + ', ' + c[1].nAgents + ' agents, ' + c[1].years + ' yr; participants ' + pct(py/ay) + ' of agent-years; year-0 dollars ===');
+        console.log('| Flow | Per person per year | Per participant per year | ' + c[1].years + '-yr cumulative per person | Share of cash income |');
+        console.log('|---|---|---|---|---|');
+        FLOWS.forEach(function(f){ var v = g(rl, f[0]); if (!v && f[2] === 'memo' && f[0] === 'surplusConsumed') return;
+          var pp = ['buIssued','buSpent','buExpired','ccoRelief','convGross','convTax','convNet'].indexOf(f[0]) >= 0 && py > 0 ? usd(v/py) : '—';
+          console.log('| ' + f[1] + ' | ' + usd(v/ay) + ' | ' + pp + ' | ' + usd(v/nAg) + ' | ' + pct(g(T,f[0])/inc) + ' |'); });
+        console.log('| BU outstanding at the end of the run (stock, per participant) | — | ' + (py ? usd(R.outBU/(py/c[1].years)) : '—') + ' | — | — |');
+        console.log('| Acre Equity endowment at year 0 ($5,000 per PTH member; read by no metric) | — | — | ' + usd(R.acre0/nAg) + ' | — |');
+        var created = g(T,'ccoRelief') + g(T,'emergRelief') + g(T,'convNet'), unf = g(T,'ptfRelief') + g(T,'pthRelief');
+        console.log('Summary, shares of cash income: created by program design (CCO relief + conversion) ' + pct(created/inc) + '; unfunded cost reductions (PTF + PTH) ' + pct(unf/inc) + '; PTH liquid appreciation ' + pct(g(T,'pthApprLiquid')/inc) + '; wealth-floor absorption (unfinanced deficits, in every scenario including the Baseline) ' + pct(g(T,'floor')/inc) + '. Floor hit in ' + pct(g(T,'floorHits')/ay) + ' of agent-years. Last seed\'s final price index ' + (R.L.y[c[1].years-1].pIdx || 1).toFixed(3) + '.');
+      });
+    }
+    if (secLd === 'tiers' || secLd === 'all'){
+      ['Full Integration','CCO Only','Adverse Environment','Stress Test'].forEach(function(nm){
+        var c = SCN.filter(function(x){ return x[0] === nm; })[0], R = res(c), tt = R.L.tiers, bu = tt.reduce(function(s,t){ return s + t.bu; }, 0), net = tt.reduce(function(s,t){ return s + t.net; }, 0);
+        console.log('\n=== Conversion by rate tier: ' + nm + ' (all years; nominal) ===');
+        console.log('| Rate tier | Share of conversion events | Share of BU converted | Mean rate | Share of net proceeds | Tax share of gross |');
+        console.log('|---|---|---|---|---|---|');
+        var lab = ['1–1.5×','1.5–3×','3–6×','6–9×','9× and up'], nEv = tt.reduce(function(s,t){ return s + t.n; }, 0);
+        tt.forEach(function(t, i){ console.log('| ' + lab[i] + ' | ' + pct(t.n/nEv) + ' | ' + pct(t.bu/bu) + ' | ' + (t.bu ? (t.gross/t.bu).toFixed(2) + '×' : '—') + ' | ' + pct(t.net/net) + ' | ' + (t.gross ? pct(t.tax/t.gross) : '—') + ' |'); });
+        console.log('Mean rate across all BU converted (rate × BU ÷ BU): ' + (g(R.L.tot,'convRateXspend')/g(R.L.tot,'buSpent')).toFixed(2) + '×; net proceeds per BU converted: ' + (net/bu).toFixed(2));
+      });
+    }
+    if (secLd === 'years' || secLd === 'all'){
+      ['Full Integration','Adverse Environment'].forEach(function(nm){
+        var c = SCN.filter(function(x){ return x[0] === nm; })[0], R = res(c);
+        console.log('\n=== By year: ' + nm + ' (share of that year\'s cash income; mean conversion rate) ===');
+        console.log('| Year | CCO relief | Conversion (net) | Floor absorption | All created | Mean rate | Floor hits |');
+        console.log('|---|---|---|---|---|---|---|');
+        [0,4,9,14,19].forEach(function(y){ var Y = R.L.y[y], inc = g(Y,'wage') + g(Y,'convNet');
+          console.log('| ' + (y+1) + ' | ' + pct(g(Y,'ccoRelief')/inc) + ' | ' + pct(g(Y,'convNet')/inc) + ' | ' + pct(g(Y,'floor')/inc) + ' | ' + pct((g(Y,'ccoRelief')+g(Y,'emergRelief')+g(Y,'convNet')+g(Y,'floor'))/inc) + ' | ' + (g(Y,'buSpent') ? (g(Y,'convRateXspend')/g(Y,'buSpent')).toFixed(2) + '×' : '—') + ' | ' + pct(g(Y,'floorHits')/g(Y,'agentYears')) + ' |'); });
+      });
+    }
+    if (secLd === 'deciles' || secLd === 'all'){
+      console.log('\n=== Wealth-floor absorption by final-wealth decile (per agent, 20-yr total, nominal) ===');
+      console.log('| Decile | ' + ['Full Integration','CCO Only','Baseline @0% (matched)','Baseline @3% (shipped comparator)'].join(' | ') + ' |');
+      console.log('|---|---|---|---|---|');
+      var DS = ['Full Integration','CCO Only','Baseline @0% (matched)','Baseline @3% (shipped comparator)'].map(function(nm){ return res(SCN.filter(function(x){ return x[0] === nm; })[0]); });
+      for (var q2 = 0; q2 < 10; q2++) console.log('| D' + (q2+1) + ' | ' + DS.map(function(R){ var b = R.dec[q2]; return usd(b.floor/b.n) + ' (' + pct(b.hit/b.n) + ' hit)'; }).join(' | ') + ' |');
+    }
+    if (secLd === 'consume'){
+      /* The consumption-rule decision (v4.21, open): what each rule does to saving, to spending out of the flows the
+       * system creates, to the floor, and to the headline figures. Paired seeds; not part of `all` (it reruns). */
+      console.log('\n=== Consumption rule: seeds 1-' + nLd + ', ' + AG + ' agents, 20 yr (shares of cash income = wage + net conversion) ===');
+      console.log('| Scenario | Rule | Saving rate, deficits as dissaving | Saving rate, floor write-offs as unmet need | Surplus consumed (share of income) | Floor absorption | Wealth poverty | BLEI poverty | Basket poverty | Median wealth |');
+      console.log('|---|---|---|---|---|---|---|---|---|---|');
+      var RULES = [[0,'wage','shipped: consume the basket, save the rest'],[0.5,'wage','v4.21 sweep: 0.5 of wage surplus'],[0.9,'wage','v4.21 sweep: 0.9 of wage surplus'],[0.5,'cash','0.5 of all cash surplus'],[0.75,'cash','0.75 of all cash surplus'],[0.9,'cash','0.9 of all cash surplus'],[0.95,'cash','0.95 of all cash surplus']];
+      [['Full Integration', FULL_INTEGRATION], ['Baseline @0% (matched)', Object.assign({}, BASELINE, {inflRate:0})], ['Baseline @3% (shipped comparator)', BASELINE], ['Adverse Environment', ADVERSE_REFERENCE]].forEach(function(c){
+        RULES.forEach(function(ru){
+          SURPLUS_CONSUMPTION_SHARE = ru[0]; SURPLUS_CONSUMPTION_BASE = ru[1]; LEDGER = newLedger();
+          var rs = []; for (var sd = 1; sd <= nLd; sd++) rs.push(runScenario(c[1], sd));
+          var T = LEDGER.tot; LEDGER = null; SURPLUS_CONSUMPTION_SHARE = 0; SURPLUS_CONSUMPTION_BASE = 'wage';
+          var inc = g(T,'wage') + g(T,'convNet'), cons = g(T,'surplusConsumed');
+          var sr1 = (inc - g(T,'cost') - cons + g(T,'pthApprLiquid'))/inc, sr2 = (inc - (g(T,'cost') - g(T,'floor')) - cons + g(T,'pthApprLiquid'))/inc;
+          function m(k){ return rs.reduce(function(a, r){ return a + r[k]; }, 0)/rs.length; }
+          console.log('| ' + c[0] + ' | ' + ru[2] + ' | ' + pct(sr1) + ' | ' + pct(sr2) + ' | ' + pct(cons/inc) + ' | ' + pct(g(T,'floor')/inc) + ' | ' + m('pov').toFixed(1) + '% | ' + m('bleiPovPct').toFixed(1) + '% | ' + m('basketPov').toFixed(1) + '% | ' + usd(m('wealth')) + ' |');
+        });
+      });
+    }
+    if (secLd === 'framework' || secLd === 'all'){
+      /* Derived, not simulated: the engine converts one allocation a year and nothing it counts as essentials
+       * spending. The Research Hub describes businesses and creators converting every BU they accept. */
+      var R2 = res(SCN[0]), T2 = R2.L.tot, py2 = g(T2,'partYears'), inc2 = g(T2,'wage') + g(T2,'convNet'), mr = g(T2,'convRateXspend')/g(T2,'buSpent'), taxS = g(T2,'convTax')/g(T2,'convGross');
+      var reliefPP = g(T2,'ccoRelief')/py2, fwBU = FULL_INTEGRATION.bu*12;
+      console.log('\n=== Derived scale check (Full Integration; arithmetic on the ledger, not a simulation result) ===');
+      console.log('Framework issuance at $' + FULL_INTEGRATION.bu + '/month: ' + usd(fwBU) + ' per participant per year.');
+      console.log('Engine: relief ' + usd(reliefPP) + ' + balance credit ' + usd(g(T2,'buIssued')/py2) + ' = ' + usd(reliefPP + g(T2,'buIssued')/py2) + ' per participant per year (' + pct((reliefPP + g(T2,'buIssued')/py2)/fwBU) + ' of framework issuance).');
+      console.log('Engine conversion creates ' + usd(g(T2,'convNet')/py2) + ' per participant per year (' + pct(g(T2,'convNet')/inc2) + ' of cash income).');
+      [['every BU issued, at par (1×)', fwBU, 1], ['every BU issued, at the engine\'s mean participant rate', fwBU, mr], ['the relief-BU only, at par', reliefPP, 1], ['the relief-BU only, at the engine\'s mean rate', reliefPP, mr]].forEach(function(z){
+        var cr = z[1]*z[2]*(1-taxS);
+        console.log('If receivers converted ' + z[0] + ' (' + z[2].toFixed(2) + '×, less the engine\'s ' + pct(taxS) + ' average tax): ' + usd(cr) + ' per participant per year, ' + pct(cr*py2/inc2) + ' of cash income.');
+      });
     }
   }
 
