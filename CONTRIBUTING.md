@@ -43,7 +43,7 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 v4.20 answers three external audits of v4.19 (Grok, Claude Sonnet and ChatGPT, run from the same prompt), checked claim by claim, plus an internal audit. **Duke signed off on the four decisions they raised**: recalibrating `automationRisk`, CI with jsdom as a dev dependency, the engine-split question, and tagged releases. Each is below, with the path taken.
 
-**The seed-42/Full Integration/20yr regression moves, once, by design** (1,965d · $559,223 · 0.534 · 16.6% · 88.5% → **1,975d · $570,661 · 0.518 · 15.8% · 88.8%**). The cause is the sampler change in the first section: the same population statistics, a different random realisation. At N=500 Full Integration is unchanged within noise. `harness.js validate` now asserts both the new figures and that a legacy switch reproduces v4.19 exactly. `domtest.js`, now 77 checks, passes in full; the 9 new Phase 8 checks each fail against an unmodified v4.19 page, without throwing.
+**The seed-42/Full Integration/20yr regression moves, once, by design** (1,965d · $559,223 · 0.534 · 16.6% · 88.5% → **1,975d · $570,661 · 0.518 · 15.8% · 88.8%**). The cause is the sampler change in the first section: the same population statistics, a different random realisation. At N=500 Full Integration is unchanged within noise. `harness.js validate` now asserts both the new figures and that a legacy switch reproduces v4.19 exactly. `domtest.js`, now 78 checks, passes in full; the 10 new Phase 8 checks each fail against an unmodified v4.19 page, without throwing.
 
 ### automationRisk: recalibrated, and decoupled from the rest of agent construction
 
@@ -116,6 +116,27 @@ The claim is about the same people, and the two arms are common-random-numbers p
 - **Staleness (Sonnet).** `harness.js`'s header gains the v4.19 entry it lacked. This file's signature line said v4.16, and Code Contributions said "56 checks as of v4.18". `harness.js validate` labelled its figures "v4.5/v4.6/v4.7".
 - **README (internal).** Its licence section still read "Released under CC BY 4.0" for everything, stale since the v4.8 split; it now states the split, and its citation matches `META.CITATION`.
 
+### Found by the first CI run: a race in `domtest.js` since v4.13
+
+The first GitHub Actions run failed two Phase 7 checks that pass here on every Node version tried, including the runner's (22.23.3). The failing check's own output gave the cause. The page reported the seed-42 **Full Integration** figures ($570,661; CCO Only $427,239) where an **Adverse Environment** run was expected (harness: $262,968).
+
+- **The false premise.** `domtest.js`'s header said the page is evaluated after jsdom's DOMContentLoaded and load events have fired, so the page's auto-run never starts. That was never true: at evaluation `readyState` is still "loading", and both events fire afterwards.
+- **What that caused.** The page's DOMContentLoaded handler re-applied the reference preset, and its load handler started the seed-42 reference run 300ms later.
+- **Why it only failed on CI.** Here, Phase 7's run was still going at 300ms, so the page's own guard ignored the auto-run. On the faster runner, the run finished first and the auto-run replaced its results. The second failure, the exports check, followed from the first.
+- **Scope.** Every check since v4.13 ran in the same kind of window, so the race was latent from then. It surfaced now because v4.20's runs are fast enough to beat 300ms on a GitHub runner.
+
+`makeWindow()` now never registers the page's load handler, and runs its DOMContentLoaded handler only when a check dispatches that event itself, as Phases 5 and 8 already do. A new Phase 8 check fails if a test window's auto-run ever fires. **No page code changed for this;** the page behaves as intended in a browser, where the auto-run is the reference run readers see on opening it.
+
+### The Automatic Stabilizers panel, reworded (Duke's request)
+
+Display text only.
+
+- **The panel.** A one-line introduction now says what the panel is, and that every lever is off by default and needs recessions or inflation switched on.
+- **Labels.** Each label says what the control does, e.g. "Raise BU during recessions", "How the raise is set", "Trigger: smallest income loss that counts".
+- **Hints.** Each hint says when the control acts and what its default means, e.g. "×1.35 means BU is 35% higher in a triggered year".
+- **COLA spelled out.** It reads "cost-of-living adjustment (COLA)" in the panel, its tooltip, the run warning, the run-configuration line and the Shock Response card.
+- **What did not change.** Control ids, URL parameters, CSV row labels and JSON keys, so shared links and parsers keep working.
+
 ### The four decisions, and the path taken
 
 1. **automationRisk:** recalibrated and resampled, as above.
@@ -152,7 +173,7 @@ The claim is about the same people, and the two arms are common-random-numbers p
 
 - **`harness.js validate`** asserts eight figures for v4.20, and the same eight for v4.19 under `AUTOMATION_SAMPLER_LEGACY` at weight 0.47.
 - **`harness.js unit`**: 11 tests run; four are skipped because those functions exist only in the page.
-- **`domtest.js` Phase 8 (9 checks):**
+- **`domtest.js` Phase 8 (10 checks):**
   - accessible names;
   - tooltip reachability, and idempotent initialisation;
   - `aria-valuetext`;
@@ -161,7 +182,8 @@ The claim is about the same people, and the two arms are common-random-numbers p
   - all 15 unit tests against the page;
   - source parity, and identical `drawAutomationRisk()` sequences;
   - agent construction independent of the weight;
-  - the paired non-participant check.
+  - the paired non-participant check;
+  - a test window never starts the page's load-time reference run (see "Found by the first CI run", below).
 - **Earlier phases.** Phase 2's and Phase 4's pinned seed-42 figures moved with the regression, including the inflation-matched Baseline ($49,876 / 48.2%; v4.19 $13,612 / 50.8%). Phase 3's six internal-consistency checks pass.
 - **Stabilizer defaults rechecked.** `node harness.js stabilizer 300 neutral` gives:
 
@@ -1995,7 +2017,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. If you change a function that exists in both `index.html` and `harness.js`, change both identically: `domtest.js` Phase 8 compares their source (comments and whitespace ignored) and fails on any drift outside five listed, intentional differences. If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (77 checks as of v4.20) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (78 checks as of v4.20) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -2003,7 +2025,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 **Good first issues:**
 
-- **Done in v4.20** (see Release Notes, above): recalibrated `automationRisk` to Frey & Osborne's 702 occupations weighted by employment (every row of the `plotly/datasets` file checked against the paper's appendix), and sampled it by inverse CDF so the weight no longer re-streams agent construction; made the non-participant validation check paired; gave every slider, toggle group and the seed field an accessible name, made every tooltip keyboard-reachable and exposed to screen readers, and restored a slider focus ring; fixed the shared-link seed readout; added `unitSuite()` (15 pure-function and property tests, run against both `harness.js` and the page) — the pure-function layer of v4.12 item (a); added a page/harness source-parity check; made `harness.js validate` assert; added CI and `package.json`; corrected the LHS export's Sobol/Morris claim; fixed the README's licence statement. `domtest.js` gained nine checks (77 total), each failing against v4.19.
+- **Done in v4.20** (see Release Notes, above): recalibrated `automationRisk` to Frey & Osborne's 702 occupations weighted by employment (every row of the `plotly/datasets` file checked against the paper's appendix), and sampled it by inverse CDF so the weight no longer re-streams agent construction; made the non-participant validation check paired; gave every slider, toggle group and the seed field an accessible name, made every tooltip keyboard-reachable and exposed to screen readers, and restored a slider focus ring; fixed the shared-link seed readout; added `unitSuite()` (15 pure-function and property tests, run against both `harness.js` and the page) — the pure-function layer of v4.12 item (a); added a page/harness source-parity check; made `harness.js validate` assert; added CI and `package.json`; corrected the LHS export's Sobol/Morris claim; fixed the README's licence statement. `domtest.js` gained ten checks (78 total), each failing against v4.19.
 - **Done in v4.18** (see Release Notes, above): added extreme poverty (homeless; necessities via charity, if at all) as a fifth poverty measure, an expected-share overlay from economic, serious-mental-illness and voluntary pathways, reported per 10,000 against year 0 and the Baseline in the card, both exports and a new `harness.js extreme` mode; restyled the poverty card to the page's scenario colours; repaired three v4.17 `domtest.js` checks, one of which had never exercised the version-label fill it guarded; filled the tab title from `META`; verified v4.17's poverty-card and preset-grid layout in headless Chromium.
 - **Done in v4.17** (see Release Notes, above): fixed three bugs — hardcoded v4.15 version labels (now read from `META.VERSION`), BU Expiry missing from every CSV export, and an inert PTF column in the LHS design whenever the page's PTF toggle was off — and restored `harness.js`'s `structuralStability()` parity. Added relative income and living-wage basket poverty, each reported against year 0 as well as the Baseline, in a new card and both exports. Added an Adverse Environment preset separating environmental stress from weaker settings. Ported recessions to `harness.js` (bit-identical to the page at seed 42) with `headline`, `year0`, `stress` and `participation` modes. Disclosed that the papers' 98% headline is not produced by the engine and that two-thirds of agents start below the living-wage basket. Relabelled the 55% participation threshold and θ's density gate as a design reference and a proxy. `domtest.js` gained ten checks (48 total), each confirmed to fail against v4.16.
 - **Done in v4.16** (see Release Notes, above): fixed a reproducibility bug — a seeded run started while the previous run's attribution ablation or the validation suite was still computing drew from the wrong stream (seed 42: $545,506 / $555,354 vs $559,223), now isolated at every asynchronous boundary; disclosed and measured the Baseline comparison's inflation mismatch (fixed 3% vs the slider's 0%; ~24–38% of the headline poverty gap) and added an opt-in, off-by-default toggle to match them, with the default logged as a decision; enumerated `runYear()`'s annual schedule (v4.14 item (e)) into a new ODD Process Overview & Scheduling card; paired the validation suite's benefit check and extended its invariants check with determinism, eight-draws-per-agent-year, BU/equity/λ bounds and PTF-cap assertions (item (f)); corrected three documentation claims against the code (a stale `SIU_TO_USD` comment in `runYear()`, recession's scope, the PTH appreciation accounting) and measured the PTH alternative as a second decision; added `infl-match` and `pth-accounting` modes to `harness.js`. `domtest.js` gained nine checks (38 total), each verified to fail against an unmodified v4.15 page.

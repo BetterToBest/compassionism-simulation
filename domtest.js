@@ -38,9 +38,13 @@
  * no canvas). Those still need a human look at a few zoom levels and widths
  * after deploying. Do not read a green run here as "the UI is verified."
  *
- * The page is loaded with runScripts:'outside-only' so DOMContentLoaded and
- * load have already fired before the script is evaluated — the page's own
- * auto-run never triggers, and every function is exercised deliberately.
+ * The page is loaded with runScripts:'outside-only' and its script evaluated
+ * by makeWindow(). v4.20 correction: this said DOMContentLoaded and load had
+ * already fired by then, so the page's auto-run never triggered. They had
+ * not, and on a fast machine the auto-run raced the checks (see makeWindow).
+ * makeWindow() now drops the page's load handler and runs its DOMContentLoaded
+ * handler only when a check dispatches that event, so every function is
+ * exercised deliberately, at any machine speed.
  *
  * v4.14 additions: regression guards for two mechanics bugs an external audit
  * found in runYear() — the BU-expiry slider collapsing every value 2-6 into
@@ -80,7 +84,8 @@
  * own functions (including the five that exist only in the page), source parity between the page
  * and harness.js for every function they share, the recalibrated automationRisk sampler (two
  * draws, and agent construction no longer depending on the high-risk share), and the paired
- * non-participant validation check. v4.20 also moved the seed-42 regression once (automationRisk
+ * non-participant validation check, and that a test window never starts the page's load-time
+ * reference run (a race the first CI run exposed; see makeWindow). v4.20 also moved the seed-42 regression once (automationRisk
  * sampler and share; see CONTRIBUTING.md v4.20), so Phase 2 and Phase 4's pinned figures moved.
  * Phase 4 (v4.16) reproduces a reproducibility bug the v4.16 audit found: a seed-42 run started
  * while the previous run's attribution ablation, or the validation suite, was still computing
@@ -118,7 +123,23 @@ function makeWindow(query) {
   w.HTMLCanvasElement.prototype.getContext = function () { return {}; };
   const inline = [...w.document.querySelectorAll('script')].filter(s => !s.src && !s.type);
   if (inline.length !== 1) throw new Error('expected exactly 1 inline JS script, found ' + inline.length);
+  /* v4.20 fix: jsdom fires the document's own DOMContentLoaded and load events AFTER this eval
+   * (readyState is still 'loading' here), so the page's handlers used to run on their own: the
+   * DOMContentLoaded handler re-applied the reference preset, and the load handler started the
+   * seed-42 reference run 300ms later. Whether that auto-run overwrote a test's results depended
+   * on machine speed: on the first CI runner, Phase 7's Adverse Environment run finished inside
+   * 300ms and was replaced by the reference run (page $570,661 against harness $262,968). The
+   * header comment's premise, "load has already fired", was never true. The page's load handler
+   * (the auto-run) is now never registered, and its DOMContentLoaded handler runs only when a
+   * check dispatches the event itself (isTrusted false), as Phases 5 and 8 do. */
+  const addEL = w.addEventListener.bind(w);
+  w.addEventListener = function (type, fn, opts) {
+    if (type === 'load') return;
+    if (type === 'DOMContentLoaded') return addEL(type, function (e) { if (!e.isTrusted) return fn.call(this, e); }, opts);
+    return addEL(type, fn, opts);
+  };
   w.eval(inline[0].textContent);
+  w.addEventListener = addEL;
   return w;
 }
 
@@ -661,6 +682,9 @@ function phase8(done) {
   const nameOf = el => { const ids = (el.getAttribute('aria-labelledby') || '').split(/\s+/).filter(Boolean);
     return ids.map(id => txt($(id))).join(' ').trim() || (el.getAttribute('aria-label') || '').trim(); };
 
+  // 8-0. the page's own load-time run never fires inside a test window (the v4.20 CI failure)
+  const wq = makeWindow();
+    // checked at the end of this phase, after other synchronous work has given jsdom time to fire its events
   // 8a. accessible names
   const sliders = [...d.querySelectorAll('input[type="range"]')], groups = [...d.querySelectorAll('.tg')];
   const cnOf = el => { const cr = el.closest('.cr'); const cn = cr && cr.querySelector('.cn'); if (!cn) return '';
@@ -748,5 +772,10 @@ function phase8(done) {
   const worst = rnp ? parseFloat((rnp.detail.match(/largest difference ([+-]?[\d.]+)pp/) || [])[1]) : NaN;
   check('v4.20: the non-participant check compares the same people in both arms, and passes with room',
     !!rnp && rnp.pass && /paired/.test(rnp.detail) && worst <= 0, rnp ? rnp.detail : 'missing');
-  done();
+  setTimeout(() => {
+    check('v4.20: a test window never starts the page\'s load-time reference run, whatever the machine speed (the first CI run failed on this race)',
+      wq.document.readyState === 'complete' && !wq.SIM_RESULTS && !wq.running,
+      'readyState ' + wq.document.readyState + ', results ' + (wq.SIM_RESULTS ? 'present (auto-run fired)' : 'none') + ' after 1.5 s');
+    done();
+  }, 1500);
 }
