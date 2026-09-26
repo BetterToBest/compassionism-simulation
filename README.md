@@ -66,6 +66,8 @@ node harness.js unit     # pure-function tests
 node domtest.js          # drives index.html in a headless DOM (a few minutes)
 ```
 
+Every `harness.js` study mode also accepts `--agents=N`, the population per run (default 500). For example, `node harness.js largen 500 headline --agents=5000` reruns the headline figures at 5,000 agents per run, in about five minutes on one CPU core.
+
 The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see.
 
 ---

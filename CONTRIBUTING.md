@@ -29,6 +29,8 @@ The **Full Integration** preset (seed 42, 20 years) serves as the illustrative r
 | Simulation years | 20 | Two decades captures full automation wave |
 | Seed | 42 | Fixed for reproducibility; labeled "illustrative reference" |
 
+**v4.21:** no reference value changed, and the seed-42 figures did not move. CCO's cost relief now reads BU in year-0 dollars, which changes only runs with inflation on (Adverse Environment, Stress Test). A 5,000-agent study confirms the headline figures. See v4.21 Release Notes.
+
 **v4.20:** no reference value changed, but the seed-42 figures did, once: `automationRisk` is now sampled with a fixed number of draws, and its high-risk weight is 0.63 (was 0.47). See v4.20 Release Notes.
 
 **v4.19:** the automatic stabilizers (recession BU increase, suspended expiry, emergency enrollment, COLA) are off in every preset. CCO's cost relief now scales with BU; at the $1,200 reference it is the same 20% as before.
@@ -36,6 +38,274 @@ The **Full Integration** preset (seed 42, 20 years) serves as the illustrative r
 **v4.17:** a sixth preset, **Adverse Environment**, runs these settings unchanged under recessions, 2% inflation and AI automation — the environment the Stress Test preset uses, without its weaker settings.
 
 The label "Reference" (not "Optimal") reflects that these are calibrated starting points for exploration — the solution space around them is what the simulation is designed to map.
+
+---
+
+## v4.21 Release Notes
+
+v4.21 investigates the v4.19–v4.20 figures that read counter-intuitively, fixes the one bug that turned up, and reruns the headline figures with ten times the population per run. It also closes three open items.
+
+**The seed-42/Full Integration/20yr regression is unchanged** (1,975d · $570,661 · 0.518 · 15.8% · 88.8%). The fix acts only where inflation and CCO are both on: Adverse Environment and Stress Test move, and every 0%-inflation preset is bit-identical. `harness.js validate` now asserts all six presets at seed 42, and that a legacy switch reproduces v4.20's two inflation presets. `domtest.js`, now 82 checks, passes in full; the 4 new Phase 9 checks each fail against v4.20.
+
+**Flagged as a decision:** the relief fix below is applied, with v4.20's rule kept behind `RELIEF_PRICE_LEGACY` in `harness.js`. It changes every figure from a run with inflation, including the published Adverse Environment and COLA tables.
+
+### The bug: CCO relief under inflation
+
+v4.19 made CCO's cost relief scale with BU: 20% of the basket at $1,200 (Option B). The $1,200 is a year-0 amount. The rule compared nominal BU with it and applied the resulting share to the nominal basket, which already rises with prices. Two errors followed:
+
+- **Without COLA, the relief kept its full real value.** It stayed a flat 20% of a basket that grows with prices. The v4.19 notes and the COLA tooltip said an unindexed BU erodes; in the relief channel, which carries most of BU's value, it did not.
+- **With COLA, inflation was counted twice.** The indexed BU raised the share itself, to 20% × the price index.
+
+The share now reads BU in year-0 dollars: effective BU divided by the price index that `mainLoopCostUSD` and COLA already use. Relief dollars are then proportional to nominal BU. At 0% inflation the index is exactly 1.
+
+Relief share of the basket for a participant outside PTF and PTH (Adverse Environment settings, recessions off, seed 1; `node harness.js v421 200 relief`):
+
+| | Year 1 | Year 5 | Year 10 | Year 15 | Year 20 |
+|---|---|---|---|---|---|
+| v4.20, no COLA | 20.0% | 20.0% | 20.0% | 20.0% | 20.0% |
+| v4.20, COLA | 20.0% | 21.4% | 23.1% | 24.8% | 26.3% |
+| **v4.21, no COLA** | 20.0% | 18.7% | 17.3% | 16.1% | **15.2%** |
+| **v4.21, COLA** | 20.0% | 20.0% | 20.0% | 20.0% | **20.0%** |
+
+**What moved** (seeds 1–500, 500 agents, final year; v4.20 from its release notes or `RELIEF_PRICE_LEGACY`):
+
+| Scenario | Wealth poverty | BLEI poverty | Median wealth | Median BLEI |
+|---|---|---|---|---|
+| Adverse Environment, v4.20 | 38.42% | 34.92% | $169,911 | 606d |
+| **Adverse Environment, v4.21** | **40.33%** | **36.63%** | **$146,364** | **526d** |
+| Stress Test, v4.20 | 61.18% | 59.14% | −$10,000 | 16d |
+| **Stress Test, v4.21** | **62.00%** | **59.90%** | −$10,000 | 16d |
+| CCO Only, adverse environment, v4.20 | 53.50% | 51.87% | −$2,175 | 38d |
+| **CCO Only, adverse environment, v4.21** | **56.26%** | **54.64%** | **−$8,916** | **26d** |
+| Full Integration at 3%, v4.20 | 28.84% | 25.88% | $343,488 | — |
+| **Full Integration at 3%, v4.21** | **31.13%** | **27.46%** | **$306,660** | 1,079d |
+
+The last pair feeds the headline table's "both at 3%" comparator, which falls from 59.7% / 63.3% (wealth / BLEI poverty) to 56.5% / 61.0%.
+
+**COLA, redone** (seeds 1–200, 500 agents, wealth poverty, final year; `node harness.js v421 200 relief`):
+
+| Scenario | v4.20: no COLA → COLA | COLA's gain | v4.21: no COLA → COLA | COLA's gain |
+|---|---|---|---|---|
+| Adverse Environment (2%) | 38.49% → 35.30% | −3.19 pp | 40.38% → 37.72% | −2.66 pp |
+| Adverse Environment at 5% | 55.51% → 44.62% | −10.89 pp | 60.01% → 53.50% | −6.51 pp |
+| Full Integration at 5.5% | 42.14% → 30.37% | −11.77 pp | 47.04% → 40.09% | −6.95 pp |
+
+v4.19's COLA table overstated COLA's benefit by about 20% at 2% inflation and about 70% at 5–5.5%. Without COLA, outcomes are also worse than it reported, because BU now loses real value as the notes said it did.
+
+**Stabilizer defaults, rechecked** (`node harness.js stabilizer 300 neutral`):
+
+| Environment | Participants' excess, no stabilizer | After the hub's ×1.20 | Shock-neutral multiplier |
+|---|---|---|---|
+| Full Integration + recessions | 3.08 pp | 1.49 pp | ×1.35 (unchanged) |
+| Adverse Environment | 2.31 pp | 1.19 pp | **×1.40** (v4.20: ×1.35) |
+| CCO Only + recessions | 4.00 pp | 2.01 pp | ×1.35 (unchanged) |
+| Stress Test | 2.46 pp | 1.64 pp | **×1.55**, ×1.57 unrounded (v4.20: ×1.50) |
+
+Without COLA, each step of the multiplier buys less real relief as prices rise, so the two inflation environments need more. At 5,000 agents and 100 seeds Stress Test's unrounded value is ×1.58, which rounds to ×1.60; the two agree within their seed noise. `STAB_NEUTRAL_MULT` and `STAB_NEUTRAL_K` are calibrated to the reference settings at 0% inflation, and stand.
+
+### Why several figures read counter-intuitively
+
+`node harness.js v421 200 <section>` reproduces every table in this section (seeds 1–200, 500 agents).
+
+**1. BLEI poverty "ends above year 0" (12.4% against 10.3%).** It rises and then falls, and year 20 sits on the way down (section `hump`):
+
+| Year | 0 | 1 | 3 | 5 | 7 | 10 | 15 | 20 | 24 | 30 | 40 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| BLEI poverty (policy-neutral rules) | 10.3% | 13.4% | 19.8% | 22.0% | 22.6% | 21.8% | 18.1% | 13.4% | 10.2% | 6.7% | 3.3% |
+| … CCO participants (scenario rules) | 0.5% | 6.5% | 13.0% | 15.5% | 16.1% | 15.3% | 11.4% | 7.1% | 4.6% | 2.2% | 0.5% |
+| … non-participants | 9.5% | 20.1% | 31.4% | 35.8% | 37.6% | 38.0% | 35.8% | 31.4% | 27.2% | 21.1% | 12.5% |
+
+- **The cause is the calibration logged in v4.17.** Two-thirds of agents start with wage income below the basket, the model has no consumption response, and deficits run straight to the floor. Wages then grow 1–3% a year and flows turn positive. BLEI poverty peaks around year 7 and returns to its year-0 level at year 24.
+- **The year-20 BLEI-poor are mostly different people from the year-0 BLEI-poor.** 1.8% of agents are poor at both points; 8.4% only at year 0; 10.7% only at year 20. Year-0 BLEI poverty is low starting wealth, drawn independently of wage. Year-20 BLEI poverty is a persistent deficit: 73% of the year-20 poor are at the wealth floor, and 77% ran a cash deficit that year.
+- **By group at year 20:** non-participants outside PTH 36.5% (contributing 6.5 of the 12.5 points); CCO participants outside PTH 8.9% (5.6 points); non-participants in PTH 11.1% (0.5 points); CCO participants in PTH **0.0%**.
+- **The 0.0% is by construction.** `agentBLEI()` adds one month of BU's food value ($990 at $1,200) and divides by the CCO+PTH daily cost ($31.67): 31.3 days, above the 30-day line, whatever the member's wealth or wage. It holds at any BU from $1,152. This follows the BLEI paper's definition, which counts a month of flows toward coverage, and is now disclosed in Known Limitations.
+
+**2. Median wealth of about $530,000.** Agents spend exactly their own (discounted) basket, so every dollar above it is saved (section `decile` of `node harness.js saving 200`):
+
+| Final-wealth decile | Wage income, 20 yr | Basket cost, 20 yr | Final wealth | 20-yr saving rate |
+|---|---|---|---|---|
+| D1 | $510,730 | $852,844 | −$9,687 | −60% |
+| D3 | $804,410 | $753,117 | $160,611 | 12% |
+| D5 | $1,062,792 | $726,459 | $454,921 | 35% |
+| D8 | $1,564,582 | $704,540 | $1,002,793 | 57% |
+| D10 | $2,661,219 | $691,852 | $2,151,221 | 75% |
+
+Across the population the 20-year saving rate is 43.8%. The US personal saving rate averaged 3.4–5.6% a year in 2022–2025 (BEA, FRED series PSAVERT; a share of disposable income, where this engine has no taxes). Basket cost barely varies across deciles, so income differences pass almost entirely into wealth. Two side effects: the bottom decile's deficits (about $259,000 per agent over 20 years) are absorbed by the wealth floor, and long-horizon wealth grows without bound (logged in v4.6).
+
+Consuming a share of the surplus above the basket (`SURPLUS_CONSUMPTION_SHARE`, harness-only; section `sweep`):
+
+| Share consumed | FI saving rate | FI wealth poverty | FI BLEI poverty | FI median wealth | Reduction vs matched Baseline (wealth / BLEI) |
+|---|---|---|---|---|---|
+| 0 (shipped) | 43.8% | 15.3% | 12.5% | $528,341 | 69.5% / 74.4% |
+| 0.50 | 21.7% | 16.8% | 13.2% | $321,474 | 67.5% / 73.7% |
+| 0.75 | 10.6% | 18.1% | 14.0% | $212,227 | 65.7% / 72.7% |
+| 0.90 | 4.0% | 19.6% | 14.7% | $139,516 | 64.2% / 71.7% |
+
+**The poverty findings are robust to this assumption; the wealth levels are not.** At a saving rate in the observed range, median wealth falls by three-quarters while the reduction against the matched Baseline falls by about five points. Agents near the poverty lines have little surplus, so how the surplus is spent barely reaches them. Basket poverty does not move, because it compares income with the basket. A consumption rule is logged as a decision below.
+
+**3. Recessions add less housing distress in harsher environments** (participants: Adverse Environment 2.31 pp and Stress Test 2.46 pp, against 3.08 pp for Full Integration; `stabilizer 300 neutral`). Outcomes are bimodal, and in a harsher environment more participants are already in distress, so fewer are within reach of the line (section `margin`):
+
+| Environment | Participants in distress, no recession | Within one recession of distress | Excess distress | Excess ÷ calm distress |
+|---|---|---|---|---|
+| Full Integration + recessions | 10.6% | 2.5% | 3.05 pp | 29% |
+| CCO Only + recessions | 16.5% | 3.2% | 4.01 pp | 24% |
+| Adverse Environment | 23.2% | 1.3% | 2.24 pp | 10% |
+| Stress Test | 35.4% | 1.1% | 2.38 pp | 7% |
+
+Excess distress in points measures how many people a recession tips over the line, not how hard an environment is. The stabilizer studies use it correctly, as the target a stabilizer must offset.
+
+**4. The shock-neutral multiplier is ×1.35 in every $1,200 environment, and ×1.50 at $900.** Neutrality takes a roughly fixed amount of extra relief, about 6–8% of the basket, whatever the environment (section `neutralbu`, Full Integration + recessions):
+
+| BU | No stabilizer | Neutral multiplier (unrounded) | Extra BU at neutrality | Extra relief |
+|---|---|---|---|---|
+| $900 | 3.59 pp | ×1.520 | $468/month | 7.8% of the basket |
+| $1,200 | 3.05 pp | ×1.366 | $439/month | 7.3% |
+| $1,500 | 2.51 pp | ×1.263 | $395/month | 6.6% |
+| $1,800 | 1.80 pp | ×1.207 | $373/month | 6.2% |
+
+The recession-depth distribution and the relief per BU dollar are the same in every environment; the environment changes only how many participants sit at the margin. That scales the excess and the offset together, so the neutral point stays put. A smaller BU needs a larger multiplier to supply the same dollars.
+
+**5. Stabilizers that leave recession years better than calm ones** (participants at ×1.50: −1.43 pp; non-participants with emergency enrollment at 100% take-up: −8.38 pp, both from v4.19). This is arithmetic, not a defect. At ×1.35 the relief is 27% of the basket, about $13,300 a year at year-0 prices; a typical engine recession cuts income by about 12%, about $4,800 for a median earner. With no price response and no budget constraint, a transfer larger than the loss makes the recession year better. Emergency enrollment also reaches every eligible non-participant, not only those who lost income.
+
+**6. Seed 42's High Automation poverty fell in v4.20 (28.8% → 27.8%) although automation risk rose.** Two steps were folded into one row (section `ha42`): the sampler switch alone, a new random realisation, moved it to 25.6%; the recalibration then raised it to 27.8%. With the sampler held fixed, raising the weight from 0.47 to 0.63 never lowers wealth poverty, in 200 of 200 seeds.
+
+**7. Poverty lines under inflation.** Wealth poverty uses a nominal $25,000, and BLEI divides nominal resources by the year-0 daily cost, so under inflation both read slightly low. Measured (section `lines`), the effect is small, because few agents sit near either line:
+
+| Scenario | Final price index | Wealth poverty, nominal line → real line | BLEI poverty, year-0 cost → current cost |
+|---|---|---|---|
+| Baseline @3% (shipped comparator) | 1.754 | 71.4% → 72.4% | 70.4% → 70.9% |
+| Adverse Environment (2%) | 1.317 | 40.4% → 41.0% | 36.8% → 37.3% |
+| Full Integration @3% | 1.509 | 31.2% → 32.0% | 27.5% → 29.0% |
+
+Disclosed in Known Limitations; not changed. The price index is also recomputed each year from that year's damped rate, so as PTF adoption grows, earlier years' prices are in effect revised down; the resulting annual inflation is slightly below the damped rate.
+
+### The large-N study
+
+**Two axes.** The project's earlier "N=5,000" studies were 5,000 seeds of 500 agents. The headline figures through v4.20 were 500 seeds of 500 agents. Averaging over seeds narrows the confidence interval, but only a larger population per run can reveal effects that depend on population size. This study holds seeds at 500 and raises the population to 5,000 agents (`--agents=5000`, new), then checks population size directly.
+
+**Headline** (`node harness.js largen 500 headline --agents=5000`; means across runs, ±95% CI):
+
+| Figure | 500 agents | 5,000 agents |
+|---|---|---|
+| Wealth poverty | 15.27% ±0.14 | 15.26% ±0.05 |
+| BLEI poverty | 12.43% ±0.13 | 12.48% ±0.04 |
+| Basket poverty (net) | 9.92% ±0.12 | 9.93% ±0.04 |
+| Median wealth | $528,624 ±2,948 | $527,328 ±900 |
+| Median BLEI | 1,834d ±11 | 1,827d ±3 |
+| Gini (EDC-adjusted) | 0.518 | 0.519 |
+| Year 0: wealth / BLEI / basket poverty | 37.8% / 10.3% / 66.3% | 37.8% / 10.4% / 66.4% |
+| Reduction vs shipped Baseline (wealth / BLEI) | 78.6% / 82.4% | 78.7% / 82.3% |
+| Reduction vs matched Baseline | 69.7% / 74.6% | 69.7% / 74.5% |
+| Reduction vs both at 3% | 56.5% / 61.0% | 56.5% / 61.1% |
+| Reduction vs year 0 (wealth) | 59.6% | 59.6% |
+| Highest measure (net basket vs shipped Baseline) | 87.9% | 87.9% |
+
+**Confirmed.** Every Full Integration figure agrees within its interval at the two sizes.
+
+**Presets** (`largen 500 presets`, wealth poverty / BLEI poverty / median wealth):
+
+| Preset | 500 agents | 5,000 agents |
+|---|---|---|
+| CCO Only | 24.16% / 21.11% / $391,095 | 24.09% / 21.05% / $390,510 |
+| High Automation (25 yr) | 29.16% / 26.65% / $340,928 | 29.17% / 26.66% / $339,975 |
+| Adverse Environment | 40.33% / 36.63% / $146,364 | 40.37% / 36.68% / $145,206 |
+| Stress Test | 62.00% / 59.90% / −$10,000 | 62.09% / 59.99% / −$10,000 |
+| Weaker settings @ reference environment | 33.29% / 30.39% / $250,339 | 33.34% / 30.44% / $249,902 |
+| Baseline, adverse environment (3%) | 83.56% / 82.89% / −$10,000 | 83.67% / 83.00% / −$10,000 |
+
+**Population size** (`largen 500 popsize`: Full Integration, about 1.25 million agent-runs at each size):
+
+| Agents per run | Seeds | Wealth poverty | BLEI poverty | Median wealth | Gini |
+|---|---|---|---|---|---|
+| 250 | 5,000 | 15.27% ±0.06 | 12.49% ±0.06 | $527,982 ±1,311 | 0.5169 |
+| 500 | 2,500 | 15.22% ±0.06 | 12.44% ±0.06 | $527,503 ±1,350 | 0.5177 |
+| 1,000 | 1,250 | 15.31% ±0.06 | 12.52% ±0.06 | $527,364 ±1,353 | 0.5183 |
+| 2,000 | 625 | 15.32% ±0.06 | 12.53% ±0.06 | $526,835 ±1,275 | 0.5187 |
+| 5,000 | 250 | 15.24% ±0.06 | 12.46% ±0.06 | $527,023 ±1,340 | 0.5187 |
+| 10,000 | 125 | 15.29% ±0.06 | 12.49% ±0.06 | $526,497 ±1,433 | 0.5187 |
+| 20,000 | 63 | 15.28% ±0.07 | 12.49% ±0.07 | $527,833 ±1,453 | 0.5186 |
+
+**Two finite-population effects, neither in a headline poverty figure:**
+
+- **Gini reads slightly low in small populations.** The sample Gini formula is biased down by a factor of (n − 1)/n: 0.2% at 500 agents, which matches the 0.001–0.002 rise at 5,000 in every scenario. Multiplying by n/(n − 1) would remove it; logged, not applied, because it would move every documented Gini.
+- **A median can be biased where a large share of agents sits at the wealth floor.** The median then lands in a sparse part of the distribution, and a mean of run medians overstates it at 500 agents. The matched Baseline's median wealth is $26,546 ±2,399 at 500 agents but $19,678 ±800 at 5,000; its median BLEI 88d against 65d. CCO Only in the adverse environment: −$8,916 against −$10,000. Poverty rates in the same runs agree.
+
+**With recessions on, seeds matter more than agents.** Every agent in a run shares one recession path, so Adverse Environment's interval on basket poverty narrows only from ±0.31 to ±0.25 at ten times the population. Studies of shock scenarios should add seeds, not agents.
+
+**Run time**, for planning: a 20-year run costs about 40–50 µs per agent on one CPU core, so 500 seeds × 5,000 agents takes about 100 seconds per scenario.
+
+### Open items closed
+
+- **CCO/PTH pathway decomposition** (Good First Issues, v4.14 (b)). `node harness.js pathways 200` switches off one channel at a time (harness-only `PATHWAY_OFF`, paired runs). Contribution of each channel, full run minus the run without it (±95% CI):
+
+  | Channel | Median wealth | Wealth poverty | BLEI poverty |
+  |---|---|---|---|
+  | CCO cost relief | +$141,921 ±1,833 | −7.47 pp | −6.14 pp |
+  | Octave wage bonus | +$134,215 ±1,492 | −6.20 pp | −6.20 pp |
+  | Octave advancement | +$120,466 ±1,675 | −5.76 pp | −5.48 pp |
+  | BLEI-gated wage bonus | +$87,826 ±566 | −1.66 pp | −1.07 pp |
+  | PTH cost reduction (and the equity it funds) | +$57,368 ±2,204 | −2.33 pp | −1.07 pp |
+  | Conversion proceeds | +$53,091 ±1,072 | −2.70 pp | −2.21 pp |
+  | PTH equity routing and appreciation | −$2,192 ±299 | 0.00 pp | 0.00 pp |
+  | All four CCO channels together | +$325,749 ±2,512 | −20.97 pp | −19.05 pp |
+
+  - **Cost relief and octave-driven wages carry most of CCO's effect.** Conversion proceeds, the channel with no production constraint, carry about a sixth of the wealth effect: BU is credited once a year.
+  - **The channels overlap.** The four CCO channels' single effects sum to $123,944 more than their joint effect, because octave advancement feeds both wages and conversion rates.
+  - **PTH's equity routing slightly lowers reported wealth.** It moves savings into `acreEquity`, which no metric reads, and returns only the liquid share of appreciation (the v4.16 accounting decision).
+- **Stored regression fixtures** (v4.12 item (a), in part). `validate` asserts every preset at seed 42, and `RELIEF_PRICE_LEGACY`'s reproduction of v4.20, and exits 1 on any mismatch.
+- **The tables v4.20 left unreproduced.** Regenerated at N=500 on the v4.21 engine, as it asked:
+
+  `node harness.js extreme 500` (per 10,000; housing distress in percent):
+
+  | Scenario | Extreme poverty | Economic | SMI | Voluntary | Housing distress |
+  |---|---|---|---|---|---|
+  | Year 0 (every scenario) | 22.0 | 16.1 | 5.5 | 0.4 | 16.9% |
+  | Baseline @3% (shipped) | 73.1 | 67.2 | 5.5 | 0.4 | 70.1% |
+  | Baseline @0% (matched) | 49.1 | 43.2 | 5.5 | 0.4 | 45.1% |
+  | CCO Only | 22.4 | 16.5 | 5.5 | 0.4 | 17.3% |
+  | Full Integration | 13.1 | 9.2 | 3.5 | 0.4 | 9.6% |
+  | Adverse Environment | 40.0 | 36.0 | 3.5 | 0.4 | 37.6% |
+  | Stress Test | 62.4 | 57.5 | 4.5 | 0.4 | 60.0% |
+
+  Full Integration is 40.3% below year 0, 82.0% below the shipped Baseline and 73.3% below the matched one. CCO Only is 2.0% above year 0.
+
+  `node harness.js stress 500`:
+
+  | Scenario | Wealth poverty | BLEI poverty | Basket poverty (net) | Median wealth |
+  |---|---|---|---|---|
+  | Full Integration | 15.3% | 12.4% | 9.9% | $528,624 |
+  | Adverse environment @ reference settings | 40.3% | 36.6% | 60.8% | $146,364 |
+  | Weaker settings @ reference environment | 33.3% | 30.4% | 26.7% | $250,339 |
+  | Stress Test (both) | 62.0% | 59.9% | 80.6% | −$10,000 |
+  | Baseline under the adverse environment (3%) | 83.6% | 82.9% | 95.9% | −$10,000 |
+
+  The v4.17 reading holds: the adverse environment alone multiplies Full Integration's wealth poverty by 2.6, the weaker settings alone by 2.2, and together they compound.
+
+### Decisions for Duke
+
+- **A consumption rule.** Agents consume exactly their basket and save 44% of income in aggregate. The options: **(A)** keep it and state it wherever wealth levels are quoted; **(B)** consume a fixed share of the surplus, set so the aggregate saving rate matches the BEA range (about 0.9 on the sweep above); **(C)** a consumption function that rises with income and wealth, sourced from the literature. (B) or (C) would move every wealth figure, most poverty figures by 1–5 points, and the seed-42 regression, and would bound the long-horizon growth logged in v4.6. The harness switch is there to test it.
+- **Poverty lines under inflation.** Keep them nominal (status quo, effect under 1.5 points) or deflate both lines by the price index. Low stakes; it matters only where the headline comparison uses the Baseline at 3%.
+
+### What did NOT get done, and why
+
+- **Nothing else in the engine changed.** The octave sampler, wage-linked automation risk, θ on realised PTF density and the other logged decisions remain open.
+- **No layout check.** v4.21 changes page text and a tooltip, not layout.
+- **The Gini small-sample correction** is logged above, not applied.
+
+### Regression: seed 42 / Full Integration / 20yr, v4.20 → v4.21
+
+Unchanged: 1,975d · 13.2% BLEI poverty · $570,661 · 0.518 · 15.8% · 88.8% · 24.2% EDC · 8.8% at the floor.
+
+**Seed 42, every preset** (wealth poverty / median wealth / median BLEI / Gini):
+
+| Preset | v4.20 | v4.21 |
+|---|---|---|
+| Full Integration | 15.8% / $570,661 / 1,975d / 0.518 | unchanged |
+| CCO Only | 24.8% / $427,239 / 1,283d / 0.575 | unchanged |
+| Traditional Welfare (3%) | 68.8% / −$10,000 / 8d / 0.824 | unchanged |
+| High Automation | 27.8% / $382,123 / 1,351d / 0.603 | unchanged |
+| Adverse Environment | 35.0% / $218,851 / 819d / 0.646 | **36.8% / $205,005 / 723d / 0.658** |
+| Stress Test | 59.0% / −$10,000 / 16d / 0.781 | **59.8% / −$10,000 / 16d / 0.785** |
 
 ---
 
@@ -1801,9 +2071,9 @@ The simulation uses several empirically grounded constants defined in the `CFG` 
 | `SS_ANCHOR_SSI_ANNUAL` / `SS_ANCHOR_SSDI_ANNUAL` / `SS_ANCHOR_RETIRE_ANNUAL` | $11,928 / $19,560 / $24,852 | SSA 2026 COLA Fact Sheet (ssa.gov/news/en/cola/factsheets/2026.html) | **New in v4.3.** Reference points for the Social-Security-anchored cohort study (see v4.3 Release Notes). Annual figures; update on each year's COLA Fact Sheet publication to keep current. Cohort tagging now uses `WAGE_TO_USD` for the SIU conversion as of v4.4 (unchanged in practice — the SS-anchor cohorts already used `WAGE_TO_USD` for this purpose since their v4.3 introduction; only BLEI/FBS/Gini's *own* internal formulas changed anchor in v4.4). |
 | `POVERTY_LINE` | $25,000 | **None documented anywhere in this codebase** — found while building v4.10 | Unlike almost every other constant in this table, `POVERTY_LINE` has never carried a citation, a "Framework spec" label, or even a code comment explaining where $25,000 came from, despite being the sole classification threshold behind the "Wealth Poverty Rate" KPI and the `pov` figure in every large-N study this document reports. Not corrected here (this table documents provenance, it doesn't invent it retroactively) — genuinely open: is this meant to approximate the US federal poverty guideline (currently $15,960 for one person, per `FED_POVERTY_LINE_1P` below — noticeably lower), some other reference point, or a round-number placeholder never revisited since an early version? Worth a `calibration:`-prefixed issue. **v4.13 note:** a comment recording this gap now sits at the constant itself in `index.html`, so a reader who never opens this file is still warned — and the stake rose slightly, since `POVERTY_LINE` is now also the denominator of the new Cumulative Poverty Exposure metric. Still uncorrected, because inventing a provenance retroactively would be worse than documenting its absence. |
 | `FED_POVERTY_LINE_1P` / `FED_POVERTY_LINE_YEAR` | $15,960 / 2026 | 2026 HHS ASPE federal poverty guideline, one-person household, 48 contiguous states + DC. Verified directly this session: a first fetch against `aspe.hhs.gov/poverty-guidelines` returned a stale cached 2017 snapshot (caught, not used); cross-checked against an independently-dated primary-source PDF (Lifeline Safe Connections Act eligibility table, dated January 15, 2026, HHS-sourced) plus three further independent citations, all converging on $15,960 | **New in v4.10.** External reference only — never read by any simulation-mechanics function, used solely as labeled callout text in the new Threshold Sensitivity charts. Update annually when HHS publishes a fresh guideline (typically late January), same discipline as `SS_ANCHOR_*` above. |
-| `CCO_RELIEF_AT_REF` / `CCO_RELIEF_REF_BU` / `CCO_RELIEF_CAP` | 0.20 / $1,200 / 0.50 | 0.20 is the flat relief carried from earlier releases; the cap is a placeholder | **New in v4.19 (Option B, Duke's decision).** CCO cost relief = min(cap, 0.20 × effective BU / $1,200). A source for how much essential spending a BU of a given size displaces would replace both the proportional form and the cap. |
+| `CCO_RELIEF_AT_REF` / `CCO_RELIEF_REF_BU` / `CCO_RELIEF_CAP` | 0.20 / $1,200 / 0.50 | 0.20 is the flat relief carried from earlier releases; the cap is a placeholder | **New in v4.19 (Option B, Duke's decision).** CCO cost relief = min(cap, 0.20 × effective BU / $1,200). A source for how much essential spending a BU of a given size displaces would replace both the proportional form and the cap. **v4.21:** effective BU is divided by the basket's price index before the comparison, because $1,200 is a year-0 amount; through v4.20 an unindexed BU kept its real relief under inflation and COLA counted inflation twice (v4.21 Release Notes). |
 | `STAB_HUB_MULT` / `STAB_HUB_THRESH` / `COLA_HUB_THRESH` | 1.20 / 2% / 5% | Research Hub, Integrated Implementation Roadmap, Appendix G | **New in v4.19.** The hub's own crisis-protocol values; the recession trigger reads population income loss because the engine has no GDP. |
-| `STAB_NEUTRAL_MULT` / `STAB_NEUTRAL_K` | ×1.35 / 2.8 | `node harness.js stabilizer 300` | **New in v4.19.** Shock-neutral for CCO participants at the reference settings (×1.36 unrounded). Recalibrate with the same command after any change to how BU enters the model. |
+| `STAB_NEUTRAL_MULT` / `STAB_NEUTRAL_K` | ×1.35 / 2.8 | `node harness.js stabilizer 300` | **New in v4.19.** Shock-neutral for CCO participants at the reference settings (×1.36 unrounded). Recalibrate with the same command after any change to how BU enters the model. **v4.21:** unchanged at the reference settings (0% inflation); with the relief fix, Adverse Environment's neutral point is ×1.40 and Stress Test's ×1.55. |
 | `STAB_EMERG_TAKEUP` | 50% | None — placeholder | **New in v4.19.** Default take-up of emergency enrollment. |
 | `WAGE_MEDIAN_SIU` | 35 SIU | Framework spec | Cross-scenario calibration; also the anchor point for `agentEDC()`'s rescaled saturation constants (v4.0) |
 | `FBS_LAMBDA_LO/HI` | **0.0001654 / 0.0013233 (v4.4)** — was 0.001 / 0.008 through v4.3 | BLEI paper §Index IV (λ ~ Uniform), rescaled v4.4 | **Rescaled ÷6.0456 (the `WAGE_TO_USD`/legacy-`SIU_TO_USD` ratio) as a *behavioral recalibration* to restore useful advancement-probability variation — not, as an earlier version of this document claimed, a dimensionally-forced conversion (FBS mixes scaled and unscaled terms, so it doesn't scale by a single clean factor). Open calibration status: the paper's original range already saturates (89.8–100% advancement probability) at the paper's own worked example; the v4.4 range is not itself externally validated. See v4.4 Release Notes for the full account and the recommended FBS₅₀ reparameterization.** |
@@ -1830,6 +2100,8 @@ The simulation supports seeded runs (Mulberry32 PRNG). To verify a result:
 3. Confirm the output matches
 
 If results diverge under identical seed + parameters, open a bug report with both exports. This should not happen — if it does, it indicates a browser environment difference worth documenting.
+
+**v4.21 update:** the seed-42 figures are unchanged, and so is every 0%-inflation preset. Adverse Environment and Stress Test move at every seed, because CCO relief under inflation now reads BU in year-0 dollars (seed 42: 36.8% / $205,005 and 59.8%). `node harness.js validate` now asserts all six presets at seed 42, and that `RELIEF_PRICE_LEGACY` reproduces v4.20's two inflation presets. Any mode accepts `--agents=N` for the population per run; a seed reproduces exactly only at the same population size.
 
 **v4.20 update — the seed-42 figures move, once.** `automationRisk` is now drawn with a fixed two random numbers per agent, instead of through a rejection sampler with a variable count, so the draws after it in agent construction differ from v4.19. The new regression is 1,975d · $570,661 · 0.518 · 15.8% · 88.8% (table in the v4.20 Release Notes); a run that reproduced v4.19 will not reproduce v4.20 at the same seed, and that is expected. `node harness.js validate` now asserts the figures and exits non-zero on a mismatch; it also checks that `AUTOMATION_SAMPLER_LEGACY` at weight 0.47 still reproduces v4.19 exactly. The three checks run on every push (`.github/workflows/checks.yml`).
 
@@ -1920,6 +2192,10 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 
 Areas currently open for discussion:
 
+- **Decision needed, v4.21: a consumption rule.** Agents consume exactly their own basket, so every dollar above it is saved: 44% of income in aggregate over 20 years, against a US personal saving rate of 3.4–5.6% in 2022–2025 (BEA, FRED PSAVERT). This produces most of the model's wealth levels and the unbounded long-horizon growth logged in v4.6, but moves poverty little (v4.21 Release Notes, `node harness.js saving`). The options: **(A)** keep it and state it wherever wealth levels are quoted; **(B)** consume a fixed share of the surplus, about 0.9 to match the observed saving rate; **(C)** a sourced consumption function rising with income and wealth. (B) and (C) move the regression and need a restudy.
+- **Decision needed, v4.21: poverty lines under inflation.** Wealth poverty's $25,000 line is nominal, and BLEI divides nominal resources by the year-0 daily cost, so both read slightly low under inflation (at most 1.5 points in any scenario measured). Keep, or deflate both by the price index. Relevant mainly to the Baseline at 3%.
+- **New in v4.21: the Gini small-sample bias.** The sample Gini is biased down by (n − 1)/n, 0.2% at 500 agents. Multiplying by n/(n − 1) would remove it and move every documented Gini by about 0.001. Logged, not applied.
+- **New in v4.21: the BLEI floor for CCO+PTH members.** One month of BU's food value at the PTH daily cost is 31.3 days, so no CCO+PTH member is ever BLEI-poor at BU ≥ $1,152. It follows the BLEI paper's definition; whether a month of flows should count toward the 30-day line is a framework question.
 - **Settled in v4.20 (Duke signed off on all four):**
   - `automationRisk` recalibrated to employment data (weight 0.63) and sampled by inverse CDF;
   - CI on every push, with jsdom as the one dev dependency;
@@ -1946,14 +2222,14 @@ Areas currently open for discussion:
 - **New in v4.18: the extreme-poverty overlay's inputs, to be updated as data sources become available.** Duke adopted all of them for v4.18 (see Release Notes). None is an estimate this project made. The voluntary share (`EP_VOL_SHARE`, 2%) has no US source. The two structural assumptions are that economic homelessness is proportional to housing distress, and that the SMI pathway does not worsen with the economy. Useful new sources would be: a national count or survey of voluntary or religious mendicancy; panel data linking income shortfall to entry into homelessness, which would replace the elasticity-1 assumption with an estimate; and evidence on how SMI homelessness responds to housing costs. The SMI share and the wellness-zone effect are sourced, but each is a single study or meta-analysis. `node harness.js extreme` shows how far each moves the result.
 - **Settled in v4.18 (Duke):** the measure keeps the name "extreme poverty," with its difference from the World Bank's income-based definition stated wherever it appears; wellness zones require both PTH and SZH.
 
-- **Decision needed, v4.17: reconcile the papers' headline with the engine.** The papers report a 98% poverty reduction and an $82,000 median wealth. This engine produces 78.7% (wealth) / 82.2% (BLEI) against the shipped Baseline, 69.7% / 74.4% against the inflation-matched Baseline, and 59.5% for wealth poverty against year 0. BLEI poverty ends *above* its policy-neutral year-0 level (12.6% vs 10.3%). Median wealth is $526,629. No measure and comparator reaches 98%; the highest is 87.8%, net basket poverty against the shipped Baseline. The options: **(A)** publish the model that produced 98% alongside this one; **(B)** restate the papers against the current engine, naming the comparator; **(C)** keep both and state the gap explicitly in the papers. Regenerate every figure with `node harness.js headline 500`. The `TARGET_*` constants would follow whichever is chosen. *(v4.20, refreshed: 78.6% / 82.4% against the shipped Baseline, 69.7% / 74.6% matched, 59.6% against year 0, BLEI poverty 12.4% vs 10.3%, highest 87.9%, median wealth $528,624. The gap is unchanged.)*
+- **Decision needed, v4.17: reconcile the papers' headline with the engine.** The papers report a 98% poverty reduction and an $82,000 median wealth. This engine produces 78.7% (wealth) / 82.2% (BLEI) against the shipped Baseline, 69.7% / 74.4% against the inflation-matched Baseline, and 59.5% for wealth poverty against year 0. BLEI poverty ends *above* its policy-neutral year-0 level (12.6% vs 10.3%). Median wealth is $526,629. No measure and comparator reaches 98%; the highest is 87.8%, net basket poverty against the shipped Baseline. The options: **(A)** publish the model that produced 98% alongside this one; **(B)** restate the papers against the current engine, naming the comparator; **(C)** keep both and state the gap explicitly in the papers. Regenerate every figure with `node harness.js headline 500`. The `TARGET_*` constants would follow whichever is chosen. *(v4.20, refreshed: 78.6% / 82.4% against the shipped Baseline, 69.7% / 74.6% matched, 59.6% against year 0, BLEI poverty 12.4% vs 10.3%, highest 87.9%, median wealth $528,624. The gap is unchanged.)* *(v4.21, confirmed at 5,000 agents per run: 78.7% / 82.3%, 69.7% / 74.5% matched, 56.5% / 61.1% with both at 3% (59.7% / 63.3% before the relief fix), 59.6% against year 0, highest 87.9%, median wealth $527,328. BLEI poverty returns to its year-0 level at year 24; the 20-year horizon lands on its way down. Median wealth depends mostly on the consumption assumption above.)*
 - **Decision needed, v4.17: the wage distribution versus the living-wage basket.** The median year-0 wage income ($39,945) is 81% of `LIVING_WAGE_ANNUAL` ($49,370), so 66.6% of agents start in basket poverty (66.3% at v4.20, N=500). This single fact drives the Baseline's deterioration and Full Integration's early BLEI rise (v4.17 Release Notes). The options:
   - **(A)** keep it, documented, as a deliberately harsh starting population;
   - **(B)** recalibrate the wage lognormal's μ against a sourced earnings distribution;
   - **(C)** recalibrate the basket;
   - **(D)** draw initial wealth conditional on wage, so the starting population is consistent with the flow model. This removes most of the early transient without changing the steady-state gap.
 
-  Every option except (A) moves the regression and needs its own large-N restudy.
+  Every option except (A) moves the regression and needs its own large-N restudy. *(v4.21: the resulting BLEI-poverty hump, traced over 40 years, peaks near 22.6% around year 7 and returns to the year-0 level at year 24; see v4.21 Release Notes.)*
 - **Decision needed, v4.17: should SZH synergy θ read realised PTF density?** The BLEI paper gates θ on PTF merchant density; the code gates it on the zone-coherence slider as a proxy. Gating on realised PTF share would move seed 42 to 16.8% / $556,503 / 1,897d. At N=200 wealth poverty would rise 15.28% → 15.50% and median wealth fall 0.7%. It is small, but it would make θ respond to the adoption dynamics it is meant to describe.
 - **Decision needed, v4.17: should the 55% CCO participation threshold be a dynamic?** Three documents described a network collapse below 55%; the engine has none, and v4.17 relabels it. Building one would mean a participation-dependent term in `runYear()`, for example conversion rate or cost relief scaled by aggregate participation. Its functional form would need a source.
 - **New in v4.17: an endogenous price channel** (NEEC note 9). Prices are an exogenous input rate, damped only by realised PTF/PTH membership. No price responds to demand, BU issuance, conversion volume, recession or automation; recession scales income only, and automation slows wage growth only. NEEC's maintainers note this bears on their CCO criterion C3.4. As long as prices are exogenous, the model assumes the framework is non-inflationary rather than testing it. This is a substantial modelling task, the same class as the flow-of-funds ledger below, with which it would naturally be built.
@@ -1964,7 +2240,7 @@ Areas currently open for discussion:
 - **Noted in v4.15: PTH membership is a one-time draw.** The v4.15 PTH-inflation fix (see Release Notes) scales damping by PTH's *realised* share, which never changes after construction — there is no PTH analogue of PTF's Bass/distress adoption path, and no exit. That is a design simplification present since v4.0, not something the fix introduced; a rollout/transition-path model (Good First Issues, v4.12 item (d)) is where PTH entry and exit would naturally be modelled, and would make the realised-share input to this damping time-varying the way PTF's already is.
 - **New in v4.14: a fuller flow-of-funds ledger, scoped by an external audit's specific proposed schema.** The stock-flow accounting gap has been an open Known Limitation since v4.0 ("CCO conversion proceeds are tracked but not production-constrained"); a v4.14 audit elaborated it with a concrete schema worth recording rather than re-deriving later: BU issued, BU redeemed, BU expired, BU converted, conversion-tax receipts, treasury balance, PTF operating surplus/deficit, PTH equity inflows/outflows, aggregate production/output, aggregate household income, aggregate household consumption, aggregate transfers — enforced against explicit accounting identities (e.g. total household financial assets + treasury liabilities + institutional balances = system-wide monetary claims, with the precise identity depending on how BU and the primary currency are defined). A substantial economic-modelling undertaking in its own right, not a bug fix; logged here so a future session building this doesn't have to re-derive the schema from scratch.
 - **New in v4.14: monthly BU tranches, as the "proper" fix for BU expiry that v4.14 deliberately did not attempt.** v4.14 fixed a genuine bug — the expiry slider collapsed six values into two behaviours (see v4.14 Release Notes) — with a continuous annual-approximation `decay=1-1/expiry`, not a full rebuild. The fuller mechanism an audit suggested: track individual monthly BU allocations as separate tranches and expire each one on its own schedule, rather than approximating monthly expiry inside an annual-cadence loop. A real, scoped enhancement — not attempted because it's a materially larger rearchitecture than an audit-response release should take on unilaterally, and because the annual approximation actually shipped is honestly documented as an approximation rather than presented as the real thing.
-- **New in v4.14: CCO/PTH pathway decomposition.** An audit's focused review of `runYear()`'s causal structure found (and this project's ODD panel now documents explicitly, see v4.14 Release Notes) that CCO and PTH each drive wealth through more than one coupled channel — CCO through direct cost reduction *and* conversion proceeds *and* octave-mediated wage growth *and* octave-mediated conversion-rate capacity; PTH through direct cost reduction *and* octave-mediated wage growth via the same FBS gate. A headline "CCO effect" or "PTH effect" is therefore a compound of several mechanisms, and a reader currently has no way to see how much of it comes from which channel. A structured ablation decomposition (Model A: full mechanism; B: no conversion proceeds; C: no octave advancement; D: no octave→wage bonus; E: no direct cost reduction; then `ΔW_A = ΔW_direct + ΔW_wage + ΔW_octave + ΔW_conversion`) would answer this without needing formal causal mediation analysis. A genuine extension of the existing ablation engine (`runAblation()`), not a quick toggle — scoped here for whoever picks it up.
+- **New in v4.14: CCO/PTH pathway decomposition.** *(v4.21: done in `harness.js`, `node harness.js pathways`; see v4.21 Release Notes. An in-page version extending `runAblation()` remains open.)* An audit's focused review of `runYear()`'s causal structure found (and this project's ODD panel now documents explicitly, see v4.14 Release Notes) that CCO and PTH each drive wealth through more than one coupled channel — CCO through direct cost reduction *and* conversion proceeds *and* octave-mediated wage growth *and* octave-mediated conversion-rate capacity; PTH through direct cost reduction *and* octave-mediated wage growth via the same FBS gate. A headline "CCO effect" or "PTH effect" is therefore a compound of several mechanisms, and a reader currently has no way to see how much of it comes from which channel. A structured ablation decomposition (Model A: full mechanism; B: no conversion proceeds; C: no octave advancement; D: no octave→wage bonus; E: no direct cost reduction; then `ΔW_A = ΔW_direct + ΔW_wage + ΔW_octave + ΔW_conversion`) would answer this without needing formal causal mediation analysis. A genuine extension of the existing ablation engine (`runAblation()`), not a quick toggle — scoped here for whoever picks it up.
 - **New in v4.14: λ heterogeneity beyond a fixed, persistent per-agent draw.** `makeLatentAgent()` draws λ once per agent and holds it fixed for the agent's lifetime — a coherent heterogeneity assumption (persistent individual capability), but one worth testing against alternatives: time-varying λ (capability that itself evolves), λ correlated with initial wage or other latent traits (capability isn't independent of starting position), or confirming the current independent-and-fixed assumption is actually the right one to have made implicitly. Extends the existing λ Calibration Status note, below, which already treats the magnitude of λ as open; this is about its *structure* (fixed vs. varying, independent vs. correlated) rather than its calibrated range.
 - **New in v4.14: AI automation as an employment-transition model, and a fuller macro-recession model.** Both mechanisms are real and calibrated but implement a reduced-form slice of what their names evoke — see the matching Known Limitations entry in `index.html`, added this release. AI automation subtracts directly from wage *growth*; there's no explicit job-loss event, unemployment spell, job search, or re-employment transition an agent passes through. A fuller model — displacement probability → employment state → wage, with re-employment dynamics — would capture the labour-market reallocation the current linear-drag mechanism can't. Recession, similarly, only ever multiplies income — earned wage income and, via the same `incomeShock`, CCO conversion proceeds (v4.16 correction: this item said wage income only); a fuller model would touch asset prices, employment status, housing costs, government transfers, and interest rates. Both are substantial modelling undertakings, not quick fixes.
 
@@ -2017,7 +2293,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. If you change a function that exists in both `index.html` and `harness.js`, change both identically: `domtest.js` Phase 8 compares their source (comments and whitespace ignored) and fails on any drift outside five listed, intentional differences. If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (78 checks as of v4.20) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (82 checks as of v4.21) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -2025,15 +2301,16 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 **Good first issues:**
 
+- **Done in v4.21** (see Release Notes, above): fixed CCO relief under inflation (an unindexed BU kept its real relief; COLA counted inflation twice); explained seven counter-intuitive v4.19–v4.20 figures with reproducible tables (`node harness.js v421`); confirmed the headline figures at 5,000 agents per run and across 250–20,000 agents (`largen`, and `--agents` for every mode); built the CCO/PTH pathway decomposition (v4.14 (b)) as `pathways`; added a saving-rate sensitivity (`saving`); stored seed-42 fixtures for all six presets in `validate` (part of v4.12 (a)); regenerated the extreme-poverty and stress tables v4.20 left unreproduced. `domtest.js` gained four checks (82 total), each failing against v4.20.
 - **Done in v4.20** (see Release Notes, above): recalibrated `automationRisk` to Frey & Osborne's 702 occupations weighted by employment (every row of the `plotly/datasets` file checked against the paper's appendix), and sampled it by inverse CDF so the weight no longer re-streams agent construction; made the non-participant validation check paired; gave every slider, toggle group and the seed field an accessible name, made every tooltip keyboard-reachable and exposed to screen readers, and restored a slider focus ring; fixed the shared-link seed readout; added `unitSuite()` (15 pure-function and property tests, run against both `harness.js` and the page) — the pure-function layer of v4.12 item (a); added a page/harness source-parity check; made `harness.js validate` assert; added CI and `package.json`; corrected the LHS export's Sobol/Morris claim; fixed the README's licence statement. `domtest.js` gained ten checks (78 total), each failing against v4.19.
 - **Done in v4.18** (see Release Notes, above): added extreme poverty (homeless; necessities via charity, if at all) as a fifth poverty measure, an expected-share overlay from economic, serious-mental-illness and voluntary pathways, reported per 10,000 against year 0 and the Baseline in the card, both exports and a new `harness.js extreme` mode; restyled the poverty card to the page's scenario colours; repaired three v4.17 `domtest.js` checks, one of which had never exercised the version-label fill it guarded; filled the tab title from `META`; verified v4.17's poverty-card and preset-grid layout in headless Chromium.
 - **Done in v4.17** (see Release Notes, above): fixed three bugs — hardcoded v4.15 version labels (now read from `META.VERSION`), BU Expiry missing from every CSV export, and an inert PTF column in the LHS design whenever the page's PTF toggle was off — and restored `harness.js`'s `structuralStability()` parity. Added relative income and living-wage basket poverty, each reported against year 0 as well as the Baseline, in a new card and both exports. Added an Adverse Environment preset separating environmental stress from weaker settings. Ported recessions to `harness.js` (bit-identical to the page at seed 42) with `headline`, `year0`, `stress` and `participation` modes. Disclosed that the papers' 98% headline is not produced by the engine and that two-thirds of agents start below the living-wage basket. Relabelled the 55% participation threshold and θ's density gate as a design reference and a proxy. `domtest.js` gained ten checks (48 total), each confirmed to fail against v4.16.
 - **Done in v4.16** (see Release Notes, above): fixed a reproducibility bug — a seeded run started while the previous run's attribution ablation or the validation suite was still computing drew from the wrong stream (seed 42: $545,506 / $555,354 vs $559,223), now isolated at every asynchronous boundary; disclosed and measured the Baseline comparison's inflation mismatch (fixed 3% vs the slider's 0%; ~24–38% of the headline poverty gap) and added an opt-in, off-by-default toggle to match them, with the default logged as a decision; enumerated `runYear()`'s annual schedule (v4.14 item (e)) into a new ODD Process Overview & Scheduling card; paired the validation suite's benefit check and extended its invariants check with determinism, eight-draws-per-agent-year, BU/equity/λ bounds and PTF-cap assertions (item (f)); corrected three documentation claims against the code (a stale `SIU_TO_USD` comment in `runYear()`, recession's scope, the PTH appreciation accounting) and measured the PTH alternative as a second decision; added `infl-match` and `pth-accounting` modes to `harness.js`. `domtest.js` gained nine checks (38 total), each verified to fail against an unmodified v4.15 page.
 - **Done in v4.15** (see Release Notes, above): fixed another genuine `runYear()` mechanics bug an external audit found — PTH's inflation damping was a flat toggle-triggered 10% reduction independent of realised uptake (PTH on with zero members still damped inflation), the coarser sibling of v4.14's PTF fix — now scaled by the population's realised PTH share, proven inert on four of five shipped presets and every documented figure by direct old-vs-new comparison of every agent's final wealth (only Stress Test moves); guarded the BU-expiry decay against NaN if `expiry` were ever missing (never a live defect, but the failure mode zeroed all CCO-participant wealth silently); replaced the Monte Carlo CI's fixed z=1.96 with Student's t (the 10× interval was ~13% too narrow); corrected a fourth stale PTH documentation card the v4.12 sweep missed. `domtest.js` gained four checks (29 total), each verified to fail against an unmodified v4.14 page.
 - **Done in v4.14** (see Release Notes, above): fixed two genuine `runYear()` mechanics bugs an external audit's focused review found — the BU-expiry slider collapsing six values into two identical behaviours, and PTF's inflation-damping term reading a static slider instead of actual current adoption (both proven inert on every documented figure, both ported to `harness.js` for parity); added the Wealth Floor Diagnostic (in-app companion to the offline `WEALTH_FLOOR` sweep) with CSV/JSON export; reframed EDC-adjusted Gini as a constructed stock-minus-flow index rather than conventional net worth; added a dual-cost-anchor (`LIVING_WAGE_ANNUAL` vs `BASE_DAILY_COST`) table; documented the CCO/PTH feedback loops through FBS and octave explicitly in the ODD panel and inline in `runYear()`; added a Known Limitations entry naming recession and AI automation as reduced-form mechanisms; extended the "not a forecast" banner with an explicit interpretive caveat. `domtest.js` gained six regression-guard checks — two that fail immediately if either mechanics bug is reintroduced.
-- **New in v4.14 (external audit suggestions, not attempted this session — each is a real, separable task, most already scoped in Model Architecture Feedback above):** (a) **Monthly BU tranches** — the "proper" fix for BU expiry, vs. the annual-approximation `decay=1-1/expiry` actually shipped; individual monthly allocations tracked and expired on their own schedule inside the annual-cadence loop. (b) **CCO/PTH pathway decomposition** — a structured ablation splitting a headline effect into direct-cost-reduction / conversion-proceeds / octave-mediated-wage / octave-mediated-conversion components; extends the existing `runAblation()` engine. (c) **λ heterogeneity beyond fixed-and-independent** — time-varying λ, or λ correlated with initial wage/other latent traits, as alternatives to the current persistent-and-independent draw; a sensitivity-testing task, not a recalibration. (d) **A fuller macro-recession model** (asset prices, employment, transfers, interest rates) and **AI automation as an employment-transition model** (displacement → job search → re-employment), replacing the current income-shock-only and wage-growth-penalty reduced forms respectively — both substantial modelling undertakings. (e) **`runYear()`'s full annual state-transition schedule, enumerated explicitly** — *done in v4.16, verified line by line and cross-checked by an RNG-draw-count invariant; see Release Notes* — deliberately not attempted this session despite being genuinely valuable and genuinely undocumented, because re-deriving a 15-20-step ordered sequence correctly from the actual code, accurately, alongside everything else in this release, carried real risk of shipping an inaccurate sequence; a future session with the bandwidth to verify each step against the code line-by-line should do this properly rather than transcribe an audit's own attempt at it. (f) **An expanded invariant/mechanism/calibration test taxonomy** — *done in v4.16 for the four named assertions and five more; mechanism and calibration tests beyond these remain open* — same-seed-reproduces-identical-output, different-seed-changes-output, PTF-cap-never-exceeded, and probability-bounds-in-[0,1] as explicit assertions (the `invariants` `VAL_TEST` and scattered NaN/Inf guards already cover some of this implicitly, but not as named, itemized checks); a legitimate extension of `VAL_TESTS`, not attempted this session given the two mechanics fixes already carried it. (g) **A full aggregate flow-of-funds ledger** — see Model Architecture Feedback, above, for the audit's specific proposed schema (BU issuance/redemption/expiry/conversion, treasury, PTF/PTH balance sheets, aggregate production/consumption identities).
+- **New in v4.14 (external audit suggestions, not attempted this session — each is a real, separable task, most already scoped in Model Architecture Feedback above):** (a) **Monthly BU tranches** — the "proper" fix for BU expiry, vs. the annual-approximation `decay=1-1/expiry` actually shipped; individual monthly allocations tracked and expired on their own schedule inside the annual-cadence loop. (b) **CCO/PTH pathway decomposition** — *done in v4.21 in the harness (`pathways`); an in-page version remains open* — a structured ablation splitting a headline effect into direct-cost-reduction / conversion-proceeds / octave-mediated-wage / octave-mediated-conversion components; extends the existing `runAblation()` engine. (c) **λ heterogeneity beyond fixed-and-independent** — time-varying λ, or λ correlated with initial wage/other latent traits, as alternatives to the current persistent-and-independent draw; a sensitivity-testing task, not a recalibration. (d) **A fuller macro-recession model** (asset prices, employment, transfers, interest rates) and **AI automation as an employment-transition model** (displacement → job search → re-employment), replacing the current income-shock-only and wage-growth-penalty reduced forms respectively — both substantial modelling undertakings. (e) **`runYear()`'s full annual state-transition schedule, enumerated explicitly** — *done in v4.16, verified line by line and cross-checked by an RNG-draw-count invariant; see Release Notes* — deliberately not attempted this session despite being genuinely valuable and genuinely undocumented, because re-deriving a 15-20-step ordered sequence correctly from the actual code, accurately, alongside everything else in this release, carried real risk of shipping an inaccurate sequence; a future session with the bandwidth to verify each step against the code line-by-line should do this properly rather than transcribe an audit's own attempt at it. (f) **An expanded invariant/mechanism/calibration test taxonomy** — *done in v4.16 for the four named assertions and five more; mechanism and calibration tests beyond these remain open* — same-seed-reproduces-identical-output, different-seed-changes-output, PTF-cap-never-exceeded, and probability-bounds-in-[0,1] as explicit assertions (the `invariants` `VAL_TEST` and scattered NaN/Inf guards already cover some of this implicitly, but not as named, itemized checks); a legitimate extension of `VAL_TESTS`, not attempted this session given the two mechanics fixes already carried it. (g) **A full aggregate flow-of-funds ledger** — see Model Architecture Feedback, above, for the audit's specific proposed schema (BU issuance/redemption/expiry/conversion, treasury, PTF/PTH balance sheets, aggregate production/consumption identities).
 - **Done in v4.13** (see Release Notes, above): fixed two live UI defects found by running the page in a headless DOM rather than reading it (shared-link tooltip stripping; duplicated sensitivity tip box); fixed a `structuralStability()` window that returned a constant 0.99 for every 5–7 year run; corrected four stale claims in `runYear()`'s own comments plus `CFG.SIM_COST_SCALE`'s; added Cumulative Poverty Exposure KPIs and exports; made the v4.12 dominance check exportable and added its two missing caveats; fixed the Wealth Poverty KPI's arrow direction, two inline bare-`1fr` grids, the JSON export's pre-v4.8 license string, and the CSV's "v4.0 FIXES" header; added `aria-pressed` to every toggle; surfaced `POVERTY_LINE`'s missing provenance at the constant; restored this file's missing `## v4.11 Release Notes` heading; corrected two four-release-stale version labels on the replication page. **Committed `domtest.js`** — the jsdom DOM-behaviour harness that found the first two items.
-- **New in v4.12 (external audit suggestions, not attempted this session — each is a real, separable task):** (a) **Executable test hierarchy** — *v4.13 update: partly begun. `domtest.js` now covers the "does the page behave" layer (19 checks: classes, attributes, render paths, export payloads, a full seed-42 run through the live page). Still missing from the audit's proposed structure: pure-function tests, accounting-invariant tests, scenario-pairing tests, stored regression fixtures beyond the single seed-42 table, and documentation-snapshot tests. Build around `domtest.js` rather than starting over. Note `domtest.js` adds `jsdom` — this project's first dev-only dependency — which is worth Duke's explicit sign-off before the suite grows further.* *v4.20 update: pure-function tests done (`unitSuite()`, run against both files), and jsdom signed off. Still missing: accounting-invariant tests beyond v4.16's, scenario-pairing tests, stored regression fixtures beyond seed 42, and documentation-snapshot tests.* The original scoping follows: — the audit proposed a concrete structure: pure-function tests (`mulberry32`, `gamma`, `beta`, `lognormal`, `szhTheta`, `pthLiquidShare`, `povertyCDF`, `buildPrefixSum`, `povertyGapAvg`, `checkDominance`, percentile interpolation, Gini edge cases), accounting/invariant tests (no wealth below `WEALTH_FLOOR`, no negative `buBalance`, PTF-cap membership contract, conversion-ledger totals reconciling), scenario-pairing tests (identical latent population and RNG streams across Baseline/CCO-Only/Main, no ablation-leak regressions), machine-stored regression fixtures beyond the single seed-42 table this document already carries, and documentation-snapshot tests (displayed version matches `META.VERSION`, no un-caveated references to retired constants). This project already has real regression discipline (the seed-42 table, `harness.js`, `VAL_TESTS`) — formalizing it into an executable suite that runs outside the browser would be a genuine improvement, but it's a real engineering investment, and depending how it's built may be in tension with the explicit single-buildless-file constraint (Code Contributions, below) — worth Duke's input on shape before anyone starts. (b) **Replace positional function arguments** (`agentBLEI(a,bu,ccoOn,pthOn,szhOn,szhCoh,ptfOn)` and similar) **with a context object**, for clarity and to reduce argument-order-mistake risk in future edits — a real code-quality improvement, but touches signatures used throughout the mechanics engine and would need full regression re-validation, not a quiet refactor. (c) **A calibrated "current U.S. policy" comparison scenario**, alongside (not replacing) the existing Traditional Welfare Baseline no-intervention counterfactual — modeling actual SNAP/EITC/TANF/SSI-SSDI/housing-assistance/UI receipt as income would make a genuinely different, complementary comparison point; a substantial data-and-calibration undertaking of its own. (d) **A rollout/transition-path model** — CCO participation ramp, PTF network formation lag, PTH construction capacity, SZH/CIP maturation — as an alternative to the current "all five architectures available from year 0" assumption; would meaningfully change early-year figures and is a real design decision, not a quick toggle. (e) **Person-years-in-poverty / time-to-tier-attainment / wealth-floor-recovery-rate metrics**, complementing the final-year-only Threshold Sensitivity charts with something that captures transition dynamics the current snapshot view can't. None of these were attempted this session — each is logged here rather than either dismissed or unilaterally started.
+- **New in v4.12 (external audit suggestions, not attempted this session — each is a real, separable task):** (a) **Executable test hierarchy** — *v4.13 update: partly begun. `domtest.js` now covers the "does the page behave" layer (19 checks: classes, attributes, render paths, export payloads, a full seed-42 run through the live page). Still missing from the audit's proposed structure: pure-function tests, accounting-invariant tests, scenario-pairing tests, stored regression fixtures beyond the single seed-42 table, and documentation-snapshot tests. Build around `domtest.js` rather than starting over. Note `domtest.js` adds `jsdom` — this project's first dev-only dependency — which is worth Duke's explicit sign-off before the suite grows further.* *v4.20 update: pure-function tests done (`unitSuite()`, run against both files), and jsdom signed off. Still missing: accounting-invariant tests beyond v4.16's, scenario-pairing tests, stored regression fixtures beyond seed 42, and documentation-snapshot tests.* *v4.21 update: `validate` stores seed-42 fixtures for all six presets. Fixtures at other seeds, accounting invariants, scenario pairing and documentation snapshots remain.* The original scoping follows: — the audit proposed a concrete structure: pure-function tests (`mulberry32`, `gamma`, `beta`, `lognormal`, `szhTheta`, `pthLiquidShare`, `povertyCDF`, `buildPrefixSum`, `povertyGapAvg`, `checkDominance`, percentile interpolation, Gini edge cases), accounting/invariant tests (no wealth below `WEALTH_FLOOR`, no negative `buBalance`, PTF-cap membership contract, conversion-ledger totals reconciling), scenario-pairing tests (identical latent population and RNG streams across Baseline/CCO-Only/Main, no ablation-leak regressions), machine-stored regression fixtures beyond the single seed-42 table this document already carries, and documentation-snapshot tests (displayed version matches `META.VERSION`, no un-caveated references to retired constants). This project already has real regression discipline (the seed-42 table, `harness.js`, `VAL_TESTS`) — formalizing it into an executable suite that runs outside the browser would be a genuine improvement, but it's a real engineering investment, and depending how it's built may be in tension with the explicit single-buildless-file constraint (Code Contributions, below) — worth Duke's input on shape before anyone starts. (b) **Replace positional function arguments** (`agentBLEI(a,bu,ccoOn,pthOn,szhOn,szhCoh,ptfOn)` and similar) **with a context object**, for clarity and to reduce argument-order-mistake risk in future edits — a real code-quality improvement, but touches signatures used throughout the mechanics engine and would need full regression re-validation, not a quiet refactor. (c) **A calibrated "current U.S. policy" comparison scenario**, alongside (not replacing) the existing Traditional Welfare Baseline no-intervention counterfactual — modeling actual SNAP/EITC/TANF/SSI-SSDI/housing-assistance/UI receipt as income would make a genuinely different, complementary comparison point; a substantial data-and-calibration undertaking of its own. (d) **A rollout/transition-path model** — CCO participation ramp, PTF network formation lag, PTH construction capacity, SZH/CIP maturation — as an alternative to the current "all five architectures available from year 0" assumption; would meaningfully change early-year figures and is a real design decision, not a quick toggle. (e) **Person-years-in-poverty / time-to-tier-attainment / wealth-floor-recovery-rate metrics**, complementing the final-year-only Threshold Sensitivity charts with something that captures transition dynamics the current snapshot view can't. None of these were attempted this session — each is logged here rather than either dismissed or unilaterally started.
 - Occupation-*stratified* (not just bimodal) automationRisk — **v4.20 update: step (a) done in full, and the aggregate distribution recalibrated.** All 702 rows of `plotly/datasets`' file match Frey & Osborne's appendix on SOC code, rank and probability; the mixture weight is now 0.63 (v4.20 Release Notes). Step (b), the Kaggle licence, is moot, since the plotly file is the source used. What remains is step (c), now sharpened: tie risk to wage (correlation −0.65 in the data) — see Model Architecture Feedback. **v4.11 update: the Kaggle license claim now reads as actively contradicted, not corroborated, and a better-documented alternative source has emerged.** v4.8's "third-party card says MIT licensed" finding was checked again this session via a second external system (Grok), which reported the Kaggle listing's own license field as "Other (specified in description)," with the description itself reportedly stating the source license was never specified — the opposite of what v4.8's card claimed. This session could not independently confirm either version (Kaggle remains JS-rendered and unreachable to automated fetching — the same wall every session hitting this dataset has hit since v4.7), so the honest status is unconfirmed either way, but the specific, contradicting nature of the new claim means the v4.8 "MIT licensed" finding should now be treated as suspect, not as increasing confidence. **A new, more promising lead, found independently this session:** `job-automation-probability.csv` in the `plotly/datasets` GitHub repository — 703 lines (702 data rows after the header, an exact match to Frey & Osborne's own occupation count), richer columns than reported for the Kaggle dataset (SOC code, probability, median annual wage, May-2016 BLS employment, education level), hosted in a repository with a genuine first-party `LICENSE` file stating MIT (Plotly Technologies Inc.) — a materially cleaner starting point than Kaggle's ambiguous per-dataset licensing, though the repo has its own open GitHub issue (#23) questioning whether that MIT grant cleanly covers third-party-*sourced* data files the way it covers Plotly's own code, a real nuance worth carrying forward rather than glossing over. **Still no trace of "FOWIGS"** — unverified across three independent sessions now, treat as non-existent absent new evidence. Remaining task, re-scoped: (a) pull `plotly/datasets`' CSV directly (no account/API barrier, unlike Kaggle) and spot-check a sample of rows against the original Frey & Osborne appendix (pp. 57–72) for fidelity — the row count already matches exactly, but individual-row fidelity hasn't been checked; (b) separately, if the Kaggle route is still preferred, a contributor with an actual Kaggle account needs to check the license field directly rather than relying on any third party's description of it, since two independent AI-relayed descriptions of that same field now disagree; (c) either way, decide the agent→occupation mapping (draw one per agent weighted by BLS employment share, assign that occupation's F&O probability as `automationRisk`).
 - **`WEALTH_FLOOR`/`TARGET_*` sensitivity sweep — the `WEALTH_FLOOR` half is done in v4.8, see Release Notes.** A validated N=500-seed sweep across four candidate floor values now exists (Baseline invariant on everything but the raw wealth figure; Full Integration shows a real, modest, mechanistically-understood sensitivity). `TARGET_WEALTH`/`TARGET_POVERTY`/`TARGET_GINI` recalibration remains untouched — that's less a sweep-able question and more a "the authors need to just pick new numbers reflecting where the model actually lands now" decision, which a sensitivity sweep doesn't resolve on its own.
 - Implement the Sobol/LHC sensitivity export (spec above) — **done in v4.6, see Release Notes.**
@@ -2110,7 +2387,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v4.20*
+*Better To Best Research Hub · Compassionism Framework Simulation v4.21*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
@@ -2138,4 +2415,5 @@ If you're contributing code (a pull request touching `index.html` or a harness s
      time the bug's window had closed) — caught by running the new checks against v4.15
      before shipping, rather than assuming a new check guards anything.
      v4.17-v4.19: this line was not bumped and still read v4.16 — flagged by the external Sonnet
-     audit in v4.20, and bumped straight to v4.20 here. -->
+     audit in v4.20, and bumped straight to v4.20 here.
+     v4.21: bumped with the release. -->

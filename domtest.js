@@ -87,6 +87,12 @@
  * non-participant validation check, and that a test window never starts the page's load-time
  * reference run (a race the first CI run exposed; see makeWindow). v4.20 also moved the seed-42 regression once (automationRisk
  * sampler and share; see CONTRIBUTING.md v4.20), so Phase 2 and Phase 4's pinned figures moved.
+ * Phase 9 (v4.21) checks the CCO relief under inflation, through the page's own engine functions:
+ * with a cost-of-living adjustment the relief is exactly 20% of the basket in every year, without
+ * one it is 20% divided by the price index; at 0% inflation it is 20% either way; the page's
+ * runYear() and harness.js agree agent by agent under inflation with and without COLA; and the six
+ * presets' seed-42 figures, computed from the page's engine, match the fixtures `harness.js validate`
+ * asserts (only Adverse Environment and Stress Test moved from v4.20). Each fails against v4.20.
  * Phase 4 (v4.16) reproduces a reproducibility bug the v4.16 audit found: a seed-42 run started
  * while the previous run's attribution ablation, or the validation suite, was still computing
  * drew from the wrong RNG stream (v4.15 gave $545,506 / $555,354 instead of $559,223). It also
@@ -745,7 +751,7 @@ function phase8(done) {
   const names = [...src.matchAll(/^function ([A-Za-z0-9_]+)\(/gm)].map(m => m[1]);
   const hf = new Function('module', 'require', src + ';return {' + names.join(',') + '};')({exports: {}}, require);
   const norm = f => f.toString().replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '').replace(/\s+/g, '');
-  const KNOWN = {runYear: 'harness-only before/after switches (BU_ALLOCATIONS_PER_YEAR, CCO_RELIEF_FLAT, PTH_APPR_CONSERVE); checked by the seed-42 page/harness runs',
+  const KNOWN = {runYear: 'harness-only switches (BU_ALLOCATIONS_PER_YEAR, CCO_RELIEF_FLAT, PTH_APPR_CONSERVE, RELIEF_PRICE_LEGACY, PATHWAY_OFF, SURPLUS_CONSUMPTION_SHARE); checked by the seed-42 page/harness runs and Phase 9',
     drawAutomationRisk: 'harness-only AUTOMATION_SAMPLER_LEGACY switch; checked by the draw-sequence comparison below',
     getTier: 'display fields (class, colour) in the page', agentBLEI: 'a local renamed gammaV in the harness, where it would shadow gamma()',
     incomeBasketMetrics: 'guard order only'};
@@ -776,6 +782,49 @@ function phase8(done) {
     check('v4.20: a test window never starts the page\'s load-time reference run, whatever the machine speed (the first CI run failed on this race)',
       wq.document.readyState === 'complete' && !wq.SIM_RESULTS && !wq.running,
       'readyState ' + wq.document.readyState + ', results ' + (wq.SIM_RESULTS ? 'present (auto-run fired)' : 'none') + ' after 1.5 s');
-    done();
+    phase9(done);  // v4.21
   }, 1500);
+}
+
+/* ── Phase 9 (v4.21): CCO relief under inflation. Through v4.20 the relief share was read off
+ * NOMINAL effective BU against the year-0 $1,200 reference, so an unindexed BU kept its full real
+ * relief and a COLA-indexed one counted inflation twice. Every check fails against v4.20. */
+function phase9(done) {
+  console.log('\n--- Phase 9: v4.21 ---');
+  const H = require('./harness.js');
+  const w = makeWindow();
+  const CALM = {active: false, incomeMultiplier: 1, yearsLeft: 0};
+  function pop(win, p, seed) { win.RNG = win.mulberry32(seed + 700003); return win.makeLatentPopulation(p.nAgents).map(l => win.instantiateAgent(l, p)); }
+  function reliefPath(win, p, seed) {  // relief share seen by a CCO participant outside PTF and PTH, and the price index, by year
+    const ag = pop(win, p, seed); win.RNG = win.mulberry32(seed); const out = [];
+    for (let y = 0; y < p.years; y++) { win.runYear(ag, y, p, CALM); const a = ag.find(x => x.inCCO && !x.inPTF && !x.inPTH);
+      out.push({r: 1 - a.yrCostUSD / a.yrBasketUSD, P: a.yrBasketUSD / win.CFG.LIVING_WAGE_ANNUAL}); }
+    return out;
+  }
+  const ADV = Object.assign({}, H.ADVERSE_REFERENCE, {shock: false});
+  const noCola = reliefPath(w, ADV, 1), cola = reliefPath(w, Object.assign({}, ADV, {cola: true, colaThresh: 0}), 1);
+  const exactCola = cola.every(x => Math.abs(x.r - 0.20) < 1e-12);
+  const exactNo = noCola.every(x => Math.abs(x.r - 0.20 / x.P) < 1e-12) && noCola[19].r < 0.16 && noCola[19].P > 1.2;
+  check('v4.21: under inflation, CCO relief holds 20% of the basket with COLA and erodes with the price index without it (Adverse settings, seed 1)',
+    exactCola && exactNo, 'year 20: no COLA ' + (noCola[19].r * 100).toFixed(2) + '% at price index ' + noCola[19].P.toFixed(3) + ', COLA ' + (cola[19].r * 100).toFixed(2) + '%  (v4.20: 20.00% and ' + (20 * noCola[19].P).toFixed(2) + '%)');
+  const FI0 = Object.assign({}, H.FULL_INTEGRATION), z1 = reliefPath(w, FI0, 1), z2 = reliefPath(w, Object.assign({}, FI0, {cola: true, colaThresh: 0}), 1);
+  check('v4.21: at 0% inflation the relief is exactly 20% with or without COLA (the fix is inert there)',
+    z1.concat(z2).every(x => x.r === 0.2 || Math.abs(x.r - 0.2) < 1e-15) && z1.every(x => x.P === 1));
+  const same = (p, seed) => { const a = pop(w, p, seed), b = (H.setRNG(H.mulberry32(seed + 700003)), H.makeLatentPopulation(p.nAgents).map(l => H.instantiateAgent(l, p)));
+    w.RNG = w.mulberry32(seed); H.setRNG(H.mulberry32(seed)); const rp = p.shock ? H.buildRecessionPath(p.years, seed) : null;
+    for (let y = 0; y < p.years; y++) { const rs = rp ? rp[y] : CALM; const sv = H.getRNG(); w.runYear(a, y, p, rs); H.setRNG(sv); H.runYear(b, y, p, rs); }
+    return a.every((x, i) => x.wealth === b[i].wealth && x.wage === b[i].wage && x.yrCostUSD === b[i].yrCostUSD); };
+  const par = [H.ADVERSE_REFERENCE, Object.assign({}, H.ADVERSE_REFERENCE, {cola: true, colaThresh: 0, stab: true, stabMult: 1.35, stabThresh: 0.02, emerg: true, emergTakeup: 0.5}),
+    Object.assign({}, H.STRESS_TEST, {inflRate: 0.05, cola: true, colaThresh: 0.01})].every(p => same(p, 7));
+  check('v4.21: the page\'s runYear() and harness.js agree agent by agent under inflation, with and without COLA and stabilizers (seed 7)', par);
+  function pageRun(p, seed) { const ag = pop(w, p, seed), rp = p.shock ? w.buildRecessionPath(p.years, seed) : null; w.RNG = w.mulberry32(seed);
+    for (let y = 0; y < p.years; y++) w.runYear(ag, y, p, rp ? rp[y] : CALM);
+    const m = w.calcMetrics(ag, p.ccoOn, p.pth), b = w.bleiMetrics(ag, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf);
+    return [+(m.pov * 100).toFixed(1), Math.round(m.med), Math.round(b.med), +m.gini.toFixed(3)]; }
+  const FIX = [['Full Integration', H.FULL_INTEGRATION, [15.8, 570661, 1975, 0.518]], ['CCO Only', H.CCO_ONLY, [24.8, 427239, 1283, 0.575]], ['Baseline', H.BASELINE, [68.8, -10000, 8, 0.824]],
+    ['High Automation', H.HIGH_AUTOMATION, [27.8, 382123, 1351, 0.603]], ['Adverse Environment', H.ADVERSE_REFERENCE, [36.8, 205005, 723, 0.658]], ['Stress Test', H.STRESS_TEST, [59.8, -10000, 16, 0.785]]];
+  const got = FIX.map(f => pageRun(f[1], 42)), bad = FIX.filter((f, i) => got[i].join() !== f[2].join());
+  check('v4.21: every preset\'s seed-42 figures from the page\'s engine match the fixtures harness.js validate asserts (Adverse Environment and Stress Test moved)',
+    !bad.length, bad.length ? bad.map(f => f[0] + ' ' + got[FIX.indexOf(f)].join(' / ') + ' (expected ' + f[2].join(' / ') + ')').join('; ') : FIX.map((f, i) => f[0] + ' ' + got[i].join(' / ')).slice(4).join('; ') + ' (v4.20: 35.0 / 218851 / 819 / 0.646; 59.0 / -10000 / 16 / 0.781)');
+  done();
 }

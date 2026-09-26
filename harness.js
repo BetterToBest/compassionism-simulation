@@ -39,6 +39,14 @@
  * checks that the legacy switch reproduces v4.19. New: unitSuite() (pure-function and
  * property tests, run here by `unit` and against the page by domtest.js), and an `automation`
  * mode (the calibration sweep behind the new share).
+ *
+ * v4.21: runYear() reads CCO relief off effective BU in year-0 dollars (buEff / priceIdx), ported from
+ * index.html, with RELIEF_PRICE_LEGACY restoring v4.20; two harness-only switches for studies
+ * (PATHWAY_OFF, SURPLUS_CONSUMPTION_SHARE), both inert by default; `--agents=N` for every mode;
+ * `validate` asserts seed-42 fixtures for all six presets; and four modes: `largen` (the large-N
+ * headline, preset and population-size study), `pathways` (the v4.14 pathway decomposition),
+ * `saving` (where the wealth comes from, and a consumption sweep) and `v421` (the investigation
+ * behind CONTRIBUTING.md's v4.21 Release Notes).
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -107,6 +115,22 @@ var CCO_RELIEF_FLAT = false;
  * AUTO_HIGH_SHARE set back to 0.47 it reproduces v4.19 exactly (checked by `validate`).
  * index.html: false. */
 var AUTOMATION_SAMPLER_LEGACY = false;
+/* v4.21: harness-only switch. true restores v4.19-v4.20's CCO relief share, read off NOMINAL
+ * effective BU against the year-0 $1,200 reference (an unindexed BU kept its real relief under
+ * inflation, and COLA counted inflation twice). Inert at 0% inflation. index.html: false. */
+var RELIEF_PRICE_LEGACY = false;
+/* v4.21: harness-only switches for the `pathways` and `saving` modes (CONTRIBUTING.md v4.21). Both
+ * default to the shipped engine, bit-identically (checked by `validate`).
+ *  PATHWAY_OFF — switch off one channel through which CCO or PTH reaches wealth, CRN-paired:
+ *    relief (CCO cost relief), conversion (conversion proceeds), octave (octave advancement),
+ *    octaveWage (the octave wage-growth bonus), bleiWage (the BLEI-gated wage-growth bonus),
+ *    pthCost (PTH's 35% cost reduction, and with it the equity routing it funds),
+ *    pthEquity (equity routing and liquid appreciation; the saving stays in wealth).
+ *    The v4.14 pathway-decomposition item (Good First Issues, v4.14 (b)).
+ *  SURPLUS_CONSUMPTION_SHARE — the share of income above the agent's own basket cost that the
+ *    agent consumes. The engine consumes exactly the basket (0), so every dollar above it is saved. */
+var PATHWAY_OFF = {relief:false, conversion:false, octave:false, octaveWage:false, bleiWage:false, pthCost:false, pthEquity:false};
+var SURPLUS_CONSUMPTION_SHARE = 0;
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 
 function lognormal(mu,sigma){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.exp(mu+sigma*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v));}
@@ -267,7 +291,10 @@ function runYear(agentSet,yr,p,recSt){
    * basket at the $1,200 reference, in proportion above and below it, capped at 50%. At $1,200
    * this is exactly 0.80, so every $1,200 preset and the seed-42 regression are bit-identical;
    * Stress Test ($900) and any run at another BU amount move. The 50% cap is a placeholder. */
-  var ccoReliefF=CCO_RELIEF_FLAT?0.80:1-Math.min(CFG.CCO_RELIEF_CAP,CFG.CCO_RELIEF_AT_REF*buEff/CFG.CCO_RELIEF_REF_BU);
+  /* v4.21 units fix, ported from index.html (see its comment): the relief share reads BU in
+   * year-0 dollars, buEff / priceIdx. RELIEF_PRICE_LEGACY (harness-only) restores v4.19-v4.20. */
+  var priceIdx=RELIEF_PRICE_LEGACY?1:Math.pow(1+inflRate,yr);
+  var ccoReliefF=CCO_RELIEF_FLAT?0.80:1-Math.min(CFG.CCO_RELIEF_CAP,CFG.CCO_RELIEF_AT_REF*buEff/(CFG.CCO_RELIEF_REF_BU*priceIdx));
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
@@ -281,24 +308,25 @@ function runYear(agentSet,yr,p,recSt){
     var uPtfAdopt=RNG();
     var bleiCheck=agentBLEI(a,buEff,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
     var wg=CFG.WAGE_BASE_GROWTH;
-    if(bleiCheck>CFG.BLEI_PRECARIOUS_MAX){
+    if(bleiCheck>CFG.BLEI_PRECARIOUS_MAX&&!PATHWAY_OFF.bleiWage){  // v4.21: harness-only pathway switch
       var drFactor=1/(1+0.5*Math.max(0,a.wage/CFG.WAGE_MEDIAN_SIU-1));
       wg+=CFG.WAGE_BLEI_BONUS*Math.max(0.1,drFactor);
     }
-    wg+=a.octave*CFG.WAGE_OCTAVE_BONUS;
+    if(!PATHWAY_OFF.octaveWage)wg+=a.octave*CFG.WAGE_OCTAVE_BONUS;  // v4.21: harness-only pathway switch
     if(p.cip)wg+=p.cipDemo*0.005;
     wg-=popAIDisp*((typeof a.automationRisk==='number'&&!isNaN(a.automationRisk))?a.automationRisk:0.5);  /* v4.17 parity: `||0.5` read a draw of exactly 0 as 0.5 */
     a.wage=Math.max(a.wage*0.80,a.wage*(1+wg));
     if(isNaN(a.wage))a.wage=1;
     var cf=1.0;
     if(p.ptf&&a.inPTF)cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));
-    if(p.pth&&a.inPTH)cf*=0.65;
-    if(p.ccoOn&&a.inCCO&&p.bu>0)cf*=ccoReliefF;  // v4.19: was a flat 0.80 (see ccoReliefF)
+    if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost)cf*=0.65;  // v4.21: harness-only pathway switch
+    if(p.ccoOn&&a.inCCO&&p.bu>0){if(!PATHWAY_OFF.relief)cf*=ccoReliefF;}  // v4.19: was a flat 0.80 (see ccoReliefF). v4.21: pathway switch
     else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf*=ccoReliefF;emergN++;}  // v4.19: emergency enrollment
     var mainLoopCostUSD=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);
     var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
     var costUSD=mainLoopCostUSD*cf;
     a.wealth+=annualWageUSD-costUSD;
+    if(SURPLUS_CONSUMPTION_SHARE>0)a.wealth-=SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD);  // v4.21: harness-only (saving mode)
     a.yrWageUSD=annualWageUSD;a.yrCostUSD=costUSD;a.yrBasketUSD=mainLoopCostUSD;a.yrConvUSD=0;  /* v4.17: income/basket poverty inputs (no RNG) */
     if(isNaN(a.wealth))a.wealth=0;
     if(p.ccoOn&&a.inCCO){
@@ -323,7 +351,7 @@ function runYear(agentSet,yr,p,recSt){
       var rate=Math.min(baseRate*phi*ptfB,p.maxMult*(p.phi?CFG.PHI_RATIO:1.0));
       var bTax=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax;
       var progTax=Math.min(CFG.PROG_TAX_MAX,bTax+Math.max(0,(rate-CFG.PROG_PIVOT)*CFG.PROG_RATE));
-      var convGain=spend*rate*(1-progTax)*cipB*incomeShock;
+      var convGain=PATHWAY_OFF.conversion?0:spend*rate*(1-progTax)*cipB*incomeShock;  // v4.21: pathway switch
       a.wealth+=convGain;totalConversion+=convGain;a.yrConvUSD=convGain;
       if(isNaN(a.wealth))a.wealth=0;
       if(a.octave<p.maxOct){
@@ -334,11 +362,11 @@ function runYear(agentSet,yr,p,recSt){
         var lam=(typeof a.lambda==='number'&&!isNaN(a.lambda))?a.lambda:(CFG.FBS_LAMBDA_LO+CFG.FBS_LAMBDA_HI)/2;
         if(p.cip)lam*=(1+p.cipDemo*CFG.FBS_CIP_LAMBDA_BOOST);
         var pAdvance=1-Math.exp(-lam*fbs);
-        if(uAdvance<pAdvance)a.octave++;
+        if(uAdvance<pAdvance&&!PATHWAY_OFF.octave)a.octave++;  // v4.21: pathway switch
       }
       if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&ptfCapAllows()){a.inPTF=uSzhPtfShare<p.ptfShare;if(a.inPTF&&p.ptfCap)ptfLiveCount++;}
     }
-    if(p.pth&&a.inPTH){
+    if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthEquity&&!PATHWAY_OFF.pthCost){  // v4.21: pathway switches (off: no routing, no appreciation)
       if(typeof a.pthTenure!=='number'||isNaN(a.pthTenure))a.pthTenure=0;
       a.pthTenure+=1;
       var cfWithoutPTH=cf/0.65;
@@ -777,7 +805,7 @@ function unitSuite(F){
   return out;
 }
 
-Object.assign(module.exports, { unitSuite, unitTargets, HIGH_AUTOMATION, setAutomationSampler:function(legacy){AUTOMATION_SAMPLER_LEGACY=!!legacy;}, shockRun, shockStudy, stabRuleText, setStabSwitches:function(n,flat){BU_ALLOCATIONS_PER_YEAR=n;CCO_RELIEF_FLAT=flat;}, CFG, mulberry32, runScenario, trajectory, baselineFor, ccoOnlyFor, extremePovertyOf, FULL_INTEGRATION, BASELINE, CCO_ONLY, STRESS_TEST, ADVERSE_REFERENCE });
+Object.assign(module.exports, { runYear, makeLatentPopulation, instantiateAgent, agentBLEI, housingDistressOf, housingDistressYear0, buildRecessionPath, calcMetrics, bleiMetrics, setRNG:function(r){RNG=r;}, getRNG:function(){return RNG;}, unitSuite, unitTargets, HIGH_AUTOMATION, setAutomationSampler:function(legacy){AUTOMATION_SAMPLER_LEGACY=!!legacy;}, setReliefPriceLegacy:function(v){RELIEF_PRICE_LEGACY=!!v;}, shockRun, shockStudy, stabRuleText, setStabSwitches:function(n,flat){BU_ALLOCATIONS_PER_YEAR=n;CCO_RELIEF_FLAT=flat;}, CFG, mulberry32, runScenario, trajectory, baselineFor, ccoOnlyFor, extremePovertyOf, FULL_INTEGRATION, BASELINE, CCO_ONLY, STRESS_TEST, ADVERSE_REFERENCE });
 
 function stabRuleText(p){
   if(!p.stab)return 'off';
@@ -879,6 +907,13 @@ function shockRunWith(p,seed,multFor){
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
+  /* v4.21: `--agents=N` sets the population of every run in every mode (default 500, the page's
+   * reference population). Seeds and agents are separate axes: the project's earlier "N=5,000"
+   * studies were 5,000 seeds of 500 agents; `--agents` scales the population inside each run. */
+  var AGENTS_ARG = process.argv.filter(function(a){ return /^--agents=\d+$/.test(a); })[0];
+  process.argv = process.argv.filter(function(a){ return !/^--agents=/.test(a); });
+  if (AGENTS_ARG){ var nAgArg = parseInt(AGENTS_ARG.split('=')[1], 10); [FULL_INTEGRATION, BASELINE, STRESS_TEST, ADVERSE_REFERENCE, HIGH_AUTOMATION, CCO_ONLY].forEach(function(q){ q.nAgents = nAgArg; }); }
+  var AG = FULL_INTEGRATION.nAgents;
   var mode = process.argv[2] || 'validate';
 
   if (mode === 'validate') {
@@ -887,13 +922,14 @@ if (require.main === module) {
      * the v4.20 figures, then the legacy automation sampler at the old 0.47 share against v4.19's,
      * which proves the before/after switch reproduces the previous release exactly. */
     CFG.WEALTH_FLOOR = -10000; // shipped default
+    if (AG !== 500){ console.log('validate runs the documented 500-agent populations; --agents is ignored here'); [FULL_INTEGRATION, BASELINE, STRESS_TEST, ADVERSE_REFERENCE, HIGH_AUTOMATION, CCO_ONLY].forEach(function(q){ q.nAgents = 500; }); }
     var r = runScenario(FULL_INTEGRATION, 42);
     console.log('=== Validation: seed 42, Full Integration, 20yr, WEALTH_FLOOR=-10000 (shipped default) ===');
     console.log(JSON.stringify(r, null, 2));
     var KEYS = [['bleiMed','Median BLEI (d)'],['bleiPovPct','BLEI poverty (%)'],['wealth','Median wealth ($)'],['pov','Wealth poverty (%)'],
       ['gini','Gini, EDC-adj.'],['stab','System Stability (%)'],['avgEDC','Avg EDC (%)'],['fracAtFloor','Pinned at the floor (share)']];
     var DOC = {
-      'v4.20 (shipped)': {bleiMed:1975, bleiPovPct:13.2, wealth:570661, pov:15.8, gini:0.518, stab:88.8, avgEDC:24.2, fracAtFloor:0.088},
+      'v4.21 (shipped)': {bleiMed:1975, bleiPovPct:13.2, wealth:570661, pov:15.8, gini:0.518, stab:88.8, avgEDC:24.2, fracAtFloor:0.088},
       'v4.19 (legacy automation sampler, share 0.47)': {bleiMed:1965, bleiPovPct:13.6, wealth:559223, pov:16.6, gini:0.534, stab:88.5, avgEDC:24.9, fracAtFloor:0.106}
     };
     function check(label, got){
@@ -903,12 +939,32 @@ if (require.main === module) {
         console.log('  ' + (ok ? 'ok  ' : 'FAIL') + '  ' + k[1] + ': ' + got[k[0]] + (ok ? '' : '  (documented ' + want[k[0]] + ')')); });
       return bad;
     }
-    var fails = check('v4.20 (shipped)', r);
+    var fails = check('v4.21 (shipped)', r);
     var savedShare = CFG.AUTO_HIGH_SHARE; AUTOMATION_SAMPLER_LEGACY = true; CFG.AUTO_HIGH_SHARE = 0.47;
     var rl = runScenario(FULL_INTEGRATION, 42);
     AUTOMATION_SAMPLER_LEGACY = false; CFG.AUTO_HIGH_SHARE = savedShare;
     fails = fails.concat(check('v4.19 (legacy automation sampler, share 0.47)', rl));
-    console.log(fails.length ? '\nVALIDATION FAILED: ' + fails.join(', ') : '\nVALIDATION PASSED: both documented regressions reproduce exactly.');
+    /* v4.21: stored seed-42 fixtures for every preset (the v4.12 test-hierarchy item's "regression
+     * fixtures beyond the single seed-42 table"), and a check that RELIEF_PRICE_LEGACY reproduces
+     * v4.20's two inflation presets, the only ones the v4.21 relief fix moves. */
+    var PRESET_KEYS = [['pov','wealth poverty %'],['wealth','median wealth $'],['bleiMed','median BLEI d'],['gini','Gini'],['bleiPovPct','BLEI poverty %']];
+    var PRESET_DOC = [
+      ['Full Integration', FULL_INTEGRATION, {pov:15.8, wealth:570661, bleiMed:1975, gini:0.518, bleiPovPct:13.2}],
+      ['CCO Only', CCO_ONLY, {pov:24.8, wealth:427239, bleiMed:1283, gini:0.575, bleiPovPct:21}],
+      ['Traditional Welfare Baseline (3%)', BASELINE, {pov:68.8, wealth:-10000, bleiMed:8, gini:0.824, bleiPovPct:67.6}],
+      ['High Automation (25yr)', HIGH_AUTOMATION, {pov:27.8, wealth:382123, bleiMed:1351, gini:0.603, bleiPovPct:25.8}],
+      ['Adverse Environment', ADVERSE_REFERENCE, {pov:36.8, wealth:205005, bleiMed:723, gini:0.658, bleiPovPct:32.4}],
+      ['Stress Test', STRESS_TEST, {pov:59.8, wealth:-10000, bleiMed:16, gini:0.785, bleiPovPct:57.2}],
+      ['Adverse Environment, RELIEF_PRICE_LEGACY (= v4.20)', ADVERSE_REFERENCE, {pov:35, wealth:218851, bleiMed:819, gini:0.646, bleiPovPct:31.2}, true],
+      ['Stress Test, RELIEF_PRICE_LEGACY (= v4.20)', STRESS_TEST, {pov:59, wealth:-10000, bleiMed:16, gini:0.781, bleiPovPct:56.6}, true]];
+    console.log('\nSeed-42 preset fixtures (v4.21):');
+    PRESET_DOC.forEach(function(d){
+      RELIEF_PRICE_LEGACY = !!d[3]; var g = runScenario(d[1], 42); RELIEF_PRICE_LEGACY = false;
+      var bad = PRESET_KEYS.filter(function(k){ return g[k[0]] !== d[2][k[0]]; });
+      if (bad.length) fails.push(d[0] + ': ' + bad.map(function(k){ return k[1] + ' ' + g[k[0]] + ' (documented ' + d[2][k[0]] + ')'; }).join('; '));
+      console.log('  ' + (bad.length ? 'FAIL' : 'ok  ') + '  ' + d[0] + ': ' + PRESET_KEYS.map(function(k){ return g[k[0]]; }).join(' / '));
+    });
+    console.log(fails.length ? '\nVALIDATION FAILED: ' + fails.join(', ') : '\nVALIDATION PASSED: the documented regressions and all preset fixtures reproduce exactly.');
     if (fails.length) process.exitCode = 1;
   }
 
@@ -953,7 +1009,7 @@ if (require.main === module) {
     }
     if (secA === 'sweep' || secA === 'all'){
       var saveA = [CFG.AUTO_HIGH_SHARE, CFG.AUTO_HIGH_A, CFG.AUTO_LOW_B];
-      console.log('=== Outcomes by variant: seeds 1-' + nA + ', 500 agents (mean across runs, final year) ===');
+      console.log('=== Outcomes by variant: seeds 1-' + nA + ', ' + AG + ' agents (mean across runs, final year) ===');
       console.log('variant | scenario | wealth poverty % | BLEI poverty % | median wealth | median BLEI (d) | seed 42 wealth poverty % / median wealth');
       [['High Automation (25yr)', HIGH_AUTOMATION], ['Adverse Environment', ADVERSE_REFERENCE], ['Stress Test', STRESS_TEST], ['Full Integration (automation off)', FULL_INTEGRATION]].forEach(function(sc){
         VARIANTS.forEach(function(v){
@@ -1033,7 +1089,7 @@ if (require.main === module) {
 
   /* v4.16: the two studies behind CONTRIBUTING.md's v4.16 Release Notes, so their tables can be
    * regenerated rather than taken on trust. Both hold shocks and automation off (the harness's
-   * documented scope) and aggregate seeds 1..N at 500 agents / 20 years. */
+   * documented scope) and aggregate seeds 1..N at --agents (default 500) agents / 20 years. */
   function aggregate(p, N){
     var keys = ['pov','gini','wealth','bleiMed','bleiPovPct','fracAtFloor','incPov','incPovExt','basketPov','basketPovGross','stab','recessionYears'], s = {}, pinned = 0, medW = [];  // v4.17: +incPov, basketPov, stab, recessionYears
     keys.forEach(function(k){ s[k] = 0; });
@@ -1052,7 +1108,7 @@ if (require.main === module) {
   if (mode === 'infl-match') {
     CFG.WEALTH_FLOOR = -10000;
     var nI = parseInt(process.argv[3] || '500', 10);
-    console.log('=== Baseline inflation asymmetry (v4.16): seeds 1-' + nI + ', 500 agents, 20yr, shocks off ===');
+    console.log('=== Baseline inflation asymmetry (v4.16): seeds 1-' + nI + ', ' + AG + ' agents, 20yr, shocks off ===');
     [['Baseline @ 3% (shipped default)', BASELINE],
      ['Baseline @ 0% (matched to Full Integration)', Object.assign({}, BASELINE, {inflRate:0})],
      ['Full Integration @ 0% (shipped default)', FULL_INTEGRATION],
@@ -1089,7 +1145,7 @@ if (require.main === module) {
     var nH = parseInt(process.argv[3] || '500', 10);
     var FI = runMany(FULL_INTEGRATION, nH), FI3 = runMany(Object.assign({}, FULL_INTEGRATION, {inflRate:0.03}), nH);
     var B3 = runMany(BASELINE, nH), B0 = runMany(Object.assign({}, BASELINE, {inflRate:0}), nH);
-    console.log('=== Poverty reduction by comparator (v4.17): seeds 1-' + nH + ', 500 agents, 20yr, shocks off ===');
+    console.log('=== Poverty reduction by comparator (v4.17): seeds 1-' + nH + ', ' + AG + ' agents, 20yr, shocks off ===');
     console.log('comparator\tmeasure\tcomparator %\tFull Integration %\treduction (ratio of means)\treduction (mean of per-run)');
     [['pov','wealth poverty'],['bleiPovPct','BLEI poverty'],['incPov','relative income poverty (cash)'],['incPovExt','relative income poverty (incl. in-kind)'],['basketPov','basket poverty (net)'],['basketPovGross','basket poverty (gross)']].forEach(function(m){
       [['Baseline @3% (shipped)', B3, FI, false],['Baseline @0% (inflation-matched)', B0, FI, false],['Baseline @3% vs FI @3%', B3, FI3, false],['Year 0 (policy-neutral)', FI, FI, true]].forEach(function(c){
@@ -1125,7 +1181,7 @@ if (require.main === module) {
     /* NEEC notes 5 and 6: recessions in the harness; environment vs settings stress. */
     CFG.WEALTH_FLOOR = -10000;
     var nS = parseInt(process.argv[3] || '500', 10);
-    console.log('=== Stress decomposition (v4.17): seeds 1-' + nS + ', 500 agents, 20yr ===');
+    console.log('=== Stress decomposition (v4.17): seeds 1-' + nS + ', ' + AG + ' agents, 20yr ===');
     [['Full Integration (reference environment)', FULL_INTEGRATION],
      ['Adverse Environment @ reference settings', ADVERSE_REFERENCE],
      ['Weaker settings @ reference environment', Object.assign({}, STRESS_TEST, {shock:false, automation:false, inflRate:0})],
@@ -1157,7 +1213,7 @@ if (require.main === module) {
       ['CCO Only', CCO_ONLY], ['Full Integration', FULL_INTEGRATION], ['Adverse Environment', ADVERSE_REFERENCE],
       ['Baseline under the adverse environment (3%)', baselineFor(ADVERSE_REFERENCE, false)], ['Stress Test', STRESS_TEST], ['CCO Only under the adverse environment', ccoOnlyFor(ADVERSE_REFERENCE)]];
     var RUNS = {};
-    console.log('=== Extreme poverty overlay (v4.18): seeds 1-' + nE + ', 500 agents, 20yr. Per 10,000 people (housing distress in %) ===');
+    console.log('=== Extreme poverty overlay (v4.18): seeds 1-' + nE + ', ' + AG + ' agents, 20yr. Per 10,000 people (housing distress in %) ===');
     console.log('scenario\ttotal\teconomic\tSMI\tvoluntary\thousing distress\tdistress, CCO participants\tdistress, non-participants');
     SC.forEach(function(c){
       var r = runMany(c[1], nE); RUNS[c[0]] = r;
@@ -1226,7 +1282,7 @@ if (require.main === module) {
       /* the engine's declared rule and the outside-runYear multiplier must agree exactly */
       var e1 = shockRun(arm(REC, {stabMult:1.35}), 7), e2 = shockRunWith(REC, 7, function(y, rp){ return rp[y].active ? 1.35 : 1; });
       console.log('engine rule = outside multiplier (seed 7, x1.35): ' + (JSON.stringify(e1.dAll) === JSON.stringify(e2.dAll) ? 'identical' : 'DIFFERENT'));
-      console.log('=== Rules at the reference settings: Full Integration + recessions, seeds 1-' + nS + ', 500 agents, 20yr ===');
+      console.log('=== Rules at the reference settings: Full Integration + recessions, seeds 1-' + nS + ', ' + AG + ' agents, 20yr ===');
       console.log(HDR);
       table(REC, R, nS).forEach(function(a, i){ line(R[i].l, a); });
     }
@@ -1258,6 +1314,243 @@ if (require.main === module) {
           console.log(c[0] + ', ' + v[0] + ' | ' + mean(col(rs,'pov')).toFixed(2) + ' | ' + mean(col(rs,'basketPov')).toFixed(2) + ' | ' + mean(col(rs,'distress')).toFixed(2) + ' | ' + (mean(col(rs,'epTotal'))*100).toFixed(1) + ' | $' + Math.round(mean(col(rs,'wealth'))).toLocaleString());
         });
       });
+    }
+  }
+
+  /* ─── v4.21 modes: the studies behind CONTRIBUTING.md's v4.21 Release Notes ─── */
+  function tCI(arr){ var n = arr.length, m = mean(arr), v = 0; arr.forEach(function(x){ v += (x-m)*(x-m); }); var sd = n > 1 ? Math.sqrt(v/(n-1)) : 0, df = Math.max(1, n-1);
+    return {m:m, h:(1.96 + 2.37/df)*sd/Math.sqrt(n), sd:sd, n:n}; }  // Cornish-Fisher t(0.975, df): within 0.002 of the exact value from df 30
+  function fmtCI(arr, d){ var c = tCI(arr); return c.m.toFixed(d) + ' ±' + c.h.toFixed(d); }
+  function trackRun(p, seed, ag0){  /* one run with the saving tallies; draws exactly as runScenario() does */
+    RNG = mulberry32(seed + 700003);
+    var ag = makeLatentPopulation(p.nAgents).map(function(l){ return instantiateAgent(l, p); });
+    var rp = p.shock ? buildRecessionPath(p.years, seed) : null;
+    RNG = mulberry32(seed);
+    var inc = 0, net = 0;
+    for (var y = 0; y < p.years; y++){
+      runYear(ag, y, p, rp ? rp[y] : {active:false, incomeMultiplier:1.0, yearsLeft:0});
+      ag.forEach(function(a){ var i = a.yrWageUSD + (a.yrConvUSD || 0); inc += i; net += i - a.yrCostUSD - SURPLUS_CONSUMPTION_SHARE*Math.max(0, a.yrWageUSD - a.yrCostUSD); });
+    }
+    var m = calcMetrics(ag, p.ccoOn, p.pth), b = bleiMetrics(ag, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf), ib = incomeBasketMetrics(ag);
+    return {pov:m.pov*100, wealth:m.med, gini:m.gini, bleiPov:(b.tc[0]+b.tc[1])/b.n*100, bleiMed:b.med, basketPov:ib.basketPov, saveRate:net/inc*100, agents:ag};
+  }
+
+  if (mode === 'largen') {
+    /* Large-N confirmation of the headline figures: `node harness.js largen <seeds> <section> --agents=N`.
+     * Sections: headline (the v4.17 comparator table, with 95% CIs across runs), presets, popsize (Full
+     * Integration at 250-20,000 agents, holding total agents per size fixed, to look for finite-population
+     * effects), all. Optional --out=<file> writes every run's figures as JSON. */
+    CFG.WEALTH_FLOOR = -10000;
+    var OUT = process.argv.filter(function(a){ return /^--out=/.test(a); })[0];
+    process.argv = process.argv.filter(function(a){ return !/^--out=/.test(a); });
+    var nL = parseInt(process.argv[3] || '500', 10), secL = process.argv[4] || 'all', dump = {agents:AG, seeds:nL, version:'4.21'}, t0L = Date.now();
+    var KL = [['pov','wealth poverty %',1],['bleiPovPct','BLEI poverty %',1],['basketPov','basket poverty (net) %',1],['basketPovGross','basket poverty (gross) %',1],['incPov','relative income poverty %',1],['incPovExt','… incl. in-kind %',1],
+      ['wealth','median wealth $',0],['bleiMed','median BLEI d',0],['gini','Gini (EDC-adj.)',3],['epTotal','extreme poverty /10k',1],['distress','housing distress %',1],['fracAtFloor','pinned at floor %',1]];
+    function lvl(runs, k){ return col(runs, k).map(function(v){ return k === 'epTotal' ? v*100 : k === 'fracAtFloor' ? v*100 : v; }); }
+    function levels(name, runs){ console.log(name + ': ' + KL.map(function(k){ return k[1] + ' ' + fmtCI(lvl(runs, k[0]), k[2]); }).join(' | ')); }
+    if (secL === 'headline' || secL === 'all'){
+      var FIL = runMany(FULL_INTEGRATION, nL), FI3L = runMany(Object.assign({}, FULL_INTEGRATION, {inflRate:0.03}), nL), B3L = runMany(BASELINE, nL), B0L = runMany(Object.assign({}, BASELINE, {inflRate:0}), nL);
+      dump.headline = {FI:FIL, FI3:FI3L, B3:B3L, B0:B0L};
+      console.log('=== Headline (v4.21 large-N): seeds 1-' + nL + ', ' + AG + ' agents, 20yr, shocks off. Levels are means across runs ±95% CI ===');
+      levels('Full Integration', FIL); levels('Baseline @3% (shipped)', B3L); levels('Baseline @0% (matched)', B0L); levels('Full Integration @3%', FI3L);
+      console.log('year 0 (policy-neutral): wealth poverty ' + fmtCI(col0(FIL,'pov'),1) + ' | BLEI poverty ' + fmtCI(col0(FIL,'bleiPovNeutral'),1) + ' | basket poverty ' + fmtCI(col0(FIL,'basketPov'),1) + ' | relative income poverty ' + fmtCI(col0(FIL,'incPov'),1));
+      console.log('comparator | measure | comparator % | Full Integration % | reduction (ratio of means) | reduction (mean of per-run)');
+      [['pov','wealth poverty'],['bleiPovPct','BLEI poverty'],['incPov','relative income poverty (cash)'],['incPovExt','relative income poverty (incl. in-kind)'],['basketPov','basket poverty (net)'],['basketPovGross','basket poverty (gross)']].forEach(function(m){
+        [['Baseline @3% (shipped)', B3L, FIL, false],['Baseline @0% (inflation-matched)', B0L, FIL, false],['Baseline @3% vs FI @3%', B3L, FI3L, false],['Year 0 (policy-neutral)', FIL, FIL, true]].forEach(function(c){
+          var k0 = m[0] === 'pov' ? 'pov' : m[0] === 'bleiPovPct' ? 'bleiPovNeutral' : m[0];
+          var cmp = c[3] ? col0(c[1], k0) : col(c[1], m[0]), fi = col(c[2], m[0]);
+          var pr = mean(cmp.map(function(v, i){ return v > 0 ? (1 - fi[i]/v)*100 : 0; }));
+          console.log(c[0] + ' | ' + m[1] + ' | ' + f1(mean(cmp)) + ' | ' + f1(mean(fi)) + ' | ' + f1((1 - mean(fi)/mean(cmp))*100) + '% | ' + f1(pr) + '%');
+        });
+      });
+    }
+    if (secL === 'presets' || secL === 'all'){
+      console.log('=== Presets (v4.21 large-N): seeds 1-' + nL + ', ' + AG + ' agents. Means across runs ±95% CI ===');
+      dump.presets = {};
+      [['CCO Only', CCO_ONLY], ['High Automation (25yr)', HIGH_AUTOMATION], ['Adverse Environment', ADVERSE_REFERENCE], ['Stress Test', STRESS_TEST],
+       ['Weaker settings @ reference environment', Object.assign({}, STRESS_TEST, {shock:false, automation:false, inflRate:0})],
+       ['CCO Only, adverse environment', ccoOnlyFor(ADVERSE_REFERENCE)], ['Baseline, adverse environment (3%)', baselineFor(ADVERSE_REFERENCE, false)]].forEach(function(c){
+        var rs = runMany(c[1], nL); dump.presets[c[0]] = rs; levels(c[0], rs);
+      });
+    }
+    if (secL === 'popsize' || secL === 'all'){
+      var totL = parseInt(process.argv[5] || '1250000', 10);
+      console.log('=== Population size (v4.21): Full Integration, ~' + totL.toLocaleString() + ' agent-runs per size (seeds = total / agents). Means ±95% CI ===');
+      console.log('agents | seeds | wealth poverty % | BLEI poverty % | basket poverty % | median wealth $ | median BLEI d | Gini | pinned at floor %');
+      dump.popsize = {};
+      [250, 500, 1000, 2000, 5000, 10000, 20000].forEach(function(nA){
+        var sd = Math.max(30, Math.round(totL/nA)), rs = runMany(Object.assign({}, FULL_INTEGRATION, {nAgents:nA}), sd);
+        dump.popsize[nA] = rs.map(function(r){ return {pov:r.pov, bleiPovPct:r.bleiPovPct, basketPov:r.basketPov, wealth:r.wealth, bleiMed:r.bleiMed, gini:r.gini, fracAtFloor:r.fracAtFloor}; });
+        console.log(nA + ' | ' + sd + ' | ' + fmtCI(col(rs,'pov'),2) + ' | ' + fmtCI(col(rs,'bleiPovPct'),2) + ' | ' + fmtCI(col(rs,'basketPov'),2) + ' | ' + fmtCI(col(rs,'wealth'),0) + ' | ' + fmtCI(col(rs,'bleiMed'),0) + ' | ' + fmtCI(col(rs,'gini'),4) + ' | ' + fmtCI(lvl(rs,'fracAtFloor'),2));
+      });
+    }
+    if (OUT) require('fs').writeFileSync(OUT.split('=')[1], JSON.stringify(dump));
+    console.error('largen runtime ' + ((Date.now() - t0L)/1000).toFixed(0) + 's');
+  }
+
+  if (mode === 'pathways') {
+    /* v4.14 good-first-issue (b): how much of Full Integration's result comes through each channel.
+     * Each arm switches one channel off (PATHWAY_OFF), CRN-paired with the full run; the effect of a
+     * channel is full minus arm. Channels interact (octave feeds both wages and conversion rates), so
+     * the single effects need not sum to the combined one; the gap is reported as the interaction. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nW = parseInt(process.argv[3] || '200', 10);
+    var ARMS = [['CCO cost relief', ['relief']], ['conversion proceeds', ['conversion']], ['octave advancement', ['octave']], ['octave wage bonus', ['octaveWage']],
+      ['BLEI-gated wage bonus', ['bleiWage']], ['PTH cost reduction (and the equity it funds)', ['pthCost']], ['PTH equity routing and appreciation', ['pthEquity']],
+      ['all four CCO channels', ['relief','conversion','octave','octaveWage']]];
+    function armRuns(off){ Object.keys(PATHWAY_OFF).forEach(function(k){ PATHWAY_OFF[k] = off.indexOf(k) >= 0; }); var r = runMany(FULL_INTEGRATION, nW); Object.keys(PATHWAY_OFF).forEach(function(k){ PATHWAY_OFF[k] = false; }); return r; }
+    var FULLW = armRuns([]);
+    function d(rs, k){ return fmtCI(col(FULLW, k).map(function(v, i){ return v - rs[i][k]; }), k === 'wealth' ? 0 : 2); }
+    console.log('=== Pathway decomposition (v4.21): Full Integration, seeds 1-' + nW + ', ' + AG + ' agents. Contribution of each channel = full run minus the run without it (paired, ±95% CI) ===');
+    console.log('full run: wealth poverty ' + f1(mean(col(FULLW,'pov'))) + '%, BLEI poverty ' + f1(mean(col(FULLW,'bleiPovPct'))) + '%, basket poverty ' + f1(mean(col(FULLW,'basketPov'))) + '%, median wealth $' + Math.round(mean(col(FULLW,'wealth'))).toLocaleString());
+    console.log('channel | median wealth $ | wealth poverty pp | BLEI poverty pp | basket poverty pp');
+    var single = 0;
+    ARMS.forEach(function(a, i){ var rs = armRuns(a[1]); var dw = mean(col(FULLW,'wealth')) - mean(col(rs,'wealth')); if (i < 4) single += dw;
+      console.log(a[0] + ' | ' + d(rs,'wealth') + ' | ' + d(rs,'pov') + ' | ' + d(rs,'bleiPovPct') + ' | ' + d(rs,'basketPov'));
+      if (i === 7) console.log('interaction among the four CCO channels (median wealth): combined minus the sum of single effects = $' + Math.round(dw - single).toLocaleString()); });
+  }
+
+  if (mode === 'saving') {
+    /* v4.21: agents consume exactly their own (discounted) basket, so every dollar above it is saved.
+     * `decile` shows the saving rates that implies; `sweep` consumes a share of the surplus
+     * (SURPLUS_CONSUMPTION_SHARE, harness-only) and shows what moves. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nV = parseInt(process.argv[3] || '200', 10), secV = process.argv[4] || 'all';
+    if (secV === 'decile' || secV === 'all'){
+      var dec = []; for (var q = 0; q < 10; q++) dec.push({inc:0, cost:0, conv:0, w0:0, w20:0, n:0});
+      for (var sV = 1; sV <= nV; sV++){
+        RNG = mulberry32(sV + 700003); var agV = makeLatentPopulation(FULL_INTEGRATION.nAgents).map(function(l){ return instantiateAgent(l, FULL_INTEGRATION); });
+        var w0V = agV.map(function(a){ return a.wealth; }), cumV = agV.map(function(){ return {inc:0, cost:0, conv:0}; });
+        RNG = mulberry32(sV);
+        for (var yV = 0; yV < FULL_INTEGRATION.years; yV++){ runYear(agV, yV, FULL_INTEGRATION, {active:false, incomeMultiplier:1, yearsLeft:0}); agV.forEach(function(a, i){ cumV[i].inc += a.yrWageUSD; cumV[i].cost += a.yrCostUSD; cumV[i].conv += a.yrConvUSD || 0; }); }
+        agV.map(function(a, i){ return i; }).sort(function(i, j){ return agV[i].wealth - agV[j].wealth; }).forEach(function(i, r){ var b = dec[Math.min(9, Math.floor(r/agV.length*10))]; b.inc += cumV[i].inc; b.cost += cumV[i].cost; b.conv += cumV[i].conv; b.w0 += w0V[i]; b.w20 += agV[i].wealth; b.n++; });
+      }
+      console.log('=== Where Full Integration wealth comes from: final-wealth deciles, seeds 1-' + nV + ', ' + AG + ' agents (per agent, 20-year totals) ===');
+      console.log('decile | wage income | own basket cost | conversion | starting wealth | final wealth | floor, PTH and other | 20-yr saving rate');
+      dec.forEach(function(b, i){ var f = function(k){ return '$' + Math.round(b[k]/b.n).toLocaleString(); };
+        console.log('D' + (i+1) + ' | ' + f('inc') + ' | ' + f('cost') + ' | ' + f('conv') + ' | ' + f('w0') + ' | ' + f('w20') + ' | $' + Math.round((b.w20 - b.w0 - (b.inc - b.cost + b.conv))/b.n).toLocaleString() + ' | ' + ((b.inc - b.cost + b.conv)/(b.inc + b.conv)*100).toFixed(0) + '%'); });
+    }
+    if (secV === 'sweep' || secV === 'all'){
+      console.log('=== Consuming a share of the surplus above the basket (harness-only): seeds 1-' + nV + ', ' + AG + ' agents ===');
+      console.log('share consumed | scenario | 20-yr saving rate % | wealth poverty % | BLEI poverty % | basket poverty % | median wealth $ | Gini');
+      var keep = {};
+      [0, 0.5, 0.75, 0.9].forEach(function(sh){
+        SURPLUS_CONSUMPTION_SHARE = sh;
+        [['Full Integration', FULL_INTEGRATION], ['Baseline @0% (matched)', Object.assign({}, BASELINE, {inflRate:0})], ['Baseline @3% (shipped)', BASELINE]].forEach(function(c){
+          var rs = []; for (var s2 = 1; s2 <= nV; s2++){ var t = trackRun(c[1], s2); delete t.agents; rs.push(t); }
+          keep[sh + c[0]] = rs;
+          console.log(sh + ' | ' + c[0] + ' | ' + f1(mean(col(rs,'saveRate'))) + ' | ' + f1(mean(col(rs,'pov'))) + ' | ' + f1(mean(col(rs,'bleiPov'))) + ' | ' + f1(mean(col(rs,'basketPov'))) + ' | $' + Math.round(mean(col(rs,'wealth'))).toLocaleString() + ' | ' + mean(col(rs,'gini')).toFixed(3));
+        });
+        var fi = keep[sh + 'Full Integration'], b0 = keep[sh + 'Baseline @0% (matched)'];
+        console.log('   reduction vs matched Baseline at share ' + sh + ': wealth poverty ' + f1((1 - mean(col(fi,'pov'))/mean(col(b0,'pov')))*100) + '%, BLEI poverty ' + f1((1 - mean(col(fi,'bleiPov'))/mean(col(b0,'bleiPov')))*100) + '%');
+      });
+      SURPLUS_CONSUMPTION_SHARE = 0;
+    }
+  }
+
+  if (mode === 'v421') {
+    /* The investigation behind CONTRIBUTING.md's v4.21 Release Notes: why several v4.19/v4.20
+     * figures read counter-intuitively. Sections: hump | margin | neutralbu | relief | lines | ha42 | all. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nQ = parseInt(process.argv[3] || '200', 10), secQ = process.argv[4] || 'all';
+    var CALM = {active:false, incomeMultiplier:1, yearsLeft:0};
+    function popFor(P, s){ RNG = mulberry32(s + 700003); return makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); }); }
+    function poorB(a, P){ return agentBLEI(a, P.bu, P.ccoOn, P.pth, P.szh, P.szhCoh, P.ptf) < CFG.BLEI_PRECARIOUS_MAX; }
+    function poorN(a){ return agentBLEI(a, 0, false, false, false, 0, false) < CFG.BLEI_PRECARIOUS_MAX; }
+    if (secQ === 'hump' || secQ === 'all'){
+      var YQ = 40, PQ = Object.assign({}, FULL_INTEGRATION, {years:YQ}), tr = [], cells = {}, tot = 0, trans = {pp:0, pn:0, np:0, nn:0};
+      for (var yq = 0; yq <= YQ; yq++) tr.push({all:0, neu:0, part:0, non:0, wpov:0});
+      for (var sq = 1; sq <= nQ; sq++){
+        var agQ = popFor(PQ, sq), p0 = agQ.map(poorN), nq = agQ.length;
+        var recQ = function(y){ var t = tr[y], a = 0, ne = 0, pa = 0, pn = 0, no = 0, nn = 0, wp = 0;
+          agQ.forEach(function(x){ var b = poorB(x, PQ); a += b; ne += poorN(x); if (x.inCCO){ pa += b; pn++; } else { no += b; nn++; } wp += x.wealth < CFG.POVERTY_LINE; });
+          t.all += a/nq/nQ*100; t.neu += ne/nq/nQ*100; t.part += pa/pn/nQ*100; t.non += no/nn/nQ*100; t.wpov += wp/nq/nQ*100; };
+        recQ(0); RNG = mulberry32(sq);
+        for (var y2 = 0; y2 < YQ; y2++){ runYear(agQ, y2, PQ, CALM); recQ(y2+1);
+          if (y2+1 === 20) agQ.forEach(function(x, i){ var b = poorB(x, PQ), g = (x.inCCO ? 'CCO participant' : 'non-participant') + (x.inPTH ? ', PTH member' : ', not in PTH'); tot++;
+            cells['n|'+g] = (cells['n|'+g] || 0) + 1; if (b){ cells['p|'+g] = (cells['p|'+g] || 0) + 1; cells.poor = (cells.poor || 0) + 1; if (x.wealth <= CFG.WEALTH_FLOOR + 1e-6) cells.floor = (cells.floor || 0) + 1; if (x.yrWageUSD + (x.yrConvUSD || 0) < x.yrCostUSD) cells.deficit = (cells.deficit || 0) + 1; }
+            trans[(p0[i] ? 'p' : 'n') + (b ? 'p' : 'n')]++; }); }
+      }
+      console.log('=== BLEI poverty over 40 years, Full Integration: seeds 1-' + nQ + ', ' + AG + ' agents ===');
+      console.log('year | BLEI poverty (scenario rules) | (policy-neutral rules) | CCO participants | non-participants | wealth poverty');
+      [0,1,2,3,5,7,10,15,20,22,24,25,30,35,40].forEach(function(y){ var t = tr[y]; console.log(y + ' | ' + [t.all, t.neu, t.part, t.non, t.wpov].map(function(v){ return v.toFixed(1); }).join(' | ')); });
+      var cross = null; for (var y3 = 1; y3 <= YQ; y3++){ if (tr[y3].all < tr[0].neu && tr[y3-1].all >= tr[0].neu){ cross = y3; } }
+      console.log('first year after the peak at or below the year-0 policy-neutral level (' + tr[0].neu.toFixed(1) + '%): year ' + cross);
+      console.log('Year 20, BLEI poverty by group:');
+      Object.keys(cells).filter(function(k){ return k.indexOf('n|') === 0; }).sort().forEach(function(k){ var g = k.slice(2); console.log('  ' + g + ': ' + ((cells['p|'+g] || 0)/cells[k]*100).toFixed(1) + '% (population share ' + (cells[k]/tot*100).toFixed(1) + '%, contributes ' + ((cells['p|'+g] || 0)/tot*100).toFixed(2) + ' pp)'); });
+      console.log('  of the BLEI-poor at year 20: at the wealth floor ' + (cells.floor/cells.poor*100).toFixed(1) + '%, cash deficit in year 20 ' + (cells.deficit/cells.poor*100).toFixed(1) + '%');
+      console.log('  year 0 (policy-neutral) -> year 20: poor at both ' + (trans.pp/tot*100).toFixed(2) + '%, poor at year 0 only ' + (trans.pn/tot*100).toFixed(2) + '%, poor at year 20 only ' + (trans.np/tot*100).toFixed(2) + '%');
+      console.log('  CCO+PTH floor: one month of BU food value (BU x 990/1200) / CCO_PTH_DAILY_COST = ' + (FULL_INTEGRATION.bu*990/1200/CFG.CCO_PTH_DAILY_COST).toFixed(1) + ' days at $' + FULL_INTEGRATION.bu + '; >= 30 days from BU $' + Math.ceil(30*CFG.CCO_PTH_DAILY_COST*1200/990));
+    }
+    if (secQ === 'margin' || secQ === 'all'){
+      console.log('=== Excess recession distress vs how many participants are near the margin: seeds 1-' + nQ + ', ' + AG + ' agents ===');
+      console.log('environment | participants in distress, calm arm (recession years) | within one recession of distress | excess distress (pp) | excess as share of calm distress');
+      [['Full Integration + recessions', Object.assign({}, FULL_INTEGRATION, {shock:true})], ['Adverse Environment', ADVERSE_REFERENCE], ['CCO Only + recessions', Object.assign({}, CCO_ONLY, {shock:true})], ['Stress Test', STRESS_TEST]].forEach(function(c){
+        var P = c[1], dC = 0, band = 0, ex = 0, n = 0;
+        for (var s = 1; s <= nQ; s++){
+          var rp = buildRecessionPath(P.years, s), calmP = Object.assign({}, P, {shock:false});
+          var a1 = popFor(P, s), a2 = popFor(P, s), p1 = a1.filter(function(a){ return a.inCCO; }), p2 = a2.filter(function(a){ return a.inCCO; });
+          var R1 = mulberry32(s), R2 = mulberry32(s);
+          for (var y = 0; y < P.years; y++){
+            RNG = R1; runYear(a1, y, calmP, CALM); RNG = R2; runYear(a2, y, P, rp[y]);
+            if (rp[y].active){ var L = 1 - rp[y].incomeMultiplier, d = 0, b = 0;
+              p1.forEach(function(a){ var inc = a.yrWageUSD + (a.yrConvUSD || 0), h = inc + Math.max(0, a.yrWealthStartUSD) - a.yrCostUSD; if (h < 0) d++; else if (h < L*inc) b++; });
+              dC += d/p1.length; band += b/p1.length; ex += housingDistressOf(p2) - housingDistressOf(p1); n++; }
+          }
+        }
+        console.log(c[0] + ' | ' + (dC/n*100).toFixed(1) + '% | ' + (band/n*100).toFixed(1) + '% | ' + (ex/n*100).toFixed(2) + ' | ' + (ex/dC*100).toFixed(0) + '%');
+      });
+    }
+    if (secQ === 'neutralbu' || secQ === 'all'){
+      console.log('=== Shock-neutral multiplier vs BU amount: Full Integration + recessions, seeds 1-' + nQ + ', ' + AG + ' agents ===');
+      console.log('BU | no stabilizer (pp) | neutral multiplier | extra BU at neutrality ($/month) | extra relief (% of basket)');
+      [900, 1200, 1500, 1800].forEach(function(bu){
+        var st = shockStudy(Object.assign({}, FULL_INTEGRATION, {shock:true, bu:bu, stab:false}), nQ), pts = st.points, lo = null, hi = null;
+        pts.forEach(function(q){ if (q.partPP > 0){ if (!lo || q.m > lo.m) lo = q; } else if (!hi || q.m < hi.m) hi = q; });
+        var mu = lo && hi ? lo.m + (hi.m - lo.m)*lo.partPP/(lo.partPP - hi.partPP) : st.neutral.m;
+        console.log('$' + bu + ' | ' + st.none.partPP.toFixed(2) + ' | x' + st.neutral.m.toFixed(2) + ' (x' + mu.toFixed(3) + ' unrounded) | $' + Math.round((mu - 1)*bu) + ' | ' + (CFG.CCO_RELIEF_AT_REF*(mu - 1)*bu/CFG.CCO_RELIEF_REF_BU*100).toFixed(1) + '%');
+      });
+    }
+    if (secQ === 'relief' || secQ === 'all'){
+      var ADVC = Object.assign({}, ADVERSE_REFERENCE, {shock:false});
+      console.log('=== CCO relief share under inflation (Adverse Environment settings, recessions off, seed 1): a participant outside PTF and PTH, years 1 / 5 / 10 / 15 / 20 ===');
+      [['v4.20, no COLA', true, {}], ['v4.20, COLA', true, {cola:true, colaThresh:0}], ['v4.21, no COLA', false, {}], ['v4.21, COLA', false, {cola:true, colaThresh:0}]].forEach(function(v){
+        RELIEF_PRICE_LEGACY = v[1]; var P = Object.assign({}, ADVC, v[2]), ag = popFor(P, 1), out = []; RNG = mulberry32(1);
+        for (var y = 0; y < P.years; y++){ runYear(ag, y, P, CALM); var a = ag.filter(function(x){ return x.inCCO && !x.inPTF && !x.inPTH; })[0]; out.push(1 - a.yrCostUSD/a.yrBasketUSD); }
+        console.log(v[0] + ': ' + [0,4,9,14,19].map(function(i){ return (out[i]*100).toFixed(1) + '%'; }).join(' / '));
+      });
+      RELIEF_PRICE_LEGACY = false;
+      console.log('=== v4.20 vs v4.21 wherever inflation and CCO are both on: seeds 1-' + nQ + ', ' + AG + ' agents (final year) ===');
+      console.log('scenario | version | wealth poverty % | BLEI poverty % | basket poverty (net) % | housing distress % | extreme /10k | median wealth $ | median BLEI d');
+      [['Adverse Environment', ADVERSE_REFERENCE], ['Stress Test', STRESS_TEST], ['CCO Only, adverse environment', ccoOnlyFor(ADVERSE_REFERENCE)],
+       ['Adverse Environment + COLA', Object.assign({}, ADVERSE_REFERENCE, {cola:true, colaThresh:0})], ['Adverse Environment at 5%', Object.assign({}, ADVERSE_REFERENCE, {inflRate:0.05})],
+       ['Adverse Environment at 5% + COLA', Object.assign({}, ADVERSE_REFERENCE, {inflRate:0.05, cola:true, colaThresh:0})], ['Full Integration at 5.5%', Object.assign({}, FULL_INTEGRATION, {inflRate:0.055})],
+       ['Full Integration at 5.5% + COLA', Object.assign({}, FULL_INTEGRATION, {inflRate:0.055, cola:true, colaThresh:0})], ['Full Integration @3%', Object.assign({}, FULL_INTEGRATION, {inflRate:0.03})]].forEach(function(c){
+        [true, false].forEach(function(leg){ RELIEF_PRICE_LEGACY = leg; var rs = runMany(c[1], nQ); RELIEF_PRICE_LEGACY = false;
+          console.log(c[0] + ' | ' + (leg ? 'v4.20' : 'v4.21') + ' | ' + mean(col(rs,'pov')).toFixed(2) + ' | ' + mean(col(rs,'bleiPovPct')).toFixed(2) + ' | ' + f1(mean(col(rs,'basketPov'))) + ' | ' + f1(mean(col(rs,'distress'))) + ' | ' + f1(mean(col(rs,'epTotal'))*100) + ' | $' + Math.round(mean(col(rs,'wealth'))).toLocaleString() + ' | ' + Math.round(mean(col(rs,'bleiMed')))); });
+      });
+    }
+    if (secQ === 'lines' || secQ === 'all'){
+      console.log('=== Poverty lines under inflation (measurement only): seeds 1-' + nQ + ', ' + AG + ' agents ===');
+      console.log('scenario | final price index | wealth poverty, nominal $25,000 | $25,000 in year-0 dollars | BLEI poverty, year-0 daily cost | current daily cost');
+      [['Baseline @3% (shipped comparator)', BASELINE], ['Adverse Environment (2%)', ADVERSE_REFERENCE], ['Stress Test (2%)', STRESS_TEST], ['Full Integration @3%', Object.assign({}, FULL_INTEGRATION, {inflRate:0.03})], ['Full Integration @0% (reference)', FULL_INTEGRATION]].forEach(function(c){
+        var P = c[1], acc = {P:0, wn:0, wr:0, bn:0, br:0};
+        for (var s = 1; s <= nQ; s++){ var ag = popFor(P, s), rp = P.shock ? buildRecessionPath(P.years, s) : null; RNG = mulberry32(s);
+          for (var y = 0; y < P.years; y++) runYear(ag, y, P, rp ? rp[y] : CALM);
+          var Pi = ag[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL, n = ag.length; acc.P += Pi/nQ;
+          ag.forEach(function(a){ var d = agentBLEI(a, P.bu, P.ccoOn, P.pth, P.szh, P.szhCoh, P.ptf); acc.wn += (a.wealth < CFG.POVERTY_LINE)/n/nQ*100; acc.wr += (a.wealth < CFG.POVERTY_LINE*Pi)/n/nQ*100; acc.bn += (d < 30)/n/nQ*100; acc.br += (d/Pi < 30)/n/nQ*100; }); }
+        console.log(c[0] + ' | ' + acc.P.toFixed(3) + ' | ' + acc.wn.toFixed(1) + ' | ' + acc.wr.toFixed(1) + ' | ' + acc.bn.toFixed(1) + ' | ' + acc.br.toFixed(1));
+      });
+    }
+    if (secQ === 'ha42' || secQ === 'all'){
+      console.log('=== Seed 42, High Automation: the v4.20 regression row, split into its two steps ===');
+      var saveS = CFG.AUTO_HIGH_SHARE, rowHA = function(l){ var x = runScenario(HIGH_AUTOMATION, 42); console.log(l + ': ' + x.pov + '% / $' + x.wealth.toLocaleString() + ' / ' + x.bleiMed + 'd'); };
+      AUTOMATION_SAMPLER_LEGACY = true; CFG.AUTO_HIGH_SHARE = 0.47; rowHA('v4.19 (legacy sampler, share 0.47)');
+      AUTOMATION_SAMPLER_LEGACY = false; rowHA('new sampler, share 0.47 (new population realisation only)');
+      CFG.AUTO_HIGH_SHARE = 0.63; rowHA('new sampler, share 0.63 (v4.20 and v4.21)');
+      var down = 0; for (var s4 = 1; s4 <= nQ; s4++){ CFG.AUTO_HIGH_SHARE = 0.47; var a4 = runScenario(HIGH_AUTOMATION, s4).pov; CFG.AUTO_HIGH_SHARE = 0.63; if (runScenario(HIGH_AUTOMATION, s4).pov < a4) down++; }
+      CFG.AUTO_HIGH_SHARE = saveS;
+      console.log('seeds 1-' + nQ + ', same sampler: wealth poverty lower at share 0.63 than at 0.47 in ' + down + ' seeds');
     }
   }
 }
