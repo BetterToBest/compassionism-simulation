@@ -58,6 +58,13 @@
  * wage indexation), driven by priceRun()/priceStudy(); NEXT_ROUND, the D1 consumption rule as a profile; priceUnitSuite(),
  * run by `unit`; and the `price` mode. Every switch is inert by default: `validate`, domtest's parity checks and the
  * price suite's "fully matched" and "zero issuance" tests confirm bit-identical runs. index.html is unchanged.
+ *
+ * Unreleased (next-round session 3, Sep 26 2026): the A2 sweep machinery (s3BaseS/s3Point/s3Breakeven/s3Config: breakeven
+ * additionality by bracketed secant search on the exact CRN seed mean, with a bootstrap interval over seeds and the a at which 90%
+ * of seeds are within tolerance), S3_ROWS (the one-at-a-time sweep) and s3StabArms (the recession stabilizer arms), run by the
+ * `price` sections be | inert | sweep | corners | stab; two new price-suite tests; and S3-1, the price module's aw accounting (an
+ * unmatched raise enters as the year's change in the premium; awLevel restores session 2's reading). Every default run is
+ * unchanged: validate, unit and domtest pass. index.html is unchanged.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -521,7 +528,7 @@ function runYear(agentSet,yr,p,recSt){
     if(PRICE){  // session 2 (D1/N5): a write-off at the floor is basket consumption that did not happen (unmet need), not spending
       var pmW=a.wealth<CFG.WEALTH_FLOOR?CFG.WEALTH_FLOOR-a.wealth:0,pmB=mainLoopCostUSD*cfPreCCO,pmU=pmB>0?Math.min(1,pmW/pmB):0,A=PRICE.acc;
       A.n++;A.essD+=1-pmU;A.unmet+=pmW;A.basketOwn+=pmB;if(pmW>0)A.unmetN++;A.Y+=annualWageUSD+a.yrConvUSD;if(p.ptf&&a.inPTF)A.ptfN++;
-      A.wageBonus+=Math.max(0,a.wage-a._wNB)*12*CFG.WAGE_TO_USD*incomeShock;
+      A.wageBonus+=Math.max(0,a.wage-a._wNB)*12*CFG.WAGE_TO_USD*incomeShock;A.wageBonusNS+=Math.max(0,a.wage-a._wNB)*12*CFG.WAGE_TO_USD;  // session 3: the premium before the income shock, for aw's increment reading
     }
     if(a.wealth<CFG.WEALTH_FLOOR){if(LEDGER){var lfA=CFG.WEALTH_FLOOR-a.wealth;ledAdd(yr,'floor',lfA);ledAdd(yr,'floorHits',1);a._ledFloor=(a._ledFloor||0)+lfA;}a.wealth=CFG.WEALTH_FLOOR;}  // A1 ledger inside the clamp
   });
@@ -1080,7 +1087,10 @@ function nextRoundPreset(p){ return p.ccoOn ? Object.assign({}, p, {cola:true, c
  *           P_E). No evidence yet, so 0 (the plan's rule); swept.
  *  pthUnmatched  PTH appreciation credited to liquid wealth has no counterparty: counted as unmatched new money (a = 0).
  *  floorUnmatched  N5: false = a floor write-off is unmet need, not money; true = the plan's original treatment.
- *  aw       N7: share of program-induced raises (octave, CIP) matched by output. 1 by default.
+ *  aw       N7: share of program-induced raises (octave, CIP) matched by output. 1 by default. Session 3 (S3-1): the unmatched
+ *           part enters U as the year's CHANGE in the aggregate premium (measured before the income shock): a raise paid from
+ *           revenue with no added output passes through to prices once, as a level shift. awLevel: true restores session 2's
+ *           reading, which counts the whole premium as new money every year (the raise re-created as currency each year).
  *  wIdx     wage indexation to P_G (0 = the engine's nominal drift).
  *  pgOnE    general (monetary) inflation raises essentials prices too. The plan's text reprices essentials by P_E only;
  *           applying P_G to them as well is the conservative reading (flagged in the hand-off).
@@ -1092,13 +1102,13 @@ function nextRoundPreset(p){ return p.ccoOn ? Object.assign({}, p, {cola:true, c
  *           reading shrinks capacity whenever the Baseline impoverishes (Adverse: to about half by year 19) and is kept
  *           as an upper bound. */
 var PM_DEFAULTS = {a:0, lamG:1, theta:{food:0, housing:0.6, medical:0.5}, ptfCap:0, pthUnmatched:true, floorUnmatched:false,
-  aw:1, wIdx:0, pgOnE:true, noDamp:false, essMatched:false, lines:'deflate', supply:'capacity', gS:0};
+  aw:1, awLevel:false, wIdx:0, pgOnE:true, noDamp:false, essMatched:false, lines:'deflate', supply:'capacity', gS:0};
 function pmOpts(o){ o = o || {}; var r = Object.assign({}, PM_DEFAULTS, o); r.theta = Object.assign({}, PM_DEFAULTS.theta, o.theta || {}); return r; }
 /* Pure price rules (tested by priceUnitSuite). */
 function pmEssLevel(D, S, cap, theta){ var s = S*(1 + cap); return s > 0 ? Math.max(0, 1 + theta*(D - s)/s) : 1; }
 function pmGenStep(PG, U, Y, lam){ return Y > 0 ? PG*(1 + lam*U/Y) : PG; }
 function pmBasketIdx(comp){ var b = 1; CFG.BASKET_KEYS.forEach(function(k){ b += CFG.BASKET[k]*(comp[k] - 1); }); return b; }  /* 1 + weighted deviations: exactly 1 when no price moved */
-function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, ptfN:0, conv:0, pthLiq:0, wageBonus:0}; }
+function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, ptfN:0, conv:0, pthLiq:0, wageBonus:0, wageBonusNS:0}; }
 /* One run with the price module. S: the supply path for effective essentials demand (per-agent share of basket consumed,
  * by year), normally the matched Baseline's own path under the same rule; null holds P_E at 1. Draws exactly as
  * runScenario() does. Returns the demand path D (for use as S), the price path, and end-of-run metrics under D2. */
@@ -1111,14 +1121,15 @@ function priceRun(p, seed, o, S){
   RNG = mulberry32(seed);
   var comp = {}; CFG.BASKET_KEYS.forEach(function(k){ comp[k] = 1; });
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
-  var PG = 1, D = [], path = [], tot = newPMAcc();
+  var PG = 1, D = [], path = [], tot = newPMAcc(), wbPrev = 0;
   try {
     for (var yr = 0; yr < p.years; yr++){
       PRICE.acc = newPMAcc();
       runYear(agents, yr, p, recPath ? recPath[yr] : CALM0);
       var A = PRICE.acc, d = A.n ? A.essD/A.n : 1; D.push(d);
       Object.keys(tot).forEach(function(k){ tot[k] += A[k]; });
-      var U = (1 - o.a)*A.conv + (o.pthUnmatched ? A.pthLiq : 0) + (o.floorUnmatched ? A.unmet : 0) + (1 - o.aw)*A.wageBonus;
+      var wbInc = A.wageBonusNS - wbPrev; wbPrev = A.wageBonusNS;  /* session 3 (S3-1): an unmatched raise is a cost-push level shift, so only the year's change in the premium is new */
+      var U = (1 - o.a)*A.conv + (o.pthUnmatched ? A.pthLiq : 0) + (o.floorUnmatched ? A.unmet : 0) + (1 - o.aw)*(o.awLevel ? A.wageBonus : wbInc);
       var PGn = pmGenStep(PG, U, A.Y, o.lamG), capShare = o.ptfCap*(A.n ? A.ptfN/A.n : 0), PE = {};
       CFG.ESSENTIALS.forEach(function(k){
         var cut = !p.ptf ? 0 : PTF_MODE === 'shipped' ? (p.szh ? 0.12 + p.szhCoh*0.04 : 0.12) : (k === 'food' ? PTF_FOOD_CUT[PTF_MODE] : 0);
@@ -1218,12 +1229,153 @@ function priceUnitSuite(){
     applyRule({SURPLUS_CONSUMPTION_SHARE:0, SURPLUS_CONSUMPTION_BASE:'wage'}); var r = runScenario(FULL_INTEGRATION, 42);
     return {pass: r.pov === 15.8 && r.wealth === 570661 && r.bleiMed === 1975, detail: r.pov + ' / ' + r.wealth + ' / ' + r.bleiMed};
   });
+  /* Session 3: the sweep machinery. */
+  t('breakeven search (session 3): finds the root of a known monotone curve, handles the none and any-a cases, and its interval covers the root', function(){
+    function synth(f){ return function(a){ var n = 200, s = new Float64Array(n), m = 0, R = mulberry32(4242);
+      for (var i = 0; i < n; i++){ s[i] = f(a) + (R() - 0.5)*0.002; m += s[i]; } return {a:a, n:n, s:{endoAnn:s}, m:{endoAnn:m/n}}; }; }
+    var f1 = function(a){ return 0.05*(1 - a)*(1 - a) + 0.002; }, want = [1 - Math.sqrt(0.003/0.05), 1 - Math.sqrt(0.008/0.05)];
+    var pts = {}, b5 = s3Breakeven(pts, 0.005, synth(f1)), b10 = s3Breakeven(pts, 0.010, synth(f1));
+    var none = s3Breakeven({}, 0.005, synth(function(a){ return 0.006 + 0.01*(1 - a); })), any = s3Breakeven({}, 0.005, synth(function(a){ return 0.004*(1 - a); }));
+    var ok = Math.abs(b5.be - want[0]) < 1e-3 && Math.abs(b10.be - want[1]) < 1e-3 && none.be === null && any.be === 0 && b5.ci[0] <= want[0] + 1e-3 && b5.ci[1] >= want[0] - 1e-3;
+    return {pass: ok, detail: 'found ' + b5.be.toFixed(4) + ' and ' + b10.be.toFixed(4) + ' (true ' + want[0].toFixed(4) + ', ' + want[1].toFixed(4) + ') in ' + Object.keys(pts).length + ' points'};
+  });
+  t('sweep points (session 3): s3Point reproduces priceStudy exactly, and the cached Baseline supply path equals a fresh one (Full Integration, seeds 1-3, a = 0.9, both models)', function(){
+    var ok = true, d = [];
+    ['engine','framework'].forEach(function(cm){ CONVERSION_MODEL = cm;
+      var q = s3Point(FI, {}, 0.9, 3), r = priceStudy(FI, 3, [{a:0.9}], {})[0];
+      ['endoAnn','pov','bleiPov','basketPov','unmetShare'].forEach(function(k){ if (Math.abs(q.m[k] - r[k]) > 1e-12*Math.max(1, Math.abs(r[k]))) ok = false; });
+      for (var s = 1; s <= 3; s++){ var A = s3BaseS(FI, s), B = priceRun(baselineFor(FI, true), s, {}, null).D; if (A.length !== B.length || A.some(function(x, i){ return x !== B[i]; })) ok = false; }
+      d.push(cm + ' ' + (q.m.endoAnn*100).toFixed(4) + ' = ' + (r.endoAnn*100).toFixed(4) + ' pt/yr'); });
+    return {pass: ok, detail: d.join('; ')};
+  });
   return out;
 }
 
 /* Session 2 exports, for scripts that drive the next round's modules (domtest.js does not use them). */
 Object.assign(module.exports, { priceRun, priceStudy, breakevenA, priceUnitSuite, nextRoundPreset, applyRule, NEXT_ROUND, PM_DEFAULTS, FW, newLedger,
   setConversionModel:function(m){ CONVERSION_MODEL = m; }, setPtfMode:function(m){ PTF_MODE = m; }, setLedger:function(L){ LEDGER = L; } });
+
+/* ─── Session 3 (Sep 26 2026; Duke assigns the version): A2 sweeps and the breakeven report ─────────────────
+ * Harness-only, and nothing here changes a run: these functions only drive priceRun(). CRN makes the mean over a fixed
+ * set of seeds a deterministic function of every input, so each point below is an exact mean, not a noisy estimate,
+ * and breakeven additionality can be found by a bracketed secant search instead of a coarse grid.
+ *  s3BaseS    the matched Baseline's effective-demand path for P_E (the supply side). The Baseline has no conversion,
+ *             no PTH and no floor money under the adopted rules, so its prices never move and the path depends only on
+ *             the seed, the environment and the consumption rule: cached.
+ *  s3Point    per-seed results at one a (kept, for a bootstrap over seeds and the share of seeds above tolerance).
+ *  s3Breakeven  the smallest a at which mean endogenous inflation is at or below tol: anchors at a = 1, 0 and 0.9,
+ *             then secant steps inside the tightest bracket until it is 0.002 wide or an end is within 0.01 point of
+ *             tol; the estimate interpolates the final bracket. 95% interval: 2,000 bootstrap resamples of the seeds at
+ *             the two bracket points (linear inside the bracket, which is narrow).
+ *  s3Config   one scenario under one sweep row (switches, preset overrides and module options), both tolerances. */
+var S3_CACHE = {};
+var S3_KEYS = ['endoAnn','endoMax','pov','bleiPov','basketPov','unmetShare','unmetYears','convShare','buReal','PG','medWealthReal'];
+function s3BaseS(p, seed){
+  var bp = baselineFor(p, true), k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed;
+  if (!S3_CACHE[k]) S3_CACHE[k] = priceRun(bp, seed, {}, null).D;
+  return S3_CACHE[k];
+}
+function s3Set(sw){ var sv = {cm:CONVERSION_MODEL, pm:PTF_MODE, fw:Object.assign({}, FW)};
+  if (sw){ if (sw.cm) CONVERSION_MODEL = sw.cm; if (sw.ptfMode) PTF_MODE = sw.ptfMode; if (sw.fw) Object.assign(FW, sw.fw); }
+  return sv; }
+function s3Reset(sv){ CONVERSION_MODEL = sv.cm; PTF_MODE = sv.pm; Object.assign(FW, sv.fw); }
+/* Per-seed results at one a. With wantRec and a shock preset, also pools the endogenous year-on-year rate by whether the
+ * previous year was a recession year (prices respond to last year's flows, so a recession in year t shows in year t+1). */
+function s3Point(P, opts, a, N, wantRec, noFeedback){
+  var o = {a:a, n:N, s:{}, m:{}, rec:null};
+  S3_KEYS.forEach(function(k){ o.s[k] = new Float64Array(N); });
+  if (wantRec) o.rec = {post:0, postN:0, calm:0, calmN:0};
+  for (var sd = 1; sd <= N; sd++){
+    var r = priceRun(P, sd, Object.assign({}, opts, {a:a}), noFeedback ? null : s3BaseS(P, sd));
+    S3_KEYS.forEach(function(k){ o.s[k][sd-1] = r.res[k]; });
+    if (wantRec && P.shock){ var rp = buildRecessionPath(P.years, sd);
+      for (var t = 1; t < P.years; t++){ var g = r.path[t].bIdx/r.path[t-1].bIdx - 1;
+        if (rp[t-1].active){ o.rec.post += g; o.rec.postN++; } else { o.rec.calm += g; o.rec.calmN++; } } }
+  }
+  S3_KEYS.forEach(function(k){ var t = 0; for (var i = 0; i < N; i++) t += o.s[k][i]; o.m[k] = t/N; });
+  return o;
+}
+function s3Boot(lo, hi, tol, B){
+  var R = mulberry32(987654321), n = lo.n, v = [];
+  for (var b = 0; b < B; b++){ var sl = 0, sh = 0;
+    for (var i = 0; i < n; i++){ var j = Math.floor(R()*n); sl += lo.s.endoAnn[j]; sh += hi.s.endoAnn[j]; }
+    sl /= n; sh /= n; var d = sl - sh;
+    v.push(Math.min(1, Math.max(0, lo.a + (d > 0 ? (sl - tol)/d : 0.5)*(hi.a - lo.a)))); }
+  v.sort(function(x, y){ return x - y; });
+  return [v[Math.floor(0.025*B)], v[Math.min(B - 1, Math.floor(0.975*B))]];
+}
+function s3Breakeven(pts, tol, evalAt){
+  function P(a){ var k = a.toFixed(4); if (!pts[k]) pts[k] = evalAt(+k); return pts[k]; }
+  function I(q){ return q.m.endoAnn; }
+  if (I(P(1)) > tol) return {be:null};
+  if (I(P(0)) <= tol) return {be:0};
+  P(0.9);
+  var lo, hi, it;
+  for (it = 0; it < 14; it++){
+    lo = null; hi = null;
+    Object.keys(pts).forEach(function(k){ var q = pts[k]; if (I(q) > tol && (!lo || q.a > lo.a)) lo = q; });
+    Object.keys(pts).forEach(function(k){ var q = pts[k]; if (q.a > lo.a && I(q) <= tol && (!hi || q.a < hi.a)) hi = q; });
+    var w = hi.a - lo.a;
+    if (w <= 0.002 || Math.min(I(lo) - tol, tol - I(hi)) < 1e-4) break;
+    var x = lo.a + (I(lo) - tol)/(I(lo) - I(hi))*w;
+    x = Math.min(hi.a - 0.02*w, Math.max(lo.a + 0.02*w, x));
+    if (pts[x.toFixed(4)]) x = lo.a + w/2;
+    P(x);
+  }
+  var f = (I(lo) - tol)/(I(lo) - I(hi)), be = lo.a + f*(hi.a - lo.a), above = 0;
+  for (var i = 0; i < lo.n; i++) if (lo.s.endoAnn[i] + f*(hi.s.endoAnn[i] - lo.s.endoAnn[i]) > tol) above++;
+  /* a90: the a at which 90% of seeds are within tol, from each seed's own curve (linear between evaluated points). */
+  var ks = Object.keys(pts).map(function(k){ return pts[k]; }).sort(function(x, y){ return x.a - y.a; }), cr = [];
+  for (i = 0; i < lo.n; i++){ var c = Infinity;
+    for (var j = 0; j < ks.length; j++) if (ks[j].s.endoAnn[i] <= tol){ c = j === 0 ? 0 : ks[j-1].a + (ks[j-1].s.endoAnn[i] - tol)/(ks[j-1].s.endoAnn[i] - ks[j].s.endoAnn[i])*(ks[j].a - ks[j-1].a); break; }
+    cr.push(c); }
+  cr.sort(function(x, y){ return x - y; });
+  var a90 = cr[Math.min(cr.length - 1, Math.ceil(0.9*cr.length) - 1)];
+  return {be:be, ci:s3Boot(lo, hi, tol, 2000), above:above/lo.n, a90:a90, lo:lo.a, hi:hi.a};
+}
+var S3_TOLS = [0.005, 0.010];
+function s3Config(P0, row, N, extra){
+  extra = extra || {};
+  var sv = s3Set(row.sw), P = Object.assign({}, P0, row.preset || {}), opts = Object.assign({}, row.opts || {}), pts = extra.pts || {};
+  try {
+    var evalAt = function(a){ return s3Point(P, opts, a, N, !!extra.rec); };
+    var out = {row:row, b:S3_TOLS.map(function(t){ return s3Breakeven(pts, t, evalAt); })};
+    ['0.0000','0.9000','1.0000'].forEach(function(k){ if (!pts[k]) pts[k] = evalAt(+k); });
+    out.p0 = pts['0.0000']; out.p09 = pts['0.9000']; out.p1 = pts['1.0000']; out.nEval = Object.keys(pts).length; out.pts = pts;
+    if (extra.at !== undefined && extra.at !== null){ var k = (+extra.at).toFixed(4); if (!pts[k]) pts[k] = evalAt(+k); out.pAt = pts[k]; }
+    return out;
+  } finally { s3Reset(sv); }
+}
+/* The one-at-a-time sweep (session 3). `grp`: 'parameter' (a sourced range or a logged placeholder), 'structural' (an
+ * adopted decision's alternative) or 'design' (a framework setting). Rows marked fwOnly apply to the framework model. */
+var S3_REF = {id:'ref', grp:'reference', lbl:'Reference: lamG 1; theta food 0, housing 0.6, medical 0.5; ptfCap 0; capacity supply; wIdx 0; COLA ratchet at 5%; PTF shipped'};
+var S3_ROWS = [S3_REF,
+  {id:'lam25', grp:'parameter', lbl:'lamG 0.25', opts:{lamG:0.25}},
+  {id:'lam50', grp:'parameter', lbl:'lamG 0.5', opts:{lamG:0.5}},
+  {id:'widx1', grp:'parameter', lbl:'Wages indexed to P_G (wIdx 1)', opts:{wIdx:1}},
+  {id:'aw0', grp:'parameter', lbl:'Program-induced raises unmatched, level shift (aw 0; N7 alternative, S3-1 reading)', opts:{aw:0}},
+  {id:'aw0lvl', grp:'structural', lbl:'  ... session 2 reading: the whole premium re-created as money every year (awLevel)', opts:{aw:0, awLevel:true}},
+  {id:'biz2', grp:'parameter', lbl:'Business rate 2x (FW.bizRate)', sw:{fw:{bizRate:2}}, fwOnly:true},
+  {id:'biz4', grp:'parameter', lbl:'Business rate 4x (FW.bizRate)', sw:{fw:{bizRate:4}}, fwOnly:true},
+  {id:'supB', grp:'structural', lbl:'Supply = the Baseline\'s same-year demand (N11 alternative; upper bound)', opts:{supply:'baseline'}},
+  {id:'supBhi', grp:'parameter', lbl:'  ... with theta high: food 0.2*, housing 0.78, medical 1.0* (*placeholder)', opts:{supply:'baseline', theta:{food:0.2, housing:0.78, medical:1.0}}},
+  {id:'supBcap', grp:'parameter', lbl:'  ... with ptfCap 1 (all of PTF\'s cut is new capacity)', opts:{supply:'baseline', ptfCap:1}},
+  {id:'colaOff', grp:'structural', lbl:'COLA off (D6 alternative)', preset:{cola:false}},
+  {id:'colaCont', grp:'structural', lbl:'COLA continuous: BU indexed every year (D6 alternative)', preset:{cola:true, colaThresh:-1}},
+  {id:'pthM', grp:'structural', lbl:'PTH liquid appreciation matched (N13 alternative)', opts:{pthUnmatched:false}},
+  {id:'floorU', grp:'structural', lbl:'Floor write-offs as unmatched money (N5 alternative)', opts:{floorUnmatched:true}},
+  {id:'food30', grp:'design', lbl:'PTF: 30% off food only (NYC pilot\'s promise; D4)', sw:{ptfMode:'food30'}},
+  {id:'food62', grp:'design', lbl:'PTF: 62% off food only (hub eps_food 2.64; D4)', sw:{ptfMode:'food62'}}];
+/* Recession stabilizer arms (v4.19 rules; the page ships all off). */
+function s3StabArms(){
+  return [{id:'none', lbl:'No stabilizer', preset:{stab:false}},
+    {id:'hub', lbl:'Hub protocol: x1.20 when income falls >=2%', preset:{stab:true, stabSev:false, stabMult:CFG.STAB_HUB_MULT, stabThresh:CFG.STAB_HUB_THRESH, stabSusp:false, emerg:false}},
+    {id:'n135', lbl:'Shock-neutral fixed: x1.35', preset:{stab:true, stabSev:false, stabMult:CFG.STAB_NEUTRAL_MULT, stabThresh:CFG.STAB_HUB_THRESH, stabSusp:false, emerg:false}},
+    {id:'nk', lbl:'Shock-neutral scaled: +2.8% BU per 1% income loss', preset:{stab:true, stabSev:true, stabK:CFG.STAB_NEUTRAL_K, stabThresh:CFG.STAB_HUB_THRESH, stabSusp:false, emerg:false}},
+    {id:'pkg', lbl:'Scaled + expiry suspended + emergency enrollment (50%)', preset:{stab:true, stabSev:true, stabK:CFG.STAB_NEUTRAL_K, stabThresh:CFG.STAB_HUB_THRESH, stabSusp:true, emerg:true, emergTakeup:CFG.STAB_EMERG_TAKEUP}}];
+}
+Object.assign(module.exports, { s3BaseS, s3Point, s3Breakeven, s3Config, S3_ROWS, s3StabArms });
+
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
@@ -1921,7 +2073,9 @@ if (require.main === module) {
   if (mode === 'price') {
     /* Session 2 (Next Round Plan A2, and decisions D1, D2, D4, N1-N10): `node harness.js price <seeds> [section]`.
      * Every section runs under the next round's rule (NEXT_ROUND, D1) and D6's COLA unless it says otherwise; each is
-     * CRN-paired (the same seeds for every arm). Sections: basket | d1 | framework | ptf | breakeven | sens | all. */
+     * CRN-paired (the same seeds for every arm). Sections: basket | d1 | framework | ptf | breakeven | sens | all (session 2);
+     * be | inert | sweep | corners | stab (session 3, not run by `all`; `sweep`, `inert`, `corners` and `be` take an optional
+     * scenario list as the next argument: fi,adv,st). */
     CFG.WEALTH_FLOOR = -10000;
     var nP = parseInt(process.argv[3] || '200', 10), secP = process.argv[4] || 'all';
     var BASKET_LBL = {food:'Food', housing:'Housing (incl. utilities)', medical:'Medical', transport:'Transportation', civic:'Civic', internet:'Internet & mobile', other:'Other necessities', taxes:'Income and payroll taxes'};
@@ -2044,6 +2198,140 @@ if (require.main === module) {
         });
       });
       applyRule(svS);
+    }
+
+    /* ─── Session 3 sections (A2 sweeps and the breakeven report): be | inert | sweep [fi|adv|st] | corners | stab ───
+     * Every section: D1 rule, D2 lines, D6 COLA (unless a row changes it), CRN-paired seeds 1-N. Endogenous inflation is the
+     * annualized growth of the endogenous basket index over the run, on top of any exogenous rate. Breakevens come from
+     * s3Breakeven (bracketed secant on the exact seed mean), with a 95% bootstrap interval over seeds and the share of seeds
+     * whose own inflation exceeds the tolerance at that a. */
+    function fmtB(b){ return b.be === null ? 'none' : b.be === 0 ? '0 (any a)' : b.be.toFixed(3) + ' [' + b.ci[0].toFixed(3) + '–' + b.ci[1].toFixed(3) + ']'; }
+    function fmtA(b){ return b.be === null ? 'none' : b.be === 0 ? '0' : b.a90 === Infinity ? 'none (above 1)' : b.a90.toFixed(3); }
+    function fmtS(b){ return b.be === null || b.be === 0 ? '—' : pc(b.above, 0); }
+    function pt(x){ return isFinite(x) && Math.abs(x) < 10 ? (x*100).toFixed(2) : 'diverges'; }
+    var ENV3 = {fi:['Full Integration', FULL_INTEGRATION], adv:['Adverse Environment', ADVERSE_REFERENCE], st:['Stress Test', STRESS_TEST]};
+    var envSel = (process.argv[5] || 'fi,adv,st').split(',');
+
+    if (secP === 'be'){
+      var svE = applyRule(NEXT_ROUND);
+      console.log('\n=== A2 breakeven additionality, reference settings (seeds 1-' + nP + ', ' + AG + ' agents; D1, D2, D6; ' + S3_REF.lbl + ') ===');
+      console.log('| Scenario | Model | Conversion, share of cash income (no feedback) | Inflation at a = 0 (pt/yr) | at a = 0.9 | at a = 1 | Breakeven a at 0.5 pt [95% CI] | Seeds above 0.5 pt there | a with 90% of seeds within 0.5 pt | Breakeven a at 1 pt [95% CI] | a with 90% of seeds within 1 pt | Points evaluated |');
+      console.log('|---|---|---|---|---|---|---|---|---|---|---|---|');
+      var BE = [];
+      envSel.forEach(function(e){ var c = ENV3[e], P = nextRoundPreset(c[1]);
+        ['engine','framework'].forEach(function(cm){
+          var r = s3Config(P, Object.assign({}, S3_REF, {sw:{cm:cm}}), nP);
+          if (r.b[0].be !== null){ var k = Math.round(r.b[0].be*1000)/1000; r.pBE = s3Config(P, Object.assign({}, S3_REF, {sw:{cm:cm}}), nP, {pts:r.pts, at:k}).pAt; r.kBE = k; }
+          var sv0 = s3Set({cm:cm}); r.pNF = s3Point(P, {a:1, pthUnmatched:false}, 1, nP, false, true); s3Reset(sv0);
+          BE.push([c[0], cm, r]);
+          console.log('| ' + c[0] + ' | ' + cm + ' | ' + pc(r.pNF.m.convShare) + ' | ' + pt(r.p0.m.endoAnn) + ' | ' + pt(r.p09.m.endoAnn) + ' | ' + pt(r.p1.m.endoAnn) + ' | ' + fmtB(r.b[0]) + ' | ' + fmtS(r.b[0]) + ' | ' + fmtA(r.b[0]) + ' | ' + fmtB(r.b[1]) + ' | ' + fmtA(r.b[1]) + ' | ' + r.nEval + ' |');
+        });
+      });
+      console.log('\nPoverty under D2 (lines deflated by the full index): no price feedback, at the 0.5-pt breakeven, and at a = 1');
+      console.log('| Scenario | Model | No feedback: wealth / BLEI / basket poverty | Unmet need | At breakeven (a) | Wealth / BLEI / basket poverty | Unmet need | Real BU, yr 20 (yr-0 $) | At a = 1: wealth / BLEI / basket | At a = 0: wealth / BLEI / basket |');
+      console.log('|---|---|---|---|---|---|---|---|---|---|');
+      BE.forEach(function(z){ var r = z[2], f = function(q){ return q.m.pov.toFixed(1) + '% / ' + q.m.bleiPov.toFixed(1) + '% / ' + q.m.basketPov.toFixed(1) + '%'; };
+        console.log('| ' + z[0] + ' | ' + z[1] + ' | ' + f(r.pNF) + ' | ' + pc(r.pNF.m.unmetShare) + ' | ' + (r.pBE ? r.kBE.toFixed(3) : 'none') + ' | ' + (r.pBE ? f(r.pBE) : '—') + ' | ' + (r.pBE ? pc(r.pBE.m.unmetShare) : '—') + ' | ' + (r.pBE ? us(r.pBE.m.buReal) : '—') + ' | ' + f(r.p1) + ' | ' + f(r.p0) + ' |'); });
+      applyRule(svE);
+    }
+
+    if (secP === 'inert'){
+      /* Checks behind two shortcuts: (1) under capacity supply P_E never leaves 1, so theta and ptfCap cannot matter there
+       * and the reference equals supply = baseline with theta 0; (2) the same holds with each stabilizer arm on. */
+      var svI = applyRule(NEXT_ROUND);
+      console.log('\n=== Capacity supply: does P_E ever move? (seeds 1-' + nP + '; a = 0 and a = 1; every stabilizer arm in the shock scenarios) ===');
+      console.log('| Scenario | Model | Arm | Seed-years with essentials demand above capacity (a = 0 / a = 1) | Max P_E housing | Reference identical to supply = baseline with theta 0 |');
+      console.log('|---|---|---|---|---|---|');
+      envSel.forEach(function(e){ var c = ENV3[e], P0 = nextRoundPreset(c[1]);
+        ['engine','framework'].forEach(function(cm){ var sv1 = s3Set({cm:cm});
+          (c[1].shock ? s3StabArms() : [{id:'none', lbl:'—', preset:{}}]).forEach(function(arm){
+            var P = Object.assign({}, P0, arm.preset), cnt = [0, 0], mx = 1, same = true;
+            [0, 1].forEach(function(a, ai){
+              for (var sd = 1; sd <= nP; sd++){ var S = s3BaseS(P, sd), r = priceRun(P, sd, {a:a}, S);
+                r.path.forEach(function(q, t){ if (q.d > S[0] + 1e-12) cnt[ai]++; mx = Math.max(mx, q.PEh); });
+                if (ai === 0 && arm.id === 'none'){ var r2 = priceRun(P, sd, {a:a, supply:'baseline', theta:{food:0, housing:0, medical:0}}, S); if (r2.res.endoAnn !== r.res.endoAnn || r2.res.pov !== r.res.pov) same = false; } }
+            });
+            console.log('| ' + c[0] + ' | ' + cm + ' | ' + arm.lbl + ' | ' + cnt[0] + ' / ' + cnt[1] + ' of ' + nP*P.years + ' | ' + mx.toFixed(4) + ' | ' + (arm.id === 'none' ? (same ? 'yes, bit-identical' : 'no') : '—') + ' |');
+          });
+          s3Reset(sv1); });
+      });
+      /* How much theta can move endogenous inflation under capacity supply (it replaces two sweep rows). */
+      console.log('\nMean endogenous inflation (pt/yr) under capacity supply by essentials pass-through, seeds 1-' + nP + ':');
+      console.log('| Scenario | Model | a | theta 0 (no essentials channel) | Reference (0 / 0.6 / 0.5) | theta high (0.2* / 0.78 / 1.0*) |'); console.log('|---|---|---|---|---|---|');
+      envSel.forEach(function(e){ var c = ENV3[e], P = nextRoundPreset(c[1]);
+        ['engine','framework'].forEach(function(cm){ var sv3 = s3Set({cm:cm});
+          [0.9, 1].forEach(function(a){ var v = [{food:0, housing:0, medical:0}, {}, {food:0.2, housing:0.78, medical:1.0}].map(function(th){ return s3Point(P, {theta:th}, a, nP).m.endoAnn; });
+            console.log('| ' + c[0] + ' | ' + cm + ' | ' + a + ' | ' + v.map(function(x){ return (x*100).toFixed(3); }).join(' | ') + ' |'); });
+          s3Reset(sv3); });
+      });
+      applyRule(svI);
+    }
+
+    if (secP === 'sweep'){
+      var svW = applyRule(NEXT_ROUND);
+      envSel.forEach(function(e){ var c = ENV3[e], P = nextRoundPreset(c[1]), bp = baselineFor(P, true);
+        var n5 = 0; for (var sd = 1; sd <= nP; sd++) n5 += priceRun(bp, sd, {floorUnmatched:true}, null).res.endoAnn/nP;
+        console.log('\n=== A2 one-at-a-time sweep: ' + c[0] + ' (seeds 1-' + nP + ', ' + AG + ' agents; D1, D2) ===');
+        console.log('N5 alternative, shown once: under it the matched Baseline (no program) has endogenous inflation of ' + pt(n5) + ' pt/yr from its own floor write-offs.');
+        console.log('| Row | Group | Engine: breakeven at 0.5 pt [95% CI] | at 1 pt | Inflation at a = 0 / 1 (pt) | Framework: breakeven at 0.5 pt [95% CI] | at 1 pt | Inflation at a = 0 / 1 (pt) |');
+        console.log('|---|---|---|---|---|---|---|---|');
+        S3_ROWS.forEach(function(row){
+          var cells = ['engine','framework'].map(function(cm){
+            if (row.fwOnly && cm === 'engine') return ['n/a', 'n/a', '—'];
+            var sw = Object.assign({}, row.sw || {}, {cm:cm}), r = s3Config(P, Object.assign({}, row, {sw:sw}), nP);
+            return [fmtB(r.b[0]), fmtB(r.b[1]), pt(r.p0.m.endoAnn) + ' / ' + pt(r.p1.m.endoAnn)];
+          });
+          console.log('| ' + row.lbl + ' | ' + row.grp + ' | ' + cells[0].join(' | ') + ' | ' + cells[1].join(' | ') + ' |');
+        });
+      });
+      applyRule(svW);
+    }
+
+    if (secP === 'corners'){
+      /* The parameter envelope: every 'parameter' row of the sweep set at the end of its range that gave the higher (or lower)
+       * breakeven in the one-at-a-time sweep, under the adopted structure (capacity supply, where theta and ptfCap are inert),
+       * and the upper bound: the high corner plus the structural alternatives that raised the breakeven. */
+      var svC = applyRule(NEXT_ROUND);
+      var CORNERS = [
+        {id:'lo', grp:'envelope', lbl:'Low corner: lamG 0.25, wIdx 1, aw 1; framework: bizRate 2', opts:{lamG:0.25, wIdx:1}, fw:{bizRate:2, bizCap:1}},
+        {id:'hi', grp:'envelope', lbl:'High corner: lamG 1, wIdx 0, aw 0; framework: bizRate 4, bizCap 1', opts:{lamG:1, wIdx:0, aw:0}, fw:{bizRate:4, bizCap:1}},
+        {id:'ub', grp:'upper bound', lbl:'High corner + Baseline same-year supply + theta high + floor write-offs unmatched', opts:{lamG:1, wIdx:0, aw:0, supply:'baseline', theta:{food:0.2, housing:0.78, medical:1.0}, floorUnmatched:true}, fw:{bizRate:4, bizCap:1}}];
+      console.log('\n=== A2 envelope: breakeven a at the corners of the swept parameter ranges (seeds 1-' + nP + ', ' + AG + ' agents) ===');
+      console.log('| Scenario | Corner | Engine: breakeven at 0.5 pt [95% CI] | at 1 pt | Inflation at a = 0 / 1 (pt) | Framework: breakeven at 0.5 pt [95% CI] | at 1 pt | Inflation at a = 0 / 1 (pt) |');
+      console.log('|---|---|---|---|---|---|---|---|');
+      envSel.forEach(function(e){ var c = ENV3[e], P = nextRoundPreset(c[1]);
+        CORNERS.forEach(function(k){
+          var cells = ['engine','framework'].map(function(cm){ var r = s3Config(P, {id:k.id, opts:k.opts, sw:{cm:cm, fw:cm === 'framework' ? k.fw : undefined}}, nP);
+            return [fmtB(r.b[0]), fmtB(r.b[1]), pt(r.p0.m.endoAnn) + ' / ' + pt(r.p1.m.endoAnn)]; });
+          console.log('| ' + c[0] + ' | ' + k.lbl + ' | ' + cells[0].join(' | ') + ' | ' + cells[1].join(' | ') + ' |');
+        });
+      });
+      applyRule(svC);
+    }
+
+    if (secP === 'stab'){
+      /* Plan A2: does raising BU in recessions produce endogenous inflation, and how much? Adverse Environment and Stress Test
+       * (the reference environment has no recessions). Each arm vs no stabilizer, CRN-paired. Extra BU: BU issued (engine) or
+       * the BU budget (framework), relative to no stabilizer, at a = 1. The year-after-recession rate pools the endogenous
+       * year-on-year rate over years whose previous year was a recession (prices respond to last year's flows). */
+      var svR = applyRule(NEXT_ROUND);
+      console.log('\n=== Recession stabilizer under the price module (seeds 1-' + nP + ', ' + AG + ' agents; D1, D2, D6; reference settings) ===');
+      console.log('| Scenario | Model | Arm | Extra BU (% of no stabilizer) | Inflation at a = 0 (pt/yr) | at a = 1 | Year after a recession, a = 0: rate (pt) | Difference vs none | Year after a recession, a = 1 | Difference vs none | Breakeven a at 0.5 pt [95% CI] | at 1 pt | Wealth / BLEI / basket poverty at a = 1 | Unmet need at a = 1 |');
+      console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
+      ['adv','st'].filter(function(e){ return envSel.indexOf(e) >= 0; }).forEach(function(e){ var c = ENV3[e], P0 = nextRoundPreset(c[1]);
+        ['engine','framework'].forEach(function(cm){
+          var ref = null;
+          s3StabArms().forEach(function(arm){
+            var P = Object.assign({}, P0, arm.preset), sv2 = s3Set({cm:cm}); LEDGER = newLedger();
+            var p1 = s3Point(P, {}, 1, nP, true); var T = LEDGER.tot, iss = cm === 'engine' ? (T.buIssued || 0) : (T.fwBudget || 0); LEDGER = null; s3Reset(sv2);
+            var r = s3Config(P0, {id:arm.id, preset:arm.preset, sw:{cm:cm}}, nP, {rec:true, pts:{'1.0000':p1}});
+            var q = {iss:iss, post0:r.p0.rec.post/Math.max(1, r.p0.rec.postN), post1:r.p1.rec.post/Math.max(1, r.p1.rec.postN)};
+            if (!ref) ref = q;
+            console.log('| ' + c[0] + ' | ' + cm + ' | ' + arm.lbl + ' | ' + (arm.id === 'none' ? '—' : '+' + pc(q.iss/ref.iss - 1)) + ' | ' + pt(r.p0.m.endoAnn) + ' | ' + pt(r.p1.m.endoAnn) + ' | ' + pt(q.post0) + ' | ' + (arm.id === 'none' ? '—' : (q.post0 - ref.post0 >= 0 ? '+' : '') + pt(q.post0 - ref.post0)) + ' | ' + pt(q.post1) + ' | ' + (arm.id === 'none' ? '—' : (q.post1 - ref.post1 >= 0 ? '+' : '') + pt(q.post1 - ref.post1)) + ' | ' + fmtB(r.b[0]) + ' | ' + fmtB(r.b[1]) + ' | ' + r.p1.m.pov.toFixed(1) + '% / ' + r.p1.m.bleiPov.toFixed(1) + '% / ' + r.p1.m.basketPov.toFixed(1) + '% | ' + pc(r.p1.m.unmetShare) + ' |');
+          });
+        });
+      });
+      applyRule(svR);
     }
   }
 

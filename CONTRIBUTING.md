@@ -41,6 +41,39 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: A2 sweeps and the breakeven report (harness-only)
+
+Next-round session 3 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, plus 8 price-module tests, 2 of them new) and `domtest` passes all 82 checks. Full tables, sources and decisions: `session-3-handoff.md`; raw output: `session-3-results.txt`.
+
+### What was added to `harness.js`
+
+- **Breakeven search** (`s3BaseS`, `s3Point`, `s3Breakeven`, `s3Config`). CRN makes the mean over a fixed set of seeds an exact function of every input, so breakeven additionality is found by a bracketed secant search instead of read off a coarse grid. Each breakeven comes with a 95% bootstrap interval over seeds, the share of seeds above the tolerance at that point, and the additionality at which 90% of seeds are within it.
+- **`S3_ROWS`**, the one-at-a-time sweep, and **`s3StabArms()`**, the recession stabilizer arms.
+- **`node harness.js price <seeds> <section> [fi,adv,st]`**, new sections: `be`, `inert`, `sweep`, `corners`, `stab`.
+- **Decision S3-1** (price module only; inert by default). When program-induced raises are treated as unmatched (`aw` < 1), only each year's *change* in the aggregate premium enters as new money: a raise paid from revenue with no added output passes through to prices once. `awLevel: true` restores session 2's reading, which re-created the whole premium as money every year.
+
+### Headline results
+
+Breakeven additionality: the smallest share of conversion-created currency that must be matched by new output to keep the program's endogenous inflation within 0.5 point (D3) / 1 point a year. Seeds 1–500; reference settings, including λ_G = 1, a logged placeholder.
+
+| Scenario | Engine model | Framework model |
+|---|---|---|
+| Full Integration | 0.964 / 0.837 | 0.989 / 0.966 |
+| Adverse Environment | none / 0.900 | 0.994 / 0.975 |
+| Stress Test | 0.871 / 0.548 | 0.979 / 0.936 |
+
+- The 95% intervals are within ±0.004. A 5,000-agent check (50 seeds) gives the same Full Integration figures.
+- "None": at a = 1 the Adverse Environment still has 0.52 point a year from PTH appreciation credited as cash (N13). Counted as matched, the engine breakeven is 0.892.
+- The breakeven depends mostly on λ_G. At λ_G = 0.25, Full Integration needs 0.578 (engine) and 0.922 (framework).
+- It also depends on whether program-induced raises are productivity. If they are not (S3-1), no a keeps Full Integration within tolerance: they add about 2 points a year.
+- **Staying within tolerance still costs poverty when wages are nominal.** At the 0.5-point breakeven, Full Integration's basket poverty is 13.4% against 9.9% with no price feedback (engine), and 7.0% against 5.1% (framework).
+- **Recession stabilizer.** It adds 3–5% more BU over the run. The extra inflation scales with the unmatched share: at a = 0 it raises the year-after-recession rate by 0.3–7.4 points; at a = 1 it changes it by less than 0.05 point. It moves the 0.5-point breakeven by 0.01 or less.
+- **Under capacity supply** the essentials channel is negligible: θ from 0 to its high end changes inflation by 0.02 point a year or less.
+
+**A correction to the session 2 notes.** "Housing θ changes nothing under capacity supply" holds only approximately. Program demand exceeds capacity in year 0, which causes a one-year essentials price rise of up to 0.9%. It does not change the breakeven to three decimals.
+
+---
+
 ## Unreleased: basket split, framework conversion model and the price module (harness-only)
 
 Next-round session 2 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate`, `unit` (11 tests, plus 6 new price-module tests) and `domtest` (82 checks) pass, and `ledger 5 identity` is identical in all 35 runs. Full tables, sources and decisions: `session-2-handoff.md`.
