@@ -41,6 +41,42 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: basket split, framework conversion model and the price module (harness-only)
+
+Next-round session 2 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate`, `unit` (11 tests, plus 6 new price-module tests) and `domtest` (82 checks) pass, and `ledger 5 identity` is identical in all 35 runs. Full tables, sources and decisions: `session-2-handoff.md`.
+
+### What was added to `harness.js`
+
+- **`CFG.BASKET`** (decision N10). The $49,370 basket by component, from the MIT Living Wage Calculator (Feb 15, 2026 data, 1 adult, 0 children). `LIVING_WAGE_ANNUAL` is the unweighted mean of the 51 state living wages × 2,080 hours ($49,369.82, checked). The site asks not to be scraped, so the components are fitted from 8 state pages read by hand: food 9.0%, housing (with utilities) 27.6%, medical 6.9%, transportation 19.6%, civic 6.6%, internet and mobile 3.1%, other 9.2%, taxes 18.0%. Essentials (food, housing, medical) are 43.5%.
+- **`PTF_MODE`** (D4): `'shipped'` (12% + 4% × SZH off the whole basket), `'food30'`, `'food62'`.
+- **`CONVERSION_MODEL = 'framework'`** (N1–N4): one BU budget of 12 × BU a year, spent on essentials at the agent's own prices; businesses convert the BU they accept at `FW.bizRate` (placeholder 3×) and pay the premium over a cash sale to all agents by wage the next year; unspent BU go to projects and are converted by participants within octave capacity.
+- **`PRICE`**, the A2 issuance and price module, driven by `priceRun()` and `priceStudy()`: an essentials index P_E, a general index P_G, COLA read off the endogenous headline rate, wage indexation to P_G, poverty lines deflated by the index (D2), floor write-offs as unmet need (N5), and program raises matched by output (N7).
+- **`NEXT_ROUND`**, the D1 consumption rule (0.9 of all cash surplus) as a profile. The global switches keep their v4.21 defaults so the checks still test `index.html`.
+- **`priceUnitSuite()`**, run by `unit`: zero issuance leaves the index at exactly 1 and the run bit-identical; fully matched issuance does the same in both conversion models; inflation falls monotonically as additionality rises; the framework model's BU and payout accounting balances.
+- **`node harness.js price <seeds> [section]`**: `basket`, `d1`, `framework`, `ptf`, `breakeven`, `sens`, `all`.
+
+### Findings that need a decision
+
+- **The shipped PTH cut exceeds the whole housing component.** 35% of the basket is $17,280; MIT's housing component is $13,631 (127%). The shipped PTF cut (12% of the basket, $5,924) is 133% of the food component. Every discount is also taken on the basket's 18% tax share.
+- **COLA feeds inflation when additionality is low.** With BU indexed and wages nominal, created money grows as a share of income. Adverse Environment, engine model, a = 0: 11.7 points a year with D6's COLA, 5.2 without it.
+- **What is left at full additionality is PTH appreciation.** Liquid PTH appreciation has no counterparty and is counted as unmatched new money; it adds 0.24–0.52 points a year at a = 1.
+
+### Headline results
+
+D1, Full Integration, seeds 1–500 (nominal lines, no price module): wealth poverty 15.3% → 24.9%, BLEI poverty 12.4% → 19.7%, basket poverty 9.9% (unchanged), unmet need 3.7% of basket cost. Reduction against the matched Baseline under D1: 54.4% / 62.0% / 78.9% (wealth / BLEI / basket).
+
+Preliminary breakeven additionality (seeds 1–200; λ_G = 1, a logged placeholder; capacity supply):
+
+| Scenario | Engine model (0.5 pt / 1 pt) | Framework model (0.5 pt / 1 pt) |
+|---|---|---|
+| Full Integration | 0.964 / 0.837 | 0.989 / 0.966 |
+| Adverse Environment | none / 0.898 | 0.993 / 0.974 |
+| Stress Test | 0.870 / 0.547 | 0.979 / 0.936 |
+
+These depend on λ_G. At λ_G = 0.25 the Full Integration figures are 0.578 / 0.065 (engine) and 0.922 / 0.832 (framework). Session 3 sweeps the inputs.
+
+---
+
 ## Unreleased: issuance ledger and a consumption-base switch (harness-only)
 
 Next-round session 1 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate`, `unit` and `domtest` (82 checks) pass.
