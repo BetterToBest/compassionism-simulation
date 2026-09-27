@@ -1,0 +1,47 @@
+# Next round, session 4 (Sep 27, 2026): decision d1 on the project dashboard. When index.html's META.VERSION names
+# a version with no tag yet, this creates the tag v<version> at the commit that first set that version string, and a
+# GitHub release whose notes are CONTRIBUTING.md's "v<version> Release Notes" section. Duke still assigns every
+# version by editing META.VERSION; this workflow only records it. It never edits a file, so the shipped page and
+# the checks are untouched. Run it by hand (Actions > release > Run workflow) with a version to backfill an older
+# one, e.g. 4.20.
+name: release
+
+on:
+  push:
+    branches: [main]
+    paths: [index.html]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to tag, e.g. 4.20 (default: the one in index.html now)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Tag and release the version in META.VERSION, if untagged
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          V="${INPUT_VERSION:-$(grep -oP "VERSION:'\K[0-9.]+" index.html | awk 'NR==1')}"
+          [ -n "$V" ] || { echo "::error::No VERSION:'x.y' found in index.html"; exit 1; }
+          T="v$V"
+          if git rev-parse -q --verify "refs/tags/$T" >/dev/null; then echo "$T already exists; nothing to do."; exit 0; fi
+          C="$(git log --reverse --format=%H -S"VERSION:'$V'" -- index.html | awk 'NR==1')"
+          [ -n "$C" ] || { echo "::error::No commit sets VERSION:'$V' in index.html"; exit 1; }
+          awk -v h="## $T Release Notes" '$0==h{on=1;next} on&&/^## /{exit} on' CONTRIBUTING.md > notes.md
+          [ -s notes.md ] || echo "See CONTRIBUTING.md for this version's notes." > notes.md
+          git tag "$T" "$C"
+          git push origin "$T"
+          gh release create "$T" --verify-tag --title "$T" --notes-file notes.md
+          echo "Tagged $T at $C and published its release."
