@@ -41,6 +41,59 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: session 6, the A4 policy testbed (harness-only)
+
+Next-round session 6 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes; `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 9 new testbed tests); `domtest` passes all 82 checks. Tables, sources and decisions: `session-6-handoff.md`. Raw output: `session-6-results.txt`.
+
+### What was added to `harness.js`
+
+- **Comparator presets** (`tbPresets`):
+  - a universal basic income;
+  - a negative income tax (G, t);
+  - a public grocery network (a cut on the food component for a covered share, plus capital);
+  - a one-time asset endowment below a wealth threshold;
+  - X-Cents, as a flat adult daily exchange and as a community-work variant;
+  - Compassionism in the engine and framework models, and CCO alone.
+
+  Each is matched to Compassionism's gross cost by `tbMatch`.
+- **One cost ledger.** Every program dollar at face value per adult-year, in year-0 dollars.
+- **A financing switch.**
+  - Tax: a flat contribution on wage earnings set from last year's cost ÷ base, capped at 90%, with an optional threshold `X` indexed to the basket and the treasury reported.
+  - Money: every program dollar is new money, with transfer output-matching `aT`, price-cut efficiency `eP` and conversion additionality `a`.
+- **Fairness rules applied to every design.**
+  - One income effect ρ on every unconditional dollar, price-cut dollars included.
+  - One elasticity (ε − ρ) on every change in the net return to work: contribution, phase-out, raises.
+  - A design-neutral gate for the engine's BLEI-gated wage bonus.
+- **Measures.**
+  - Basket FGT₀–₂ at year 20 and over person-years.
+  - Wealth poverty.
+  - A group check: would-be participants, non-participants, PTH members, and bottom and top thirds by year-0 wage, each on resources, person-year basket FGT₀ and year-20 wealth poverty.
+- **Per-row pathway switches in `tbStudy`**, so every Compassionism row can be shown with the octave wage bonus off (d19).
+- **`tbUnitSuite()`**, run by `unit`. It checks that:
+  - the hooks are inert, and `tbRun` with no comparator reproduces `priceRun` exactly;
+  - an NIT at t = 0 is a UBI, and flat X-Cents is a UBI of $3,613.50;
+  - the income effect is exactly ρ × UBI;
+  - the treasury balances to within 5%;
+  - money financing at aT = 1 adds no inflation;
+  - the cost ledger is exact;
+  - the per-row switch restores itself;
+  - a threshold above every earner collects nothing.
+- **`node harness.js testbed <seeds> match|frontier [ref,adv,st] [--pilot=N] [--models=...] [--fin=tax,money] [--X=N]`**.
+
+### Sources
+
+Public grocery: nyc.gov press release, Jul 27, 2026. It announces 30% off a core basket, projected to cut the average grocery bill by 15%, and a $70M capital budget for five stores. It is a promise, not an observed result, and it states no operating subsidy. The capital cost per covered adult-year ($140) rests on an unsourced shopper count and is swept.
+
+### Headline results (seeds 1–500, 500 agents, tax-financed, reference environment)
+
+- **At matched cost ($11,338 per adult-year), Compassionism (engine model) cuts year-20 basket FGT₂ by 4.46 points.** A UBI cuts it by 1.71 and an NIT (t 0.5) by 2.90. With the octave wage bonus off (d19), Compassionism's cut is 2.46.
+- **In the Adverse Environment, Compassionism cuts FGT₂ by 18.05 (6.18 with the bonus off), while a matched UBI and NIT raise it** (+0.78, +8.24).
+- **The framework model's own cost ($32,151 per adult-year) needs a 61% wage contribution.** Matched cash designs hit the 90% cap and run deficits.
+- **Money-created, with transfers unmatched by output, every large design inflates.** Compassionism runs 18.6 points a year at a = 0 and 14.4 at a = 1; the UBI runs 22.8. The breakeven and price-neutral figures from sessions 3–5 hold only if BU and price cuts are financed outside money creation.
+- **No design above about $1,000 per adult-year passes the no-group-worse-off check under tax financing.** Decision d29.
+- **A contribution threshold at the basket line does not work at these costs.** With wages below $49,370 exempt, every design above about $3,600 per adult-year hits the 90% cap and runs an unfunded deficit.
+- **Population size:** session 5's labor comparison at 5,000 agents (100 seeds) reproduces the 500-agent results: earnings to within 0.01 point, poverty to within 0.1 point.
+
 ## Unreleased: session 5, the A2 carry-over and the large-N restudy (harness-only)
 
 Next-round session 5 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests and 6 new session 5 tests) and `domtest` passes all 82 checks. Tables, sources and decisions: `session-5-handoff.md`; raw output: `session-5-results.txt`.
