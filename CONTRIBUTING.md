@@ -41,6 +41,30 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: session 5, the A2 carry-over and the large-N restudy (harness-only)
+
+Next-round session 5 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests and 6 new session 5 tests) and `domtest` passes all 82 checks. Tables, sources and decisions: `session-5-handoff.md`; raw output: `session-5-results.txt`.
+
+### What was added to `harness.js`
+
+- **Three restudy switches**, each off by default: `THETA_GATE = 'density'` reads SZH θ off the realised PTF share instead of the SZH coherence slider (claims ledger C08, dashboard d12); `PTH_MODE = 'housing'` applies PTH's 35% to the housing component only (d4); `DISC_BASE = 'pretax'` keeps PTF, PTH and CCO relief off the basket's 18% tax share (d5).
+- **The joint run**: `priceRun()` takes a `labor` option, so the A2 price module and the A3 labor response run together.
+- **`s5Neutral()`** (d18): the price-neutral point, the output per dollar of conversion reward at which endogenous inflation is zero. Additionality may exceed 1.
+- **A λ_G = 1.41 sweep row**: the quantity-theory reading at US M2 velocity (FRED M2V, Q1 2026: 1.409).
+- **`s5UnitSuite()`**, run by `unit`: the switches are inert at their defaults; the housing and pre-tax algebra reduces to the shipped chain where it should; skipping the tax share raises every discounted agent's cost and no one else's; the density gate gives θ = 0 below 55%; the joint run with zero coefficients is bit-identical to the price run alone; the neutral search finds a known root above 1.
+- **`node harness.js restudy <seeds> lam|grid|labor [fi,adv,st] [rows]`**, and **`labor ... --env=ref,adv,st`**.
+
+### Sourcing λ_G
+
+λ_G (pass-through of unmatched new money to the general price level) stays at 1 in the reference and is now a sourced range rather than a placeholder. High end: under the quantity theory λ_G equals the velocity of the money conversion creates, and US M2 velocity is 1.409 (FRED, Q1 2026); McCandless and Weber (1995) find an almost-unity long-run correlation between money growth and inflation across 110 countries. Low end: De Grauwe and Polan (2005) find the relation weak in countries with inflation under 10%; 0.25 stays a logged placeholder. Transfer studies measure pass-through and additionality together, so they bound the product, not λ_G: Egger et al. (2022) find average price inflation of 0.1% from a transfer of over 15% of local GDP, attributed to slack capacity; Jordà et al. (2022) attribute about 3 points of 2021 US inflation to pandemic transfers, at the upper end of published estimates.
+
+### Headline results
+
+- **`price 500 be` reproduces session 3's breakevens exactly** and adds the price-neutral point: Full Integration 1.091 (engine) / 1.011 (framework); Adverse Environment 1.110 / 1.013; Stress Test 1.193 / 1.021.
+- **The price-neutral point does not depend on λ_G** (engine: 1.091 at λ_G 0.25, 1 and 1.41), while the breakeven does (0.578, 0.964, none). It is the headline least exposed to the contested pass-through evidence.
+- **Restudy, Full Integration, engine model** (seeds 1–500, 500 agents): the joint run moves the breakeven by 0.001. The three text-versus-engine corrections together (θ density gate, PTH housing only, discounts skip the tax share) raise wealth / BLEI / basket poverty with no price feedback from 26.3 / 20.4 / 9.7% to 31.5 / 23.2 / 12.2%, and lower the breakeven from 0.963 to 0.910. Wage indexation cuts basket poverty at the breakeven from 13.0% to 10.2%.
+- **d19 confirmed at 500 seeds**: CCO alone's earnings edge over a matched-cost UBI is 2.69 points with the octave wage bonus and 0.05 without it (engine model).
+
 ## Unreleased: A3 labor supply and a release workflow
 
 Next-round session 4 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, 8 price-module tests and 4 new labor-module tests) and `domtest` passes all 82 checks. Tables, sources and decisions: `session-4-handoff.md`; raw output: `session-4-results.txt`. Status and open decisions now live on the project dashboard.

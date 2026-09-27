@@ -71,6 +71,12 @@
  * by delta), and p.ubi, a flat cash transfer to every adult for the matched-cost UBI comparator; laborRun()/laborStudy(),
  * laborUnitSuite() (run by `unit`) and the `labor` mode. Both are inert by default (LABOR null, ubi unset): validate,
  * unit and domtest pass and every shipped figure is bit-identical. index.html is unchanged.
+ *
+ * Unreleased (next-round session 5, Sep 27 2026): three restudy switches, THETA_GATE (theta on realised PTF density, C08),
+ * PTH_MODE (PTH cuts housing only, d4) and DISC_BASE (discounts skip the basket's tax share, d5); a joint price and labor
+ * run (priceRun option `labor`); the price-neutral search s5Neutral() (d18: additionality may exceed 1); a lamG 1.41 sweep
+ * row (quantity theory at US M2 velocity); s5UnitSuite() (run by `unit`); the `restudy` mode; and `labor --env=`. All
+ * inert by default: validate, unit and domtest pass and every shipped figure is bit-identical. index.html is unchanged.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -238,6 +244,24 @@ var PRICE = null;
  * money-created; counted as cash income in the income and basket measures. Unset in every preset. */
 var LABOR = null;
 var LABOR_DEFAULTS = {rho:0.16, rhoBU:0.16, rhoR:0, eps:0.33, delta:0};
+/* Session 5 restudy switches (harness-only; each off by default, so every shipped figure is bit-identical; checked by `unit`).
+ *  THETA_GATE  'szh' = index.html: SZH theta (the PTF conversion bonus add-on, the PTF induction boost and the BLEI term)
+ *              is read off the SZH zone-coherence slider. 'density' = the framework's gate (claims ledger C08, dashboard
+ *              d12): theta is read off the population's realised PTF share at the start of each year, through the same
+ *              szhTheta() curve (55% threshold, full at 90%, cap 0.25). THETA_DENS holds the latest share for agentBLEI().
+ *  PTH_MODE    'basket' = index.html: PTH cuts the whole (post-PTF) basket by 35%, which is 127% of MIT's housing
+ *              component. 'housing' (d4): PTH cuts the housing component by PTH_HOUSING_CUT (the same 35% rate, applied
+ *              to what PTH provides). Under shipped PTF the housing component has already been cut by PTF's rate.
+ *  DISC_BASE   'basket' = index.html: PTF, PTH and CCO relief discount the whole basket. 'pretax' (d5): they skip the
+ *              basket's income and payroll tax share (17.97% at year-0 prices), which no price cut reduces.
+ * With PTH_MODE or DISC_BASE changed, the PTH saving that funds equity routing is PTH's own cut on the agent's post-relief
+ * basket (identical to index.html's cf/0.65 formula in the engine model; in the framework model BU purchases are not a
+ * price cut, so the saving is PTH's cut before them). BLEI keeps its own daily-cost anchor (dual-anchor table, v4.14),
+ * so PTH_MODE and DISC_BASE act on the wealth loop only. */
+var THETA_GATE = 'szh', PTH_MODE = 'basket', DISC_BASE = 'basket', THETA_DENS = null, PTH_HOUSING_CUT = 0.35;
+function setRestudy(o){ var old = {THETA_GATE:THETA_GATE, PTH_MODE:PTH_MODE, DISC_BASE:DISC_BASE};
+  if (o){ if (o.THETA_GATE) THETA_GATE = o.THETA_GATE; if (o.PTH_MODE) PTH_MODE = o.PTH_MODE; if (o.DISC_BASE) DISC_BASE = o.DISC_BASE; }
+  return old; }
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 
 function lognormal(mu,sigma){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.exp(mu+sigma*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v));}
@@ -296,7 +320,7 @@ function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh,ptfOn){
   var mInc=Math.max(isNaN(a.wage)?1:a.wage,0.1)*CFG.WAGE_TO_USD;
   var buFood=(ccoOn&&a.inCCO&&buAlloc>0)?((CONVERSION_MODEL==='framework'&&a._fwBUm!==undefined)?a._fwBUm:buAlloc*(990/1200)):0;  // session 2, N3: framework credits one month of the BU actually spent on essentials
   var szhD=szhOn?szhCoh*CFG.SZH_ALL_RESIDENTS:0;
-  if(szhOn&&ptfOn&&a.inPTF)szhD+=szhTheta(szhCoh)*0.20;
+  if(szhOn&&ptfOn&&a.inPTF)szhD+=szhTheta(THETA_GATE==='density'&&THETA_DENS!==null?THETA_DENS:szhCoh)*0.20;  // session 5 (C08): harness-only gate
   var baseCost=(ccoOn&&a.inCCO&&pthOn&&a.inPTH)?CFG.CCO_PTH_DAILY_COST:CFG.BASE_DAILY_COST;
   var dc=Math.max(baseCost*(1-szhD),0.1);
   var r=(liquid+gammaV*mInc+buFood)/dc;
@@ -323,6 +347,7 @@ function runYear(agentSet,yr,p,recSt){
   var totalBU=0,totalConversion=0;recSt=recSt||{active:false,incomeMultiplier:1.0,yearsLeft:0};
   var pthApprBonus=p.szh?p.szhCoh*0.01:0;
   var szhThetaVal=p.szh?szhTheta(p.szhCoh):0;
+  if(THETA_GATE==='density'){var tdN=0;if(p.ptf)agentSet.forEach(function(a){if(a.inPTF)tdN++;});THETA_DENS=tdN/Math.max(1,agentSet.length);szhThetaVal=p.szh?szhTheta(THETA_DENS):0;}  // session 5 (C08/d12): harness-only
   var ptfConvBonus=1.30+((p.szh&&p.ptf)?szhThetaVal:0);
   var szhPartBoost=(p.szh&&p.ccoOn)?szhThetaVal*0.16:0;
   /* v4.14 parity fix — ported from index.html: PTF's inflation-damping term used to read
@@ -413,6 +438,9 @@ function runYear(agentSet,yr,p,recSt){
   if(FWON){if(yr===0||!FWS)FWS={prev:null};FWS.next={bizBU:0,projBU:0,expiredBU:0,destroyedBU:0,wSum:0,pwSum:0,projAlloc:0,projGross:0,projTax:0,projNet:0,projLost:0,bizPaid:0};}
   var eShareCur=0,fShareCur=CFG.BASKET.food;CFG.ESSENTIALS.forEach(function(k){eShareCur+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});
   if(PRICE){eShareCur/=PRICE.bIdx;fShareCur=CFG.BASKET.food*PRICE.comp.food/PRICE.bIdx;}
+  var rsAlt=PTH_MODE!=='basket'||DISC_BASE!=='basket';  // session 5 (d4/d5): harness-only
+  var tShareCur=DISC_BASE==='pretax'?CFG.BASKET.taxes*(PRICE?PRICE.comp.taxes/PRICE.bIdx:1):0,hShareCur=CFG.BASKET.housing*(PRICE?PRICE.comp.housing/PRICE.bIdx:1);
+  function discMul(c,m){return DISC_BASE==='pretax'?tShareCur+(c-tShareCur)*m:c*m;}
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
@@ -439,19 +467,28 @@ function runYear(agentSet,yr,p,recSt){
     if(isNaN(a.wage))a.wage=1;
     if(LABOR){var lbProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0);a._lwNB=Math.max(a._lwNB*0.80,a._lwNB*(1+wg-lbProg));}
     if(PRICE){var pmProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0);a._wNB=Math.max(a._wNB*0.80,a._wNB*(1+wg-pmProg));}  // N7: the wage without program-induced raises
-    var cf=1.0;
+    var cf=1.0,rsPtfU=1,rsRel=1;
+    if(!rsAlt){
     if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped')cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));else cf*=(1-PTF_FOOD_CUT[PTF_MODE]*fShareCur);}  // session 2: PTF_MODE (D4); 'shipped' is index.html
     var cfPTF=cf;  // A1 ledger (reporting only)
     if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost)cf*=0.65;  // v4.21: harness-only pathway switch
     var cfPreCCO=cf;  // A1 ledger (reporting only)
     if(p.ccoOn&&a.inCCO&&p.bu>0){if(!PATHWAY_OFF.relief&&!FWON)cf*=ccoReliefF;}  // v4.19: was a flat 0.80 (see ccoReliefF). v4.21: pathway switch
     else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf*=ccoReliefF;emergN++;}  // v4.19: emergency enrollment
+    } else {  // session 5 (d4/d5): the same chain with PTH_MODE and DISC_BASE (harness-only)
+    if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped'){rsPtfU=1-(p.szh?0.12+p.szhCoh*0.04:0.12);cf=discMul(cf,rsPtfU);}else cf-=PTF_FOOD_CUT[PTF_MODE]*fShareCur;}
+    var cfPTF=cf;
+    if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')cf-=PTH_HOUSING_CUT*hShareCur*rsPtfU;else cf=discMul(cf,0.65);}
+    var cfPreCCO=cf;
+    if(p.ccoOn&&a.inCCO&&p.bu>0){if(!PATHWAY_OFF.relief&&!FWON){cf=discMul(cf,ccoReliefF);rsRel=ccoReliefF;}}
+    else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf=discMul(cf,ccoReliefF);rsRel=ccoReliefF;emergN++;}
+    }
     var mainLoopCostUSD=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);
     if(PRICE)mainLoopCostUSD*=PRICE.bIdx;  // session 2: endogenous basket index
     if(FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // session 2, N3/N4: BU buy essentials at the agent's own prices, up to 12 x BU a year
       var essF=eShareCur;
       if(p.ptf&&a.inPTF)essF=PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fShareCur;
-      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost)essF*=0.65;
+      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')essF-=PTH_HOUSING_CUT*hShareCur*rsPtfU;else essF*=0.65;}  // session 5 (d4)
       var fwBudget=12*buEff,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),fwLeft=fwBudget-fwB;
       cf=cfPreCCO-fwB/mainLoopCostUSD;a._fwBUm=fwB/12;
       FWS.next.bizBU+=fwB;FWS.next.expiredBU+=fwLeft;FWS.next.projBU+=fwLeft*FW.directedShare;FWS.next.destroyedBU+=fwLeft*(1-FW.directedShare);
@@ -561,6 +598,7 @@ function runYear(agentSet,yr,p,recSt){
       a.pthTenure+=1;
       var cfWithoutPTH=cf/0.65;
       var pthSaving=Math.max(0,dollarCost*cfWithoutPTH*(1-0.65));
+      if(rsAlt)pthSaving=Math.max(0,dollarCost*(cfPTF-cfPreCCO)*rsRel);  // session 5 (d4/d5): PTH's own cut on the post-relief basket
       var equityContrib=pthSaving*CFG.PTH_EQUITY_CONTRIB_SHARE;
       a.acreEquity+=equityContrib;a.wealth-=equityContrib;yrCashSurplus-=equityContrib;  // session 1: equity routing is not discretionary cash
       var ar=0.030+uPthAppr*0.020+pthApprBonus;var appr=a.acreEquity*ar,lqs=pthLiquidShare(a.pthTenure);a.acreEquity+=PTH_APPR_CONSERVE?appr*(1-lqs):appr;a.wealth+=appr*lqs;yrCashSurplus+=appr*lqs;  /* v4.16: PTH_APPR_CONSERVE=false is bit-identical to index.html */
@@ -1168,7 +1206,9 @@ function priceRun(p, seed, o, S){
   RNG = mulberry32(seed);
   var comp = {}; CFG.BASKET_KEYS.forEach(function(k){ comp[k] = 1; });
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
-  var PG = 1, D = [], path = [], tot = newPMAcc(), wbPrev = 0;
+  var PG = 1, D = [], path = [], tot = newPMAcc(), wbPrev = 0, labAcc = null;
+  THETA_DENS = null;
+  if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }  /* session 5: the joint price and labor run */
   try {
     for (var yr = 0; yr < p.years; yr++){
       PRICE.acc = newPMAcc();
@@ -1190,7 +1230,7 @@ function priceRun(p, seed, o, S){
       CFG.BASKET_KEYS.forEach(function(k){ comp[k] = CFG.ESSENTIALS.indexOf(k) >= 0 ? PE[k]*(o.pgOnE ? PG : 1) : PG; });
       PRICE.bIdx = pmBasketIdx(comp);
     }
-  } finally { PRICE = null; }
+  } finally { PRICE = null; if (labAcc) LABOR = null; }
   var T = p.years, full = agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL, lineF = o.lines === 'nominal' ? 1 : full, n = agents.length;
   var ws = agents.map(function(a){ return a.wealth; }), pov = 0, bpov = 0;
   ws.forEach(function(w){ if (w < CFG.POVERTY_LINE*lineF) pov++; });
@@ -1202,7 +1242,8 @@ function priceRun(p, seed, o, S){
     endoAnn: Math.pow(bI, 1/(T - 1)) - 1, endoMax: mx, endoIdx: bI, PG: path[T-1].PG, PEh: path[T-1].PEh, fullIdx: full,
     pov: pov/n*100, bleiPov: bpov/n*100, basketPov: ib.basketPov, medWealthReal: medianOf(ws)/full,
     unmetShare: tot.basketOwn > 0 ? tot.unmet/tot.basketOwn : 0, unmetYears: tot.unmetN/tot.n, convShare: tot.Y > 0 ? tot.conv/tot.Y : 0,
-    buReal: p.bu*(p.cola ? colaLast : 1)/full}};
+    buReal: p.bu*(p.cola ? colaLast : 1)/full,
+    dE: labAcc && labAcc.E0 > 0 ? (labAcc.E - labAcc.E0)/labAcc.E0 : 0, labE: labAcc ? labAcc.E/Math.max(1, labAcc.n) : 0}};
 }
 /* Paired study: for each seed, the matched Baseline under the same rule gives the supply path; the scenario is then run at
  * every option set in `grid` against that path. Returns the per-option mean of each metric. */
@@ -1316,7 +1357,7 @@ Object.assign(module.exports, { priceRun, priceStudy, breakevenA, priceUnitSuite
  *             the two bracket points (linear inside the bracket, which is narrow).
  *  s3Config   one scenario under one sweep row (switches, preset overrides and module options), both tolerances. */
 var S3_CACHE = {};
-var S3_KEYS = ['endoAnn','endoMax','pov','bleiPov','basketPov','unmetShare','unmetYears','convShare','buReal','PG','medWealthReal'];
+var S3_KEYS = ['endoAnn','endoMax','pov','bleiPov','basketPov','unmetShare','unmetYears','convShare','buReal','PG','medWealthReal','dE','labE'];
 function s3BaseS(p, seed){
   var bp = baselineFor(p, true), k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed;
   if (!S3_CACHE[k]) S3_CACHE[k] = priceRun(bp, seed, {}, null).D;
@@ -1399,6 +1440,7 @@ var S3_REF = {id:'ref', grp:'reference', lbl:'Reference: lamG 1; theta food 0, h
 var S3_ROWS = [S3_REF,
   {id:'lam25', grp:'parameter', lbl:'lamG 0.25', opts:{lamG:0.25}},
   {id:'lam50', grp:'parameter', lbl:'lamG 0.5', opts:{lamG:0.5}},
+  {id:'lam141', grp:'parameter', lbl:'lamG 1.41 (quantity theory at US M2 velocity, FRED M2V Q1 2026; session 5)', opts:{lamG:1.41}},
   {id:'widx1', grp:'parameter', lbl:'Wages indexed to P_G (wIdx 1)', opts:{wIdx:1}},
   {id:'aw0', grp:'parameter', lbl:'Program-induced raises unmatched, level shift (aw 0; N7 alternative, S3-1 reading)', opts:{aw:0}},
   {id:'aw0lvl', grp:'structural', lbl:'  ... session 2 reading: the whole premium re-created as money every year (awLevel)', opts:{aw:0, awLevel:true}},
@@ -1423,6 +1465,121 @@ function s3StabArms(){
 }
 Object.assign(module.exports, { s3BaseS, s3Point, s3Breakeven, s3Config, S3_ROWS, s3StabArms });
 
+/* ─── Session 5 (Sep 27 2026; Duke assigns the version): the price-neutral point (d18) and the large-N restudy ──────────
+ * Harness-only; nothing here changes a run at its defaults.
+ *  s5Neutral  d18: the output per dollar of conversion reward, a, at which the program's endogenous inflation is zero, so
+ *             the currency keeps its value. a may exceed 1: then the conversion term of the unmatched flow U is negative
+ *             (output beyond the reward), offsetting the program's other unmatched flows (PTH appreciation credited as
+ *             cash, the essentials channel, any unmatched raises). Bracketed secant on the exact seed mean (CRN) over
+ *             [0, aMax]; 95% interval from 2,000 bootstrap resamples of the seeds at the final bracket (not clamped at 1).
+ *             null = still inflationary at aMax.
+ *  S5_ROWS    the restudy rows (dashboard s17): R0 is session 3's reference (labor off); R1 adds the A3 labor response at
+ *             its central values (the joint run); R2-R6 each change one thing on top of R1; R7 applies the three
+ *             text-versus-engine corrections together.
+ *  s5Config   one scenario under one row: breakeven at 0.5 point (D3) and the price-neutral point, plus a = 0, a = 1 and
+ *             the run with no price feedback. */
+function s5Neutral(pts, evalAt, aMax){
+  aMax = aMax || 5;
+  function P(a){ var k = a.toFixed(4); if (!pts[k]) pts[k] = evalAt(+k); return pts[k]; }
+  function I(q){ return q.m.endoAnn; }
+  var lo, hi = null, i, q;
+  if (I(P(1)) <= 0){ if (I(P(0)) <= 0) return {an:0, ci:[0, 0]}; lo = P(0); hi = P(1); }
+  else { lo = P(1); var cand = [2, 3, aMax];
+    for (i = 0; i < cand.length; i++){ q = P(cand[i]); if (I(q) <= 0){ hi = q; break; } lo = q; }
+    if (!hi) return {an:null, ci:null, aMax:aMax}; }
+  for (var it = 0; it < 20; it++){
+    var w = hi.a - lo.a; if (w <= 0.002 || Math.min(I(lo), -I(hi)) < 1e-5) break;
+    var x = lo.a + I(lo)/(I(lo) - I(hi))*w; x = Math.min(hi.a - 0.02*w, Math.max(lo.a + 0.02*w, x));
+    if (pts[x.toFixed(4)]) x = lo.a + w/2;
+    q = P(x); if (I(q) > 0) lo = q; else hi = q;
+  }
+  var f = I(lo)/(I(lo) - I(hi)), an = lo.a + f*(hi.a - lo.a), R = mulberry32(987654321), n = lo.n, v = [];
+  for (var b = 0; b < 2000; b++){ var sl = 0, sh = 0;
+    for (i = 0; i < n; i++){ var j = Math.floor(R()*n); sl += lo.s.endoAnn[j]; sh += hi.s.endoAnn[j]; }
+    sl /= n; sh /= n; var d = sl - sh; v.push(lo.a + (d > 0 ? sl/d : 0.5)*(hi.a - lo.a)); }
+  v.sort(function(x, y){ return x - y; });
+  return {an:an, ci:[v[50], v[1949]], lo:lo.a, hi:hi.a};
+}
+function s5Set(row){ var sv = {s3:s3Set(row.sw), rs:setRestudy(row.rs), pw:Object.assign({}, PATHWAY_OFF)}; if (row.pw) Object.assign(PATHWAY_OFF, row.pw); return sv; }
+function s5Reset(sv){ s3Reset(sv.s3); setRestudy(sv.rs); Object.assign(PATHWAY_OFF, sv.pw); }
+var S5_JOINT = {labor:LABOR_DEFAULTS};
+var S5_ROWS = [
+  {id:'R0', lbl:'R0 Session 3 reference (labor off; lamG 1)', opts:{}},
+  {id:'R1', lbl:'R1 Joint run: R0 + A3 labor response at central values', opts:S5_JOINT},
+  {id:'R2', lbl:'R2 R1 + theta gated on realised PTF density (C08, d12)', opts:S5_JOINT, rs:{THETA_GATE:'density'}},
+  {id:'R3', lbl:'R3 R1 + PTH cuts housing only, 35% of it (d4)', opts:S5_JOINT, rs:{PTH_MODE:'housing'}},
+  {id:'R4', lbl:'R4 R1 + discounts skip the basket\'s tax share (d5)', opts:S5_JOINT, rs:{DISC_BASE:'pretax'}},
+  {id:'R5', lbl:'R5 R1 + wages indexed to P_G, with COLA (d6)', opts:Object.assign({wIdx:1}, S5_JOINT)},
+  {id:'R6', lbl:'R6 R1 + octave wage bonus off (d19)', opts:S5_JOINT, pw:{octaveWage:true}},
+  {id:'R7', lbl:'R7 R1 + R2, R3 and R4 together (the three text-versus-engine corrections)', opts:S5_JOINT, rs:{THETA_GATE:'density', PTH_MODE:'housing', DISC_BASE:'pretax'}}];
+function s5Config(P0, row, N, tols){
+  var sv = s5Set(row), P = Object.assign({}, P0, row.preset || {}), opts = Object.assign({}, row.opts || {}), pts = {};
+  try {
+    var evalAt = function(a){ return s3Point(P, opts, a, N); };
+    var out = {row:row, b:(tols || [0.005]).map(function(t){ return s3Breakeven(pts, t, evalAt); }), n:s5Neutral(pts, evalAt)};
+    ['0.0000','1.0000'].forEach(function(k){ if (!pts[k]) pts[k] = evalAt(+k); });
+    out.p0 = pts['0.0000']; out.p1 = pts['1.0000'];
+    if (out.b[0].be !== null){ var k = out.b[0].be.toFixed(4); if (!pts[k]) pts[k] = evalAt(+k); out.pBE = pts[k]; }
+    out.pNF = s3Point(P, Object.assign({}, opts, {pthUnmatched:false}), 1, N, false, true);
+    out.nEval = Object.keys(pts).length;
+    return out;
+  } finally { s5Reset(sv); }
+}
+/* Tests for the session 5 switches and search (harness-only; run by `unit`). */
+function s5UnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, r:applyRule(NEXT_ROUND), rs:setRestudy({THETA_GATE:'szh', PTH_MODE:'basket', DISC_BASE:'basket'})};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; applyRule(sv.r); setRestudy(sv.rs); LABOR = null; PRICE = null; THETA_DENS = null; } }
+  function agentsAfter(p, seed){ RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(p.nAgents).map(function(l){ return instantiateAgent(l, p); });
+    var rp = p.shock ? buildRecessionPath(p.years, seed) : null; RNG = mulberry32(seed); THETA_DENS = null;
+    for (var y = 0; y < p.years; y++) runYear(ag, y, p, rp ? rp[y] : {active:false, incomeMultiplier:1.0, yearsLeft:0}); return ag; }
+  function same(x, y){ return x.every(function(a, i){ return a.wealth === y[i].wealth && a.wage === y[i].wage && a.yrCostUSD === y[i].yrCostUSD && a.acreEquity === y[i].acreEquity && a.octave === y[i].octave; }); }
+  var FI = nextRoundPreset(FULL_INTEGRATION);
+  t('switches inert at their defaults: index.html\'s seed-42 Full Integration figures, with THETA_GATE, PTH_MODE and DISC_BASE set explicitly to their defaults', function(){
+    applyRule({SURPLUS_CONSUMPTION_SHARE:0, SURPLUS_CONSUMPTION_BASE:'wage'}); var r = runScenario(FULL_INTEGRATION, 42);
+    return {pass: r.pov === 15.8 && r.wealth === 570661 && r.bleiMed === 1975, detail: r.pov + ' / ' + r.wealth + ' / ' + r.bleiMed};
+  });
+  t('d4/d5 algebra: with PTH_MODE housing at a cut equal to the whole-basket rate over the housing share, and DISC_BASE basket, every agent matches the shipped run (engine, seed 1)', function(){
+    var sv = PTH_HOUSING_CUT; PTH_HOUSING_CUT = 0.35/CFG.BASKET.housing; setRestudy({PTH_MODE:'housing'});
+    var ok = true, A = agentsAfter(ccoOnlyFor(FI), 1); setRestudy({PTH_MODE:'basket'}); var B = agentsAfter(ccoOnlyFor(FI), 1); if (!same(A, B)) ok = false;
+    /* with PTF off and PTH on, 0.35/h x h = 0.35 of the basket, the shipped cut: wealth must agree to rounding */
+    var Pn = Object.assign({}, FI, {ptf:false, ptfShare:0}); setRestudy({PTH_MODE:'housing'}); var C = agentsAfter(Pn, 1); setRestudy({PTH_MODE:'basket'}); var Dd = agentsAfter(Pn, 1);
+    var md = 0; C.forEach(function(a, i){ md = Math.max(md, Math.abs(a.wealth - Dd[i].wealth)/Math.max(1, Math.abs(Dd[i].wealth))); });
+    PTH_HOUSING_CUT = sv;
+    return {pass: ok && md < 1e-9, detail: 'CCO alone identical: ' + ok + '; PTF off, PTH on: max relative wealth gap ' + md.toExponential(1)};
+  });
+  t('d5 direction: skipping the tax share raises every discounted agent\'s cost and leaves undiscounted agents unchanged (Full Integration, seed 1, year 1)', function(){
+    function yr1(){ RNG = mulberry32(700004); var ag = makeLatentPopulation(FI.nAgents).map(function(l){ return instantiateAgent(l, FI); }); RNG = mulberry32(1);
+      runYear(ag, 0, FI, {active:false, incomeMultiplier:1.0, yearsLeft:0}); return ag; }
+    var A = yr1(); setRestudy({DISC_BASE:'pretax'}); var B = yr1(); setRestudy({DISC_BASE:'basket'});
+    var up = 0, eq = 0, bad = 0; A.forEach(function(a, i){ var disc = a.inCCO || a.inPTF || a.inPTH; if (disc){ if (B[i].yrCostUSD > a.yrCostUSD) up++; else bad++; } else { if (B[i].yrCostUSD === a.yrCostUSD) eq++; else bad++; } });
+    return {pass: bad === 0 && up > 0, detail: up + ' discounted agents cost more, ' + eq + ' undiscounted unchanged, ' + bad + ' exceptions'};
+  });
+  t('theta density gate: below 55% realised PTF share theta is 0 (conversion bonus 1.30 for PTF members); the reference run\'s realised share stays below it', function(){
+    setRestudy({THETA_GATE:'density'}); var ag = agentsAfter(FI, 1), sh = THETA_DENS; setRestudy({THETA_GATE:'szh'});
+    return {pass: sh !== null && sh < CFG.SZH_THETA_THRESHOLD && szhTheta(sh) === 0 && szhTheta(0.72) > 0, detail: 'realised PTF share in year 20: ' + (sh*100).toFixed(1) + '%; theta there ' + szhTheta(sh) + ' vs ' + szhTheta(0.72).toFixed(3) + ' on the slider'};
+  });
+  t('joint run: labor coefficients at zero in priceRun are bit-identical to priceRun without labor, and central coefficients move earnings and inflation (Full Integration, seed 1, a = 0.9, both models)', function(){
+    var ok = true, d = [];
+    ['engine','framework'].forEach(function(cm){ CONVERSION_MODEL = cm; var S = s3BaseS(FI, 1);
+      var r0 = priceRun(FI, 1, {a:0.9}, S), r1 = priceRun(FI, 1, {a:0.9, labor:LAB_ZERO}, S), r2 = priceRun(FI, 1, {a:0.9, labor:LABOR_DEFAULTS}, S);
+      if (!same(r0.agents, r1.agents) || r0.res.endoAnn !== r1.res.endoAnn || r1.res.dE !== 0) ok = false; if (r2.res.dE === 0 || r2.res.endoAnn === r0.res.endoAnn) ok = false;
+      d.push(cm + ': dE at central ' + (r2.res.dE*100).toFixed(2) + '%'); });
+    return {pass: ok, detail: d.join('; ')};
+  });
+  t('price-neutral search (d18): finds a known root above 1 on a synthetic linear curve, and returns 0 when a = 0 is already non-inflationary', function(){
+    function synth(f){ return function(a){ var n = 100, s = new Float64Array(n), m = 0, R = mulberry32(99);
+      for (var i = 0; i < n; i++){ s[i] = f(a) + (R() - 0.5)*0.001; m += s[i]; } return {a:a, n:n, s:{endoAnn:s}, m:{endoAnn:m/n}}; }; }
+    var r = s5Neutral({}, synth(function(a){ return 0.04*(1 - a) + 0.006; })), z = s5Neutral({}, synth(function(a){ return -0.001 - 0.01*a; }));
+    var want = 1 + 0.006/0.04;
+    return {pass: Math.abs(r.an - want) < 2e-3 && r.ci[0] <= want + 2e-3 && r.ci[1] >= want - 2e-3 && z.an === 0, detail: 'found ' + r.an.toFixed(4) + ' [' + r.ci[0].toFixed(4) + '-' + r.ci[1].toFixed(4) + '] (true ' + want.toFixed(4) + ')'};
+  });
+  return out;
+}
+Object.assign(module.exports, { s5Neutral, s5Config, S5_ROWS, s5UnitSuite, setRestudy });
+
 
 /* ─── Session 4 (Sep 27 2026; Duke assigns the version): A3 labor supply ─────────────────────────────────────────────
  * laborRun   one run with LABOR set to L (null = off). Draws exactly as runScenario() does, so runs are CRN-paired
@@ -1438,6 +1595,7 @@ function laborRun(p, seed, L, wantBound){
   var recPath = p.shock ? buildRecessionPath(p.years, seed) : null;
   RNG = mulberry32(seed);
   var acc = newLabAcc();
+  THETA_DENS = null;  // session 5
   LABOR = L ? Object.assign({}, L, {acc:acc}) : null;
   if (wantBound) LEDGER = newLedger();
   try { for (var yr = 0; yr < p.years; yr++) runYear(agents, yr, p, recPath ? recPath[yr] : CALM0); }
@@ -1586,7 +1744,12 @@ if (require.main === module) {
     console.log('\n=== laborUnitSuite(): A3 labor supply and the UBI comparator (harness-only) ===');
     LU.forEach(function(x){ if (!x.pass) lf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + LU.length + ' run, ' + lf + ' failed');
-    if (nf || pf || lf) process.exitCode = 1;
+    /* Session 5: the restudy switches (THETA_GATE, PTH_MODE, DISC_BASE), the joint run and the price-neutral search (harness-only). */
+    var RU = s5UnitSuite(), rf = 0;
+    console.log('\n=== s5UnitSuite(): session 5 restudy switches, joint price and labor run, price-neutral search (harness-only) ===');
+    RU.forEach(function(x){ if (!x.pass) rf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + RU.length + ' run, ' + rf + ' failed');
+    if (nf || pf || lf || rf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -2342,6 +2505,7 @@ if (require.main === module) {
     function fmtB(b){ return b.be === null ? 'none' : b.be === 0 ? '0 (any a)' : b.be.toFixed(3) + ' [' + b.ci[0].toFixed(3) + '–' + b.ci[1].toFixed(3) + ']'; }
     function fmtA(b){ return b.be === null ? 'none' : b.be === 0 ? '0' : b.a90 === Infinity ? 'none (above 1)' : b.a90.toFixed(3); }
     function fmtS(b){ return b.be === null || b.be === 0 ? '—' : pc(b.above, 0); }
+    function fmtN(n){ return n.an === null ? 'none up to ' + n.aMax : n.an.toFixed(3) + ' [' + n.ci[0].toFixed(3) + '–' + n.ci[1].toFixed(3) + ']'; }
     function pt(x){ return isFinite(x) && Math.abs(x) < 10 ? (x*100).toFixed(2) : 'diverges'; }
     var ENV3 = {fi:['Full Integration', FULL_INTEGRATION], adv:['Adverse Environment', ADVERSE_REFERENCE], st:['Stress Test', STRESS_TEST]};
     var envSel = (process.argv[5] || 'fi,adv,st').split(',');
@@ -2349,16 +2513,17 @@ if (require.main === module) {
     if (secP === 'be'){
       var svE = applyRule(NEXT_ROUND);
       console.log('\n=== A2 breakeven additionality, reference settings (seeds 1-' + nP + ', ' + AG + ' agents; D1, D2, D6; ' + S3_REF.lbl + ') ===');
-      console.log('| Scenario | Model | Conversion, share of cash income (no feedback) | Inflation at a = 0 (pt/yr) | at a = 0.9 | at a = 1 | Breakeven a at 0.5 pt [95% CI] | Seeds above 0.5 pt there | a with 90% of seeds within 0.5 pt | Breakeven a at 1 pt [95% CI] | a with 90% of seeds within 1 pt | Points evaluated |');
-      console.log('|---|---|---|---|---|---|---|---|---|---|---|---|');
+      console.log('| Scenario | Model | Conversion, share of cash income (no feedback) | Inflation at a = 0 (pt/yr) | at a = 0.9 | at a = 1 | Breakeven a at 0.5 pt [95% CI] | Seeds above 0.5 pt there | a with 90% of seeds within 0.5 pt | Breakeven a at 1 pt [95% CI] | a with 90% of seeds within 1 pt | Price-neutral a (d18) [95% CI] | Points evaluated |');
+      console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|');
       var BE = [];
       envSel.forEach(function(e){ var c = ENV3[e], P = nextRoundPreset(c[1]);
         ['engine','framework'].forEach(function(cm){
           var r = s3Config(P, Object.assign({}, S3_REF, {sw:{cm:cm}}), nP);
           if (r.b[0].be !== null){ var k = Math.round(r.b[0].be*1000)/1000; r.pBE = s3Config(P, Object.assign({}, S3_REF, {sw:{cm:cm}}), nP, {pts:r.pts, at:k}).pAt; r.kBE = k; }
-          var sv0 = s3Set({cm:cm}); r.pNF = s3Point(P, {a:1, pthUnmatched:false}, 1, nP, false, true); s3Reset(sv0);
+          var sv0 = s3Set({cm:cm}); r.pNF = s3Point(P, {a:1, pthUnmatched:false}, 1, nP, false, true);
+          r.n = s5Neutral(r.pts, function(a){ return s3Point(P, {}, a, nP); }); s3Reset(sv0);  /* session 5 (d18): the price-neutral point */
           BE.push([c[0], cm, r]);
-          console.log('| ' + c[0] + ' | ' + cm + ' | ' + pc(r.pNF.m.convShare) + ' | ' + pt(r.p0.m.endoAnn) + ' | ' + pt(r.p09.m.endoAnn) + ' | ' + pt(r.p1.m.endoAnn) + ' | ' + fmtB(r.b[0]) + ' | ' + fmtS(r.b[0]) + ' | ' + fmtA(r.b[0]) + ' | ' + fmtB(r.b[1]) + ' | ' + fmtA(r.b[1]) + ' | ' + r.nEval + ' |');
+          console.log('| ' + c[0] + ' | ' + cm + ' | ' + pc(r.pNF.m.convShare) + ' | ' + pt(r.p0.m.endoAnn) + ' | ' + pt(r.p09.m.endoAnn) + ' | ' + pt(r.p1.m.endoAnn) + ' | ' + fmtB(r.b[0]) + ' | ' + fmtS(r.b[0]) + ' | ' + fmtA(r.b[0]) + ' | ' + fmtB(r.b[1]) + ' | ' + fmtA(r.b[1]) + ' | ' + fmtN(r.n) + ' | ' + Object.keys(r.pts).length + ' |');
         });
       });
       console.log('\nPoverty under D2 (lines deflated by the full index): no price feedback, at the 0.5-pt breakeven, and at a = 1');
@@ -2475,6 +2640,8 @@ if (require.main === module) {
      * sweep: one parameter at a time around the central values (LABOR_DEFAULTS), CCO alone, reference environment. */
     var LN = parseInt(process.argv[3], 10) || 500, LSEC = (process.argv[4] && process.argv[4].indexOf('--') !== 0) ? process.argv[4] : 'all', nA = FULL_INTEGRATION.nAgents;
     var ENVS = [['Reference', FULL_INTEGRATION], ['Adverse Environment', ADVERSE_REFERENCE], ['Stress Test', STRESS_TEST]];
+    var ENVF = process.argv.filter(function(a){ return /^--env=/.test(a); })[0];  /* session 5: --env=ref,adv,st runs a subset */
+    if (ENVF){ var envKeep = ENVF.split('=')[1].split(','), envKey = {ref:'Reference', adv:'Adverse Environment', st:'Stress Test'}; ENVS = ENVS.filter(function(E){ return envKeep.some(function(k){ return envKey[k] === E[0]; }); }); }
     function f0(x){ var v = Math.round(x); return v === 0 ? '0' : (v > 0 ? '+' : '') + v.toLocaleString('en-US'); }
     function pc(x){ return (x*100 >= 0 ? '+' : '') + (x*100).toFixed(2) + '%'; }
     function pv(r){ return r.pov.toFixed(1) + ' / ' + r.bleiPov.toFixed(1) + ' / ' + r.basketPov.toFixed(1); }
@@ -2520,6 +2687,68 @@ if (require.main === module) {
         } finally { Object.assign(FW, sv); Object.assign(PATHWAY_OFF, svP); } });
     });
     CONVERSION_MODEL = svCM;
+  }
+
+  if (mode === 'restudy') {
+    /* Session 5 (dashboard s17): node harness.js restudy <seeds> <section> [fi,adv,st] [--agents=N]. Every section: D1 rule, D2
+     * lines, D6 COLA, CRN-paired seeds 1-N. Sections:
+     *  lam    lamG 0.25 and 1.41 against the reference 1: breakeven at 0.5 pt and the price-neutral point (Full Integration).
+     *  grid   S5_ROWS x scenarios x both conversion models: breakeven at 0.5 pt, the price-neutral point (d18), inflation at
+     *         a = 0 and 1, and poverty with no price feedback, at the breakeven and at a = 1; earnings change for joint rows.
+     *  labor  prices off: CCO alone against a UBI at matched gross cost, and Full Integration, under each restudy switch. */
+    CFG.WEALTH_FLOOR = -10000;
+    var nR = parseInt(process.argv[3] || '500', 10), secR = process.argv[4] || 'grid', envR = (process.argv[5] || 'fi,adv,st').split(',');
+    var ENV5 = {fi:['Full Integration', FULL_INTEGRATION], adv:['Adverse Environment', ADVERSE_REFERENCE], st:['Stress Test', STRESS_TEST]};
+    function b5(b){ return b.be === null ? 'none' : b.be === 0 ? '0 (any a)' : b.be.toFixed(3) + ' [' + b.ci[0].toFixed(3) + '–' + b.ci[1].toFixed(3) + ']'; }
+    function n5(n){ return n.an === null ? 'none up to ' + n.aMax : n.an.toFixed(3) + ' [' + n.ci[0].toFixed(3) + '–' + n.ci[1].toFixed(3) + ']'; }
+    function p5(x){ return isFinite(x) && Math.abs(x) < 10 ? (x*100).toFixed(2) : 'diverges'; }
+    function v5(q){ return q.m.pov.toFixed(1) + ' / ' + q.m.bleiPov.toFixed(1) + ' / ' + q.m.basketPov.toFixed(1); }
+    var t0R = Date.now(), svR = applyRule(NEXT_ROUND);
+    if (secR === 'lam'){
+      console.log('=== Restudy: lamG and the price-neutral point (Full Integration, seeds 1-' + nR + ', ' + AG + ' agents) ===');
+      console.log('| Model | lamG | Breakeven a at 0.5 pt [95% CI] | Price-neutral a [95% CI] | Inflation at a = 0 / 1 (pt/yr) | Points |'); console.log('|---|---|---|---|---|---|');
+      ['engine','framework'].forEach(function(cm){ [0.25, 1, 1.41].forEach(function(lam){
+        var r = s5Config(nextRoundPreset(FULL_INTEGRATION), {id:'lam', sw:{cm:cm}, opts:{lamG:lam}}, nR);
+        console.log('| ' + cm + ' | ' + lam + ' | ' + b5(r.b[0]) + ' | ' + n5(r.n) + ' | ' + p5(r.p0.m.endoAnn) + ' / ' + p5(r.p1.m.endoAnn) + ' | ' + r.nEval + ' |'); }); });
+    }
+    if (secR === 'grid'){
+      var rowSel = process.argv[6] ? process.argv[6].split(',') : null;
+      console.log('=== Restudy grid (seeds 1-' + nR + ', ' + AG + ' agents; D1, D2, D6; reference settings, lamG 1; tolerance 0.5 pt, D3) ===');
+      console.log('| Scenario | Model | Row | Breakeven a at 0.5 pt [95% CI] | Price-neutral a (d18) [95% CI] | Inflation at a = 0 / 1 (pt/yr) | Poverty, no price feedback (wealth / BLEI / basket %) | At the breakeven | At a = 1 | Earnings change at a = 1 | Points |');
+      console.log('|---|---|---|---|---|---|---|---|---|---|---|');
+      envR.forEach(function(e){ var c = ENV5[e], P = nextRoundPreset(c[1]);
+        ['engine','framework'].forEach(function(cm){
+          S5_ROWS.filter(function(row){ return !rowSel || rowSel.indexOf(row.id) >= 0; }).forEach(function(row){
+            var rr = Object.assign({}, row, {sw:{cm:cm}}), r = s5Config(P, rr, nR);
+            console.log('| ' + c[0] + ' | ' + cm + ' | ' + row.lbl + ' | ' + b5(r.b[0]) + ' | ' + n5(r.n) + ' | ' + p5(r.p0.m.endoAnn) + ' / ' + p5(r.p1.m.endoAnn) + ' | ' + v5(r.pNF) + ' | ' + (r.pBE ? v5(r.pBE) : '—') + ' | ' + v5(r.p1) + ' | ' + (row.opts && row.opts.labor ? (r.p1.m.dE*100).toFixed(2) + '%' : '—') + ' | ' + r.nEval + ' |');
+          });
+        });
+      });
+    }
+    if (secR === 'labor'){
+      console.log('=== Restudy, labor (prices off; seeds 1-' + nR + ', ' + AG + ' agents; reference environment; central rho 0.16, eps 0.33, delta 0) ===');
+      console.log('Earnings change vs the same preset with no labor response. The UBI is matched to CCO alone\'s gross cost under each row.');
+      console.log('| Model | Row | CCO alone: earnings | UBI at matched cost: earnings | CCO minus UBI (pt) | CCO alone gross cost / adult-yr | CCO alone poverty, response on (wealth / BLEI / basket) | UBI poverty | Full Integration: earnings | Full Integration poverty |');
+      console.log('|---|---|---|---|---|---|---|---|---|---|');
+      var LR = [{id:'central', lbl:'Central (shipped engine)'}, {id:'oct', lbl:'Octave wage bonus off (d19)', pw:{octaveWage:true}},
+        {id:'tax', lbl:'Discounts skip the tax share (d5)', rs:{DISC_BASE:'pretax'}}, {id:'taxoct', lbl:'d5 and d19 together', rs:{DISC_BASE:'pretax'}, pw:{octaveWage:true}},
+        {id:'theta', lbl:'Theta on realised PTF density (C08)', rs:{THETA_GATE:'density'}, fiOnly:true}, {id:'pth', lbl:'PTH housing only (d4)', rs:{PTH_MODE:'housing'}, fiOnly:true},
+        {id:'r7', lbl:'C08 + d4 + d5 together', rs:{THETA_GATE:'density', PTH_MODE:'housing', DISC_BASE:'pretax'}, fiOnly:true}];
+      function pv5(r){ return r.pov.toFixed(1) + ' / ' + r.bleiPov.toFixed(1) + ' / ' + r.basketPov.toFixed(1); }
+      function pp(x){ return (x*100 >= 0 ? '+' : '') + (x*100).toFixed(2) + '%'; }
+      ['engine','framework'].forEach(function(cm){ CONVERSION_MODEL = cm;
+        LR.forEach(function(row){ var sv = s5Set(row);
+          try {
+            var P = FULL_INTEGRATION, fc = laborStudy(P, nR, LABOR_DEFAULTS), cell = ['—', '—', '—', '—', '—', '—'];
+            if (!row.fiOnly){ var C = ccoOnlyFor(P), cz = laborStudy(C, nR, LAB_ZERO), cc = laborStudy(C, nR, LABOR_DEFAULTS), U = ubiFor(P, cz.cost), uc = laborStudy(U, nR, LABOR_DEFAULTS);
+              cell = [pp(cc.dE), pp(uc.dE), ((cc.dE - uc.dE)*100).toFixed(2), '$' + Math.round(cz.cost).toLocaleString('en-US'), pv5(cc), pv5(uc)]; }
+            console.log('| ' + cm + ' | ' + row.lbl + ' | ' + cell.join(' | ') + ' | ' + pp(fc.dE) + ' | ' + pv5(fc) + ' |');
+          } finally { s5Reset(sv); } });
+      });
+      CONVERSION_MODEL = 'engine';
+    }
+    applyRule(svR);
+    console.log('\n(' + ((Date.now() - t0R)/60000).toFixed(1) + ' min)');
   }
 
   if (mode === 'v421') {

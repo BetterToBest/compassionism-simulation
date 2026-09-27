@@ -751,9 +751,9 @@ function phase8(done) {
   const names = [...src.matchAll(/^function ([A-Za-z0-9_]+)\(/gm)].map(m => m[1]);
   const hf = new Function('module', 'require', src + ';return {' + names.join(',') + '};')({exports: {}}, require);
   const norm = f => f.toString().replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '').replace(/\s+/g, '');
-  const KNOWN = {runYear: 'harness-only switches (BU_ALLOCATIONS_PER_YEAR, CCO_RELIEF_FLAT, PTH_APPR_CONSERVE, RELIEF_PRICE_LEGACY, PATHWAY_OFF, SURPLUS_CONSUMPTION_SHARE, and the next round\'s LEDGER, CONVERSION_MODEL, PRICE, LABOR and p.ubi); checked by the seed-42 page/harness runs and Phase 9',
+  const KNOWN = {runYear: 'harness-only switches (BU_ALLOCATIONS_PER_YEAR, CCO_RELIEF_FLAT, PTH_APPR_CONSERVE, RELIEF_PRICE_LEGACY, PATHWAY_OFF, SURPLUS_CONSUMPTION_SHARE, and the next round\'s LEDGER, CONVERSION_MODEL, PRICE, LABOR, p.ubi, THETA_GATE, PTH_MODE and DISC_BASE); checked by the seed-42 page/harness runs and Phase 9',
     drawAutomationRisk: 'harness-only AUTOMATION_SAMPLER_LEGACY switch; checked by the draw-sequence comparison below',
-    getTier: 'display fields (class, colour) in the page', agentBLEI: 'a local renamed gammaV in the harness, where it would shadow gamma()',
+    getTier: 'display fields (class, colour) in the page', agentBLEI: 'a local renamed gammaV in the harness, where it would shadow gamma(); and the harness-only THETA_GATE switch (session 5)',
     incomeBasketMetrics: 'guard order only, and the harness-only UBI term (session 4; absent in every preset)'};
   const shared = names.filter(n => typeof w[n] === 'function');
   const drift = shared.filter(n => !KNOWN[n] && norm(w[n]) !== norm(hf[n]));
