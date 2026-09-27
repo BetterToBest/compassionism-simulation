@@ -65,6 +65,12 @@
  * `price` sections be | inert | sweep | corners | stab; two new price-suite tests; and S3-1, the price module's aw accounting (an
  * unmatched raise enters as the year's change in the premium; awLevel restores session 2's reading). Every default run is
  * unchanged: validate, unit and domtest pass. index.html is unchanged.
+ *
+ * Unreleased (next-round session 4, Sep 27 2026): LABOR, the A3 labor-supply module (income effect rho on unconditional
+ * support; wage elasticity eps on program-induced raises; conversion read as rent, dissipated project time, or between,
+ * by delta), and p.ubi, a flat cash transfer to every adult for the matched-cost UBI comparator; laborRun()/laborStudy(),
+ * laborUnitSuite() (run by `unit`) and the `labor` mode. Both are inert by default (LABOR null, ubi unset): validate,
+ * unit and domtest pass and every shipped figure is bit-identical. index.html is unchanged.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -205,6 +211,33 @@ var FWS = null;  /* per-run framework state (pools carried from one year to the 
  * endogenous headline rate, indexes wages to P_G by PRICE.wIdx, and accumulates the year's flows into PRICE.acc.
  * No RNG is drawn; with bIdx = 1 and no accumulation a run is bit-identical (checked by `unit`). */
 var PRICE = null;
+/* LABOR (A3 labor-supply module, session 4; decisions d14, d15 and d2 on the project dashboard): null = off (index.html).
+ * When an object, each agent's wage earnings E0 for the year are replaced by
+ *   E = max(0, E0 x raise^eps - rho x cash - rhoBU x BUspent - rhoR x BUexpired - conversion term)
+ *  rho     income effect per dollar of unconditional cash (p.ubi). Source: Vivalt et al., NBER w32719 (revised Aug 2026):
+ *          $1,000 a month for three years; for every dollar received, individual income excluding the transfer fell about
+ *          16 cents and household income about 28 cents. The model's agents are single adults, so 0.16 is central (d15).
+ *  rhoBU   income effect per BU spent on the agent's own essentials (engine: the CCO relief dollars; framework: the BU
+ *          spent up to the essentials budget). These BU are inframarginal (below own essentials spending), and Hoynes &
+ *          Schanzenbach (AEJ Applied 2009) find inframarginal food stamps act like cash, so rhoBU = rho by default. Hastings &
+ *          Shapiro (AER 2018) reject fungibility in spending (mental accounting), the case for sweeping rhoBU below rho.
+ *  rhoR    income effect per BU that expire unspent (framework: directed to projects). The holder cannot consume them, so 0
+ *          by default. d2's "UBI-equivalent toggle" sets rhoBU = rhoR = rho (every BU treated as cash).
+ *  eps     compensated (Hicksian) wage elasticity. Chetty (Econometrica 2012): 0.33 on the intensive margin and 0.25 on the
+ *          extensive margin, pooled. The program's raises are uncompensated wage increases, so earnings scale by
+ *          raise^(eps - rho) (Slutsky: e_u = e_c + eta, with eta = w dh/dI = -rho, the same rho as the income effect), where
+ *          raise = wage / wage without the program's raises (octave, CIP; the N7 split) x (1 + the framework's business
+ *          payout per wage dollar). One elasticity for every change in the return to work (the plan's fairness rule).
+ *  delta   conversion (d14). Conversion proceeds in both models do not depend on effort; the framework says they reward
+ *          project work. Last year's creator proceeds C (engine: own conversion; framework: project conversion, not the
+ *          wage-linked business payout) enter as  delta x C + rho x (1 - delta) x C : delta = 0 treats C as a rent (an
+ *          unconditional dollar, the engine as coded); delta = 1 as fully dissipated project time that displaces wage
+ *          time one for one (a fixed BU pool bid for competitively, so a marginal project hour earns the wage).
+ * No RNG is drawn. With rho = rhoBU = rhoR = eps = delta = 0 a run is bit-identical to LABOR null (checked by `unit`).
+ * LABOR.acc (when an object) tallies each channel in dollars. p.ubi (harness-only): annual cash to every adult, nominal,
+ * money-created; counted as cash income in the income and basket measures. Unset in every preset. */
+var LABOR = null;
+var LABOR_DEFAULTS = {rho:0.16, rhoBU:0.16, rhoR:0, eps:0.33, delta:0};
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
 
 function lognormal(mu,sigma){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.exp(mu+sigma*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v));}
@@ -399,10 +432,12 @@ function runYear(agentSet,yr,p,recSt){
     }
     if(!PATHWAY_OFF.octaveWage)wg+=a.octave*CFG.WAGE_OCTAVE_BONUS;  // v4.21: harness-only pathway switch
     if(p.cip)wg+=p.cipDemo*0.005;
+    if(LABOR&&a._lwNB===undefined)a._lwNB=a.wage;  // session 4 (A3): the wage without program-induced raises
     if(PRICE){if(a._wNB===undefined)a._wNB=a.wage;if(PRICE.wIdx)wg+=PRICE.wIdx*PRICE.piG;}  // session 2: wage indexation to P_G (price module; 0 = nominal drift)
     wg-=popAIDisp*((typeof a.automationRisk==='number'&&!isNaN(a.automationRisk))?a.automationRisk:0.5);  /* v4.17 parity: `||0.5` read a draw of exactly 0 as 0.5 */
     a.wage=Math.max(a.wage*0.80,a.wage*(1+wg));
     if(isNaN(a.wage))a.wage=1;
+    if(LABOR){var lbProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0);a._lwNB=Math.max(a._lwNB*0.80,a._lwNB*(1+wg-lbProg));}
     if(PRICE){var pmProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0);a._wNB=Math.max(a._wNB*0.80,a._wNB*(1+wg-pmProg));}  // N7: the wage without program-induced raises
     var cf=1.0;
     if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped')cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));else cf*=(1-PTF_FOOD_CUT[PTF_MODE]*fShareCur);}  // session 2: PTF_MODE (D4); 'shipped' is index.html
@@ -423,10 +458,21 @@ function runYear(agentSet,yr,p,recSt){
       if(LEDGER){ledAdd(yr,'fwBudget',fwBudget);ledAdd(yr,'fwBUSpent',fwB);ledAdd(yr,'fwBUExpired',fwLeft);ledAdd(yr,'fwBUDirected',fwLeft*FW.directedShare);}
     }
     var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
+    if(LABOR){  // session 4 (A3): the labor-supply response replaces this year's wage earnings (no RNG)
+      var lbE0=annualWageUSD,lbBU=0,lbR=0,lbC=a._labC||0,lbU=p.ubi||0;
+      if(p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){if(FWON){lbBU=fwB;lbR=fwLeft;}else lbBU=mainLoopCostUSD*(cfPreCCO-cf);}
+      var lbBiz=(FWON&&FWS.prev&&FWS.prev.wSum>0)?Math.max(0,FWS.prev.bizNet)/FWS.prev.wSum:0;
+      var lbRaise=Math.pow(Math.max(1,a.wage/a._lwNB)*(1+lbBiz),LABOR.eps-LABOR.rho);  // uncompensated: Slutsky e_u = e_c + eta, eta = -rho
+      var lbInc=LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC,lbDisp=LABOR.delta*lbC;
+      annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);
+      if(LABOR.acc){var LA=LABOR.acc;LA.n++;if(a.inCCO)LA.nP++;LA.E0+=lbE0;LA.E+=annualWageUSD;LA.raise+=lbE0*(lbRaise-1);LA.cash+=LABOR.rho*lbU;LA.bu+=LABOR.rhoBU*lbBU;LA.buR+=LABOR.rhoR*lbR;
+        LA.rent+=LABOR.rho*(1-LABOR.delta)*lbC;LA.disp+=lbDisp;LA.C+=lbC;LA.U+=lbU+lbBU;LA.projH+=lbE0>0?lbDisp/lbE0:0;if(annualWageUSD===0&&lbE0>0)LA.zero++;}
+    }
     var costUSD=mainLoopCostUSD*cf;
     a.wealth+=annualWageUSD-costUSD;
     if(SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='wage')a.wealth-=SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD);  // v4.21: harness-only (saving mode)
-    var yrCashSurplus=annualWageUSD-costUSD;  // session 1: for SURPLUS_CONSUMPTION_BASE 'cash' (harness-only; no RNG)
+    if(p.ubi>0){a.wealth+=p.ubi;a.yrUbiUSD=p.ubi;}  // session 4: UBI comparator (harness-only; unset in every preset)
+    var yrCashSurplus=annualWageUSD-costUSD+(p.ubi>0?p.ubi:0);  // session 1: for SURPLUS_CONSUMPTION_BASE 'cash' (harness-only; no RNG)
     if(LEDGER){  // A1 ledger (reporting only): no RNG, no state read by any dynamic
       ledAdd(yr,'agentYears',1);if(a.inCCO)ledAdd(yr,'partYears',1);
       ledAdd(yr,'wage',annualWageUSD);ledAdd(yr,'cost',costUSD);ledAdd(yr,'basket',mainLoopCostUSD);
@@ -455,7 +501,7 @@ function runYear(agentSet,yr,p,recSt){
       if(FWS.prev&&FWS.prev.pwSum>0){
         var fwWant=FWS.prev.projBU*(a._fwPW||0)/FWS.prev.pwSum,fwAl=Math.min(capBU,fwWant);
         var fwG=PATHWAY_OFF.conversion?0:fwAl*rateF*cipBF*incomeShock,fwN=fwG*(1-taxF);
-        a.wealth+=fwN;a.yrConvUSD+=fwN;yrCashSurplus+=fwN;totalConversion+=fwN;totalBU+=fwAl;
+        a.wealth+=fwN;a.yrConvUSD+=fwN;yrCashSurplus+=fwN;totalConversion+=fwN;totalBU+=fwAl;if(LABOR)a._labCn=fwN;
         FWS.next.projAlloc+=fwAl;FWS.next.projGross+=fwG;FWS.next.projTax+=fwG*taxF;FWS.next.projNet+=fwN;FWS.next.projLost+=fwWant-fwAl;
         if(PRICE)PRICE.acc.conv+=fwN;
         if(LEDGER){ledAdd(yr,'fwProjBU',fwAl);ledAdd(yr,'fwProjGross',fwG);ledAdd(yr,'fwProjTax',fwG*taxF);ledAdd(yr,'fwProjNet',fwN);ledAdd(yr,'fwProjLost',fwWant-fwAl);ledAdd(yr,'fwProjRateXbu',rateF*fwAl);}
@@ -492,7 +538,7 @@ function runYear(agentSet,yr,p,recSt){
       var bTax=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax;
       var progTax=Math.min(CFG.PROG_TAX_MAX,bTax+Math.max(0,(rate-CFG.PROG_PIVOT)*CFG.PROG_RATE));
       var convGain=PATHWAY_OFF.conversion?0:spend*rate*(1-progTax)*cipB*incomeShock;  // v4.21: pathway switch
-      a.wealth+=convGain;totalConversion+=convGain;a.yrConvUSD=convGain;yrCashSurplus+=convGain;
+      a.wealth+=convGain;totalConversion+=convGain;a.yrConvUSD=convGain;yrCashSurplus+=convGain;if(LABOR)a._labCn=convGain;
       if(PRICE)PRICE.acc.conv+=convGain;  // session 2: price module (P_G injection)
       if(LEDGER){var lcG=PATHWAY_OFF.conversion?0:spend*rate*cipB*incomeShock,lcT=lcG*progTax,lcI=0;while(lcI<LEDGER_RATE_TIERS.length&&rate>=LEDGER_RATE_TIERS[lcI])lcI++;
         var lcTier=LEDGER.tiers[lcI];lcTier.bu+=spend;lcTier.gross+=lcG;lcTier.tax+=lcT;lcTier.net+=convGain;lcTier.n++;
@@ -530,6 +576,7 @@ function runYear(agentSet,yr,p,recSt){
       A.n++;A.essD+=1-pmU;A.unmet+=pmW;A.basketOwn+=pmB;if(pmW>0)A.unmetN++;A.Y+=annualWageUSD+a.yrConvUSD;if(p.ptf&&a.inPTF)A.ptfN++;
       A.wageBonus+=Math.max(0,a.wage-a._wNB)*12*CFG.WAGE_TO_USD*incomeShock;A.wageBonusNS+=Math.max(0,a.wage-a._wNB)*12*CFG.WAGE_TO_USD;  // session 3: the premium before the income shock, for aw's increment reading
     }
+    if(LABOR){a._labC=a._labCn||0;a._labCn=0;if(LABOR.acc){LABOR.acc.conv+=a.yrConvUSD||0;if(a.inCCO)LABOR.acc.convP+=a.yrConvUSD||0;}}  // session 4: creator proceeds carried to next year's labor response
     if(a.wealth<CFG.WEALTH_FLOOR){if(LEDGER){var lfA=CFG.WEALTH_FLOOR-a.wealth;ledAdd(yr,'floor',lfA);ledAdd(yr,'floorHits',1);a._ledFloor=(a._ledFloor||0)+lfA;}a.wealth=CFG.WEALTH_FLOOR;}  // A1 ledger inside the clamp
   });
   if(FWON){  // session 2, N1: businesses convert this year's accepted BU; the premium over a cash sale is paid out next year
@@ -553,7 +600,7 @@ function runYear(agentSet,yr,p,recSt){
  * reductions (gross basket − own cost) to income before applying the 60%-of-median line. */
 function medianOf(arr){var s=arr.slice().sort(function(a,b){return a-b;}),n=s.length;return n?(n%2===0?(s[n/2-1]+s[n/2])/2:s[Math.floor(n/2)]):0;}
 function incomeBasketMetrics(agents){
-  var inc=agents.map(function(a){var w=+a.yrWageUSD,c=+a.yrConvUSD;return (isNaN(w)?0:w)+(isNaN(c)?0:c);});
+  var inc=agents.map(function(a){var w=+a.yrWageUSD,c=+a.yrConvUSD;return (isNaN(w)?0:w)+(isNaN(c)?0:c)+(a.yrUbiUSD||0);});  /* session 4: + UBI (harness-only; absent in every preset) */
   var n=inc.length;if(!n||agents[0].yrBasketUSD===undefined)return null;
   var ext=agents.map(function(a,i){return inc[i]+Math.max(0,(+a.yrBasketUSD||0)-(+a.yrCostUSD||0));});
   var med=medianOf(inc),line=0.6*med,medX=medianOf(ext),rel=0,relX=0,net=0,gross=0;
@@ -1377,6 +1424,88 @@ function s3StabArms(){
 Object.assign(module.exports, { s3BaseS, s3Point, s3Breakeven, s3Config, S3_ROWS, s3StabArms });
 
 
+/* ─── Session 4 (Sep 27 2026; Duke assigns the version): A3 labor supply ─────────────────────────────────────────────
+ * laborRun   one run with LABOR set to L (null = off). Draws exactly as runScenario() does, so runs are CRN-paired
+ *            across every L and preset. Returns end-of-run poverty (wealth, BLEI, basket) and, per agent-year, the
+ *            earnings response by channel, the program's gross cost (BU spent on own essentials + conversion + UBI) and,
+ *            with wantBound, the BU that expired unconverted (the most extra conversion could draw on).
+ * laborStudy the mean over seeds 1..N of laborRun, under the D1 consumption rule (NEXT_ROUND) and D6 COLA. */
+function newLabAcc(){ return {n:0, nP:0, E0:0, E:0, raise:0, cash:0, bu:0, buR:0, rent:0, disp:0, C:0, U:0, projH:0, zero:0, conv:0, convP:0}; }
+function laborRun(p, seed, L, wantBound){
+  var CALM0 = {active:false, incomeMultiplier:1.0, yearsLeft:0};
+  RNG = mulberry32(seed + 700003);
+  var agents = makeLatentPopulation(p.nAgents).map(function(l){ return instantiateAgent(l, p); });
+  var recPath = p.shock ? buildRecessionPath(p.years, seed) : null;
+  RNG = mulberry32(seed);
+  var acc = newLabAcc();
+  LABOR = L ? Object.assign({}, L, {acc:acc}) : null;
+  if (wantBound) LEDGER = newLedger();
+  try { for (var yr = 0; yr < p.years; yr++) runYear(agents, yr, p, recPath ? recPath[yr] : CALM0); }
+  finally { LABOR = null; }
+  var bound = null;
+  if (wantBound){ var T = LEDGER.tot; bound = {expired: CONVERSION_MODEL === 'framework' ? (T.fwProjLost || 0) : (T.buExpired || 0), conv: T.convNet || T.fwProjNet || 0, convBU: T.buSpent || T.fwProjBU || 0}; LEDGER = null; }
+  var n = agents.length, pov = 0, bpov = 0;
+  agents.forEach(function(a){ if (a.wealth < CFG.POVERTY_LINE) pov++; if (agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf) < CFG.BLEI_PRECARIOUS_MAX) bpov++; });
+  var ib = incomeBasketMetrics(agents), N = Math.max(1, acc.n), ubiTot = (p.ubi || 0)*acc.n;
+  return {pov:pov/n*100, bleiPov:bpov/n*100, basketPov:ib.basketPov, medWealth:medianOf(agents.map(function(a){ return a.wealth; })),
+    E0:acc.E0/N, E:acc.E/N, dE:(acc.E - acc.E0)/Math.max(1, acc.E0), raise:acc.raise/N, cash:acc.cash/N, bu:acc.bu/N, buR:acc.buR/N,
+    rent:acc.rent/N, disp:acc.disp/N, C:acc.C/N, zero:acc.zero/N, projH:acc.projH/N, partShare:acc.nP/N,
+    cost:(acc.U + acc.conv)/N, costU:acc.U/N, costConv:acc.conv/N, ubiPer:ubiTot/N, bound:bound};
+}
+var LAB_KEYS = ['pov','bleiPov','basketPov','medWealth','E0','E','dE','raise','cash','bu','buR','rent','disp','C','zero','projH','partShare','cost','costU','costConv'];
+function laborStudy(p, N, L, wantBound){
+  var old = applyRule(NEXT_ROUND), P = nextRoundPreset(p), m = {}, b = {expired:0, conv:0, convBU:0};
+  LAB_KEYS.forEach(function(k){ m[k] = 0; });
+  try {
+    for (var sd = 1; sd <= N; sd++){ var r = laborRun(P, sd, L, wantBound);
+      LAB_KEYS.forEach(function(k){ m[k] += r[k]/N; });
+      if (r.bound){ b.expired += r.bound.expired/N; b.conv += r.bound.conv/N; b.convBU += r.bound.convBU/N; } }
+  } finally { applyRule(old); }
+  if (wantBound) m.bound = b;
+  return m;
+}
+function laborOpts(o){ return Object.assign({}, LABOR_DEFAULTS, o || {}); }
+var LAB_ZERO = {rho:0, rhoBU:0, rhoR:0, eps:0, delta:0};
+function ubiFor(p, cost){ return Object.assign({}, baselineFor(p, true), {ubi:cost}); }
+/* Tests for the labor module (harness-only; run by `unit` after the price suite). */
+function laborUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, r:applyRule(NEXT_ROUND)};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; applyRule(sv.r); LABOR = null; LEDGER = null; } }
+  function agentsAfter(p, seed, L){ RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(p.nAgents).map(function(l){ return instantiateAgent(l, p); });
+    var rp = p.shock ? buildRecessionPath(p.years, seed) : null; RNG = mulberry32(seed); LABOR = L;
+    try { for (var y = 0; y < p.years; y++) runYear(ag, y, p, rp ? rp[y] : {active:false, incomeMultiplier:1.0, yearsLeft:0}); } finally { LABOR = null; } return ag; }
+  function same(x, y){ return x.every(function(a, i){ return a.wealth === y[i].wealth && a.wage === y[i].wage && a.yrWageUSD === y[i].yrWageUSD && a.octave === y[i].octave; }); }
+  var FI = nextRoundPreset(FULL_INTEGRATION), ADV = nextRoundPreset(ADVERSE_REFERENCE);
+  t('inert: LABOR with every coefficient 0, and p.ubi = 0, are bit-identical to LABOR off (Full Integration and Adverse, seeds 1-2, both models)', function(){
+    var ok = true;
+    ['engine','framework'].forEach(function(cm){ CONVERSION_MODEL = cm; [FI, ADV].forEach(function(P){ for (var s = 1; s <= 2; s++){
+      if (!same(agentsAfter(P, s, Object.assign({}, LAB_ZERO)), agentsAfter(P, s, null))) ok = false;
+      if (!same(agentsAfter(Object.assign({}, P, {ubi:0}), s, null), agentsAfter(P, s, null))) ok = false; } }); });
+    return {pass: ok, detail: 'every agent\'s wealth, wage, earnings and octave identical'};
+  });
+  t('income effect: in the UBI arm with eps 0, earnings fall by exactly rho x UBI wherever the zero floor does not bind (seed 1)', function(){
+    var U = ubiFor(FULL_INTEGRATION, 6000), r = laborRun(U, 1, {rho:0.16, rhoBU:0.16, rhoR:0, eps:0, delta:0}), gap = Math.abs((r.E0 - r.E) - 0.16*6000);
+    return {pass: r.zero === 0 && gap < 1e-6, detail: 'mean fall $' + (r.E0 - r.E).toFixed(4) + ' vs $' + (0.16*6000).toFixed(4) + '; floor binds in ' + (r.zero*100).toFixed(2) + '% of agent-years'};
+  });
+  t('monotone: earnings fall as rho rises (UBI arm) and as delta rises (Full Integration, framework), seed 1', function(){
+    var U = ubiFor(FULL_INTEGRATION, 6000), prev = Infinity, ok = true, v = [];
+    [0, 0.1, 0.16, 0.28].forEach(function(rho){ var e = laborRun(U, 1, {rho:rho, rhoBU:rho, rhoR:0, eps:0, delta:0}).E; if (e > prev) ok = false; prev = e; v.push(e.toFixed(0)); });
+    CONVERSION_MODEL = 'framework'; prev = Infinity; var w = [];
+    [0, 0.5, 1].forEach(function(d){ var e = laborRun(FI, 1, laborOpts({delta:d})).E; if (e > prev) ok = false; prev = e; w.push(e.toFixed(0)); });
+    return {pass: ok, detail: 'UBI earnings by rho: ' + v.join(' > ') + '; framework earnings by delta: ' + w.join(' > ')};
+  });
+  t('return to work: with no unconditional support (rho 0), a positive eps raises Full Integration earnings and leaves the Baseline unchanged (seed 1)', function(){
+    var f0 = laborRun(FI, 1, LAB_ZERO).E, f1 = laborRun(FI, 1, {rho:0, rhoBU:0, rhoR:0, eps:0.33, delta:0}).E;
+    var B = nextRoundPreset(baselineFor(FULL_INTEGRATION, true)), b0 = laborRun(B, 1, LAB_ZERO).E, b1 = laborRun(B, 1, {rho:0.16, rhoBU:0.16, rhoR:0, eps:0.33, delta:1}).E;
+    return {pass: f1 > f0 && b0 === b1, detail: 'Full Integration $' + f0.toFixed(0) + ' to $' + f1.toFixed(0) + '; Baseline $' + b0.toFixed(0) + ' = $' + b1.toFixed(0)};
+  });
+  return out;
+}
+Object.assign(module.exports, { laborRun, laborStudy, laborUnitSuite, laborOpts, LABOR_DEFAULTS, LAB_ZERO, ubiFor, setLabor:function(L){ LABOR = L; } });
+
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
   /* v4.21: `--agents=N` sets the population of every run in every mode (default 500, the page's
@@ -1452,7 +1581,12 @@ if (require.main === module) {
     console.log('\n=== priceUnitSuite(): A2 price rule and the framework conversion model (harness-only) ===');
     PU.forEach(function(x){ if (!x.pass) pf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PU.length + ' run, ' + pf + ' failed');
-    if (nf || pf) process.exitCode = 1;
+    /* Session 4: the labor module's tests (harness-only). */
+    var LU = laborUnitSuite(), lf = 0;
+    console.log('\n=== laborUnitSuite(): A3 labor supply and the UBI comparator (harness-only) ===');
+    LU.forEach(function(x){ if (!x.pass) lf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + LU.length + ' run, ' + lf + ' failed');
+    if (nf || pf || lf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -2333,6 +2467,59 @@ if (require.main === module) {
       });
       applyRule(svR);
     }
+  }
+
+  if (mode === 'labor') {
+    /* Session 4 (A3): node harness.js labor [seeds] [head|sweep|all] [--agents=N]. head: CCO alone and Full Integration
+     * against a UBI at matched gross cost, both conversion models, three environments, earnings response by channel.
+     * sweep: one parameter at a time around the central values (LABOR_DEFAULTS), CCO alone, reference environment. */
+    var LN = parseInt(process.argv[3], 10) || 500, LSEC = (process.argv[4] && process.argv[4].indexOf('--') !== 0) ? process.argv[4] : 'all', nA = FULL_INTEGRATION.nAgents;
+    var ENVS = [['Reference', FULL_INTEGRATION], ['Adverse Environment', ADVERSE_REFERENCE], ['Stress Test', STRESS_TEST]];
+    function f0(x){ var v = Math.round(x); return v === 0 ? '0' : (v > 0 ? '+' : '') + v.toLocaleString('en-US'); }
+    function pc(x){ return (x*100 >= 0 ? '+' : '') + (x*100).toFixed(2) + '%'; }
+    function pv(r){ return r.pov.toFixed(1) + ' / ' + r.bleiPov.toFixed(1) + ' / ' + r.basketPov.toFixed(1); }
+    function chan(r){ return 'raise ' + f0(r.raise) + ', BU ' + f0(-r.bu - r.buR) + ', cash ' + f0(-r.cash) + ', conv. rent ' + f0(-r.rent) + ', displaced ' + f0(-r.disp); }
+    var svCM = CONVERSION_MODEL;
+    console.log('=== A3 labor supply (session 4): seeds 1-' + LN + ', ' + nA + ' agents, D1 consumption rule, D6 COLA ===');
+    console.log('Central: rho ' + LABOR_DEFAULTS.rho + ' (w32719, individual), rhoBU = rho (inframarginal BU act like cash), rhoR 0, eps ' + LABOR_DEFAULTS.eps + ' (Chetty 2012), raise exponent eps - rho, delta 0 (conversion as rent).');
+    console.log('Earnings change = mean change in wage earnings per adult-year vs the same run with no labor response (hours x wage; wages per hour unchanged).');
+    console.log('Poverty: wealth / BLEI / basket, % at year 20; "no response" is the same preset with LABOR off in effect (all coefficients 0).');
+    if (LSEC === 'head' || LSEC === 'all') ['engine', 'framework'].forEach(function(cm){ CONVERSION_MODEL = cm;
+      console.log('\n##### Conversion model: ' + cm + ' #####');
+      ENVS.forEach(function(E){
+        var P = Object.assign({}, E[1], {nAgents:nA}), C = ccoOnlyFor(P);
+        var cz = laborStudy(C, LN, LAB_ZERO, true), cc = laborStudy(C, LN, LABOR_DEFAULTS), cd = laborStudy(C, LN, laborOpts({delta:1}));
+        var U = Object.assign(ubiFor(P, cz.cost), {nAgents:nA}), uz = laborStudy(U, LN, LAB_ZERO), uc = laborStudy(U, LN, LABOR_DEFAULTS);
+        var fz = laborStudy(P, LN, LAB_ZERO, true), fc = laborStudy(P, LN, LABOR_DEFAULTS), fd = laborStudy(P, LN, laborOpts({delta:1}));
+        var B = Object.assign({}, baselineFor(P, true), {nAgents:nA}), bz = laborStudy(B, LN, LAB_ZERO);
+        console.log('\n--- ' + E[0] + ' ---');
+        console.log('  Gross cost per adult-year: CCO alone $' + Math.round(cz.cost).toLocaleString('en-US') + ' (BU spent on essentials $' + Math.round(cz.costU).toLocaleString('en-US') + ', conversion $' + Math.round(cz.costConv).toLocaleString('en-US') + '); Full Integration $' + Math.round(fz.cost).toLocaleString('en-US') + '. UBI matched to CCO alone: $' + Math.round(cz.cost).toLocaleString('en-US') + ' a year to every adult.');
+        console.log('  Mean wage earnings with no response: CCO alone $' + Math.round(cz.E0).toLocaleString('en-US') + ', UBI $' + Math.round(uz.E0).toLocaleString('en-US') + ', Baseline $' + Math.round(bz.E0).toLocaleString('en-US'));
+        [['CCO alone, delta 0 (rent)', cc, cz], ['CCO alone, delta 1 (dissipated)', cd, cz], ['UBI at matched cost', uc, uz], ['Full Integration, delta 0', fc, fz], ['Full Integration, delta 1', fd, fz]].forEach(function(row){
+          console.log('  ' + (row[0] + '                                ').slice(0, 32) + ' earnings ' + pc(row[1].dE) + ', work time incl. projects ' + pc((row[1].E - row[1].E0 + row[1].disp)/Math.max(1, row[1].E0)) + ' ($' + f0(row[1].E - row[1].E0) + ': ' + chan(row[1]) + ')');
+          console.log('  ' + '                                '.slice(0, 32) + ' poverty ' + pv(row[2]) + ' -> ' + pv(row[1]) + (row[1].zero > 0 ? '; earnings at zero in ' + (row[1].zero*100).toFixed(1) + '% of adult-years' : ''));
+        });
+        console.log('  Baseline (no program)            poverty ' + pv(bz));
+        console.log('  CCO alone minus UBI, earnings: ' + ((cc.dE - uc.dE)*100 >= 0 ? '+' : '') + ((cc.dE - uc.dE)*100).toFixed(2) + ' points (delta 0), ' + ((cd.dE - uc.dE)*100 >= 0 ? '+' : '') + ((cd.dE - uc.dE)*100).toFixed(2) + ' points (delta 1)');
+        var bd = cz.bound;
+        var perPY = bd.expired/(cz.partShare*P.years*nA), rateBar = bd.convBU > 0 ? bd.conv/bd.convBU : 0;
+        console.log('  Upper bound for a positive conversion channel: BU that expired unconverted, $' + Math.round(perPY).toLocaleString('en-US') + ' per participant-year (CCO alone), which at the mean net rate ' + rateBar.toFixed(2) + 'x could fund $' + Math.round(perPY*rateBar).toLocaleString('en-US') + ' of extra proceeds.');
+      });
+    });
+    if (LSEC === 'sweep' || LSEC === 'all') ['engine', 'framework'].forEach(function(cm){ CONVERSION_MODEL = cm;
+      var P = Object.assign({}, FULL_INTEGRATION, {nAgents:nA}), C = ccoOnlyFor(P), cz = laborStudy(C, LN, LAB_ZERO), Uc = Object.assign(ubiFor(P, cz.cost), {nAgents:nA});
+      console.log('\n##### One-at-a-time sweep, reference environment, conversion model ' + cm + ' (CCO alone vs UBI at $' + Math.round(cz.cost).toLocaleString('en-US') + ') #####');
+      var rows = [['central', {}], ['rho 0', {rho:0, rhoBU:0}], ['rho 0.10', {rho:0.10, rhoBU:0.10}], ['rho 0.28 (household)', {rho:0.28, rhoBU:0.28}], ['rho 0.30', {rho:0.30, rhoBU:0.30}],
+        ['rhoBU 0.08 (mental accounting, half of rho)', {rhoBU:0.08}], ['UBI-equivalent toggle (every BU at rho, d2)', {rhoR:LABOR_DEFAULTS.rho}],
+        ['eps 0', {eps:0}], ['eps 0.25 (extensive)', {eps:0.25}], ['eps 0.5 (placeholder high)', {eps:0.5}], ['raise channel off (eps = rho)', {eps:LABOR_DEFAULTS.rho}],
+        ['delta 0.5', {delta:0.5}], ['delta 1', {delta:1}], ['octave wage bonus off (PATHWAY_OFF)', {}, null, {octaveWage:true}]];
+      if (cm === 'framework') rows.push(['business rate 2x', {}, {bizRate:2}], ['business rate 4x', {}, {bizRate:4}]);
+      rows.forEach(function(r){ var sv = Object.assign({}, FW), svP = Object.assign({}, PATHWAY_OFF); if (r[2]) Object.assign(FW, r[2]); if (r[3]) Object.assign(PATHWAY_OFF, r[3]);
+        try { var L = laborOpts(r[1]), c = laborStudy(C, LN, L), u = laborStudy(Uc, LN, L), cz2 = (r[2] || r[3]) ? laborStudy(C, LN, LAB_ZERO) : cz;
+          console.log('  ' + (r[0] + '                                              ').slice(0, 46) + ' CCO ' + pc(c.dE) + ' (work ' + pc((c.E - c.E0 + c.disp)/Math.max(1, c.E0)) + ')  UBI ' + pc(u.dE) + '  diff ' + ((c.dE - u.dE)*100).toFixed(2) + ' pt | CCO poverty ' + pv(cz2) + ' -> ' + pv(c) + (r[2] || r[3] ? ' (CCO cost here $' + Math.round(cz2.cost).toLocaleString('en-US') + '; UBI kept at the reference cost; mean earnings with no response $' + Math.round(cz2.E0).toLocaleString('en-US') + ' vs $' + Math.round(cz.E0).toLocaleString('en-US') + ')' : ''));
+        } finally { Object.assign(FW, sv); Object.assign(PATHWAY_OFF, svP); } });
+    });
+    CONVERSION_MODEL = svCM;
   }
 
   if (mode === 'v421') {

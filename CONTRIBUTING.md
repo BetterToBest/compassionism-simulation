@@ -41,6 +41,17 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: A3 labor supply and a release workflow
+
+Next-round session 4 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, 8 price-module tests and 4 new labor-module tests) and `domtest` passes all 82 checks. Tables, sources and decisions: `session-4-handoff.md`; raw output: `session-4-results.txt`. Status and open decisions now live on the project dashboard.
+
+### What was added
+
+- **`LABOR`** (harness-only, off by default): each agent's wage earnings respond to unconditional support at rate ρ (0.16, NBER w32719, revised Aug 2026: individual income excluding the transfer fell about 16 cents per dollar received), to BU spent on the agent's own essentials at the same rate (inframarginal in-kind aid acts like cash: Hoynes & Schanzenbach 2009; the mental-accounting counter-evidence, Hastings & Shapiro 2018, is a swept sensitivity), and to the program's raises through the uncompensated elasticity ε − ρ (ε = 0.33, Chetty 2012). Conversion proceeds enter as a rent (δ = 0) or as project time that displaces wage time (δ = 1).
+- **`p.ubi`**: a flat cash transfer to every adult, for the matched-cost UBI comparator. Counted as cash income in the income and basket measures.
+- **`laborRun()`, `laborStudy()`, `laborUnitSuite()`** and **`node harness.js labor <seeds> [head|sweep|all]`**.
+- **`.github/workflows/release.yml`**: when `META.VERSION` names a version with no tag, it tags the commit that first set that version and publishes a release with that version's Release Notes section. Run it by hand with a version to backfill one (for example 4.20).
+
 ## Unreleased: A2 sweeps and the breakeven report (harness-only)
 
 Next-round session 3 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, plus 8 price-module tests, 2 of them new) and `domtest` passes all 82 checks. Full tables, sources and decisions: `session-3-handoff.md`; raw output: `session-3-results.txt`.
