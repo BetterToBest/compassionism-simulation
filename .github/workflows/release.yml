@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to tag, e.g. 4.20 (default: the one in index.html now)'
+        description: 'Version to tag, e.g. 4.20 or v4.20 (default: the one in index.html now)'
         required: false
 
 permissions:
@@ -34,6 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           V="${INPUT_VERSION:-$(grep -oP "VERSION:'\K[0-9.]+" index.html | awk 'NR==1')}"
+          V="${V#[vV]}"  # accept 4.20 or v4.20
           [ -n "$V" ] || { echo "::error::No VERSION:'x.y' found in index.html"; exit 1; }
           T="v$V"
           if git rev-parse -q --verify "refs/tags/$T" >/dev/null; then echo "$T already exists; nothing to do."; exit 0; fi
