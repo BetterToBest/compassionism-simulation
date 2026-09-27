@@ -6,7 +6,7 @@ A research-oriented, browser-based agent-based simulation exploring all five [Co
 
 [![checks](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml/badge.svg)](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml)
 
-This file covers what the project is and how to run it. For everything version-specific — the full changelog, current output metrics, methodology, and formulas — see the **[Replication Framework](https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html)**, which is kept current with each release. For open questions, known limitations, and how to contribute, see **[CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md)**.
+This file covers what the project is and how to run it. For everything version-specific — the full changelog, current output metrics, methodology, and formulas — see the **[Replication Framework](https://bettertobest.github.io/compassionism-simulation/replication.html)**, which is kept current with each release. For open questions, known limitations, and how to contribute, see **[CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md)**.
 
 ---
 
@@ -48,7 +48,7 @@ The simulation itself documents its own current controls, presets, calibration c
 
 This README intentionally stays stable across releases. For anything tied to a specific version:
 
-- **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html) has the full line-by-line changelog, in chronological order, for every release.
+- **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/compassionism-simulation/replication.html) has the full line-by-line changelog, newest first, for every release.
 - **Current output metrics and large-N study results** — the Replication Framework's Performance Comparison section, refreshed after any mechanics-changing release.
 - **Formulas as currently implemented** — the Replication Framework's Mathematical Framework section, and the simulation's own source comments.
 - **Open questions, known limitations, and how to contribute** — [CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md), which tracks unresolved calibration items, model-architecture feedback, and good-first-issues.
@@ -87,7 +87,7 @@ The DOI resolves to the archived record; cite the specific version and date you 
 **Research Hub:** [bettertobest.github.io/research-hub](https://bettertobest.github.io/research-hub/)
 **Wiki:** [bettertobest.github.io/research-hub/wiki](https://bettertobest.github.io/research-hub/wiki/)
 **BLEI Paper:** [basic-living-economic-index.html](https://bettertobest.github.io/research-hub/basic-living-economic-index.html)
-**Replication Framework:** [cco-ptf-simulation-replication.html](https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html)
+**Replication Framework:** [replication.html](https://bettertobest.github.io/compassionism-simulation/replication.html)
 **Contributors' Guide:** [CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md)
 **DOI:** [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 **Contact:** BetterToBestResearch@gmail.com

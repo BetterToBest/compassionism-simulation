@@ -87,6 +87,8 @@
  * non-participant validation check, and that a test window never starts the page's load-time
  * reference run (a race the first CI run exposed; see makeWindow). v4.20 also moved the seed-42 regression once (automationRisk
  * sampler and share; see CONTRIBUTING.md v4.20), so Phase 2 and Phase 4's pinned figures moved.
+ * Phase 10 (session 7) checks that replication.html declares META.VERSION everywhere it names the engine version and
+ * that index.html links to it (not to the Hub's old address).
  * Phase 9 (v4.21) checks the CCO relief under inflation, through the page's own engine functions:
  * with a cost-of-living adjustment the relief is exactly 20% of the basket in every year, without
  * one it is 20% divided by the price index; at 0% inflation it is 20% either way; the page's
@@ -826,5 +828,28 @@ function phase9(done) {
   const got = FIX.map(f => pageRun(f[1], 42)), bad = FIX.filter((f, i) => got[i].join() !== f[2].join());
   check('v4.21: every preset\'s seed-42 figures from the page\'s engine match the fixtures harness.js validate asserts (Adverse Environment and Stress Test moved)',
     !bad.length, bad.length ? bad.map(f => f[0] + ' ' + got[FIX.indexOf(f)].join(' / ') + ' (expected ' + f[2].join(' / ') + ')').join('; ') : FIX.map((f, i) => f[0] + ' ' + got[i].join(' / ')).slice(4).join('; ') + ' (v4.20: 35.0 / 218851 / 819 / 0.646; 59.0 / -10000 / 16 / 0.781)');
+  phase10(done);  // session 7: the replication page
+}
+
+/* ── Phase 10 (session 7, dashboard i1 and s10): the replication page lives in this repository (replication.html) and
+ * must describe the engine it ships with. Through v4.21 it sat in the Research Hub's repository, and its version labels went
+ * stale four times (CONTRIBUTING.md v4.9, v4.13). Every label that names the engine version carries class repl-ver, the
+ * page declares the version in <meta name="sim-version"> and in its JSON-LD, and all of them must equal META.VERSION, so a
+ * release that bumps META without the page fails CI. The page's links from index.html must point here, not to the Hub. */
+function phase10(done) {
+  console.log('\n--- Phase 10: the replication page (session 7) ---');
+  const RP = path.join(path.dirname(FILE), 'replication.html'), NEW = 'https://bettertobest.github.io/compassionism-simulation/replication.html';
+  if (!fs.existsSync(RP)) { check('session 7: replication.html exists beside index.html', false, 'missing: ' + RP); return done(); }
+  const w = makeWindow(), V = w.META.VERSION, rd = new JSDOM(fs.readFileSync(RP, 'utf8')).window.document;
+  const meta = (rd.querySelector('meta[name="sim-version"]') || {}).content, labels = [...rd.querySelectorAll('.repl-ver')].map(e => e.textContent.trim());
+  let ld = null; try { ld = JSON.parse(rd.querySelector('script[type="application/ld+json"]').textContent); } catch (e) {}
+  check('session 7: the replication page declares the engine version (meta sim-version, JSON-LD) and every version label reads v' + V,
+    meta === V && !!ld && ld.version === V && labels.length >= 4 && labels.every(t => t === 'v' + V),
+    'META.VERSION=' + V + ', meta=' + meta + ', JSON-LD=' + (ld && ld.version) + ', labels=' + JSON.stringify(labels));
+  const canon = (rd.querySelector('link[rel="canonical"]') || {}).href;
+  check('session 7: the replication page\'s canonical address is in this repository', canon === NEW && !!ld && ld.url === NEW, 'canonical=' + canon);
+  const links = [...w.document.querySelectorAll('a[href*="replication"]')].map(a => a.getAttribute('href'));
+  check('session 7: every index.html link to the replication page points here, none to the Hub\'s old address',
+    links.length >= 4 && links.every(h => h === NEW), links.length + ' links' + (links.some(h => h !== NEW) ? '; stale: ' + links.filter(h => h !== NEW).join(', ') : ''));
   done();
 }

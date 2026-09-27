@@ -41,6 +41,39 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: session 7, decomposing the testbed result, and the replication page moves here
+
+Next-round session 7 (Sep 27, 2026). Duke assigns the version number. **The engine in `index.html` is unchanged and every shipped figure is bit-identical; the page changed only where it links to the replication page.** `validate` passes; `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 11 testbed tests, 2 of them new); `domtest` passes all 85 checks (3 new, Phase 10). Tables and decisions: `session-7-handoff.md`. Raw output: `session-7-results.txt`.
+
+### The replication page lives in this repository
+
+`replication.html` replaces the Research Hub's `cco-ptf-simulation-replication.html`, which becomes a redirect (Hub ledger s1). Through v4.21 it was the only file outside this repository that had to change with every release, and its version labels went stale four times. Now:
+
+- every label that names the engine version carries class `repl-ver`, and the page declares the version in `<meta name="sim-version">` and in its JSON-LD;
+- **domtest Phase 10 fails if any of them differs from `META.VERSION`**, so a release that bumps `META` without the page fails CI;
+- Phase 10 also checks the page's canonical address and that every `index.html` link to it points here.
+
+**On each release:** change every `repl-ver` label (six), the `sim-version` meta tag and the JSON-LD `version` in `replication.html`, alongside `META.VERSION`.
+
+The page's text is carried over from the Hub page; a token comparison finds nothing lost except the old toggle and banner labels. What changed is presentation: the simulation's palette, header and dark mode; a sticky section list with scrollspy and a section picker on phones; code and JSON blocks behind collapsible boxes with a Copy button; definitions on hover, focus or tap for 146 first uses of glossary terms; one panel per release in Version History, newest first (the detailed notes previously ran v3.1 to v4.6 and then v4.21 back to v4.7); links back to the Hub made absolute. Decisions d30–d32 cover the address, the headline figures and two metadata lines.
+
+### What was added to `harness.js`
+
+- **`FBS_BU_ONCE`** (dashboard i3-1). The engine's FBS gate reads the monthly basic cost after the CCO relief and then adds BU again; `true` reads the pre-relief cost, as the framework branch already does. Default `false` (the page).
+- **The conversion switch now also covers the framework model's business-side conversion**, so `PATHWAY_OFF.conversion` turns off all conversion in both models.
+- **Testbed reporting:** a targeting share (program dollars that close a shortfall before transfers ÷ program dollars) and design-neutral BLEI poverty beside the shipped definition (d28).
+- **Financing:** a `hybrid` mode (transfers taxed, conversion rewards money-created at additionality a; d26 option c) and `buAtA` (d24 option b: output matched at a to a converted BU's face value as well as its reward).
+- **Per-row engine-question switches** in `tbStudy` (`g: {FBS_BU_ONCE, PTH_APPR_CONSERVE}`), restored after each row.
+- **`node harness.js testbed <seeds> decomp [ref,adv,st]`**: each channel off in turn at BU $1,200, tax-financed, CRN-paired, with a matched UBI.
+- **`node harness.js testbed <seeds> alts [ref,adv,st]`**: Duke's d24–d29 follow-ups side by side, with each group's losses in dollars and poverty points (d29).
+
+### Headline results (tax-financed, BU $1,200; reference 500 seeds, Adverse and Stress Test 200)
+
+- **Two unsourced mechanisms with no cost in the ledger carry most of Compassionism's per-dollar edge.** The octave wage raise (d19) accounts for 45% of the engine model's FGT₂ cut at reference, 65% in Adverse and 48% in the Stress Test. The PTF/PTH inflation damping (i3-4), which lowers everyone's basket inflation for free, accounts for 21% in Adverse and 32% in the Stress Test (nothing at reference, which has no inflation).
+- **With both off and the i3 fixes on, Compassionism still beats a matched UBI per dollar, by much less.** FGT₂ cut per $1,000: 0.22 against 0.15 at reference; 0.20 against −0.07 in Adverse; 0.40 against 0.08 in the Stress Test (engine model). In Adverse it was 1.79 with everything on.
+- **The CCO relief and conversion buy little poverty reduction at their cost.** Turning the relief off halves the engine model's cost and loses 0.26 points of FGT₂ at reference (0.66 Adverse, 0.03 Stress Test). Turning conversion off saves $2,000–2,500 per adult-year at reference and in Adverse ($600 in the Stress Test) and moves FGT₂ by 0.1 point or less; in the framework model it improves FGT₂ (by 0.2 at reference and 1.3 in Adverse).
+- **The i3 engine questions are small.** FBS counting BU twice (i3-1) is worth 0.09–0.24 points; the PTH appreciation double-count (i3-3) is within ±0.1.
+
 ## Unreleased: session 6, the A4 policy testbed (harness-only)
 
 Next-round session 6 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes; `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 9 new testbed tests); `domtest` passes all 82 checks. Tables, sources and decisions: `session-6-handoff.md`. Raw output: `session-6-results.txt`.
