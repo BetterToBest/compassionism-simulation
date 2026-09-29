@@ -43,6 +43,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: the revised opening line (i5)
+
+After the v4.22 tag (`777d9b3`, Sep 28, 2026), Duke revised the page's opening line (`589a127`) to: "Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: test that claim against five other designs on the same simulated people." The tagged v4.22 release, and the session 11 note below, carry the earlier wording (d41).
+
+- **README.md** opens with the revised sentence. Until it did, `domtest` Phase 11's first check failed on `main` (94 of 95), because README.md must open with the page's sentence.
+- **One sentence added to the front door's subtitle and to README.md (d51):** "The model measures poverty, cost and work, not the cultural effects Compassionism aspires to." The opening line now names culture, which nothing in the model measures, so the page says so beside its note on how poverty is measured. The design panel already frames the framework's cultural value as its intent, not a measured result (d47).
+- **Checks.** Text only: the engine is unchanged, `validate` and `unit` pass, and `domtest` passes all 95 checks. `META.VERSION` stays 4.22, so the release workflow does nothing; these notes join the next version's.
+
 ## v4.22 Release Notes
 
 v4.22 (Sep 28, 2026) releases the policy-testbed round: sessions 1–11 of *Next Round Plan: Simulation Testbed and Claims Ledger* (Sep 26). Each session's notes follow as a "v4.22, session N" section, newest first. **The engine in `index.html` is unchanged: the seed-42 regression and every preset's figures are bit-identical** (`validate` passes). What a visitor sees does change: the page opens with a comparison of Compassionism against five other anti-poverty designs. `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 16 testbed tests, 1 of them new); `domtest` passes all 94 checks (2 new). Hand-off: `session-10-handoff.md`.
