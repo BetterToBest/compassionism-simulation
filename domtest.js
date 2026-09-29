@@ -89,6 +89,10 @@
  * sampler and share; see CONTRIBUTING.md v4.20), so Phase 2 and Phase 4's pinned figures moved.
  * Phase 10 (session 7) checks that replication.html declares META.VERSION everywhere it names the engine version and
  * that index.html links to it (not to the Hub's old address).
+ * Phase 11 (session 8; v4.22 adds the design panel; session 11 the second view) checks the front door: one sentence, a question or a
+ * statement (also README.md's first line), comparison data for every environment, model and view, the mechanisms-off row beneath every
+ * Compassionism row, the source and reproduce command, one caveats box that runs no longer hide, the preset picker, the method links,
+ * the view switch, the change per $1,000 on every costed row, and the X-Cents site link.
  * Phase 9 (v4.21) checks the CCO relief under inflation, through the page's own engine functions:
  * with a cost-of-living adjustment the relief is exactly 20% of the basket in every year, without
  * one it is 20% divided by the price index; at 0% inflation it is 20% either way; the page's
@@ -719,6 +723,32 @@ function phase8(done) {
     iconsOK && hostsOK && nDesc === hosts.length && nDesc2 === hosts.length && cssOK,
     icons.length + ' ⓘ icons ' + (iconsOK ? 'OK' : 'NOT OK') + ', ' + hosts.length + ' buttons/links ' + (hostsOK ? 'OK' : 'NOT OK') + ', descriptions ' + nDesc + ' then ' + nDesc2 + ', focus CSS ' + (cssOK ? 'present' : 'missing'));
 
+  // 8b2. v4.22: one floating tooltip, placed by script, serves every tip. The ::after boxes were clipped by the front door's
+  // scroll box and widened the page on phones; they now apply only without scripts. jsdom has no layout, so this checks
+  // behaviour (opens with the host's text on hover and on keyboard focus, not on a mouse-click focus; closes on leave and
+  // Escape; one box however often init runs), not placement. Placement was checked in a headless Chromium (session 10).
+  {
+    let tipOK = false, tipDetail = 'no initTips (pre-v4.22 page)';
+    if (typeof w.initTips === 'function') {
+      w.initTips(); w.initTips();
+      const boxes = d.querySelectorAll('#tip-float'), box = boxes[0], ic = icons.find(el => el.closest('#front-door')) || icons[0], pb = $('pb-adverse');
+      const on = () => !!box && box.classList.contains('on'), is = el => on() && box.textContent === el.getAttribute('data-tip');
+      const kb0 = w.tipByKey, st = {};
+      try {
+        w.tipByKey = () => false; ic.focus(); st.clickFocus = !on(); ic.blur();
+        w.tipByKey = () => true; ic.focus(); st.keyFocus = is(ic);
+        ic.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'Escape', bubbles: true})); st.esc = !on(); ic.blur();
+        ic.dispatchEvent(new w.MouseEvent('mouseover', {bubbles: true})); st.hover = is(ic);
+        d.body.dispatchEvent(new w.MouseEvent('mouseover', {bubbles: true})); st.leave = !on();
+        if (pb) { pb.dispatchEvent(new w.MouseEvent('mouseover', {bubbles: true})); st.preset = is(pb); w.tipHide(); }
+      } finally { w.tipByKey = kb0; }
+      const css2 = /html:not\(\.js-tips\) \.abbr-link::after\{content:attr\(data-tip\)/.test(css) && /html:not\(\.js-tips\) \.tip-host\[data-tip\]::after\{content:attr\(data-tip\)/.test(css) && /#tip-float\{position:fixed/.test(css);
+      tipOK = boxes.length === 1 && box.getAttribute('aria-hidden') === 'true' && d.documentElement.classList.contains('js-tips') && css2 && Object.keys(st).length === 6 && Object.values(st).every(Boolean);
+      tipDetail = boxes.length + ' box(es); ' + Object.keys(st).map(k => k + ' ' + (st[k] ? 'ok' : 'FAIL')).join(', ') + '; fallback CSS scoped to no-script: ' + css2;
+    }
+    check('v4.22: one floating tooltip serves every tip: it opens on hover and on keyboard focus (not a mouse-click focus), closes on leave and Escape, and the CSS boxes apply only without scripts', tipOK, tipDetail);
+  }
+
   // 8c. sliders announce their formatted value
   const vt0 = $('s-bu').getAttribute('aria-valuetext');
   $('s-bu').value = '900'; w.sv('bu', '900');
@@ -851,5 +881,75 @@ function phase10(done) {
   const links = [...w.document.querySelectorAll('a[href*="replication"]')].map(a => a.getAttribute('href'));
   check('session 7: every index.html link to the replication page points here, none to the Hub\'s old address',
     links.length >= 4 && links.every(h => h === NEW), links.length + ' links' + (links.some(h => h !== NEW) ? '; stale: ' + links.filter(h => h !== NEW).join(', ') : ''));
+  phase11(done);  // session 8: the front door
+}
+
+/* ── Phase 11 (session 8, dashboard s18; the plan's A6): the front door. The first screen states in one sentence the question
+ * the tool answers (and README.md opens with the same sentence), offers a design comparison and a preset picker, has one
+ * caveats box that stays visible, and links to the method. The comparison is data written by `node harness.js frontdoor`
+ * from the testbed's a5 output; wherever Compassionism is shown, the row with its two unsourced mechanisms switched off
+ * (the octave wage raise, d19; the PTF/PTH inflation damping, d33) must sit directly beneath it. */
+function phase11(done) {
+  console.log('\n--- Phase 11: the front door (session 8) ---');
+  const w = makeWindow(), d = w.document, fdEl = d.getElementById('front-door');
+  if (!fdEl || typeof w.fdRender !== 'function') { check('session 8: the front door exists', false, 'no #front-door or fdRender (pre-session 8 page)'); return done(); }
+  w.fdInit();  // its DOMContentLoaded handler runs only when a check dispatches the event (see makeWindow)
+  const q = (d.getElementById('fd-q') || {}).textContent || '', qs = q.trim();
+  const readme = fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8').split('\n').filter(l => l.trim())[1] || '';
+  check('session 8 (d41, session 11: a question or a statement): the first screen states in one sentence what the tool tests, before the layout, and README.md opens with the same sentence',
+    /^[^.?!]+[.?]$/.test(qs) && fdEl.compareDocumentPosition(d.querySelector('.layout')) === 4 && readme.replace(/\*\*/g, '').trim() === qs,
+    '"' + qs.slice(0, 70) + '..."; README line 2 ' + (readme.replace(/\*\*/g, '').trim() === qs ? 'matches' : 'differs: ' + readme.slice(0, 60)));
+  let D = null; try { D = JSON.parse(d.getElementById('fd-data').textContent); } catch (e) {}
+  const envs = D && D.envs ? Object.keys(D.envs) : [];
+  check('session 8: the comparison data parses and covers all three environments, both models and both views (session 11: equal cost, proposed size), each with the Baseline, Compassionism, its top-up variant and the five comparators, grocery as planned and at scale',
+    envs.join() === 'ref,adv,st' && envs.every(e => ['rows', 'prop'].every(v => D.envs[e][v] && ['engine', 'framework'].every(m => { const k = (D.envs[e][v][m] || []).map(r => r.k);
+      return ['base', 'cco', 'corr', 'top', 'ubi', 'nit', 'endow', 'groc', 'grocP', 'xc'].every(x => k.indexOf(x) >= 0); }))),
+    'environments: ' + envs.join(', ') + '; engine v' + (D && D._meta ? D._meta.engine : '?'));
+  let honest = true, seen = 0, bad = [];
+  ['ref', 'adv', 'st'].forEach(e => ['engine', 'framework'].forEach(m => ['cost', 'prop'].forEach(v => [false, true].forEach(sens => {
+    w.FD.env = e; w.FD.m = m; w.FD.v = v; w.FD.sens = sens; w.fdRender();
+    const ks = [...d.querySelectorAll('#fd-rows tr')].map(tr => tr.getAttribute('data-k')), i = ks.indexOf('cco');
+    seen++; if (i < 0 || ks[i + 1] !== 'corr' || ks[0] !== 'base' || (sens !== ks.some(k => /^(d19|d33|hyb0|hyb1|topc|xc0|xcH)$/.test(k)) && (sens || e !== 'ref'))) { honest = false; bad.push(e + '/' + m + '/' + v + '/' + sens + ': ' + ks.join(' ')); } }))));
+  w.FD.env = 'ref'; w.FD.m = 'engine'; w.FD.v = 'cost'; w.FD.sens = false; w.fdRender();
+  check('session 8: in every environment, model and view, the Compassionism row is followed directly by the same design with its two theoretical mechanisms off, and sensitivity rows appear only when asked for',
+    honest && seen === 24, honest ? seen + ' views rendered' : bad.join('; '));
+  const src = (d.getElementById('fd-src') || {}).textContent || '';
+  check('session 8: the comparison names its source (engine version, seeds) and the command that reproduces it',
+    D && D._meta && src.indexOf('engine v' + D._meta.engine) >= 0 && /node harness\.js testbed \d+ a5 ref/.test(src), src.slice(0, 120));
+  const cav = d.getElementById('uncertainty-notice'), runSrc = w.runSim.toString();
+  check('session 8: there is one caveats box, it sits in the front door, and a run no longer hides it',
+    !!cav && fdEl.contains(cav) && d.querySelectorAll('#uncertainty-notice').length === 1 && cav.style.display !== 'none' && runSrc.indexOf("'uncertainty-notice'") < 0,
+    cav ? 'inside front door: ' + fdEl.contains(cav) : 'missing');
+  const chips = [...d.querySelectorAll('#fd-live .fd-chip')].map(b => (b.getAttribute('onclick').match(/fdRun\('(\w+)'\)/) || [])[1]);
+  const saveRun = w.runSim; let ran = 0; w.runSim = function () { ran++; }; w.fdRun('adverse'); w.runSim = saveRun;
+  const pbA = d.getElementById('pb-adverse'), live = d.getElementById('fd-live');
+  check('session 8: the preset picker offers the six presets, and a pick loads that preset into the controls and runs it',
+    chips.length === 6 && chips.every(c => w.PRESET_IDS.indexOf(c) >= 0) && ran === 1 && w.ST.shock === true && pbA && /pbtn-active/.test(pbA.className) && live && !live.hidden,
+    'chips: ' + chips.join(', ') + '; runs started ' + ran + '; shock ' + w.ST.shock);
+  const meth = [...fdEl.querySelectorAll('.fd-meth a')].map(a => a.getAttribute('href'));
+  check('session 8: the front door links to the method (the replication page) and the code',
+    meth.indexOf('https://bettertobest.github.io/compassionism-simulation/replication.html') >= 0 && meth.some(h => /github\.com\/BetterToBest\/compassionism-simulation/.test(h)), meth.join(', '));
+  // v4.22: "What each design is". Every design shown has an entry; every comparator entry cites a source with a link (X-Cents its
+  // Academia paper); every row label, in every environment, model and view, links to an entry that exists; fdAbout opens the panel.
+  const about = d.getElementById('fd-about'), need = ['base', 'cco', 'ubi', 'nit', 'endow', 'groc', 'xc'], ent = need.map(k => d.getElementById('fd-about-' + k));
+  const srcOK = need.filter(k => k !== 'base').every(k => { const e = d.getElementById('fd-about-' + k); return !!e && e.querySelectorAll('.fd-srcs a[href^="https://"]').length >= 1; });
+  const xcE = d.getElementById('fd-about-xc'), xcOK = !!xcE && [...xcE.querySelectorAll('a')].some(a => /academia\.edu\/144441020\//.test(a.getAttribute('href')));
+  let linksOK = true, nLinks = 0;
+  ['ref', 'adv', 'st'].forEach(e => ['engine', 'framework'].forEach(m => ['cost', 'prop'].forEach(v => { w.FD.env = e; w.FD.m = m; w.FD.v = v; w.FD.sens = true; w.fdRender();
+    [...d.querySelectorAll('#fd-rows tr')].forEach(tr => { const a = tr.querySelector('.fd-lnk'); nLinks++; if (!a || a.tagName !== 'BUTTON' || !d.getElementById(a.getAttribute('data-go') || '')) linksOK = false; }); })));
+  w.FD.env = 'ref'; w.FD.m = 'engine'; w.FD.v = 'cost'; w.FD.sens = false; w.fdRender();
+  if (about) about.open = false; const ret = typeof w.fdAbout === 'function' ? w.fdAbout('nit') : true;
+  check('v4.22: every design in the comparison has an entry under "What each design is", each comparator cites a linked source (X-Cents its Academia paper), and every row label links to its entry',
+    !!about && ent.every(Boolean) && srcOK && xcOK && linksOK && nLinks > 0 && about.open === true && ret === false,
+    ent.filter(Boolean).length + '/' + need.length + ' entries; sources ' + (srcOK ? 'linked' : 'MISSING') + '; X-Cents paper ' + (xcOK ? 'linked' : 'MISSING') + '; ' + nLinks + ' row labels, links ' + (linksOK ? 'resolve' : 'BROKEN'));
+  // session 11: the view switch changes the comparators (not Compassionism), every costed row states its change per $1,000, the X-Cents
+  // entry links the framework's site, and no visible text calls the two mechanisms unsourced (Duke: "theoretical, yet to be empirically tested").
+  function cells(v){ w.FD.v = v; w.fdRender(); const o = {}; [...d.querySelectorAll('#fd-rows tr')].forEach(tr => { o[tr.getAttribute('data-k')] = tr.children[1].textContent; }); return o; }
+  const cc = cells('cost'), cp = cells('prop'); w.FD.v = 'cost'; w.fdRender();
+  const per = Object.keys(cc).filter(k => k !== 'base' && k !== 'grocP').every(k => /per \$1,000/.test(cc[k]));
+  const vis = fdEl.textContent, xs = !!xcE && [...xcE.querySelectorAll('a')].some(a => a.getAttribute('href') === 'https://bettertobest.github.io/x-cents/');
+  check('session 11: the view switch changes the comparators and not Compassionism; every costed row states its change per $1,000; X-Cents links its site; no visible text calls the two mechanisms unsourced; no link on the page is a same-page fragment (in-page links are buttons)',
+    cc.cco === cp.cco && cc.ubi !== cp.ubi && cc.nit !== cp.nit && per && xs && !/unsourced|no documented source/i.test(vis) && /theoretical, yet to be empirically tested/.test(vis) && d.querySelectorAll('a[href^="#"]').length === 0,
+    'Compassionism ' + (cc.cco === cp.cco ? 'same' : 'DIFFERS') + ' in both views; basic income ' + (cc.ubi !== cp.ubi ? 'differs' : 'SAME') + '; per $1,000 ' + (per ? 'on every row' : 'MISSING') + '; X-Cents site ' + (xs ? 'linked' : 'MISSING'));
   done();
 }

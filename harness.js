@@ -48,41 +48,49 @@
  * `saving` (where the wealth comes from, and a consumption sweep) and `v421` (the investigation
  * behind CONTRIBUTING.md's v4.21 Release Notes).
  *
- * Unreleased (next-round session 1, Sep 26 2026; Duke assigns the version): LEDGER, a reporting-only tally
+ * v4.22 (next-round session 1, Sep 26 2026): LEDGER, a reporting-only tally
  * of every money flow runYear() computes, and the `ledger` mode (the A1 issuance ledger); and
  * SURPLUS_CONSUMPTION_BASE, which lets SURPLUS_CONSUMPTION_SHARE apply to all cash surplus. Both are inert
  * by default, and `ledger identity` checks that the tally changes no output. index.html is unchanged.
  *
- * Unreleased (next-round session 2, Sep 26 2026): CFG.BASKET (the living-wage basket by component, N10); PTF_MODE (D4);
+ * v4.22 (next-round session 2, Sep 26 2026): CFG.BASKET (the living-wage basket by component, N10); PTF_MODE (D4);
  * CONVERSION_MODEL 'framework' (N1-N4); PRICE, the A2 issuance and price module (P_E, P_G, COLA on the endogenous rate,
  * wage indexation), driven by priceRun()/priceStudy(); NEXT_ROUND, the D1 consumption rule as a profile; priceUnitSuite(),
  * run by `unit`; and the `price` mode. Every switch is inert by default: `validate`, domtest's parity checks and the
  * price suite's "fully matched" and "zero issuance" tests confirm bit-identical runs. index.html is unchanged.
  *
- * Unreleased (next-round session 3, Sep 26 2026): the A2 sweep machinery (s3BaseS/s3Point/s3Breakeven/s3Config: breakeven
+ * v4.22 (next-round session 3, Sep 26 2026): the A2 sweep machinery (s3BaseS/s3Point/s3Breakeven/s3Config: breakeven
  * additionality by bracketed secant search on the exact CRN seed mean, with a bootstrap interval over seeds and the a at which 90%
  * of seeds are within tolerance), S3_ROWS (the one-at-a-time sweep) and s3StabArms (the recession stabilizer arms), run by the
  * `price` sections be | inert | sweep | corners | stab; two new price-suite tests; and S3-1, the price module's aw accounting (an
  * unmatched raise enters as the year's change in the premium; awLevel restores session 2's reading). Every default run is
  * unchanged: validate, unit and domtest pass. index.html is unchanged.
  *
- * Unreleased (next-round session 4, Sep 27 2026): LABOR, the A3 labor-supply module (income effect rho on unconditional
+ * v4.22 (next-round session 4, Sep 27 2026): LABOR, the A3 labor-supply module (income effect rho on unconditional
  * support; wage elasticity eps on program-induced raises; conversion read as rent, dissipated project time, or between,
  * by delta), and p.ubi, a flat cash transfer to every adult for the matched-cost UBI comparator; laborRun()/laborStudy(),
  * laborUnitSuite() (run by `unit`) and the `labor` mode. Both are inert by default (LABOR null, ubi unset): validate,
  * unit and domtest pass and every shipped figure is bit-identical. index.html is unchanged.
  *
- * Unreleased (next-round session 5, Sep 27 2026): three restudy switches, THETA_GATE (theta on realised PTF density, C08),
+ * v4.22 (next-round session 5, Sep 27 2026): three restudy switches, THETA_GATE (theta on realised PTF density, C08),
  * PTH_MODE (PTH cuts housing only, d4) and DISC_BASE (discounts skip the basket's tax share, d5); a joint price and labor
  * run (priceRun option `labor`); the price-neutral search s5Neutral() (d18: additionality may exceed 1); a lamG 1.41 sweep
  * row (quantity theory at US M2 velocity); s5UnitSuite() (run by `unit`); the `restudy` mode; and `labor --env=`. All
  * inert by default: validate, unit and domtest pass and every shipped figure is bit-identical. index.html is unchanged.
  *
- * Unreleased (next-round session 6, Sep 27 2026): the A4 policy testbed. Comparator presets (UBI, NIT, public grocery, asset
+ * v4.22 (session 11, Sep 28 2026, Duke's review): PR.ccoTop and tbMatch('ccoTop') (a participant-only needs-based top-up at
+ * equal cost; nit.part), the `topup` section, PR.grocPilot (five stores, TB_GROC_PILOT), PR.xcFull (X-Cents Power of 1; groc.housing),
+ * the proposed-size constants (TB_UBI_PROP, TB_NIT_PROP, TB_ENDOW_PROP), a5 rows for all of them, and a second front-door view
+ * ('prop'). Every other row is bit-identical; 2 unit tests.
+ * v4.22 (next-round session 6, Sep 27 2026): the A4 policy testbed. Comparator presets (UBI, NIT, public grocery, asset
  * endowment, X-Cents) beside Compassionism under one cost ledger, one income effect and one wage elasticity (d24-d26, d28);
  * a tax/money financing switch (TB, p.tb); basket FGT0-2 and a group check; per-row pathway switches (d19); tbUnitSuite()
  * (run by `unit`); and the `testbed` mode. runYear hooks are inert unless a preset carries p.tb: validate, unit and domtest
  * pass and every shipped figure is bit-identical. index.html is unchanged.
+ * v4.22 (next-round sessions 7-10, Sep 27-28 2026): the testbed's decomp, alts, a5 and n7 sections; FBS_BU_ONCE,
+ * PTH_APPR_CONSERVE and N7_BLEI (the i3 engine questions, harness-only); the `frontdoor` writer, which puts the a5 comparison
+ * into index.html's front door; and TB_PROFILE_G, which turns N7_BLEI on in the testbed profile (d40). The engine in
+ * index.html is unchanged in every one of these sessions.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 var CFG = {
@@ -171,6 +179,15 @@ var SURPLUS_CONSUMPTION_SHARE = 0;
  * AFTER the CCO relief discount and then adds effective BU on top, so BU enters FBS twice (the framework branch already reads the
  * cost before the relief). true: the engine branch reads the pre-relief cost, as the framework branch does. index.html: false. */
 var FBS_BU_ONCE = false;
+/* Session 9 (dashboard i3-2): N7 attribution of the BLEI-gated wage raise. The N7 split counts the octave and CIP raises as
+ * program-induced and the BLEI-gated raise as not, since the Baseline has it too. But in a design the raise can fire only
+ * because the design's own support lifts the adult over the gate. N7_BLEI true counts the BLEI raise as program-induced in
+ * exactly those adult-years: the gate passes as the run reads it (the shipped or the design-neutral gate) and fails on Baseline
+ * rules with no program support (agentBLEI(a, 0, false, ...)). Direct, same-year attribution only: a raise that passes on
+ * Baseline rules is not attributed, even where program-built wealth put the adult there. The same rule applies to every
+ * design. It moves the labor module's raise (uncompensated response) and, where aw < 1, the price module's unmatched
+ * premium; the raise itself is unchanged. Default false (the attribution through session 8). No RNG. */
+var N7_BLEI = false;
 /* Session 1 of the Sep 26 plan: which income SURPLUS_CONSUMPTION_SHARE applies to. 'wage' (the v4.21
  * behaviour): the share of wage income above the agent's basket, taken right after the wage step, so
  * conversion proceeds and PTH liquid appreciation are always saved in full. 'cash': the share of ALL cash
@@ -292,18 +309,18 @@ function setRestudy(o){ var old = {THETA_GATE:THETA_GATE, PTH_MODE:PTH_MODE, DIS
  *    endowment's annuity value, against the agent's own cost (gross basket less in-kind cuts). */
 var TB = null;
 var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true};
-function tbNewAcc(){ return {n:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0}; }
+function tbNewAcc(){ return {n:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0}; }
 function tbYear(p, colaF){
   var s = p.tb;
   TB.cur = tbNewAcc();
   return {ubi:(s.ubi || 0)*colaF, xc:(s.xc ? s.xc.amt : 0)*colaF, xd:s.xc ? (s.xc.delta || 0) : 0, G:s.nit ? s.nit.G*colaF : 0, t:s.nit ? s.nit.t : 0,
-    tau:TB.tau || 0, X:(TB.X || 0)*(TB.xIdx || 1), W:s.endow ? s.endow.amt : 0, T:p.years, gcap:s.groc ? (s.groc.cap || 0) : 0, gcov:s.groc ? s.groc.cover : 0};
+    tau:TB.tau || 0, X:(TB.X || 0)*(TB.xIdx || 1), W:s.endow ? s.endow.amt : 0, T:p.years, gcap:s.groc ? (s.groc.cap || 0) : 0, gcov:s.groc ? s.groc.cover : 0, Gp:!!(s.nit && s.nit.part)};
 }
 /* d28: the BLEI gate on the engine's wage-growth bonus, read the same way for every design: Baseline rules (gamma 0.12, the base
  * daily cost, no SZH term) plus one month of the design's regular support, BU (the credit agentBLEI gives participants) or cash
  * (UBI, X-Cents, the NIT benefit on last year's earnings). agentBLEI itself, and every BLEI figure reported, are unchanged. */
 function tbGate(a, p, buEff, y){
-  var Ep = a.yrWageUSD !== undefined ? a.yrWageUSD : a.wage*12*CFG.WAGE_TO_USD, Bx = y.G > 0 ? (y.t > 0 ? Math.max(0, y.G - y.t*Ep) : y.G) : 0;  /* the NIT benefit expected on last year's earnings */
+  var Ep = a.yrWageUSD !== undefined ? a.yrWageUSD : a.wage*12*CFG.WAGE_TO_USD, Bx = (y.G > 0 && (!y.Gp || a.inCCO)) ? (y.t > 0 ? Math.max(0, y.G - y.t*Ep) : y.G) : 0;  /* the NIT benefit expected on last year's earnings; session 11: a participant-only top-up (Gp) reaches participants only */
   var m = (y.ubi + y.xc + Bx)/12;
   if (p.ccoOn && a.inCCO && buEff > 0) m += (CONVERSION_MODEL === 'framework' && a._fwBUm !== undefined) ? a._fwBUm : buEff*(990/1200);
   a._tbM = m;  /* session 7: kept for the design-neutral BLEI poverty figure (d28) */
@@ -313,7 +330,7 @@ function tbNitElig(y, E0){ return y.G > 0 && (y.t <= 0 || E0 < y.G/y.t); }
 /* Labor terms for one agent-year: F multiplies earnings (net-of-rate factors), V is extra unconditional dollars (x rho), D is
  * time displaced from wage work. Eligibility for the phase-out and the contribution is read on earnings before the response. */
 function tbLab(a, y, E0, cutUSD){
-  var ex = LABOR.eps - LABOR.rho, F = 1, el = tbNitElig(y, E0), tx = y.tau > 0 && E0 > y.X;
+  var ex = LABOR.eps - LABOR.rho, F = 1, el = tbNitElig(y, E0) && (!y.Gp || a.inCCO), tx = y.tau > 0 && E0 > y.X;
   var V = y.ubi + y.xc*(1 - y.xd) + (el ? y.G : 0), D = y.xc*y.xd;  /* cash first, so an NIT at t = 0 is bit-identical to a UBI */
   if (a._tbEl) V += y.W/y.T;
   if (tx){ F *= Math.pow(1 - y.tau, ex); V += y.tau*y.X; }
@@ -322,7 +339,7 @@ function tbLab(a, y, E0, cutUSD){
   return {F:F, V:V, D:D};
 }
 function tbCashFlow(a, y, E, yr){
-  var B = y.G > 0 ? (y.t > 0 ? Math.max(0, y.G - y.t*E) : y.G) : 0, cash = y.ubi + y.xc + B, tax = y.tau > 0 ? y.tau*Math.max(0, E - y.X) : 0;
+  var B = (y.G > 0 && (!y.Gp || a.inCCO)) ? (y.t > 0 ? Math.max(0, y.G - y.t*E) : y.G) : 0, cash = y.ubi + y.xc + B, tax = y.tau > 0 ? y.tau*Math.max(0, E - y.X) : 0;
   a.yrTbCash = cash; a.yrTax = tax; a._tbNit = B;
   return {net:cash - tax, endow:(yr === 0 && a._tbEl) ? y.W : 0};
 }
@@ -342,6 +359,16 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   var inc = E + conv + (a.yrUbiUSD || 0) + a.yrTbCash - a.yrTax + (a._tbEl ? y.W/y.T : 0), g = Math.max(0, costUSD - inc)/mlc;
   C.f0 += g > 0 ? 1 : 0; C.f1 += g; C.f2 += g*g;
   a._tbGap = g; a._tbF0 = (a._tbF0 || 0) + (g > 0 ? 1 : 0); a._tbRes = (a._tbRes || 0) + (inc + mlc - costUSD)/idx; a._tbYrs = (a._tbYrs || 0) + 1;
+  /* Session 8 (A5; dashboard s18). Reporting only, no RNG. Spells: a spell starts in any year the agent is below the basket after
+   * being above it (or in year 0); spells are censored at the 20-year window. Hours: this year's earnings over the same agent's
+   * earnings with no labor response (a._lbE0, set in runYear's LABOR block), which is hours at a fixed wage; 1 with LABOR off.
+   * Disposable income, OECD definition (the Hub's C30): wage earnings + conversion proceeds + cash transfers - the contribution;
+   * no in-kind benefits, no capital transfer (the endowment), no capital gains (PTH appreciation). Extended income adds the in-kind
+   * cuts to the agent's basket (BU relief and PTF, PTH and grocery price cuts). */
+  if (g > 0){ if (!a._tbInSp) a._tbSp = (a._tbSp || 0) + 1; a._tbInSp = true; } else a._tbInSp = false;
+  C.emp += E > 0 ? 1 : 0; C.hrs += a._lbE0 > 0 ? E/a._lbE0 : 1;
+  C.bR += a._bleiR || 0; C.bP += a._bleiP || 0;  /* session 9 (i3-2): BLEI raises, and those the program's support carried over the gate */
+  a._tbDisp = E + conv + (a.yrUbiUSD || 0) + a.yrTbCash - a.yrTax; a._tbExt = a._tbDisp + Math.max(0, mlc - costUSD);
   a._tbPthPrev = a._tbPthNow || 0; a._tbPthNow = 0;
 }
 function mulberry32(seed){var s=seed>>>0;return function(){s=(s+0x6D2B79F5)>>>0;var t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
@@ -537,9 +564,11 @@ function runYear(agentSet,yr,p,recSt){
     var uPtfAdopt=RNG();
     var bleiCheck=agentBLEI(a,buEff,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
     var tbNB=tbY?tbGate(a,p,buEff,tbY):0,wg=CFG.WAGE_BASE_GROWTH,bleiGate=(tbY&&TB.neutralGate)?tbNB:bleiCheck;  // session 6 (d28): design-neutral gate for the wage bonus (testbed only)
+    var bleiProg=0;a._bleiR=0;a._bleiP=0;  // session 9 (i3-2): harness-only attribution of the BLEI raise (no RNG)
     if(bleiGate>CFG.BLEI_PRECARIOUS_MAX&&!PATHWAY_OFF.bleiWage){  // v4.21: harness-only pathway switch
       var drFactor=1/(1+0.5*Math.max(0,a.wage/CFG.WAGE_MEDIAN_SIU-1));
       wg+=CFG.WAGE_BLEI_BONUS*Math.max(0.1,drFactor);
+      a._bleiR=1;if(!(agentBLEI(a,0,false,false,false,0,false)>CFG.BLEI_PRECARIOUS_MAX)){a._bleiP=1;if(N7_BLEI)bleiProg=CFG.WAGE_BLEI_BONUS*Math.max(0.1,drFactor);}
     }
     if(!PATHWAY_OFF.octaveWage)wg+=a.octave*CFG.WAGE_OCTAVE_BONUS;  // v4.21: harness-only pathway switch
     if(p.cip)wg+=p.cipDemo*0.005;
@@ -548,8 +577,8 @@ function runYear(agentSet,yr,p,recSt){
     wg-=popAIDisp*((typeof a.automationRisk==='number'&&!isNaN(a.automationRisk))?a.automationRisk:0.5);  /* v4.17 parity: `||0.5` read a draw of exactly 0 as 0.5 */
     a.wage=Math.max(a.wage*0.80,a.wage*(1+wg));
     if(isNaN(a.wage))a.wage=1;
-    if(LABOR){var lbProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0);a._lwNB=Math.max(a._lwNB*0.80,a._lwNB*(1+wg-lbProg));}
-    if(PRICE){var pmProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0);a._wNB=Math.max(a._wNB*0.80,a._wNB*(1+wg-pmProg));}  // N7: the wage without program-induced raises
+    if(LABOR){var lbProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0)+bleiProg;a._lwNB=Math.max(a._lwNB*0.80,a._lwNB*(1+wg-lbProg));}
+    if(PRICE){var pmProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0)+bleiProg;a._wNB=Math.max(a._wNB*0.80,a._wNB*(1+wg-pmProg));}  // N7: the wage without program-induced raises
     var cf=1.0,rsPtfU=1,rsRel=1;
     if(!rsAlt){
     if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped')cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));else cf*=(1-PTF_FOOD_CUT[PTF_MODE]*fShareCur);}  // session 2: PTF_MODE (D4); 'shipped' is index.html
@@ -578,7 +607,7 @@ function runYear(agentSet,yr,p,recSt){
       if(LEDGER){ledAdd(yr,'fwBudget',fwBudget);ledAdd(yr,'fwBUSpent',fwB);ledAdd(yr,'fwBUExpired',fwLeft);ledAdd(yr,'fwBUDirected',fwLeft*FW.directedShare);}
     }
     var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
-    var tbG=0,tbPT=0;if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*fShareCur;}  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
+    var tbG=0,tbPT=0;if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fShareCur+(p.tb.groc.housing?hShareCur:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
     if(LABOR){  // session 4 (A3): the labor-supply response replaces this year's wage earnings (no RNG)
       var lbE0=annualWageUSD,lbBU=0,lbR=0,lbC=a._labC||0,lbU=p.ubi||0;
       if(p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){if(FWON){lbBU=fwB;lbR=fwLeft;}else lbBU=mainLoopCostUSD*(cfPreCCO-cf);}
@@ -586,7 +615,7 @@ function runYear(agentSet,yr,p,recSt){
       var lbRaise=Math.pow(Math.max(1,a.wage/a._lwNB)*(1+lbBiz),LABOR.eps-LABOR.rho);  // uncompensated: Slutsky e_u = e_c + eta, eta = -rho
       var tbQ=tbY?tbLab(a,tbY,lbE0,tbPT+tbG):null;if(tbQ)lbRaise*=tbQ.F;  // session 6: phase-out and contribution rates (one elasticity), extra unconditional dollars (one income effect)
       var lbInc=LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC+(tbQ?LABOR.rho*tbQ.V:0),lbDisp=LABOR.delta*lbC+(tbQ?tbQ.D:0);
-      annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);
+      annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=lbE0;  // session 8 (A5): earnings with no response, for the hours measure
       if(tbQ&&LABOR.acc)LABOR.acc.cash+=LABOR.rho*tbQ.V;
       if(LABOR.acc){var LA=LABOR.acc;LA.n++;if(a.inCCO)LA.nP++;LA.E0+=lbE0;LA.E+=annualWageUSD;LA.raise+=lbE0*(lbRaise-1);LA.cash+=LABOR.rho*lbU;LA.bu+=LABOR.rhoBU*lbBU;LA.buR+=LABOR.rhoR*lbR;
         LA.rent+=LABOR.rho*(1-LABOR.delta)*lbC;LA.disp+=lbDisp;LA.C+=lbC;LA.U+=lbU+lbBU;LA.projH+=lbE0>0?lbDisp/lbE0:0;if(annualWageUSD===0&&lbE0>0)LA.zero++;}
@@ -1762,7 +1791,16 @@ var NR6 = {rule:NEXT_ROUND, rs:{THETA_GATE:'density', PTH_MODE:'housing', DISC_B
 function applyNR6(){ return {rule:applyRule(NR6.rule), rs:setRestudy(NR6.rs)}; }
 function resetNR6(sv){ applyRule(sv.rule); setRestudy(sv.rs); }
 var TB_RUN = {wIdx:1, labor:LABOR_DEFAULTS};
+/* Session 10 (dashboard d40, confirmed Sep 28, 2026): the testbed profile counts the BLEI-gated raise as program-induced where
+ * the design's own support carries the adult over the gate (N7_BLEI; session 9, i3-2), the same rule for every design. The
+ * `testbed` mode applies it to every row that does not set N7_BLEI itself (its n7 section sets it both ways, so that section
+ * still shows the attribution off and on). The global default stays false, so the unit tests and the index.html parity checks
+ * are unchanged; tbUnitSuite checks the profile directly. */
+var TB_PROFILE_G = {N7_BLEI:true};
 function tbOpts(o){ o = o || {}; var r = Object.assign({}, PM_DEFAULTS, TB_DEFAULTS, TB_RUN, o); r.theta = Object.assign({}, PM_DEFAULTS.theta, o.theta || {}); return r; }
+/* Session 8 (A5): Gini coefficient of a list of incomes (negatives count as 0), the standard sorted-rank formula. */
+function giniOfArr(x){ var v = x.map(function(z){ return Math.max(0, +z || 0); }).sort(function(a, b){ return a - b; }), n = v.length, t = 0, w = 0;
+  for (var i = 0; i < n; i++){ t += v[i]; w += (i + 1)*v[i]; } return n > 0 && t > 0 ? 2*w/(n*t) - (n + 1)/n : 0; }
 /* One testbed run: priceRun()'s loop (same draws, same price rules) with TB set. Returns the run's metrics; see tbStudy for keys. */
 function tbRunCore(p, seed, o, S, tau0, yMax){
   var CALM0 = {active:false, incomeMultiplier:1.0, yearsLeft:0};
@@ -1777,7 +1815,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null};
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
-  var L = {cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0};
+  var L = {cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0};
   THETA_DENS = null;
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
@@ -1802,6 +1840,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       L.cost += (C.cash + C.endow + C.bu + C.conv + C.cap + C.cutPT + C.cutG + C.pthLiq)/C.idx;
       L.cash += C.cash/C.idx; L.endow += C.endow/C.idx; L.bu += C.bu/C.idx; L.conv += C.conv/C.idx; L.cutPT += C.cutPT/C.idx; L.cutG += C.cutG/C.idx; L.cap += C.cap/C.idx; L.pth += C.pthLiq/C.idx;
       L.pd += C.pd/C.idx; L.tgt += C.tgt/C.idx; L.tax += C.tax/C.idx; L.need += need/C.idx; L.treas += (C.tax - need)/C.idx; L.f0 += C.f0; L.f1 += C.f1; L.f2 += C.f2; L.n += C.n;
+      L.emp += C.emp; L.hrs += C.hrs; L.Er += C.E/C.idx; L.bR += C.bR; L.bP += C.bP;  /* session 8 (A5): employment, hours, real wage earnings */
       if (o.fin === 'tax' || o.fin === 'hybrid') TB.tau = C.base > 0 ? Math.min(o.tauMax, need/C.base) : 0;
       var PGn = pmGenStep(PG, U, A.Y, o.lamG), capShare = o.ptfCap*(A.n ? A.ptfN/A.n : 0), PE = {};
       CFG.ESSENTIALS.forEach(function(k){
@@ -1811,7 +1850,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
         var dEff = o.supply === 'baseline' ? d : sRef + Math.max(0, d - sRef) - Math.max(0, S[yr] - sRef);
         PE[k] = pmEssLevel(dEff, sRef, capShare*cut, o.theta[k]);
       });
-      path.push({bIdx:PRICE.bIdx, PG:PG, U:U, Y:A.Y, tau:tauUsed, colaLevel:PRICE.colaLevel});
+      path.push({bIdx:PRICE.bIdx, PG:PG, U:U, Y:A.Y, tau:tauUsed, colaLevel:PRICE.colaLevel, full:C.idx});  /* session 8: full price level (exogenous x endogenous) */
       PRICE.piG = PGn/PG - 1; PG = PGn;
       CFG.BASKET_KEYS.forEach(function(k){ comp[k] = CFG.ESSENTIALS.indexOf(k) >= 0 ? PE[k]*(o.pgOnE ? PG : 1) : PG; });
       PRICE.bIdx = pmBasketIdx(comp);
@@ -1828,6 +1867,10 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   function grpOf(f){ var m = 0, k = 0, f0 = 0, wp = 0; agents.forEach(function(a){ if (f(a)){ k++; m += a._tbRes/a._tbYrs; f0 += a._tbF0/a._tbYrs; if (a.wealth < CFG.POVERTY_LINE*lineF) wp++; } });
     return k ? {res:m/k, f0:f0/k*100, wp:wp/k*100, k:k} : {res:0, f0:0, wp:0, k:0}; }
   var gP = grpOf(function(a){ return a._tbPart; }), gN = grpOf(function(a){ return !a._tbPart; }), gH = grpOf(function(a){ return a._tbPTH; }), gL = grpOf(function(a){ return a._tbLow; }), gT = grpOf(function(a){ return a._tbTop; });
+  /* Session 8 (A5): spells, persistence, and the year-20 income distribution (reporting only). */
+  var sp = 0, spY = 0, ever = 0, chron = 0; agents.forEach(function(a){ sp += a._tbSp || 0; spY += a._tbF0 || 0; if (a._tbF0 > 0) ever++; if ((a._tbF0 || 0) >= T/2) chron++; });
+  var giniD = giniOfArr(agents.map(function(a){ return a._tbDisp || 0; })), giniX = giniOfArr(agents.map(function(a){ return a._tbExt || 0; }));
+  var pT = path[T-1], p10 = path[Math.min(T-1, 9)], realT = (p.cola ? pT.colaLevel : 1)/pT.full;
   var bI = path[T-1].bIdx, mx = 0, tauS = 0;
   for (var t = 1; t < T; t++) mx = Math.max(mx, path[t].bIdx/path[t-1].bIdx - 1);
   path.forEach(function(q){ tauS += q.tau; });
@@ -1838,7 +1881,9 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     tax:L.tax/NY, need:L.need/NY, treas:L.treas/NY, tauMean:tauS/T, tauLast:path[T-1].tau,
     dE:labAcc && labAcc.E0 > 0 ? (labAcc.E - labAcc.E0)/labAcc.E0 : 0, E:labAcc ? labAcc.E/Math.max(1, labAcc.n) : 0, E0:labAcc ? labAcc.E0/Math.max(1, labAcc.n) : 0, zero:labAcc ? labAcc.zero/Math.max(1, labAcc.n) : 0,
     gPartRes:gP.res, gPartF0:gP.f0, gNonRes:gN.res, gNonF0:gN.f0, gPthRes:gH.res, gPthF0:gH.f0, gLowRes:gL.res, gLowF0:gL.f0, gTopRes:gT.res, gTopF0:gT.f0,
-    gPartW:gP.wp, gNonW:gN.wp, gPthW:gH.wp, gLowW:gL.wp, gTopW:gT.wp}};
+    gPartW:gP.wp, gNonW:gN.wp, gPthW:gH.wp, gLowW:gL.wp, gTopW:gT.wp,
+    pyPoor:spY/n, everPoor:ever/n*100, spellMean:sp > 0 ? spY/sp : 0, chronic:chron/n*100, emp:L.emp/L.n*100, hrs:L.hrs/L.n - 1, Er:L.Er/NY,
+    giniD:giniD, giniX:giniX, pLev10:p10.full, pLev20:pT.full, realT:realT, bleiR:L.bR/L.n*100, bleiP:L.bP/L.n*100}};
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
@@ -1847,7 +1892,7 @@ function tbRun(p, seed, o, S){
 }
 var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthReal','fgt0','fgt1','fgt2','fgt0PY','fgt1PY','fgt2PY','cost','cCash','cEndow','cBU','cConv','cCut','cCap','cPth',
   'tax','need','treas','tauMean','tauLast','dE','E','E0','zero','gPartRes','gPartF0','gNonRes','gNonF0','gPthRes','gPthF0','gLowRes','gLowF0','gTopRes','gTopF0',
-  'gPartW','gNonW','gPthW','gLowW','gTopW'];
+  'gPartW','gNonW','gPthW','gLowW','gTopW','pyPoor','everPoor','spellMean','chronic','emp','hrs','Er','giniD','giniX','pLev10','pLev20','realT','bleiR','bleiP'];
 /* Paired study over seeds 1..N (optionally lo..hi). envP: the Compassionism scenario that defines the environment, the essentials
  * supply path (its matched Baseline, as in sessions 2-5) and the groups (participants: latent uCCO < its partRate; PTH members:
  * latent uPTH < its pthUptake, the same agents in every design). cfgs: [{p, o, cm, pw}]; pw switches PATHWAY_OFF entries for that
@@ -1867,8 +1912,8 @@ function tbStudy(cfgs, N, envP, o0, lo){
   return out;
 }
 /* Session 7: set the i3 engine-question switches for one row; returns the previous values. */
-function tbSetG(g){ var old = {FBS_BU_ONCE:FBS_BU_ONCE, PTH_APPR_CONSERVE:PTH_APPR_CONSERVE};
-  if (g){ if ('FBS_BU_ONCE' in g) FBS_BU_ONCE = !!g.FBS_BU_ONCE; if ('PTH_APPR_CONSERVE' in g) PTH_APPR_CONSERVE = !!g.PTH_APPR_CONSERVE; }
+function tbSetG(g){ var old = {FBS_BU_ONCE:FBS_BU_ONCE, PTH_APPR_CONSERVE:PTH_APPR_CONSERVE, N7_BLEI:N7_BLEI};
+  if (g){ if ('FBS_BU_ONCE' in g) FBS_BU_ONCE = !!g.FBS_BU_ONCE; if ('PTH_APPR_CONSERVE' in g) PTH_APPR_CONSERVE = !!g.PTH_APPR_CONSERVE; if ('N7_BLEI' in g) N7_BLEI = !!g.N7_BLEI; }
   return old; }
 /* Paired difference x - y on a key, with a normal 95% interval over seeds. */
 function tbDiff(x, y, k){ var n = x._s[k].length, m = 0, v = 0, i; for (i = 0; i < n; i++) m += (x._s[k][i] - y._s[k][i])/n;
@@ -1881,6 +1926,28 @@ var TB_GROC = {cut:0.15, cap:140}; /* d27. cut: nyc.gov (Jul 27, 2026): 30% off 
                                     * assumed 5,000 regular adult shoppers per store: a logged placeholder (the shopper count is unsourced), swept. */
 var TB_ENDOW_THRESH = 25000;       /* d27: year-0 wealth below the model's wealth-poverty line (CFG.POVERTY_LINE) */
 var TB_NIT_T = 0.5;                /* d27: central phase-out rate; 0.3 and 0.7 swept */
+/* Session 11 (Duke's notes on the v4.22 page; dashboard d44-d47).
+ * TB_GROC_PILOT  the NYC plan's five stores serve a small share of the city's shoppers: the Mayor puts the existing count at
+ *                "more than the thousand existing grocery stores" (nyc.gov transcript, Jul 27, 2026), so five equal-sized stores
+ *                would serve 5/1,005 = 0.5%; the first sites are 9,000 sq ft, smaller than a typical supermarket, so this is if
+ *                anything high. Derived. The full-cover row (cover 1) is the network at a scale that serves every adult.
+ * TB_XC_P1       X-Cents "Power of 1" (the CurrentSea X-Change paper, s3.2): at designated times every coin is worth $1 for
+ *                necessities, so food bought with pennies costs 1 cent per dollar (a 99% cut). One designated day a week
+ *                (Duke, Sep 28): the share of food bought that day, f, is 1 if adults do their weekly food shopping on it (central)
+ *                and 1/7 if they do not shift any (swept). Food only: rent and utilities need the paper's phase-2 service-provider
+ *                integration, which the model does not assume centrally; the X-Cents site names food and housing, so a row with
+ *                housing (rent and utilities, HUD FMR incl. tenant-paid utilities) paid the same way is shown beside it (d48).
+ * TB_UBI_PROP, TB_NIT_PROP, TB_ENDOW_PROP  each comparator at its proposers' size (d45): $1,000 a month (the amount paid in
+ *                Vivalt et al.'s study); the guarantee at the 2026 HHS poverty guideline for one person ($15,960, aspe.hhs.gov),
+ *                50% phase-out, inside the range the 1968-82 NIT experiments tested; the stakeholder grant's $80,000 of 1999
+ *                (Ackerman and Alstott) in 2025 dollars, x 321.943/166.6 (BLS CPI-U annual averages) = $154,594.
+ * TB_TOPUP_S     d39/N3: the share of the flat BU moved to the needs-based top-up at equal cost in `topup` (0.1, 0.25 and 0.5 swept).
+ *                TB_TOPUP_S_A5 = 0.1 in a5 and on the page (d44): the only share tested that deepens the FGT2 cut in all four cells. */
+var TB_GROC_PILOT = 0.005, TB_XC_P1 = 0.99, TB_UBI_PROP = 12000, TB_NIT_PROP = 15960, TB_ENDOW_PROP = 154594, TB_TOPUP_S = 0.25, TB_TOPUP_S_A5 = 0.1;
+/* Session 8 (d33; dashboard s24): every Compassionism-versus-comparator result is shown with the PTF/PTH inflation damping on and
+ * off. The damping scales the exogenous inflation rate only, so where that rate is 0 the damping-off rows equal the rows shown
+ * (checked by `unit`) and are not rerun. */
+var D33_NOTE = '  (d33: the PTF/PTH inflation damping acts only on exogenous inflation, which is 0 here, so the damping-off rows equal the rows shown; checked by `unit`.)';
 function tbComp(P, spec){ return Object.assign({}, baselineFor(P, true), {nAgents:P.nAgents, years:P.years, cola:true, colaThresh:CFG.COLA_HUB_THRESH, tb:spec}); }
 function tbCCO(P, bu){ var q = nextRoundPreset(Object.assign({}, P, bu !== undefined ? {bu:bu} : {})); q.tb = {}; return q; }
 function tbPresets(P){
@@ -1892,13 +1959,17 @@ function tbPresets(P){
     endow: function(W){ return tbComp(P, {endow:{amt:W, thresh:TB_ENDOW_THRESH}}); },
     xc: function(delta){ return tbComp(P, {xc:{amt:TB_XC_AMT, delta:delta || 0}}); },
     cco: function(bu){ return tbCCO(P, bu); },
-    ccoAlone: function(bu){ return tbCCO(ccoOnlyFor(P), bu); }
+    ccoAlone: function(bu){ return tbCCO(ccoOnlyFor(P), bu); },
+    /* session 11 */
+    grocPilot: function(){ return tbComp(P, {groc:{cut:TB_GROC.cut, cover:TB_GROC_PILOT, cap:TB_GROC.cap}}); },
+    xcFull: function(f, h){ return tbComp(P, {xc:{amt:TB_XC_AMT, delta:0}, groc:{cut:TB_XC_P1*(f === undefined ? 1 : f), cover:1, cap:0, housing:!!h}}); },
+    ccoTop: function(G, s, t){ var q = tbCCO(P, P.bu*(1 - (s === undefined ? TB_TOPUP_S : s))); q.tb = {nit:{G:G, t:t === undefined ? TB_NIT_T : t, part:true}}; return q; }
   };
 }
 /* Matching a comparator to a target gross cost per adult-year (year-0 dollars) on pilot seeds 1..Np. UBI: one proportional
  * correction (COLA and deflation make real cost differ slightly from the nominal amount). NIT: secant on G. Endowment: exact
  * (paid in year 0, so cost = W x eligible share / years). */
-function tbMatch(kind, target, P, Np, o){
+function tbMatch(kind, target, P, Np, o, x){
   var PR = tbPresets(P);
   function cost(q){ return tbStudy([{p:q}], Np, P, o)[0].cost; }
   if (kind === 'ubi'){ var c = cost(PR.ubi(target)); return target*target/Math.max(1, c); }
@@ -1906,6 +1977,10 @@ function tbMatch(kind, target, P, Np, o){
   if (kind === 'nit'){ var x0 = target, x1 = 2*target, f0 = cost(PR.nit(x0)) - target, f1 = cost(PR.nit(x1)) - target;
     for (var it = 0; it < 6 && Math.abs(f1) > 0.002*target; it++){ var x2 = x1 - f1*(x1 - x0)/(f1 - f0); x0 = x1; f0 = f1; x1 = Math.max(100, x2); f1 = cost(PR.nit(x1)) - target; }
     return x1; }
+  if (kind === 'ccoTop'){  /* session 11 (d39/N3): the top-up's guarantee G that brings Compassionism with a smaller flat BU back to the target */
+    var xs = typeof x === 'object' ? x : {s:x}, g0 = 0.25*target, g1 = target, h0 = cost(PR.ccoTop(g0, xs.s, xs.t)) - target, h1 = cost(PR.ccoTop(g1, xs.s, xs.t)) - target;
+    for (var jt = 0; jt < 8 && Math.abs(h1) > 0.002*target; jt++){ var g2 = g1 - h1*(g1 - g0)/(h1 - h0); g0 = g1; h0 = h1; g1 = Math.max(0, g2); h1 = cost(PR.ccoTop(g1, xs.s, xs.t)) - target; }
+    return g1; }
   throw new Error('tbMatch: unknown kind ' + kind);
 }
 /* Tests (harness-only; run by `unit`). Each restores every switch. */
@@ -1981,15 +2056,64 @@ function tbUnitSuite(){
     CONVERSION_MODEL = 'framework'; var f0 = tbStudy([{p:q}], 1, FI, {fin:'tax'})[0], f1 = tbStudy([{p:q, g:{FBS_BU_ONCE:true}}], 1, FI, {fin:'tax'})[0];
     return {pass:restored && base.fgt2 !== fix.fgt2 && f0.fgt2 === f1.fgt2, detail:'engine FGT2 ' + base.fgt2.toFixed(3) + ' -> ' + fix.fgt2.toFixed(3) + '; framework ' + f0.fgt2.toFixed(3) + ' = ' + f1.fgt2.toFixed(3) + '; restored: ' + restored};
   });
+  t('session 8 (d33): with no exogenous inflation the PTF/PTH damping switch changes nothing (Full Integration, seed 1, tax and money, both models); in the Adverse Environment it lowers the price level', function(){
+    var ok = true, v = [];
+    ['engine','framework'].forEach(function(cm){ CONVERSION_MODEL = cm; ['tax','money'].forEach(function(fin){
+      var R = tbStudy([{p:PR.cco()}, {p:PR.cco(), o:{noDamp:true}}], 1, FI, {fin:fin});
+      if (!same(R[0], R[1], TB_KEYS)) ok = false; }); });
+    CONVERSION_MODEL = 'engine'; var PA = tbPresets(ADVERSE_REFERENCE), RA = tbStudy([{p:PA.cco()}, {p:PA.cco(), o:{noDamp:true}}], 1, ADVERSE_REFERENCE, {fin:'tax'});
+    return {pass:ok && RA[0].pLev20 < RA[1].pLev20, detail:'reference: identical on every key; Adverse price level at year 20 ' + RA[0].pLev20.toFixed(4) + ' (damped) vs ' + RA[1].pLev20.toFixed(4)};
+  });
+  t('session 8 (A5): person-years poor per adult = person-year FGT0 x 20 / 100; ever poor >= year-20 FGT0 and >= chronic; spells 1-20 years; Gini of known vectors; with no labor response hours are unchanged (seeds 1-2)', function(){
+    var R = tbStudy([{p:PR.baseline()}, {p:PR.cco()}, {p:PR.ubi(8000)}], 2, FI, {fin:'tax'}), ok = true, v = [];
+    R.forEach(function(r){ for (var i = 0; i < 2; i++){ var py = r._s.pyPoor[i], f = r._s.fgt0PY[i]*FI.years/100;
+      if (Math.abs(py - f) > 1e-9 || r._s.everPoor[i] < r._s.fgt0[i] - 1e-9 || r._s.everPoor[i] < r._s.chronic[i] - 1e-9 || r._s.spellMean[i] < 1 || r._s.spellMean[i] > FI.years) ok = false; } });
+    var g1 = giniOfArr([1,1,1,1]), g2 = giniOfArr([0,0,0,1]), g3 = giniOfArr([1,2,3,4]);
+    var L0 = {rho:0, rhoBU:0, rhoR:0, eps:0, delta:0}, z = tbStudy([{p:PR.cco()}], 1, FI, {fin:'none', labor:L0})[0];
+    var gOk = Math.abs(g1) < 1e-12 && Math.abs(g2 - 0.75) < 1e-12 && Math.abs(g3 - 0.25) < 1e-12;
+    return {pass:ok && gOk && Math.abs(z.hrs) < 1e-12 && z.emp === 100, detail:'Gini [1,1,1,1] ' + g1.toFixed(3) + ', [0,0,0,1] ' + g2.toFixed(3) + ', [1,2,3,4] ' + g3.toFixed(3) + '; Compassionism years poor per adult ' + R[1].pyPoor.toFixed(3) + ' = ' + (R[1].fgt0PY*FI.years/100).toFixed(3) + '; no-response hours ' + (z.hrs*100).toFixed(4) + '%'};
+  });
+  t('session 8 (A5): the price path. Tax-financed Adverse Baseline: price level at year 20 = 1.02^19 (no program, no damping); a UBI below the 5% COLA trigger is worth 1/price level; at reference every level is 1 (seed 1)', function(){
+    var PA = tbPresets(ADVERSE_REFERENCE), R = tbStudy([{p:PA.baseline()}, {p:PA.ubi(6000)}], 1, ADVERSE_REFERENCE, {fin:'tax'}), r0 = tbStudy([{p:PR.ubi(6000)}], 1, FI, {fin:'tax'})[0];
+    var want = Math.pow(1 + ADVERSE_REFERENCE.inflRate, FI.years - 1);
+    return {pass:Math.abs(R[0].pLev20 - want) < 1e-9 && Math.abs(R[1].realT - 1/R[1].pLev20) < 1e-12 && r0.pLev20 === 1 && r0.realT === 1,
+      detail:'Adverse Baseline price level ' + R[0].pLev20.toFixed(6) + ' vs 1.02^19 = ' + want.toFixed(6) + '; UBI real value $' + R[1].realT.toFixed(4)};
+  });
+  t('session 9 (i3-2): N7_BLEI moves attribution only. With no labor response and every raise matched (aw 1) every figure is identical; on the Baseline it changes nothing; program-carried BLEI raises are a subset of BLEI raises; the switch is restored (seeds 1-2)', function(){
+    var o = {fin:'tax', labor:null}, R = tbStudy([{p:PR.cco(), o:o}, {p:PR.cco(), o:o, g:{N7_BLEI:true}}, {p:PR.baseline()}, {p:PR.baseline(), g:{N7_BLEI:true}}, {p:PR.cco()}, {p:PR.cco(), g:{N7_BLEI:true}}], 2, FI, {fin:'tax'});
+    var sub = R.every(function(r){ for (var i = 0; i < 2; i++) if (r._s.bleiP[i] > r._s.bleiR[i] + 1e-12) return false; return true; });
+    return {pass:same(R[0], R[1], TB_KEYS) && same(R[2], R[3], TB_KEYS) && R[2].bleiP === 0 && sub && N7_BLEI === false && R[5].hrs !== R[4].hrs,
+      detail:'no response: identical; Baseline: identical, program-carried share ' + R[2].bleiP.toFixed(2) + '%; Full Integration with the response: hours ' + (R[4].hrs*100).toFixed(3) + '% -> ' + (R[5].hrs*100).toFixed(3) + '% (' + R[4].bleiP.toFixed(2) + '% of adult-years carried over the gate)'};
+  });
+  t('session 10 (d40): the testbed profile turns N7_BLEI on for rows that do not set it, a row\'s own setting still wins, and the global default is restored to false (seeds 1-2)', function(){
+    var sv = tbSetG(TB_PROFILE_G), R, on;
+    try { on = N7_BLEI; R = tbStudy([{p:PR.cco()}, {p:PR.cco(), g:{N7_BLEI:true}}, {p:PR.cco(), g:{N7_BLEI:false}}], 2, FI, {fin:'tax'}); } finally { tbSetG(sv); }
+    return {pass:TB_PROFILE_G.N7_BLEI === true && on === true && same(R[0], R[1], TB_KEYS) && R[2].hrs !== R[0].hrs && N7_BLEI === false,
+      detail:'profile row = explicit on: ' + same(R[0], R[1], TB_KEYS) + '; hours ' + (R[0].hrs*100).toFixed(3) + '% (profile) vs ' + (R[2].hrs*100).toFixed(3) + '% (row sets it off); global after: ' + N7_BLEI};
+  });
   t('d19 row switch: a per-row PATHWAY_OFF entry is restored after each row, leaves a comparator unchanged, and lowers Full Integration earnings (seeds 1-2)', function(){
     var R = tbStudy([{p:PR.ubi(6000)}, {p:PR.ubi(6000), pw:{octaveWage:true}}, {p:PR.cco()}, {p:PR.cco(), pw:{octaveWage:true}}], 2, FI, {fin:'tax'});
     var restored = Object.keys(PATHWAY_OFF).every(function(k){ return PATHWAY_OFF[k] === false; });
     return {pass:restored && same(R[0], R[1], TB_KEYS) && R[3].E < R[2].E,
       detail:'UBI rows identical; Full Integration earnings $' + R[2].E.toFixed(0) + ' on, $' + R[3].E.toFixed(0) + ' off; switches restored: ' + restored};
   });
+  /* Session 11 */
+  t('session 11 top-up (d39, d44): with G = 0 Compassionism with a top-up equals Compassionism at the smaller BU; with G > 0 it pays participants only, and costs more (seed 1, tax)', function(){
+    var q0 = tbCCO(FI, FI.bu*0.9), R = tbStudy([{p:q0}, {p:PR.ccoTop(0, 0.1)}, {p:PR.ccoTop(8000, 0.1)}], 1, FI, {fin:'tax'});
+    var S = S1(FI, 1), got = {part:0, non:0}; TB = Object.assign({}, TB_DEFAULTS, {tau:0, X:0});
+    var P2 = PR.ccoTop(8000, 0.1), y = tbYear(P2, 1), ag = [{inCCO:true}, {inCCO:false}].map(function(a){ return tbCashFlow(a, y, 0, 1), a._tbNit; }); TB = null;
+    return {pass:same(R[0], R[1], TB_KEYS) && ag[0] === 8000 && ag[1] === 0 && R[2].cost > R[1].cost,
+      detail:'G 0 identical to BU x 0.9: ' + same(R[0], R[1], TB_KEYS) + '; with no earnings a participant gets $' + ag[0] + ', a non-participant $' + ag[1] + '; cost $' + R[1].cost.toFixed(0) + ' to $' + R[2].cost.toFixed(0)};
+  });
+  t('session 11 X-Cents and grocery: Power of 1 with f = 0 equals the flat exchange; five stores cost a small fraction of the full network (under 3% on 2 seeds; 0.5% at 500); adding housing raises the cut (seeds 1-2, tax)', function(){
+    var R = tbStudy([{p:PR.xc(0)}, {p:PR.xcFull(0)}, {p:PR.xcFull(1)}, {p:PR.xcFull(1, true)}, {p:PR.groc(1)}, {p:PR.grocPilot()}], 2, FI, {fin:'tax'});
+    var ratio = R[5].cost/R[4].cost;
+    return {pass:same(R[0], R[1], TB_KEYS) && R[3].cost > R[2].cost && R[2].cost > R[0].cost && ratio > 0 && ratio < 0.03,
+      detail:'f 0 identical to the flat exchange: ' + same(R[0], R[1], TB_KEYS) + '; costs $' + R[0].cost.toFixed(0) + ' / $' + R[2].cost.toFixed(0) + ' (food) / $' + R[3].cost.toFixed(0) + ' (food and housing); five stores ' + (ratio*100).toFixed(2) + '% of the full network\'s cost (2 seeds)'};
+  });
   return out;
 }
-Object.assign(module.exports, { tbRun, tbStudy, tbDiff, tbPresets, tbMatch, tbUnitSuite, applyNR6, resetNR6, NR6, TB_KEYS, TB_XC_AMT, TB_GROC, setTB:function(x){ TB = x; } });
+Object.assign(module.exports, { tbRun, tbStudy, tbDiff, tbPresets, tbMatch, tbUnitSuite, applyNR6, resetNR6, NR6, TB_PROFILE_G, TB_KEYS, TB_XC_AMT, TB_GROC, giniOfArr, setTB:function(x){ TB = x; } });
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
@@ -3099,7 +3223,7 @@ if (require.main === module) {
     var XT = +((process.argv.filter(function(a){ return /^--X=\d+$/.test(a); })[0] || '--X=0').split('=')[1]);  /* d26: contribution threshold, year-0 dollars */
     var ENVT = {ref:['Reference (Full Integration settings)', FULL_INTEGRATION], adv:['Adverse Environment', ADVERSE_REFERENCE], st:['Stress Test', STRESS_TEST]};
     var MLBL = {engine:'Compassionism: shipped (engine model)', framework:'Compassionism: hub spec (framework model)'};
-    var t0T = Date.now(), svT = applyNR6();
+    var t0T = Date.now(), svT = applyNR6(), svG = tbSetG(TB_PROFILE_G);  /* session 10 (d40): N7_BLEI on in the testbed profile */
     function $(x){ return (x < 0 ? '-$' : '$') + Math.round(Math.abs(x)).toLocaleString('en-US'); }
     function f1(x){ return x.toFixed(1); } function f2(x){ return x.toFixed(2); }
     function pinf(x){ return isFinite(x) && Math.abs(x) < 10 ? (x*100).toFixed(2) : 'diverges'; }
@@ -3113,7 +3237,7 @@ if (require.main === module) {
         if (dr < -0.5) why.push('r'); if (df > 0.5) why.push('i'); if (dw > 0.5) why.push('w'); if (why.length) worse.push(g[0] + ' (' + why.join('') + ')');
         return sg(dr, 1) + '% / ' + sg(df, 1) + ' / ' + sg(dw, 1); }).join('; ');
       return txt + ' | ' + (worse.length ? worse.join(', ') : 'none'); }
-    console.log('=== A4 testbed (session 6): seeds 1-' + nT + ', ' + AG + ' agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); lines deflated (D2); lamG 1 ===');
+    console.log('=== A4 testbed (session 6): seeds 1-' + nT + ', ' + AG + ' agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===');
     console.log('Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment\'s annuity value, against own cost; x100.');
     if (secT === 'match') envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P);
       MODELS.forEach(function(cm){ CONVERSION_MODEL = cm;
@@ -3122,17 +3246,20 @@ if (require.main === module) {
           var mU = tbMatch('ubi', tgt, P, PILOT, o), mN = tbMatch('nit', tgt, P, PILOT, o), mE = tbMatch('endow', tgt, P, PILOT, o);
           var rows = [['Baseline (no program)', PR.baseline()], [MLBL[cm] + (fin === 'money' ? ', a = 0' : ''), PR.cco()]];
           rows.push([MLBL[cm] + (fin === 'money' ? ', a = 0' : '') + ', octave wage bonus off (d19)', PR.cco(), null, {octaveWage:true}]);
+          if (P.inflRate > 0) rows.push([MLBL[cm] + (fin === 'money' ? ', a = 0' : '') + ', PTF/PTH inflation damping off (d33)', PR.cco(), {noDamp:true}],
+            [MLBL[cm] + (fin === 'money' ? ', a = 0' : '') + ', octave raise and damping off (d19 + d33)', PR.cco(), {noDamp:true}, {octaveWage:true}]);  /* session 8 (s24) */
           if (fin === 'money') rows.push([MLBL[cm] + ', a = 1 (H1: every reward dollar matched by output)', PR.cco(), {a:1}]);
           rows.push(['UBI ' + $(mU) + '/yr', PR.ubi(mU)], ['NIT: G ' + $(mN) + ', t ' + TB_NIT_T, PR.nit(mN)], ['Asset endowment ' + $(mE) + ' (wealth < $25,000)', PR.endow(mE)],
             ['X-Cents, flat ($3,614/yr)', PR.xc(0)], ['X-Cents, community-work variant (delta 1)', PR.xc(1)], ['Public grocery, full coverage (15% off food)', PR.groc(1)]);
           var R = tbStudy(rows.map(function(r){ return {p:r[1], o:r[2] || undefined, pw:r[3]}; }), nT, P, o), B = R[0];
           console.log('\n--- ' + E[0] + ' | ' + MLBL[cm] + ' | ' + (fin === 'tax' ? 'tax-financed' + (XT ? ', contribution on wages above ' + $(XT) : '') : 'money-created, aT = 0') + ' | target ' + $(tgt) + '/adult-yr (pilot ' + PILOT + ' seeds) ---');
-          console.log('| Design | Gross cost | Cash / BU / conv / cuts / PTH | Contribution rate (mean) | Treasury | Endogenous inflation (pt/yr) | Earnings | Wealth pov % | Basket FGT0 / FGT1 / FGT2 (yr 20) | FGT0 / FGT2, person-years | FGT2 vs Baseline [95% CI] | Groups vs Baseline: resources % / PY FGT0 pt / wealth pov pt (participants; non-participants; PTH; bottom third by year-0 wage; top third) | Worse off (r resources, i income poverty, w wealth poverty) |');
-          console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|');
-          R.forEach(function(r, i){ var dF = tbDiff(R[i], B, 'fgt2');
+          console.log('| Design | Gross cost | Cash / BU / conv / cuts / PTH | Contribution rate (mean) | Treasury | Endogenous inflation (pt/yr) | Earnings | Wealth pov % | Basket FGT0 / FGT1 / FGT2 (yr 20) | FGT0 / FGT2, person-years | FGT2 vs Baseline [95% CI] | PY FGT2 vs Baseline [95% CI] | Groups vs Baseline: resources % / PY FGT0 pt / wealth pov pt (participants; non-participants; PTH; bottom third by year-0 wage; top third) | Worse off (r resources, i income poverty, w wealth poverty) |');
+          console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
+          R.forEach(function(r, i){ var dF = tbDiff(R[i], B, 'fgt2'), dP = tbDiff(R[i], B, 'fgt2PY');
             console.log('| ' + rows[i][0] + ' | ' + $(r.cost) + ' | ' + [r.cCash + r.cEndow, r.cBU, r.cConv, r.cCut + r.cCap, r.cPth].map($).join(' / ') + ' | ' + (fin === 'tax' ? (r.tauMean*100).toFixed(1) + '%' : '—') + ' | ' + (fin === 'tax' ? $(r.treas) : '—') +
               ' | ' + pinf(r.endoAnn) + ' | ' + sg(r.dE*100) + '% | ' + f1(r.pov) + ' | ' + f1(r.fgt0) + ' / ' + f2(r.fgt1) + ' / ' + f2(r.fgt2) + ' | ' + f1(r.fgt0PY) + ' / ' + f2(r.fgt2PY) +
-              ' | ' + (i ? sg(dF.m) + ' [' + sg(dF.lo) + ', ' + sg(dF.hi) + ']' : '—') + ' | ' + (i ? grpCell(r, B) : '— | —') + ' |'); });
+              ' | ' + (i ? sg(dF.m) + ' [' + sg(dF.lo) + ', ' + sg(dF.hi) + ']' : '—') + ' | ' + (i ? sg(dP.m) + ' [' + sg(dP.lo) + ', ' + sg(dP.hi) + ']' : '—') + ' | ' + (i ? grpCell(r, B) : '— | —') + ' |'); });
+          if (!(P.inflRate > 0)) console.log(D33_NOTE);
         });
       });
       CONVERSION_MODEL = 'engine';
@@ -3149,14 +3276,17 @@ if (require.main === module) {
         [0, 1].forEach(function(dl){ cf.push({f:'X-Cents', l:dl ? 'community-work variant (delta 1)' : 'flat', p:PR.xc(dl)}); });
         MODELS.forEach(function(cm){ (cm === 'engine' ? [600, 900, 1200, 1800] : [300, 600, 900, 1200]).forEach(function(bu){ cf.push({f:MLBL[cm], l:'BU ' + $(bu) + '/mo', p:PR.cco(bu), cm:cm}); });
           cf.push({f:MLBL[cm] + ', octave wage bonus off (d19)', l:'BU $1,200/mo', p:PR.cco(1200), cm:cm, pw:{octaveWage:true}});
-          cf.push({f:MLBL[cm] + ', CCO alone', l:'BU $1,200/mo', p:PR.ccoAlone(1200), cm:cm}); });
+          cf.push({f:MLBL[cm] + ', CCO alone', l:'BU $1,200/mo', p:PR.ccoAlone(1200), cm:cm});
+          if (P.inflRate > 0) cf.push({f:MLBL[cm] + ', PTF/PTH inflation damping off (d33)', l:'BU $1,200/mo', p:PR.cco(1200), cm:cm, o:{noDamp:true}},
+            {f:MLBL[cm] + ', octave raise and damping off (d19 + d33)', l:'BU $1,200/mo', p:PR.cco(1200), cm:cm, o:{noDamp:true}, pw:{octaveWage:true}}); });  /* session 8 (s24) */
         if (fin === 'money') MODELS.forEach(function(cm){ cf.push({f:MLBL[cm] + ', a = 1', l:'BU $1,200/mo', p:PR.cco(1200), cm:cm, o:{a:1}}); });
         var R = tbStudy(cf, nT, P, o), B = R[0];
         console.log('\n--- Frontier: ' + E[0] + ' | ' + (fin === 'tax' ? 'tax-financed' + (XT ? ', contribution on wages above ' + $(XT) : '') : 'money-created, aT = 0') + ' ---');
-        console.log('| Family | Setting | Gross cost / adult-yr | Contribution rate | Endogenous inflation (pt/yr) | Earnings | Wealth pov % | Basket FGT0 / FGT2 (yr 20) | FGT2 person-years | FGT2 cut per $1,000 of cost (yr 20) | Groups vs Baseline |');
+        console.log('| Family | Setting | Gross cost / adult-yr | Contribution rate | Endogenous inflation (pt/yr) | Earnings | Wealth pov % | Basket FGT0 / FGT2 (yr 20) | FGT2 person-years | FGT2 cut per $1,000 of cost: yr 20 / person-years | Groups vs Baseline |');
         console.log('|---|---|---|---|---|---|---|---|---|---|---|');
-        R.forEach(function(r, i){ var per = r.cost > 1 ? (B.fgt2 - r.fgt2)/(r.cost/1000) : 0;
-          console.log('| ' + cf[i].f + ' | ' + cf[i].l + ' | ' + $(r.cost) + ' | ' + (fin === 'tax' ? (r.tauMean*100).toFixed(1) + '%' : '—') + ' | ' + pinf(r.endoAnn) + ' | ' + sg(r.dE*100) + '% | ' + f1(r.pov) + ' | ' + f1(r.fgt0) + ' / ' + f2(r.fgt2) + ' | ' + f2(r.fgt2PY) + ' | ' + (i ? f2(per) : '—') + ' | ' + (i ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
+        R.forEach(function(r, i){ var per = r.cost > 1 ? (B.fgt2 - r.fgt2)/(r.cost/1000) : 0, perP = r.cost > 1 ? (B.fgt2PY - r.fgt2PY)/(r.cost/1000) : 0;
+          console.log('| ' + cf[i].f + ' | ' + cf[i].l + ' | ' + $(r.cost) + ' | ' + (fin === 'tax' ? (r.tauMean*100).toFixed(1) + '%' : '—') + ' | ' + pinf(r.endoAnn) + ' | ' + sg(r.dE*100) + '% | ' + f1(r.pov) + ' | ' + f1(r.fgt0) + ' / ' + f2(r.fgt2) + ' | ' + f2(r.fgt2PY) + ' | ' + (i ? f2(per) + ' / ' + f2(perP) : '—') + ' | ' + (i ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
+        if (!(P.inflRate > 0)) console.log(D33_NOTE);
       });
     });
     /* Session 7 (dashboard s23): decompose Compassionism's per-dollar edge, tax-financed, BU $1,200. One channel off per arm, CRN-paired;
@@ -3178,12 +3308,15 @@ if (require.main === module) {
       var R = tbStudy(rows.map(function(r){ return {p:r.p, o:r.o, pw:r.pw, g:r.g, cm:r.cm}; }), nT, P, o), full = {};
       rows.forEach(function(r, i){ if (r.full) full[r.cm] = i; });
       console.log('\n--- Decomposition: ' + E[0] + ' | tax-financed | seeds 1-' + nT + ' ---');
-      console.log('| Arm | Gross cost | BU relief / conversion / price cuts / PTH liq | Contribution | Earnings | Targeting share | Wealth pov % | FGT2 (yr 20) | FGT2 vs own Baseline [95% CI] | Cut per $1,000 | Cut lost vs full design (pt) | Worse off |');
-      console.log('|---|---|---|---|---|---|---|---|---|---|---|---|');
+      console.log('| Arm | Gross cost | BU relief / conversion / price cuts / PTH liq | Contribution | Earnings | Targeting share | Wealth pov % | FGT2 (yr 20) | FGT2 vs own Baseline [95% CI] | Cut per $1,000 | Cut lost vs full design (pt) | FGT2 person-years | PY FGT2 vs own Baseline [95% CI] | PY cut per $1,000 | PY cut lost (pt) | Worse off |');
+      console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
       R.forEach(function(r, i){ var row = rows[i], B = R[row.b], d = i > 1 ? tbDiff(R[i], B, 'fgt2') : null, per = d && r.cost > 1 ? -d.m/(r.cost/1000) : 0;
+        var dp = i > 1 ? tbDiff(R[i], B, 'fgt2PY') : null, perP = dp && r.cost > 1 ? -dp.m/(r.cost/1000) : 0;  /* session 8 (s18): person-year FGT2 beside year 20 */
         var fi = row.cm ? full[row.cm] : null, lost = (fi !== null && fi !== undefined && i !== fi) ? (-tbDiff(R[fi], R[rows[fi].b], 'fgt2').m) - (-d.m) : null;
+        var lostP = (fi !== null && fi !== undefined && i !== fi) ? (-tbDiff(R[fi], R[rows[fi].b], 'fgt2PY').m) - (-dp.m) : null;
         console.log('| ' + row.l + ' | ' + $(r.cost) + ' | ' + [r.cBU, r.cConv, r.cCut, r.cPth].map($).join(' / ') + ' | ' + (r.tauMean*100).toFixed(1) + '% | ' + sg(r.dE*100) + '% | ' + (r.tgt*100).toFixed(1) + '% | ' + f1(r.pov) +
-          ' | ' + f2(r.fgt2) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : '—') + ' | ' + (d ? f2(per) : '—') + ' | ' + (lost === null ? '—' : sg(lost)) + ' | ' + (i > 1 ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
+          ' | ' + f2(r.fgt2) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : '—') + ' | ' + (d ? f2(per) : '—') + ' | ' + (lost === null ? '—' : sg(lost)) +
+          ' | ' + f2(r.fgt2PY) + ' | ' + (dp ? sg(dp.m) + ' [' + sg(dp.lo) + ', ' + sg(dp.hi) + ']' : '—') + ' | ' + (dp ? f2(perP) : '—') + ' | ' + (lostP === null ? '—' : sg(lostP)) + ' | ' + (i > 1 ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
     });
     /* Session 7: Duke's d24-d29 follow-ups, reference environment, side by side (CRN-paired within each model):
      *  d24 money-mode rules (a) default, (b) a also on a converted BU's face value, (c) the session 2-5 rule ('none': BU and cuts outside
@@ -3214,14 +3347,17 @@ if (require.main === module) {
           [C + ', d24 (c) session 2-5 rule, a = 0', PR.cco(), Object.assign({}, oM, {fin:'none', a:0}), null, 'money'],
           [C + ', d24 (c) session 2-5 rule, a = 1', PR.cco(), Object.assign({}, oM, {fin:'none', a:1}), null, 'money'],
           ['UBI ' + $(uM) + '/yr, money', PR.ubi(uM), oM, null, 'money'], ['NIT: G ' + $(nM) + ', t 0.5, money', PR.nit(nM), oM, null, 'money']];
+        if (P.inflRate > 0) rows.push([C + ', PTF/PTH inflation damping off (d33)', PR.cco(), Object.assign({}, oT, {noDamp:true}), null, 'd33'],
+          [C + ', octave raise and damping off (d19 + d33)', PR.cco(), Object.assign({}, oT, {noDamp:true}), {octaveWage:true}, 'd33']);  /* session 8 (s24) */
         var R = tbStudy(rows.map(function(r){ return {p:r[1], o:r[2], pw:r[3] || undefined}; }), nT, P, {}), B = R[0];
         console.log('\n--- Follow-ups d24-d29: ' + E[0] + ' | ' + C + ' | seeds 1-' + nT + ' | tax target ' + $(tgtT) + ', money target ' + $(tgtM) + ' ---');
-        console.log('| Design | Set | Gross cost | Contribution (mean) | Treasury | Inflation (pt/yr) | Earnings | Wealth pov % | BLEI pov %, shipped def. | BLEI pov %, design-neutral | Targeting share | FGT0 / FGT2 (yr 20) | FGT2 vs Baseline [95% CI] | Cut per $1,000 | Worse off |');
-        console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
-        R.forEach(function(r, i){ var d = i ? tbDiff(R[i], B, 'fgt2') : null, fin = rows[i][2].fin, tx = fin === 'tax' || fin === 'hybrid';
+        console.log('| Design | Set | Gross cost | Contribution (mean) | Treasury | Inflation (pt/yr) | Earnings | Wealth pov % | BLEI pov %, shipped def. | BLEI pov %, design-neutral | Targeting share | FGT0 / FGT2 (yr 20) | FGT2 vs Baseline [95% CI] | Cut per $1,000 | PY FGT2 vs Baseline [95% CI] | Worse off |');
+        console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
+        R.forEach(function(r, i){ var d = i ? tbDiff(R[i], B, 'fgt2') : null, dp = i ? tbDiff(R[i], B, 'fgt2PY') : null, fin = rows[i][2].fin, tx = fin === 'tax' || fin === 'hybrid';
           console.log('| ' + rows[i][0] + ' | ' + rows[i][4] + ' | ' + $(r.cost) + ' | ' + (tx ? (r.tauMean*100).toFixed(1) + '%' : '—') + ' | ' + (tx ? $(r.treas) : '—') + ' | ' + pinf(r.endoAnn) + ' | ' + sg(r.dE*100) + '% | ' + f1(r.pov) +
             ' | ' + f1(r.bleiPov) + ' | ' + f1(r.nbleiPov) + ' | ' + (r.tgt*100).toFixed(1) + '% | ' + f1(r.fgt0) + ' / ' + f2(r.fgt2) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : '—') +
-            ' | ' + (d && r.cost > 1 ? f2(-d.m/(r.cost/1000)) : '—') + ' | ' + (i ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
+            ' | ' + (d && r.cost > 1 ? f2(-d.m/(r.cost/1000)) : '—') + ' | ' + (dp ? sg(dp.m) + ' [' + sg(dp.lo) + ', ' + sg(dp.hi) + ']' : '—') + ' | ' + (i ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
+        if (!(P.inflRate > 0)) console.log(D33_NOTE);
         /* d29: how much worse off, in real dollars per adult-year and poverty points, per group (tax default rows) */
         console.log('\n  d29 group detail (tax-financed defaults; change vs Baseline: real resources $/adult-yr (%), person-year basket FGT0 pt, year-20 wealth poverty pt):');
         console.log('| Group | Baseline resources $/yr | ' + [1, 3, 4, 5].map(function(i){ return rows[i][0]; }).join(' | ') + ' |');
@@ -3237,8 +3373,183 @@ if (require.main === module) {
       });
       CONVERSION_MODEL = 'engine';
     });
-    resetNR6(svT);
+    /* Session 9 (dashboard i3-2): the N7 attribution of the BLEI-gated raise, off (through session 8) and on, for Compassionism and
+     * the matched UBI and NIT, tax-financed; and Compassionism money-created at a = 1 with every program raise unmatched (aw 0),
+     * where the attribution also reaches the price module. CRN-paired within each model. */
+    if (secT === 'n7') envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT};
+      var rows = [{l:'Baseline (no program)', p:PR.baseline()}];
+      MODELS.forEach(function(cm){ CONVERSION_MODEL = cm; var q = PR.cco(), tgt = tbStudy([{p:q}], PILOT, P, o)[0].cost, mU = tbMatch('ubi', tgt, P, PILOT, o), mN = tbMatch('nit', tgt, P, PILOT, o), C = MLBL[cm]; CONVERSION_MODEL = 'engine';
+        [[C, q], ['UBI ' + $(mU) + '/yr (matched, ' + cm + ')', PR.ubi(mU)], ['NIT: G ' + $(mN) + ', t 0.5 (matched, ' + cm + ')', PR.nit(mN)]].forEach(function(d){
+          [false, true].forEach(function(on){ rows.push({l:d[0] + ', tax' + (on ? ', N7_BLEI on' : ''), p:d[1], cm:cm, g:{N7_BLEI:on}}); }); });
+        [false, true].forEach(function(on){ rows.push({l:C + ', money, a = 1, aw 0' + (on ? ', N7_BLEI on' : ''), p:q, cm:cm, g:{N7_BLEI:on}, o:{fin:'money', a:1, aw:0}}); });
+      });
+      var R = tbStudy(rows.map(function(r){ return {p:r.p, o:r.o, cm:r.cm, g:r.g}; }), nT, P, o), B = R[0];
+      console.log('\n--- i3-2, N7 attribution of the BLEI-gated raise: ' + E[0] + ' | seeds 1-' + nT + ' ---');
+      console.log('| Design | Gross cost | Adult-years with a BLEI raise | ... of which the design\'s support carried over the gate | Hours vs no response | Earnings response | Inflation (pt/yr) | FGT2 vs Baseline: yr 20 / 20-yr avg | Change from switching N7_BLEI on: hours (pt) / FGT2 yr 20 / 20-yr avg / inflation (pt/yr) |');
+      console.log('|---|---|---|---|---|---|---|---|---|');
+      R.forEach(function(r, i){ var on = i && rows[i].g && rows[i].g.N7_BLEI, pr = on ? R[i - 1] : null;
+        var dd = i ? sg(tbDiff(R[i], B, 'fgt2').m) + ' / ' + sg(tbDiff(R[i], B, 'fgt2PY').m) : '—';
+        var ch = pr ? sg((r.hrs - pr.hrs)*100, 3) + ' / ' + sg(tbDiff(R[i], pr, 'fgt2').m, 3) + ' / ' + sg(tbDiff(R[i], pr, 'fgt2PY').m, 3) + ' / ' + sg((r.endoAnn - pr.endoAnn)*100, 3) : '—';
+        console.log('| ' + rows[i].l + ' | ' + $(r.cost) + ' | ' + f1(r.bleiR) + '% | ' + (i ? f2(r.bleiP) + '%' : '—') + ' | ' + sg(r.hrs*100) + '% | ' + sg(r.dE*100) + '% | ' + pinf(r.endoAnn) + ' | ' + dd + ' | ' + ch + ' |'); });
+    });
+    /* Session 8 (A5, dashboard s18; d33 s24; d26 shown for Duke's call): the reporting upgrade. Tax-financed (d26 default) at matched
+     * gross cost, design-neutral BLEI gate (d34), per environment and model: Compassionism with the octave wage raise (d19) and the
+     * PTF/PTH inflation damping (d33) on and off, the d26 hybrid at a = 0 and a = 1 beside it, and the comparators. Four tables:
+     * poverty (FGT0-2 at year 20 and over person-years, persistence and spells), cost and efficiency, prices, work and income
+     * distribution, and the group check in dollars. --json=<path> writes the rows the page's front door reads (A6). */
+    /* Session 11 (d39; the plan's N3): Compassionism with part of its flat BU moved to a needs-based top-up for participants
+     * (max(0, G - 0.5 x wage earnings), paid in BU; the model treats it as cash), at the same total cost, beside Compassionism and
+     * the matched NIT. Shares s = 0.25 and 0.5 of the BU. Tax-financed, design-neutral gate, as a5. */
+    if (secT === 'topup') envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT};
+      MODELS.forEach(function(cm){ CONVERSION_MODEL = cm; var tgt = tbStudy([{p:PR.cco()}], PILOT, P, o)[0].cost;
+        var G25 = tbMatch('ccoTop', tgt, P, PILOT, o, 0.25), G50 = tbMatch('ccoTop', tgt, P, PILOT, o, 0.5), G10 = tbMatch('ccoTop', tgt, P, PILOT, o, 0.1), G25t = tbMatch('ccoTop', tgt, P, PILOT, o, {s:0.25, t:0.3}), mN = tbMatch('nit', tgt, P, PILOT, o);
+        var rows = [{l:'Baseline', p:PR.baseline()}, {l:'Compassionism', p:PR.cco(), cm:cm}, {l:'Compassionism, theoretical mechanisms off', p:PR.cco(), cm:cm, pw:{octaveWage:true}, o:{noDamp:true}},
+          {l:'Compassionism + top-up, s 0.25, G ' + $(G25), p:PR.ccoTop(G25, 0.25), cm:cm}, {l:'  same, theoretical mechanisms off', p:PR.ccoTop(G25, 0.25), cm:cm, pw:{octaveWage:true}, o:{noDamp:true}},
+          {l:'Compassionism + top-up, s 0.5, G ' + $(G50), p:PR.ccoTop(G50, 0.5), cm:cm}, {l:'Compassionism + top-up, s 0.1, G ' + $(G10), p:PR.ccoTop(G10, 0.1), cm:cm},
+          {l:'Compassionism + top-up, s 0.25, t 0.3, G ' + $(G25t), p:PR.ccoTop(G25t, 0.25, 0.3), cm:cm}, {l:'NIT matched, G ' + $(mN), p:PR.nit(mN)}];
+        CONVERSION_MODEL = 'engine';
+        var R = tbStudy(rows.map(function(r){ return {p:r.p, o:r.o, pw:r.pw, cm:r.cm}; }), nT, P, o), B = R[0];
+        console.log('\n--- topup (d39/N3): ' + E[0] + ' | ' + cm + ' | target ' + $(tgt) + ' | seeds 1-' + nT + ' ---');
+        console.log('| Design | Cost | FGT2 20-yr avg vs Baseline [95% CI] | FGT2 yr 20 vs Baseline | FGT0 20-yr avg | Hours | Contribution | vs Compassionism, FGT2 20-yr [95% CI] |');
+        console.log('|---|---|---|---|---|---|---|---|');
+        R.forEach(function(r, i){ var d = i ? tbDiff(R[i], B, 'fgt2PY') : null, dc = i > 1 ? tbDiff(R[i], R[1], 'fgt2PY') : null;
+          console.log('| ' + rows[i].l + ' | ' + $(r.cost) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : f2(r.fgt2PY)) + ' | ' + (i ? sg(tbDiff(R[i], B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + f1(r.fgt0PY) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + (dc ? sg(dc.m) + ' [' + sg(dc.lo) + ', ' + sg(dc.hi) + ']' : '—') + ' |'); });
+      }); });
+    if (secT === 'a5'){ var JS = {}, JPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
+      envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0;
+        var rows = [{l:'Baseline (no program)', p:PR.baseline(), k:'base'}], tg = {};
+        MODELS.forEach(function(cm){ CONVERSION_MODEL = cm; var q = PR.cco(), tgt = tbStudy([{p:q}], PILOT, P, o)[0].cost;
+          var mU = tbMatch('ubi', tgt, P, PILOT, o), mN = tbMatch('nit', tgt, P, PILOT, o), mE = tbMatch('endow', tgt, P, PILOT, o), C = MLBL[cm];
+          var gT = tbMatch('ccoTop', tgt, P, PILOT, o, {s:TB_TOPUP_S_A5, t:TB_NIT_T});  /* session 11 (d39, d44): the top-up variant at the same cost */
+          CONVERSION_MODEL = 'engine'; tg[cm] = tgt;
+          rows.push({l:C, p:q, cm:cm, k:'cco', m:cm}, {l:C + ', octave wage raise off (d19)', p:q, cm:cm, pw:{octaveWage:true}, k:'d19', m:cm});
+          if (infl) rows.push({l:C + ', PTF/PTH inflation damping off (d33)', p:q, cm:cm, o:{noDamp:true}, k:'d33', m:cm},
+            {l:C + ', octave raise and damping off (d19 + d33)', p:q, cm:cm, o:{noDamp:true}, pw:{octaveWage:true}, k:'d19d33', m:cm});
+          rows.push({l:C + ', d26 hybrid, a = 0', p:q, cm:cm, o:{fin:'hybrid', a:0}, k:'hyb0', m:cm}, {l:C + ', d26 hybrid, a = 1 (H1)', p:q, cm:cm, o:{fin:'hybrid', a:1}, k:'hyb1', m:cm},
+            {l:'UBI ' + $(mU) + '/yr (matched, ' + cm + ')', p:PR.ubi(mU), k:'ubi', m:cm, amt:mU}, {l:'NIT: G ' + $(mN) + ', t 0.5 (matched, ' + cm + ')', p:PR.nit(mN), k:'nit', m:cm, amt:mN},
+            {l:'Asset endowment ' + $(mE) + ', wealth < $25,000 (matched, ' + cm + ')', p:PR.endow(mE), k:'endow', m:cm, amt:mE},
+            {l:C + ' with a needs-based top-up (s ' + TB_TOPUP_S_A5 + ', G ' + $(gT) + ', t 0.5; same cost)', p:PR.ccoTop(gT, TB_TOPUP_S_A5), cm:cm, k:'top', m:cm, amt:gT},
+            {l:C + ' with the top-up, theoretical mechanisms off (d19 + d33)', p:PR.ccoTop(gT, TB_TOPUP_S_A5), cm:cm, o:{noDamp:true}, pw:{octaveWage:true}, k:'topc', m:cm});
+        });
+        /* session 11: grocery at full scale (cover 1) and as planned (five stores); X-Cents with Power of 1 (k 'xc') and the exchange alone
+         * ('xc0'); each comparator at its proposers' size (d45) */
+        rows.push({l:'Public grocery, full cover (own cost)', p:PR.groc(1), k:'groc'}, {l:'Public grocery, five stores (cover ' + (TB_GROC_PILOT*100).toFixed(1) + '%; own cost)', p:PR.grocPilot(), k:'grocP'},
+          {l:'X-Cents, exchange $3,614/yr + Power of 1 on food, one day a week (own cost)', p:PR.xcFull(1), k:'xc'}, {l:'X-Cents, Power of 1 with no shift in shopping (f = 1/7; own cost)', p:PR.xcFull(1/7), k:'xc7'},
+          {l:'X-Cents, flat $3,614/yr (own cost)', p:PR.xc(0), k:'xc0'}, {l:'X-Cents, Power of 1 on food and housing, one day a week (own cost)', p:PR.xcFull(1, true), k:'xcH'},
+          {l:'UBI $12,000/yr (proposed size)', p:PR.ubi(TB_UBI_PROP), k:'ubiP'}, {l:'NIT: G $15,960 (poverty guideline), t 0.5 (proposed size)', p:PR.nit(TB_NIT_PROP), k:'nitP'},
+          {l:'Stakeholder grant $154,594 once, wealth < $25,000 (proposed size)', p:PR.endow(TB_ENDOW_PROP), k:'endowP'});
+        var R = tbStudy(rows.map(function(r){ return {p:r.p, o:r.o, pw:r.pw, cm:r.cm}; }), nT, P, o), B = R[0];
+        function ci(d){ return sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']'; }
+        function cpp(r, k){ var cut = B[k] - r[k]; return r.cost > 1 ? (cut > 0.005 ? $(r.cost/cut) : 'no cut') : '—'; }
+        var hdr = '\n--- A5: ' + E[0] + ' | tax-financed at matched cost (d26 default) | design-neutral BLEI gate (d34) | seeds 1-' + nT + ' | targets ' + MODELS.map(function(cm){ return cm + ' ' + $(tg[cm]); }).join(', ') + '/adult-yr ---';
+        console.log(hdr + '\n\nA5-1 Poverty. Basket FGT x 100 (income incl. transfers less the contribution, against own cost). Person-years: the 20-year mean, i.e. the area under the poverty curve / 20.');
+        console.log('| Design | Gross cost | FGT0 / FGT1 / FGT2, yr 20 | FGT0 / FGT1 / FGT2, person-years | Years poor per adult (of 20) | Ever poor % | Mean spell (yrs) | Poor 10+ of 20 yrs % | Wealth pov % | FGT2 vs Baseline, yr 20 [95% CI] | FGT2 vs Baseline, person-years [95% CI] |');
+        console.log('|---|---|---|---|---|---|---|---|---|---|---|');
+        R.forEach(function(r, i){ console.log('| ' + rows[i].l + ' | ' + $(r.cost) + ' | ' + f1(r.fgt0) + ' / ' + f2(r.fgt1) + ' / ' + f2(r.fgt2) + ' | ' + f1(r.fgt0PY) + ' / ' + f2(r.fgt1PY) + ' / ' + f2(r.fgt2PY) +
+          ' | ' + f2(r.pyPoor) + ' | ' + f1(r.everPoor) + ' | ' + f2(r.spellMean) + ' | ' + f1(r.chronic) + ' | ' + f1(r.pov) + ' | ' + (i ? ci(tbDiff(R[i], B, 'fgt2')) : '—') + ' | ' + (i ? ci(tbDiff(R[i], B, 'fgt2PY')) : '—') + ' |'); });
+        console.log('\nA5-2 Cost and efficiency. Cost per point: gross cost per adult-year / points of poverty removed against the Baseline.');
+        console.log('| Design | Gross cost | Contribution (mean) | Targeting share | Cut per $1,000: FGT2 yr 20 / FGT2 person-years | Cost per point removed: FGT0 person-years / FGT2 person-years | Worse off (r resources, i income poverty, w wealth poverty) |');
+        console.log('|---|---|---|---|---|---|---|');
+        R.forEach(function(r, i){ var per = r.cost > 1 ? f2((B.fgt2 - r.fgt2)/(r.cost/1000)) + ' / ' + f2((B.fgt2PY - r.fgt2PY)/(r.cost/1000)) : '—';
+          console.log('| ' + rows[i].l + ' | ' + $(r.cost) + ' | ' + (r.tauMean*100).toFixed(1) + '% | ' + (r.cost > 1 ? (r.tgt*100).toFixed(1) + '%' : '—') + ' | ' + per + ' | ' + cpp(r, 'fgt0PY') + ' / ' + cpp(r, 'fgt2PY') + ' | ' + (i ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
+        console.log('\nA5-3 Prices, work and income distribution. Hours: earnings over the same adult\'s earnings with no labor response (hours at a fixed wage), adult-year mean. Earnings response: the aggregate version (the earlier tables\' "Earnings"). Real wage earnings: before the contribution, in year-1 dollars. Income Gini at year 20: disposable income, OECD definition (the Hub\'s C30: wages + conversion + cash transfers - contribution); and with in-kind cuts added.');
+        console.log('| Design | Endogenous inflation (pt/yr) | Price level yr 10 / yr 20 (yr 1 = 1) | Real value of $1 of cash or BU at yr 20 | Employed (% of adult-years) | Hours vs no response | Earnings response | Real wage earnings vs Baseline | Income Gini yr 20: disposable / incl. in-kind |');
+        console.log('|---|---|---|---|---|---|---|---|---|');
+        R.forEach(function(r, i){ console.log('| ' + rows[i].l + ' | ' + pinf(r.endoAnn) + ' | ' + r.pLev10.toFixed(3) + ' / ' + r.pLev20.toFixed(3) + ' | ' + (/^(cco|d19|d33|d19d33|hyb0|hyb1|ubi|nit|xc|top|topc|ubiP|nitP|xc0|xc7)$/.test(rows[i].k) ? '$' + r.realT.toFixed(3) : '—') +
+          ' | ' + f1(r.emp) + ' | ' + sg(r.hrs*100) + '% | ' + sg(r.dE*100) + '% | ' + sg((r.Er/B.Er - 1)*100) + '% | ' + r.giniD.toFixed(3) + ' / ' + r.giniX.toFixed(3) + ' |'); });
+        console.log('\nA5-4 Groups (d29): change vs Baseline in real resources per adult-year (%), person-year basket FGT0 (pt), year-20 wealth poverty (pt).');
+        var GK = [['participants', 'gPart'], ['non-participants', 'gNon'], ['PTH members', 'gPth'], ['bottom third by year-0 wage', 'gLow'], ['top third by year-0 wage', 'gTop']];
+        var gi = []; R.forEach(function(r, i){ if (i && /^(cco|d19|d19d33|hyb1|ubi|nit|groc|top|xc|ubiP|nitP)$/.test(rows[i].k)) gi.push(i); });
+        console.log('| Design | ' + GK.map(function(g){ return g[0]; }).join(' | ') + ' |'); console.log('|---|' + GK.map(function(){ return '---|'; }).join(''));
+        console.log('| Baseline resources $/adult-yr | ' + GK.map(function(g){ return $(B[g[1] + 'Res']); }).join(' | ') + ' |');
+        gi.forEach(function(i){ var r = R[i]; console.log('| ' + rows[i].l + ' | ' + GK.map(function(g){ var b = B[g[1] + 'Res'], dr = r[g[1] + 'Res'] - b;
+          return (dr >= 0 ? '+' : '-') + $(Math.abs(dr)) + ' (' + sg((r[g[1] + 'Res']/b - 1)*100, 1) + '%), ' + sg(r[g[1] + 'F0'] - B[g[1] + 'F0'], 1) + ', ' + sg(r[g[1] + 'W'] - B[g[1] + 'W'], 1); }).join(' | ') + ' |'); });
+        if (!infl) console.log(D33_NOTE);
+        console.log('  Not modeled (d29): public costs of poverty (crime, homelessness services, incarceration, emergency and institutional health care); group losses are gross of any saving.');
+        /* JSON for the front door (A6): one record per row */
+        JS[e] = {env:E[0], seeds:nT, agents:AG, targets:tg, rows:R.map(function(r, i){ var d2 = i ? tbDiff(R[i], B, 'fgt2') : null, dp = i ? tbDiff(R[i], B, 'fgt2PY') : null, d0 = i ? tbDiff(R[i], B, 'fgt0PY') : null;
+          var worse = i ? grpCell(r, B).split(' | ')[1] : 'none';
+          return {k:rows[i].k, m:rows[i].m || null, l:rows[i].l, cost:+r.cost.toFixed(0), tau:+(r.tauMean*100).toFixed(1), infl:+(r.endoAnn*100).toFixed(2),
+            fgt0PY:+r.fgt0PY.toFixed(2), fgt2PY:+r.fgt2PY.toFixed(3), fgt2:+r.fgt2.toFixed(3), pyPoor:+r.pyPoor.toFixed(2), spell:+r.spellMean.toFixed(2), wpov:+r.pov.toFixed(1),
+            d2:d2 ? [+d2.m.toFixed(2), +d2.lo.toFixed(2), +d2.hi.toFixed(2)] : null, dp:dp ? [+dp.m.toFixed(2), +dp.lo.toFixed(2), +dp.hi.toFixed(2)] : null, d0:d0 ? [+d0.m.toFixed(2), +d0.lo.toFixed(2), +d0.hi.toFixed(2)] : null,
+            hrs:+(r.hrs*100).toFixed(2), giniD:+r.giniD.toFixed(3), tgt:+(r.tgt*100).toFixed(1), worse:worse,
+            grp:GK.map(function(g){ return [g[0], Math.round(r[g[1] + 'Res'] - B[g[1] + 'Res']), +(r[g[1] + 'F0'] - B[g[1] + 'F0']).toFixed(1)]; })}; })};
+      });
+      if (JPATH){ var prev = {}; try { prev = JSON.parse(require('fs').readFileSync(JPATH, 'utf8')); } catch (x) {}
+        Object.keys(JS).forEach(function(k){ prev[k] = JS[k]; }); prev._meta = {engine:(require('fs').readFileSync(require('path').join(__dirname, 'index.html'), 'utf8').match(/VERSION:'([^']+)'/) || [0, '?'])[1], cmd:'node harness.js testbed <seeds> a5 <env> --json=' + JPATH, written:new Date().toISOString().slice(0, 10)};
+        require('fs').writeFileSync(JPATH, JSON.stringify(prev)); console.log('\nwrote ' + JPATH); }
+    }
+    tbSetG(svG); resetNR6(svT);
     console.log('\n(' + ((Date.now() - t0T)/60000).toFixed(1) + ' min)');
+  }
+
+  if (mode === 'frontdoor') {
+    /* Session 8 (A6): node harness.js frontdoor <a5.json> [index.html]. Builds the front door's comparison from the testbed's a5
+     * JSON (written by `testbed <seeds> a5 <envs> --json=<a5.json>`) and writes it into the page's #fd-data block. Reporting only:
+     * no run, no engine change. Row order per environment and model: the Baseline; Compassionism; Compassionism with its two
+     * unsourced mechanisms off (d19 octave raise + d33 damping; at the reference, with no inflation, the damping has no effect);
+     * sensitivity rows (each mechanism alone, d26 hybrid at a = 0 and a = 1); then the comparators. */
+    var fsF = require('fs'), pathF = require('path'), SRC = process.argv[3], PAGE = process.argv[4] || pathF.join(__dirname, 'index.html');
+    var A = JSON.parse(fsF.readFileSync(SRC, 'utf8')), OUT = {_meta:{engine:A._meta ? A._meta.engine : '?', agents:500, written:A._meta ? A._meta.written : ''}, envs:{}};
+    var ENVF = {ref:['Reference: Full Integration settings, no recessions, no inflation', FULL_INTEGRATION], adv:['Adverse Environment: reference settings with recessions, 2% inflation and AI automation', ADVERSE_REFERENCE],
+      st:['Stress Test: the adverse environment with weaker settings (40% participation, $900 BU)', STRESS_TEST]};
+    var GN = {participants:'participants', 'non-participants':'adults who chose not to take part',  /* session 11: participation is open to all; not taking part is a choice */
+      'PTH members':'PTH members', 'bottom third by year-0 wage':'bottom third by wage', 'top third by year-0 wage':'top third by wage'};
+    var FK = {part:'participants', non:'non-participants', PTH:'PTH members', low:'bottom third by year-0 wage', top:'top third by year-0 wage'};
+    function mon(x){ return '<span style="white-space:nowrap">' + (x < 0 ? '\u2212$' : '+$') + Math.round(Math.abs(x)).toLocaleString('en-US') + ' a year</span>'; }
+    function amt(l){ var m = l.match(/\$(\d[\d,]*\d)/); return m ? '$' + m[1] : ''; }
+    function worse(r, w, cco){ if (!r.worse || r.worse === 'none') return 'No group'; var fl = {}; r.worse.split(', ').forEach(function(x){ var m = x.match(/^(\w+) \((\w+)\)$/); if (m) fl[FK[m[1]]] = m[2]; });
+      var G = {}; r.grp.forEach(function(g){ G[g[0]] = g; }); function one(n){ var f = fl[n], g = G[n]; return GN[n] + (f.indexOf('r') >= 0 ? ' (' + mon(g[1]) + ')' : ' (more poverty)'); }
+      var out = [];
+      if (cco) Object.keys(GN).forEach(function(n){ if (fl[n]) out.push(one(n)); });
+      else { if (fl.participants && fl['non-participants']){ var av = w*G.participants[1] + (1 - w)*G['non-participants'][1]; out.push('most adults (' + (av < 0 ? 'about ' + mon(av) : 'more poverty') + ')'); }
+        ['bottom third by year-0 wage', 'top third by year-0 wage'].forEach(function(n){ if (fl[n]) out.push(one(n)); });
+        if (!out.length) Object.keys(GN).forEach(function(n){ if (fl[n]) out.push(one(n)); }); }
+      var s0 = out.join('; '); return s0.charAt(0).toUpperCase() + s0.slice(1); }
+    Object.keys(ENVF).forEach(function(e){ if (!A[e]) return; var X = A[e], w = ENVF[e][1].partRate, rows = {};
+      function find(k, m){ return X.rows.filter(function(r){ return r.k === k && (m === null ? true : r.m === m); })[0]; }
+      /* Session 11 (d45): two views. 'rows' (equal cost): the basic income, NIT and asset endowment matched to Compassionism's cost.
+       * 'prop' (proposed size): each comparator at its proposers' size. Grocery and X-Cents run at their own cost in both, and the
+       * Compassionism rows are the same in both. Each view keeps the Baseline first and the mechanisms-off row directly beneath Compassionism. */
+      var prop = {};
+      ['engine', 'framework'].forEach(function(m){ var C = m === 'engine' ? 'Compassionism, as coded' : 'Compassionism, as specified on the Hub';
+        function build(view){ var L = [];
+        function add(k, r, label, o){ if (!r) return; o = o || {}; var cco = /^(cco|corr|d19|d33|hyb0|hyb1|top|topc)$/.test(k);
+          L.push({k:k, label:label, note:o.note || '', sens:!!o.sens, cost:r.cost, tau:r.tau, infl:r.infl, dp:r.dp, d2:r.d2, fgt2PY:r.fgt2PY, fgt2:r.fgt2, f0:r.fgt0PY, hrs:r.hrs, worse:k === 'base' ? '' : worse(r, w, cco)}); }
+        add('base', find('base', null), 'No program (Baseline)');
+        add('cco', find('cco', m), C);
+        var corr = find('d19d33', m);
+        if (corr) add('corr', corr, C + ', without its two theoretical mechanisms', {note:'octave wage raise and PTF/PTH inflation damping off (theoretical, yet to be empirically tested)'});
+        else add('corr', find('d19', m), C + ', without its two theoretical mechanisms', {note:'octave wage raise off (theoretical, yet to be empirically tested); with no inflation the damping has no effect'});
+        var tp = find('top', m), tc = find('topc', m);
+        if (tp) add('top', tp, C + ', with a needs-based top-up', {note:'same cost; a tenth of the flat allowance moved to extra BU for low earners, reduced by 50 cents per dollar earned' + (tc && tc.dp ? '; with the two theoretical mechanisms off: ' + (tc.dp[0] > 0 ? '+' : '\u2212') + Math.abs(tc.dp[0]).toFixed(2) : '')});
+        if (corr){ add('d19', find('d19', m), 'octave wage raise off only', {sens:true}); add('d33', find('d33', m), 'inflation damping off only', {sens:true}); }
+        add('hyb0', find('hyb0', m), 'conversion rewards paid as new money, no matching output (a = 0)', {sens:true, note:'transfers still paid by the contribution'});
+        add('hyb1', find('hyb1', m), 'conversion rewards paid as new money, fully matched by new output (a = 1)', {sens:true, note:'assumes H1, which the model cannot test'});
+        if (view === 'cost'){ var u = find('ubi', m), n = find('nit', m), en = find('endow', m);
+          if (u) add('ubi', u, 'Basic income, ' + amt(u.l) + ' a year to every adult', {note:'same cost as the Compassionism row'});
+          if (n) add('nit', n, 'Negative income tax, ' + amt(n.l) + ' guarantee, 50% phase-out', {note:'same cost; means-tested'});
+          if (en) add('endow', en, 'Asset endowment, ' + amt(en.l) + ' once to adults with under $25,000', {note:'same cost; baby-bond-style, but the model has no children'}); }
+        else {
+          add('ubi', find('ubiP', null), 'Basic income, $12,000 a year to every adult', {note:'its proposed size: $1,000 a month'});
+          add('nit', find('nitP', null), 'Negative income tax, $15,960 guarantee, 50% phase-out', {note:'its proposed size: the guarantee at the 2026 poverty guideline for one adult'});
+          add('endow', find('endowP', null), 'Stakeholder grant, $154,594 once to adults with under $25,000', {note:'its proposed size: $80,000 in 1999 dollars; the model has no young adults, so it goes to adults with little wealth'}); }
+        add('groc', find('groc', null), 'Public grocery network at full scale, 15% off food for every adult', {note:'its own cost; enough stores to serve everyone'});
+        add('grocP', find('grocP', null), 'Public grocery network as planned: five stores', {note:'its own cost; serves about 0.5% of shoppers'});
+        add('xc', find('xc', null), 'X-Cents: the adult exchange plus Power of 1', {note:'its own cost; one day a week, coins buy food at $1 each'});
+        add('xc0', find('xc0', null), 'X-Cents adult exchange only, $3,614 a year', {sens:true});
+        add('xcH', find('xcH', null), 'X-Cents with Power of 1 on food and housing', {sens:true, note:'assumes landlords and utilities accept coins at $1 on the designated day'});
+        return L; }
+        rows[m] = build('cost'); prop[m] = build('prop'); });
+      OUT.envs[e] = {name:ENVF[e][0], seeds:X.seeds, rows:rows, prop:prop, cmd:'node harness.js testbed ' + X.seeds + ' a5 ' + e,
+        caption:'Tax-financed: each design is paid for by a flat contribution on wages set to cover its cost. Shaded row: the Compassionism design with its two theoretical mechanisms, yet to be empirically tested, switched off. Worse off: each group is compared with itself under no program, and the losses come from the contribution that pays for each design; under Compassionism they fall mainly on adults who chose not to take part, who pay the contribution and receive no BU. Participation is open to every adult; in the model each adult\'s choice is set at the start and kept for 20 years. The comparison runs on the testbed\'s profile, which the live scenarios do not use, so their figures differ; among its differences, PTH cuts housing costs only, discounts skip the tax share of the basket, wages follow prices, and adults adjust how much they work.' +
+          (ENVF[e][1].inflRate > 0 ? ' Amounts in the labels are nominal. With 2% inflation, below the 5% cost-of-living trigger, a dollar of cash is worth 0.686 year-1 dollars by year 20, so the costs, which are in year-1 dollars, are lower.' : '')};
+    });
+    var html = fsF.readFileSync(PAGE, 'utf8'), re = /(<script type="application\/json" id="fd-data">)[\s\S]*?(<\/script>)/;
+    if (!re.test(html)) throw new Error('frontdoor: no #fd-data block in ' + PAGE);
+    html = html.replace(re, function(m0, a, b){ return a + JSON.stringify(OUT).replace(/</g, '\\u003c') + b; });
+    fsF.writeFileSync(PAGE, html);
+    console.log('frontdoor: wrote ' + Object.keys(OUT.envs).join(', ') + ' (' + JSON.stringify(OUT).length + ' bytes) into ' + PAGE);
   }
 
   if (mode === 'v421') {

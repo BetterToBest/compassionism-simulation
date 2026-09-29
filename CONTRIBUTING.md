@@ -29,6 +29,8 @@ The **Full Integration** preset (seed 42, 20 years) serves as the illustrative r
 | Simulation years | 20 | Two decades captures full automation wave |
 | Seed | 42 | Fixed for reproducibility; labeled "illustrative reference" |
 
+**v4.22:** no reference value changed, and every preset's seed-42 figures are bit-identical. The page now opens with a comparison of Compassionism against five other anti-poverty designs, pre-computed by the policy testbed in `harness.js`. See v4.22 Release Notes.
+
 **v4.21:** no reference value changed, and the seed-42 figures did not move. CCO's cost relief now reads BU in year-0 dollars, which changes only runs with inflation on (Adverse Environment, Stress Test). A 5,000-agent study confirms the headline figures. See v4.21 Release Notes.
 
 **v4.20:** no reference value changed, but the seed-42 figures did, once: `automationRisk` is now sampled with a fixed number of draws, and its high-risk weight is 0.63 (was 0.47). See v4.20 Release Notes.
@@ -41,9 +43,121 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
-## Unreleased: session 7, decomposing the testbed result, and the replication page moves here
+## v4.22 Release Notes
 
-Next-round session 7 (Sep 27, 2026). Duke assigns the version number. **The engine in `index.html` is unchanged and every shipped figure is bit-identical; the page changed only where it links to the replication page.** `validate` passes; `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 11 testbed tests, 2 of them new); `domtest` passes all 85 checks (3 new, Phase 10). Tables and decisions: `session-7-handoff.md`. Raw output: `session-7-results.txt`.
+v4.22 (Sep 28, 2026) releases the policy-testbed round: sessions 1–11 of *Next Round Plan: Simulation Testbed and Claims Ledger* (Sep 26). Each session's notes follow as a "v4.22, session N" section, newest first. **The engine in `index.html` is unchanged: the seed-42 regression and every preset's figures are bit-identical** (`validate` passes). What a visitor sees does change: the page opens with a comparison of Compassionism against five other anti-poverty designs. `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 16 testbed tests, 1 of them new); `domtest` passes all 94 checks (2 new). Hand-off: `session-10-handoff.md`.
+
+### What the release contains
+
+| Plan item | Where it lives | Sessions |
+|---|---|---|
+| A0 flow map: where program money enters, moves and leaves | `A0-flow-map.md` (project files) | 1 |
+| A1 issuance ledger | `node harness.js ledger` | 1 |
+| A2 money-creation and price module, breakeven additionality, price-neutral point | `PRICE`; `node harness.js price` | 2, 3, 5 |
+| A3 labor supply: one income effect per unconditional dollar (ρ 0.16), one compensated elasticity (0.33) | `LABOR`; `node harness.js labor` | 4, 5 |
+| A4 testbed: basic income, negative income tax, asset endowment, public grocery, X-Cents, one cost ledger, tax / money / hybrid financing | `node harness.js testbed … match / frontier / alts / decomp` | 6, 7 |
+| A5 reporting: FGT₀–₂ at year 20 and over 20 years, spells, cost per point, prices, hours, income Gini, group losses in dollars | `node harness.js testbed … a5` | 8 |
+| A6 front door on the page | `index.html`; `node harness.js frontdoor` | 8, 9, 10 |
+| The replication page moves into this repository | `replication.html`; `domtest` Phase 10 | 7 |
+
+Every harness addition sits behind switches whose defaults leave the engine bit-identical, and `validate`, `unit` and `domtest` run on every push.
+
+### Reading the comparison
+
+- **Same people, same rules.** Every design runs on the same 500 simulated single adults for 20 years with paired random seeds, is paid for by a flat contribution on wages set each year to cover its cost, and meets the same work response. The basic income, negative income tax and asset endowment are matched to Compassionism's gross cost per adult-year; the public grocery network and X-Cents run at their own cost.
+- **The shaded row.** Wherever Compassionism appears, the row beneath it switches off its two mechanisms that are theoretical, yet to be empirically tested, and cost nothing in the model (both the model's stand-ins, not the design; session 11): the octave wage raise (d19) and the PTF/PTH inflation damping (d33). Across the round these carried most of Compassionism's edge (see `round-close-out-and-next-round-plan.md` in the project files).
+- **The headline measure** is poverty severity (FGT₂ on the living-wage basket) averaged over all 20 years, with year 20 beside it (d37); year 20 alone overstated Compassionism's gains.
+- **Pre-computed, on the testbed's profile.** The table is data written by `node harness.js frontdoor` from `testbed … a5`, not a live run (d36). The testbed's profile differs from the live scenarios (θ on realised PTF density, PTH cuts housing only, discounts skip the basket's tax share, wages indexed to prices, the work response, the design-neutral BLEI gate, and `N7_BLEI`), so the two sets of figures differ. The table's caption says so.
+- **Not modelled, for any design:** public costs of poverty (d29), a production side for conversion rewards (H1), households and children.
+
+### Session 11: what changed (Duke's review of the prepared page)
+
+- **The opening line (d41, Duke's option 5).** "Compassionism aims to end extreme poverty while incentivizing participation and contribution: test that claim against five other designs on the same simulated people." It is a statement, so Phase 11's first check now accepts one sentence ending in a full stop or a question mark. The subtitle adds that poverty is measured against a living-wage basket, a higher bar than extreme poverty, with the deepest shortfalls weighted most (FGT₂), so the claim is tested on a stricter line than the one it names. README.md opens with the same sentence.
+- **Wording.** Everything a reader sees now calls the octave wage raise and the PTF/PTH inflation damping "theoretical, yet to be empirically tested", and says both are the model's stand-ins, not the design (d46). Earlier session notes below keep the word they used ("unsourced").
+- **The design panel.** Compassionism's entry is rewritten from Duke's notes: BU as a restricted currency that expires; conversion at elevated rates set by market demand and by community-validated quality (the multiplier rate); the octave as conversion capacity, a safeguard against exploitation and an open ceiling for creators with demand; wage work still paid in dollars, with creative projects able to hire at elevated rates paid in expired BU; an allowance that can vary by region, age and labor-market needs (the model holds it flat). A second paragraph says what sets the design apart: it creates both a supply of a new restricted currency and a demand for it, and aims to hold basic living costs steady through community-owned supply before letting prices fall, where current policy manages inflation through the money supply and interest rates (d47: stated by mechanism). The negative income tax entry no longer says the allowance is the same for every participant by design. The grocery and X-Cents entries are rewritten (below).
+- **A needs-based top-up (d39, d44).** `PR.ccoTop(G, s, t)`: Compassionism with its flat BU cut by a share s, and the savings paid as extra BU to participants only, max(0, G − t × wage earnings), t = 0.5 (`nit.part`, read by `tbGate`, `tbLab` and `tbCashFlow`; unset everywhere else, so every other row is bit-identical). `tbMatch('ccoTop', …)` sets G so the total cost equals Compassionism's. A 30-seed sweep (`testbed 30 topup ref,adv,st`) tried s = 0.1, 0.25 and 0.5 and a 0.3 phase-out: only s = 0.1 deepened the 20-year FGT₂ cut in all four reference and Adverse cells (the Stress Test was added afterwards), so a5 and the page use it. At full seeds (a5):
+
+| Environment, model | Compassionism: FGT₂ 20-yr change / share in poverty / hours | With the top-up (same cost) |
+|---|---|---|
+| Reference, engine | −3.21 / 45.4% / −4.9% | −3.38 / 47.4% / −7.2% |
+| Reference, Hub | −1.76 / 53.1% / −14.5% | −1.87 / 60.4% / −21.7% |
+| Adverse, engine | −7.67 / 74.4% / −7.5% | −7.76 / 75.5% / −10.2% |
+| Adverse, Hub | −4.18 / 83.9% / −25.8% | −5.30 / 87.3% / −30.6% |
+| Stress Test, engine | −3.71 / 76.1% / −3.5% | −3.70 / 76.3% / −4.5% |
+| Stress Test, Hub | −3.58 / 76.5% / −5.5% | −3.53 / 78.1% / −8.6% |
+
+  The top-up deepens the cut in four of six cells and leaves it about the same (within 0.05) in the Stress Test; it raises the share in poverty and lowers hours in all six, because a benefit that shrinks as earnings rise works like a tax on work. It is shown as its own row beneath Compassionism's mechanisms-off row, with its own mechanisms-off figure in the note, rather than replacing the main row (d44).
+- **Grocery at its real scale.** The Mayor puts New York's existing grocery stores at more than 1,000 (nyc.gov transcript, Jul 27, 2026), so five stores of the same size would serve about 0.5% of shoppers (`TB_GROC_PILOT`, derived; the 9,000 sq ft La Marqueta store makes it if anything high). The page shows the plan as announced (five stores: about $4 per adult-year, no measurable change) and the network at full scale (every adult 15% off food: $807, −0.04 at reference). Neither models the effect on other grocers' prices.
+- **X-Cents from its paper (d48).** The paper was read in full, and the page links https://bettertobest.github.io/x-cents/. `PR.xcFull(f, h)` adds the Power of 1 to the adult exchange: one designated day a week, coins count as $1 for food, so food bought with pennies costs 1 cent per dollar (`TB_XC_P1` 0.99), with the week's food shopping moved to that day (f = 1; f = 1/7 if no shopping moves). The main row covers food (reference: $8,017 per adult-year, −1.17; exchange alone $3,613, −0.56; f = 1/7 $4,243, −0.65). Food and housing (`groc.housing`) is a sensitivity row, since paying rent and utilities in coins needs landlords and utilities to join: $21,514, −2.00 at reference, and +0.24 in Adverse, where its contribution cuts hours by 37%.
+- **Each design at its proposers' size (d45).** The page gains a second view. Basic income $12,000 a year (`TB_UBI_PROP`, the $1,000 a month paid in Vivalt et al.'s study); a negative income tax guaranteeing the 2026 HHS poverty guideline for one person, $15,960, with a 50% phase-out (`TB_NIT_PROP`); the stakeholder grant, $80,000 of 1999 × 321.943 / 166.6 (CPI-U annual averages) = $154,594, once, to adults under $25,000 (`TB_ENDOW_PROP`; no return in the model). Reference: $11,999, −1.67; $1,607, −0.09; $2,922, −0.44. Because designs of different sizes are not a fair contest by themselves, every costed row in both views now shows its change in 20-year FGT₂ per $1,000 (reference, engine: Compassionism −0.28, with the top-up −0.30, without the two theoretical mechanisms −0.16; matched basic income −0.14, matched NIT −0.20; X-Cents −0.15; basic income at $12,000 −0.14; stakeholder grant −0.15).
+- **Link and layout review (Duke's screenshots).** The row labels, the "What each design is" link and the caveats box's "Assumptions and Known Limitations" link were same-page fragment links (`href="#…"`). They work on GitHub Pages, but claude.ai's file preview routes every link click as a URL on claude.ai, so they opened a new chat. They are now buttons (`.fd-go`, with `data-go` naming the target), which no host can send off the page; the page has no fragment links left, and Phase 11 checks that. All 49 external links on the page, the replication page and the README were requested: each resolves (the six that answer 403 are publishers and sites that refuse scripted requests; the two DOIs redirect to the right papers). Below 1,180 px the caveats box stood taller than its text: the base `.fd-side` rule came after the narrow-screen rule and overrode its direction, so each box took its 300 px flex-basis as a height; fixed. The replication page's section links stay fragment links (d49): correct on the live site, but they misroute in claude.ai's preview.
+- **Worse off, and participation as a choice (d50).** The column compares each group with itself under no program, and its losses come from the contribution that pays for each design. Under Compassionism they fall mainly on adults who do not take part, who pay the contribution and receive no BU. The column now names them "adults who chose not to take part", its tooltip and the table's caption say so, and the design panel states that participation is open to every adult. It also states the model's limit: each adult's choice is set at the start and kept for 20 years, so an adult who would gain by joining cannot.
+- **Checks.** `unit`: two new testbed tests (the top-up at G = 0 equals Compassionism at the smaller BU, and pays participants only; Power of 1 at f = 0 equals the flat exchange, housing raises the cut, five stores cost a small fraction of the full network). `domtest` Phase 11: the statement check, both views in the data and in rendering (24 views), and one new check (the view switch moves the comparators and not Compassionism, every costed row states its change per $1,000, X-Cents links its site, and no visible text calls the mechanisms unsourced): 95 checks. The engine in `index.html` is unchanged; `validate` passes.
+- **Reproduce.** `node harness.js testbed 500 a5 ref --json=a5.json`, `node harness.js testbed 200 a5 adv,st --json=a5.json` (about 9 minutes each), `node harness.js frontdoor a5.json`; the sweep, `node harness.js testbed 30 topup ref,adv,st --pilot=20` (about 4 minutes).
+
+### Session 10: what changed
+
+- **Tooltips (dashboard i4, and Duke's review).** Every tooltip was a CSS `::after` box drawn inside the element it explains. Inside the front door's table, which scrolls sideways on narrow screens, the scroll box clipped the top of every column tooltip, so the first lines were hidden behind the column labels. The same boxes, though invisible, widened the page to 421 px on a 390 px phone. One floating box placed by script (`initTips`, `position:fixed`) now serves every tip: it cannot be clipped, it opens below its host when there is no room above, it stays 8 px inside the window, it opens on hover, tap and keyboard focus (not on a mouse-click focus, as v4.20 intended; a tapped tip stays open until the next tap, since phones send mouse events around a tap), and it closes on leave, blur, scroll, resize and Escape. Checked on a touch-phone viewport as well. The CSS boxes remain as a fallback when scripts do not run. Checked in a headless Chromium: the column tooltips show in full, and the page is 390 px wide at 390 px. `domtest` checks the behaviour (it has no layout engine); decision d42.
+- **What each design is.** A panel under the comparison with one entry per design: the proposal, how the model simplifies it, and its source, linked. Every row label links to its entry, and the "Compassionism as" switch has its own ⓘ explaining the engine and Hub versions. Sources: Vivalt et al., NBER Working Paper 32719 (basic income; also the source of ρ); Moffitt (2003), *Journal of Economic Perspectives* 17(3) (negative income tax); Ackerman and Alstott, *The Stakeholder Society* (1999), and Hamilton and Darity (2010), *Review of Black Political Economy* 37 (asset endowment); NYC Mayor's Office, July 27, 2026 (public grocery; the 30% and 15% are the city's projections, not results); the CurrentSea X-Change paper on Academia.edu (X-Cents). `domtest` Phase 11 checks every entry, every source link and every row link.
+- **The front door's question** (d41, following d35): "Dollar for dollar, which does more against poverty: Compassionism, a basic income, or a negative income tax?" README.md opens with the same sentence, as Phase 11 requires. The subtitle now says which designs are matched to Compassionism's cost and which run at their own.
+- **`N7_BLEI` in the testbed profile (d40).** `TB_PROFILE_G` turns it on for every testbed row that does not set it (the `n7` section still sets it both ways); the global default stays `false`, so the checks still test `index.html`. The front door was regenerated (`testbed 500 a5 ref`, `testbed 200 a5 adv,st`, then `frontdoor`). Against session 9's figures, engine-model rows move by 0.06 point of 20-year FGT₂ or less (0.16 at year 20) and hours by 0.2 point or less; the largest move is the framework-scale basic income at reference, 0.15 point over 20 years and 1.18 at year 20, in the fiscal-breakdown regime (an 89% contribution). No conclusion changes. At reference, per $1,000 of cost, 20-year FGT₂ cut: Compassionism (engine) 0.28, without its two unsourced mechanisms 0.16, matched basic income 0.14, matched negative income tax 0.20.
+- **Metadata (d43).** The page's description had last been updated at v4.15; it and the sharing descriptions now say what the page compares. The replication page's JSON-LD cited the simulation as v4.17; now v4.22.
+- **Version labels.** `META.VERSION` 4.22; the page's static labels, title and JSON-LD; the replication page's eight labels (Phase 10), its highlights, and a v4.22 panel in each Version History list; the "Unreleased" headings below renamed for this release.
+
+## v4.22, session 9: the N7 attribution of the BLEI raise (i3-2), and front-door wording
+
+Next-round session 9 (Sep 28, 2026). Released in v4.22. **The engine in `index.html` is unchanged and every shipped figure is bit-identical.** `validate` passes; `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 15 testbed tests, 1 of them new); `domtest` passes all 92 checks. Tables and decisions: `session-9-handoff.md`; the round's close-out: `round-close-out-and-next-round-plan.md`. Raw output: `session-9-results.txt`.
+
+- **`N7_BLEI`** (dashboard i3-2; default `false`). The N7 split counted the octave and CIP raises as program-induced and the BLEI-gated raise as not. With `true`, the BLEI raise counts as program-induced in the adult-years where the design's own support is what carries the adult over the gate (the gate passes as the run reads it, and fails on Baseline rules with no program support); the same rule for every design. It moves the labor module's raise and, where aw < 1, the price module's premium; the raise itself is unchanged. The testbed now reports the share of adult-years with a BLEI raise and the share the design carried over the gate.
+- **`node harness.js testbed <seeds> n7 [ref,adv,st]`**: the attribution off and on, for Compassionism and the matched UBI and NIT. At engine scale it moves FGT₂ by 0.07 point or less for every design; only framework-scale cash designs move materially (up to 1.2 points at year 20).
+- **Front door wording** (data written by `frontdoor`): each environment's caption now says the comparison runs on the testbed's profile, which the live scenarios do not use; the NIT row notes that it is means-tested while Compassionism's BU is flat by design.
+
+## v4.22, session 8: reporting upgrade (A5) and the front door (A6)
+
+Next-round session 8 (Sep 27, 2026). Released in v4.22. **The engine in `index.html` is unchanged and every shipped figure is bit-identical** (`validate` passes; domtest's seed-42 fixtures and source-parity checks pass). The page gains a front door above the layout. `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 14 testbed tests, 3 of them new); `domtest` passes all 92 checks (7 new, Phase 11). Tables and decisions: `session-8-handoff.md`. Raw output: `session-8-results.txt`.
+
+### The front door (plan A6)
+
+A band above the page's layout, so it is the first screen on phones too:
+
+- **one question in one sentence**, which README.md now also opens with;
+- **Compare designs**: the testbed's comparison for the reference, adverse and stress environments, with Compassionism as coded in the engine or as specified on the Hub, and optional sensitivity rows. Figures come from `testbed … a5` and are written into the page's `#fd-data` block by `node harness.js frontdoor <a5.json>`; the page does not run the comparators live;
+- **Run a Compassionism scenario**: the six presets, each loaded into the controls and run;
+- **one caveats box**: the old notice (`#uncertainty-notice`), moved here and rewritten; a run no longer hides it;
+- **method links**: the replication page, the repository and the command that reproduces the comparison.
+
+**domtest Phase 11** checks all of this, including one honesty rule: wherever the Compassionism row appears, the same design with its two unsourced mechanisms switched off (the octave wage raise, d19; the PTF/PTH inflation damping, d33) sits directly beneath it.
+
+**After any engine change,** regenerate the comparison before releasing:
+
+```
+node harness.js testbed 500 a5 ref --json=a5.json
+node harness.js testbed 200 a5 adv,st --json=a5.json
+node harness.js frontdoor a5.json
+```
+
+The table states the engine version its figures came from, so a page-only release can keep them.
+
+### What was added to `harness.js` (plan A5)
+
+- **Testbed metrics:** poverty spells (ever poor, mean spell length, poor in 10 or more of 20 years; spells censored at the window); years in poverty per adult (the area under the headcount curve); employment and hours (earnings over the same adult's earnings with no labor response, i.e. hours at a fixed wage); real wage earnings; the price level in years 10 and 20 and the real value of $1 of cash or BU; a year-20 **disposable-income Gini on the OECD definition** (wages + conversion + cash transfers − the contribution), needed by the Hub's C30, and the same with in-kind cuts added; cost per point of poverty removed.
+- **`node harness.js testbed <seeds> a5 [ref,adv,st] [--json=path]`**: the reporting upgrade in four tables (poverty; cost and efficiency; prices, work and distribution; groups in dollars), tax-financed at matched cost, with the octave raise (d19) and the damping (d33) on and off and the d26 hybrid at a = 0 and a = 1 beside every Compassionism result.
+- **Person-year FGT₂ beside year 20** in `decomp`, `alts`, `match` and `frontier`.
+- **d33 everywhere:** `match`, `frontier` and `alts` add damping-off rows for Compassionism. The damping scales exogenous inflation only, so where that is 0 (the reference) the rows would equal those shown; they are skipped with a note, and `unit` checks the equality.
+- **`node harness.js frontdoor <a5.json> [index.html]`**: writes the front door's data.
+- `giniOfArr()` and three tests: the d33 skip rule; spells, person-years and Gini on known vectors; the price path.
+
+### Headline results (engine model, tax-financed at matched cost; reference 500 seeds, adverse and stress 200)
+
+- **The year-20 measure flatters Compassionism.** Averaged over all 20 years, its FGT₂ cut is −3.21 at the reference against −4.46 in year 20, and −7.66 against −18.08 in the adverse environment. The framework model with the octave raise off cuts year-20 FGT₂ by 1.23 at the reference but raises it by 1.26 over the 20 years.
+- **Per $1,000, averaged over 20 years,** Compassionism with its two unsourced mechanisms off still beats a matched basic income in every environment (0.16 against 0.14 at the reference, 0.16 against 0.06 adverse, 0.22 against 0.12 stress). At the reference a matched negative income tax does better on FGT₂ (0.20) while raising the share of adult-years in poverty from 55% to 81%.
+- **More adults are ever poor under Compassionism** (72% against 68% with no program at the reference) because of the contribution, though for fewer years (9.1 against 11.0 per adult) and in shorter spells.
+- **Hours fall** 4.9% under Compassionism, 9.0% under the basic income and 22.6% under the negative income tax (reference).
+- **Disposable-income Gini at year 20:** 0.297 for Compassionism (engine) and 0.309 (framework) against 0.292 with no program; 0.268 and 0.261 with in-kind cuts counted. The Baseline's figure is close to that of the model's wage distribution, a lognormal with σ = 0.5 (Gini 0.276), which is not calibrated to US income inequality; so only the change between designs is informative, and the level cannot test the Hub's ≤0.25 target.
+
+## v4.22, session 7: decomposing the testbed result, and the replication page moves here
+
+Next-round session 7 (Sep 27, 2026). Released in v4.22. **The engine in `index.html` is unchanged and every shipped figure is bit-identical; the page changed only where it links to the replication page.** `validate` passes; `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 11 testbed tests, 2 of them new); `domtest` passes all 85 checks (3 new, Phase 10). Tables and decisions: `session-7-handoff.md`. Raw output: `session-7-results.txt`.
 
 ### The replication page lives in this repository
 
@@ -74,9 +188,9 @@ The page's text is carried over from the Hub page; a token comparison finds noth
 - **The CCO relief and conversion buy little poverty reduction at their cost.** Turning the relief off halves the engine model's cost and loses 0.26 points of FGT₂ at reference (0.66 Adverse, 0.03 Stress Test). Turning conversion off saves $2,000–2,500 per adult-year at reference and in Adverse ($600 in the Stress Test) and moves FGT₂ by 0.1 point or less; in the framework model it improves FGT₂ (by 0.2 at reference and 1.3 in Adverse).
 - **The i3 engine questions are small.** FBS counting BU twice (i3-1) is worth 0.09–0.24 points; the PTH appreciation double-count (i3-3) is within ±0.1.
 
-## Unreleased: session 6, the A4 policy testbed (harness-only)
+## v4.22, session 6: the A4 policy testbed (harness-only)
 
-Next-round session 6 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes; `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 9 new testbed tests); `domtest` passes all 82 checks. Tables, sources and decisions: `session-6-handoff.md`. Raw output: `session-6-results.txt`.
+Next-round session 6 (Sep 27, 2026). Released in v4.22. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes; `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 9 new testbed tests); `domtest` passes all 82 checks. Tables, sources and decisions: `session-6-handoff.md`. Raw output: `session-6-results.txt`.
 
 ### What was added to `harness.js`
 
@@ -127,9 +241,9 @@ Public grocery: nyc.gov press release, Jul 27, 2026. It announces 30% off a core
 - **A contribution threshold at the basket line does not work at these costs.** With wages below $49,370 exempt, every design above about $3,600 per adult-year hits the 90% cap and runs an unfunded deficit.
 - **Population size:** session 5's labor comparison at 5,000 agents (100 seeds) reproduces the 500-agent results: earnings to within 0.01 point, poverty to within 0.1 point.
 
-## Unreleased: session 5, the A2 carry-over and the large-N restudy (harness-only)
+## v4.22, session 5: the A2 carry-over and the large-N restudy (harness-only)
 
-Next-round session 5 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests and 6 new session 5 tests) and `domtest` passes all 82 checks. Tables, sources and decisions: `session-5-handoff.md`; raw output: `session-5-results.txt`.
+Next-round session 5 (Sep 27, 2026). Released in v4.22. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests and 6 new session 5 tests) and `domtest` passes all 82 checks. Tables, sources and decisions: `session-5-handoff.md`; raw output: `session-5-results.txt`.
 
 ### What was added to `harness.js`
 
@@ -151,9 +265,9 @@ Next-round session 5 (Sep 27, 2026). Duke assigns the version number. **Nothing 
 - **Restudy, Full Integration, engine model** (seeds 1–500, 500 agents): the joint run moves the breakeven by 0.001. The three text-versus-engine corrections together (θ density gate, PTH housing only, discounts skip the tax share) raise wealth / BLEI / basket poverty with no price feedback from 26.3 / 20.4 / 9.7% to 31.5 / 23.2 / 12.2%, and lower the breakeven from 0.963 to 0.910. Wage indexation cuts basket poverty at the breakeven from 13.0% to 10.2%.
 - **d19 confirmed at 500 seeds**: CCO alone's earnings edge over a matched-cost UBI is 2.69 points with the octave wage bonus and 0.05 without it (engine model).
 
-## Unreleased: A3 labor supply and a release workflow
+## v4.22, session 4: A3 labor supply and a release workflow
 
-Next-round session 4 (Sep 27, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, 8 price-module tests and 4 new labor-module tests) and `domtest` passes all 82 checks. Tables, sources and decisions: `session-4-handoff.md`; raw output: `session-4-results.txt`. Status and open decisions now live on the project dashboard.
+Next-round session 4 (Sep 27, 2026). Released in v4.22. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, 8 price-module tests and 4 new labor-module tests) and `domtest` passes all 82 checks. Tables, sources and decisions: `session-4-handoff.md`; raw output: `session-4-results.txt`. Status and open decisions now live on the project dashboard.
 
 ### What was added
 
@@ -162,9 +276,9 @@ Next-round session 4 (Sep 27, 2026). Duke assigns the version number. **Nothing 
 - **`laborRun()`, `laborStudy()`, `laborUnitSuite()`** and **`node harness.js labor <seeds> [head|sweep|all]`**.
 - **`.github/workflows/release.yml`**: when `META.VERSION` names a version with no tag, it tags the commit that first set that version and publishes a release with that version's Release Notes section. Run it by hand with a version to backfill one (for example 4.20).
 
-## Unreleased: A2 sweeps and the breakeven report (harness-only)
+## v4.22, session 3: A2 sweeps and the breakeven report (harness-only)
 
-Next-round session 3 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, plus 8 price-module tests, 2 of them new) and `domtest` passes all 82 checks. Full tables, sources and decisions: `session-3-handoff.md`; raw output: `session-3-results.txt`.
+Next-round session 3 (Sep 26, 2026). Released in v4.22. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate` passes, `unit` passes (11 tests, plus 8 price-module tests, 2 of them new) and `domtest` passes all 82 checks. Full tables, sources and decisions: `session-3-handoff.md`; raw output: `session-3-results.txt`.
 
 ### What was added to `harness.js`
 
@@ -195,9 +309,9 @@ Breakeven additionality: the smallest share of conversion-created currency that 
 
 ---
 
-## Unreleased: basket split, framework conversion model and the price module (harness-only)
+## v4.22, session 2: basket split, framework conversion model and the price module (harness-only)
 
-Next-round session 2 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate`, `unit` (11 tests, plus 6 new price-module tests) and `domtest` (82 checks) pass, and `ledger 5 identity` is identical in all 35 runs. Full tables, sources and decisions: `session-2-handoff.md`.
+Next-round session 2 (Sep 26, 2026). Released in v4.22. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate`, `unit` (11 tests, plus 6 new price-module tests) and `domtest` (82 checks) pass, and `ledger 5 identity` is identical in all 35 runs. Full tables, sources and decisions: `session-2-handoff.md`.
 
 ### What was added to `harness.js`
 
@@ -231,9 +345,9 @@ These depend on λ_G. At λ_G = 0.25 the Full Integration figures are 0.578 / 0.
 
 ---
 
-## Unreleased: issuance ledger and a consumption-base switch (harness-only)
+## v4.22, session 1: issuance ledger and a consumption-base switch (harness-only)
 
-Next-round session 1 (Sep 26, 2026). Duke assigns the version number. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate`, `unit` and `domtest` (82 checks) pass.
+Next-round session 1 (Sep 26, 2026). Released in v4.22. **Nothing in `index.html` changed, and every shipped figure is bit-identical.** `validate`, `unit` and `domtest` (82 checks) pass.
 
 ### What was added to `harness.js`
 

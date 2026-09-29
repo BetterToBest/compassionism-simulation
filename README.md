@@ -1,6 +1,10 @@
 # Compassionism Framework Simulation
 
+**Compassionism aims to end extreme poverty while incentivizing participation and contribution: test that claim against five other designs on the same simulated people.**
+
 A research-oriented, browser-based agent-based simulation exploring all five [Compassionism](https://bettertobest.github.io/research-hub/) architectures for comparative policy analysis — no installation required. BLEI-calibrated against US Consumer Expenditure Survey data.
+
+The page opens with a comparison: Compassionism beside a basic income, a negative income tax, an asset endowment, a public grocery network and X-Cents, run on the same simulated adults under the same rules, with each design's description and source beneath it. Two views compare the designs at equal cost and at the size their proponents propose, and every row shows its change in poverty severity per $1,000. Poverty is measured against a living-wage basket, a higher bar than extreme poverty, with the deepest shortfalls weighted most. The comparison comes from the open policy testbed in `harness.js`, and the page names the command that reproduces it.
 
 **[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 
