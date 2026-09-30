@@ -43,6 +43,31 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: BLEI by group beside FGT₂ (s41; issue i10-1; harness only)
+
+Duke asked (i10) how ESP payroll affects BLEI, not only FGT poverty. The testbed now reports BLEI and FGT₂ separately for participants and for adults who chose not to take part. Nothing the model does changes: the addition is reporting only, draws no random number, and leaves every earlier figure identical (session 21 diffed the full output of `testbed esp`, `projcore`, `a5` and `match` against `f961adc`; only elapsed times differ).
+
+- **`tbBleiYear()`** runs after each year of every testbed run and reads three versions of each adult's BLEI, deflated to year-0 prices:
+  - **design-neutral (N)**: Baseline rules plus one month of the design's regular support. It heads the tables (d34).
+  - **the design's own (O)**: the page's definition.
+  - **net of the contribution (X)**: N with income read as the year's wage earnings after the contribution and any change in hours, in place of the gross wage rate. This is a labelled sensitivity (d83).
+- **Groups:** all adults, participants, and non-participants. They are the same adults in every row.
+- **Measures:** the person-year share below 30 days (BLEI poverty) and below 7 days (Crisis) over 20 years; the year-20 share below 30 days; and the year-20 median. Person-year FGT₂ is also reported by group (`gPartF2`, `gNonF2`).
+- **Output.** `testbed … esp`, `proj` and `projcore` print two new tables: levels by group, and changes against no program and against each row's comparison row, with 95% intervals on the design-neutral reading. The other sections compute the new keys but do not print them. `a5` gets them at the N1 release (s35).
+- **`bleiUnitSuite()`**, five tests, run by `unit`:
+  - the year-20 N and O shares for all adults equal the testbed's existing `nbleiPov` and `bleiPov` exactly;
+  - the two groups partition every share and FGT₂;
+  - reading X falls by γ × the added contribution and N does not;
+  - the accumulation changes no agent and draws no random number;
+  - one month of BU keeps a participant out of Crisis on N, which is why participants' Crisis share is 0.
+- **Run time.** Testbed sections run about 20% longer.
+- **Result (500 seeds; `N1-blei-by-group-500.md`).**
+  - **ESP payroll moves BLEI in opposite directions for the two groups** (Hub-spec model, reading N, against today's rule). For participants / non-participants the change is −0.26 / +4.44 points at reference, −2.37 / +2.56 in Adverse and −1.09 / +0.68 in the Stress Test.
+  - **Against no program, non-participants' BLEI poverty rises** by 16 points as coded (project hiring, reference) and by 33 points specified on the Hub with ESP payroll.
+  - **Why.** The loss comes from the flat wage contribution, which reaches BLEI through savings. BLEI's income term reads the gross wage rate, which the contribution does not change.
+- **The engine in `index.html` is unchanged**, and so is the page.
+- **Checks.** `validate` passes, `unit` passes (the new suite 5 of 5), and `domtest` passes all 95.
+
 ## Unreleased: ESP payroll in expired BU at workers' own rates (N1, s38; harness only)
 
 In the Hub-spec (framework) model, businesses convert every BU they accept at a flat 3× and pay the premium over a cash sale to every adult in proportion to wages: the model's largest flow, with no mechanism behind it. Duke's rule R7 (Sep 29) supplies one for the wage part: essential service providers (ESPs) may pay workers in expired BU, and the workers convert them at their own earned rates. The design and its decisions (d70–d76) are in `N1-design-esp-payroll.md` (session 18).

@@ -414,6 +414,39 @@ function tbCashFlow(a, y, E, yr){
   a.yrTbCash = cash; a.yrTax = tax; a._tbNit = B;
   return {net:cash - tax, endow:(yr === 0 && a._tbEl) ? y.W : 0};
 }
+/* Session 21 (s41; dashboard i10-1, decision d82): BLEI by group beside FGT2. Reporting only: no RNG, no state the model reads.
+ * Three readings of an adult's BLEI (days of basic living the adult could cover), each deflated to year-0 prices like the
+ * testbed's other lines (o.lines):
+ *  N  design-neutral (d34): Baseline rules (gamma 0.12, the base daily cost, no SZH term) plus one month of the design's regular
+ *     support (a._tbM, the d28 gate's measure). Heads the tables.
+ *  O  the design's own BLEI (agentBLEI with the scenario's settings; the page's and the shipped definition).
+ *  X  N with income read as this year's wage earnings net of the testbed's contribution (after any change in hours), in place of
+ *     the gross monthly wage rate. agentBLEI reads the wage rate, so the contribution and the hours response reach N and O only
+ *     through savings (20% of wealth); X shows what they do to the income term. Same function, same 0.1-unit wage floor.
+ * Groups: all adults; participants (a._tbPart); adults who chose not to take part (!a._tbPart); the same adults in every design.
+ * Measures per reading and group: person-year share below the BLEI poverty line (30 days; Crisis + Precarious) over 20 years,
+ * person-year share in Crisis (below 7 days), the year-20 share below 30 days, and the year-20 median in days. The year-20 'all'
+ * values of N and O equal the testbed's nbleiPov and bleiPov (checked by tbBleiUnitSuite). */
+var TB_BLEI_DEFS = ['N', 'O', 'X'], TB_BLEI_GRPS = ['A', 'P', 'N'], TB_BLEI_NET = {wealth:0, wage:1};
+/* Accumulators, flat for speed: index d*3 + g (d: N, O, X; g: all, participants, non-participants). */
+function tbBleiAcc(){ var r = {py:new Float64Array(9), pov:new Float64Array(9), cri:new Float64Array(9), pov20:new Float64Array(9), n20:new Float64Array(9), v20:[]};
+  for (var i = 0; i < 9; i++) r.v20.push([]); return r; }
+function tbBleiNet(a){ var q = TB_BLEI_NET; q.wealth = a.wealth; q.wage = Math.max(0, (+a.yrWageUSD || 0) - (+a.yrTax || 0))/12/CFG.WAGE_TO_USD; return q; }
+function tbBleiYear(BG, agents, p, o, last){
+  var lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL, L30 = CFG.BLEI_PRECARIOUS_MAX, L7 = CFG.BLEI_CRISIS_MAX, v = [0, 0, 0];
+  for (var i = 0; i < agents.length; i++){ var a = agents[i], m = (a._tbM || 0)/CFG.BASE_DAILY_COST, g2 = a._tbPart ? 1 : 2;
+    v[0] = (agentBLEI(a, 0, false, false, false, 0, false) + m)/lf; v[1] = agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf)/lf;
+    v[2] = (agentBLEI(tbBleiNet(a), 0, false, false, false, 0, false) + m)/lf;
+    for (var d = 0; d < 3; d++){ var x = v[d], j0 = d*3, j1 = j0 + g2;
+      BG.py[j0]++; BG.py[j1]++; if (x < L30){ BG.pov[j0]++; BG.pov[j1]++; } if (x < L7){ BG.cri[j0]++; BG.cri[j1]++; }
+      if (last){ BG.n20[j0]++; BG.n20[j1]++; if (x < L30){ BG.pov20[j0]++; BG.pov20[j1]++; } BG.v20[j0].push(x); BG.v20[j1].push(x); } }
+  }
+}
+function tbBleiRes(BG, R){
+  TB_BLEI_DEFS.forEach(function(d, di){ TB_BLEI_GRPS.forEach(function(g, gi){ var j = di*3 + gi, k = 'b' + d + g;
+    R[k + 'Py'] = BG.py[j] ? BG.pov[j]/BG.py[j]*100 : 0; R[k + 'Cr'] = BG.py[j] ? BG.cri[j]/BG.py[j]*100 : 0; R[k + '20'] = BG.n20[j] ? BG.pov20[j]/BG.n20[j]*100 : 0; R[k + 'Md'] = medianOf(BG.v20[j]); }); });
+  return R;
+}
 function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   var C = TB.cur, idx = mlc/CFG.LIVING_WAGE_ANNUAL, conv = +a.yrConvUSD || 0;
   TB.xIdx = idx;  /* d26: the contribution threshold X is in year-0 dollars, indexed to the basket with a one-year lag */
@@ -429,7 +462,8 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   if (y.gcap && a._tbU < y.gcov) C.cap += y.gcap*idx;
   var inc = E + conv + (a.yrUbiUSD || 0) + a.yrTbCash - a.yrTax + (a._tbEl ? y.W/y.T : 0), g = Math.max(0, costUSD - inc)/mlc;
   C.f0 += g > 0 ? 1 : 0; C.f1 += g; C.f2 += g*g;
-  a._tbGap = g; a._tbF0 = (a._tbF0 || 0) + (g > 0 ? 1 : 0); a._tbRes = (a._tbRes || 0) + (inc + mlc - costUSD)/idx; a._tbYrs = (a._tbYrs || 0) + 1;
+  a._tbGap = g; a._tbF0 = (a._tbF0 || 0) + (g > 0 ? 1 : 0); a._tbF2 = (a._tbF2 || 0) + g*g;  /* session 21 (s41): FGT2 by group */
+  a._tbRes = (a._tbRes || 0) + (inc + mlc - costUSD)/idx; a._tbYrs = (a._tbYrs || 0) + 1;
   /* Session 8 (A5; dashboard s18). Reporting only, no RNG. Spells: a spell starts in any year the agent is below the basket after
    * being above it (or in year 0); spells are censored at the 20-year window. Hours: this year's earnings over the same agent's
    * earnings with no labor response (a._lbE0, set in runYear's LABOR block), which is hours at a fixed wage; 1 with LABOR off.
@@ -1986,11 +2020,13 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0,
     bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0};  /* session 19 (s38) */
   THETA_DENS = null;
+  var BG = tbBleiAcc();  /* session 21 (s41; i10-1): BLEI by group, every year (reporting only, no RNG) */
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
     for (var yr = 0; yr < yMax; yr++){
       PRICE.acc = newPMAcc();
       runYear(agents, yr, p, recPath ? recPath[yr] : CALM0);
+      tbBleiYear(BG, agents, p, o, yr === T - 1);  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
       var A = PRICE.acc, C = TB.cur || tbNewAcc(), d = A.n ? A.essD/A.n : 1, tauUsed = TB.tau;
       var wbInc = A.wageBonusNS - wbPrev; wbPrev = A.wageBonusNS;
       var extra = (o.floorUnmatched ? A.unmet : 0) + (1 - o.aw)*(o.awLevel ? A.wageBonus : wbInc);
@@ -2037,8 +2073,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     var g = a._tbGap || 0; if (g > 0) g0++; g1 += g; g2 += g*g; });
   /* Groups: mean real resources per year, person-year basket FGT0, and wealth poverty at year 20 (the inflation tax on nominal wealth
    * shows only here: income terms are indexed, wealth is not). */
-  function grpOf(f){ var m = 0, k = 0, f0 = 0, wp = 0; agents.forEach(function(a){ if (f(a)){ k++; m += a._tbRes/a._tbYrs; f0 += a._tbF0/a._tbYrs; if (a.wealth < CFG.POVERTY_LINE*lineF) wp++; } });
-    return k ? {res:m/k, f0:f0/k*100, wp:wp/k*100, k:k} : {res:0, f0:0, wp:0, k:0}; }
+  function grpOf(f){ var m = 0, k = 0, f0 = 0, f2 = 0, wp = 0; agents.forEach(function(a){ if (f(a)){ k++; m += a._tbRes/a._tbYrs; f0 += a._tbF0/a._tbYrs; f2 += (a._tbF2 || 0)/a._tbYrs; if (a.wealth < CFG.POVERTY_LINE*lineF) wp++; } });
+    return k ? {res:m/k, f0:f0/k*100, f2:f2/k*100, wp:wp/k*100, k:k} : {res:0, f0:0, f2:0, wp:0, k:0}; }  /* session 21 (s41): + person-year FGT2 (f2) */
   var gP = grpOf(function(a){ return a._tbPart; }), gN = grpOf(function(a){ return !a._tbPart; }), gH = grpOf(function(a){ return a._tbPTH; }), gL = grpOf(function(a){ return a._tbLow; }), gT = grpOf(function(a){ return a._tbTop; });
   /* Session 8 (A5): spells, persistence, and the year-20 income distribution (reporting only). */
   var sp = 0, spY = 0, ever = 0, chron = 0; agents.forEach(function(a){ sp += a._tbSp || 0; spY += a._tbF0 || 0; if (a._tbF0 > 0) ever++; if ((a._tbF0 || 0) >= T/2) chron++; });
@@ -2050,7 +2086,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var bI = path[T-1].bIdx, mx = 0, tauS = 0;
   for (var t = 1; t < T; t++) mx = Math.max(mx, path[t].bIdx/path[t-1].bIdx - 1);
   path.forEach(function(q){ tauS += q.tau; });
-  return {path:path, res:{
+  return {path:path, res:tbBleiRes(BG, {
     endoAnn:Math.pow(bI, 1/(T - 1)) - 1, endoMax:mx, pov:pov/n*100, bleiPov:bpov/n*100, nbleiPov:nbpov/n*100, tgt:L.pd > 0 ? L.tgt/L.pd : 0, medWealthReal:medianOf(agents.map(function(a){ return a.wealth; }))/full,
     fgt0:g0/n*100, fgt1:g1/n*100, fgt2:g2/n*100, fgt0PY:L.f0/L.n*100, fgt1PY:L.f1/L.n*100, fgt2PY:L.f2/L.n*100,
     cost:L.cost/NY, cCash:L.cash/NY, cEndow:L.endow/NY, cBU:L.bu/NY, cConv:L.conv/NY, cCut:(L.cutPT + L.cutG)/NY, cCap:L.cap/NY, cPth:L.pth/NY,
@@ -2070,7 +2106,9 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
      * adult-year. */
     bzPay:L.n1 ? L.bz/L.n1 : 0, esPrem:L.n1 ? L.es/L.n1 : 0, payPart:L.nP1 ? L.pyP/L.nP1 : 0, payNon:L.nN1 ? L.pyN/L.nN1 : 0, esPremW:L.nWP1 ? L.esWP/L.nWP1 : 0,
     esBUW:eA && eA.wkY1 ? eA.alloc/eA.wkY1 : 0, esShare:eA && eA.wage > 0 ? eA.alloc/eA.wage*100 : 0, esRate:eA && eA.conv > 0 ? eA.rateXbu/eA.conv : 0,
-    esCapB:eA && eA.partWkY ? eA.capBind/eA.partWkY*100 : 0, esConv:eA && L.n1 ? eA.conv/L.n1 : 0, esRet:eA && L.n1 ? eA.ret/L.n1 : 0}};
+    esCapB:eA && eA.partWkY ? eA.capBind/eA.partWkY*100 : 0, esConv:eA && L.n1 ? eA.conv/L.n1 : 0, esRet:eA && L.n1 ? eA.ret/L.n1 : 0,
+    /* Session 21 (s41): person-year FGT2 (x100) and size by group; BLEI by group (tbBleiRes adds the b* keys) */
+    gPartF2:gP.f2, gNonF2:gN.f2, gPartK:gP.k, gNonK:gN.k})};
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
@@ -2081,7 +2119,8 @@ var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthRe
   'tax','need','treas','tauMean','tauLast','dE','E','E0','zero','gPartRes','gPartF0','gNonRes','gNonF0','gPthRes','gPthF0','gLowRes','gLowF0','gTopRes','gTopF0',
   'gPartW','gNonW','gPthW','gLowW','gTopW','pyPoor','everPoor','spellMean','chronic','emp','hrs','Er','giniD','giniX','pLev10','pLev20','realT','bleiR','bleiP',
   'pjNet','pjGift','pjBU','pjExp','pjHrs','pjDisp','pjWork','pjRc','pjSaved',  /* N1 (session 15) */
-  'bzPay','esPrem','payPart','payNon','esPremW','esBUW','esShare','esRate','esCapB','esConv','esRet'];  /* N1 (session 19, s38) */
+  'bzPay','esPrem','payPart','payNon','esPremW','esBUW','esShare','esRate','esCapB','esConv','esRet',  /* N1 (session 19, s38) */
+  'gPartF2','gNonF2','gPartK','gNonK'].concat(TB_BLEI_DEFS.reduce(function(r, d){ TB_BLEI_GRPS.forEach(function(g){ ['Py','Cr','20','Md'].forEach(function(m){ r.push('b' + d + g + m); }); }); return r; }, []));  /* session 21 (s41) */
 /* Paired study over seeds 1..N (optionally lo..hi). envP: the Compassionism scenario that defines the environment, the essentials
  * supply path (its matched Baseline, as in sessions 2-5) and the groups (participants: latent uCCO < its partRate; PTH members:
  * latent uPTH < its pthUptake, the same agents in every design). cfgs: [{p, o, cm, pw}]; pw switches PATHWAY_OFF entries for that
@@ -2487,6 +2526,62 @@ function espUnitSuite(){
   });
   return out;
 }
+/* Session 21 (s41; i10-1): tests for BLEI by group (tbBleiYear, tbBleiRes) and FGT2 by group. Reporting only: bit-identity of every
+ * earlier testbed measure to the harness before s41 (f961adc) was checked in session 21 by diffing full outputs (testbed esp, projcore,
+ * a5 and match); test 4 checks that the accumulation changes no agent and draws no random number. */
+function bleiUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), ow:PATHWAY_OFF.octaveWage};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; ESS = null; resetNR6(sv.nr); tbSetG(sv.g); PATHWAY_OFF.octaveWage = sv.ow; TB = null; LABOR = null; PRICE = null; LEDGER = null; } }
+  var FI = FULL_INTEGRATION, AD = ADVERSE_REFERENCE;
+  function run(P0, seed, row){ var P = nextRoundPreset(P0), R = tbPresets(P0), S = s3BaseS(P, seed), p = row.p(R);
+    CONVERSION_MODEL = row.cm || 'engine'; PROJ = row.pj ? Object.assign({}, PROJ_DEFAULTS, row.pj) : null; ESP = row.es ? Object.assign({}, ESP_DEFAULTS, row.es) : null;
+    PATHWAY_OFF.octaveWage = !!row.ow;
+    try { return tbRun(p, seed, {grp:{part:P.partRate, pth:P.pthUptake}}, S).res; } finally { PROJ = null; ESP = null; ESS = null; PATHWAY_OFF.octaveWage = false; CONVERSION_MODEL = 'engine'; } }
+  var ROWS = [{l:'Baseline', p:function(R){ return R.baseline(); }}, {l:'Compassionism, engine', p:function(R){ return R.cco(); }},
+    {l:'Compassionism, Hub spec, project hiring and ESP payroll, raise off', p:function(R){ return R.cco(); }, cm:'framework', pj:{}, es:{}, ow:true},
+    {l:'UBI $12,000', p:function(R){ return R.ubi(12000); }}];
+  var CASES = [[FI, 1], [FI, 2], [AD, 1]], RES = [];
+  CASES.forEach(function(c){ ROWS.forEach(function(r){ RES.push({c:c, r:r, x:run(c[0], c[1], r)}); }); });
+  function tag(q){ return (q.c[0] === FI ? 'FI' : 'Adverse') + ' seed ' + q.c[1] + ', ' + q.r.l; }
+  t('year 20, all adults: the design-neutral (N) and own (O) readings equal the testbed\'s nbleiPov and bleiPov exactly (4 designs x FI seeds 1-2, Adverse seed 1)', function(){
+    var bad = RES.filter(function(q){ return q.x.bNA20 !== q.x.nbleiPov || q.x.bOA20 !== q.x.bleiPov; });
+    return {pass:bad.length === 0, detail:bad.length ? bad.map(tag).join('; ') : RES.length + ' runs; e.g. FI seed 1 Baseline N ' + RES[0].x.bNA20.toFixed(1) + '%, O ' + RES[0].x.bOA20.toFixed(1) + '%'};
+  });
+  t('groups partition the population: participants + non-participants = all adults, and every BLEI share (3 readings x person-year, Crisis, year 20) and person-year FGT2 is the size-weighted mean of the two groups (tolerance 1e-9)', function(){
+    var worst = 0, n0 = 0;
+    RES.forEach(function(q){ var x = q.x, kP = x.gPartK, kN = x.gNonK, n = kP + kN; if (n !== 500) n0++;
+      ['N', 'O', 'X'].forEach(function(d){ ['Py', 'Cr', '20'].forEach(function(m){ worst = Math.max(worst, Math.abs((x['b' + d + 'P' + m]*kP + x['b' + d + 'N' + m]*kN)/n - x['b' + d + 'A' + m])); }); });
+      worst = Math.max(worst, Math.abs((x.gPartF2*kP + x.gNonF2*kN)/n - x.fgt2PY)); });
+    return {pass:n0 === 0 && worst < 1e-9, detail:'group sizes off in ' + n0 + ' runs; largest gap ' + worst.toExponential(2)};
+  });
+  t('reading X: raising one adult\'s contribution by $1,200 a year lowers X by 0.12 x $100 / the daily cost and leaves N unchanged; and in every run of a financed design here, X puts at least as many adults of each group in Crisis and below 30 days as N does', function(){
+    var bad = [];
+    RES.forEach(function(q){ var x = q.x; if (q.r.l === 'Baseline') return;
+      ['A', 'P', 'N'].forEach(function(g){ ['Cr', 'Py'].forEach(function(m){ if (x['bX' + g + m] + 1e-9 < x['bN' + g + m]) bad.push(tag(q) + ' ' + g + ' ' + m + ': X < N'); }); }); });
+    /* direct check on one agent: raising the contribution by $1,200 a year lowers X by gamma x $100 / the daily cost and leaves N alone */
+    var a = {wealth:20000, wage:40, yrWageUSD:48000, yrTax:6000, inCCO:false}, n1 = agentBLEI(a, 0, false, false, false, 0, false), x1 = agentBLEI(tbBleiNet(a), 0, false, false, false, 0, false);
+    a.yrTax += 1200; var n2 = agentBLEI(a, 0, false, false, false, 0, false), x2 = agentBLEI(tbBleiNet(a), 0, false, false, false, 0, false), want = 0.12*100/CFG.BASE_DAILY_COST;
+    var ok1 = n1 === n2 && Math.abs((x1 - x2) - want) < 1e-9, xNet = (0.2*20000 + 0.12*(48000 - 6000)/12)/CFG.BASE_DAILY_COST, ok2 = Math.abs(x1 - xNet) < 1e-9;
+    return {pass:bad.length === 0 && ok1 && ok2, detail:(bad.length ? bad.slice(0, 3).join('; ') + '; ' : '') + 'one agent: N ' + n1.toFixed(3) + ' -> ' + n2.toFixed(3) + ' d, X ' + x1.toFixed(3) + ' -> ' + x2.toFixed(3) + ' d (expected drop ' + want.toFixed(3) + '; X = (0.2 x wealth + 0.12 x net monthly earnings)/daily cost: ' + (ok2 ? 'yes' : 'no') + ')'};
+  });
+  t('reporting only: tbBleiYear changes no agent field and draws no random number (Full Integration, seed 1, after 5 years)', function(){
+    var P = nextRoundPreset(FI), CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0}; RNG = mulberry32(700004); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    RNG = mulberry32(1); for (var y = 0; y < 5; y++) runYear(ag, y, P, CALM);
+    ag.forEach(function(a, i){ a._tbPart = i % 3 !== 0; a.yrTax = 1000; });
+    var snap = JSON.stringify(ag), BG = tbBleiAcc();
+    RNG = mulberry32(99); tbBleiYear(BG, ag, P, {lines:'deflated'}, true); var r1 = RNG();
+    RNG = mulberry32(99); var r2 = RNG(), same = JSON.stringify(ag) === snap;
+    return {pass:same && r1 === r2 && BG.py[0] === P.nAgents, detail:'agents unchanged: ' + same + '; RNG untouched: ' + (r1 === r2) + '; person-years counted ' + BG.py[0]};
+  });
+  t('an adult with no support, no wealth and no earnings is in Crisis on every reading; one month of BU at $1,200 ($990 credit, 14.5 days) keeps a participant out of Crisis on N (why participants\' Crisis share is 0 on N)', function(){
+    var a = {wealth:-10000, wage:0.1, yrWageUSD:0, yrTax:0, inCCO:false, _tbM:0}, bn = agentBLEI(a, 0, false, false, false, 0, false), bm = bn + 990/CFG.BASE_DAILY_COST;
+    return {pass:bn < CFG.BLEI_CRISIS_MAX && bm >= CFG.BLEI_CRISIS_MAX, detail:'no support ' + bn.toFixed(2) + ' d; with one month of BU ' + bm.toFixed(2) + ' d'};
+  });
+  return out;
+}
 Object.assign(module.exports, { espUnitSuite, ESP_DEFAULTS, setEsp:function(x){ ESP = x; }, getESS:function(){ return ESS; } });
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
@@ -2589,7 +2684,12 @@ if (require.main === module) {
     console.log('\n=== espUnitSuite(): N1 ESP payroll in expired BU at workers\' own rates (harness-only) ===');
     EU.forEach(function(x){ if (!x.pass) ef++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + EU.length + ' run, ' + ef + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef) process.exitCode = 1;
+    /* Session 21 (s41; i10-1): BLEI by group (harness-only reporting). */
+    var BU_ = bleiUnitSuite(), bf = 0;
+    console.log('\n=== bleiUnitSuite(): BLEI by group beside FGT2 (s41; reporting only) ===');
+    BU_.forEach(function(x){ if (!x.pass) bf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + BU_.length + ' run, ' + bf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -3599,7 +3699,9 @@ if (require.main === module) {
      *            and public grocery at their own cost; tax-financed and money-created (aT = 0; Compassionism also at a = 1); group check.
      *  frontier  cost against basket FGT2 per design family, tax-financed (and money-created with --fin=money).
      *  esp       (session 19, s38) ESP payroll in the Hub-spec model: today's main row against ESP payroll at the defaults, its
-     *            sensitivities (d71-d75), the page's other rows with it, and hybrid financing at a = 0 and 1. Framework model only. */
+     *            sensitivities (d71-d75), the page's other rows with it, and hybrid financing at a = 0 and 1. Framework model only.
+     *  Session 21 (s41; i10-1): esp, proj and projcore also print BLEI by group beside FGT2 (bleiTables): participants and adults
+     *  who chose not to take part, on three readings of BLEI (design-neutral, the design's own, net of the contribution). */
     CFG.WEALTH_FLOOR = -10000;
     var nT = parseInt(process.argv[3] || '500', 10), secT = process.argv[4] || 'match';
     var envT = (process.argv[5] && process.argv[5].indexOf('--') !== 0 ? process.argv[5] : 'ref').split(',');
@@ -3623,6 +3725,27 @@ if (require.main === module) {
         if (dr < -0.5) why.push('r'); if (df > 0.5) why.push('i'); if (dw > 0.5) why.push('w'); if (why.length) worse.push(g[0] + ' (' + why.join('') + ')');
         return sg(dr, 1) + '% / ' + sg(df, 1) + ' / ' + sg(dw, 1); }).join('; ');
       return txt + ' | ' + (worse.length ? worse.join(', ') : 'none'); }
+    /* Session 21 (s41; i10-1): BLEI by group beside FGT2, two tables. cmp(i) gives the index of row i's comparison row (today's
+     * rule in esp, the raise-off row in projcore) or -1. Readings: N design-neutral (heads, d34), O the design's own, X net of the
+     * contribution (tbBleiYear). Changes are paired over seeds, in points; negative = fewer adults below the line. */
+    function bleiTables(R, lbl, B, cmp, cmpName){
+      function k(d, g, m){ return 'b' + d + g + m; }
+      function lv(r, d, m, all){ return (all ? f1(r[k(d, 'A', m)]) + ' / ' : '') + f1(r[k(d, 'P', m)]) + ' / ' + f1(r[k(d, 'N', m)]); }
+      function dd(x, y, d, m, ci){ var a = tbDiff(x, y, k(d, 'P', m)), b = tbDiff(x, y, k(d, 'N', m));
+        return ci ? sg(a.m) + ' [' + sg(a.lo) + ', ' + sg(a.hi) + '] / ' + sg(b.m) + ' [' + sg(b.lo) + ', ' + sg(b.hi) + ']' : sg(a.m) + ' / ' + sg(b.m); }
+      function g2(x, y){ var a = tbDiff(x, y, 'gPartF2'), b = tbDiff(x, y, 'gNonF2'); return sg(a.m) + ' / ' + sg(b.m); }
+      console.log('\nBLEI by group (s41), levels. Person-year shares over 20 years unless stated; part = participants, non = adults who chose not to take part (the same adults in every row). N = design-neutral BLEI (heads, d34); O = the design\'s own BLEI (the page\'s definition); X = N with income read as wage earnings net of the contribution. BLEI poverty = below 30 days (Crisis + Precarious); Crisis = below 7 days. Days at year-0 prices.');
+      console.log('| Design | Adults: part / non | FGT2 x100: part / non | BLEI poverty N: all / part / non | Crisis N: part / non | BLEI poverty O: all / part / non | BLEI poverty X: all / part / non | Crisis X: part / non | Year 20, BLEI poverty N: part / non | Year 20, median BLEI N (days): part / non |');
+      console.log('|' + Array(11).join('---|'));
+      R.forEach(function(r, i){ console.log('| ' + lbl[i] + ' | ' + f1(r.gPartK) + ' / ' + f1(r.gNonK) + ' | ' + f2(r.gPartF2) + ' / ' + f2(r.gNonF2) + ' | ' + lv(r, 'N', 'Py', true) + ' | ' + lv(r, 'N', 'Cr') +
+        ' | ' + lv(r, 'O', 'Py', true) + ' | ' + lv(r, 'X', 'Py', true) + ' | ' + lv(r, 'X', 'Cr') + ' | ' + lv(r, 'N', '20') + ' | ' + Math.round(r.bNPMd) + ' / ' + Math.round(r.bNNMd) + ' |'); });
+      console.log('\nBLEI by group (s41), changes in points: part / non, paired over seeds [95% CI on the design-neutral reading]. Negative = fewer adults below the line.');
+      console.log('| Design | vs Baseline: FGT2 x100 | vs Baseline: BLEI poverty N | vs Baseline: Crisis N | vs Baseline: BLEI poverty O | vs Baseline: BLEI poverty X | vs Baseline: Crisis X | vs ' + cmpName + ': FGT2 x100 | vs ' + cmpName + ': BLEI poverty N | vs ' + cmpName + ': Crisis N | vs ' + cmpName + ': BLEI poverty O | vs ' + cmpName + ': BLEI poverty X | vs ' + cmpName + ': Crisis X |');
+      console.log('|' + Array(14).join('---|'));
+      R.forEach(function(r, i){ if (!i) return; var j = cmp(i), C = j > 0 ? R[j] : null;
+        console.log('| ' + lbl[i] + ' | ' + g2(r, B) + ' | ' + dd(r, B, 'N', 'Py', true) + ' | ' + dd(r, B, 'N', 'Cr') + ' | ' + dd(r, B, 'O', 'Py') + ' | ' + dd(r, B, 'X', 'Py') + ' | ' + dd(r, B, 'X', 'Cr') +
+          ' | ' + (C ? g2(r, C) + ' | ' + dd(r, C, 'N', 'Py', true) + ' | ' + dd(r, C, 'N', 'Cr') + ' | ' + dd(r, C, 'O', 'Py') + ' | ' + dd(r, C, 'X', 'Py') + ' | ' + dd(r, C, 'X', 'Cr') : '— | — | — | — | — | —') + ' |'); });
+    }
     console.log('=== A4 testbed (session 6): seeds 1-' + nT + ', ' + AG + ' agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===');
     console.log('Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment\'s annuity value, against own cost; x100.');
     if (secT === 'match') envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P);
@@ -3835,6 +3958,7 @@ if (require.main === module) {
               ' | ' + (i ? sg(tbDiff(r, B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + (i && r.cost > 0 ? sg(d.m/(r.cost/1000), 3) : '—') + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + pinf(r.endoAnn) +
               '% | ' + (r.pjNet || r.pjGift ? $(r.pjNet + r.pjGift) : '—') + ' | ' + (r.pjHrs ? f1(r.pjHrs) : '—') + ' | ' + (r.pjWork ? f1(r.pjWork) + '%' : '—') + ' | ' + (r.pjRc ? f2(r.pjRc) + 'x' : '—') + ' | ' + (r.pjExp ? $(r.pjExp) : '—') +
               ' | ' + (i ? grpCell(r, B) : '—') + ' |'); });
+          bleiTables(R, lbl, B, function(i){ return i === 2 ? -1 : 2; }, 'raise off');  /* session 21 (s41) */
         }); });
     }
     if (secT === 'esp'){  /* N1, session 19 (s38; d70-d76; N1-design-esp-payroll.md, Section 8): ESP payroll in the Hub-spec model. Framework model only. */
@@ -3877,6 +4001,7 @@ if (require.main === module) {
           var es = r.esPrem > 0 || r.esBUW > 0;
           console.log('| ' + lbl[i] + ' | ' + $(r.bzPay) + ' | ' + (es ? $(r.esPrem) : '—') + ' | ' + $(r.bzPay + r.esPrem) + ' | ' + (es ? $(r.esPremW) : '—') + ' | ' + $(r.payPart) + ' / ' + $(r.payNon) +
             ' | ' + (es ? $(r.esBUW) : '—') + ' | ' + (es ? f1(r.esShare) + '%' : '—') + ' | ' + (es ? f2(r.esRate) + 'x' : '—') + ' | ' + (es ? r.esCapB.toFixed(2) + '%' : '—') + ' | ' + g(r, B) + ' | ' + (i > 1 ? g(r, TD) : '—') + ' |'); });
+        bleiTables(R, lbl, B, function(i){ var v = vsT(i); return v ? v.j : -1; }, 'its today row');  /* session 21 (s41): the i10 question */
         if (!infl) console.log(D33_NOTE);
       });
     }
