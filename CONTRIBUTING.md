@@ -43,6 +43,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: uploading a session's files as one zip (session 17)
+
+GitHub's web upload flattens folders and cannot unzip, so session 16's walk-through landed in the repository root and its tour page replaced README.md (commit `169e065`; `domtest` failed 94 of 95). The new workflow `.github/workflows/apply-upload.yml` fixes this for every later upload:
+
+- **How to use it.** A session delivers one zip named `apply-session-NN.zip`. Drop it on the repository's root upload page and commit. The workflow unzips it with its folders intact, removes any paths listed in its `DELETE.txt`, runs `validate`, `unit` and `domtest` on the result, and commits it to main only if all three pass, removing the zip. It then starts `checks` (and `release`, if `index.html` changed) on the new commit, since commits made by the workflow start no other workflow on their own.
+- **Safeguards.** A zip may not touch `.github/` or reach outside the repository. If a check fails, nothing is committed; the zip stays on main and the run's log names the failure. Actions > apply upload > Run workflow retries it.
+- **The repair.** `apply-session-16.zip` carried session 16's `README.md`, this file and the `walkthrough/` folder, and its `DELETE.txt` removed the 27 walk-through files from the root.
+
 ## Unreleased: the revised opening line (i5) and the walk-through (s29)
 
 After the v4.22 tag (`777d9b3`, Sep 28, 2026), Duke revised the page's opening line (`589a127`) to: "Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: test that claim against five other designs on the same simulated people." The tagged v4.22 release, and the session 11 note below, carry the earlier wording (d41).
