@@ -1,99 +1,131 @@
-# Compassionism Framework Simulation
+# Walk-through: the Compassionism Framework Simulation (v4.22)
 
-**Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: see how it does on poverty and work against five other designs on the same simulated people.**
+<!-- Written by walkthrough/make_walkthrough.py. Edit the captions there and rebuild; edits here are overwritten. -->
 
-A research-oriented, browser-based agent-based simulation exploring all five [Compassionism](https://bettertobest.github.io/research-hub/) architectures for comparative policy analysis — no installation required. BLEI-calibrated against US Consumer Expenditure Survey data.
+[![The walk-through video](img/poster.jpg)](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)
 
-The page opens with a comparison: Compassionism beside a basic income, a negative income tax, an asset endowment, a public grocery network and X-Cents, run on the same simulated adults under the same rules, with each design's description and source beneath it. Two views compare the designs at equal cost and at the size their proponents propose, and every row shows its change in poverty severity per $1,000. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty, with the deepest shortfalls weighted most. The comparison comes from the open policy testbed in `harness.js`, and the page names the command that reproduces it.
+**[Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (6:22, narrated by a synthetic voice, with captions; [caption file](captions.vtt)). The same tour follows as text, one screenshot per step.
 
-**[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
+It covers what the page shows, how Compassionism works, what the model finds so far, how to run a scenario, how to check the work, and how to help. Every figure below is read from the page's own comparison data when the tour is built (`python3 walkthrough/make_walkthrough.py`), so it matches the page it was built from. The figures are results of the model under its stated assumptions, not forecasts.
 
-**New to the page?** [Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4) (about six minutes, narrated, with captions) or [read it with screenshots](walkthrough/): what the page shows, how Compassionism works, what the model finds so far, and how to check it or help.
+## 1. What the page is for
 
-[![checks](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml/badge.svg)](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml)
+![The page's opening sentence, highlighted](img/01-headline.png)
 
-This file covers what the project is and how to run it. For everything version-specific — the full changelog, current output metrics, methodology, and formulas — see the **[Replication Framework](https://bettertobest.github.io/compassionism-simulation/replication.html)**, which is kept current with each release. For open questions, known limitations, and how to contribute, see **[CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md)**.
+The first screen says what the tool is for: set Compassionism beside five other anti-poverty designs and see how each does on poverty and work.
 
----
+![The subtitle: the rules every design shares, highlighted](img/02-rules.png)
 
-## What this simulates
+Every design runs on the same 500 simulated adults for 20 years, is paid for the same way, and faces the same rules for how people respond.
 
-The simulation models all five integrated Compassionism architectures and their interactions:
+![The "Read this first" caveats box, highlighted](img/03-caveats.png)
 
-| System | Layer | Role in the model |
-|--------|-------|-------------------|
-| **CCO** (Creative Currency Octaves) | Economic | Distributes flat Basic Units (BU) monthly to participants, redeemable at PTF businesses and convertible to primary currency at merit-scaled rates that improve with an agent's octave level and quality |
-| **PTF** (Public Trust Foundations) | Asset | Community-owned essential goods/services that accept BU; modeled as a **cost-reduction mechanism**, not a wealth-addition channel |
-| **PTH** (Public Trust Housing) | Asset | Community-owned housing; reduces housing-linked living costs and routes a share of that saving into Acre Equity, which appreciates over time and is accessible at exit subject to a liquidity haircut |
-| **SZH** (Social Zone Harmonization) | Spatial | Zone-level coherence gives residents a coherence-linked benefit and gates a separate cooperative-synergy bonus once PTF merchant density crosses a threshold |
-| **CIP** (Citizens Internet Portal) | Democratic | Digital platform administering CCO currency operations and democratic voting on PTF/PTH decisions; participation improves octave-advancement capability, quality accuracy, and reduces conversion-tax leakage |
+Read this first: it is an exploratory model, not a forecast. Its results show what its assumptions imply, not that the assumptions are true.
 
-Welfare outcomes are measured against the **Basic Living Economic Index (BLEI)** — a temporal-stability metric expressing how many days of basic living an agent's accessible resources cover, rather than a raw income or wealth snapshot. See the [BLEI paper](https://bettertobest.github.io/research-hub/basic-living-economic-index.html) for the full framework, and the Replication Framework for the current formulas as implemented.
+## 2. How Compassionism works
 
----
+![The design panel's description of Compassionism, highlighted](img/04-design.png)
 
-## How to use
+Each participant receives a monthly allowance of Basic Units (BU): a restricted currency for essentials that expires if it is not used. BU can be converted to dollars at elevated rates, set by market demand and by the quality of work the community validates through creative collectives. A participant's octave is their conversion capacity: a safeguard against exploitation, and an open ceiling for creators whose work draws demand. Wage work is still paid in dollars. Community-owned businesses and housing (PTF, PTH) lower living costs, zone coordination (SZH) adds a cooperative benefit, and a civic portal (CIP) runs the currency and the votes. Taking part is open to every adult. In the model, 78% do at the reference settings, and each adult's choice holds for all 20 years.
 
-**No Python. No installation. Just open `index.html` in any browser.**
+## 3. Reading the comparison
 
-### Option A — Open locally
-1. Download `index.html`
-2. Double-click — opens in Chrome, Firefox, Safari, or Edge
-3. Adjust controls and click **Run Simulation**
+![The comparison table at reference settings and equal cost, with Compassionism's row marked](img/05-table.png)
 
-### Option B — Host on GitHub Pages
-1. Upload `index.html` to your repository root
-2. Go to **Settings → Pages → Source → main branch / root**
-3. Live at `https://yourusername.github.io/compassionism-simulation/`
+Each row is a design. Cost is per adult per year, shown with the wage contribution that pays for it and the change in poverty per $1,000.
 
-The simulation itself documents its own current controls, presets, calibration constants, and known limitations in-app — see the collapsible **Assumptions, ODD Protocol & Known Limitations** and **References & Citations** panels at the bottom of the page, which are kept in sync with the shipped code.
+![The comparison table with the poverty-severity tooltip open](img/06-measure.png)
 
----
+The main measure is poverty severity: each adult's shortfall below a living-wage basket, squared so the deepest count most, averaged over 20 years. Beside it: the final year alone, the share of adults in poverty, hours worked, and any group left worse off than with no program.
 
-## Where to find version-specific information
+![The table's controls, highlighted](img/07-controls.png)
 
-This README intentionally stays stable across releases. For anything tied to a specific version:
+The controls switch the environment, compare the designs at equal cost or at the size their proponents propose, and model Compassionism as coded or as specified on the Hub.
 
-- **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/compassionism-simulation/replication.html) has the full line-by-line changelog, newest first, for every release.
-- **Current output metrics and large-N study results** — the Replication Framework's Performance Comparison section, refreshed after any mechanics-changing release.
-- **Formulas as currently implemented** — the Replication Framework's Mathematical Framework section, and the simulation's own source comments.
-- **Open questions, known limitations, and how to contribute** — [CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md), which tracks unresolved calibration items, model-architecture feedback, and good-first-issues.
+![The proposed-size view, with the basic income and negative income tax rows marked](img/08-proposed.png)
 
----
+At proposed size, the basic income pays $12,000 a year and the negative income tax guarantees the 2026 poverty guideline for one adult, $15,960.
 
-## Checking a copy
+## 4. What the model finds so far
 
-The simulation needs nothing installed. The checks that keep it honest need Node.js (22 or later) and one development dependency:
+![Compassionism, basic income and negative income tax rows marked, reference settings](img/09-headline-result.png)
+
+At the reference settings and equal cost, Compassionism as coded cuts poverty severity by 3.21 points, against 1.60 for a basic income and 2.30 for a negative income tax.
+
+![Compassionism's row and the shaded row without its two theoretical mechanisms, marked](img/10-mechanisms.png)
+
+The shaded row switches off two mechanisms that are theoretical, yet to be empirically tested, and cost nothing in the model: a yearly wage raise per octave, and slower inflation. At reference, with no inflation, only the wage raise acts. Without it the cut falls from 3.21 to 1.78, about 45% less.
+
+![The same two rows in the Adverse Environment](img/11-adverse.png)
+
+In the Adverse Environment, with recessions and 2% inflation, the two carry about 79% of the cut: 7.67 falls to 1.62. The next round replaces them or switches them off.
+
+![The mechanisms-off row and the basic income row, marked](img/12-without.png)
+
+Without them, Compassionism still does better than a basic income of equal cost, in all three environments.
+
+![The mechanisms-off row and the negative income tax row, marked](img/13-nit.png)
+
+The negative income tax cuts severity more at reference, 2.30, by focusing on the deepest shortfalls, but it raises the share in poverty from 55% to 81% and cuts hours by 22%.
+
+![Compassionism's row and the needs-based top-up row, marked](img/14-topup.png)
+
+A variant that moves a tenth of the flat allowance into a top-up for low earners cuts a little more: 3.38.
+
+![The worse-off cells for Compassionism and the basic income, marked](img/15-who-pays.png)
+
+Someone always pays. Each design is funded by a contribution on wages; under Compassionism the cost falls mainly on adults who chose not to take part, about $5,800 a year.
+
+![Compassionism as specified on the Hub, marked](img/16-hub-scale.png)
+
+At the scale specified on the Hub, Compassionism costs about $32,000 per adult a year, which would take a contribution of 61% of wages.
+
+![The caveats box, highlighted](img/17-limits.png)
+
+What the model cannot test: whether conversion rewards pay for new output (it has no production side), households and children, or savings from poverty removed.
+
+## 5. Run a scenario yourself
+
+![The live tab's scenario presets, highlighted](img/18-live.png)
+
+Compassionism's own scenarios run live in your browser: pick a preset, or change any control and press Run Simulation.
+
+![The live simulation: controls on the left, results on the right](img/19-results.png)
+
+Each run follows 500 adults year by year and reports poverty, wealth and the BLEI: how many days of basic living each adult's resources cover.
+
+![The Poverty by five measures panel](img/20-panels.png)
+
+Panels below show poverty by five measures, BLEI tiers over time, participants beside non-participants, and what each system contributes. These live runs use the engine's own settings, not the comparison's testbed profile, so their figures differ from the table's.
+
+![The Assumptions, ODD Protocol and Known Limitations panel, highlighted](img/21-assumptions.png)
+
+At the foot of the page: the assumptions, the ODD protocol, known limitations and references.
+
+## 6. Check the work
+
+![The Replication framework page](img/22-replication.png)
+
+The Replication framework page holds the formulas, the calibration and the full version history.
 
 ```
-npm install              # installs jsdom, used only by domtest.js
-node harness.js validate # the seed-42 reference run, asserted against the documented figures
-node harness.js unit     # pure-function tests
-node domtest.js          # drives index.html in a headless DOM (a few minutes)
+git clone https://github.com/BetterToBest/compassionism-simulation
+cd compassionism-simulation && npm install
+npm test                              # validate, unit and domtest
+node harness.js testbed 500 a5 ref    # the comparison table, reference environment
 ```
 
-Every `harness.js` study mode also accepts `--agents=N`, the population per run (default 500). For example, `node harness.js largen 500 headline --agents=5000` reruns the headline figures at 5,000 agents per run, in about five minutes on one CPU core.
+The simulation is one HTML file. harness.js runs the same engine from the command line; the comparison table comes from node harness.js testbed 500 a5 ref. npm test runs the three checks, validate, unit and domtest, and GitHub runs them on every push.
 
-The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see.
+## 7. Help improve it
 
----
+Ways to contribute, from [CONTRIBUTING.md](../CONTRIBUTING.md#how-to-contribute): scenario testing (the highest-value contribution), calibration with cited sources, reproducibility testing, model architecture feedback, code, and peer review.
 
-## License & attribution
+Contributions most wanted: sources for the untested constants, scenario tests from places you know, reproductions, and critiques of the design. Changes follow the project rules: the old behaviour stays behind a switch, results are compared on 500 paired seeds, and no constant is tuned to hit a target. Open an issue or a pull request on GitHub. CONTRIBUTING.md explains how.
 
-Split licensing, since v4.8:
+## Links
 
-- **Source code** (`index.html`, `harness.js`, `domtest.js`) — [Apache License 2.0](LICENSE-CODE.txt).
-- **Documentation and papers** (this README, CONTRIBUTING.md, the Replication Framework, and the Research Hub papers) — [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
-
-**Cite as:**
-> Johnson, D. & Claude (Anthropic). (2026). *Compassionism Framework Simulation*. Better To Best Research Hub. <https://doi.org/10.17605/OSF.IO/QWTE2> (source code: Apache License 2.0; content and documentation: CC BY 4.0)
-
-The DOI resolves to the archived record; cite the specific version and date you used alongside it if that matters for your purposes (the simulation's own footer and export files record the version and timestamp of any given run).
-
-**Research Hub:** [bettertobest.github.io/research-hub](https://bettertobest.github.io/research-hub/)
-**Wiki:** [bettertobest.github.io/research-hub/wiki](https://bettertobest.github.io/research-hub/wiki/)
-**BLEI Paper:** [basic-living-economic-index.html](https://bettertobest.github.io/research-hub/basic-living-economic-index.html)
-**Replication Framework:** [replication.html](https://bettertobest.github.io/compassionism-simulation/replication.html)
-**Contributors' Guide:** [CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md)
-**DOI:** [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
-**Contact:** BetterToBestResearch@gmail.com
+- Simulation: https://bettertobest.github.io/compassionism-simulation/
+- Code and checks: https://github.com/BetterToBest/compassionism-simulation
+- Replication framework: https://bettertobest.github.io/compassionism-simulation/replication.html
+- Archive: https://doi.org/10.17605/OSF.IO/QWTE2
