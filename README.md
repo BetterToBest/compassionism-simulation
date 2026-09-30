@@ -1,12 +1,14 @@
 # Compassionism Framework Simulation
 
-**Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: test that claim against five other designs on the same simulated people.**
+**Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: see how it does on poverty and work against five other designs on the same simulated people.**
 
 A research-oriented, browser-based agent-based simulation exploring all five [Compassionism](https://bettertobest.github.io/research-hub/) architectures for comparative policy analysis — no installation required. BLEI-calibrated against US Consumer Expenditure Survey data.
 
 The page opens with a comparison: Compassionism beside a basic income, a negative income tax, an asset endowment, a public grocery network and X-Cents, run on the same simulated adults under the same rules, with each design's description and source beneath it. Two views compare the designs at equal cost and at the size their proponents propose, and every row shows its change in poverty severity per $1,000. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty, with the deepest shortfalls weighted most. The comparison comes from the open policy testbed in `harness.js`, and the page names the command that reproduces it.
 
 **[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
+
+**New to the page?** [Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4) (about five minutes, captions on screen) or [read it with screenshots](walkthrough/): what the page shows, how Compassionism works, what the model finds so far, and how to check it or help.
 
 [![checks](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml/badge.svg)](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml)
 
