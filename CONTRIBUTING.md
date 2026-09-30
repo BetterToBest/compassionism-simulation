@@ -43,6 +43,27 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
+## Unreleased: ESP payroll in expired BU at workers' own rates (N1, s38; harness only)
+
+In the Hub-spec (framework) model, businesses convert every BU they accept at a flat 3× and pay the premium over a cash sale to every adult in proportion to wages: the model's largest flow, with no mechanism behind it. Duke's rule R7 (Sep 29) supplies one for the wage part: essential service providers (ESPs) may pay workers in expired BU, and the workers convert them at their own earned rates. The design and its decisions (d70–d76) are in `N1-design-esp-payroll.md` (session 18).
+
+- **`ESP` in `harness.js`** (null by default, so every run is bit-identical: session 19 diffed the full output of `testbed projcore`, `proj` and `a5`, `ledger` and `price framework` against `b1bc475`). Hub-spec model only; the engine model has no business conversion and ignores it (d70). Each year:
+  - **Payroll pool (d71).** 20% of the BU ESPs accepted last year: compensation ÷ gross output in the essential industries, weighted by the basket's essentials (BEA GDP-by-industry, 2024 values; range 0.15–0.26; derived by `sources/esp_payroll_share.py`, which also derives the workforce share). The ESP converts the rest at 3× as now.
+  - **ESP workers (d72).** 23.0% of adults (BLS CES Table B-1, August 2026), fixed by agent index, so they are the same adults in every design and seed and no random number is drawn. The pool is shared in proportion to last year's wage, each share capped at that wage.
+  - **Who converts (d73).** Participating ESP workers whose own rate after tax, times the CIP bonus, beats par take their share as expired notes and convert it at their own rate. Everyone else is paid in dollars, and the ESP converts those BU at 3× this year.
+  - **Capacity (d74).** 12,000 × 2^octave BU a year, net of project BU; BU above it are paid in dollars. It binds for 0.04% of participating ESP worker-years at reference (issue i9: octave advancement saturates).
+  - **The rest (d75).** The ESP's own premium is paid as today, to every adult by wage, as the stand-in for its other costs and surplus.
+  - **Income and work.** Wages are unchanged, so BU pay counts at face value in wages and the contribution base. The premium, BU × (rate × (1 − tax) × CIP bonus × income shock − 1), is conversion income and program cost. It is earned, so it enters the wage elasticity as a raise, with no income effect (the fairness rule).
+  - **Switches.** `lam`, `work` (a share, `'ptf'` or `'all'`), `take` (`'par'` or `'biz'`), `cap` (`'dollars'`, `'save'` or `'none'`) and `rest` (`'all'` or `'esp'`).
+- **`espUnitSuite()`**, eleven tests, run by `unit`: ESP off creates no state; λ = 0 reproduces ESP off exactly; BU conservation every year; the wage cap; octave capacity; non-participants never convert; no added random draws and a fixed workforce; the engine model unaffected; ledger rows and the premium formula; the labor raise; the worker-cooperative and "beats 3×" alternatives.
+- **The testbed reports** each run's business premium as paid, and payroll premium by group, over years 1–19 (year 0 pays none). This is reporting only.
+- **`node harness.js testbed N esp ENV`** reproduces the restudy: today's Hub-spec main row, ESP payroll at the defaults, every d71–d75 alternative, the page's other rows with and without it, and hybrid financing at a = 0 and a = 1. Its "today" rows equal session 16's 500-seed core rows.
+- **Result (500 seeds, tax-financed at own cost).** ESP payroll makes the Hub-spec main row worse in all three environments: the 20-year average FGT₂ rises by 2.71 points at reference, 1.20 in the Adverse Environment and 0.26 in the Stress Test (95% intervals within ±0.04). Under hybrid financing it rises by 0.13–0.41, with or without H1.
+  - **Every alternative is also worse, with one exception.** That exception is making every adult an ESP worker in the Adverse Environment (−0.24).
+  - **The reason.** The premium moves from every adult by wage to participating ESP workers, so non-participants lose: about $6,000 a year at reference against today's rule. Workers' own rates (4.23× on average at reference) beat the ESP's 3×, so the total premium also rises (9% at reference), and at reference the wage contribution that pays for it rises from 74.9% to 80.0% of wages.
+- **The engine in `index.html` is unchanged**, and so is the page. Per d76 the Hub-spec main row changes at the N1 release (s35).
+- **Checks.** `validate` passes, `unit` passes (the new suite 11 of 11), and `domtest` passes all 95.
+
 ## Unreleased: uploading a session's files as one zip (session 17)
 
 GitHub's web upload flattens folders and cannot unzip, so session 16's walk-through landed in the repository root and its tour page replaced README.md (commit `169e065`; `domtest` failed 94 of 95). The new workflow `.github/workflows/apply-upload.yml` fixes this for every later upload:

@@ -274,6 +274,41 @@ function pjOwnRate(a, p, pcb){ var oc = 1 + (a.octave/Math.max(1, p.maxOct))*(Ma
   return Math.min((1 + qf*(oc - 1))*ph*pb, p.maxMult*(p.phi ? CFG.PHI_RATIO : 1.0)); }
 function pjTax(p, r){ var bT = p.cip ? p.tax*(1 - p.cipDemo*0.18) : p.tax; return Math.min(CFG.PROG_TAX_MAX, bT + Math.max(0, (r - CFG.PROG_PIVOT)*CFG.PROG_RATE)); }
 function pjNewAcc(){ return {pool:0, gift:0, exp:0, alloc:0, carry:0, conv:0, giftConv:0, gross:0, net:0, giftNet:0, hrs:0, disp:0, work:0, partY:0, rc:0, rcN:0, overCap:0, unwilling:0}; }
+/* N1, session 19 (s38; decisions d70-d76; N1-design-esp-payroll.md): ESP PAYROLL IN EXPIRED BU AT WORKERS' OWN RATES, the design's
+ * mechanism (Duke's R7, Sep 29) for the wage part of the Hub-spec model's business conversion (N1 above). Framework model only: the
+ * engine model has no business conversion and ignores ESP (d70). ESP = null (the default) leaves every run bit-identical (session 19
+ * diffed full outputs against b1bc475; `unit` checks lam 0 against ESP off). When an object:
+ *  lam   payroll share (d71): of the BU essential service providers accept in year t, lam are paid out as wages in year t + 1 (the
+ *        premium's timing today) and the rest convert at FW.bizRate as now. 0.20 = compensation / gross output in the essential
+ *        industries, weighted by CFG.BASKET's essentials (BEA GDP-by-industry, 2024 values: 0.20 on both the Jun 25 and the Sep 30, 2026 releases; range 0.15-0.26,
+ *        leaning high because BEA measures a grocer's output as its margin; sources/esp_payroll_share.py).
+ *  work  who the ESP workers are (d72): a share of adults (0.230 = BLS CES Table B-1, Aug 2026: grocers, food services, utilities,
+ *        real estate and health care / total nonfarm; 0.152 without food services), assigned by agent index (the fractional part of
+ *        (i + 1) x 0.618... below the share: no RNG, the same adults in every design and seed); 'ptf' = this year's PTF members (the
+ *        Hub's "PTF workers"); 'all' = every adult (today's payout population).
+ *        The pool is shared among ESP workers in proportion to last year's wage income, each share capped at that wage; any excess
+ *        returns to the ESP.
+ *  take  'par' (d73): a participating ESP worker whose own rate (octave, quality, Phi, PTF bonus; the rate project hiring reads) after
+ *        the progressive tax, times the CIP bonus, beats par takes their share as expired notes and converts it; 'biz': only where the
+ *        own rate beats FW.bizRate (a revenue-maximizing ESP). Everyone else is paid in dollars, and the ESP converts those BU itself.
+ *  cap   'dollars' (d74): payroll conversion is capped at 12 x FW.octaveCapBase x 2^octave BU a year, net of this year's project BU;
+ *        BU above it are paid in dollars (the ESP converts them). 'save': the excess is saved and converted first in later years (R6).
+ *        'none': no cap.
+ *  rest  'all' (d75): the ESP's own premium, on the share it keeps and on the BU returned to it, is paid as today: next year (the
+ *        returned BU: this year, with the rest of last year's premium) to every adult by last year's wage, the stand-in for the ESP's
+ *        other costs and surplus. 'esp': to its own workers by last year's wage (a worker cooperative).
+ * Income: wages are unchanged, so BU pay counts at face value in wages and the contribution base; the premium over face value,
+ * BU x (rate x (1 - tax) x CIP bonus x income shock - 1), is conversion income: program cost, and P_G under money or hybrid financing.
+ * Labor: the premium is earned by working at an ESP, so it enters the wage elasticity as a raise, 1 + premium before the income shock /
+ * last year's wage, inside the same uncompensated factor as every other raise, with no income effect (the fairness rule). The ESP's
+ * own premium keeps today's treatment. No RNG is drawn in any ESP step.
+ * ESS: per-run state, reset by runYear at yr 0; ESS.acc tallies the flows in year-0 dollars for the testbed and the unit tests. */
+var ESP = null;
+var ESP_DEFAULTS = {lam:0.20, work:0.230, take:'par', cap:'dollars', rest:'all'};
+var ESP_GOLD = (Math.sqrt(5) - 1)/2;
+var ESS = null;
+function esNewAcc(){ return {accBU:0, ownBU:0, poolPaid:0, alloc:0, conv:0, ret:0, retNon:0, retPar:0, retCap:0, retWage:0, retNet:0, gross:0, tax:0, prem:0, rateXbu:0,
+  wkY:0, wkY1:0, wage:0, partWkY:0, tk:0, capBind:0, maxShare:0, sv:0}; }
 /* PRICE (A2 issuance and price module): null = off (index.html). When an object, runYear() reprices the basket by
  * PRICE.bIdx (the endogenous index, set each year by priceRun from the previous year's flows), reads COLA off the
  * endogenous headline rate, indexes wages to P_G by PRICE.wIdx, and accumulates the year's flows into PRICE.acc.
@@ -344,7 +379,8 @@ function setRestudy(o){ var old = {THETA_GATE:THETA_GATE, PTH_MODE:PTH_MODE, DIS
  *    endowment's annuity value, against the agent's own cost (gross basket less in-kind cuts). */
 var TB = null;
 var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true};
-function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0}; }
+function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0,
+  bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0}; }  /* session 19 (s38): business premium and ESP payroll by group, years 1-19 (reporting only) */
 function tbYear(p, colaF){
   var s = p.tb;
   TB.cur = tbNewAcc();
@@ -403,6 +439,10 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   if (g > 0){ if (!a._tbInSp) a._tbSp = (a._tbSp || 0) + 1; a._tbInSp = true; } else a._tbInSp = false;
   C.emp += E > 0 ? 1 : 0; C.hrs += a._lbE0 > 0 ? (a._pjHW ? E + a._pjHW : E)/a._lbE0 : 1;  /* N1 (session 15): + project hours at the worker's own wage */
   C.bR += a._bleiR || 0; C.bP += a._bleiP || 0;  /* session 9 (i3-2): BLEI raises, and those the program's support carried over the gate */
+  /* Session 19 (s38): the framework model's business premium as received, the ESP's own payout and ESP payroll, by group, over the years it
+   * is paid (1 to 19; year 0 pays none). Reporting only, no RNG; zero in the engine model. */
+  if (yr > 0){ var bzY = a._fwPayY || 0, esY = a._esPrY || 0; C.n1++; C.bz += bzY; C.es += esY;
+    if (a.inCCO){ C.nP1++; C.pyP += bzY + esY; if (a._esWk){ C.nWP1++; C.esWP += esY; } } else { C.nN1++; C.pyN += bzY; } }
   a._tbDisp = E + conv + (a.yrUbiUSD || 0) + a.yrTbCash - a.yrTax; a._tbExt = a._tbDisp + Math.max(0, mlc - costUSD);
   a._tbPthPrev = a._tbPthNow || 0; a._tbPthNow = 0;
 }
@@ -601,6 +641,46 @@ function runYear(agentSet,yr,p,recSt){
     if(yr===0&&PROJ.giftMode==='forward'&&PROJ.gift>0){PJS.next.gpool+=PROJ.gift*pjP.length;PJS.acc.gift+=PROJ.gift*pjP.length;PJS.acc.pool+=PROJ.gift*pjP.length;}
     if(yr===1&&PROJ.giftMode==='holder'&&PROJ.gift>0)pjP.forEach(function(a){a._pjGiftH=(a._pjGiftH||0)+PROJ.gift;PJS.acc.gift+=PROJ.gift;});
   }
+  var ESON=FWON&&!!ESP,esIdx=1,esCipB=1;  /* N1 (session 19, s38): ESP payroll. Framework model only; no RNG is drawn in any ESP step. */
+  if(ESON){
+    if(yr===0||!ESS)ESS={prev:null,acc:esNewAcc(),y:[]};
+    esIdx=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);esCipB=p.cip?(1+p.cipDemo*0.12):1.0;
+    var esA=ESS.acc,esPool=ESS.prev?ESS.prev.pool:0,esW=0,esRet=0,esSv=0,esY=ESS.y[yr]={pool:esPool,conv:0,ret:0,sv:0};
+    agentSet.forEach(function(a,i){
+      if(a._esU===undefined)a._esU=((i+1)*ESP_GOLD)%1;  // d72: fixed by agent index
+      a._esWk=ESP.work==='all'?true:ESP.work==='ptf'?!!(p.ptf&&a.inPTF):a._esU<ESP.work;
+      a._esBU=0;a._esC=0;a._esX=0;a._esR=0;
+      if(a._esWk)esW+=Math.max(0,a._fwW||0);
+    });
+    ESS.wW=esW;esA.poolPaid+=esPool/esIdx;
+    agentSet.forEach(function(a){
+      if(!a._esWk&&!(a._esSv>0))return;
+      var w=Math.max(0,a._fwW||0),sh=0,bu=0;
+      if(a._esWk){esA.wkY++;if(yr>0){esA.wkY1++;esA.wage+=w/esIdx;}
+        if(esPool>0&&esW>0){sh=esPool*w/esW;bu=Math.min(sh,w);if(sh>bu){esRet+=sh-bu;esA.retWage+=(sh-bu)/esIdx;}if(w>0)esA.maxShare=Math.max(esA.maxShare,bu/w);}
+        a._esBU=bu;esA.alloc+=bu/esIdx;}
+      if(!(p.ccoOn&&a.inCCO)){esRet+=bu;esA.retNon+=bu/esIdx;return;}  // d73: non-participants have no earned rate; paid in dollars
+      if(a._esWk)esA.partWkY++;
+      var r=pjOwnRate(a,p,ptfConvBonus),tx=pjTax(p,r),ok=ESP.take==='biz'?r>FW.bizRate:r*(1-tx)*esCipB>1;
+      if(!ok){esRet+=bu;esA.retPar+=bu/esIdx;return;}  // below par (or below the ESP's rate, 'biz'): paid in dollars
+      var have=bu+(ESP.cap==='save'?(a._esSv||0):0);
+      var cap=ESP.cap==='none'?Infinity:Math.max(0,12*FW.octaveCapBase*Math.pow(2,a.octave)-(PJON?(a._pjBU||0)+(a._pjSaved||0):0));  // d74: net of project BU
+      var c=Math.min(have,cap);a._esK=cap;  // _esK: reporting only (the capacity test)
+      if(have>c+1e-9){esA.capBind++;if(ESP.cap==='save')a._esSv=have-c;else{esRet+=have-c;esA.retCap+=(have-c)/esIdx;}}
+      else if(ESP.cap==='save')a._esSv=0;
+      if(c>0){a._esC=c;a._esR=r;a._esX=w>0?c*(r*(1-tx)*esCipB-1)/w:0;esA.tk++;}  // the payroll raise for the labor module (before the income shock)
+    });
+    if(ESP.cap==='save')agentSet.forEach(function(a){esSv+=a._esSv||0;});
+    esY.ret=esRet;esY.sv=esSv;esA.ret+=esRet/esIdx;esA.sv=esSv/esIdx;
+    agentSet.forEach(function(a){esY.conv+=a._esC;});
+    if(esRet>0&&FWS.prev){  // d73-d75: the BU returned to the ESP convert at FW.bizRate this year, paid with the rest of last year's premium
+      var esBT=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax,esTR=Math.min(CFG.PROG_TAX_MAX,esBT+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*CFG.PROG_RATE)),esTP=Math.min(CFG.PROG_TAX_MAX,esBT);
+      var esRG=esRet*(FW.bizCap*FW.bizRate+(1-FW.bizCap)),esRT=esRet*(FW.bizCap*FW.bizRate*esTR+(1-FW.bizCap)*esTP),esRN=PATHWAY_OFF.conversion?0:esRG-esRT-esRet;
+      FWS.prev.bizNet+=esRN;esA.retNet+=esRN/esIdx;
+      if(LEDGER){ledAdd(yr,'espRetGross',esRG);ledAdd(yr,'espRetTax',esRT);ledAdd(yr,'espRetPremium',esRN);}
+    }
+    if(LEDGER){ledAdd(yr,'espPoolPaid',esPool);ledAdd(yr,'espConvBU',esY.conv);ledAdd(yr,'espRetBU',esRet);}
+  }
   var eShareCur=0,fShareCur=CFG.BASKET.food;CFG.ESSENTIALS.forEach(function(k){eShareCur+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});
   if(PRICE){eShareCur/=PRICE.bIdx;fShareCur=CFG.BASKET.food*PRICE.comp.food/PRICE.bIdx;}
   var rsAlt=PTH_MODE!=='basket'||DISC_BASE!=='basket';  // session 5 (d4/d5): harness-only
@@ -668,7 +748,8 @@ function runYear(agentSet,yr,p,recSt){
       var lbE0=annualWageUSD,lbBU=0,lbR=0,lbC=a._labC||0,lbU=p.ubi||0;
       if(p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){if(FWON){lbBU=fwB;lbR=fwLeft;}else lbBU=mainLoopCostUSD*(cfPreCCO-cf);}
       var lbBiz=(FWON&&FWS.prev&&FWS.prev.wSum>0)?Math.max(0,FWS.prev.bizNet)/FWS.prev.wSum:0;
-      var lbRaise=Math.pow(Math.max(1,a.wage/a._lwNB)*(1+lbBiz),LABOR.eps-LABOR.rho);  // uncompensated: Slutsky e_u = e_c + eta, eta = -rho
+      if(ESON&&ESP.rest==='esp')lbBiz=(a._esWk&&ESS.wW>0&&FWS.prev)?Math.max(0,FWS.prev.bizNet)/ESS.wW:0;  // d75 alternative: the ESP's premium reaches its own workers only
+      var lbRaise=Math.pow(Math.max(1,a.wage/a._lwNB)*(1+lbBiz)*(ESON?1+a._esX:1),LABOR.eps-LABOR.rho);  // uncompensated: Slutsky e_u = e_c + eta, eta = -rho. Session 19: x the ESP payroll raise (earned: one elasticity, no income effect)
       var tbQ=tbY?tbLab(a,tbY,lbE0,tbPT+tbG):null;if(tbQ)lbRaise*=tbQ.F;  // session 6: phase-out and contribution rates (one elasticity), extra unconditional dollars (one income effect)
       var lbInc=LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC+(tbQ?LABOR.rho*tbQ.V:0),lbDisp=LABOR.delta*lbC+(tbQ?tbQ.D:0);
       annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=lbE0;  // session 8 (A5): earnings with no response, for the hours measure
@@ -695,8 +776,16 @@ function runYear(agentSet,yr,p,recSt){
     }
     a.yrWageUSD=annualWageUSD;a.yrCostUSD=costUSD;a.yrBasketUSD=mainLoopCostUSD;a.yrConvUSD=0;  /* v4.17: income/basket poverty inputs (no RNG) */
     if(FWON){  // session 2, N1: last year's business conversion premium, paid to every agent in proportion to last year's wage income
-      if(FWS.prev&&FWS.prev.wSum>0){var fwPay=FWS.prev.bizNet*(a._fwW||0)/FWS.prev.wSum;a.wealth+=fwPay;a.yrConvUSD+=fwPay;yrCashSurplus+=fwPay;FWS.next.bizPaid+=fwPay;
+      a._fwPayY=0;  // session 19: reporting only (the testbed's premium-by-group columns)
+      if(FWS.prev&&FWS.prev.wSum>0){var fwPay=FWS.prev.bizNet*(a._fwW||0)/FWS.prev.wSum;
+        if(ESON&&ESP.rest==='esp')fwPay=(a._esWk&&ESS.wW>0)?FWS.prev.bizNet*(a._fwW||0)/ESS.wW:0;  // d75 alternative (session 19): a worker cooperative
+        a.wealth+=fwPay;a.yrConvUSD+=fwPay;yrCashSurplus+=fwPay;FWS.next.bizPaid+=fwPay;a._fwPayY=fwPay;
         if(PRICE)PRICE.acc.conv+=fwPay;if(LEDGER)ledAdd(yr,'fwBizPayout',fwPay);}
+      if(ESON){a._esPrY=0;if(a._esC>0){  // session 19 (s38, d73): ESP payroll BU converted at the worker's own rate; the premium over face value is conversion income
+        var esTx=pjTax(p,a._esR),esG=PATHWAY_OFF.conversion?0:a._esC*a._esR*esCipB*incomeShock,esPr=PATHWAY_OFF.conversion?0:esG*(1-esTx)-a._esC;
+        a.wealth+=esPr;a.yrConvUSD+=esPr;yrCashSurplus+=esPr;a._esPrY=esPr;a._esShk=incomeShock;
+        var esAc=ESS.acc;esAc.conv+=a._esC/esIdx;esAc.gross+=esG/esIdx;esAc.tax+=esG*esTx/esIdx;esAc.prem+=esPr/esIdx;esAc.rateXbu+=a._esR*a._esC/esIdx;
+        if(PRICE)PRICE.acc.conv+=esPr;if(LEDGER){ledAdd(yr,'espGross',esG);ledAdd(yr,'espTax',esG*esTx);ledAdd(yr,'espPremium',esPr);}}}
       a._fwW=annualWageUSD;FWS.next.wSum+=annualWageUSD;
     }
     if(isNaN(a.wealth))a.wealth=0;
@@ -813,11 +902,15 @@ function runYear(agentSet,yr,p,recSt){
   if(FWON){  // session 2, N1: businesses convert this year's accepted BU; the premium over a cash sale is paid out next year
     var nx=FWS.next,bTaxB=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax;
     var taxR=Math.min(CFG.PROG_TAX_MAX,bTaxB+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*CFG.PROG_RATE)),taxP=Math.min(CFG.PROG_TAX_MAX,bTaxB);
-    nx.bizGross=nx.bizBU*(FW.bizCap*FW.bizRate+(1-FW.bizCap));nx.bizTax=nx.bizBU*(FW.bizCap*FW.bizRate*taxR+(1-FW.bizCap)*taxP);
-    nx.bizNet=PATHWAY_OFF.conversion?0:nx.bizGross-nx.bizTax-nx.bizBU;  // session 7: the conversion switch also covers business-side conversion (harness-only)
+    var bzB=ESON?nx.bizBU*(1-ESP.lam):nx.bizBU;  // session 19 (d71): with ESP payroll the ESP converts the share it keeps; lam of what it accepted is next year's payroll
+    nx.bizGross=bzB*(FW.bizCap*FW.bizRate+(1-FW.bizCap));nx.bizTax=bzB*(FW.bizCap*FW.bizRate*taxR+(1-FW.bizCap)*taxP);
+    nx.bizNet=PATHWAY_OFF.conversion?0:nx.bizGross-nx.bizTax-bzB;  // session 7: the conversion switch also covers business-side conversion (harness-only)
     if(LEDGER){ledAdd(yr,'fwBizGross',nx.bizGross);ledAdd(yr,'fwBizTax',nx.bizTax);ledAdd(yr,'fwBizPremium',nx.bizNet);}
+    if(ESON){ESS.next={pool:nx.bizBU*ESP.lam};ESS.acc.accBU+=nx.bizBU/esIdx;ESS.acc.ownBU+=bzB/esIdx;ESS.y[yr].acc=nx.bizBU;ESS.y[yr].own=bzB;ESS.y[yr].poolNext=ESS.next.pool;
+      if(LEDGER){ledAdd(yr,'espOwnBU',bzB);ledAdd(yr,'espPoolNext',ESS.next.pool);}}
     FWS.prev=nx;
   }
+  if(ESON)ESS.prev=ESS.next;  // N1 (session 19)
   if(PJON)PJS.prev=PJS.next;  // N1 (session 15)
   return{bu:totalBU,conversion:totalConversion,stabOn:stabOn,stabM:stabM,colaF:colaF,buEff:buEff,emergN:emergN};  // v4.19
 }
@@ -1890,7 +1983,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null};
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
-  var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0};
+  var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0,
+    bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0};  /* session 19 (s38) */
   THETA_DENS = null;
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
@@ -1919,6 +2013,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       L.cash += C.cash/C.idx; L.endow += C.endow/C.idx; L.bu += C.bu/C.idx; L.conv += C.conv/C.idx; L.cutPT += C.cutPT/C.idx; L.cutG += C.cutG/C.idx; L.cap += C.cap/C.idx; L.pth += C.pthLiq/C.idx;
       L.pd += C.pd/C.idx; L.tgt += C.tgt/C.idx; L.tax += C.tax/C.idx; L.need += need/C.idx; L.treas += (C.tax - need)/C.idx; L.f0 += C.f0; L.f1 += C.f1; L.f2 += C.f2; L.n += C.n;
       L.emp += C.emp; L.hrs += C.hrs; L.Er += C.E/C.idx; L.bR += C.bR; L.bP += C.bP;  /* session 8 (A5): employment, hours, real wage earnings */
+      L.bz += C.bz/C.idx; L.es += C.es/C.idx; L.pyP += C.pyP/C.idx; L.pyN += C.pyN/C.idx; L.esWP += C.esWP/C.idx; L.n1 += C.n1; L.nP1 += C.nP1; L.nN1 += C.nN1; L.nWP1 += C.nWP1;  /* session 19 */
       if (o.fin === 'tax' || o.fin === 'hybrid') TB.tau = C.base > 0 ? Math.min(o.tauMax, need/C.base) : 0;
       var PGn = pmGenStep(PG, U, A.Y, o.lamG), capShare = o.ptfCap*(A.n ? A.ptfN/A.n : 0), PE = {};
       CFG.ESSENTIALS.forEach(function(k){
@@ -1951,6 +2046,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var pT = path[T-1], p10 = path[Math.min(T-1, 9)], realT = (p.cola ? pT.colaLevel : 1)/pT.full;
   function pjQ(k){ return (PROJ && PJS && PJS.acc.partY > 0) ? PJS.acc[k]/PJS.acc.partY : 0; }  /* N1 (session 15) */
   var pjSv = 0; if (PROJ && PJS && PJS.acc.partY > 0){ agents.forEach(function(a){ pjSv += (a._pjSaved || 0) + (a._pjGiftH || 0); }); pjSv /= Math.max(1, PJS.acc.partY/T); }
+  var esOn = !!(ESP && ESS && CONVERSION_MODEL === 'framework'), eA = esOn ? ESS.acc : null;  /* session 19 (s38) */
   var bI = path[T-1].bIdx, mx = 0, tauS = 0;
   for (var t = 1; t < T; t++) mx = Math.max(mx, path[t].bIdx/path[t-1].bIdx - 1);
   path.forEach(function(q){ tauS += q.tau; });
@@ -1966,7 +2062,15 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     giniD:giniD, giniX:giniX, pLev10:p10.full, pLev20:pT.full, realT:realT, bleiR:L.bR/L.n*100, bleiP:L.bP/L.n*100,
     /* N1 (session 15): project hiring, per participant-year, year-0 dollars (0 when PROJ is off) */
     pjNet:pjQ('net'), pjGift:pjQ('giftNet'), pjBU:pjQ('alloc'), pjExp:pjQ('exp'), pjHrs:pjQ('hrs'), pjDisp:pjQ('disp'), pjWork:pjQ('work')*100,
-    pjRc:(PROJ && PJS && PJS.acc.rcN) ? PJS.acc.rc/PJS.acc.rcN : 0, pjSaved:pjSv}};
+    pjRc:(PROJ && PJS && PJS.acc.rcN) ? PJS.acc.rc/PJS.acc.rcN : 0, pjSaved:pjSv,
+    /* Session 19 (s38): the business premium and ESP payroll, years 1-19, year-0 dollars. bzPay: the ESP's own premium as paid out
+     * (today's whole premium when ESP is off); esPrem: payroll premium; per adult-year, participant-year, non-participant-year and
+     * participating ESP worker-year. From ESS (0 when ESP is off): payroll BU per ESP worker-year, BU share of ESP pay (%), mean rate
+     * on payroll BU, the share of participating ESP worker-years where the octave cap binds (%), and BU converted or returned per
+     * adult-year. */
+    bzPay:L.n1 ? L.bz/L.n1 : 0, esPrem:L.n1 ? L.es/L.n1 : 0, payPart:L.nP1 ? L.pyP/L.nP1 : 0, payNon:L.nN1 ? L.pyN/L.nN1 : 0, esPremW:L.nWP1 ? L.esWP/L.nWP1 : 0,
+    esBUW:eA && eA.wkY1 ? eA.alloc/eA.wkY1 : 0, esShare:eA && eA.wage > 0 ? eA.alloc/eA.wage*100 : 0, esRate:eA && eA.conv > 0 ? eA.rateXbu/eA.conv : 0,
+    esCapB:eA && eA.partWkY ? eA.capBind/eA.partWkY*100 : 0, esConv:eA && L.n1 ? eA.conv/L.n1 : 0, esRet:eA && L.n1 ? eA.ret/L.n1 : 0}};
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
@@ -1976,7 +2080,8 @@ function tbRun(p, seed, o, S){
 var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthReal','fgt0','fgt1','fgt2','fgt0PY','fgt1PY','fgt2PY','cost','cCash','cEndow','cBU','cConv','cCut','cCap','cPth',
   'tax','need','treas','tauMean','tauLast','dE','E','E0','zero','gPartRes','gPartF0','gNonRes','gNonF0','gPthRes','gPthF0','gLowRes','gLowF0','gTopRes','gTopF0',
   'gPartW','gNonW','gPthW','gLowW','gTopW','pyPoor','everPoor','spellMean','chronic','emp','hrs','Er','giniD','giniX','pLev10','pLev20','realT','bleiR','bleiP',
-  'pjNet','pjGift','pjBU','pjExp','pjHrs','pjDisp','pjWork','pjRc','pjSaved'];  /* N1 (session 15) */
+  'pjNet','pjGift','pjBU','pjExp','pjHrs','pjDisp','pjWork','pjRc','pjSaved',  /* N1 (session 15) */
+  'bzPay','esPrem','payPart','payNon','esPremW','esBUW','esShare','esRate','esCapB','esConv','esRet'];  /* N1 (session 19, s38) */
 /* Paired study over seeds 1..N (optionally lo..hi). envP: the Compassionism scenario that defines the environment, the essentials
  * supply path (its matched Baseline, as in sessions 2-5) and the groups (participants: latent uCCO < its partRate; PTH members:
  * latent uPTH < its pthUptake, the same agents in every design). cfgs: [{p, o, cm, pw}]; pw switches PATHWAY_OFF entries for that
@@ -1990,9 +2095,10 @@ function tbStudy(cfgs, N, envP, o0, lo){
       if (c.pw) Object.assign(PATHWAY_OFF, c.pw);  /* d19: e.g. {octaveWage:true}, the octave wage bonus off for this row only */
       var g0 = tbSetG(c.g);  /* session 7: per-row engine-question switches (i3), restored below */
       var pj0 = PROJ; if (c.pj) PROJ = Object.assign({}, PROJ_DEFAULTS, c.pj === true ? {} : c.pj);  /* N1 (session 15): project hiring for this row only */
+      var es0 = ESP; if (c.es) ESP = Object.assign({}, ESP_DEFAULTS, c.es === true ? {} : c.es);  /* N1 (session 19): ESP payroll for this row only */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), S).res;
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
-      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; } });
+      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; } });
   }
   return out;
 }
@@ -2281,6 +2387,108 @@ function projUnitSuite(){
 }
 Object.assign(module.exports, { projUnitSuite, PROJ_DEFAULTS, tbSetG, setProj:function(x){ PROJ = x; }, getPJS:function(){ return PJS; } });
 
+/* N1, session 19 (s38): ESP payroll's tests (harness-only; N1-design-esp-payroll.md, Section 8). Each restores ESP, ESS, PROJ, FW,
+ * LABOR, LEDGER and the conversion model. Bit-identity of ESP = null to the harness before ESP existed (b1bc475) was checked in
+ * session 19 by diffing full outputs (testbed projcore, proj and a5, ledger, price framework); test 1 checks that ESP null leaves no
+ * ESP state, and test 2 that lam 0 reproduces ESP off exactly. */
+function espUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, cap:FW.octaveCapBase, nr:applyNR6()};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; ESS = null; FW.octaveCapBase = sv.cap; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; } }
+  var FI = FULL_INTEGRATION, PR = tbPresets(FI), CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0};
+  function es(o){ return Object.assign({}, ESP_DEFAULTS, o || {}); }
+  function pj(o){ return Object.assign({}, PROJ_DEFAULTS, o || {}); }
+  function same(r1, r2, ks){ return ks.every(function(k){ return r1[k] === r2[k]; }); }
+  /* a plain framework run (no price module), with a callback after each year */
+  function plain(P, seed, each){ CONVERSION_MODEL = 'framework'; RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    RNG = mulberry32(seed); for (var y = 0; y < P.years; y++){ runYear(ag, y, P, CALM); if (each) each(ag, y); } return ag; }
+  var ESK = ['esPrem','esPremW','esBUW','esShare','esRate','esCapB','esConv','esRet'];
+  t('off: with ESP null no ESP state is created and no agent carries a payroll field (Full Integration, seed 1, framework, project hiring on)', function(){
+    ESP = null; ESS = null; PROJ = pj(); var ag = plain(FI, 1), n = 0;
+    ag.forEach(function(a){ if (a._esWk !== undefined || a._esC !== undefined || a._esPrY !== undefined || a._esSv !== undefined) n++; });
+    return {pass:ESS === null && n === 0, detail:'ESS ' + (ESS === null ? 'null' : 'set') + '; agents with an ESP field: ' + n};
+  });
+  t('lam 0 reproduces ESP off exactly on every testbed measure but the payroll ones (framework, project hiring on, labor on; Full Integration seeds 1-2 and Adverse seed 1)', function(){
+    var ok = true, v = [], KS = TB_KEYS.filter(function(k){ return ESK.indexOf(k) < 0; });
+    [[FI, 1], [FI, 2], [ADVERSE_REFERENCE, 1]].forEach(function(c){ var P = nextRoundPreset(c[0]), S = s3BaseS(P, c[1]), R = tbPresets(c[0]);
+      CONVERSION_MODEL = 'framework'; PROJ = pj(); PATHWAY_OFF.octaveWage = true;
+      try { ESP = null; var r0 = tbRun(R.cco(), c[1], {fin:'tax', grp:{part:c[0].partRate, pth:c[0].pthUptake}}, S).res;
+        ESP = es({lam:0}); var r1 = tbRun(R.cco(), c[1], {fin:'tax', grp:{part:c[0].partRate, pth:c[0].pthUptake}}, S).res; }
+      finally { PATHWAY_OFF.octaveWage = false; }
+      if (!same(r0, r1, KS) || r1.esPrem !== 0) ok = false; v.push(Math.round(r0.bzPay) + '/' + Math.round(r1.bzPay)); });
+    return {pass:ok, detail:KS.length + ' measures identical; business premium per adult-yr (off/lam 0): ' + v.join(', ')};
+  });
+  t('conservation, every year: BU accepted = the ESP\'s own share + next year\'s payroll pool; each pool = BU converted by workers + BU returned to the ESP + the change in saved BU (defaults; and cap \'save\' at a tiny capacity; Full Integration, seed 1)', function(){
+    var ok = true, v = [];
+    [[es(), 1000], [es({cap:'save'}), 1]].forEach(function(c){ ESP = c[0]; FW.octaveCapBase = c[1]; PROJ = pj(); plain(FI, 1); var Y = ESS.y, e = 0, tot = 0;
+      for (var y = 0; y < Y.length; y++){ e = Math.max(e, Math.abs(Y[y].acc - Y[y].own - Y[y].poolNext)); tot += Y[y].acc;
+        if (y > 0) e = Math.max(e, Math.abs(Y[y].pool - Y[y - 1].poolNext), Math.abs(Y[y].pool - Y[y].conv - Y[y].ret - (Y[y].sv - Y[y - 1].sv))); }
+      if (e > 1e-6*tot/Y.length) ok = false; v.push(c[0].cap + ' (base ' + c[1] + '): largest gap $' + e.toExponential(1) + ', saved at the end $' + Math.round(Y[Y.length - 1].sv)); });
+    return {pass:ok, detail:v.join('; ')};
+  });
+  t('wage cap: no ESP worker is allocated more BU than last year\'s wage; with every BU paid to a 5% workforce the cap binds and the excess returns to the ESP, conserved (Full Integration, seed 1)', function(){
+    ESP = es(); plain(FI, 1); var m0 = ESS.acc.maxShare, r0 = ESS.acc.retWage;
+    ESP = es({lam:1, work:0.05}); plain(FI, 1); var m1 = ESS.acc.maxShare, r1 = ESS.acc.retWage, A = ESS.acc, cons = Math.abs(A.poolPaid - A.conv - A.ret) < 1e-6*A.poolPaid;
+    return {pass:m0 <= 1 + 1e-12 && m1 <= 1 + 1e-12 && Math.abs(m1 - 1) < 1e-12 && r1 > 0 && cons, detail:'largest BU / wage ' + m0.toFixed(3) + ' (defaults), ' + m1.toFixed(3) + ' (lam 1, work 0.05); returned above the wage $' + Math.round(r0) + ' / $' + Math.round(r1) + ' (year-0 $); conserved ' + cons};
+  });
+  t('capacity (cap \'dollars\'): no one converts payroll BU above 12 x base x 2^octave net of project BU, and at a tiny base the excess is paid in dollars; \'none\' never binds (Full Integration, seed 1, project hiring on)', function(){
+    var over = 0, n = 0; ESP = es(); PROJ = pj(); FW.octaveCapBase = 1;
+    plain(FI, 1, function(ag){ ag.forEach(function(a){ if (a._esC > 0){ n++; var k = 12*FW.octaveCapBase*Math.pow(2, a.octave); if (a._esC > a._esK + 1e-9 || a._esK > k + 1e-9) over++; } }); });
+    var rc = ESS.acc.retCap, cb = ESS.acc.capBind; ESP = es({cap:'none'}); plain(FI, 1); var cbN = ESS.acc.capBind;
+    return {pass:over === 0 && n > 0 && rc > 0 && cb > 0 && cbN === 0, detail:n + ' payroll conversions, ' + over + ' above capacity; paid in dollars over the cap $' + Math.round(rc) + ' (' + cb + ' worker-years); cap \'none\' binds ' + cbN};
+  });
+  t('non-participants never convert payroll BU; their share is paid in dollars and the ESP converts it (Full Integration, seed 1)', function(){
+    var bad = 0, nonWk = 0; ESP = es();
+    plain(FI, 1, function(ag){ ag.forEach(function(a){ if (!a.inCCO){ if (a._esC > 0 || a._esPrY !== 0) bad++; if (a._esWk) nonWk++; } }); });
+    return {pass:bad === 0 && nonWk > 0 && ESS.acc.retNon > 0, detail:'non-participant ESP worker-years ' + nonWk + ', payroll conversions by non-participants ' + bad + ', returned to the ESP $' + Math.round(ESS.acc.retNon)};
+  });
+  t('random numbers: ESP adds no draw (8 per agent-year, Full Integration, 20 years); ESP workers are the same adults in every design and seed, 23.0% of 500', function(){
+    var n = [], sets = [];
+    [null, es()].forEach(function(q){ ESP = q; CONVERSION_MODEL = 'framework'; RNG = mulberry32(700004); var ag = makeLatentPopulation(FI.nAgents).map(function(l){ return instantiateAgent(l, FI); });
+      var base = mulberry32(1), k = 0; RNG = function(){ k++; return base(); };
+      for (var y = 0; y < FI.years; y++) runYear(ag, y, FI, CALM); n.push(k); });
+    ESP = es(); [[FI, 1], [STRESS_TEST, 2], [BASELINE, 3]].forEach(function(c){ var ag = plain(Object.assign({}, c[0], {years:2}), c[1]); sets.push(ag.map(function(a){ return a._esWk ? 1 : 0; }).join('')); });
+    var cnt = sets[0].split('1').length - 1;
+    return {pass:n[0] === n[1] && n[0] === 8*FI.nAgents*FI.years && sets[1] === sets[0] && sets[2] === sets[0] && Math.abs(cnt - 0.23*FI.nAgents) <= 3,
+      detail:'draws ' + n.join(' / ') + ' (off / on); ESP workers ' + cnt + ' of ' + FI.nAgents + ', identical in Full Integration seed 1, Stress Test seed 2 and Baseline seed 3: ' + (sets[1] === sets[0] && sets[2] === sets[0])};
+  });
+  t('the engine model is unaffected when ESP is set (engine, project hiring on, labor on; Full Integration seeds 1-2)', function(){
+    var ok = true, P = nextRoundPreset(FI);
+    for (var sd = 1; sd <= 2; sd++){ var S = s3BaseS(P, sd); CONVERSION_MODEL = 'engine'; PROJ = pj();
+      ESP = null; var r0 = tbRun(PR.cco(), sd, {fin:'tax', grp:{part:FI.partRate, pth:FI.pthUptake}}, S).res;
+      ESP = es(); var r1 = tbRun(PR.cco(), sd, {fin:'tax', grp:{part:FI.partRate, pth:FI.pthUptake}}, S).res;
+      if (!same(r0, r1, TB_KEYS)) ok = false; }
+    return {pass:ok, detail:TB_KEYS.length + ' measures identical'};
+  });
+  t('ledger rows add up, and each payroll premium = BU x (rate x (1 - tax) x CIP bonus x income shock - 1) (Full Integration, seed 1)', function(){
+    ESP = es(); LEDGER = newLedger(); var cipB = FI.cip ? 1 + FI.cipDemo*0.12 : 1, worst = 0, n = 0;
+    plain(FI, 1, function(ag){ ag.forEach(function(a){ if (a._esC > 0){ n++; var x = a._esC*(a._esR*(1 - pjTax(FI, a._esR))*cipB*a._esShk - 1); worst = Math.max(worst, Math.abs(x - a._esPrY)/Math.max(1, Math.abs(x))); } }); });
+    var T = LEDGER.tot, Y = LEDGER.y, e1 = Math.abs(T.espGross - T.espTax - T.espConvBU - T.espPremium), e2 = Math.abs(T.espPoolPaid - T.espConvBU - T.espRetBU), acc = 0, own = 0, paid = 0;
+    for (var y = 0; y < Y.length; y++){ if (y < Y.length - 1){ acc += Y[y].fwBUSpent || 0; own += Y[y].espOwnBU || 0; } if (y > 0) paid += Y[y].espPoolPaid || 0; }
+    var e3 = Math.abs(acc - own - paid), sc = Math.max(1, T.espGross);
+    return {pass:n > 0 && worst < 1e-12 && e1 < 1e-6*sc && e2 < 1e-6*sc && e3 < 1e-6*Math.max(1, acc),
+      detail:n + ' payroll conversions, largest relative gap from the formula ' + worst.toExponential(1) + '; gross - tax - BU = premium: gap $' + e1.toExponential(1) + '; pools paid = converted + returned: $' + e2.toExponential(1) + '; accepted (yrs 0-18) = ESP share + pools paid: $' + e3.toExponential(1)};
+  });
+  t('labor: the payroll raise is positive exactly for the workers who take BU pay, and it lifts their earnings response (Full Integration, seed 1, labor at central values)', function(){
+    var bad = 0, tk = 0, ratio = {};
+    [null, es()].forEach(function(q){ ESP = q; LABOR = Object.assign({}, LABOR_DEFAULTS, {acc:null}); var s = 0, m = 0, who = {};
+      ESP = es(); plain(Object.assign({}, FI, {years:6}), 1, function(ag, y){ if (y === 5) ag.forEach(function(a, i){ if (a._esC > 0) who[i] = 1; }); });
+      ESP = q; var ag = plain(Object.assign({}, FI, {years:6}), 1, function(ag, y){ if (q) ag.forEach(function(a){ if ((a._esX > 0) !== (a._esC > 0)) bad++; if (a._esC > 0) tk++; }); });
+      ag.forEach(function(a, i){ if (who[i] && a._lbE0 > 0){ s += a.yrWageUSD/a._lbE0; m++; } }); ratio[q ? 'on' : 'off'] = s/Math.max(1, m); });
+    return {pass:bad === 0 && tk > 0 && ratio.on > ratio.off, detail:tk + ' taker-years, ' + bad + ' mismatches; year-5 takers\' earnings / earnings with no response: ' + ratio.off.toFixed(4) + ' (off) vs ' + ratio.on.toFixed(4) + ' (on)'};
+  });
+  t("rest 'esp' (d75 alternative): the ESP's own premium reaches its own workers only; 'biz' (d73 alternative): every taker's own rate beats the ESP's rate (Full Integration, seed 1)", function(){
+    var leak = 0, got = 0, low = 0, tk = 0;
+    ESP = es({rest:'esp'}); plain(FI, 1, function(ag, y){ if (y > 0) ag.forEach(function(a){ if (!a._esWk && a._fwPayY !== 0) leak++; if (a._esWk && a._fwPayY > 0) got++; }); });
+    ESP = es({take:'biz'}); plain(FI, 1, function(ag){ ag.forEach(function(a){ if (a._esC > 0){ tk++; if (!(a._esR > FW.bizRate)) low++; } }); });
+    return {pass:leak === 0 && got > 0 && low === 0 && tk > 0, detail:'non-workers paid: ' + leak + ', workers paid ' + got + ' worker-years; takers under \'biz\' ' + tk + ', at or below ' + FW.bizRate + 'x: ' + low};
+  });
+  return out;
+}
+Object.assign(module.exports, { espUnitSuite, ESP_DEFAULTS, setEsp:function(x){ ESP = x; }, getESS:function(){ return ESS; } });
+
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
   /* v4.21: `--agents=N` sets the population of every run in every mode (default 500, the page's
@@ -2376,7 +2584,12 @@ if (require.main === module) {
     console.log('\n=== projUnitSuite(): N1 project hiring paid in expired BU (harness-only) ===');
     JU.forEach(function(x){ if (!x.pass) jf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + JU.length + ' run, ' + jf + ' failed');
-    if (nf || pf || lf || rf || tf || jf) process.exitCode = 1;
+    /* Session 19 (N1, s38): ESP payroll (harness-only). */
+    var EU = espUnitSuite(), ef = 0;
+    console.log('\n=== espUnitSuite(): N1 ESP payroll in expired BU at workers\' own rates (harness-only) ===');
+    EU.forEach(function(x){ if (!x.pass) ef++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + EU.length + ' run, ' + ef + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -3384,7 +3597,9 @@ if (require.main === module) {
      * CRN-paired seeds 1-N, one cost ledger and one financing rule for every design (d24-d26).
      *  match     each Compassionism preset against UBI, NIT and asset endowment matched to its gross cost per adult-year, plus X-Cents
      *            and public grocery at their own cost; tax-financed and money-created (aT = 0; Compassionism also at a = 1); group check.
-     *  frontier  cost against basket FGT2 per design family, tax-financed (and money-created with --fin=money). */
+     *  frontier  cost against basket FGT2 per design family, tax-financed (and money-created with --fin=money).
+     *  esp       (session 19, s38) ESP payroll in the Hub-spec model: today's main row against ESP payroll at the defaults, its
+     *            sensitivities (d71-d75), the page's other rows with it, and hybrid financing at a = 0 and 1. Framework model only. */
     CFG.WEALTH_FLOOR = -10000;
     var nT = parseInt(process.argv[3] || '500', 10), secT = process.argv[4] || 'match';
     var envT = (process.argv[5] && process.argv[5].indexOf('--') !== 0 ? process.argv[5] : 'ref').split(',');
@@ -3621,6 +3836,49 @@ if (require.main === module) {
               '% | ' + (r.pjNet || r.pjGift ? $(r.pjNet + r.pjGift) : '—') + ' | ' + (r.pjHrs ? f1(r.pjHrs) : '—') + ' | ' + (r.pjWork ? f1(r.pjWork) + '%' : '—') + ' | ' + (r.pjRc ? f2(r.pjRc) + 'x' : '—') + ' | ' + (r.pjExp ? $(r.pjExp) : '—') +
               ' | ' + (i ? grpCell(r, B) : '—') + ' |'); });
         }); });
+    }
+    if (secT === 'esp'){  /* N1, session 19 (s38; d70-d76; N1-design-esp-payroll.md, Section 8): ESP payroll in the Hub-spec model. Framework model only. */
+      var ES_P = {octaveWage:true};
+      var ESROWS = [['TODAY: Hub-spec main row (project hiring, raise off, gift as you go); flat 3x premium to every adult by wage', ES_P, {}, null],
+        ['ESP PAYROLL at the defaults (lam 0.20, 23.0% of adults, own rate above par, cap on, rest as today)', ES_P, {}, {}],
+        ['  today, gift financed over the run (the d67 row)', ES_P, {giftFin:'run'}, null], ['  ESP payroll, gift financed over the run (the d67 row)', ES_P, {giftFin:'run'}, {}],
+        ['  lam 0.15 (d71, low end)', ES_P, {}, {lam:0.15}], ['  lam 0.26 (d71, high end)', ES_P, {}, {lam:0.26}], ['  lam 1: every BU accepted goes to workers (upper bound)', ES_P, {}, {lam:1}],
+        ['  workforce 15.2%: no food services (d72)', ES_P, {}, {work:0.152}], ['  workforce: PTF members (d72)', ES_P, {}, {work:'ptf'}], ['  workforce: every adult (today\'s payout population; d72)', ES_P, {}, {work:'all'}],
+        ['  BU pay only where the own rate beats the ESP\'s 3x (d73)', ES_P, {}, {take:'biz'}],
+        ['  no octave cap (d74)', ES_P, {}, {cap:'none'}], ['  octave cap, excess saved for later years (d74, R6)', ES_P, {}, {cap:'save'}],
+        ['  the ESP\'s own premium to its own workers (d75: worker cooperative)', ES_P, {}, {rest:'esp'}],
+        ['  today, with the octave wage raise kept on', null, {}, null], ['  ESP payroll, with the octave wage raise kept on', null, {}, {}]];
+      envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0, cm = 'framework';
+        var cfg = [{p:PR.baseline()}], lbl = ['No program (Baseline)'];
+        ESROWS.forEach(function(r){ cfg.push({p:PR.cco(), cm:cm, pw:r[1], pj:r[2], es:r[3]}); lbl.push(r[0]); });
+        if (infl){ cfg.push({p:PR.cco(), cm:cm, pw:ES_P, pj:{}, o:{noDamp:true}}); lbl.push('  today, raise and damping off (the mechanisms-off row)');
+          cfg.push({p:PR.cco(), cm:cm, pw:ES_P, pj:{}, es:{}, o:{noDamp:true}}); lbl.push('  ESP payroll, raise and damping off'); }
+        [0, 1].forEach(function(a){ cfg.push({p:PR.cco(), cm:cm, pw:ES_P, pj:{}, o:{fin:'hybrid', a:a}}); lbl.push('  today, hybrid financing, a = ' + a + (a ? ' (H1)' : ''));
+          cfg.push({p:PR.cco(), cm:cm, pw:ES_P, pj:{}, es:{}, o:{fin:'hybrid', a:a}}); lbl.push('  ESP payroll, hybrid financing, a = ' + a + (a ? ' (H1)' : '')); });
+        var t0 = Date.now(), R = tbStudy(cfg, nT, P, o), B = R[0], TD = R[1];
+        function vsT(i){ if (i < 2) return null; var j = lbl[i].indexOf('ESP payroll, with the octave') >= 0 ? lbl.indexOf('  today, with the octave wage raise kept on') :
+          lbl[i].indexOf('ESP payroll, raise and damping') >= 0 ? lbl.indexOf('  today, raise and damping off (the mechanisms-off row)') :
+          lbl[i].indexOf('ESP payroll, hybrid financing, a = 0') >= 0 ? lbl.indexOf('  today, hybrid financing, a = 0') :
+          lbl[i].indexOf('ESP payroll, hybrid financing, a = 1') >= 0 ? lbl.indexOf('  today, hybrid financing, a = 1 (H1)') :
+          lbl[i].indexOf('ESP payroll, gift financed over the run') >= 0 ? lbl.indexOf('  today, gift financed over the run (the d67 row)') : /^  today/.test(lbl[i]) ? -1 : 1;
+          return j > 0 ? {j:j, d:tbDiff(R[i], R[j], 'fgt2PY')} : null; }
+        console.log('\n--- esp (N1, s38): ' + E[0] + ' | ' + MLBL[cm] + ' | tax-financed at own cost unless stated | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+        console.log('Poverty, money and work. "vs its today row": each ESP row against the same configuration with today\'s rule (the main row unless the label says otherwise).');
+        console.log('| Design | Cost | FGT2 20-yr avg vs Baseline [95% CI] | vs its today row [95% CI] | FGT2 yr 20 vs Baseline | Per $1,000 | FGT0 20-yr | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Worse off |');
+        console.log('|' + Array(13).join('---|'));
+        R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, v = vsT(i);
+          console.log('| ' + lbl[i] + ' | ' + $(r.cost) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : f2(r.fgt2PY)) + ' | ' + (v ? sg(v.d.m) + ' [' + sg(v.d.lo) + ', ' + sg(v.d.hi) + ']' : '—') +
+            ' | ' + (i ? sg(tbDiff(r, B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + (i && r.cost > 0 ? sg(d.m/(r.cost/1000), 3) : '—') + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + pinf(r.endoAnn) +
+            '% | ' + (i ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
+        console.log('\nPremium and groups. Premium columns: years 1-19 (year 0 pays none), year-0 dollars, per adult-year unless stated. Groups: change in real resources per adult-year, 20 years, vs the Baseline and vs today\'s main row (part = participants, non = non-participants, low / top = bottom / top third by year-0 wage).');
+        console.log('| Design | ESP\'s own premium paid | Payroll premium | Total | Payroll premium per participating ESP worker-yr | Total per participant-yr / non-participant-yr | Payroll BU per ESP worker-yr | BU share of ESP pay | Mean payroll rate | Cap binds (% of participating ESP worker-yrs) | Groups vs Baseline: part / non / low / top | Groups vs today: part / non / low / top |');
+        console.log('|' + Array(13).join('---|'));
+        R.forEach(function(r, i){ if (!i) return; var g = function(x, y){ return [['gPartRes'], ['gNonRes'], ['gLowRes'], ['gTopRes']].map(function(k){ var dv = x[k[0]] - y[k[0]]; return (dv >= 0 ? '+' : '-') + $(Math.abs(dv)); }).join(' / '); };
+          var es = r.esPrem > 0 || r.esBUW > 0;
+          console.log('| ' + lbl[i] + ' | ' + $(r.bzPay) + ' | ' + (es ? $(r.esPrem) : '—') + ' | ' + $(r.bzPay + r.esPrem) + ' | ' + (es ? $(r.esPremW) : '—') + ' | ' + $(r.payPart) + ' / ' + $(r.payNon) +
+            ' | ' + (es ? $(r.esBUW) : '—') + ' | ' + (es ? f1(r.esShare) + '%' : '—') + ' | ' + (es ? f2(r.esRate) + 'x' : '—') + ' | ' + (es ? r.esCapB.toFixed(2) + '%' : '—') + ' | ' + g(r, B) + ' | ' + (i > 1 ? g(r, TD) : '—') + ' |'); });
+        if (!infl) console.log(D33_NOTE);
+      });
     }
     if (secT === 'a5'){ var JS = {}, JPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
       envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0;
