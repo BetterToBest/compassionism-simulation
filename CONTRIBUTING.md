@@ -43,13 +43,16 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 ---
 
-## Unreleased: the revised opening line (i5)
+## Unreleased: the revised opening line (i5) and the walk-through (s29)
 
 After the v4.22 tag (`777d9b3`, Sep 28, 2026), Duke revised the page's opening line (`589a127`) to: "Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: test that claim against five other designs on the same simulated people." The tagged v4.22 release, and the session 11 note below, carry the earlier wording (d41).
 
 - **README.md** opens with the revised sentence. Until it did, `domtest` Phase 11's first check failed on `main` (94 of 95), because README.md must open with the page's sentence.
 - **One sentence added to the front door's subtitle and to README.md (d51):** "The model measures poverty, cost and work, not the cultural effects Compassionism aspires to." The opening line now names culture, which nothing in the model measures, so the page says so beside its note on how poverty is measured. The design panel already frames the framework's cultural value as its intent, not a measured result (d47).
-- **Checks.** Text only: the engine is unchanged, `validate` and `unit` pass, and `domtest` passes all 95 checks. `META.VERSION` stays 4.22, so the release workflow does nothing; these notes join the next version's.
+- **The opening line's ending (d51, session 13).** Duke chose to end the line by naming what the page measures as well: "...participation and contribution: see how it does on poverty and work against five other designs on the same simulated people." It replaces "test that claim", which a reader could take to cover the cultural aim. The page's `<h1>` and README.md line 3 carry it; the subtitle sentence above stays.
+- **Walk-through (s29, session 13).** `walkthrough/` holds a captioned video tour of the page (about five minutes, no sound), the same tour as a written page with screenshots (`walkthrough/README.md`), caption files (`captions.vtt`, `captions.srt`) and `make_walkthrough.py`, which rebuilds all of them from `index.html` (Python, Playwright and ffmpeg; not part of `npm test`, and no change to `package.json`). Every figure in the captions is read from the front door's `#fd-data`, and the build stops, naming the caption, if the data no longer supports a caption's wording, so a rebuild after N1 either carries the new figures or says which sentence to rewrite. README.md links to it; the page does not yet (d57). Nothing in the engine or the page's figures changes.
+- **Three stale labels in this file (corrections).** The signature line read v4.21; Code Contributions gave `domtest` as 82 checks as of v4.21 (now 95); Academic Peer Review linked the replication page at its old Hub address, which redirects. All three now match v4.22.
+- **Checks.** Text and new files only: the engine is unchanged, `validate` and `unit` pass, and `domtest` passes all 95 checks. `META.VERSION` stays 4.22, so the release workflow does nothing; these notes join the next version's.
 
 ## v4.22 Release Notes
 
@@ -2633,7 +2636,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. If you change a function that exists in both `index.html` and `harness.js`, change both identically: `domtest.js` Phase 8 compares their source (comments and whitespace ignored) and fails on any drift outside five listed, intentional differences. If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (82 checks as of v4.21) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (95 checks as of v4.22) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -2673,7 +2676,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 Researchers are invited to review the primary papers and submit formal comments:
 
 - **BLEI Paper**: [bettertobest.github.io/research-hub/basic-living-economic-index.html](https://bettertobest.github.io/research-hub/basic-living-economic-index.html)
-- **Replication Framework**: [bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html](https://bettertobest.github.io/research-hub/cco-ptf-simulation-replication.html)
+- **Replication Framework**: [bettertobest.github.io/compassionism-simulation/replication.html](https://bettertobest.github.io/compassionism-simulation/replication.html)
 - **Academia.edu**: [independentresearcher.academia.edu/DukeJohnson](https://independentresearcher.academia.edu/DukeJohnson)
 
 Submit review comments as GitHub issues with prefix `review:`.
@@ -2727,7 +2730,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v4.21*
+*Better To Best Research Hub · Compassionism Framework Simulation v4.22*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
@@ -2756,4 +2759,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
      before shipping, rather than assuming a new check guards anything.
      v4.17-v4.19: this line was not bumped and still read v4.16 — flagged by the external Sonnet
      audit in v4.20, and bumped straight to v4.20 here.
-     v4.21: bumped with the release. -->
+     v4.21: bumped with the release.
+     v4.22: missed at the release (it still read v4.21) and bumped in session 13, with the
+     domtest count in Code Contributions (it read 82 checks as of v4.21) and the Replication
+     Framework link in Academic Peer Review (the old Hub address, which now redirects). -->
