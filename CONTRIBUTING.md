@@ -54,6 +54,27 @@ After the v4.22 tag (`777d9b3`, Sep 28, 2026), Duke revised the page's opening l
 - **Three stale labels in this file (corrections).** The signature line read v4.21; Code Contributions gave `domtest` as 82 checks as of v4.21 (now 95); Academic Peer Review linked the replication page at its old Hub address, which redirects. All three now match v4.22.
 - **Checks.** Text and new files only: the engine is unchanged, `validate` and `unit` pass, and `domtest` passes all 95 checks. `META.VERSION` stays 4.22, so the release workflow does nothing; these notes join the next version's.
 
+## Unreleased: project hiring paid in expired BU (N1, s33; harness only)
+
+Decision d46 replaces the engine's octave wage raise (0.3% a year of extra wage growth per octave held, which every adult in the Compassionism scenarios received at their starting octave, including those who chose not to take part) with the design's own mechanism: creative projects hiring participants at elevated conversion rates, paid in expired BU. The design and its decisions (d58–d66) are in the session 14 and 15 hand-offs.
+
+- **`PROJ` in `harness.js`** (null by default, so every run is bit-identical, checked by `unit`). Both conversion models. Each year:
+  - **Pool.** Last year's expired BU (engine: the unspent balance that expires; Hub spec: the BU budget left unspent), plus the rollout plan's launch gift of 1,000 expired BU per participant in year 1.
+  - **Pay and hiring.** The pool pays for project hours at $23.74 BU an hour (the model's living wage at par, indexed to prices). Hours go to participants for whom a project hour pays more than their own wage, weighted by octave capacity × quality.
+  - **Rate.** Each BU converts at the higher of the worker's own rate and the capacity × quality-weighted mean rate.
+  - **Capacity.** No cap (d64, Duke's pick). A switch caps project BU at the octave capacity left after the engine's own-spending conversion (12,000 × 2^octave BU a year) and saves the excess; in the restudy it binds for no one, so the two give the same results.
+  - **Hours.** Project hours are added on top of wage work (d63, Duke's pick), with no income effect. A switch has them replace wage hours instead.
+  - **Financing.** The one-time gift is financed over the run, like the asset endowment (d66).
+  - **Switches.** Every alternative in d59–d63 is a switch.
+- **`projUnitSuite()`**, nine tests, run by `unit`: an empty pool equals `PROJ` off; BU conservation; octave capacity; the rate rule; willingness; no added random draws; the launch gift; hours; gift financing.
+- **`node harness.js testbed N proj ENV`** reproduces the restudy: every row CRN-paired against no program and against the raise switched off.
+- **Result (Duke's configuration at 200 seeds; the displacement version at 500).** Project hiring does not replace what the raise did.
+  - In the engine model at reference, the 20-year average FGT₂ cut is −1.78 with project hiring, against −1.76 with the raise simply off and −3.21 with it on. It costs about $1,130 more per adult a year.
+  - Elsewhere it is slightly worse than raise-off (by 0.02 to 0.13), and so is the displacement version in every cell (by 0.04 to 0.26).
+  - The reason: the pay reaches participants by capacity and quality, not need, and the wage contribution that pays for it lowers work and falls on everyone.
+- **The engine in `index.html` is unchanged**, and so is the page. Per d65 the main Compassionism row changes at the N1 release (s35).
+- **Checks.** `validate` passes, `unit` passes (the new suite 9 of 9), and `domtest` passes all 95.
+
 ## v4.22 Release Notes
 
 v4.22 (Sep 28, 2026) releases the policy-testbed round: sessions 1–11 of *Next Round Plan: Simulation Testbed and Claims Ledger* (Sep 26). Each session's notes follow as a "v4.22, session N" section, newest first. **The engine in `index.html` is unchanged: the seed-42 regression and every preset's figures are bit-identical** (`validate` passes). What a visitor sees does change: the page opens with a comparison of Compassionism against five other anti-poverty designs. `unit` passes (11 tests, 8 price-module tests, 4 labor-module tests, 6 session 5 tests and 16 testbed tests, 1 of them new); `domtest` passes all 94 checks (2 new). Hand-off: `session-10-handoff.md`.

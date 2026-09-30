@@ -239,6 +239,37 @@ var PTF_FOOD_CUT = {food30:0.30, food62:0.62};
 var CONVERSION_MODEL = 'engine';
 var FW = {bizRate:3, bizCap:1, directedShare:1, octaveCapBase:1000};
 var FWS = null;  /* per-run framework state (pools carried from one year to the next); reset by runYear at yr 0 */
+/* N1, session 15 (dashboard s33; decisions d58-d65; N1-design-project-hiring.md): PROJECT HIRING PAID IN EXPIRED BU, the design's
+ * mechanism in place of the octave wage raise (d46). PROJ = null (the default) leaves every run bit-identical (checked by `unit`).
+ * When an object, in both conversion models:
+ *  pool   last year's expired BU x share (engine: the unspent balance that expires, A0 flow 3, destroyed when PROJ is off; framework:
+ *         the BU budget left unspent, N2's pool), plus the launch gift (rollout plan: 1,000 expired BU per participant) collected
+ *         in year 0 and paid in year 1 when giftMode is 'forward'. Pool that finds no worker carries to the next year.
+ *  pay    contract pay, BU per project hour in year-0 dollars, indexed to the basket price level (default: the model's living wage,
+ *         $49,370 / 2,080 hours, at par; d63).
+ *  alloc  'capq': participants for whom a project hour pays more, after conversion and tax, than an hour of their own wage, weighted
+ *         by octave capacity x quality (d61); 'capqAll': the same weights, no willingness test (the framework model's N2 rule);
+ *         'low': the willing, lowest wage first, each up to capacity; 'equal': equal shares among the willing.
+ *  rate   'max': the higher of the worker's own rate and the contract rate, the capacity x quality-weighted mean own rate of
+ *         participants (R4, R5; d62); 'own': own rate only. Progressive conversion tax, CIP bonus and income shock as in the engine.
+ *  cap    false (d64, Duke's pick): no conversion cap. true: each participant converts at most 12 x FW.octaveCapBase x 2^octave BU a year: project BU fill what the engine's own
+ *         spent-balance conversion leaves (that conversion is left uncapped; it never reaches the smallest capacity at $1,200 BU);
+ *         BU above it are saved and converted in later years (d64).
+ *  hours  'side' (d63, Duke's pick): project hours are added on top of wage work; 'displace': each project hour replaces an hour
+ *         of wage work at the worker's own wage. 'low' allocation always fills each worker up to octave capacity. Project
+ *         pay is earned, so it carries no income effect. The testbed's hours measure counts wage plus project hours.
+ *  giftMode 'forward' | 'holder' (each participant converts their own gift at their own rate from year 1, with no hours: an
+ *         unconditional dollar, so it enters the labor module's rent channel) | 'none'.
+ * Allocation is deterministic: no RNG draw is added (CRN holds). With PROJ on, the framework model's N2 allocation is replaced.
+ * PJS: per-run state, reset by runYear at yr 0; PJS.acc tallies the flows in year-0 dollars for the testbed and the unit tests. */
+var PROJ = null;
+var PROJ_DEFAULTS = {share:1, gift:1000, giftMode:'forward', pay:CFG.LIVING_WAGE_ANNUAL/2080, alloc:'capq', rate:'max', hours:'side', cap:false, hrsYr:2080};  /* Duke's picks (Sep 30): d63 side hours, d64 no cap */
+var PJS = null;
+function pjOwnRate(a, p, pcb){ var oc = 1 + (a.octave/Math.max(1, p.maxOct))*(Math.max(1, p.maxMult) - 1), qf = Math.min(1, a.quality/Math.max(1, p.maxMult));
+  var ph = (p.phi && a.quality > p.maxMult*CFG.PHI_QUALITY_THRESH) ? CFG.PHI_RATIO : 1.0, pb = (p.ptf && a.inPTF) ? pcb : 1.0;
+  return Math.min((1 + qf*(oc - 1))*ph*pb, p.maxMult*(p.phi ? CFG.PHI_RATIO : 1.0)); }
+function pjTax(p, r){ var bT = p.cip ? p.tax*(1 - p.cipDemo*0.18) : p.tax; return Math.min(CFG.PROG_TAX_MAX, bT + Math.max(0, (r - CFG.PROG_PIVOT)*CFG.PROG_RATE)); }
+function pjNewAcc(){ return {pool:0, gift:0, exp:0, alloc:0, carry:0, conv:0, giftConv:0, gross:0, net:0, giftNet:0, hrs:0, disp:0, work:0, partY:0, rc:0, rcN:0, overCap:0, unwilling:0}; }
 /* PRICE (A2 issuance and price module): null = off (index.html). When an object, runYear() reprices the basket by
  * PRICE.bIdx (the endogenous index, set each year by priceRun from the previous year's flows), reads COLA off the
  * endogenous headline rate, indexes wages to P_G by PRICE.wIdx, and accumulates the year's flows into PRICE.acc.
@@ -309,7 +340,7 @@ function setRestudy(o){ var old = {THETA_GATE:THETA_GATE, PTH_MODE:PTH_MODE, DIS
  *    endowment's annuity value, against the agent's own cost (gross basket less in-kind cuts). */
 var TB = null;
 var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true};
-function tbNewAcc(){ return {n:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0}; }
+function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0}; }
 function tbYear(p, colaF){
   var s = p.tb;
   TB.cur = tbNewAcc();
@@ -349,7 +380,7 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   C.n++; C.idx = idx; C.E += E; C.cash += a.yrTbCash; C.tax += a.yrTax; C.base += Math.max(0, E - y.X);
   if (yr === 0 && a._tbEl) C.endow += y.W;
   var buR = Math.max(0, mlc*(cfPreCCO - cf) - tbG);
-  C.bu += buR; C.conv += conv; C.cutPT += tbPT; C.cutG += tbG; C.pthLiq += a._tbPthNow || 0;
+  C.bu += buR; C.conv += conv; C.pjg += a.yrPjGift || 0; a.yrPjGift = 0; C.cutPT += tbPT; C.cutG += tbG; C.pthLiq += a._tbPthNow || 0;
   /* Session 7 (A5 targeting share): program dollars this agent received this year (cash, the endowment's annuity value, BU relief,
    * conversion, price-cut dollars, PTH liquid appreciation; not capital), and the part that closes the agent's shortfall before
    * transfers: the gross basket less wage earnings. Reporting only. */
@@ -366,7 +397,7 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
    * no in-kind benefits, no capital transfer (the endowment), no capital gains (PTH appreciation). Extended income adds the in-kind
    * cuts to the agent's basket (BU relief and PTF, PTH and grocery price cuts). */
   if (g > 0){ if (!a._tbInSp) a._tbSp = (a._tbSp || 0) + 1; a._tbInSp = true; } else a._tbInSp = false;
-  C.emp += E > 0 ? 1 : 0; C.hrs += a._lbE0 > 0 ? E/a._lbE0 : 1;
+  C.emp += E > 0 ? 1 : 0; C.hrs += a._lbE0 > 0 ? (a._pjHW ? E + a._pjHW : E)/a._lbE0 : 1;  /* N1 (session 15): + project hours at the worker's own wage */
   C.bR += a._bleiR || 0; C.bP += a._bleiP || 0;  /* session 9 (i3-2): BLEI raises, and those the program's support carried over the gate */
   a._tbDisp = E + conv + (a.yrUbiUSD || 0) + a.yrTbCash - a.yrTax; a._tbExt = a._tbDisp + Math.max(0, mlc - costUSD);
   a._tbPthPrev = a._tbPthNow || 0; a._tbPthNow = 0;
@@ -546,6 +577,26 @@ function runYear(agentSet,yr,p,recSt){
   /* Session 2: framework conversion state (N1-N4) and the basket's current essentials and food shares (price module). */
   var FWON=CONVERSION_MODEL==='framework';
   if(FWON){if(yr===0||!FWS)FWS={prev:null};FWS.next={bizBU:0,projBU:0,expiredBU:0,destroyedBU:0,wSum:0,pwSum:0,projAlloc:0,projGross:0,projTax:0,projNet:0,projLost:0,bizPaid:0};}
+  var PJON=!!PROJ,pjPay=0,pjIdx=1,pjCipB=1,pjFg=0;  /* N1 (session 15): project hiring; see PROJ. No RNG is drawn in any PROJ step. */
+  if(PJON){
+    if(yr===0||!PJS)PJS={prev:null,acc:pjNewAcc()};PJS.next={pool:0,gpool:0};  // gpool: the launch gift's share, tracked for financing (d66)
+    pjIdx=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);pjPay=PROJ.pay*pjIdx;pjCipB=p.cip?(1+p.cipDemo*0.12):1.0;
+    var pjP=[],pjWt=0,pjWR=0,pjIn=PJS.prev?PJS.prev.pool+PJS.prev.gpool:0,pjCarry=0;pjFg=pjIn>0?PJS.prev.gpool/pjIn:0;
+    if(p.ccoOn)agentSet.forEach(function(a){if(!a.inCCO)return;var r=pjOwnRate(a,p,ptfConvBonus),cap=12*FW.octaveCapBase*Math.pow(2,a.octave),w=cap*Math.max(0,a.quality);
+      a._pjR=r;a._pjCap=cap;a._pjW=w;a._pjBU=0;pjWt+=w;pjWR+=w*r;pjP.push(a);});
+    var pjRc=pjWt>0?pjWR/pjWt:1,pjSet=[];PJS.acc.rc+=pjRc;PJS.acc.rcN++;
+    pjP.forEach(function(a){var ru=PROJ.rate==='max'?Math.max(a._pjR,pjRc):a._pjR,v=pjPay*ru*(1-pjTax(p,ru))*pjCipB,h=a.wage*12*CFG.WAGE_TO_USD/PROJ.hrsYr;
+      a._pjRu=ru;a._pjWill=v>h;if(PROJ.alloc==='capqAll'||a._pjWill)pjSet.push(a);});
+    if(pjIn>0&&pjSet.length){
+      if(PROJ.alloc==='low'){pjSet.sort(function(x,y){return x.wage-y.wage;});var pjL=pjIn;for(var pjI=0;pjI<pjSet.length&&pjL>0;pjI++){var pjT=Math.min(pjL,pjSet[pjI]._pjCap);pjSet[pjI]._pjBU=pjT;pjL-=pjT;}pjCarry=pjL;}
+      else if(PROJ.alloc==='equal'){pjSet.forEach(function(a){a._pjBU=pjIn/pjSet.length;});}
+      else{var pjS=0;pjSet.forEach(function(a){pjS+=a._pjW;});if(pjS>0)pjSet.forEach(function(a){a._pjBU=pjIn*a._pjW/pjS;});else pjCarry=pjIn;}
+    } else pjCarry=pjIn;
+    pjP.forEach(function(a){if(a._pjBU>0){PJS.acc.alloc+=a._pjBU/pjIdx;PJS.acc.work++;if(!a._pjWill)PJS.acc.unwilling++;}});
+    PJS.acc.carry=pjCarry/pjIdx;PJS.next.pool+=pjCarry*(1-pjFg);PJS.next.gpool+=pjCarry*pjFg;PJS.acc.partY+=pjP.length;
+    if(yr===0&&PROJ.giftMode==='forward'&&PROJ.gift>0){PJS.next.gpool+=PROJ.gift*pjP.length;PJS.acc.gift+=PROJ.gift*pjP.length;PJS.acc.pool+=PROJ.gift*pjP.length;}
+    if(yr===1&&PROJ.giftMode==='holder'&&PROJ.gift>0)pjP.forEach(function(a){a._pjGiftH=(a._pjGiftH||0)+PROJ.gift;PJS.acc.gift+=PROJ.gift;});
+  }
   var eShareCur=0,fShareCur=CFG.BASKET.food;CFG.ESSENTIALS.forEach(function(k){eShareCur+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});
   if(PRICE){eShareCur/=PRICE.bIdx;fShareCur=CFG.BASKET.food*PRICE.comp.food/PRICE.bIdx;}
   var rsAlt=PTH_MODE!=='basket'||DISC_BASE!=='basket';  // session 5 (d4/d5): harness-only
@@ -604,6 +655,7 @@ function runYear(agentSet,yr,p,recSt){
       var fwBudget=12*buEff,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),fwLeft=fwBudget-fwB;
       cf=cfPreCCO-fwB/mainLoopCostUSD;a._fwBUm=fwB/12;
       FWS.next.bizBU+=fwB;FWS.next.expiredBU+=fwLeft;FWS.next.projBU+=fwLeft*FW.directedShare;FWS.next.destroyedBU+=fwLeft*(1-FW.directedShare);
+      if(PJON){PJS.next.pool+=fwLeft*PROJ.share;PJS.acc.exp+=fwLeft/pjIdx;PJS.acc.pool+=fwLeft*PROJ.share/pjIdx;}  // N1 (session 15): the same pool, paid as project hiring
       if(LEDGER){ledAdd(yr,'fwBudget',fwBudget);ledAdd(yr,'fwBUSpent',fwB);ledAdd(yr,'fwBUExpired',fwLeft);ledAdd(yr,'fwBUDirected',fwLeft*FW.directedShare);}
     }
     var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
@@ -620,6 +672,9 @@ function runYear(agentSet,yr,p,recSt){
       if(LABOR.acc){var LA=LABOR.acc;LA.n++;if(a.inCCO)LA.nP++;LA.E0+=lbE0;LA.E+=annualWageUSD;LA.raise+=lbE0*(lbRaise-1);LA.cash+=LABOR.rho*lbU;LA.bu+=LABOR.rhoBU*lbBU;LA.buR+=LABOR.rhoR*lbR;
         LA.rent+=LABOR.rho*(1-LABOR.delta)*lbC;LA.disp+=lbDisp;LA.C+=lbC;LA.U+=lbU+lbBU;LA.projH+=lbE0>0?lbDisp/lbE0:0;if(annualWageUSD===0&&lbE0>0)LA.zero++;}
     }
+    if(PJON){a._pjHW=0;if(a._pjBU>0){var pjH=a._pjBU/pjPay,pjHw=a.wage*12*CFG.WAGE_TO_USD*incomeShock/PROJ.hrsYr,pjD=pjH*pjHw;  // N1 (session 15): project hours
+      if(PROJ.hours==='displace'){pjD=Math.min(pjD,Math.max(0,annualWageUSD));annualWageUSD-=pjD;if(LABOR&&LABOR.acc)LABOR.acc.E-=pjD;}
+      a._pjHW=pjD;PJS.acc.hrs+=pjH;PJS.acc.disp+=(PROJ.hours==='displace'?pjD:0)/pjIdx;}}
     if(tbG)cf-=tbG/mainLoopCostUSD;  // session 6: public grocery (applied after the labor block reads the CCO relief)
     var costUSD=mainLoopCostUSD*cf;
     a.wealth+=annualWageUSD-costUSD;
@@ -652,7 +707,7 @@ function runYear(agentSet,yr,p,recSt){
       var rateF=Math.min((1+qfF*(octCeilF-1))*phiF*ptfBF,p.maxMult*(p.phi?CFG.PHI_RATIO:1.0));
       var bTaxF=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax,taxF=Math.min(CFG.PROG_TAX_MAX,bTaxF+Math.max(0,(rateF-CFG.PROG_PIVOT)*CFG.PROG_RATE));
       var cipBF=p.cip?(1+p.cipDemo*0.12):1.0,capBU=12*FW.octaveCapBase*Math.pow(2,a.octave);
-      if(FWS.prev&&FWS.prev.pwSum>0){
+      if(FWS.prev&&FWS.prev.pwSum>0&&!PJON){  // N1 (session 15): project hiring replaces N2's allocation
         var fwWant=FWS.prev.projBU*(a._fwPW||0)/FWS.prev.pwSum,fwAl=Math.min(capBU,fwWant);
         var fwG=PATHWAY_OFF.conversion?0:fwAl*rateF*cipBF*incomeShock,fwN=fwG*(1-taxF);
         a.wealth+=fwN;a.yrConvUSD+=fwN;yrCashSurplus+=fwN;totalConversion+=fwN;totalBU+=fwAl;if(LABOR)a._labCn=fwN;
@@ -679,6 +734,7 @@ function runYear(agentSet,yr,p,recSt){
       var decay=Math.max(0,1-1/Math.max(1,p.expiry||1));
       if(stabOn&&p.stabSusp)decay=1;  // v4.19: expiry suspended while triggered  /* v4.15 parity: || 1 guards a missing expiry — Math.max(1,undefined) is NaN */
       if(LEDGER){var lbK=a.buBalance*decay,lbI=buEff*BU_ALLOCATIONS_PER_YEAR,lbC=buEff*3*BU_ALLOCATIONS_PER_YEAR;ledAdd(yr,'buIssued',lbI);ledAdd(yr,'buExpired',(a.buBalance-lbK)+Math.max(0,lbK+lbI-lbC));}  // A1 ledger
+      if(PJON){var pjK=a.buBalance*decay,pjAl=buEff*BU_ALLOCATIONS_PER_YEAR,pjX=(a.buBalance-pjK)+Math.max(0,pjK+pjAl-buEff*3*BU_ALLOCATIONS_PER_YEAR);PJS.next.pool+=pjX*PROJ.share;PJS.acc.exp+=pjX/pjIdx;PJS.acc.pool+=pjX*PROJ.share/pjIdx;}  // N1 (session 15): expired BU go to projects
       a.buBalance=Math.min(a.buBalance*decay+buEff*BU_ALLOCATIONS_PER_YEAR,buEff*3*BU_ALLOCATIONS_PER_YEAR);  // v4.19: buEff; allocations/yr is a harness-only switch (index.html: 1)
       var spend=a.buBalance*uSpendFrac;a.buBalance-=spend;totalBU+=spend;
       if(p.cip&&uCipQuality<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);
@@ -709,6 +765,20 @@ function runYear(agentSet,yr,p,recSt){
         if(uAdvance<pAdvance&&!PATHWAY_OFF.octave)a.octave++;  // v4.21: pathway switch
       }
       if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&ptfCapAllows()){a.inPTF=uSzhPtfShare<p.ptfShare;if(a.inPTF&&p.ptfCap)ptfLiveCount++;}
+    }
+    if(PJON&&p.ccoOn&&a.inCCO){  // N1 (session 15): convert project BU (and a holder's own gift) within octave capacity; the rest is saved
+      var pjA=PJS.acc,pjCapR=PROJ.cap?Math.max(0,a._pjCap-(FWON?0:spend)):Infinity,pjE=(a._pjSaved||0)+(a._pjBU||0),pjC1=Math.min(pjE,pjCapR);a._pjSaved=pjE-pjC1;pjCapR-=pjC1;
+      var pjGh=a._pjGiftH||0,pjC2=Math.min(pjGh,pjCapR);a._pjGiftH=pjGh-pjC2;
+      if(PROJ.cap&&pjC1+pjC2>Math.max(0,a._pjCap-(FWON?0:spend))+1e-6)pjA.overCap++;  // project BU fill the capacity the engine's own-spending conversion leaves (that conversion is not capped; at $1,200 BU it never reaches 12,000)
+      var pjTx=pjTax(p,a._pjRu),pjG1=PATHWAY_OFF.conversion?0:pjC1*a._pjRu*pjCipB*incomeShock,pjN1=pjG1*(1-pjTx);
+      var pjTg=pjTax(p,a._pjR),pjG2=PATHWAY_OFF.conversion?0:pjC2*a._pjR*pjCipB*incomeShock,pjN2=pjG2*(1-pjTg);
+      a.wealth+=pjN1+pjN2;a.yrConvUSD+=pjN1+pjN2;yrCashSurplus+=pjN1+pjN2;totalConversion+=pjN1+pjN2;totalBU+=pjC1+pjC2;
+      if(LABOR&&pjN2)a._labCn=(a._labCn||0)+pjN2;  // the holder's gift is an unconditional dollar: the rent channel
+      a.yrPjGift=pjN1*pjFg+pjN2;  // d66: gift-funded proceeds, financed over the run like the endowment (the carried share is approximate)
+      if(PRICE)PRICE.acc.conv+=pjN1+pjN2;
+      pjA.conv+=pjC1/pjIdx;pjA.giftConv+=pjC2/pjIdx;pjA.gross+=(pjG1+pjG2)/pjIdx;pjA.net+=pjN1/pjIdx;pjA.giftNet+=pjN2/pjIdx;
+      if(LEDGER){ledAdd(yr,'pjBU',a._pjBU||0);ledAdd(yr,'pjConvBU',pjC1+pjC2);ledAdd(yr,'pjNet',pjN1+pjN2);}
+      if(isNaN(a.wealth))a.wealth=0;
     }
     if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthEquity&&!PATHWAY_OFF.pthCost){  // v4.21: pathway switches (off: no routing, no appreciation)
       if(typeof a.pthTenure!=='number'||isNaN(a.pthTenure))a.pthTenure=0;
@@ -744,6 +814,7 @@ function runYear(agentSet,yr,p,recSt){
     if(LEDGER){ledAdd(yr,'fwBizGross',nx.bizGross);ledAdd(yr,'fwBizTax',nx.bizTax);ledAdd(yr,'fwBizPremium',nx.bizNet);}
     FWS.prev=nx;
   }
+  if(PJON)PJS.prev=PJS.next;  // N1 (session 15)
   return{bu:totalBU,conversion:totalConversion,stabOn:stabOn,stabM:stabM,colaF:colaF,buEff:buEff,emergN:emergN};  // v4.19
 }
 
@@ -1815,7 +1886,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null};
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
-  var L = {cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0};
+  var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0};
   THETA_DENS = null;
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
@@ -1828,7 +1899,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       if (yr === 0) L.endowTot = C.endow;
       /* d26: what the treasury must fund this year: every program dollar at face value (the endowment amortized over the run),
        * less the efficiency share eP of price cuts (added capacity, not a transfer; 0 by the plan's rule). */
-      var need = C.cash + L.endowTot/T + C.bu + (o.fin === 'hybrid' ? 0 : C.conv) + C.cap + (1 - o.eP)*(C.cutPT + C.cutG) + C.pthLiq, U;  /* session 7 (d26): hybrid leaves conversion rewards to money creation */
+      L.pjg += C.pjg;  /* d66 (session 15): the launch gift is one-time spending, financed over the run like the endowment (d26) */
+      var need = C.cash + L.endowTot/T + C.bu + (o.fin === 'hybrid' ? 0 : C.conv - C.pjg + L.pjg/(T - 1)) + C.cap + (1 - o.eP)*(C.cutPT + C.cutG) + C.pthLiq, U;  /* session 7 (d26): hybrid leaves conversion rewards to money creation */
       /* d24: created money counted by one rule for every design. aT: output matched to transfer dollars (cash, BU spent at face
        * value, the endowment, capital spending); a: output matched to conversion rewards (H1); eP: price-cut efficiency. */
       /* Session 7 (d24 option b, o.buAtA): output matched at a to a converted BU's face value as well as its reward. */
@@ -1871,6 +1943,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var sp = 0, spY = 0, ever = 0, chron = 0; agents.forEach(function(a){ sp += a._tbSp || 0; spY += a._tbF0 || 0; if (a._tbF0 > 0) ever++; if ((a._tbF0 || 0) >= T/2) chron++; });
   var giniD = giniOfArr(agents.map(function(a){ return a._tbDisp || 0; })), giniX = giniOfArr(agents.map(function(a){ return a._tbExt || 0; }));
   var pT = path[T-1], p10 = path[Math.min(T-1, 9)], realT = (p.cola ? pT.colaLevel : 1)/pT.full;
+  function pjQ(k){ return (PROJ && PJS && PJS.acc.partY > 0) ? PJS.acc[k]/PJS.acc.partY : 0; }  /* N1 (session 15) */
+  var pjSv = 0; if (PROJ && PJS && PJS.acc.partY > 0){ agents.forEach(function(a){ pjSv += (a._pjSaved || 0) + (a._pjGiftH || 0); }); pjSv /= Math.max(1, PJS.acc.partY/T); }
   var bI = path[T-1].bIdx, mx = 0, tauS = 0;
   for (var t = 1; t < T; t++) mx = Math.max(mx, path[t].bIdx/path[t-1].bIdx - 1);
   path.forEach(function(q){ tauS += q.tau; });
@@ -1883,7 +1957,10 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     gPartRes:gP.res, gPartF0:gP.f0, gNonRes:gN.res, gNonF0:gN.f0, gPthRes:gH.res, gPthF0:gH.f0, gLowRes:gL.res, gLowF0:gL.f0, gTopRes:gT.res, gTopF0:gT.f0,
     gPartW:gP.wp, gNonW:gN.wp, gPthW:gH.wp, gLowW:gL.wp, gTopW:gT.wp,
     pyPoor:spY/n, everPoor:ever/n*100, spellMean:sp > 0 ? spY/sp : 0, chronic:chron/n*100, emp:L.emp/L.n*100, hrs:L.hrs/L.n - 1, Er:L.Er/NY,
-    giniD:giniD, giniX:giniX, pLev10:p10.full, pLev20:pT.full, realT:realT, bleiR:L.bR/L.n*100, bleiP:L.bP/L.n*100}};
+    giniD:giniD, giniX:giniX, pLev10:p10.full, pLev20:pT.full, realT:realT, bleiR:L.bR/L.n*100, bleiP:L.bP/L.n*100,
+    /* N1 (session 15): project hiring, per participant-year, year-0 dollars (0 when PROJ is off) */
+    pjNet:pjQ('net'), pjGift:pjQ('giftNet'), pjBU:pjQ('alloc'), pjExp:pjQ('exp'), pjHrs:pjQ('hrs'), pjDisp:pjQ('disp'), pjWork:pjQ('work')*100,
+    pjRc:(PROJ && PJS && PJS.acc.rcN) ? PJS.acc.rc/PJS.acc.rcN : 0, pjSaved:pjSv}};
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
@@ -1892,7 +1969,8 @@ function tbRun(p, seed, o, S){
 }
 var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthReal','fgt0','fgt1','fgt2','fgt0PY','fgt1PY','fgt2PY','cost','cCash','cEndow','cBU','cConv','cCut','cCap','cPth',
   'tax','need','treas','tauMean','tauLast','dE','E','E0','zero','gPartRes','gPartF0','gNonRes','gNonF0','gPthRes','gPthF0','gLowRes','gLowF0','gTopRes','gTopF0',
-  'gPartW','gNonW','gPthW','gLowW','gTopW','pyPoor','everPoor','spellMean','chronic','emp','hrs','Er','giniD','giniX','pLev10','pLev20','realT','bleiR','bleiP'];
+  'gPartW','gNonW','gPthW','gLowW','gTopW','pyPoor','everPoor','spellMean','chronic','emp','hrs','Er','giniD','giniX','pLev10','pLev20','realT','bleiR','bleiP',
+  'pjNet','pjGift','pjBU','pjExp','pjHrs','pjDisp','pjWork','pjRc','pjSaved'];  /* N1 (session 15) */
 /* Paired study over seeds 1..N (optionally lo..hi). envP: the Compassionism scenario that defines the environment, the essentials
  * supply path (its matched Baseline, as in sessions 2-5) and the groups (participants: latent uCCO < its partRate; PTH members:
  * latent uPTH < its pthUptake, the same agents in every design). cfgs: [{p, o, cm, pw}]; pw switches PATHWAY_OFF entries for that
@@ -1905,9 +1983,10 @@ function tbStudy(cfgs, N, envP, o0, lo){
     cfgs.forEach(function(c, i){ var cm0 = CONVERSION_MODEL, pw0 = Object.assign({}, PATHWAY_OFF); if (c.cm) CONVERSION_MODEL = c.cm;
       if (c.pw) Object.assign(PATHWAY_OFF, c.pw);  /* d19: e.g. {octaveWage:true}, the octave wage bonus off for this row only */
       var g0 = tbSetG(c.g);  /* session 7: per-row engine-question switches (i3), restored below */
+      var pj0 = PROJ; if (c.pj) PROJ = Object.assign({}, PROJ_DEFAULTS, c.pj === true ? {} : c.pj);  /* N1 (session 15): project hiring for this row only */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), S).res;
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
-      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); } });
+      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; } });
   }
   return out;
 }
@@ -2115,6 +2194,85 @@ function tbUnitSuite(){
 }
 Object.assign(module.exports, { tbRun, tbStudy, tbDiff, tbPresets, tbMatch, tbUnitSuite, applyNR6, resetNR6, NR6, TB_PROFILE_G, TB_KEYS, TB_XC_AMT, TB_GROC, giniOfArr, setTB:function(x){ TB = x; } });
 
+/* N1, session 15 (s33): project hiring's tests (harness-only). Each restores PROJ, FW and the conversion model. */
+function projUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, cap:FW.octaveCapBase, ds:FW.directedShare, nr:applyNR6()};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; FW.octaveCapBase = sv.cap; FW.directedShare = sv.ds; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; } }
+  var FI = FULL_INTEGRATION, PR = tbPresets(FI);
+  function pj(o){ return Object.assign({}, PROJ_DEFAULTS, o || {}); }
+  function same(r1, r2, ks){ return ks.every(function(k){ return r1[k] === r2[k]; }); }
+  var KS = TB_KEYS.filter(function(k){ return k.indexOf('pj') !== 0; });
+  /* one plain engine run (no price module, no inflation), returning the agents and the project tallies */
+  function plain(P, seed){ RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    RNG = mulberry32(seed); for (var y = 0; y < P.years; y++) runYear(ag, y, P, {active:false, incomeMultiplier:1.0, yearsLeft:0});
+    return {ag:ag, acc:PJS ? PJS.acc : null, fin:PJS && PJS.prev ? PJS.prev.pool + PJS.prev.gpool : 0}; }
+  t('inert: an empty pool (share 0, no gift) is bit-identical to PROJ off on every testbed measure (engine; framework with N2 unfunded), seeds 1-2, labor on', function(){
+    var ok = true, P = nextRoundPreset(FI), S;
+    ['engine','framework'].forEach(function(cm){ CONVERSION_MODEL = cm; for (var sd = 1; sd <= 2; sd++){ S = s3BaseS(P, sd);
+      if (cm === 'framework') FW.directedShare = 0;
+      PROJ = null; var r0 = tbRun(PR.cco(), sd, {fin:'tax', grp:{part:FI.partRate, pth:FI.pthUptake}}, S).res;
+      PROJ = pj({share:0, gift:0}); var r1 = tbRun(PR.cco(), sd, {fin:'tax', grp:{part:FI.partRate, pth:FI.pthUptake}}, S).res;
+      if (!same(r0, r1, KS)) ok = false; FW.directedShare = 1; } });
+    return {pass:ok, detail:KS.length + ' measures identical in both models'};
+  });
+  t('conservation: BU into the pool = BU allocated + the pool left at the end; BU allocated = BU converted + BU saved (Full Integration, seed 1, both models)', function(){
+    var ok = true, v = [];
+    ['engine','framework'].forEach(function(cm){ CONVERSION_MODEL = cm; PROJ = pj(); var r = plain(FI, 1), sv = 0;
+      r.ag.forEach(function(a){ sv += a._pjSaved || 0; });
+      var e1 = Math.abs(r.acc.pool - r.acc.alloc - r.fin), e2 = Math.abs(r.acc.alloc - r.acc.conv - sv);
+      if (e1 > 1e-6*r.acc.pool || e2 > 1e-6*r.acc.pool) ok = false;
+      v.push(cm + ': in ' + Math.round(r.acc.pool) + ' = allocated ' + Math.round(r.acc.alloc) + ' + left ' + Math.round(r.fin) + '; converted ' + Math.round(r.acc.conv) + ' + saved ' + Math.round(sv)); });
+    return {pass:ok, detail:v.join('; ')};
+  });
+  t('capacity (cap on): project BU never exceed the capacity left after the own-spending conversion (12 x base x 2^octave a year), and with a tiny base they are saved, not lost (Full Integration, seed 1, engine)', function(){
+    PROJ = pj({cap:true}); var r = plain(FI, 1), a0 = r.acc.overCap;
+    FW.octaveCapBase = 1; var r2 = plain(FI, 1), sv = 0; r2.ag.forEach(function(a){ sv += a._pjSaved || 0; });
+    var cons = Math.abs(r2.acc.alloc - r2.acc.conv - sv) < 1e-6*Math.max(1, r2.acc.alloc);
+    return {pass:a0 === 0 && r2.acc.overCap === 0 && sv > 0 && cons, detail:'over-capacity agent-years ' + a0 + ' (base 1,000) and ' + r2.acc.overCap + ' (base 1); saved at base 1: ' + Math.round(sv) + ' BU; conservation ' + cons};
+  });
+  t("rate: the contract rate lies within participants' own rates, and 'max' pays at least 'own' per BU (Full Integration, seed 1, engine)", function(){
+    PROJ = pj(); var r = plain(FI, 1), gM = r.acc.gross/Math.max(1e-9, r.acc.conv), rc = r.acc.rc/r.acc.rcN;
+    var lo = Infinity, hi = 0; r.ag.forEach(function(a){ if (a.inCCO){ lo = Math.min(lo, a._pjR); hi = Math.max(hi, a._pjR); } });
+    PROJ = pj({rate:'own'}); var r2 = plain(FI, 1), gO = r2.acc.gross/Math.max(1e-9, r2.acc.conv);
+    return {pass:rc >= 1 && rc <= FI.maxMult*CFG.PHI_RATIO && gM >= gO, detail:'mean contract rate ' + rc.toFixed(3) + 'x (last year own rates ' + lo.toFixed(2) + '-' + hi.toFixed(2) + 'x); gross per BU ' + gM.toFixed(3) + ' (max) vs ' + gO.toFixed(3) + ' (own)'};
+  });
+  t("willingness: under 'capq' no one is allocated project BU at pay per hour at or below their own wage; 'capqAll' may be (Full Integration, seed 1, engine)", function(){
+    PROJ = pj(); var r = plain(FI, 1); PROJ = pj({alloc:'capqAll'}); var r2 = plain(FI, 1);
+    return {pass:r.acc.unwilling === 0, detail:'unwilling allocations: ' + r.acc.unwilling + ' (capq), ' + r2.acc.unwilling + ' (capqAll)'};
+  });
+  t('random numbers: project hiring adds no draw (8 per agent-year, Full Integration, 20 years, both models)', function(){
+    var ok = true, v = [];
+    ['engine','framework'].forEach(function(cm){ CONVERSION_MODEL = cm; var n = [];
+      [null, pj()].forEach(function(q){ PROJ = q; RNG = mulberry32(700004); var ag = makeLatentPopulation(FI.nAgents).map(function(l){ return instantiateAgent(l, FI); });
+        var base = mulberry32(1), k = 0; RNG = function(){ k++; return base(); };
+        for (var y = 0; y < FI.years; y++) runYear(ag, y, FI, {active:false, incomeMultiplier:1.0, yearsLeft:0}); n.push(k); });
+      if (n[0] !== n[1] || n[0] !== 8*FI.nAgents*FI.years) ok = false; v.push(cm + ' ' + n.join(' / ')); });
+    return {pass:ok, detail:v.join('; ') + ' (off / on)'};
+  });
+  t("gift: 'forward' puts 1,000 BU per participant into year 1's pool and, with share 0, all of it is allocated; 'holder' gives each participant their own (Full Integration, seed 1, engine)", function(){
+    PROJ = pj({share:0}); var r = plain(FI, 1), nP = r.ag.filter(function(a){ return a.inCCO; }).length;
+    PROJ = pj({share:0, giftMode:'holder'}); var r2 = plain(FI, 1), sv = 0; r2.ag.forEach(function(a){ sv += a._pjGiftH || 0; });
+    var ok = Math.abs(r.acc.gift - 1000*nP) < 1e-6 && Math.abs(r.acc.alloc - 1000*nP) < 1e-6 && r2.acc.alloc === 0 && Math.abs(r2.acc.gift - r2.acc.giftConv - sv) < 1e-6;
+    return {pass:ok, detail:nP + ' participants; forward: gift ' + r.acc.gift + ', allocated ' + Math.round(r.acc.alloc) + '; holder: gift ' + r2.acc.gift + ' = converted ' + Math.round(r2.acc.giftConv) + ' + held ' + Math.round(sv)};
+  });
+  t("hours: 'displace' takes project hours out of wage earnings and 'side' does not (Full Integration, seed 1, engine)", function(){
+    PROJ = pj({hours:'displace'}); var r = plain(FI, 1); PROJ = pj({hours:'side'}); var r2 = plain(FI, 1);
+    return {pass:r.acc.disp > 0 && r2.acc.disp === 0 && r.acc.hrs > 0 && Math.abs(r.acc.hrs - r2.acc.hrs) < 1e-9*r.acc.hrs, detail:'wage earnings displaced $' + Math.round(r.acc.disp) + ' (displace) vs $' + r2.acc.disp + ' (side); project hours ' + Math.round(r.acc.hrs) + ' in both'};
+  });
+  t('financing (d66): the launch gift is financed over the run, so the contribution in year 2 does not jump; the cost it adds is the same either way (seed 1, engine, tax)', function(){
+    var P = nextRoundPreset(FI), S = s3BaseS(P, 1), o = tbOpts({fin:'tax', grp:{part:FI.partRate, pth:FI.pthUptake}});
+    PROJ = pj({share:0}); var tau0 = tbRunCore(PR.cco(), 1, o, S, 0, 1).tau0, x = tbRunCore(PR.cco(), 1, o, S, tau0, P.years);
+    PROJ = pj({share:0, gift:0}); var y = tbRunCore(PR.cco(), 1, o, S, tau0, P.years);
+    var jump = x.path[2].tau - y.path[2].tau;
+    return {pass:jump < 0.01 && x.res.cost > y.res.cost, detail:'year-2 contribution ' + (x.path[2].tau*100).toFixed(2) + '% with the gift vs ' + (y.path[2].tau*100).toFixed(2) + '% without; cost $' + Math.round(x.res.cost) + ' vs $' + Math.round(y.res.cost) + ' per adult-year'};
+  });
+  return out;
+}
+Object.assign(module.exports, { projUnitSuite, PROJ_DEFAULTS, tbSetG, setProj:function(x){ PROJ = x; }, getPJS:function(){ return PJS; } });
+
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
   /* v4.21: `--agents=N` sets the population of every run in every mode (default 500, the page's
@@ -2205,7 +2363,12 @@ if (require.main === module) {
     console.log('\n=== tbUnitSuite(): A4 testbed presets, uniform accounting and the financing switch (harness-only) ===');
     TU.forEach(function(x){ if (!x.pass) tf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + TU.length + ' run, ' + tf + ' failed');
-    if (nf || pf || lf || rf || tf) process.exitCode = 1;
+    /* Session 15 (N1): project hiring (harness-only). */
+    var JU = projUnitSuite(), jf = 0;
+    console.log('\n=== projUnitSuite(): N1 project hiring paid in expired BU (harness-only) ===');
+    JU.forEach(function(x){ if (!x.pass) jf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + JU.length + ' run, ' + jf + ' failed');
+    if (nf || pf || lf || rf || tf || jf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -3415,6 +3578,34 @@ if (require.main === module) {
         R.forEach(function(r, i){ var d = i ? tbDiff(R[i], B, 'fgt2PY') : null, dc = i > 1 ? tbDiff(R[i], R[1], 'fgt2PY') : null;
           console.log('| ' + rows[i].l + ' | ' + $(r.cost) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : f2(r.fgt2PY)) + ' | ' + (i ? sg(tbDiff(R[i], B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + f1(r.fgt0PY) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + (dc ? sg(dc.m) + ' [' + sg(dc.lo) + ', ' + sg(dc.hi) + ']' : '—') + ' |'); });
       }); });
+    if (secT === 'proj'){  /* N1, session 15 (s33; d58-d65): project hiring paid in expired BU, in place of the octave wage raise */
+      var PJROWS = [['Compassionism as it runs now (octave wage raise on)', null, null], ['octave wage raise off (d19)', {octaveWage:true}, null],
+        ['PROJECT HIRING (defaults d59-d65), raise off', {octaveWage:true}, {}],
+        ['  directed share 0.5 (d59)', {octaveWage:true}, {share:0.5}], ['  directed share 0: the launch gift only', {octaveWage:true}, {share:0}],
+        ['  gift converted by each holder (d60 alternative)', {octaveWage:true}, {giftMode:'holder'}], ['  no launch gift', {octaveWage:true}, {giftMode:'none'}],
+        ['  all participants, no willingness test (d61)', {octaveWage:true}, {alloc:'capqAll'}], ['  lowest wage first (d61)', {octaveWage:true}, {alloc:'low'}],
+        ['  equal shares among the willing (d61)', {octaveWage:true}, {alloc:'equal'}], ['  own rate only (d62)', {octaveWage:true}, {rate:'own'}],
+        ['  side hours, added on top (d63)', {octaveWage:true}, {hours:'side'}], ['  pay at the median wage, $19.20 an hour (d63)', {octaveWage:true}, {pay:19.20}],
+        ['  project hiring with the octave wage raise kept on', null, {}]];
+      envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0;
+        MODELS.forEach(function(cm){
+          var cfg = [{p:PR.baseline()}], lbl = ['No program (Baseline)'];
+          PJROWS.forEach(function(r){ cfg.push({p:PR.cco(), cm:cm, pw:r[1], pj:r[2]}); lbl.push(r[0]); });
+          if (infl){ cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, o:{noDamp:true}}); lbl.push('octave raise and damping off (the page\'s mechanisms-off row)');
+            cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{noDamp:true}}); lbl.push('PROJECT HIRING, raise and damping off'); }
+          cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{fin:'hybrid', a:0}}); lbl.push('PROJECT HIRING, hybrid financing, a = 0');
+          cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{fin:'hybrid', a:1}}); lbl.push('PROJECT HIRING, hybrid financing, a = 1 (H1)');
+          var t0 = Date.now(), R = tbStudy(cfg, nT, P, o), B = R[0], OFF = R[2];
+          console.log('\n--- proj (N1): ' + E[0] + ' | ' + MLBL[cm] + ' | tax-financed at own cost unless stated | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+          console.log('| Design | Cost | FGT2 20-yr avg vs Baseline [95% CI] | vs raise off [95% CI] | FGT2 yr 20 vs Baseline | Per $1,000 | FGT0 20-yr | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Project net / participant-yr | Project hours / participant-yr | Share working | Contract rate | Pool (expired) / participant-yr | Groups: resources % / FGT0 pt / wealth pov pt (part; non; PTH; low; top) | Worse off |');
+          console.log('|' + Array(19).join('---|'));
+          R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, dO = (i && i !== 2) ? tbDiff(r, OFF, 'fgt2PY') : null;
+            console.log('| ' + lbl[i] + ' | ' + $(r.cost) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : f2(r.fgt2PY)) + ' | ' + (dO ? sg(dO.m) + ' [' + sg(dO.lo) + ', ' + sg(dO.hi) + ']' : '—') +
+              ' | ' + (i ? sg(tbDiff(r, B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + (i && r.cost > 0 ? sg(d.m/(r.cost/1000), 3) : '—') + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + pinf(r.endoAnn) +
+              '% | ' + (r.pjNet || r.pjGift ? $(r.pjNet + r.pjGift) : '—') + ' | ' + (r.pjHrs ? f1(r.pjHrs) : '—') + ' | ' + (r.pjWork ? f1(r.pjWork) + '%' : '—') + ' | ' + (r.pjRc ? f2(r.pjRc) + 'x' : '—') + ' | ' + (r.pjExp ? $(r.pjExp) : '—') +
+              ' | ' + (i ? grpCell(r, B) : '—') + ' |'); });
+        }); });
+    }
     if (secT === 'a5'){ var JS = {}, JPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
       envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0;
         var rows = [{l:'Baseline (no program)', p:PR.baseline(), k:'base'}], tg = {};
