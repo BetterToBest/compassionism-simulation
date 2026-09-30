@@ -1,0 +1,97 @@
+# Session 17 (Sep 30, 2026): applies a session's files from one zip, so folders keep their structure.
+# GitHub's web upload flattens folders and cannot unzip, so a session's files now arrive as one zip named
+# apply-<anything>.zip, dropped on the repository's root upload page. This workflow then:
+#   1. unzips it (a single top-level sim/ folder is stripped, and macOS __MACOSX/.DS_Store entries are dropped);
+#   2. removes every path listed in the zip's DELETE.txt, if it has one (one path per line; # starts a comment);
+#   3. copies the zip's files into place, overwriting files of the same path, and removes the zip;
+#   4. runs the three checks (validate, unit, domtest) on the result;
+#   5. only if all three pass, commits the result to main as one commit and starts checks (and release, when
+#      index.html changed) on it. If a check fails, nothing is committed; the zip stays on main and the log says why.
+# A zip may not touch .github/ (workflow changes stay manual) or reach outside the repository.
+# Run it by hand (Actions > apply upload > Run workflow) to retry a zip that is already on main.
+name: apply upload
+
+on:
+  push:
+    branches: [main]
+    paths: ['apply-*.zip']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: apply-upload
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Unpack apply-*.zip into place
+        id: unpack
+        run: |
+          set -euo pipefail
+          shopt -s nullglob dotglob
+          zips=(apply-*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then echo "No apply-*.zip at the repository root; nothing to do."; echo "found=0" >> "$GITHUB_OUTPUT"; exit 0; fi
+          for z in "${zips[@]}"; do
+            echo "::group::$z"
+            if zipinfo -1 "$z" | grep -Eq '(^/|(^|/)\.\.(/|$))'; then echo "::error::$z has a path outside the repository"; exit 1; fi
+            tmp="$(mktemp -d)"; unzip -q "$z" -d "$tmp"
+            rm -rf "$tmp/__MACOSX"; find "$tmp" -name '.DS_Store' -delete
+            src="$tmp"; top=("$tmp"/*)
+            if [ ${#top[@]} -eq 1 ] && [ -d "$tmp/sim" ]; then src="$tmp/sim"; fi
+            if [ -e "$src/.github" ]; then echo "::error::$z touches .github/; change workflows by hand"; exit 1; fi
+            if [ -f "$src/DELETE.txt" ]; then
+              while IFS= read -r line || [ -n "$line" ]; do
+                f="$(printf '%s' "${line%%#*}" | tr -d '\r' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+                [ -z "$f" ] && continue
+                case "$f" in /*|*..*|.github|.github/*|.git|.git/*) echo "::error::DELETE.txt: refusing '$f'"; exit 1;; esac
+                if git ls-files --error-unmatch -- "$f" >/dev/null 2>&1; then git rm -r -q -- "$f"; echo "deleted  $f"; else echo "absent   $f (skipped)"; fi
+              done < "$src/DELETE.txt"
+              rm "$src/DELETE.txt"
+            fi
+            (cd "$src" && find . -type f | sed 's|^\./||' | sort | sed 's/^/placed   /')
+            cp -a "$src/." .
+            git rm -q -- "$z"
+            rm -rf "$tmp"
+            echo "::endgroup::"
+          done
+          echo "found=1" >> "$GITHUB_OUTPUT"
+          echo "names=${zips[*]}" >> "$GITHUB_OUTPUT"
+
+      - name: Checks on the result (nothing is committed unless all three pass)
+        if: steps.unpack.outputs.found == '1'
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund --no-package-lock
+          node harness.js validate
+          node harness.js unit
+          node domtest.js
+
+      - name: Commit to main and start checks on the new commit
+        if: steps.unpack.outputs.found == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NAMES: ${{ steps.unpack.outputs.names }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- . ':(exclude)node_modules' ':(exclude)package-lock.json'
+          if git diff --cached --quiet; then echo "The zip changed nothing."; exit 0; fi
+          git diff --cached --stat
+          touched_index="$(git diff --cached --name-only | grep -qx 'index.html' && echo 1 || echo 0)"
+          git commit -q -m "Apply ${NAMES} (checks passed)"
+          git push origin HEAD:main
+          # Commits pushed with this token start no other workflow on their own, so start them here.
+          gh workflow run checks.yml --ref main
+          if [ "$touched_index" = 1 ]; then gh workflow run release.yml --ref main; fi
