@@ -260,10 +260,14 @@ var FWS = null;  /* per-run framework state (pools carried from one year to the 
  *         pay is earned, so it carries no income effect. The testbed's hours measure counts wage plus project hours.
  *  giftMode 'forward' | 'holder' (each participant converts their own gift at their own rate from year 1, with no hours: an
  *         unconditional dollar, so it enters the labor module's rent channel) | 'none'.
+ *  giftFin how the testbed's flat contribution pays for the gift's proceeds (d66; issue i7, session 16): 'payg' (Duke's pick) in
+ *         the year they are paid, so the year-2 contribution rises; 'run' spread over the remaining years of the run, the rule
+ *         the testbed applies to the asset endowment (d26). The cost counted is the same; only its timing, and so the work
+ *         response to the contribution, differs. Read only by the testbed's tax and hybrid financing.
  * Allocation is deterministic: no RNG draw is added (CRN holds). With PROJ on, the framework model's N2 allocation is replaced.
  * PJS: per-run state, reset by runYear at yr 0; PJS.acc tallies the flows in year-0 dollars for the testbed and the unit tests. */
 var PROJ = null;
-var PROJ_DEFAULTS = {share:1, gift:1000, giftMode:'forward', pay:CFG.LIVING_WAGE_ANNUAL/2080, alloc:'capq', rate:'max', hours:'side', cap:false, hrsYr:2080};  /* Duke's picks (Sep 30): d63 side hours, d64 no cap */
+var PROJ_DEFAULTS = {share:1, gift:1000, giftMode:'forward', giftFin:'payg', pay:CFG.LIVING_WAGE_ANNUAL/2080, alloc:'capq', rate:'max', hours:'side', cap:false, hrsYr:2080};  /* Duke's picks (Sep 30): d63 side hours, d64 no cap, d66 pay as you go */
 var PJS = null;
 function pjOwnRate(a, p, pcb){ var oc = 1 + (a.octave/Math.max(1, p.maxOct))*(Math.max(1, p.maxMult) - 1), qf = Math.min(1, a.quality/Math.max(1, p.maxMult));
   var ph = (p.phi && a.quality > p.maxMult*CFG.PHI_QUALITY_THRESH) ? CFG.PHI_RATIO : 1.0, pb = (p.ptf && a.inPTF) ? pcb : 1.0;
@@ -774,7 +778,7 @@ function runYear(agentSet,yr,p,recSt){
       var pjTg=pjTax(p,a._pjR),pjG2=PATHWAY_OFF.conversion?0:pjC2*a._pjR*pjCipB*incomeShock,pjN2=pjG2*(1-pjTg);
       a.wealth+=pjN1+pjN2;a.yrConvUSD+=pjN1+pjN2;yrCashSurplus+=pjN1+pjN2;totalConversion+=pjN1+pjN2;totalBU+=pjC1+pjC2;
       if(LABOR&&pjN2)a._labCn=(a._labCn||0)+pjN2;  // the holder's gift is an unconditional dollar: the rent channel
-      a.yrPjGift=pjN1*pjFg+pjN2;  // d66: gift-funded proceeds, financed over the run like the endowment (the carried share is approximate)
+      a.yrPjGift=pjN1*pjFg+pjN2;  // d66: gift-funded proceeds, tallied so the testbed can finance them as you go or over the run (the carried share is approximate)
       if(PRICE)PRICE.acc.conv+=pjN1+pjN2;
       pjA.conv+=pjC1/pjIdx;pjA.giftConv+=pjC2/pjIdx;pjA.gross+=(pjG1+pjG2)/pjIdx;pjA.net+=pjN1/pjIdx;pjA.giftNet+=pjN2/pjIdx;
       if(LEDGER){ledAdd(yr,'pjBU',a._pjBU||0);ledAdd(yr,'pjConvBU',pjC1+pjC2);ledAdd(yr,'pjNet',pjN1+pjN2);}
@@ -1899,8 +1903,10 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       if (yr === 0) L.endowTot = C.endow;
       /* d26: what the treasury must fund this year: every program dollar at face value (the endowment amortized over the run),
        * less the efficiency share eP of price cuts (added capacity, not a transfer; 0 by the plan's rule). */
-      L.pjg += C.pjg;  /* d66 (session 15): the launch gift is one-time spending, financed over the run like the endowment (d26) */
-      var need = C.cash + L.endowTot/T + C.bu + (o.fin === 'hybrid' ? 0 : C.conv - C.pjg + L.pjg/(T - 1)) + C.cap + (1 - o.eP)*(C.cutPT + C.cutG) + C.pthLiq, U;  /* session 7 (d26): hybrid leaves conversion rewards to money creation */
+      /* d66 (sessions 15-16; issue i7): the launch gift's proceeds are one-time spending. 'payg' (Duke's pick) finances them in the
+       * year they are paid, like every other conversion; 'run' spreads them over the remaining years, like the endowment (d26). */
+      L.pjg += C.pjg; var gRun = !!(PROJ && PROJ.giftFin === 'run');
+      var need = C.cash + L.endowTot/T + C.bu + (o.fin === 'hybrid' ? 0 : gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv) + C.cap + (1 - o.eP)*(C.cutPT + C.cutG) + C.pthLiq, U;  /* session 7 (d26): hybrid leaves conversion rewards to money creation */
       /* d24: created money counted by one rule for every design. aT: output matched to transfer dollars (cash, BU spent at face
        * value, the endowment, capital spending); a: output matched to conversion rewards (H1); eP: price-cut efficiency. */
       /* Session 7 (d24 option b, o.buAtA): output matched at a to a converted BU's face value as well as its reward. */
@@ -2262,12 +2268,14 @@ function projUnitSuite(){
     PROJ = pj({hours:'displace'}); var r = plain(FI, 1); PROJ = pj({hours:'side'}); var r2 = plain(FI, 1);
     return {pass:r.acc.disp > 0 && r2.acc.disp === 0 && r.acc.hrs > 0 && Math.abs(r.acc.hrs - r2.acc.hrs) < 1e-9*r.acc.hrs, detail:'wage earnings displaced $' + Math.round(r.acc.disp) + ' (displace) vs $' + r2.acc.disp + ' (side); project hours ' + Math.round(r.acc.hrs) + ' in both'};
   });
-  t('financing (d66): the launch gift is financed over the run, so the contribution in year 2 does not jump; the cost it adds is the same either way (seed 1, engine, tax)', function(){
+  t("financing (d66, i7): 'payg' pays for the launch gift in the year it is converted, so the year-2 contribution rises; 'run' spreads it over the run, like the endowment, so each year carries a small share; the program costs more than with no gift either way (seed 1, engine, tax)", function(){
     var P = nextRoundPreset(FI), S = s3BaseS(P, 1), o = tbOpts({fin:'tax', grp:{part:FI.partRate, pth:FI.pthUptake}});
-    PROJ = pj({share:0}); var tau0 = tbRunCore(PR.cco(), 1, o, S, 0, 1).tau0, x = tbRunCore(PR.cco(), 1, o, S, tau0, P.years);
-    PROJ = pj({share:0, gift:0}); var y = tbRunCore(PR.cco(), 1, o, S, tau0, P.years);
-    var jump = x.path[2].tau - y.path[2].tau;
-    return {pass:jump < 0.01 && x.res.cost > y.res.cost, detail:'year-2 contribution ' + (x.path[2].tau*100).toFixed(2) + '% with the gift vs ' + (y.path[2].tau*100).toFixed(2) + '% without; cost $' + Math.round(x.res.cost) + ' vs $' + Math.round(y.res.cost) + ' per adult-year'};
+    PROJ = pj({share:0, gift:0}); var tau0 = tbRunCore(PR.cco(), 1, o, S, 0, 1).tau0, y = tbRunCore(PR.cco(), 1, o, S, tau0, P.years);
+    PROJ = pj({share:0, giftFin:'payg'}); var x = tbRunCore(PR.cco(), 1, o, S, tau0, P.years);
+    PROJ = pj({share:0, giftFin:'run'}); var z = tbRunCore(PR.cco(), 1, o, S, tau0, P.years);
+    var jP = x.path[2].tau - y.path[2].tau, jR = z.path[2].tau - y.path[2].tau, tail = z.path[10].tau - y.path[10].tau;
+    return {pass:jP > 0.02 && jR >= 0 && jR < jP/5 && tail > 0 && x.res.cost > y.res.cost && z.res.cost > y.res.cost && Math.abs(x.res.cost - z.res.cost) < 0.01*x.res.cost,
+      detail:'year-2 contribution ' + (x.path[2].tau*100).toFixed(2) + '% (as you go) and ' + (z.path[2].tau*100).toFixed(2) + '% (over the run) vs ' + (y.path[2].tau*100).toFixed(2) + '% with no gift; year 10 +' + (tail*100).toFixed(2) + ' pt over the run; cost $' + Math.round(x.res.cost) + ' / $' + Math.round(z.res.cost) + ' vs $' + Math.round(y.res.cost) + ' per adult-year'};
   });
   return out;
 }
@@ -3578,25 +3586,33 @@ if (require.main === module) {
         R.forEach(function(r, i){ var d = i ? tbDiff(R[i], B, 'fgt2PY') : null, dc = i > 1 ? tbDiff(R[i], R[1], 'fgt2PY') : null;
           console.log('| ' + rows[i].l + ' | ' + $(r.cost) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : f2(r.fgt2PY)) + ' | ' + (i ? sg(tbDiff(R[i], B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + f1(r.fgt0PY) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + (dc ? sg(dc.m) + ' [' + sg(dc.lo) + ', ' + sg(dc.hi) + ']' : '—') + ' |'); });
       }); });
-    if (secT === 'proj'){  /* N1, session 15 (s33; d58-d65): project hiring paid in expired BU, in place of the octave wage raise */
+    /* Session 16 (issue i7): 'projcore' runs only the rows the page will carry (d65), each with the launch gift financed both ways
+     * (d66): as you go (Duke's pick, the design as intended) and over the run (the endowment's rule, equal terms). */
+    if (secT === 'proj' || secT === 'projcore'){  /* N1, session 15 (s33; d58-d65): project hiring paid in expired BU, in place of the octave wage raise */
       var PJROWS = [['Compassionism as it runs now (octave wage raise on)', null, null], ['octave wage raise off (d19)', {octaveWage:true}, null],
-        ['PROJECT HIRING (defaults d59-d65), raise off', {octaveWage:true}, {}],
+        ['PROJECT HIRING (defaults d59-d66), raise off', {octaveWage:true}, {}],
+        ['  launch gift financed over the run, like the endowment (d66 alternative)', {octaveWage:true}, {giftFin:'run'}],
         ['  directed share 0.5 (d59)', {octaveWage:true}, {share:0.5}], ['  directed share 0: the launch gift only', {octaveWage:true}, {share:0}],
         ['  gift converted by each holder (d60 alternative)', {octaveWage:true}, {giftMode:'holder'}], ['  no launch gift', {octaveWage:true}, {giftMode:'none'}],
         ['  all participants, no willingness test (d61)', {octaveWage:true}, {alloc:'capqAll'}], ['  lowest wage first (d61)', {octaveWage:true}, {alloc:'low'}],
         ['  equal shares among the willing (d61)', {octaveWage:true}, {alloc:'equal'}], ['  own rate only (d62)', {octaveWage:true}, {rate:'own'}],
         ['  side hours, added on top (d63)', {octaveWage:true}, {hours:'side'}], ['  pay at the median wage, $19.20 an hour (d63)', {octaveWage:true}, {pay:19.20}],
         ['  project hiring with the octave wage raise kept on', null, {}]];
+      var CORE = secT === 'projcore';
+      if (CORE) PJROWS = [PJROWS[0], PJROWS[1], ['PROJECT HIRING, raise off; gift paid as you go (d66, the design as intended)', {octaveWage:true}, {}],
+        ['PROJECT HIRING, raise off; gift financed over the run (d66 alternative: the endowment\'s rule)', {octaveWage:true}, {giftFin:'run'}],
+        ['  project hiring with the raise kept on; gift as you go', null, {}], ['  project hiring with the raise kept on; gift over the run', null, {giftFin:'run'}]];
       envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0;
         MODELS.forEach(function(cm){
           var cfg = [{p:PR.baseline()}], lbl = ['No program (Baseline)'];
           PJROWS.forEach(function(r){ cfg.push({p:PR.cco(), cm:cm, pw:r[1], pj:r[2]}); lbl.push(r[0]); });
           if (infl){ cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, o:{noDamp:true}}); lbl.push('octave raise and damping off (the page\'s mechanisms-off row)');
-            cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{noDamp:true}}); lbl.push('PROJECT HIRING, raise and damping off'); }
-          cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{fin:'hybrid', a:0}}); lbl.push('PROJECT HIRING, hybrid financing, a = 0');
-          cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{fin:'hybrid', a:1}}); lbl.push('PROJECT HIRING, hybrid financing, a = 1 (H1)');
+            cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{noDamp:true}}); lbl.push('PROJECT HIRING, raise and damping off' + (CORE ? '; gift as you go' : ''));
+            if (CORE){ cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{giftFin:'run'}, o:{noDamp:true}}); lbl.push('PROJECT HIRING, raise and damping off; gift over the run'); } }
+          if (!CORE){ cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{fin:'hybrid', a:0}}); lbl.push('PROJECT HIRING, hybrid financing, a = 0');
+          cfg.push({p:PR.cco(), cm:cm, pw:{octaveWage:true}, pj:{}, o:{fin:'hybrid', a:1}}); lbl.push('PROJECT HIRING, hybrid financing, a = 1 (H1)'); }
           var t0 = Date.now(), R = tbStudy(cfg, nT, P, o), B = R[0], OFF = R[2];
-          console.log('\n--- proj (N1): ' + E[0] + ' | ' + MLBL[cm] + ' | tax-financed at own cost unless stated | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+          console.log('\n--- ' + secT + ' (N1): ' + E[0] + ' | ' + MLBL[cm] + ' | tax-financed at own cost unless stated | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
           console.log('| Design | Cost | FGT2 20-yr avg vs Baseline [95% CI] | vs raise off [95% CI] | FGT2 yr 20 vs Baseline | Per $1,000 | FGT0 20-yr | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Project net / participant-yr | Project hours / participant-yr | Share working | Contract rate | Pool (expired) / participant-yr | Groups: resources % / FGT0 pt / wealth pov pt (part; non; PTH; low; top) | Worse off |');
           console.log('|' + Array(19).join('---|'));
           R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, dO = (i && i !== 2) ? tbDiff(r, OFF, 'fgt2PY') : null;

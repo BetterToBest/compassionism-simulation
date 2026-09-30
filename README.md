@@ -8,7 +8,7 @@ The page opens with a comparison: Compassionism beside a basic income, a negativ
 
 **[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 
-**New to the page?** [Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4) (about five minutes, captions on screen) or [read it with screenshots](walkthrough/): what the page shows, how Compassionism works, what the model finds so far, and how to check it or help.
+**New to the page?** [Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4) (about six minutes, narrated, with captions) or [read it with screenshots](walkthrough/): what the page shows, how Compassionism works, what the model finds so far, and how to check it or help.
 
 [![checks](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml/badge.svg)](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml)
 
