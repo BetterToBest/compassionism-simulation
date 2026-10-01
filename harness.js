@@ -2196,6 +2196,22 @@ function tbPresets(P){
     ccoTop: function(G, s, t){ var q = tbCCO(P, P.bu*(1 - (s === undefined ? TB_TOPUP_S : s))); q.tb = {nit:{G:G, t:t === undefined ? TB_NIT_T : t, part:true}}; return q; }
   };
 }
+/* Session 23 (s34; d86-d90; N1-design-damping-theta.md): the N1 Compassionism rows, built one way for the testbed's projcore, esp
+ * and match sections (unit s34-4: match's tax-financed rows equal projcore's and esp's). The main row: project hiring with Duke's
+ * d58-d66 picks, the octave wage raise off (d46), the launch gift paid as you go (d66), the PTF/PTH inflation damping off (d86,
+ * under d53), the price module's capacity term at 0 (d87); in the Hub-spec (framework) model, ESP payroll at the defaults (d76).
+ * v: {gift:'run'} the gift financed over the run (d67); {raise:true} the octave wage raise kept on; {damp:true} the damping kept on;
+ * {cap:x} the capacity term (PM ptfCap, not the engine presets' membership cap) at x; {esp:false} the Hub-spec model's business
+ * rule before ESP payroll; {es:{...}} an ESP setting (d71-d75); {fin, a} the financing. The damping is set on the row itself, so
+ * the comparators and every other testbed section are untouched. */
+function n1Row(PR, cm, v){
+  v = v || {}; var c = {p:PR.cco(), cm:cm, pj:v.gift === 'run' ? {giftFin:'run'} : {}, o:{noDamp:!v.damp}};
+  if (!v.raise) c.pw = {octaveWage:true};
+  if (cm === 'framework' && v.esp !== false) c.es = v.es || {};
+  if (v.cap) c.o.ptfCap = v.cap;
+  if (v.fin){ c.o.fin = v.fin; c.o.a = v.a || 0; }
+  return c;
+}
 /* Matching a comparator to a target gross cost per adult-year (year-0 dollars) on pilot seeds 1..Np. UBI: one proportional
  * correction (COLA and deflation make real cost differ slightly from the nominal amount). NIT: secant on G. Endowment: exact
  * (paid in year 0, so cost = W x eligible share / years). */
@@ -2582,6 +2598,58 @@ function bleiUnitSuite(){
   });
   return out;
 }
+/* Session 23 (s34; N1-design-damping-theta.md, Section 7): the damping off by default in the rebuilt testbed sections (d86), the
+ * capacity term at 0 (d87), the N1 rows in match (d90). Test 1 of the design (with --damp=on, projcore, esp, a5 and match print
+ * session 21's output exactly) is a diff of full outputs, done in session 23 and recorded in the hand-off; s34-1 checks the same at
+ * the level of a run. Adverse unless stated: the damping acts only on exogenous inflation. */
+function s34UnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, nr:applyNR6(), g:tbSetG(TB_PROFILE_G)};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; tbSetG(sv.g); resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; PROJ = null; ESP = null; } }
+  var AD = ADVERSE_REFERENCE, FI = FULL_INTEGRATION, PA = tbPresets(AD), PF = tbPresets(FI), OT = {fin:'tax', aT:0, a:0, X:0};
+  function run(P, cfgs, N, o){ return tbStudy(cfgs, N || 1, P, o || OT); }
+  function sameAll(x, y){ var bad = TB_KEYS.filter(function(k){ return x[k] !== y[k]; }); return {ok:!bad.length, bad:bad}; }
+  t('s34-1: n1Row with the damping kept on is exactly the row sessions 16-21 ran (project hiring, raise off, gift as you go; ESP payroll or today\'s rule in the Hub-spec model), every key (Adverse, seed 1)', function(){
+    var R1 = run(AD, [n1Row(PA, 'engine', {damp:true}), {p:PA.cco(), cm:'engine', pw:{octaveWage:true}, pj:{}},
+      n1Row(PA, 'framework', {damp:true}), {p:PA.cco(), cm:'framework', pw:{octaveWage:true}, pj:{}, es:{}},
+      n1Row(PA, 'framework', {damp:true, esp:false}), {p:PA.cco(), cm:'framework', pw:{octaveWage:true}, pj:{}}]);
+    var a = sameAll(R1[0], R1[1]), b = sameAll(R1[2], R1[3]), c = sameAll(R1[4], R1[5]);
+    return {pass:a.ok && b.ok && c.ok, detail:'engine ' + a.ok + ', Hub spec with ESP payroll ' + b.ok + ', Hub spec with today\'s rule ' + c.ok + (a.ok && b.ok && c.ok ? '' : '; keys differ: ' + a.bad.concat(b.bad, c.bad).slice(0, 6).join(', '))};
+  });
+  t('s34-2: with no exogenous inflation the damping switch changes nothing on the N1 rows (reference, seed 1, both models, every key); in Adverse the damping-off main row ends at a higher price level', function(){
+    var ok = true; ['engine', 'framework'].forEach(function(cm){ var R = run(FI, [n1Row(PF, cm), n1Row(PF, cm, {damp:true}), n1Row(PF, cm, {raise:true}), n1Row(PF, cm, {raise:true, damp:true})]);
+      if (!sameAll(R[0], R[1]).ok || !sameAll(R[2], R[3]).ok) ok = false; });
+    var RA = run(AD, [n1Row(PA, 'engine'), n1Row(PA, 'engine', {damp:true})]);
+    return {pass:ok && RA[0].pLev20 > RA[1].pLev20, detail:'reference identical: ' + ok + '; Adverse price level at year 20 ' + RA[0].pLev20.toFixed(4) + ' (off) vs ' + RA[1].pLev20.toFixed(4) + ' (on)'};
+  });
+  t('s34-3: the damping switch leaves every comparator row unchanged (Baseline, UBI, NIT, endowment, X-Cents both ways, grocery; Adverse, seed 1, tax and money, every key)', function(){
+    var cs = [PA.baseline(), PA.ubi(8000), PA.nit(12000), PA.endow(50000), PA.xc(0), PA.xc(1), PA.groc(1)], ok = true, n = 0;
+    ['tax', 'money'].forEach(function(fin){ var R = run(AD, cs.map(function(p){ return {p:p, o:{noDamp:false}}; }).concat(cs.map(function(p){ return {p:p, o:{noDamp:true}}; })), 1, {fin:fin, aT:0, a:0, X:0});
+      cs.forEach(function(p, i){ n++; if (!sameAll(R[i], R[i + cs.length]).ok) ok = false; }); });
+    return {pass:ok, detail:n + ' comparator runs identical on every key: ' + ok};
+  });
+  t('s34-4: under tax financing match\'s N1 rows equal projcore\'s and esp\'s seed by seed: match sets CONVERSION_MODEL to the row\'s model, projcore and esp leave it at the engine and rely on the row (Adverse, seeds 1-2, both models, every key)', function(){
+    var ok = true; ['engine', 'framework'].forEach(function(cm){ CONVERSION_MODEL = 'engine'; var Rp = run(AD, [n1Row(PA, cm)], 2);
+      CONVERSION_MODEL = cm; var Rm = run(AD, [n1Row(PA, cm)], 2); CONVERSION_MODEL = 'engine';
+      TB_KEYS.forEach(function(k){ for (var s = 0; s < 2; s++) if (Rp[0]._s[k][s] !== Rm[0]._s[k][s]) ok = false; }); });
+    return {pass:ok, detail:'identical per seed on every key: ' + ok};
+  });
+  t('s34-5: with the capacity term at 0, every result equals the damping-off run exactly; at 1 the year-20 price level is lower (Adverse, seed 1, both models)', function(){
+    var ok = true, lv = []; ['engine', 'framework'].forEach(function(cm){ var z = n1Row(PA, cm); z.o.ptfCap = 0;
+      var R = run(AD, [n1Row(PA, cm), z, n1Row(PA, cm, {cap:1})]); if (!sameAll(R[0], R[1]).ok || !(R[2].pLev20 < R[0].pLev20)) ok = false; lv.push(cm + ' ' + R[0].pLev20.toFixed(4) + ' / ' + R[2].pLev20.toFixed(4)); });
+    return {pass:ok, detail:'price level at year 20, term 0 / term 1: ' + lv.join('; ')};
+  });
+  t('s34-6: random numbers: the damping switch adds no draw; a full testbed run makes the same number of draws with the damping on and off (Adverse, seed 1, both models; runYear\'s 8 per agent-year are checked by the ESP and project suites)', function(){
+    var m0 = mulberry32, k = 0, n = [];
+    mulberry32 = function(sd){ var g = m0(sd); return function(){ k++; return g(); }; };
+    try { ['engine', 'framework'].forEach(function(cm){ [{}, {damp:true}].forEach(function(v){ k = 0; run(AD, [n1Row(PA, cm, v)]); n.push(k); }); }); }
+    finally { mulberry32 = m0; }
+    return {pass:n[0] === n[1] && n[2] === n[3] && n[0] > 0, detail:'draws, damping off / on: engine ' + n[0] + ' / ' + n[1] + ', Hub spec ' + n[2] + ' / ' + n[3]};
+  });
+  return out;
+}
 Object.assign(module.exports, { espUnitSuite, ESP_DEFAULTS, setEsp:function(x){ ESP = x; }, getESS:function(){ return ESS; } });
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
@@ -2689,7 +2757,11 @@ if (require.main === module) {
     console.log('\n=== bleiUnitSuite(): BLEI by group beside FGT2 (s41; reporting only) ===');
     BU_.forEach(function(x){ if (!x.pass) bf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + BU_.length + ' run, ' + bf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf) process.exitCode = 1;
+    var ZU = s34UnitSuite(), zf = 0;
+    console.log('\n=== s34UnitSuite(): the damping off by default, the capacity term and the N1 rows in match (s34; harness-only) ===');
+    ZU.forEach(function(x){ if (!x.pass) zf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + ZU.length + ' run, ' + zf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -3701,7 +3773,10 @@ if (require.main === module) {
      *  esp       (session 19, s38) ESP payroll in the Hub-spec model: today's main row against ESP payroll at the defaults, its
      *            sensitivities (d71-d75), the page's other rows with it, and hybrid financing at a = 0 and 1. Framework model only.
      *  Session 21 (s41; i10-1): esp, proj and projcore also print BLEI by group beside FGT2 (bleiTables): participants and adults
-     *  who chose not to take part, on three readings of BLEI (design-neutral, the design's own, net of the contribution). */
+     *  who chose not to take part, on three readings of BLEI (design-neutral, the design's own, net of the contribution).
+ *  Session 23 (s34; d86-d90): projcore, esp and match print the N1 rows (n1Row) with the PTF/PTH inflation damping off by default,
+ *            one shaded row with both former stand-ins on (d88), and match's N1 rows under every financing; --damp=on prints the
+ *            session 21 tables exactly. a5 and frontdoor keep their rows until s35. */
     CFG.WEALTH_FLOOR = -10000;
     var nT = parseInt(process.argv[3] || '500', 10), secT = process.argv[4] || 'match';
     var envT = (process.argv[5] && process.argv[5].indexOf('--') !== 0 ? process.argv[5] : 'ref').split(',');
@@ -3712,6 +3787,10 @@ if (require.main === module) {
     var ENVT = {ref:['Reference (Full Integration settings)', FULL_INTEGRATION], adv:['Adverse Environment', ADVERSE_REFERENCE], st:['Stress Test', STRESS_TEST]};
     var MLBL = {engine:'Compassionism: shipped (engine model)', framework:'Compassionism: hub spec (framework model)'};
     var t0T = Date.now(), svT = applyNR6(), svG = tbSetG(TB_PROFILE_G);  /* session 10 (d40): N7_BLEI on in the testbed profile */
+    /* Session 23 (s34; d86): projcore, esp and match print the N1 rows with the PTF/PTH inflation damping off by default (n1Row);
+     * --damp=on prints each exactly as session 21 did (the old rows, damping on). Other sections are unchanged. */
+    var S34 = process.argv.indexOf('--damp=on') < 0 && /^(projcore|esp|match)$/.test(secT);
+    if (S34) console.log('s34 (d86-d90): N1 rows, PTF/PTH inflation damping off by default; --damp=on prints the session 21 tables.');
     function $(x){ return (x < 0 ? '-$' : '$') + Math.round(Math.abs(x)).toLocaleString('en-US'); }
     function f1(x){ return x.toFixed(1); } function f2(x){ return x.toFixed(2); }
     function pinf(x){ return isFinite(x) && Math.abs(x) < 10 ? (x*100).toFixed(2) : 'diverges'; }
@@ -3748,7 +3827,36 @@ if (require.main === module) {
     }
     console.log('=== A4 testbed (session 6): seeds 1-' + nT + ', ' + AG + ' agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===');
     console.log('Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment\'s annuity value, against own cost; x100.');
-    if (secT === 'match') envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P);
+    /* Session 23 (s34; d90): match on the N1 rows. Each financing matches UBI, the NIT and the endowment to the N1 main row's gross cost
+     * under that financing (pilot seeds); X-Cents and grocery at their own cost, as before. Rows: the N1 main row (damping off; ESP
+     * payroll in the Hub-spec model), at a = 1 as well under money and hybrid financing, the shaded row, and the damping kept on.
+     * Hybrid leaves only conversion rewards to money creation, so the comparators, which have none, are tax-financed there.
+     * `--damp=on` prints session 21's match (the pre-N1 rows) instead. */
+    if (S34 && secT === 'match') envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), infl = P.inflRate > 0;
+      MODELS.forEach(function(cm){
+        FINS.forEach(function(fin){ CONVERSION_MODEL = cm;
+          var o = {fin:fin, aT:0, a:0, X:XT}, tgt = tbStudy([n1Row(PR, cm)], PILOT, P, o)[0].cost, lab = fin === 'tax' ? '' : ', a = 0';
+          var mU = tbMatch('ubi', tgt, P, PILOT, o), mN = tbMatch('nit', tgt, P, PILOT, o), mE = tbMatch('endow', tgt, P, PILOT, o);
+          var rows = [['Baseline (no program)', {p:PR.baseline()}], [MLBL[cm] + ', N1 main row (d88' + (cm === 'framework' ? ', ESP payroll' : '') + ')' + lab, n1Row(PR, cm)]];
+          if (fin !== 'tax') rows.push([MLBL[cm] + ', N1 main row, a = 1 (H1: every reward dollar matched by output)', n1Row(PR, cm, {fin:fin, a:1})]);
+          rows.push([MLBL[cm] + ', shaded: the two former stand-ins on' + lab, n1Row(PR, cm, {raise:true, damp:true})]);
+          if (infl) rows.push([MLBL[cm] + ', N1 main row with the damping kept on (d86)' + lab, n1Row(PR, cm, {damp:true})]);
+          rows.push(['UBI ' + $(mU) + '/yr (matched)', {p:PR.ubi(mU)}], ['NIT: G ' + $(mN) + ', t ' + TB_NIT_T + ' (matched)', {p:PR.nit(mN)}], ['Asset endowment ' + $(mE) + ' (wealth < $25,000; matched)', {p:PR.endow(mE)}],
+            ['X-Cents, flat ($3,614/yr; own cost)', {p:PR.xc(0)}], ['X-Cents, community-work variant (delta 1; own cost)', {p:PR.xc(1)}], ['Public grocery, full coverage (15% off food; own cost)', {p:PR.groc(1)}]);
+          var R = tbStudy(rows.map(function(r){ return r[1]; }), nT, P, o), B = R[0];
+          console.log('\n--- match (N1, s34): ' + E[0] + ' | ' + MLBL[cm] + ' | ' + (fin === 'tax' ? 'tax-financed' : fin === 'money' ? 'money-created, aT = 0' : 'hybrid: transfers taxed, conversion rewards created') + (XT ? ', contribution on wages above ' + $(XT) : '') + ' | target ' + $(tgt) + '/adult-yr (pilot ' + PILOT + ' seeds) | seeds 1-' + nT + ' ---');
+          console.log('| Design | Gross cost | Cash / BU / conv / cuts / PTH | Contribution rate (mean) | Endogenous inflation (pt/yr) | Price level yr 10 / yr 20 | Real value of $1 of cash or BU at yr 20 (after COLA) | Earnings | Wealth pov % | FGT0 / FGT2, person-years | FGT2 vs Baseline, yr 20 [95% CI] | PY FGT2 vs Baseline [95% CI] | Groups vs Baseline: resources % / PY FGT0 pt / wealth pov pt (participants; non-participants; PTH; bottom third by year-0 wage; top third) | Worse off (r resources, i income poverty, w wealth poverty) |');
+          console.log('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
+          R.forEach(function(r, i){ var dF = tbDiff(R[i], B, 'fgt2'), dP = tbDiff(R[i], B, 'fgt2PY');
+            console.log('| ' + rows[i][0] + ' | ' + $(r.cost) + ' | ' + [r.cCash + r.cEndow, r.cBU, r.cConv, r.cCut + r.cCap, r.cPth].map($).join(' / ') + ' | ' + (fin !== 'money' ? (r.tauMean*100).toFixed(1) + '%' : '—') +
+              ' | ' + pinf(r.endoAnn) + ' | ' + r.pLev10.toFixed(3) + ' / ' + r.pLev20.toFixed(3) + ' | ' + (i ? '$' + r.realT.toFixed(3) : '—') + ' | ' + sg(r.dE*100) + '% | ' + f1(r.pov) + ' | ' + f1(r.fgt0PY) + ' / ' + f2(r.fgt2PY) +
+              ' | ' + (i ? sg(dF.m) + ' [' + sg(dF.lo) + ', ' + sg(dF.hi) + ']' : '—') + ' | ' + (i ? sg(dP.m) + ' [' + sg(dP.lo) + ', ' + sg(dP.hi) + ']' : '—') + ' | ' + (i ? grpCell(r, B) : '— | —') + ' |'); });
+          if (!infl) console.log(D33_NOTE);
+          CONVERSION_MODEL = 'engine';
+        });
+      });
+    });
+    if (secT === 'match' && !S34) envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P);
       MODELS.forEach(function(cm){ CONVERSION_MODEL = cm;
         FINS.forEach(function(fin){
           var o = {fin:fin, aT:0, a:0, X:XT}, tgt = tbStudy([{p:PR.cco()}], PILOT, P, o)[0].cost;
@@ -3926,7 +4034,7 @@ if (require.main === module) {
       }); });
     /* Session 16 (issue i7): 'projcore' runs only the rows the page will carry (d65), each with the launch gift financed both ways
      * (d66): as you go (Duke's pick, the design as intended) and over the run (the endowment's rule, equal terms). */
-    if (secT === 'proj' || secT === 'projcore'){  /* N1, session 15 (s33; d58-d65): project hiring paid in expired BU, in place of the octave wage raise */
+    if (secT === 'proj' || (secT === 'projcore' && !S34)){  /* N1, session 15 (s33; d58-d65): project hiring paid in expired BU, in place of the octave wage raise */
       var PJROWS = [['Compassionism as it runs now (octave wage raise on)', null, null], ['octave wage raise off (d19)', {octaveWage:true}, null],
         ['PROJECT HIRING (defaults d59-d66), raise off', {octaveWage:true}, {}],
         ['  launch gift financed over the run, like the endowment (d66 alternative)', {octaveWage:true}, {giftFin:'run'}],
@@ -3961,7 +4069,7 @@ if (require.main === module) {
           bleiTables(R, lbl, B, function(i){ return i === 2 ? -1 : 2; }, 'raise off');  /* session 21 (s41) */
         }); });
     }
-    if (secT === 'esp'){  /* N1, session 19 (s38; d70-d76; N1-design-esp-payroll.md, Section 8): ESP payroll in the Hub-spec model. Framework model only. */
+    if (secT === 'esp' && !S34){  /* N1, session 19 (s38; d70-d76; N1-design-esp-payroll.md, Section 8): ESP payroll in the Hub-spec model. Framework model only. */
       var ES_P = {octaveWage:true};
       var ESROWS = [['TODAY: Hub-spec main row (project hiring, raise off, gift as you go); flat 3x premium to every adult by wage', ES_P, {}, null],
         ['ESP PAYROLL at the defaults (lam 0.20, 23.0% of adults, own rate above par, cap on, rest as today)', ES_P, {}, {}],
@@ -4002,6 +4110,77 @@ if (require.main === module) {
           console.log('| ' + lbl[i] + ' | ' + $(r.bzPay) + ' | ' + (es ? $(r.esPrem) : '—') + ' | ' + $(r.bzPay + r.esPrem) + ' | ' + (es ? $(r.esPremW) : '—') + ' | ' + $(r.payPart) + ' / ' + $(r.payNon) +
             ' | ' + (es ? $(r.esBUW) : '—') + ' | ' + (es ? f1(r.esShare) + '%' : '—') + ' | ' + (es ? f2(r.esRate) + 'x' : '—') + ' | ' + (es ? r.esCapB.toFixed(2) + '%' : '—') + ' | ' + g(r, B) + ' | ' + (i > 1 ? g(r, TD) : '—') + ' |'); });
         bleiTables(R, lbl, B, function(i){ var v = vsT(i); return v ? v.j : -1; }, 'its today row');  /* session 21 (s41): the i10 question */
+        if (!infl) console.log(D33_NOTE);
+      });
+    }
+    /* Session 23 (s34; d86-d88; N1-design-damping-theta.md, Sections 4 and 7): projcore prints the rows the page carries after s34,
+     * built by n1Row: the main row with the PTF/PTH inflation damping off (d86); the gift over the run beneath it (d67); one shaded
+     * row with both former stand-ins on (d88); and sensitivities with the damping kept on, the octave raise kept on, and the capacity
+     * term at 1 (d87). In the Hub-spec model every row carries ESP payroll (d76). `--damp=on` prints session 21's projcore instead. */
+    if (S34 && secT === 'projcore'){
+      envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0;
+        MODELS.forEach(function(cm){
+          var rows = [['MAIN (d88): project hiring, raise off, damping off, gift as you go' + (cm === 'framework' ? '; ESP payroll (d76)' : ''), {}],
+            ['  the gift financed over the run (d67)', {gift:'run'}],
+            ['  SHADED (d88): the two former stand-ins on, the octave wage raise and the inflation damping' + (infl ? '' : ' (no inflation here, so the raise alone)'), {raise:true, damp:true}]];
+          if (infl) rows.push(['  sensitivity: the inflation damping kept on (d86; the session 16/19 main row)', {damp:true}], ['  sensitivity: the octave wage raise kept on, damping off', {raise:true}]);
+          rows.push(['  sensitivity: the price module\'s capacity term at 1 (d87; the most the supply side could do)', {cap:1}]);
+          var cfg = [{p:PR.baseline()}], lbl = ['No program (Baseline)'];
+          rows.forEach(function(r){ cfg.push(n1Row(PR, cm, r[1])); lbl.push(r[0]); });
+          var t0 = Date.now(), R = tbStudy(cfg, nT, P, o), B = R[0], M = R[1];
+          console.log('\n--- projcore (N1, s34): ' + E[0] + ' | ' + MLBL[cm] + ' | tax-financed at own cost | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+          console.log('| Design | Cost | FGT2 20-yr avg vs Baseline [95% CI] | vs main row [95% CI] | FGT2 yr 20 vs Baseline | Per $1,000 | FGT0 20-yr | Wealth poverty yr 20 | Hours | Contribution | Price level yr 20 | Project net / participant-yr | Groups: resources % / FGT0 pt / wealth pov pt (part; non; PTH; low; top) | Worse off |');
+          console.log('|' + Array(15).join('---|'));
+          R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, dM = i > 1 ? tbDiff(r, M, 'fgt2PY') : null;
+            console.log('| ' + lbl[i] + ' | ' + $(r.cost) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : f2(r.fgt2PY)) + ' | ' + (dM ? sg(dM.m) + ' [' + sg(dM.lo) + ', ' + sg(dM.hi) + ']' : '—') +
+              ' | ' + (i ? sg(tbDiff(r, B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + (i && r.cost > 0 ? sg(d.m/(r.cost/1000), 3) : '—') + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + r.pLev20.toFixed(3) +
+              ' | ' + (r.pjNet || r.pjGift ? $(r.pjNet + r.pjGift) : '—') + ' | ' + (i ? grpCell(r, B) : '— | —') + ' |'); });
+          bleiTables(R, lbl, B, function(i){ return i > 1 ? 1 : -1; }, 'main row');
+        }); });
+    }
+    /* Session 23 (s34): esp with the damping off by default. Each ESP row is paired with the same row under the Hub-spec model's business
+     * rule before ESP payroll ("today"), as in session 19; the ESP settings (d71-d75) are paired with today's main row, and the
+     * capacity term row with the main row. `--damp=on` prints session 21's esp instead. */
+    if (S34 && secT === 'esp'){
+      envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0, cm = 'framework';
+        var rows = [];
+        function add(l, v, k, vs){ rows.push({l:l, v:v, k:k, vs:vs}); }
+        add('MAIN (d76, d88): ESP payroll at the defaults; project hiring, raise off, damping off, gift as you go', {}, 'main', 'today');
+        add('  today\'s rule (flat 3x premium to every adult by wage), same row', {esp:false}, 'today');
+        add('  ESP payroll, gift financed over the run (d67)', {gift:'run'}, 'run', 'todayRun');
+        add('  today, gift financed over the run', {gift:'run', esp:false}, 'todayRun');
+        add('  SHADED (d88): ESP payroll with the two former stand-ins on (octave raise and damping)', {raise:true, damp:true}, 'shaded', 'todaySh');
+        add('  today, the two former stand-ins on', {raise:true, damp:true, esp:false}, 'todaySh');
+        if (infl){ add('  sensitivity: ESP payroll, damping kept on (d86; the session 19 main row)', {damp:true}, 'damp', 'todayDamp');
+          add('  today, damping kept on (the session 19 today row)', {damp:true, esp:false}, 'todayDamp'); }
+        add('  sensitivity: ESP payroll, capacity term at 1 (d87; paired with the main row)', {cap:1}, 'cap1', 'main');
+        [['lam 0.15 (d71, low end)', {lam:0.15}], ['lam 0.26 (d71, high end)', {lam:0.26}], ['lam 1: every BU accepted goes to workers (upper bound)', {lam:1}],
+          ['workforce 15.2%: no food services (d72)', {work:0.152}], ['workforce: PTF members (d72)', {work:'ptf'}], ['workforce: every adult (d72)', {work:'all'}],
+          ['BU pay only where the own rate beats the ESP\'s 3x (d73)', {take:'biz'}], ['no octave cap (d74)', {cap:'none'}], ['octave cap, excess saved for later years (d74, R6)', {cap:'save'}],
+          ['the ESP\'s own premium to its own workers (d75: worker cooperative)', {rest:'esp'}]].forEach(function(s){ add('  ESP ' + s[0], {es:s[1]}, 'sens', 'today'); });
+        [0, 1].forEach(function(a){ add('  ESP payroll, hybrid financing, a = ' + a + (a ? ' (H1)' : ''), {fin:'hybrid', a:a}, 'hyb' + a, 'tHyb' + a);
+          add('  today, hybrid financing, a = ' + a + (a ? ' (H1)' : ''), {fin:'hybrid', a:a, esp:false}, 'tHyb' + a); });
+        var idx = {}; rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
+        var cfg = [{p:PR.baseline()}], lbl = ['No program (Baseline)'];
+        rows.forEach(function(r){ cfg.push(n1Row(PR, cm, r.v)); lbl.push(r.l); });
+        function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
+        var t0 = Date.now(), R = tbStudy(cfg, nT, P, o), B = R[0], TD = R[idx.today];
+        console.log('\n--- esp (N1, s34): ' + E[0] + ' | ' + MLBL[cm] + ' | tax-financed at own cost unless stated | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+        console.log('Poverty, money and work. "vs its pair": each ESP row against the same row under today\'s rule; the ESP settings against today\'s main row; the capacity-term row against the main row.');
+        console.log('| Design | Cost | FGT2 20-yr avg vs Baseline [95% CI] | vs its pair [95% CI] | FGT2 yr 20 vs Baseline | Per $1,000 | FGT0 20-yr | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Worse off |');
+        console.log('|' + Array(14).join('---|'));
+        R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, j = vsI(i), v = j > 0 ? tbDiff(r, R[j], 'fgt2PY') : null;
+          console.log('| ' + lbl[i] + ' | ' + $(r.cost) + ' | ' + (d ? sg(d.m) + ' [' + sg(d.lo) + ', ' + sg(d.hi) + ']' : f2(r.fgt2PY)) + ' | ' + (v ? sg(v.m) + ' [' + sg(v.lo) + ', ' + sg(v.hi) + ']' : '—') +
+            ' | ' + (i ? sg(tbDiff(r, B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + (i && r.cost > 0 ? sg(d.m/(r.cost/1000), 3) : '—') + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + pinf(r.endoAnn) +
+            '% | ' + r.pLev20.toFixed(3) + ' | ' + (i ? grpCell(r, B).split(' | ')[1] : '—') + ' |'); });
+        console.log('\nPremium and groups. Premium columns: years 1-19 (year 0 pays none), year-0 dollars, per adult-year unless stated. Groups: change in real resources per adult-year, 20 years, vs the Baseline and vs today\'s main row.');
+        console.log('| Design | ESP\'s own premium paid | Payroll premium | Total | Payroll premium per participating ESP worker-yr | Total per participant-yr / non-participant-yr | Payroll BU per ESP worker-yr | BU share of ESP pay | Mean payroll rate | Cap binds (% of participating ESP worker-yrs) | Groups vs Baseline: part / non / low / top | Groups vs today: part / non / low / top |');
+        console.log('|' + Array(13).join('---|'));
+        R.forEach(function(r, i){ if (!i) return; var g = function(x, y){ return ['gPartRes', 'gNonRes', 'gLowRes', 'gTopRes'].map(function(k){ var dv = x[k] - y[k]; return (dv >= 0 ? '+' : '-') + $(Math.abs(dv)); }).join(' / '); };
+          var es = r.esPrem > 0 || r.esBUW > 0;
+          console.log('| ' + lbl[i] + ' | ' + $(r.bzPay) + ' | ' + (es ? $(r.esPrem) : '—') + ' | ' + $(r.bzPay + r.esPrem) + ' | ' + (es ? $(r.esPremW) : '—') + ' | ' + $(r.payPart) + ' / ' + $(r.payNon) +
+            ' | ' + (es ? $(r.esBUW) : '—') + ' | ' + (es ? f1(r.esShare) + '%' : '—') + ' | ' + (es ? f2(r.esRate) + 'x' : '—') + ' | ' + (es ? r.esCapB.toFixed(2) + '%' : '—') + ' | ' + g(r, B) + ' | ' + (i !== idx.today ? g(r, TD) : '—') + ' |'); });
+        bleiTables(R, lbl, B, vsI, 'its pair');
         if (!infl) console.log(D33_NOTE);
       });
     }
