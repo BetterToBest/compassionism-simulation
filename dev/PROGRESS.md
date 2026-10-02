@@ -45,3 +45,15 @@ Duke's order (ledger, Oct 2): these replace step 11's restudy as the one the rel
 - [ ] 22. Hub index files in `BetterToBest/research-hub` (dev/RELEASE.md step 5); outreach drafts (s37).
 
 Notes: pushes to the session branch worked this session (PR #1 on `claude/loving-maxwell-crvgjr`); `apply-v5.0.1.zip` carries the same files for the apply workflow if the PR route is not used. To rebuild the video: `pip install playwright pillow numpy kokoro-onnx soundfile`, then `python3 walkthrough/make_walkthrough.py`.
+
+## Session 33 (Oct 2, 2026): Duke's copy notes, the 40-year horizon, the video cache
+
+Branch `claude/hopeful-mayer-o5whzi`, draft PR BetterToBest/compassionism-simulation#2 into `main` (pushes work this session; merging the PR is the release). `next-release` is not on GitHub; the PR route replaces it, as in session 32.
+
+- [x] 23. Video cache: the page's video, poster and captions URLs carry `?v=5.1`. The file on GitHub Pages was already the v5.0 video; Duke's browser had kept the old one.
+- [x] 24. Clarity polish, second edit (Duke's notes): creative projects and Creative Collectives in one bullet; ESPs convert BU to dollars; private ESPs pay the market rate; glossary ESP and Creative Collectives entries (DECISIONS, Session 33).
+- [x] 25. 40-year horizon: `testbed --years=N` (bit-identical without it), supply-path fix for runs past 20 years, Years switch on the page and the live run, `merge_panel.py 40`, `release_figs.py` 40-year table, domtest check. Runs: `dev/runs/step19-release40-500-{ref,adv,st}.txt`, command `node harness.js testbed 500 release ENV --years=40 --json=dev/runs/release-panel-40-ENV.json` (one process per environment), then `python3 dev/tools/merge_panel.py 40` and `python3 dev/tools/release_figs.py`. Report `dev/reports/v5-6-forty-years.md`.
+- [x] 26. Walk-through video rebuilt: 6:16, 31 captions, new wording and a 40-year shot (`python3 walkthrough/make_walkthrough.py`). The version label stays v5.0 until Duke assigns the next one at "release" (`dev/tools/set_version.py`); the video's title card reads it, so rebuild after relabelling (only the title card changes; voice clips are cached).
+- [x] 27. Suggestions beyond the ledger: `dev/reports/v5-7-suggestions.md`.
+- [x] 28. Hub files for Duke to upload (another repository): `dev/hub-updates/wiki/index.html` (the simulation card) and `dev/hub-updates/cco-ptf-simulation/README.md` (replaces the v3.3 description). The Hub has no `ai-index.json` or `research-index.json`; RELEASE.md step 5's file names were wrong, and these two are the files that describe the simulation.
+- [ ] 29. The compare page: plan in `dev/reports/compare-page-plan.md` (needs one financing rule for every design and a 500-seed restudy first). Next session.

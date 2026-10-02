@@ -392,6 +392,12 @@ footer{border-top:.5px solid var(--rule);background:var(--surface)}
 <tr><td>Adverse</td><td>33.1% vs 60.0%</td><td>42.1% vs 78.2%</td><td>87.1% vs 82.6%</td><td>45.6%</td><td>52.5%</td><td>$27,678</td></tr>
 <tr><td>Stress Test</td><td>54.9% vs 60.0%</td><td>65.6% vs 78.2%</td><td>90.6% vs 82.6%</td><td>23.8%</td><td>72.6%</td><td>$10,495</td></tr>
 </tbody></table>
+  <p id="rel-40-h">Over 40 years, the same adults and rules (they do not age in the model). Reproduce: <code>node harness.js testbed 500 release ref --years=40</code> (and <code>adv</code>, <code>st</code>) <code>--json=dev/runs/release-panel-40-ENV.json</code>, then <code>python3 dev/tools/merge_panel.py 40</code>.</p>
+  <table class="rel-t" id="rel-t40"><thead><tr><th>Environment</th><th>Below 30 days of basic living (BLEI)</th><th>Below the cost of living</th><th>Too little wealth, year 40</th><th>Programme inflation a year</th><th>Too little wealth if every Source dollar were backed (H1)</th><th>Cost per adult a year</th></tr></thead><tbody>
+<tr><td>Reference</td><td>14.8% vs 46.6%</td><td>15.3% vs 47.4%</td><td>15.3% vs 44.2%</td><td>30.4%</td><td>7.0%</td><td>$32,277</td></tr>
+<tr><td>Adverse</td><td>51.7% vs 75.1%</td><td>62.2% vs 86.7%</td><td>97.9% vs 94.5%</td><td>65.4%</td><td>87.7%</td><td>$27,014</td></tr>
+<tr><td>Stress Test</td><td>72.3% vs 75.1%</td><td>79.3% vs 86.7%</td><td>98.8% vs 94.5%</td><td>36.4%</td><td>93.0%</td><td>$10,687</td></tr>
+</tbody></table>
   <p>The gain is confirmed on all three poverty measures at reference. In the Adverse Environment and the Stress Test income poverty and BLEI poverty fall, but more adults end with too little wealth than with no programme, because prices rise and savings are not protected from inflation. The decisive unknown is how much new output conversion rewards call forth. v5.0 adds four items to the earlier release candidate: private essential-service businesses pass what conversion adds to their BU customers as lower prices; creative projects' output counts at market value (Claude's reading of the design; the cost of their hours is the cautious reading); community businesses add capacity within a year; and the programme's spending fills the idle capacity recessions leave. Public costs avoided now include prisons, hospital and psychiatric care.</p>
 </section>
 

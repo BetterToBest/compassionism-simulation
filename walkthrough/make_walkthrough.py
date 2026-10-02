@@ -51,6 +51,7 @@ SPOKEN = [   # (pattern, replacement): how the voice reads the caption text; the
     (r'\bv(\d+\.\d+)\b', r'version \1'),            # v4.22 -> version 4.22
     (r'\$([\d,]+)', r'\1 dollars'),                    # $5,800 -> 5,800 dollars (the voice would say "dollar five thousand")
     (r'\bH1\b', 'H 1'), (r'\bPTF\b', 'P T F'), (r'\bPTH\b', 'P T H'), (r'\bSZH\b', 'S Z H'),
+    (r'\bESPs\b', 'E S Ps'), (r'\bESP\b', 'E S P'),   # session 33: essential-service providers
     (r'\bBU\b', 'B U'), (r'\bCIP\b', 'C I P'), (r'\bBLEI\b', 'B L E I'),   # spelled out (the voice would say "boo", "sip", "blay")
     (r'\b2026\b', 'twenty twenty-six'),
     (r'harness\.js', 'harness dot J S'), (r'\bnpm\b', 'N P M'), (r'CONTRIBUTING\.md', 'contributing dot M D'), (r'\bdomtest\b', 'dom test'),
@@ -102,6 +103,8 @@ _m = re.search(r'<script type="application/json" id="rel-data">(.*?)</script>', 
 if not _m:
     sys.exit('index.html has no #rel-data block: the walk-through describes the release results and cannot be built without it')
 REL = json.loads(_m.group(1))
+_m40 = re.search(r'<script type="application/json" id="rel-data-40">(.*?)</script>', HTML, re.S)   # session 33: the 40-year panel
+REL40 = json.loads(_m40.group(1)) if _m40 else None
 VERSION = re.search(r"VERSION:'([^']+)'", HTML).group(1)
 HEADLINE = re.sub(r'<[^>]+>', '', re.search(r'<h1 class="fd-q" id="fd-q">(.*?)</h1>', HTML, re.S).group(1)).strip()
 TOUR = json.load(open(os.path.join(OUT, 'tour.json'), encoding='utf-8'))
@@ -122,6 +125,14 @@ V = {
     'adv_bo': pct(A['bOAPy']), 'adv_base_bo': pct(base('adv')['bOAPy']), 'adv_pov': pct(A['pov']), 'adv_base_pov': pct(base('adv')['pov']),
     'st_bo': pct(S['bOAPy']), 'st_base_bo': pct(base('st')['bOAPy']), 'st_pov': pct(S['pov']), 'st_base_pov': pct(base('st')['pov']),
 }
+if REL40:
+    def rel40(env, k='release'): return REL40['envs'][env]['rows'][k]
+    def base40(env): return REL40['envs'][env]['base']
+    R4 = rel40('ref')
+    V.update({'ref40_bo': pct(R4['bOAPy']), 'base40_bo': pct(base40('ref')['bOAPy']), 'ref40_pov': pct(R4['pov']), 'base40_pov': pct(base40('ref')['pov']),
+              'ref40_f0': pct(R4['fgt0PY']), 'base40_f0': pct(base40('ref')['fgt0PY']), 'ref40_infl': pct(R4['infl']),
+              'adv40_pov': pct(rel40('adv')['pov']), 'adv40_base_pov': pct(base40('adv')['pov']),
+              'st40_pov': pct(rel40('st')['pov']), 'st40_base_pov': pct(base40('st')['pov'])})
 CHECKS = {   # the conditions each caption's wording depends on
     'reference confirmed gain': R['dBO'][0] < 0 and R['dF0'][0] < 0 and R['dPov'][0] < 0,
     'non-participants lose at reference': R['grp']['non'] < 0 < R['grp']['part'],
@@ -130,6 +141,11 @@ CHECKS = {   # the conditions each caption's wording depends on
     'adverse wealth worse': A['dBO'][0] < 0 and A['dPov'][0] > 0,
     'stress wealth worse': S['dBO'][0] < 0 and S['dPov'][0] > 0,
 }
+if REL40:
+    CHECKS.update({
+        '40 years: reference confirmed gain': R4['dBO'][2] < 0 and R4['dF0'][2] < 0 and R4['dPov'][2] < 0,
+        '40 years: adverse and stress wealth worse': rel40('adv')['dPov'][0] > 0 and rel40('st')['dPov'][0] > 0,
+    })
 
 def fill(text): return text.format(**V)
 
@@ -153,6 +169,7 @@ tr.wt-mark, td.wt-mark{outline:3px solid #D99A00!important;outline-offset:-3px}
 
 APPLY = """(s) => {
   document.querySelectorAll('.wt-dim,.wt-mark').forEach(e => e.classList.remove('wt-dim','wt-mark'));
+  if (window.relYears) relYears(s.yrs || 20);
   if (window.relSet) relSet(s.env || 'ref');
   const mo = document.getElementById('rel-more'); if (mo) mo.open = !!s.more;
   const old = document.getElementById('fd-old'); if (old) old.open = false;
@@ -198,7 +215,7 @@ def capture(pw, base):
             pg.goto(url, wait_until='networkidle'); pg.wait_for_timeout(3500)
             pg.add_style_tag(content=SPOT_CSS); current = url
         pg.mouse.move(2, VH - 2)
-        state = {k: s[k] for k in ('env', 'more', 'run', 'scroll', 'off', 'dim') if k in s}
+        state = {k: s[k] for k in ('env', 'yrs', 'more', 'run', 'scroll', 'off', 'dim') if k in s}
         res = pg.evaluate(APPLY, state)
         if res != 'ok':
             sys.exit('shot %r: %s' % (s['id'], res))

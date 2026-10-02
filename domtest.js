@@ -916,6 +916,15 @@ function phase11(done) {
     blFirst && rows === NEEDR.length && /500 paired runs/.test(srcT) && /node harness\.js testbed 500 release/.test(srcT), 'sentences ' + (blFirst ? 'in order' : 'MISSING') + '; readings ' + rows + '; source "' + srcT.slice(0, 60) + '"');
   const conf = ['ref', 'adv', 'st'].map(e => { const r = D.envs[e].rows.release; const ok = r.dF0[2] < 0 && r.dPov[2] < 0 && r.dBO[2] < 0; return e + ':' + (ok ? 'confirmed' : 'not') + (/A confirmed gain/.test(txts[e]) === ok ? '' : ' MISLABELLED'); });
   check('step 12: the panel calls a gain confirmed only where basket poverty, wealth poverty and BLEI poverty all fall (95% intervals below zero)', conf.every(x => !/MISLABELLED/.test(x)), conf.join(', '));
+  /* Session 33 (Duke's 40-year horizon): the 40-year panel parses with every reading in all three environments, says 40 years in its
+   * command, and the Years switch shows it ("year 40") and switches back to the 20-year text. */
+  let D40 = null; try { D40 = JSON.parse(d.getElementById('rel-data-40').textContent); } catch (e) {}
+  w.relSet('ref'); w.relYears(40); const t40 = (d.getElementById('rel-out') || {}).textContent || '', th40 = (d.getElementById('rel-th-pov') || {}).textContent || '';
+  w.relYears(20); const t20b = (d.getElementById('rel-out') || {}).textContent || '';
+  check('session 33: the 40-year panel covers all three environments with every reading, and the Years switch shows it and switches back',
+    !!D40 && D40._meta && D40._meta.years === 40 && /--years=40/.test(D40._meta.command || '') && ['ref', 'adv', 'st'].every(e => D40.envs[e] && NEEDR.every(k => D40.envs[e].rows[k] && D40.envs[e].rows[k].dBO.length === 3)) &&
+    /at year 40/.test(t40) && /Over 40 years/.test(t40) && th40 === 'Too little wealth, year 40' && /at year 20/.test(t20b) && !/Over 40 years/.test(t20b) && t20b === txts.ref,
+    D40 ? '40-year panel: ' + Object.keys(D40.envs).join(', ') + '; text ' + (/at year 40/.test(t40) ? 'year 40' : 'MISSING') : 'no #rel-data-40');
   w.relSet('adv'); const si = d.getElementById('rel-seed'); si.value = '3'; const st0 = w.setTimeout; w.setTimeout = function (f) { f(); }; w.relRun(); w.setTimeout = st0;
   const live = w.REL.last, hR = (function(){ const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G); try { const P = Object.assign({}, H.ADVERSE_REFERENCE), PR = H.tbPresets(P);
     return H.tbStudy([{p:PR.baseline()}, H.n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, H.REL_V5))], 3, P, {fin:'tax', aT:0, a:0, X:0, sc:H.SPEND_SOURCED}, 3); } finally { H.resetNR6(svN); H.tbSetG(svG); } })();
@@ -925,7 +934,7 @@ function phase11(done) {
   const vis = fdEl.textContent + ' ' + fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8');
   const lim = [...d.querySelectorAll('#uncertainty-notice li')].length, draft = fs.existsSync(path.join(path.dirname(FILE), 'dev', 'drafts', 'compare-designs.html'));
   check('step 12: the comparison has left the page (no table, no "other designs", saved unlinked in dev/drafts/), the walk-through (v5.0, s65) is linked from the README and plays from the top of the page, and a short list of limits remains',
-    !d.getElementById('fd-table') && !d.getElementById('fd-data') && !/other designs/i.test(vis) && /walkthrough\/walkthrough\.mp4/.test(fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8')) && !!d.querySelector('#fd-video video source[src="walkthrough/walkthrough.mp4"]') && draft && lim >= 5 && lim <= 8,
+    !d.getElementById('fd-table') && !d.getElementById('fd-data') && !/other designs/i.test(vis) && /walkthrough\/walkthrough\.mp4/.test(fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8')) && !!d.querySelector('#fd-video video source[src^="walkthrough/walkthrough.mp4"]') && draft && lim >= 5 && lim <= 8,
     'limits ' + lim + '; draft ' + (draft ? 'saved' : 'MISSING'));
   const chips = [...d.querySelectorAll('#fd-live .fd-chip')].map(b => (b.getAttribute('onclick').match(/fdRun\('(\w+)'\)/) || [])[1]);
   const saveRun = w.runSim; let ran = 0; w.runSim = function () { ran++; }; w.fdRun('adverse'); w.runSim = saveRun;
