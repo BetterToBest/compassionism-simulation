@@ -348,14 +348,14 @@ table.fd-t{border-collapse:collapse;width:100%;min-width:880px;table-layout:fixe
  <div class="fd-in">
   <h1 class="fd-q" id="fd-q">Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: see how it does.</h1>
   <p class="fd-attr" id="fd-attr">The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson's book <em>Better To Best</em> and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.</p>
-  <p class="fd-sub">An open agent-based model follows the same 500 simulated adults for 20 years, once with Compassionism and once with no programme, in three environments. The figures below are averages over 500 paired runs; you can also run the model yourself.</p>
+  <p class="fd-sub">An open agent-based model follows the same 500 simulated adults for 20 years, or for 40, once with Compassionism and once with no programme, in three environments. The figures below are averages over 500 paired runs; you can also run the model yourself.</p>
   <details class="fd-about" id="fd-video" style="max-width:52rem">
    <summary>▶ Watch the walk-through (narrated by a synthetic voice, with captions)</summary>
    <div style="padding:0 .85rem .85rem">
-    <video controls preload="none" poster="walkthrough/img/poster.jpg" style="width:100%;border-radius:6px;background:#0F1715" aria-label="Walk-through of the Compassionism Framework Simulation">
-     <source src="walkthrough/walkthrough.mp4" type="video/mp4">
-     <track kind="captions" src="walkthrough/captions.vtt" srclang="en" label="English" default>
-     Your browser cannot play the video; <a href="walkthrough/walkthrough.mp4">download it</a> or <a href="walkthrough/README.md">read the written tour</a>.
+    <video controls preload="none" poster="walkthrough/img/poster.jpg?v=5.1" style="width:100%;border-radius:6px;background:#0F1715" aria-label="Walk-through of the Compassionism Framework Simulation">
+     <source src="walkthrough/walkthrough.mp4?v=5.1" type="video/mp4">
+     <track kind="captions" src="walkthrough/captions.vtt?v=5.1" srclang="en" label="English" default>
+     Your browser cannot play the video; <a href="walkthrough/walkthrough.mp4?v=5.1">download it</a> or <a href="walkthrough/README.md">read the written tour</a>.
     </video>
     <p class="fd-note">The same tour as text, with a screenshot for each step, is the <a href="walkthrough/README.md" target="_blank" rel="noopener">written walk-through</a>.</p>
    </div>
@@ -365,12 +365,11 @@ table.fd-t{border-collapse:collapse;width:100%;min-width:880px;table-layout:fixe
     <div class="fd-what" id="fd-what">
      <h2>What Compassionism is</h2>
      <ul>
-      <li>Every adult who takes part receives a monthly allowance of <strong>Basic Units (BU)</strong>: a currency that only buys essentials (food, housing, utilities, health care) and expires if it is not used.</li>
-      <li><strong>Expired BU can be converted to dollars at higher rates</strong> for work the community values: BU that go unused are directed to community projects, which hire participants and pay them at the converted rate. A person's <em>octave</em> sets how much they can convert; it rises with their financial stability.</li>
-      <li><strong>Essential-service businesses</strong> accept BU and convert them. Community-owned ones (PTFs) split what they earn between lower prices, new capacity and their workers; privately owned ones pass what conversion adds to their BU customers as lower prices and pay their workers what community-business workers earn. Community businesses add capacity within a year when demand outgrows them, paying for the capital they borrow.</li>
-      <li><strong>Creative projects</strong> offer their work to members far below the market price and are paid at the conversion rate they have earned by showing their work. <span class="fd-lab">Claude's reading of the design: what they deliver counts as new output at market value; the cautious reading, counting only the cost of their hours, is shown beside it.</span></li>
+      <li>Every adult who takes part receives a monthly allowance of <strong>Basic Units (BU)</strong>: a currency that buys only essentials (food, housing, utilities, health care) and expires if it is not spent.</li>
+      <li><strong>Expired BU can be converted to dollars at higher rates, for work the community values.</strong> They go to creative projects organized through the <strong>Creative Collectives</strong> (networks of artists, makers and other contributors). The projects hire participants, offer their work to members far below the market price, and are paid at the conversion rate they have earned by showing their work through the Collectives. A person's <em>octave</em> sets how much they can convert; it rises with their financial stability. <span class="fd-lab">Claude's reading of the design: what the projects deliver counts as new output at market value; the cautious reading, counting only the cost of their hours, is shown beside it.</span></li>
+      <li><strong>Essential-service providers (ESPs)</strong>, such as grocers, utilities and clinics, accept BU and convert them to dollars. Community-owned ESPs (Public Trust Foundations, PTFs) split what they earn between lower prices, new capacity and their workers. Privately owned ESPs pass what conversion adds to their BU customers as lower prices, and pay their workers what community-ESP workers earn: the market rate, since both compete for the same workers. Community ESPs add capacity within a year when demand outgrows them, paying for the capital they borrow.</li>
+      <li><strong>Community-owned housing</strong> (Public Trust Housing, PTH) lowers housing costs and builds residents' equity; zone coordination (SZH) and a civic internet portal (CIP) complete the design.</li>
       <li><strong>Spending creates jobs in recessions:</strong> the programme's spending fills the idle capacity a recession leaves, at a multiplier from published estimates.</li>
-      <li><strong>Community-owned businesses and housing</strong> (PTF, PTH) lower the cost of living; zone coordination (SZH) and a civic internet portal (CIP) complete the design.</li>
       <li>Any adult can <strong>join or leave</strong> each year.</li>
       <li><strong>How it is paid for:</strong> a Source (the Treasury) issues the BU and pays for every conversion, keeping the conversion tax. <span class="fd-lab">Claude's reading of the design: the Hub names no tax that pays the Source, so the model treats what it pays out as new money, except what new output backs.</span></li>
      </ul>
@@ -379,16 +378,18 @@ table.fd-t{border-collapse:collapse;width:100%;min-width:880px;table-layout:fixe
      <div class="fd-ctl">
       <span>Environment</span>
       <span class="fd-seg" role="group" aria-label="Environment"><button type="button" id="rel-env-ref" aria-pressed="true" onclick="relSet('ref')">Reference</button><button type="button" id="rel-env-adv" aria-pressed="false" onclick="relSet('adv')">Adverse</button><button type="button" id="rel-env-st" aria-pressed="false" onclick="relSet('st')">Stress Test</button></span>
+      <span>Years</span>
+      <span class="fd-seg" role="group" aria-label="Years"><button type="button" id="rel-yrs-20" aria-pressed="true" onclick="relYears(20)">20</button><button type="button" id="rel-yrs-40" aria-pressed="false" onclick="relYears(40)">40</button></span>
      </div>
      <p class="fd-note" id="rel-env-note"></p>
      <div id="rel-out" class="rel-out"></div>
-     <details class="fd-about" id="rel-more"><summary>Other readings of the design, side by side</summary><div class="fd-tw"><table class="fd-t" id="rel-table"><thead><tr><th scope="col">Reading</th><th scope="col">Below 30 days of basic living (your BLEI; design-neutral), change vs no programme</th><th scope="col">Below the cost of living</th><th scope="col">Too little wealth, year 20</th><th scope="col">Prices, rise a year</th><th scope="col">Cost per adult a year</th></tr></thead><tbody id="rel-rows"></tbody></table></div></details>
+     <details class="fd-about" id="rel-more"><summary>Other readings of the design, side by side</summary><div class="fd-tw"><table class="fd-t" id="rel-table"><thead><tr><th scope="col">Reading</th><th scope="col">Below 30 days of basic living (your BLEI; design-neutral), change vs no programme</th><th scope="col">Below the cost of living</th><th scope="col" id="rel-th-pov">Too little wealth, year 20</th><th scope="col">Prices, rise a year</th><th scope="col">Cost per adult a year</th></tr></thead><tbody id="rel-rows"></tbody></table></div></details>
      <p class="fd-note" id="rel-src"></p>
     </div>
     <div class="fd-rel" id="rel-live">
      <button type="button" class="run-btn" id="rel-run-btn" onclick="relRun()">▶ Run it yourself</button>
      <label class="fd-chk">Seed <input type="number" id="rel-seed" min="1" max="1000000" placeholder="random" style="width:7em"></label>
-     <span class="fd-note">One run of 500 adults in the environment chosen above, with and without the programme (a few seconds). One run varies more than the 500-run averages.</span>
+     <span class="fd-note">One run of 500 adults in the environment and number of years chosen above, with and without the programme (a few seconds; longer for 40 years). One run varies more than the 500-run averages.</span>
      <div id="rel-live-out" class="rel-out"></div>
     </div>
     <details class="fd-about" id="fd-old">
@@ -436,8 +437,10 @@ table.fd-t{border-collapse:collapse;width:100%;min-width:880px;table-layout:fixe
       📖 Glossary
       <span style="font-size:10px;font-weight:400;color:var(--text3);margin-left:auto">new to this? tap to expand</span>
     </summary>
-    <div class="gloss-item"><div class="gloss-term">CCO — Creative Currency Octaves</div><p class="gloss-def">Dual-currency layer. Participants get monthly Basic Units (BU), spent on essentials at essential-service businesses (community-owned or private), and converted to primary currency at merit-scaled rates.</p></div>
-    <div class="gloss-item"><div class="gloss-term">BU — Basic Units</div><p class="gloss-def">The community currency issued by CCO. Pegged 1:1 to primary currency, accepted for essentials by essential-service businesses, community-owned (PTF) or private (PTF members pay lower prices), expires monthly.</p></div>
+    <div class="gloss-item"><div class="gloss-term">CCO — Creative Currency Octaves</div><p class="gloss-def">Dual-currency layer. Participants get monthly Basic Units (BU), spent on essentials at essential-service providers (ESPs), community-owned or private; expired BU are converted to primary currency (dollars) at merit-scaled rates through the Creative Collectives.</p></div>
+    <div class="gloss-item"><div class="gloss-term">BU — Basic Units</div><p class="gloss-def">The community currency issued by CCO. Pegged 1:1 to primary currency, accepted for essentials by essential-service providers (ESPs), community-owned (PTF) or private, and expires monthly.</p></div>
+    <div class="gloss-item"><div class="gloss-term">ESP — Essential-service provider</div><p class="gloss-def">A business that sells essentials (groceries, utilities, health care, meals) and accepts BU. Community-owned ESPs are PTFs; privately owned ESPs pass what conversion adds to their BU customers as lower prices.</p></div>
+    <div class="gloss-item"><div class="gloss-term">Creative Collectives</div><p class="gloss-def">Networks of artists, makers and other contributors, part of CCO, that review members' work and manage the conversion of expired BU into primary currency at elevated rates.</p></div>
     <div class="gloss-item"><div class="gloss-term">PTF — Public Trust Foundations</div><p class="gloss-def">Community-owned, not-for-profit businesses that accept BU. Modelled as a cost-reduction mechanism (12–16% lower costs), not a wealth-addition channel.</p></div>
     <div class="gloss-item"><div class="gloss-term">PTH — Public Trust Housing</div><p class="gloss-def">Community-owned housing; monthly payments build Acre Equity instead of paying market rent or mortgage interest.</p></div>
     <div class="gloss-item"><div class="gloss-term">AE — Acre Equity</div><p class="gloss-def">Community equity built by PTH residents, appreciating ~4%/yr, accessible at exit subject to a tenure-based liquidity haircut.</p></div>
@@ -2715,7 +2718,7 @@ function getCurrentParams(){
 /* Plan step 12 (Oct 1, 2026): the front door of the release. REL.data is the 500-seed panel (#rel-data); relRender writes one everyday
  * sentence per result, BLEI first (Duke's BLEI paper's definition, with the design-neutral reading beside it); relRun runs the page's own
  * release engine for one seed (domtest phase 12 checks it against harness.js). fdRun keeps the earlier engine's presets. */
-var REL={env:'ref',data:null};
+var REL={env:'ref',yrs:20,data:null,data40:null};
 var REL_ENV_NOTE={ref:'Reference: the model’s main settings, with no recessions and no outside inflation.',adv:'Adverse: recessions, 2% outside inflation and an automation wave.',st:'Stress Test: the Adverse environment with weaker settings (40% take part, a smaller allowance).'};
 function fdMoney(x){return (x<0?'−$':'$')+Math.round(Math.abs(x)).toLocaleString('en-US');}
 function fdSg(x,d){d=d===undefined?2:d;return (x>0?'+':x<0?'−':'')+Math.abs(x).toFixed(d);}
@@ -2724,16 +2727,17 @@ function fdRun(name){try{applyPreset(name);var o=document.getElementById('fd-old
 function relCi(d){return d?' <span class="fd-ci">(change '+fdSg(d[0],1)+' points'+(d.length>2?', 95% interval '+fdSg(d[1],1)+' to '+fdSg(d[2],1):'')+')</span>':'';}
 function relPct(x){return (+x).toFixed(1)+'%';}
 /* One everyday sentence per result; b = no programme, r = the release row, h = the H1 row (optional). */
-function relSentences(b,r,h){
+function relSentences(b,r,h,T){
+  T=T||20;
   var s=[],better=function(d){return d&&(d.length>2?d[2]<0:d[0]<0);},worse=function(d){return d&&(d.length>2?d[1]>0:d[0]>0);};
-  s.push('<p><strong>Basic living covered.</strong> With Compassionism, '+relPct(r.bOAPy)+' of adult-years fall below 30 days of basic living, against '+relPct(b.bOAPy)+' with no programme'+relCi(r.dBO)+'. On the design-neutral reading (the same rules for everyone), '+relPct(r.bNAPy)+' against '+relPct(b.bNAPy)+relCi(r.dBN)+'. The typical adult’s resources cover '+Math.round(r.bOAMd)+' days at year 20, against '+Math.round(b.bOAMd)+'.</p>');
+  s.push('<p><strong>Basic living covered.</strong> With Compassionism, '+relPct(r.bOAPy)+' of adult-years fall below 30 days of basic living, against '+relPct(b.bOAPy)+' with no programme'+relCi(r.dBO)+'. On the design-neutral reading (the same rules for everyone), '+relPct(r.bNAPy)+' against '+relPct(b.bNAPy)+relCi(r.dBN)+'. The typical adult’s resources cover '+Math.round(r.bOAMd)+' days at year '+T+', against '+Math.round(b.bOAMd)+'.</p>');
   s.push('<p><strong>Living below the cost of living.</strong> '+relPct(r.fgt0PY)+' of adult-years, against '+relPct(b.fgt0PY)+relCi(r.dF0)+'; how far below people fall (poverty severity) changes by '+fdSg(r.dFgt2[0])+(r.dFgt2.length>2?' <span class="fd-ci">(95% interval '+fdSg(r.dFgt2[1])+' to '+fdSg(r.dFgt2[2])+')</span>':'')+'.</p>');
-  s.push('<p><strong>Savings.</strong> '+relPct(r.pov)+' of adults end with too little wealth at year 20, against '+relPct(b.pov)+relCi(r.dPov)+'.</p>');
+  s.push('<p><strong>Savings.</strong> '+relPct(r.pov)+' of adults end with too little wealth at year '+T+', against '+relPct(b.pov)+relCi(r.dPov)+'.</p>');
   var ok=better(r.dF0)&&better(r.dPov)&&better(r.dBO),mixed=(better(r.dF0)||better(r.dBO))&&worse(r.dPov);
   s.push('<p class="'+(ok?'fd-good':'fd-bad')+'"><strong>'+(ok?'A confirmed gain:':mixed?'Not a confirmed gain:':'No confirmed gain:')+'</strong> '+(ok?'fewer people below the cost of living, fewer below 30 days of basic living, and fewer with too little wealth.':mixed?'fewer people live below the cost of living, but more end with too little wealth, because prices rise and savings are not protected from inflation.':'the measures do not all improve.')+'</p>');
   if(r.grp)s.push('<p><strong>Who gains.</strong> Real resources a year against no programme: adults who took part '+fdMoney(r.grp.part)+', adults who did not '+fdMoney(r.grp.non)+', the poorest third by starting wage '+fdMoney(r.grp.low)+', the richest third '+fdMoney(r.grp.top)+'.'+relWorse(r.worse)+'</p>');
   s.push('<p><strong>Work.</strong> Hours worked change by '+fdSg(r.hrs,1)+'% (people work a little less when they receive money they did not work for, by the rate measured in the largest US study of unconditional cash).</p>');
-  s.push('<p><strong>Prices.</strong> '+(r.infl>0?'The programme raises prices by '+(+r.infl).toFixed(1)+'% a year; by year 20 they are '+(r.pLev20>=10?Math.round(r.pLev20).toLocaleString('en-US'):(+r.pLev20).toFixed(2))+' times today’s'+(r.pLev20>1.5&&r.infl===0?'':'')+'. The allowance keeps its value through the cost-of-living adjustment; savings do not.':'The programme adds no inflation of its own.')+'</p>');
+  s.push('<p><strong>Prices.</strong> '+(r.infl>0?'The programme raises prices by '+(+r.infl).toFixed(1)+'% a year; by year '+T+' they are '+(r.pLev20>=10?Math.round(r.pLev20).toLocaleString('en-US'):(+r.pLev20).toFixed(2))+' times today’s'+(r.pLev20>1.5&&r.infl===0?'':'')+'. The allowance keeps its value through the cost-of-living adjustment; savings do not.':'The programme adds no inflation of its own.')+'</p>');
   s.push('<p><strong>Cost and how it is paid.</strong> '+fdMoney(r.cost)+' per adult a year (today’s dollars). The Source pays '+fdMoney(r.srcPay)+' at conversion and keeps '+fdMoney(r.srcTax)+' in conversion tax; '+fdMoney(r.srcM)+' of it is backed by new output (capacity built and project work). A flat contribution of '+(+r.tau).toFixed(1)+'% of wages pays for the community price cuts.</p>');
   if(r.avoidHi!==undefined)s.push('<p><strong>Public costs avoided.</strong> Homelessness falls by '+(+r.unhousedAvoided).toFixed(1)+' person-years per 1,000 adults a year, saving '+fdMoney(r.avoidLo)+' to '+fdMoney(r.avoidHi)+' per adult a year in shelter, health care and justice costs.'+(r.avoidW!==undefined?' Fewer people in prison and fewer hospital and psychiatric stays save about '+fdMoney(r.avoidW)+' more'+(r.avoidWHi!==undefined?' (up to '+fdMoney(r.avoidWHi)+' if the largest published prison effect applied to everyone)':'')+'.':'')+' Together these are a small share of the programme’s cost.</p>');
   if(h)s.push('<p><strong>The optimistic end.</strong> If every dollar the Source pays were backed by new output, prices would not rise from the programme, '+relPct(h.bOAPy)+' of adult-years would fall below 30 days of basic living, and '+relPct(h.pov)+' of adults would end with too little wealth (no programme: '+relPct(b.pov)+').</p>');
@@ -2744,11 +2748,13 @@ function relWorse(w){if(!w||w==='none')return ' No group is worse off than with 
   var G={part:'adults who took part',non:'adults who did not',PTH:'community-housing members',low:'the poorest third',top:'the richest third'},T={r:'less real income',i:'more income poverty',w:'more wealth poverty'};
   var parts=w.split(',').map(function(x){var m=x.trim().match(/^(\w+) \((\w+)\)$/);if(!m)return x.trim();return (G[m[1]]||m[1])+' ('+m[2].split('').map(function(c){return T[c]||c;}).join(', ')+')';});
   return ' Worse off than with no programme: '+parts.join('; ')+'.';}
+function relYears(y){REL.yrs=y===40?40:20;[20,40].forEach(function(k){var b=document.getElementById('rel-yrs-'+k);if(b)b.setAttribute('aria-pressed',k===REL.yrs?'true':'false');});relRender();}
 function relSet(e){REL.env=e;['ref','adv','st'].forEach(function(k){var b=document.getElementById('rel-env-'+k);if(b)b.setAttribute('aria-pressed',k===e?'true':'false');});relRender();}
 function relRender(){
   var out=document.getElementById('rel-out');if(!out)return;var D=REL.data,n=document.getElementById('rel-env-note');if(n)n.textContent=REL_ENV_NOTE[REL.env]||'';
+  if(REL.yrs===40)D=REL.data40;var th=document.getElementById('rel-th-pov');if(th)th.textContent='Too little wealth, year '+REL.yrs;
   if(!D||!D.envs||!D.envs[REL.env]){out.innerHTML='<p>Results not available.</p>';return;}
-  var E=D.envs[REL.env],R=E.rows;out.innerHTML=relSentences(E.base,R.release,R.h1);
+  var E=D.envs[REL.env],R=E.rows;out.innerHTML=(REL.yrs===40?'<p class="fd-note">Over 40 years: the same adults followed for twice as long. The adults do not age in the model, so this shows where the same rules lead, not a life course.</p>':'')+relSentences(E.base,R.release,R.h1,REL.yrs);
   var tb=document.getElementById('rel-rows'),h='',ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422'];
   ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
   if(tb)tb.innerHTML=h;
@@ -2756,7 +2762,7 @@ function relRender(){
 }
 /* The live run: the page's release engine, one seed, no programme against the release row (and H1 for the optimistic end). */
 function relLiveRows(env,seed){
-  var P=Object.assign({},{ref:FULL_INTEGRATION,adv:ADVERSE_REFERENCE,st:STRESS_TEST}[env]),svN=applyNR6(),svG=tbSetG(TB_PROFILE_G);
+  var P=Object.assign({},{ref:FULL_INTEGRATION,adv:ADVERSE_REFERENCE,st:STRESS_TEST}[env],REL.yrs===40?{years:40}:{}),svN=applyNR6(),svG=tbSetG(TB_PROFILE_G);
   try{var PR=tbPresets(P),ALL=Object.assign({fin:'source',a:0,jn:{},cs:{}},REL_V5);  /* plan step 18: the v5.0 release row */
     var R=tbStudy([{p:PR.baseline()},n1Row(PR,'framework',ALL)],seed,P,{fin:'tax',aT:0,a:0,X:0,sc:SPEND_SOURCED},seed);
     var b=R[0],r=R[1],d=function(k){return [r[k]-b[k]];},av=(b.epPY-r.epPY)/100;
@@ -2768,9 +2774,9 @@ function relLiveRows(env,seed){
 function relRun(){
   var out=document.getElementById('rel-live-out'),si=document.getElementById('rel-seed'),seed=parseInt(si&&si.value,10);if(!(seed>=1))seed=1+Math.floor(Math.random()*1000000);
   if(out)out.innerHTML='<p>Running seed '+seed+'…</p>';
-  setTimeout(function(){try{var x=relLiveRows(REL.env,seed);if(out){out.innerHTML='<p class="fd-note">One run, seed '+seed+', '+(REL_ENV_NOTE[REL.env]||'')+'</p>'+relSentences(x.b,x.r,null).replace(/<p class="fd-(good|bad)">[\s\S]*?<\/p>/,'');} REL.last={seed:seed,x:x};}catch(e){if(out)out.innerHTML='<p>The run failed: '+e.message+'</p>';console.error(e);}},20);
+  setTimeout(function(){try{var x=relLiveRows(REL.env,seed);if(out){out.innerHTML='<p class="fd-note">One run, seed '+seed+', '+REL.yrs+' years. '+(REL_ENV_NOTE[REL.env]||'')+'</p>'+relSentences(x.b,x.r,null,REL.yrs).replace(/<p class="fd-(good|bad)">[\s\S]*?<\/p>/,'');} REL.last={seed:seed,x:x};}catch(e){if(out)out.innerHTML='<p>The run failed: '+e.message+'</p>';console.error(e);}},20);
 }
-function relInit(){var el=document.getElementById('rel-data');try{REL.data=JSON.parse(el?el.textContent:'{}');}catch(e){REL.data=null;}relRender();}
+function relInit(){var el=document.getElementById('rel-data'),e4=document.getElementById('rel-data-40');try{REL.data=JSON.parse(el?el.textContent:'{}');}catch(e){REL.data=null;}try{REL.data40=JSON.parse(e4?e4.textContent:'{}');}catch(e){REL.data40=null;}relRender();}
 window.addEventListener('DOMContentLoaded',relInit);
 var SLIDER_KEYS=['bu','oct','exp','tax','mult','agents','part','yrs','ptf','pth','szh','cip','infl','stabm','stabk','stabth','emtk','colath'];  // v4.19: +stabilizer sliders
 /* v4.6: ptfCapOn added for the new feedback-clamped-adoption toggle (see PTF section) —
@@ -4766,7 +4772,9 @@ function priceRun(p, seed, o, S){
  *  s3Config   one scenario under one sweep row (switches, preset overrides and module options), both tolerances. */
 var S3_CACHE = {};
 function s3BaseS(p, seed){
-  var bp = baselineFor(p, true), k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed;
+  var bp = baselineFor(p, true);
+  if (p.years > bp.years) bp.years = p.years;  /* session 33: the supply path covers runs longer than the Baseline's 20 years (unchanged for 20) */
+  var k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed;
   if (!S3_CACHE[k]) S3_CACHE[k] = priceRun(bp, seed, {}, null).D;
   return S3_CACHE[k];
 }

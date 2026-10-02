@@ -1956,7 +1956,9 @@ Object.assign(module.exports, { priceRun, priceStudy, breakevenA, priceUnitSuite
 var S3_CACHE = {};
 var S3_KEYS = ['endoAnn','endoMax','pov','bleiPov','basketPov','unmetShare','unmetYears','convShare','buReal','PG','medWealthReal','dE','labE'];
 function s3BaseS(p, seed){
-  var bp = baselineFor(p, true), k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed;
+  var bp = baselineFor(p, true);
+  if (p.years > bp.years) bp.years = p.years;  /* session 33: the supply path covers runs longer than the Baseline's 20 years (unchanged for 20) */
+  var k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed;
   if (!S3_CACHE[k]) S3_CACHE[k] = priceRun(bp, seed, {}, null).D;
   return S3_CACHE[k];
 }
@@ -4659,6 +4661,10 @@ if (require.main === module) {
     var FINS = (process.argv.filter(function(a){ return /^--fin=/.test(a); })[0] || (secT === 'frontier' ? '--fin=tax' : '--fin=tax,money')).split('=')[1].split(',');
     var XT = +((process.argv.filter(function(a){ return /^--X=\d+$/.test(a); })[0] || '--X=0').split('=')[1]);  /* d26: contribution threshold, year-0 dollars */
     var ENVT = {ref:['Reference (Full Integration settings)', FULL_INTEGRATION], adv:['Adverse Environment', ADVERSE_REFERENCE], st:['Stress Test', STRESS_TEST]};
+    /* Session 33 (Oct 2, 2026; Duke's 40-year horizon): --years=N runs every environment for N years instead of the presets' 20. Without the
+     * flag nothing changes. The adults do not age (the model has no ages), so a longer run follows the same working-age adults for longer. */
+    var YRS = +((process.argv.filter(function(a){ return /^--years=\d+$/.test(a); })[0] || '--years=0').split('=')[1]);
+    if (YRS > 0) Object.keys(ENVT).forEach(function(k){ ENVT[k][1] = Object.assign({}, ENVT[k][1], {years:YRS}); });
     var MLBL = {engine:'Compassionism: shipped (engine model)', framework:'Compassionism: hub spec (framework model)'};
     var t0T = Date.now(), svT = applyNR6(), svG = tbSetG(TB_PROFILE_G);  /* session 10 (d40): N7_BLEI on in the testbed profile */
     /* Session 23 (s34; d86): projcore, esp and match print the N1 rows with the PTF/PTH inflation damping off by default (n1Row);
@@ -5332,7 +5338,7 @@ if (require.main === module) {
     });
     /* Plan step 11 (Oct 1, 2026): the restudy with every mechanism in (dev/reports/11-restudy.md). --json=FILE writes the page's precomputed
      * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
-    if (secT === 'release'){ var RJ = {_meta:{engine:'release candidate (next-release)', seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + ' --json=dev/runs/release-panel.json'}, envs:{}},
+    if (secT === 'release'){ var RJ = {_meta:{engine:'release candidate (next-release)', seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
       envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5) */
         function av(r){ return (r._B.epPY - r.epPY)/100; }

@@ -10,7 +10,7 @@ The video, its captions and the written tour (`README.md`) are all built from on
 
 ## Add, remove or reorder a shot
 
-Each entry in `"shots"` is one screen. Its caption list `"caps"` is read aloud one caption at a time. Fields: `ch` (chapter number), `scroll` (a CSS selector to bring near the top, or `0`), `dim` (one element to spotlight), `env` (`ref`, `adv` or `st`), `more` (open the "other readings" table), `run` (press "Run it yourself", seed 42), `url` (another page), `card` (a full-frame card: `title`, `terminal`, `contribute`, `end`). Add alt text for the written tour under `"alt"`.
+Each entry in `"shots"` is one screen. Its caption list `"caps"` is read aloud one caption at a time. Fields: `ch` (chapter number), `yrs` (20 or 40, the Years switch), `scroll` (a CSS selector to bring near the top, or `0`), `dim` (one element to spotlight), `env` (`ref`, `adv` or `st`), `more` (open the "other readings" table), `run` (press "Run it yourself", seed 42), `url` (another page), `card` (a full-frame card: `title`, `terminal`, `contribute`, `end`). Add alt text for the written tour under `"alt"`.
 
 ## Refresh the figures after the results are regenerated
 
