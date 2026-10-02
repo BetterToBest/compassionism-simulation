@@ -4,7 +4,7 @@
 
 [![The walk-through video](img/poster.jpg)](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)
 
-**[Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (5:14, narrated by a synthetic voice, with captions; [caption file](captions.vtt)). The same tour follows as text, one screenshot per step.
+**[Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (6:16, narrated by a synthetic voice, with captions; [caption file](captions.vtt)). The same tour follows as text, one screenshot per step.
 
 It covers what the page shows, how Compassionism works, what the model finds so far (including where the gain is not confirmed), how to run a scenario, what the model cannot tell you, how to check the work, and how to help. Every figure below is read from the page's own results data when the tour is built (`python3 walkthrough/make_walkthrough.py`; the script is `tour.json`, see [UPDATING.md](UPDATING.md)), so it matches the page it was built from. The figures are results of the model under its stated assumptions, not forecasts.
 
@@ -18,15 +18,15 @@ The first screen says what the tool is for: to see how Compassionism does at era
 
 Duke Johnson wrote the concepts. Claude, an AI model made by Anthropic, engineered the math and code. No independent economist has reviewed the model yet, and the code is open for anyone to check.
 
-![The subtitle describing the 500 adults, 20 years and three environments, highlighted](img/03-rules.png)
+![The subtitle describing the 500 adults, 20 or 40 years and three environments, highlighted](img/03-rules.png)
 
-The model follows the same 500 simulated adults for 20 years, once with Compassionism and once with no programme, in three environments. Figures are averages over 500 paired runs.
+The model follows the same 500 simulated adults for 20 years, or for 40, once with Compassionism and once with no programme, in three environments. Figures are averages over 500 paired runs.
 
 ## 2. How Compassionism works
 
 ![The 'What Compassionism is' list, highlighted](img/04-what.png)
 
-Every adult who takes part receives a monthly allowance of Basic Units, or BU: a currency that only buys essentials, and expires if it is not used. Expired BU can be converted to dollars at higher rates, for work the community values. Unused BU go to community projects, which hire participants and pay them at the converted rate. A person's octave sets how much they can convert; it rises with their financial stability. Essential-service businesses accept BU, and community-owned ones lower prices and add capacity within a year when demand outgrows them. Creative projects offer their work to members far below market price. Spending also creates jobs in recessions. Any adult can join or leave each year. A Source, the Treasury, issues the BU and pays for every conversion. Where the Hub is silent, the page labels the choice as Claude's reading of the design.
+Every adult who takes part receives a monthly allowance of Basic Units, or BU: a currency that buys only essentials, and expires if it is not spent. Expired BU can be converted to dollars at higher rates, for work the community values. They go to creative projects organized through the Creative Collectives, networks of artists, makers and other contributors. The projects hire participants, offer their work to members far below the market price, and are paid at the conversion rate they have earned by showing their work through the Collectives. A person's octave sets how much they can convert. Essential-service providers, or ESPs, accept BU and convert them to dollars. Community-owned ESPs split what they earn between lower prices, new capacity and their workers. Privately owned ESPs pass what conversion adds to their BU customers as lower prices, and pay their workers the same market rate. Spending also creates jobs in recessions, and any adult can join or leave each year. A Source, the Treasury, issues the BU and pays for every conversion. Where the Hub is silent, the page labels the choice as Claude's reading of the design.
 
 ## 3. What the model finds
 
@@ -42,29 +42,33 @@ In the Adverse Environment, with recessions and inflation, fewer adults fall bel
 
 In the Stress Test it is the same: below 30 days of basic living falls from 60.0% to 54.9%, but too little wealth rises from 82.6% to 90.6%. The gain is not confirmed there, and the page says so.
 
-![The table of other readings of the design, open](img/08-other.png)
+![The reference results over 40 years, highlighted](img/08-forty.png)
+
+The Years switch runs the same adults for 40 years instead of 20. They do not age in the model, so this shows where the same rules lead, not a lifetime. At the reference settings the gains grow: 14.8% of adult-years fall below 30 days of basic living, against 46.6%, and too little wealth at year 40 falls from 44.2% to 15.3%. In the Adverse Environment and the Stress Test, too little wealth is still worse with the programme over 40 years: 97.9% against 94.5% in Adverse, as prices keep rising and savings earn no interest.
+
+![The table of other readings of the design, open](img/09-other.png)
 
 Below the results, other readings of the design sit side by side, including full backing by output, creative work counted at cost, and the earlier engine, so you can see how much each choice matters.
 
 ## 4. Run it yourself
 
-![The 'Run it yourself' control and its result](img/09-run.png)
+![The 'Run it yourself' control and its result](img/10-run.png)
 
 Press Run it yourself to run one seed of 500 adults, with and without the programme, in your browser. A single run varies more than the 500-run averages. Enter a seed to repeat a run exactly: the same seed gives the same result.
 
 ## 5. What it cannot tell you
 
-![The 'Limits, in short' box, highlighted](img/10-limits.png)
+![The 'Limits, in short' box, highlighted](img/11-limits.png)
 
 What the model cannot tell you: it has single adults only, no children or households, no places, and a simple rule for prices. It is an exploratory model, not a forecast.
 
-![The note about the earlier engine, highlighted](img/11-earlier.png)
+![The note about the earlier engine, highlighted](img/12-earlier.png)
 
 The earlier engine, v4.22, stays below for exploration, with its own settings and presets. Its figures differ from the results above.
 
 ## 6. Check the work
 
-![The Replication framework page](img/12-replication.png)
+![The Replication framework page](img/13-replication.png)
 
 The Replication framework page holds the formulas, the calibration, the assumptions and the full version history.
 
