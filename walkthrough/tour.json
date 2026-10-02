@@ -1,0 +1,70 @@
+{
+  "_help": "This file is the walk-through's script. Edit a caption's text here, then run: python3 walkthrough/make_walkthrough.py (see walkthrough/UPDATING.md). {names} in braces are figures read from the page's own data (#rel-data) when the video is built, so they follow any regenerated results. 'needs' lists conditions that must hold for the wording to be true; the build stops, naming the caption, if one fails. Shot fields: ch = chapter number; scroll = a selector brought near the top (0 = page top); dim = one element spotlit; env = ref/adv/st; more = open the 'other readings' table; run = press 'Run it yourself'; url = another page; card = a full-frame card (title, terminal, contribute, end).",
+  "chapters": ["What the page is for", "How Compassionism works", "What the model finds", "Run it yourself", "What it cannot tell you", "Check the work", "Help improve it"],
+  "shots": [
+    {"id": "title", "card": "title", "caps": [
+      {"t": "A walk-through of the Compassionism Framework Simulation, v{ver}: what the page shows, how the model works, what it finds so far, and how to check it or help."}]},
+    {"id": "headline", "ch": 1, "scroll": 0, "dim": "#fd-q", "caps": [
+      {"t": "The first screen says what the tool is for: to see how Compassionism does at eradicating extreme poverty, and at rewarding participation and contribution."}]},
+    {"id": "attribution", "ch": 1, "scroll": 0, "dim": "#fd-attr", "caps": [
+      {"t": "Duke Johnson wrote the concepts. Claude, an AI model made by Anthropic, engineered the math and code. No independent economist has reviewed the model yet, and the code is open for anyone to check."}]},
+    {"id": "rules", "ch": 1, "scroll": 0, "dim": ".fd-sub", "caps": [
+      {"t": "The model follows the same {agents} simulated adults for 20 years, once with Compassionism and once with no programme, in three environments. Figures are averages over 500 paired runs."}]},
+    {"id": "what", "ch": 2, "scroll": "#fd-what", "off": 10, "dim": "#fd-what", "caps": [
+      {"t": "Every adult who takes part receives a monthly allowance of Basic Units, or BU: a currency that only buys essentials, and expires if it is not used."},
+      {"t": "Expired BU can be converted to dollars at higher rates, for work the community values. Unused BU go to community projects, which hire participants and pay them at the converted rate."},
+      {"t": "A person's octave sets how much they can convert; it rises with their financial stability. Essential-service businesses accept BU, and community-owned ones lower prices and add capacity within a year when demand outgrows them."},
+      {"t": "Creative projects offer their work to members far below market price. Spending also creates jobs in recessions. Any adult can join or leave each year."},
+      {"t": "A Source, the Treasury, issues the BU and pays for every conversion. Where the Hub is silent, the page labels the choice as Claude's reading of the design."}]},
+    {"id": "ref", "ch": 3, "scroll": "#rel-panel", "off": 8, "dim": "#rel-out", "caps": [
+      {"t": "At the reference settings, {ref_bo} of adult-years fall below 30 days of basic living with Compassionism, against {base_bo} with no programme.",
+       "needs": ["reference confirmed gain"]},
+      {"t": "Living below the cost of living falls from {base_f0} to {ref_f0}, and the share with too little wealth at year 20 falls from {base_pov} to {ref_pov}.",
+       "needs": ["reference confirmed gain"]},
+      {"t": "Adults who take part gain about {ref_part} dollars a year in real resources. Adults who do not take part lose about {ref_non} dollars a year.",
+       "needs": ["non-participants lose at reference"]},
+      {"t": "The cost is about {ref_cost} dollars per adult a year, and prices rise {ref_infl} a year, because the model treats conversion as new money with little output behind it.",
+       "needs": ["prices rise at reference"]},
+      {"t": "If every dollar the Source pays were backed by new output, prices would stay flat and the gains would be larger. The decisive unknown is how much output conversion rewards call forth.",
+       "needs": ["H1 flat prices at reference"]}]},
+    {"id": "adverse", "ch": 3, "env": "adv", "scroll": "#rel-panel", "off": 8, "dim": "#rel-out", "caps": [
+      {"t": "In the Adverse Environment, with recessions and inflation, fewer adults fall below 30 days of basic living: {adv_bo} against {adv_base_bo}. But too little wealth rises from {adv_base_pov} to {adv_pov}.",
+       "needs": ["adverse wealth worse"]}]},
+    {"id": "stress", "ch": 3, "env": "st", "scroll": "#rel-panel", "off": 8, "dim": "#rel-out", "caps": [
+      {"t": "In the Stress Test it is the same: below 30 days of basic living falls from {st_base_bo} to {st_bo}, but too little wealth rises from {st_base_pov} to {st_pov}. The gain is not confirmed there, and the page says so.",
+       "needs": ["stress wealth worse"]}]},
+    {"id": "other", "ch": 3, "more": true, "scroll": "#rel-more", "off": 8, "dim": "#rel-more", "caps": [
+      {"t": "Below the results, other readings of the design sit side by side, including full backing by output, creative work counted at cost, and the earlier engine, so you can see how much each choice matters."}]},
+    {"id": "run", "ch": 4, "run": true, "scroll": "#rel-live", "off": 8, "dim": "#rel-live", "caps": [
+      {"t": "Press Run it yourself to run one seed of 500 adults, with and without the programme, in your browser. A single run varies more than the 500-run averages."},
+      {"t": "Enter a seed to repeat a run exactly: the same seed gives the same result."}]},
+    {"id": "limits", "ch": 5, "scroll": "#uncertainty-notice", "off": 12, "dim": "#uncertainty-notice", "caps": [
+      {"t": "What the model cannot tell you: it has single adults only, no children or households, no places, and a simple rule for prices. It is an exploratory model, not a forecast."}]},
+    {"id": "earlier", "ch": 5, "scroll": "#old-note", "off": 12, "dim": "#old-note", "caps": [
+      {"t": "The earlier engine, v4.22, stays below for exploration, with its own settings and presets. Its figures differ from the results above."}]},
+    {"id": "replication", "ch": 6, "url": "replication.html", "scroll": 0, "caps": [
+      {"t": "The Replication framework page holds the formulas, the calibration, the assumptions and the full version history."}]},
+    {"id": "checks", "ch": 6, "card": "terminal", "caps": [
+      {"t": "The simulation is one HTML file. harness.js runs the same engine from the command line; the figures on the page come from node harness.js testbed 500 release ref,adv,st."},
+      {"t": "npm test runs the three checks, validate, unit and domtest, and GitHub runs them on every push."}]},
+    {"id": "contribute", "ch": 7, "card": "contribute", "caps": [
+      {"t": "Contributions most wanted: sources for the untested constants, scenario tests from places you know, reproductions, and critiques of the design."},
+      {"t": "Open an issue or a pull request on GitHub. CONTRIBUTING.md explains how."}]},
+    {"id": "end", "card": "end", "caps": [
+      {"t": "Open the simulation, read the code, and test the claims yourself."}]}
+  ],
+  "alt": {
+    "headline": "The page's opening sentence, highlighted",
+    "attribution": "The attribution paragraph, highlighted",
+    "rules": "The subtitle describing the 500 adults, 20 years and three environments, highlighted",
+    "what": "The 'What Compassionism is' list, highlighted",
+    "ref": "The reference-environment results, highlighted",
+    "adverse": "The Adverse Environment results, highlighted",
+    "stress": "The Stress Test results, highlighted",
+    "other": "The table of other readings of the design, open",
+    "run": "The 'Run it yourself' control and its result",
+    "limits": "The 'Limits, in short' box, highlighted",
+    "earlier": "The note about the earlier engine, highlighted",
+    "replication": "The Replication framework page"
+  }
+}
