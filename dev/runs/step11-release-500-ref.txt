@@ -1,0 +1,75 @@
+=== A4 testbed (session 6): seeds 1-500, 500 agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===
+Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment's annuity value, against own cost; x100.
+
+--- release (plan step 11): Reference (Full Integration settings) | Compassionism: hub spec (framework model) | seeds 1-500 | 422 s ---
+BLEI first (plan step 8). Days of basic living covered, year-0 prices. Duke's BLEI = the BLEI paper's definition (the page's); design-neutral = the Baseline's rules for everyone plus one month of the design's regular support. BLEI poverty = person-years below 30 days. Changes vs Baseline [95% CI]; negative = fewer below the line.
+| Design | Duke's BLEI: median days, yr 20 | Duke's BLEI poverty (person-years) | vs Baseline [95% CI] | Design-neutral: median days, yr 20 | Design-neutral BLEI poverty | vs Baseline [95% CI] |
+|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | 41 | 46.7% | — | 41 | 46.7% | — |
+| TODAY (v4.22, Hub spec): the s34 main row (wage contribution) | 34 | 39.0% | -7.74 [-7.88, -7.60] | 25 | 57.2% | +10.47 [+10.32, +10.62] |
+| RELEASE: Compassionism with every mechanism, paid for by the Source | 125 | 25.2% | -21.52 [-21.67, -21.37] | 100 | 30.3% | -16.44 [-16.57, -16.31] |
+|   H1: every dollar the Source pays backed by new output | 909 | 18.4% | -28.35 [-28.51, -28.19] | 784 | 20.5% | -26.22 [-26.38, -26.07] |
+|   essentials bought with BU counted as backed by output | 187 | 22.0% | -24.73 [-24.88, -24.58] | 154 | 25.7% | -21.05 [-21.19, -20.92] |
+|   paid for by a flat contribution on wages instead of the Source | 34 | 39.6% | -7.12 [-7.29, -6.96] | 25 | 62.0% | +15.28 [+15.13, +15.42] |
+|   one split for every essential-service business (no private owners keeping their earnings) | 140 | 20.2% | -26.54 [-26.70, -26.37] | 112 | 24.8% | -21.89 [-22.04, -21.75] |
+|   taking part costs nothing (every adult joins) | 146 | 17.5% | -29.18 [-29.33, -29.03] | 112 | 24.6% | -22.11 [-22.25, -21.97] |
+|   price cuts free (PTF and PTH cuts counted as capacity, not a transfer) | 143 | 22.8% | -23.90 [-24.05, -23.74] | 115 | 27.4% | -19.31 [-19.45, -19.17] |
+|   the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default) | 200 | 21.5% | -25.18 [-25.33, -25.03] | 164 | 25.8% | -20.91 [-21.05, -20.78] |
+
+FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.
+| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Unhoused person-years avoided per 1,000 adults a year | Public cost avoided per adult-year, low / high | Source: paid / tax kept / backed | Participation yr 19 | Median wealth yr 20 (year-0 $) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | $0 | 8.04 | — | — | — | — | 55.2% | 52.0% | +0.0% | 0.0% | 0.00% | 1.000 | — | — | — | — | — |
+| TODAY (v4.22, Hub spec): the s34 main row (wage contribution) | $33,904 | +4.10 [+4.03, +4.18] | — | — | — | — | 74.2% | 71.8% | -26.3% | 79.9% | 0.00% | 1.000 | 2.19 | $23 / $220 | $30,890 / $4,561 / $0 | — | -$9,952 |
+| RELEASE: Compassionism with every mechanism, paid for by the Source | $27,635 | -5.62 [-5.65, -5.58] | -9.72 [-9.81, -9.63] | -44.18 [-44.45, -43.92] | -24.29 [-24.56, -24.02] | -9.72 | 30.0% | 47.5% | -6.7% | 5.0% | 39.73% | 581.647 | 2.08 | $22 / $209 | $25,140 / $4,018 / $972 | 77.8% | $28,021 |
+|   H1: every dollar the Source pays backed by new output | $34,292 | -6.13 [-6.16, -6.09] | -0.51 [-0.51, -0.50] | -7.15 [-7.22, -7.09] | -25.71 [-25.89, -25.53] | -10.23 | 22.9% | 21.8% | -6.5% | 5.0% | 0.00% | 1.000 | 2.77 | $29 / $279 | $31,622 / $5,069 / $1,299 | 77.8% | $259,882 |
+|   essentials bought with BU counted as backed by output | $29,919 | -5.85 [-5.88, -5.81] | -0.23 [-0.23, -0.23] | -2.82 [-2.85, -2.79] | -9.88 [-10.00, -9.76] | -9.95 | 27.2% | 37.7% | -6.5% | 5.0% | 23.49% | 55.345 | 2.37 | $25 / $238 | $27,398 / $4,416 / $1,037 | 77.8% | $45,995 |
+|   paid for by a flat contribution on wages instead of the Source | $34,443 | +16.76 [+16.66, +16.87] | +22.38 [+22.29, +22.47] | +46.75 [+46.60, +46.90] | +30.19 [+29.97, +30.41] | +12.66 | 76.8% | 77.7% | -35.5% | 83.7% | 0.00% | 1.000 | 0.98 | $10 / $99 | $31,680 / $5,101 / $1,320 | 77.8% | -$10,000 |
+|   one split for every essential-service business (no private owners keeping their earnings) | $28,071 | -6.51 [-6.55, -6.47] | -0.89 [-0.90, -0.89] | -6.20 [-6.27, -6.13] | -5.12 [-5.22, -5.01] | -10.61 | 23.8% | 42.4% | -4.3% | 4.9% | 41.16% | 706.583 | 2.70 | $28 / $272 | $25,575 / $4,463 / $1,436 | 77.8% | $32,164 |
+|   taking part costs nothing (every adult joins) | $33,583 | -6.80 [-6.84, -6.76] | -1.18 [-1.20, -1.17] | -6.45 [-6.54, -6.37] | -3.95 [-4.06, -3.84] | -10.90 | 23.6% | 43.6% | -7.6% | 5.1% | 47.40% | 1599.734 | 2.62 | $27 / $263 | $31,115 / $5,173 / $1,130 | 100.0% | $31,672 |
+|   price cuts free (PTF and PTH cuts counted as capacity, not a transfer) | $27,668 | -5.98 [-6.01, -5.94] | -0.36 [-0.37, -0.36] | -3.15 [-3.19, -3.12] | -4.22 [-4.31, -4.14] | -10.08 | 26.9% | 43.3% | -5.8% | 0.0% | 39.46% | 560.615 | 2.18 | $23 / $219 | $25,173 / $4,024 / $972 | 77.8% | $33,256 |
+|   the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default) | $28,008 | -5.98 [-6.01, -5.94] | -0.36 [-0.36, -0.36] | -4.77 [-4.81, -4.73] | -13.66 [-13.79, -13.53] | -10.08 | 25.3% | 33.9% | -4.5% | 4.5% | 36.89% | 393.229 | 2.47 | $26 / $248 | $25,511 / $4,089 / $983 | 77.8% | $49,161 |
+
+Groups: change in real resources per adult-year over 20 years, participants / non-participants (as at year 0) / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.
+| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |
+|---|---|---|---|---|
+| TODAY (v4.22, Hub spec): the s34 main row (wage contribution) | -$6,206 / -$25,793 / +$902 / -$24,537 | — | — | part (riw), non (riw), PTH (riw), top (riw) |
+| RELEASE: Compassionism with every mechanism, paid for by the Source | +$24,844 / +$3,167 / +$16,064 / +$25,583 | +$31,050 / +$28,960 / +$15,161 / +$50,119 | -6.41 / -21.46 | non (w), top (w) |
+|   H1: every dollar the Source pays backed by new output | +$35,947 / +$9,268 / +$22,381 / +$38,976 | +$42,153 / +$35,061 / +$21,478 / +$63,513 | -6.72 / -22.66 | none |
+|   essentials bought with BU counted as backed by output | +$28,704 / +$4,983 / +$18,203 / +$30,323 | +$34,910 / +$30,775 / +$17,301 / +$54,860 | -6.56 / -21.95 | non (w) |
+|   paid for by a flat contribution on wages instead of the Source | -$6,824 / -$35,480 / +$3,186 / -$32,917 | -$618 / -$9,688 / +$2,283 / -$8,380 | +7.89 / +29.44 | part (riw), non (riw), PTH (riw), top (riw) |
+|   one split for every essential-service business (no private owners keeping their earnings) | +$26,928 / +$2,662 / +$20,839 / +$22,405 | +$33,134 / +$28,454 / +$19,937 / +$46,942 | -7.01 / -23.39 | non (w), top (w) |
+|   taking part costs nothing (every adult joins) | +$25,497 / +$24,212 / +$19,959 / +$32,079 | +$31,703 / +$50,005 / +$19,057 / +$56,616 | -6.44 / -26.67 | none |
+|   price cuts free (PTF and PTH cuts counted as capacity, not a transfer) | +$27,729 / +$6,298 / +$17,619 / +$30,087 | +$33,935 / +$32,091 / +$16,717 / +$54,623 | -6.60 / -22.43 | non (w), top (w) |
+|   the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default) | +$32,550 / +$5,128 / +$19,424 / +$35,547 | +$38,756 / +$30,921 / +$18,521 / +$60,084 | -6.69 / -22.08 | non (w), top (w) |
+
+BLEI by group (s41), levels. Person-year shares over 20 years unless stated; part = participants, non = adults who chose not to take part (the same adults in every row). N = design-neutral BLEI (heads, d34); O = the design's own BLEI (the page's definition); X = N with income read as wage earnings net of the contribution. BLEI poverty = below 30 days (Crisis + Precarious); Crisis = below 7 days. Days at year-0 prices.
+| Design | Adults: part / non | FGT2 x100: part / non | BLEI poverty N: all / part / non | Crisis N: part / non | BLEI poverty O: all / part / non | BLEI poverty X: all / part / non | Crisis X: part / non | Year 20, BLEI poverty N: part / non | Year 20, median BLEI N (days): part / non |
+|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | 389.5 / 110.5 | 8.06 / 7.96 | 46.7 / 46.7 / 46.7 | 42.2 / 42.1 | 46.7 / 46.7 / 46.7 | 46.7 / 46.7 / 46.7 | 42.0 / 41.9 | 50.5 / 50.5 | 45 / 68 |
+| TODAY (v4.22, Hub spec): the s34 main row (wage contribution) | 389.5 / 110.5 | 7.60 / 28.22 | 57.2 / 51.0 / 79.0 | 0.0 / 45.2 | 39.0 / 27.7 / 78.9 | 58.1 / 52.0 / 79.5 | 0.0 / 77.7 | 61.3 / 90.7 | 27 / 8 |
+| RELEASE: Compassionism with every mechanism, paid for by the Source | 389.5 / 110.5 | 1.19 / 6.76 | 30.3 / 23.7 / 53.6 | 0.0 / 44.0 | 25.2 / 17.3 / 53.2 | 30.5 / 23.9 / 53.7 | 0.0 / 45.8 | 21.7 / 55.4 | 122 / 18 |
+|   H1: every dollar the Source pays backed by new output | 389.5 / 110.5 | 0.88 / 5.56 | 20.5 / 14.8 / 40.5 | 0.0 / 35.9 | 18.4 / 12.1 / 40.4 | 20.6 / 14.9 / 40.5 | 0.0 / 37.1 | 12.1 / 40.9 | 910 / 275 |
+|   essentials bought with BU counted as backed by output | 389.5 / 110.5 | 1.03 / 6.28 | 25.7 / 19.3 / 48.1 | 0.0 / 40.6 | 22.0 / 14.7 / 47.8 | 25.8 / 19.4 / 48.2 | 0.0 / 42.0 | 16.8 / 50.6 | 188 / 31 |
+|   paid for by a flat contribution on wages instead of the Source | 389.5 / 110.5 | 15.49 / 57.66 | 62.0 / 55.9 / 83.6 | 0.0 / 44.3 | 39.6 / 27.1 / 83.5 | 66.6 / 61.7 / 83.9 | 0.1 / 82.8 | 60.9 / 93.5 | 27 / 8 |
+|   one split for every essential-service business (no private owners keeping their earnings) | 389.5 / 110.5 | 0.59 / 4.83 | 24.8 / 17.2 / 51.8 | 0.0 / 42.3 | 20.2 / 11.3 / 51.4 | 25.1 / 17.4 / 52.0 | 0.0 / 42.8 | 11.9 / 51.1 | 133 / 28 |
+|   taking part costs nothing (every adult joins) | 389.5 / 110.5 | 1.15 / 1.55 | 24.6 / 24.0 / 26.7 | 0.0 / 0.9 | 17.5 / 17.1 / 19.2 | 24.8 / 24.3 / 26.9 | 0.0 / 0.9 | 21.2 / 21.3 | 112 / 111 |
+|   price cuts free (PTF and PTH cuts counted as capacity, not a transfer) | 389.5 / 110.5 | 1.00 / 5.80 | 27.4 / 21.1 / 49.7 | 0.0 / 41.5 | 22.8 / 15.3 / 49.3 | 27.5 / 21.2 / 49.7 | 0.0 / 41.5 | 18.6 / 50.4 | 137 / 30 |
+|   the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default) | 389.5 / 110.5 | 0.91 / 6.15 | 25.8 / 18.7 / 51.0 | 0.0 / 41.4 | 21.5 / 13.3 / 50.7 | 26.0 / 18.8 / 51.2 | 0.0 / 42.8 | 10.5 / 49.8 | 200 / 33 |
+
+BLEI by group (s41), changes in points: part / non, paired over seeds [95% CI on the design-neutral reading]. Negative = fewer adults below the line.
+| Design | vs Baseline: FGT2 x100 | vs Baseline: BLEI poverty N | vs Baseline: Crisis N | vs Baseline: BLEI poverty O | vs Baseline: BLEI poverty X | vs Baseline: Crisis X | vs today: FGT2 x100 | vs today: BLEI poverty N | vs today: Crisis N | vs today: BLEI poverty O | vs today: BLEI poverty X | vs today: Crisis X |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TODAY (v4.22, Hub spec): the s34 main row (wage contribution) | -0.46 / +20.26 | +4.26 [+4.09, +4.44] / +32.35 [+32.03, +32.67] | -42.22 / +3.09 | -19.08 / +32.25 | +5.25 / +32.84 | -42.02 / +35.76 | — | — | — | — | — | — |
+| RELEASE: Compassionism with every mechanism, paid for by the Source | -6.87 / -1.20 | -23.06 [-23.21, -22.91] / +6.88 [+6.71, +7.05] | -42.20 / +1.82 | -29.49 / +6.54 | -22.87 / +7.03 | -41.99 / +3.86 | -6.41 / -21.46 | -27.32 [-27.52, -27.12] / -25.47 [-25.77, -25.17] | +0.02 / -1.27 | -10.41 / -25.71 | -28.12 / -25.81 | +0.02 / -31.90 |
+|   H1: every dollar the Source pays backed by new output | -7.18 / -2.40 | -31.90 [-32.08, -31.73] / -6.20 [-6.37, -6.04] | -42.21 / -6.28 | -34.60 / -6.32 | -31.85 / -6.16 | -42.00 / -4.88 | -6.72 / -22.66 | -36.17 [-36.39, -35.95] / -38.56 [-38.89, -38.22] | +0.01 / -9.37 | -15.52 / -38.57 | -37.10 / -39.00 | +0.01 / -40.64 |
+|   essentials bought with BU counted as backed by output | -7.02 / -1.69 | -27.42 [-27.58, -27.26] / +1.40 [+1.26, +1.54] | -42.20 / -1.57 | -32.07 / +1.15 | -27.30 / +1.51 | -42.00 / +0.10 | -6.56 / -21.95 | -31.69 [-31.89, -31.48] / -30.95 [-31.26, -30.64] | +0.02 / -4.66 | -12.99 / -31.10 | -32.55 / -31.33 | +0.02 / -35.65 |
+|   paid for by a flat contribution on wages instead of the Source | +7.43 / +49.70 | +9.13 [+8.97, +9.30] / +36.93 [+36.60, +37.27] | -42.20 / +2.16 | -19.59 / +36.84 | +14.94 / +37.24 | -41.97 / +40.90 | +7.89 / +29.44 | +4.87 [+4.71, +5.03] / +4.58 [+4.37, +4.79] | +0.03 / -0.93 | -0.51 / +4.58 | +9.69 / +4.40 | +0.05 / +5.14 |
+|   one split for every essential-service business (no private owners keeping their earnings) | -7.47 / -3.13 | -29.56 [-29.72, -29.40] / +5.13 [+4.98, +5.29] | -42.20 / +0.18 | -35.39 / +4.68 | -29.32 / +5.34 | -41.99 / +0.82 | -7.01 / -23.39 | -33.82 [-34.03, -33.62] / -27.22 [-27.53, -26.90] | +0.02 / -2.91 | -16.31 / -27.58 | -34.57 / -27.50 | +0.02 / -34.93 |
+|   taking part costs nothing (every adult joins) | -6.91 / -6.42 | -22.71 [-22.86, -22.56] / -20.00 [-20.30, -19.70] | -42.22 / -41.29 | -29.67 / -27.46 | -22.49 / -19.76 | -42.02 / -41.08 | -6.44 / -26.67 | -26.97 [-27.17, -26.78] / -52.35 [-52.68, -52.01] | +0.00 / -44.38 | -10.59 / -59.71 | -27.74 / -52.60 | +0.00 / -76.83 |
+|   price cuts free (PTF and PTH cuts counted as capacity, not a transfer) | -7.06 / -2.17 | -25.65 [-25.81, -25.49] / +3.03 [+2.87, +3.19] | -42.20 / -0.67 | -31.43 / +2.67 | -25.55 / +3.06 | -42.00 / -0.41 | -6.60 / -22.43 | -29.91 [-30.11, -29.71] / -29.32 [-29.63, -29.01] | +0.02 / -3.76 | -12.35 / -29.58 | -30.80 / -29.78 | +0.02 / -36.17 |
+|   the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default) | -7.15 / -1.82 | -28.08 [-28.24, -27.93] / +4.37 [+4.21, +4.53] | -42.20 / -0.75 | -33.46 / +4.01 | -27.94 / +4.50 | -42.00 / +0.91 | -6.69 / -22.08 | -32.35 [-32.55, -32.15] / -27.98 [-28.29, -27.68] | +0.02 / -3.84 | -14.38 / -28.24 | -33.19 / -28.34 | +0.02 / -34.85 |
+
+wrote dev/runs/release-panel-ref.json
+
+(7.0 min)

@@ -2,22 +2,37 @@
 
 Update this after every completed sub-step. A new session reads it and continues from the first unchecked item.
 
-- [ ] Setup: create branch `next-release` from `main` (the kit is already on `main`), push the branch. Confirm Node runs `harness.js` and the three checks pass on the untouched code.
-- [ ] 0. Page outline
-- [ ] 1. ESP split
-- [ ] 2. Production side
-- [ ] 3. Financing (checkpoint report)
-- [ ] 4. Joining and leaving
-- [ ] 5. Capital and running costs of community businesses and housing
-- [ ] 6. Octave rule
-- [ ] 7. Spending rule
-- [ ] 8. BLEI-led reporting
-- [ ] 9. Avoided public costs
-- [ ] 10. Port into the page
-- [ ] 11. Restudy
-- [ ] 12. Page items
-- [ ] 13. Release prep (then stop for Duke)
+- [x] Setup: create branch `next-release` from `main` (the kit is already on `main`), push the branch. Confirm Node runs `harness.js` and the three checks pass on the untouched code.
+  - Oct 1, 2026 (session 30): `next-release` created locally from `main` at `40a15b8`. Node v22.22.0. On the untouched code: `node harness.js validate` passes (seed-42 fixtures exact), `node harness.js unit` 6 suites run, 0 failed, `node domtest.js` 95 of 95 checks. **GitHub write access is missing in this session**: `git push` to `next-release` and to the session branch `claude/elegant-mayer-1vwhfk` both return HTTP 403, and the GitHub API refuses branch creation ("Resource not accessible by integration"); reading works. Work is committed on a local `next-release` and sent to Duke as a git bundle at milestones. Fix: reconnect GitHub at https://claude.ai/connect-github and install the Claude GitHub App on the repository with write access; then a session can push the commits. The Research Hub (bettertobest.github.io) is reachable.
+- [x] 0. Page outline: `dev/reports/00-page-outline.md` (no numbers; built at step 12)
+- [x] 1. ESP split: `SURP` in `harness.js` (12 unit tests), testbed section `surp`, 500-seed restudy in `dev/runs/step1-surp-500-*.txt`, report `dev/reports/01-esp-split.md`. Result: worse than today's stand-in in every environment (+11.5 / +11.8 / +3.8 on poverty severity), mostly because private owners keep 70-80% of the premium.
+- [x] 2. Production side: `PROD` (8 unit tests), section `prod`, restudy `dev/runs/step2-prod-500-*.txt`, report `dev/reports/02-production-side.md`. Small under the wage contribution (+0.02 / +0.05 / +0.22); slows created-money inflation by 1.5-2 points a year.
+- [x] 3. Financing (checkpoint report): reading `dev/reports/03a-financing-reading.md`; `fin: 'source'` (4 unit tests), section `fin`, restudy `dev/runs/step3-fin-500-*.txt`, checkpoint report `dev/reports/03-financing.md`. Income poverty halves at reference but prices rise ~40%/yr and wealth poverty rises: not a confirmed gain. Under H1 the gain is confirmed on all measures.
+- [x] 4. Joining and leaving: `JOIN` (4 unit tests), section `join`, restudy `dev/runs/step4-join-500-*.txt`, report `dev/reports/04-joining.md`. Little effect under the Source; people leave where BU lose value (wage contribution, Adverse).
+- [x] 5. Capital and running costs: `COST` (3 unit tests), section `cost`, restudy `dev/runs/step5-cost-500-*.txt`, report `dev/reports/05-ptf-pth-costs.md`. Small gain, confirmed on all three measures.
+- [x] 6. Octave rule: kept; `OCT` sensitivity (1 unit test), section `oct`, restudy `dev/runs/step6-oct-500-*.txt`, report `dev/reports/06-octave-rule.md`. Barely matters.
+- [x] 7. Spending rule: share 0.593 from BEA's 2025 saving rate (1 unit test), section `spend`, restudy `dev/runs/step7-spend-500-*.txt`, report `dev/reports/07-spending-rule.md`. Reference gain now confirmed on all three measures; Adverse and Stress still worse on wealth poverty.
+- [x] 8. BLEI-led reporting: BLEI table first in every step section; section `blei`; restudy `dev/runs/step8-blei-500-*.txt`; report `dev/reports/08-blei.md`. Design default 8 confirmed, with the neutral reading beside it.
+- [x] 9. Avoided public costs: homelessness, sourced low/high; section `avoid`; restudy `dev/runs/step9-avoid-500-*.txt`; report `dev/reports/09-avoided-costs.md`. Small next to the programme's cost.
+- [x] 10. Port into the page: `dev/tools/port_engine.py` copies the release engine into `index.html` verbatim (rerunnable, idempotent); domtest phase 12 checks source equality and same-seed agreement (97/97 pass). Report `dev/reports/10-port.md`.
+- [x] 11. Restudy: section `release`, outputs `dev/runs/step11-release-500-*.txt`, panel `dev/runs/release-panel.json`, report `dev/reports/11-restudy.md`. Confirmed gain at reference; in Adverse and Stress wealth poverty is worse than no programme.
+- [x] 12. Page items: front door rebuilt, comparison removed (draft in `dev/drafts/`), assumptions and history moved to the replication page, wording fixed, attribution added; report `dev/reports/12-page.md`.
+- [x] 13. Release prep (then stop for Duke): `dev/RELEASE.md` (gate status, proposed label v5.0, the exact release steps), `dev/tools/set_version.py`, v5.0 notes drafted in CONTRIBUTING, release figures on the replication page, page description and sharing tags rewritten. **Stopped for Duke: read `dev/reports/11-restudy.md`, then say "release".** Hub index files (another repository) listed in RELEASE.md.
+
+## Next round: Duke's four items before v5.0 (added Oct 2, 2026)
+
+Duke's order (ledger, Oct 2): these replace step 11's restudy as the one the release gate asks him to read. Design notes, written in session 31 before the code was back: `dev/reports/v5-1` to `v5-4`.
+
+- [x] 14. Private ESP correction (ledger s66, d140): `SURP.priv 'prices'` (6 tests, `privUnitSuite`), restudy `dev/runs/step14-priv-500-*.txt`, report `dev/reports/v5-1-private-esp-correction.md`. Reference: below the cost of living 30.0% → 22.6%, too little wealth 47.5% → 40.4%; Adverse and Stress wealth poverty slightly worse; non-participants lose the owners' share.
+- [x] 15. Creative-output backing, capacity speed and the ESP octave cap (s67; d137-d139): `PROD.match 'market'`, `PROD.speed 'oneyear'` (5 tests, `v5ProdUnitSuite`), restudy `dev/runs/step15-creative-500-*.txt`, report `dev/reports/v5-2-creative-output-reading.md`. Wealth poverty −4.7 (ref), −2.3 (adv); capacity speed makes no difference.
+- [x] 16. Spending layer (s68): `MULT` (4 tests, `multUnitSuite`), restudy `dev/runs/step16-17-v5-500-*.txt`, report `dev/reports/v5-3-spending-layer.md`.
+- [x] 17. Wider public costs avoided (s69): `avoidWide` (3 tests), report `dev/reports/v5-4-public-costs.md`. About 3% of cost at Reference, 6-7% in Adverse and Stress.
+- [x] 18. Port and restudy: `REL_V5` in the release row and the page, panel regenerated (`dev/runs/step18-release-500-*.txt`, `release-panel.json`), replication figures (`dev/tools/release_figs.py`), CONTRIBUTING and `dev/RELEASE.md` updated, report `dev/reports/v5-5-restudy.md`. Duke said "release" on Oct 2, 2026: labels set to v5.0, `next-release` merged into `main` locally; because pushes are refused (403), the release reaches GitHub as `apply-v5.0.zip`, which Duke uploads to main (the apply workflow runs the checks, commits, and the release workflow tags v5.0). Still to do: the Hub index files in `BetterToBest/research-hub` (steps in `dev/RELEASE.md`), the new walk-through (s65), outreach drafts (s37).
 
 ## Notes from the last session
 
-(none yet)
+- Session 31 (Oct 2, 2026): `next-release` was restored from session 30's bundle (head `da986d1`), which Duke uploaded to the chat, and merged with session 31's notes (written on `claude/ecstatic-fermi-55o5vm` while the code was missing). Pushes still refused (403); work goes to Duke as a bundle (`next-release-session31.bundle`). Steps 14-18 built and restudied the same day; the release waits only for Duke's read and "release" (and GitHub access, or Duke pushing the bundle).
+
+- Oct 2: the project ledger (claude.ai artifact KMdxWQ5KAefQVFxQA236pV, project "sim") recorded Duke's answer that only participating ESP workers share in the PTF profit share; the repo kit had the older default. Applied from the step-11 restudy on (DECISIONS, "Correction from the project ledger"). The step-11 figures in the reports, the panel, CONTRIBUTING and the replication page are from the rerun.
+
+- Session 30 (Oct 1, 2026): no GitHub write access (see Setup). Commits are local on `next-release`; a bundle `next-release.bundle` is sent to Duke at milestones (`git fetch next-release.bundle next-release` restores it). Commands for the three checks (from `.github/workflows/checks.yml`): `npm install --no-audit --no-fund`, then `node harness.js validate`, `node harness.js unit`, `node domtest.js`.

@@ -29,6 +29,8 @@ The **Full Integration** preset (seed 42, 20 years) serves as the illustrative r
 | Simulation years | 20 | Two decades captures full automation wave |
 | Seed | 42 | Fixed for reproducibility; labeled "illustrative reference" |
 
+**v5.0 (released Oct 2, 2026):** the page now runs Compassionism as specified on the Hub with every planned mechanism, paid for by a Source, at a spending share matched to the US saving rate; the earlier engine's reference values above are unchanged and still drive its settings panel. See v5.0 Release Notes.
+
 **v4.22:** no reference value changed, and every preset's seed-42 figures are bit-identical. The page now opens with a comparison of Compassionism against five other anti-poverty designs, pre-computed by the policy testbed in `harness.js`. See v4.22 Release Notes.
 
 **v4.21:** no reference value changed, and the seed-42 figures did not move. CCO's cost relief now reads BU in year-0 dollars, which changes only runs with inflation on (Adverse Environment, Stress Test). A 5,000-agent study confirms the headline figures. See v4.21 Release Notes.
@@ -130,6 +132,50 @@ Decision d46 replaces the engine's octave wage raise (0.3% a year of extra wage 
   - The reason: the pay reaches participants by capacity and quality, not need, and the wage contribution that pays for it lowers work and falls on everyone.
 - **The engine in `index.html` is unchanged**, and so is the page. Per d65 the main Compassionism row changes at the N1 release (s35).
 - **Checks.** `validate` passes, `unit` passes (the new suite 9 of 9), and `domtest` passes all 95.
+
+## v5.0 Release Notes
+
+**Released Oct 2, 2026 as v5.0** (Duke said "release" on Oct 2; `python3 dev/tools/set_version.py 5.0` set every label). Built on the branch `next-release` in sessions 30 and 31 (Oct 1-2, 2026) following `dev/PLAN.md` and Duke's four added items (Oct 2); every decision is in `dev/DECISIONS.md` and every mechanism has a plain-words report in `dev/reports/`.
+
+### Why a new major version
+
+The page now runs Compassionism as specified on the Research Hub, with every planned mechanism, instead of the v4.22 engine as coded, and it opens with that model's results instead of a comparison with other designs. The headline figures change meaning, not just value.
+
+### What the release contains
+
+| Plan step | What | Where |
+|---|---|---|
+| 1 | The ESP split: community businesses split their premium (prices, capacity, workers); private ones keep it | `SURP` in `harness.js`; `dev/reports/01-esp-split.md` |
+| 2 | The production side: PTF capacity built by reinvestment; project work and capital counted as output | `PROD`; `02-production-side.md` |
+| 3 | Source financing: the Treasury issues BU and pays conversions; net payout is new money less output that backs it | testbed `fin: 'source'`; `03a-financing-reading.md`, `03-financing.md` |
+| 4 | Joining and leaving each year | `JOIN`; `04-joining.md` |
+| 5 | PTF running costs and PTH capital from BEA and Census figures | `COST`; `05-ptf-pth-costs.md` |
+| 6 | The octave rule kept; slower advancement as a sensitivity | `OCT`; `06-octave-rule.md` |
+| 7 | The spending rule matched to the 2025 US saving rate (59.3% of surplus spent) | `SPEND_SOURCED`; `07-spending-rule.md` |
+| 8 | BLEI leads every result | every step section; `08-blei.md` |
+| 9 | Public costs of homelessness avoided, sourced low and high | `AVOID_HOMELESS`; `09-avoided-costs.md` |
+| 10 | The engine ported into the page verbatim, with source and same-seed parity checks | `dev/tools/port_engine.py`; domtest phase 12 |
+| 11 | The 500-seed restudy, three environments | `dev/runs/step11-release-500-*.txt`; `11-restudy.md` |
+| 12 | The page rebuilt; the comparison saved unlinked; assumptions and history moved to the replication page; three wording fixes; attribution | `12-page.md` |
+| 14 | Private ESPs pass the conversion premium to BU customers as lower prices; their workers paid like profit-share workers (Duke's correction) | `SURP.priv 'prices'`; `v5-1-private-esp-correction.md` |
+| 15 | Creative output counted at market value; community capacity within a year, its borrowed capital charged; ESP conversion capped by capacity | `PROD.match 'market'`, `PROD.speed 'oneyear'`; `v5-2-creative-output-reading.md` |
+| 16 | The spending layer: the programme's spending fills recession losses at a sourced multiplier | `MULT`; `v5-3-spending-layer.md` |
+| 17 | Wider public costs avoided: prisons, hospital and psychiatric care | `avoidWide`; `v5-4-public-costs.md` |
+| 18 | v5.0's main row includes steps 14-16; the 500-seed panel regenerated | `REL_V5`; `v5-5-restudy.md` |
+
+### Headline (500 paired seeds; release row against no programme)
+
+| Environment | Below 30 days of basic living | Below the cost of living | Too little wealth, year 20 | Programme inflation | Too little wealth if every Source dollar were backed (H1) |
+|---|---|---|---|---|---|
+| Reference | 18.7% vs 46.7% | 22.0% vs 55.2% | 35.7% vs 52.0% | 34.9% | 15.4% |
+| Adverse | 33.1% vs 60.0% | 42.1% vs 78.2% | 87.1% vs 82.6% | 45.6% | 52.5% |
+| Stress | 54.9% vs 60.0% | 65.6% vs 78.2% | 90.6% vs 82.6% | 23.8% | 72.6% |
+
+The gain is confirmed on all three measures at reference; in Adverse and Stress more adults end with too little wealth than with no programme. See `dev/reports/v5-5-restudy.md` (session 30's figures, before Duke's four items, are in `11-restudy.md`).
+
+### Checks
+
+`node harness.js validate`, `node harness.js unit` (new suites: surp, prod, src, join, cost, oct, spend, avoid, priv, v5Prod, mult, avoidWide) and `node domtest.js` (97 checks; phase 11 rewritten for the new front door, phase 12 new). With every new switch off, the v4.22 engine's outputs are byte-identical (full-output diffs of the testbed sections and validate after each step).
 
 ## v4.22 Release Notes
 
@@ -383,7 +429,7 @@ Breakeven additionality: the smallest share of conversion-created currency that 
 |---|---|---|
 | Full Integration | 0.964 / 0.837 | 0.989 / 0.966 |
 | Adverse Environment | none / 0.900 | 0.994 / 0.975 |
-| Stress Test | 0.871 / 0.548 | 0.979 / 0.936 |
+| Stress Test | 54.9% vs 60.0% | 65.6% vs 78.2% | 90.6% vs 82.6% | 23.8% | 72.6% |
 
 - The 95% intervals are within ±0.004. A 5,000-agent check (50 seeds) gives the same Full Integration figures.
 - "None": at a = 1 the Adverse Environment still has 0.52 point a year from PTH appreciation credited as cash (N13). Counted as matched, the engine breakeven is 0.892.

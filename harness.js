@@ -309,6 +309,203 @@ var ESP_GOLD = (Math.sqrt(5) - 1)/2;
 var ESS = null;
 function esNewAcc(){ return {accBU:0, ownBU:0, poolPaid:0, alloc:0, conv:0, ret:0, retNon:0, retPar:0, retCap:0, retWage:0, retNet:0, gross:0, tax:0, prem:0, rateXbu:0,
   wkY:0, wkY1:0, wage:0, partWkY:0, tk:0, capBind:0, maxShare:0, sv:0}; }
+/* Plan step 1 (Oct 1, 2026; s40; dev/background/N1-design-esp-surplus.md, decisions d97-d106 and dev/DECISIONS.md): THE ESP SURPLUS
+ * SPLIT, in place of today's stand-in (the ESP's own premium paid next year to every adult by wage). Hub-spec (framework) model only;
+ * SURP = null (the default) leaves every run bit-identical (full-output diffs of projcore, esp, match and a5; `unit` checks it). When an
+ * object, each year the ESP's own premium from last year (FWS.prev.bizNet: the BU it kept and the payroll BU returned to it, converted
+ * at FW.bizRate under the progressive tax, less face value; d97) is split:
+ *  priv  'owners' (default; Duke, Oct 1: owners keep all of a private business's earnings): the premium earned on BU that PTF members
+ *        spent last year is the PTFs' and is split as below; the rest is private ESPs' and is paid in dollars to owners, every adult
+ *        in proportion to positive start-of-year wealth (the model has no firms or shares; wealth stands in for ownership). An
+ *        unconditional dollar: one income effect (rho). 'same' (d102): one split for every ESP.
+ *        'prices' (plan step 14, Oct 2, 2026; Duke's correction d140, dev/reports/v5-1-private-esp-correction.md): a private ESP
+ *        passes its premium to the customers who paid it in BU as a lower BU price and stays revenue neutral (Duke: a $9/$12/$15
+ *        menu becomes $3/$4/$5 in BU at 3x); nothing goes to owners. Owners compete for workers, so participating private-ESP
+ *        workers are paid what a profit-share worker earns: the private premium's profit-share fraction (the PTFs' this phase) joins
+ *        the profit share (the model has no firms, so the match is funded from the premium itself; every dollar stays accounted),
+ *        and the rest is the private price pool. It is shared among participants who are not PTF members (the BU spent at private
+ *        ESPs, by the same proxy that sizes the PTFs' share) in proportion to the BU each spent last year, capped at their own
+ *        essentials; the rest carries to next year. BU buy the discounted essentials first; the BU the cut frees expire as usual.
+ *  privWk 'match' (default) as above; 'none': the whole private premium becomes lower prices (sensitivity row).
+ *  p1,p2 shares [price cuts, reinvestment, profit share] in phase 1 (until PTF capacity is reached) and phase 2 (S2, S3). Shares that
+ *        sum below 1 leave a remainder paid as today's stand-in (by wage to every adult), for the "each part alone" rows.
+ *  K     capacity: phase 2 starts the year after cumulative reinvestment per adult, in year-0 dollars, reaches K (d101: $18,862, BEA
+ *        Fixed Assets Table 3.1ESI 2025 net stock of food and beverage stores, food services and utilities / Census adults 18+, 2025).
+ *        Infinity = never. swYear (a number): phase 2 from that year on, whatever the capital account (the fixed-year rows).
+ *  cust  who gets the price cuts: 'auto' (default) = 'ptf' under priv 'owners' (the PTFs' cuts reach the PTFs' customers, read as PTF
+ *        members, the same proxy that sizes the PTFs' share) and 'all' under 'same' (d98); 'all' every adult; 'pp' participants and
+ *        PTF members; 'ptf' PTF members; 'part' participants. Shared in proportion to each customer's essentials at own prices
+ *        (basket x essentials share x the PTF and PTH factors), one uniform cut delta = price pool / that sum, capped at 1; the rest
+ *        carries to next year's price pool.
+ *  bu    'one' (d99): one price for BU and cash; a participant's BU buy the discounted essentials first, and the BU a cut frees expire
+ *        and go to project hiring like every expired BU. 'cash': the cut applies to cash purchases only (no BU freed).
+ *  rv    'capital' (d100): reinvestment goes to an ESP capital account no household receives (its effect on supply is plan step 2).
+ *        'price': the reinvestment share is spent as price cuts (no capital is built, so phase 1 lasts the run).
+ *  wk    'espPart' (default from the step-11 restudy; Duke's answer recorded in the project ledger, s40): the profit share is paid in
+ *        dollars to ESP workers who take part (ESP payroll's workforce, d72), by last year's wage; it is earned, so it enters the wage
+ *        elasticity as a raise (1 + share / last year's wage) with no income effect. 'esp' (d104's earlier default, used in steps 1-9):
+ *        every ESP worker.
+ * Accounting (d105): price cuts used, the profit share, reinvestment and the owners' dollars are parts of the ESP's conversion premium,
+ * counted as conversion in the testbed (financed by the contribution under tax financing; created at a under money and hybrid). The
+ * design-neutral BLEI gate keeps counting the BU a participant would have spent without the cut (price cuts enter no design's neutral
+ * BLEI). No RNG is drawn in any SURP step (CRN holds). SPS: per-run state, reset at yr 0; SPS.acc tallies flows in year-0 dollars. */
+var SURP = null;
+var SURP_DEFAULTS = {p1:[1/3, 1/3, 1/3], p2:[0.6, 0, 0.4], K:18862, swYear:null, cust:'auto', bu:'one', rv:'capital', priv:'owners', wk:'espPart', privWk:'match'};  /* wk 'espPart': Duke's answer (ledger, s40): only participating ESP workers share; applied from the step-11 restudy on (steps 1-9 ran 'esp', d104's earlier default) */
+var SPS = null;
+/* Plan step 2 (Oct 1, 2026; design default 1; dev/reports/02-production-side.md): THE PRODUCTION SIDE, the new output that backs the BU.
+ * Hub-spec (framework) model only; PROD = null (the default) leaves every run bit-identical (full-output diffs; `unit`). When an object:
+ *  cap   'ptf' (default): PTF capacity. The PTFs can serve a share c of the population: c = c0 + the ESP capital account per adult / K
+ *        (SURP.K, d101), capped at 1, where c0 is the PTF members' share at the start of year 0 (the PTFs that already exist). An adult
+ *        joins PTF (Bass adoption or SZH induction, with the draws the engine already makes) only while PTF members are fewer than
+ *        c x adults; no member is ever removed. Reinvestment in year t serves customers from year t + 1. With the split on, phase 2
+ *        starts when c reaches 1 (enough PTFs to serve demand, S3). 'none': PTF reach is unlimited, as before.
+ *  match 'face' (default): project work is output valued at the cost of the hours it pays for, the contract pay (the BU's face
+ *        value; hours = project BU converted / the contract pay); the conversion paid above that is a reward, not output. 'own': the
+ *        hours valued at the worker's own market wage (more output for the many project workers paid above the contract rate, so
+ *        the less cautious reading). The ESP split's reinvestment is output at face value (capital
+ *        goods). Neither adds essentials supply. Both enter the price module only where conversion is created money (money and
+ *        hybrid financing): unmatched money = (1 - a) x (conversion - matched output), so H1 (a = 1) stays a sensitivity row.
+ *  mat   materials bought per dollar of project labour (0: the model has no materials; a stated limit).
+ * No RNG is drawn in any PROD step (adoption reads the draws the engine makes for every agent-year). PDS: per-run state. */
+var PROD = null;
+var PROD_DEFAULTS = {cap:'ptf', match:'face', mat:0, speed:'reinvest'};
+/* Plan step 15 (Oct 2, 2026; Duke's answers d137-d139; dev/reports/v5-2-creative-output-reading.md). Two more PROD options:
+ *  match 'market' (Duke's reading, d138): a creative project offers its output to members far below the market price and converts the
+ *        BU it receives at its earned rate, so its dollar income is about what the market would pay (revenue neutral). The whole project
+ *        payout (the elevated part included) counts as output, beyond essentials. The model's project hours are the work shown: no hours,
+ *        no payout. 'face' (session 30's rule) stays the cautious other reading; a = 1 (H1) the optimistic row.
+ *  speed 'oneyear' (Duke's answer d137, the main run): PTF capacity grows within a year: the adults the capacity limit turned away last
+ *        year (draws the engine already makes) are served this year. Capacity reinvestment has not paid for is borrowed and charged every
+ *        year at depreciation plus real interest, paid from the PTFs' premium before the split (any shortfall carries). 'reinvest'
+ *        (session 30): capacity grows only as reinvestment pays for it (the 5-year rule; the labelled other reading).
+ * The charge (real, on capital in year-0 dollars revalued with the price level):
+ *  PROD_CAP_DEP 4.528%: BEA Fixed Assets Table 3.4ESI, current-cost depreciation 2025 (utilities $166,748m, food and beverage stores
+ *        $24,478m, food services and drinking places $33,202m; lines 9, 45, 95) over the mean of Table 3.1ESI net stock, yearend 2024 and
+ *        2025 ($4,823,935m and $5,088,349m) (Section3All_xls.xlsx, file created Sep 28, 2026).
+ *  PROD_CAP_INT 3.668%: a real corporate borrowing rate, 2025 annual means from FRED: Moody's Baa yield 5.998% (BAA) less the 10-year
+ *        Treasury 4.293% (DGS10) plus the 10-year TIPS yield 1.963% (DFII10). The depreciation part buys replacement capital (output,
+ *        like reinvestment); the interest part goes to lenders the model does not have (counted as conversion, unmatched; a stated limit).
+ * ESP octave caps (d139): BU can only buy essentials adults already consume, which ESPs already supply, so the BU an ESP converts never
+ * exceed its throughput; the cap holds by construction (v5ProdUnitSuite checks it). Individuals and Collectives have no cap (PROJ.cap
+ * false, d64), and every expired BU already pays project work (PROJ.share 1), the route Duke's "6 expired BUs" describes. */
+/* Plan step 16 (Oct 2, 2026; dev/reports/v5-3-spending-layer.md): THE SPENDING LAYER. Spending at businesses raises output and jobs where
+ * there is idle capacity. MULT = null (the default) leaves every run bit-identical. When an object (testbed, Source financing only):
+ *  push  the programme's new spending: last year's net Source payout (BU spent plus conversion paid, less the conversion tax kept), in
+ *        current dollars (one-year lag; it is known at the start of the year). The multiplier is per dollar of transfer, so it already
+ *        includes how much of a transfer is spent (Parker et al. 2013: 50-90% within a quarter, for context).
+ *  m     output per dollar of push in a recession year: 1.5 (main; the middle of CBO's 0.8-2.2 for transfers to individuals, Estimated
+ *        Impact of the American Recovery and Reinvestment Act, output multipliers table; the low end of Auerbach and Gorodnichenko 2012,
+ *        AEJ: Economic Policy 4(2), 1.5-2 in recessions); 0.8 (low; CBO's low end, in line with Ramey and Zubairy 2018, JPE 126(2),
+ *        multipliers below 1 with or without slack); 2.2 (high; CBO's high end).
+ *  Idle capacity: only the income a recession takes away (the model's recession path). Outside recessions the model has no slack (no
+ *        unemployment beyond what workers choose), so the layer adds nothing there and the published normal-times multipliers (0-0.5)
+ *        never apply; spending above capacity goes to prices exactly as before. Automation's wage losses are structural, not idle demand,
+ *        and are not counted (a stated limit).
+ *  The wages restored = min(labour share x m x push, the recession's wage loss); they reach every adult in proportion to what the
+ *        recession took from them (in the model everyone loses the same share), by raising the year's income multiplier. Labour share
+ *        0.5079: compensation of employees over gross domestic income, 2025 (BEA NIPA via FRED COE and GDI, sums of the four quarters).
+ *        The non-labour part of the added output is not paid to anyone (the model has no firms; a stated limit). The restored wages raise
+ *        the output the price rule divides by, so they slow the created-money price rise; nothing else changes.
+ * No RNG is drawn. MLS: per-run state (push, and per year the fill and wages restored). */
+var MULT = null, MULT_DEFAULTS = {m:1.5}, MLS = null, MULT_LS = 62784.912/123630.857;
+var PROD_CAP_DEP = 224428/((4823935 + 5088349)/2), PROD_CAP_INT = (5.998 - 4.293 + 1.963)/100;
+var PDS = null;
+/* Plan step 4 (Oct 1, 2026; design default 3; dev/reports/04-joining.md): JOINING AND LEAVING. Hub-spec (framework) model only; JOIN =
+ * null (the default) leaves every run bit-identical. When an object, from year 1 each adult faces open enrolment at the start of the year
+ * (before any participant list is read): an adult joins when the BU they would use this year, min(12 x effective BU, their essentials at
+ * own prices), is at least what taking part costs them, and a participant leaves when it is less, after a minimum stay (stay years since
+ * they last joined); rejoining is allowed and there is no fee.
+ *  cost  'revealed' (default; a modelling assumption): the cost of taking part (time, obligations) is read off the year-0 choice. Adult i's
+ *        cost is 12 x BU x uCCO_i / partRate in year-0 dollars, moved with the basket price level: at year 0 this reproduces the model's
+ *        participation rule exactly (an adult whose BU cover 12 months of essentials takes part iff uCCO < partRate), and later choices move
+ *        only as the BU's use value moves (inflation, COLA, price cuts, membership). 'none': taking part costs nothing (every adult joins).
+ *        'nominal': the same cost fixed in dollars, so inflation does not raise it.
+ *  stay  the minimum stay in years (2; 1 and 5 swept).
+ * Emergency enrolment on shocks is unchanged. The testbed's groups stay the adults who took part at year 0 (the same adults in every row).
+ * No RNG is drawn. JNS: per-run state. */
+/* Plan step 5 (Oct 1, 2026; design default 5; dev/reports/05-ptf-pth-costs.md): THE RUNNING COSTS OF COMMUNITY BUSINESSES (PTF) AND THE
+ * CAPITAL OF COMMUNITY HOUSING (PTH), from sourced figures. Testbed accounting only (no agent's resources change); COST = null (the default)
+ * leaves every run bit-identical. When an object:
+ *  PTF  PTF capital comes from the ESP split's reinvestment account (steps 1-2), so a PTF need not earn a return on capital and can price at
+ *       running cost: conventional price less net operating surplus (gross operating surplus less depreciation; it still pays wages, inputs,
+ *       taxes and depreciation). Net operating surplus per dollar of sales, 2025 (BEA GDP by industry, Components of Value Added TVA113-A
+ *       and Gross Output TGO105-A, released Sep 30, 2026; BEA Fixed Assets Table 3.4ESI depreciation): food and beverage stores 9.29% of
+ *       gross output x 28.8% gross margin on sales (Census Annual Retail Trade Survey, gross margin as a percentage of sales, 2022) = 2.68%;
+ *       food services 7.60%; utilities 20.32%. Weighted by 2025 personal consumption (BEA NIPA Table 2.4.5: food off premises $1,524.0bn,
+ *       food services $1,294.2bn; housing $3,326.3bn, household utilities $487.7bn): 4.94% of the food component (food) and 20.32% x 12.79%
+ *       = 2.60% of the housing component (util). That much of each PTF member's discount is not a transfer: it is not counted as programme
+ *       cost or financed. The rest of the discount (the model's 12% of the basket, more with SZH) is a running subsidy and is counted as now.
+ *  PTH  community housing capital: BEA Fixed Assets Table 5.1, tenant-occupied residential net stock 2025 $7,197.7bn / 46.14 million renter
+ *       households (Census Housing Vacancy Survey, Table 7, 2025) = $156,000 per rented home (structures; land excluded). Net operating
+ *       surplus of the housing industry is 54.7% of its output (BEA 2025: gross operating surplus $2,655.4bn less residential depreciation
+ *       $824.9bn, over output $3,345.1bn), so PTH's 35% cut fits inside the return on capital a PTH need not pay: residents' rent still
+ *       covers running costs, taxes and depreciation. The cost of PTH is the return forgone on its capital, which is the cut itself, as the
+ *       testbed already counts it (counting the capital outlay as well would count the same cost twice). Reported, not changed.
+ * "Price cuts free" (every PTF and PTH cut treated as added capacity, not a transfer) is the testbed's eP = 1, a sensitivity row. */
+/* Plan step 6 (Oct 1, 2026; design default 4; dev/reports/06-octave-rule.md): THE OCTAVE RULE. Today's rule stays the default: each year a
+ * participant below the top octave advances with probability 1 - exp(-lambda x FBS), where FBS is their monthly financial bandwidth (income
+ * plus BU less the basic cost of living and extractive costs), i.e. advancement gated by financial stability. OCT = null (the default) leaves
+ * every run bit-identical. OCT {gap:N}: the slower-advancement sensitivity, at most one octave per N years (an advance needs N years since the
+ * participant's last advance, or since year 0). Hub-spec (framework) model only. The advancement draw is made every year as before (CRN). */
+/* Plan step 7 (Oct 1, 2026; dev/reports/07-spending-rule.md): THE SPENDING RULE. The page's engine saves every dollar above the cost of living;
+ * the testbed's profile (D1, Sep 26) consumes 0.9 of all cash surplus, a placeholder. SPEND_SOURCED is the share of cash surplus consumed that
+ * makes the no-programme Baseline's saving rate (wages less outlays, where outlays are the basket actually consumed plus surplus consumed, over
+ * wages; reference settings, testbed profile, seeds 1-100) equal the US personal saving rate in 2025, 5.4% of disposable personal income (BEA
+ * NIPA Table 2.1, line 35, released Sep 30, 2026). Derived by bisection (harness `spend` section prints the check); 0.554 matches 2024's
+ * 6.3%. It is derived once from a primary source on the no-programme run, not tuned to any programme result. A testbed row uses it when its
+ * options carry sc (a number: the share); a study-level sc (tbStudy's options) applies to the supply path and every row, Baseline included. */
+var SPEND_SOURCED = 0.593, SPEND_2024 = 0.554;
+/* Plan step 18 (Oct 2, 2026): the v5.0 release row's switches beyond session 30's: private ESPs pass their premium to BU customers (step 14),
+ * creative output at market value and capacity within a year (step 15), the spending layer (step 16). Read by the testbed's release section and the page. */
+var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}};
+/* Plan step 9 (Oct 1, 2026; dev/reports/09-avoided-costs.md): PUBLIC COSTS OF POVERTY AVOIDED, reported beside the programme's cost (no feedback
+ * into the model). Homelessness (with the health care and justice costs that come with it): the model's extreme-poverty overlay (v4.18: HUD
+ * 2025 AHAR point-in-time rate, scaled by housing distress against year 0) gives unhoused person-years; each is costed at two sourced ends:
+ *  low   emergency-shelter cost only: $581 a month for an individual (Des Moines; Spellman et al., Costs Associated with First-Time
+ *        Homelessness for Families and Individuals, HUD/Abt Associates, 2010; 2009 dollars) x 12 x CPI-U 321.943/214.537 = $10,462 (2025 $).
+ *  high  every public cost of homeless residents: $520 million a year (Santa Clara County, 2007-2012; health care 53%, justice 34%; Flaming,
+ *        Toros and Burns, Home Not Found, Economic Roundtable, 2015) / 7,631 homeless people counted in January 2013 (Santa Clara County
+ *        Homeless Census) x CPI-U 321.943/218.056 (2010) = $100,608 (2025 $) per homeless person-year. High because it counts the costs of
+ *        everyone homeless at any time in the year against a one-night count, and the costliest users dominate.
+ * Health care and crime among adults who are poor but housed are not costed: no primary source in hand gives a causal public cost per poor
+ * adult-year (stated in the report as a limit, with the direction of the omission: it understates avoided costs). */
+/* Plan step 17 (Oct 2, 2026; dev/reports/v5-4-public-costs.md): WIDER PUBLIC COSTS OF POVERTY AVOIDED, reported beside the programme's cost
+ * (no feedback into the model; it changes no adult's resources). Counted only where a causal estimate of income's effect exists; zero main
+ * where none does; low / main / high. All in 2025 dollars per adult-year, from two paired measures against no programme: the poverty-gap
+ * dollars closed (person-year FGT1 x the cost-of-living line, year-0 = 2025 dollars) and the person-years lifted above the cost of living.
+ *  justice  Deshpande and Mueller-Smith (2022, QJE 137(4)): each youth removed from SSI saved the government $37,700 in SSI over two
+ *           decades and created $30,200 in incarceration and $10,800 in police and court costs, i.e. $0.80 and $0.29 per dollar of
+ *           income withdrawn (both in the same dollars). Their sample's annual incarceration rate is 4.7% (control mean, ages 18-38);
+ *           US adults' is 0.70% (BJS, Correctional Populations in the United States, 2022: 1,827,600 in prisons and jails at yearend /
+ *           261.5 million adults, Census 2022), so the main figure scales incarceration by 0.70/4.7 and leaves police and courts out
+ *           (mostly fixed salaries); high: the study's own $1.09 per dollar; low: 0 (the effect may not carry to other adults). Applied to
+ *           poverty-gap dollars closed (the study's income changes were up to about $10,000 a year; larger gaps are a stated limit).
+ *  hospital Forget (2011, Canadian Public Policy 37(3)): a guaranteed income cut hospitalisation by 8.5%. Applied to person-years lifted
+ *           above the cost of living: 8.5% x stays per person-year (35.8m / 325.1m, HCUP Statistical Brief 261, 2017) x cost per stay
+ *           ($434.2bn / 35.8m) x CPI-U 2025/2017 (321.943/245.120) x the public share of hospital costs (Medicare 46.9% + Medicaid 19.4%,
+ *           same brief). Low: 0 (one study, another country and decade); high: the same as main.
+ *  psych    state psychiatric hospitals, outside HCUP's community hospitals: $14.8bn of state mental health agency spending, FY2024 (NRI),
+ *           over 340.1m residents (Census 2024), x Forget's 8.5%, per person-year lifted. Low 0.
+ *  er       emergency visits: no causal estimate for adults' income, so 0 main; high: Forget's 8.5% x treat-and-release visits per person
+ *           (107.4m / 332.0m, HCUP Statistical Brief 311, 2021) x $750 a visit x CPI-U 2025/2021 (321.943/270.970) x the public share.
+ *  Not costed: child welfare (the model has no children yet), ambulances (no separate source), and the Alaska dividend's short-run rise in
+ *  substance-related incidents (Watson, Guettabi and Reimer 2020), which would offset some savings. */
+var AVOID_WIDE = (function(){ var pub = 0.469 + 0.194, rate = 0.0070/0.047;
+  return {jMain:rate*30200/37700, jHigh:(30200 + 10800)/37700, hosp:0.085*(35.8/325.1)*(434.2e9/35.8e6)*321.943/245.120*pub, psych:0.085*14.8e9/340.1e6,
+    erHigh:0.085*(107.4/332.0)*750*321.943/270.970*pub}; })();
+function avoidWide(gap, lift){  /* gap: poverty-gap dollars closed per adult-year; lift: share of person-years lifted above the cost of living */
+  var g = Math.max(0, gap), l = Math.max(0, lift), W = AVOID_WIDE;
+  return {low:0, main:g*W.jMain + l*(W.hosp + W.psych), high:g*W.jHigh + l*(W.hosp + W.psych + W.erHigh), jail:g*W.jMain, health:l*(W.hosp + W.psych)}; }
+var AVOID_HOMELESS = {low:581*12*321.943/214.537, high:520e6/7631*321.943/218.056};
+var OCT = null;
+var OCT_DEFAULTS = {gap:3};
+var COST = null;
+var COST_DEFAULTS = {food:0.0494, util:0.0260};
+var JOIN = null;
+var JOIN_DEFAULTS = {cost:'revealed', stay:2};
+var JNS = null;
+function spNewAcc(){ return {pool:0, own:0, ptf:0, rest:0, pricePool:0, cut:0, cutN:0, cutP:0, freed:0, cash:0, carry:0, profit:0, profitN:0, reinv:0, wkY:0, wkY1:0,
+  d1:0, n1:0, d2:0, n2:0, non:0, yrs:0}; }
 /* PRICE (A2 issuance and price module): null = off (index.html). When an object, runYear() reprices the basket by
  * PRICE.bIdx (the endogenous index, set each year by priceRun from the previous year's flows), reads COLA off the
  * endogenous headline rate, indexes wages to P_G by PRICE.wIdx, and accumulates the year's flows into PRICE.acc.
@@ -379,7 +576,7 @@ function setRestudy(o){ var old = {THETA_GATE:THETA_GATE, PTH_MODE:PTH_MODE, DIS
  *    endowment's annuity value, against the agent's own cost (gross basket less in-kind cuts). */
 var TB = null;
 var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true};
-function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0,
+function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, convM:0, buIss:0, ctax:0, cutFree:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0,
   bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0}; }  /* session 19 (s38): business premium and ESP payroll by group, years 1-19 (reporting only) */
 function tbYear(p, colaF){
   var s = p.tb;
@@ -452,12 +649,13 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   TB.xIdx = idx;  /* d26: the contribution threshold X is in year-0 dollars, indexed to the basket with a one-year lag */
   C.n++; C.idx = idx; C.E += E; C.cash += a.yrTbCash; C.tax += a.yrTax; C.base += Math.max(0, E - y.X);
   if (yr === 0 && a._tbEl) C.endow += y.W;
-  var buR = Math.max(0, mlc*(cfPreCCO - cf) - tbG);
-  C.bu += buR; C.conv += conv; C.pjg += a.yrPjGift || 0; a.yrPjGift = 0; C.cutPT += tbPT; C.cutG += tbG; C.pthLiq += a._tbPthNow || 0;
+  var spCut = a._spCutY || 0, buR = Math.max(0, mlc*(cfPreCCO - cf) - tbG - spCut);  /* plan step 1 (d105): the split's price cut is conversion premium, not BU relief */
+  if (a._csFree){ C.cutFree += a._csFree; a._csFree = 0; }  /* plan step 5 */
+  C.bu += buR; C.conv += conv + spCut; if (a._pdM){ C.convM += a._pdM; a._pdM = 0; }  /* plan step 2: matched project output */ C.pjg += a.yrPjGift || 0; a.yrPjGift = 0; C.cutPT += tbPT; C.cutG += tbG; C.pthLiq += a._tbPthNow || 0;
   /* Session 7 (A5 targeting share): program dollars this agent received this year (cash, the endowment's annuity value, BU relief,
    * conversion, price-cut dollars, PTH liquid appreciation; not capital), and the part that closes the agent's shortfall before
    * transfers: the gross basket less wage earnings. Reporting only. */
-  var pd = a.yrTbCash + (a._tbEl ? y.W/y.T : 0) + buR + conv + tbPT + tbG + (a._tbPthNow || 0);
+  var pd = a.yrTbCash + (a._tbEl ? y.W/y.T : 0) + buR + conv + spCut + tbPT + tbG + (a._tbPthNow || 0);
   C.pd += pd; C.tgt += Math.min(pd, Math.max(0, mlc - E));
   if (y.gcap && a._tbU < y.gcov) C.cap += y.gcap*idx;
   var inc = E + conv + (a.yrUbiUSD || 0) + a.yrTbCash - a.yrTax + (a._tbEl ? y.W/y.T : 0), g = Math.max(0, costUSD - inc)/mlc;
@@ -597,9 +795,19 @@ function runYear(agentSet,yr,p,recSt){
   var dollarCost=CFG.BASE_DAILY_COST*365*Math.pow(1+inflRate,yr);
   if(PRICE)dollarCost*=PRICE.bIdx;  // session 2: endogenous basket index (price module only)
   var popShock=recSt.active?recSt.incomeMultiplier:1.0;
+  if(MULT&&TB&&p.tb){if(yr===0||!MLS)MLS={push:0,y:[]};var mlFill=0,mlLoss=0,mlRest=0;  // plan step 16: the spending layer (testbed only; no RNG)
+    if(recSt.active&&popShock<1&&MLS.push>0){var mlW=0;agentSet.forEach(function(a){if(!isNaN(a.wage)&&a.wage>0)mlW+=a.wage*12*CFG.WAGE_TO_USD;});mlLoss=(1-popShock)*mlW;
+      if(mlLoss>0){mlRest=Math.min(mlLoss,MULT_LS*MULT.m*MLS.push);mlFill=mlRest/mlLoss;popShock+=(1-popShock)*mlFill;}}
+    MLS.y[yr]={fill:mlFill,loss:mlLoss,rest:mlRest,push:MLS.push};}
   var ptfLiveCount=0,ptfLiveTotal=agentSet.length;
   if(p.ptf&&p.ptfCap){agentSet.forEach(function(a){if(a.inPTF)ptfLiveCount++;});}
-  function ptfCapAllows(){return !p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare;}
+  var PDON=!!PROD&&CONVERSION_MODEL==='framework'&&!!p.ptf&&PROD.cap==='ptf',pdCap=1,pdLive=0;  /* plan step 2: PTF capacity (no RNG) */
+  if(PDON){if(yr===0||!PDS){var pdN0=0;agentSet.forEach(function(a){if(a.inPTF)pdN0++;});PDS={c0:pdN0/Math.max(1,agentSet.length),y:[]};}
+    var pdK=SURP?SURP.K:Infinity,pdA=(yr>0&&SURP&&SPS)?SPS.capPA:0;pdCap=pdK<=0?1:Math.min(1,PDS.c0+pdA/pdK);
+    agentSet.forEach(function(a){if(a.inPTF)pdLive++;});
+    var pdOwn=pdCap,pdBor=0;if(PROD.speed==='oneyear'){if(yr>0&&pdK<Infinity&&pdK>0){pdCap=Math.min(1,Math.max(pdOwn,(pdLive+(PDS.blk||0))/Math.max(1,agentSet.length)));pdBor=Math.max(0,pdCap-pdOwn)*pdK;}PDS.blk=0;PDS.borPA=pdBor;}  // plan step 15 (d137): last year's unmet demand is served this year; the capacity reinvestment has not paid for is borrowed (year-0 $ per adult)
+    PDS.y[yr]={cap:pdCap,mem:pdLive/Math.max(1,agentSet.length),own:pdOwn,bor:pdBor};}
+  function ptfCapAllows(){return (!p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare)&&(!PDON||pdLive<ptfLiveTotal*pdCap);}
   var popAIDisp=0;
   if(p.automation){
     if(yr>=CFG.AI_DISPLACEMENT_YEAR_2)popAIDisp=CFG.AI_DISPLACEMENT_RATE_1*(CFG.AI_DISPLACEMENT_YEAR_2-CFG.AI_DISPLACEMENT_YEAR_1)+CFG.AI_DISPLACEMENT_RATE_2*(yr-CFG.AI_DISPLACEMENT_YEAR_2+1);
@@ -637,6 +845,20 @@ function runYear(agentSet,yr,p,recSt){
   if(PRICE){var pmFull=Math.pow(1+inflRate,yr)*PRICE.bIdx;if(p.cola&&pmFull/PRICE.lastFull-1>(p.colaThresh||0))PRICE.colaLevel=pmFull;PRICE.lastFull=pmFull;colaF=p.cola?PRICE.colaLevel:1;}
   var buEff=p.bu*stabM*colaF;
   var tbY=(TB&&p.tb)?tbYear(p,colaF):null;  // session 6 (A4 testbed): null unless TB and p.tb are both set (harness-only; no RNG)
+  if(JOIN&&CONVERSION_MODEL==='framework'&&p.ccoOn){  /* plan step 4: open enrolment (no RNG) */
+    if(yr===0||!JNS){JNS={y:[],join:0,leave:0};agentSet.forEach(function(a){a._jnY=0;});}
+    var jnN=0,jnJ=0,jnL=0;
+    if(yr>0){var jnIdx=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1),jnM=CFG.LIVING_WAGE_ANNUAL*jnIdx,jnE=0,jnTx=DISC_BASE==='pretax';
+      CFG.ESSENTIALS.forEach(function(k){jnE+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});if(PRICE)jnE/=PRICE.bIdx;
+      var jnF=CFG.BASKET.food*(PRICE?PRICE.comp.food/PRICE.bIdx:1),jnH=CFG.BASKET.housing*(PRICE?PRICE.comp.housing/PRICE.bIdx:1),jnRs=PTH_MODE!=='basket'||DISC_BASE!=='basket';
+      agentSet.forEach(function(a){var ef=jnE,u=1;
+        if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(jnRs)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*jnF;}
+        if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*jnH*u;else ef*=0.65;}
+        var use=Math.min(12*buEff,jnM*ef),cost=JOIN.cost==='none'?0:12*p.bu*(typeof a.uCCO==='number'?a.uCCO:1)/Math.max(1e-9,p.partRate)*(JOIN.cost==='nominal'?1:jnIdx),want=p.bu>0&&use>=cost;
+        if(a.inCCO&&!want&&yr-a._jnY>=JOIN.stay){a.inCCO=false;a._jnY=yr;jnL++;}
+        else if(!a.inCCO&&want){a.inCCO=true;a._jnY=yr;jnJ++;}});}
+    agentSet.forEach(function(a){if(a.inCCO)jnN++;});JNS.join+=jnJ;JNS.leave+=jnL;JNS.y[yr]={part:jnN/Math.max(1,agentSet.length),join:jnJ,leave:jnL};
+  }
   var emergLine=(stabOn&&p.emerg)?p.partRate+Math.max(0,Math.min(1,p.emergTakeup||0))*(1-p.partRate):-1;
   var emergN=0;
   /* v4.19, Duke's decision (Option B): CCO's cost relief scales with the effective BU. Through
@@ -710,7 +932,7 @@ function runYear(agentSet,yr,p,recSt){
     if(esRet>0&&FWS.prev){  // d73-d75: the BU returned to the ESP convert at FW.bizRate this year, paid with the rest of last year's premium
       var esBT=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax,esTR=Math.min(CFG.PROG_TAX_MAX,esBT+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*CFG.PROG_RATE)),esTP=Math.min(CFG.PROG_TAX_MAX,esBT);
       var esRG=esRet*(FW.bizCap*FW.bizRate+(1-FW.bizCap)),esRT=esRet*(FW.bizCap*FW.bizRate*esTR+(1-FW.bizCap)*esTP),esRN=PATHWAY_OFF.conversion?0:esRG-esRT-esRet;
-      FWS.prev.bizNet+=esRN;esA.retNet+=esRN/esIdx;
+      FWS.prev.bizNet+=esRN;esA.retNet+=esRN/esIdx;if(tbY)TB.cur.ctax+=esRT;
       if(LEDGER){ledAdd(yr,'espRetGross',esRG);ledAdd(yr,'espRetTax',esRT);ledAdd(yr,'espRetPremium',esRN);}
     }
     if(LEDGER){ledAdd(yr,'espPoolPaid',esPool);ledAdd(yr,'espConvBU',esY.conv);ledAdd(yr,'espRetBU',esRet);}
@@ -720,6 +942,46 @@ function runYear(agentSet,yr,p,recSt){
   var rsAlt=PTH_MODE!=='basket'||DISC_BASE!=='basket';  // session 5 (d4/d5): harness-only
   var tShareCur=DISC_BASE==='pretax'?CFG.BASKET.taxes*(PRICE?PRICE.comp.taxes/PRICE.bIdx:1):0,hShareCur=CFG.BASKET.housing*(PRICE?PRICE.comp.housing/PRICE.bIdx:1);
   function discMul(c,m){return DISC_BASE==='pretax'?tShareCur+(c-tShareCur)*m:c*m;}
+  var SPON=FWON&&!!SURP,spDelta=0,spProfW=0,spRestW=0,spOwnW=0;  /* plan step 1 (Oct 1, 2026): the ESP surplus split; see SURP. No RNG is drawn in any SURP step. */
+  if(SPON){
+    if(yr===0||!SPS)SPS={capPA:0,cap:0,carry:0,carryP:0,sw:-1,acc:spNewAcc(),y:[]};
+    var spIdx=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1),spA=SPS.acc,spN=agentSet.length;
+    var spPool=FWS.prev?FWS.prev.bizNet:0,spS=(SURP.priv==='owners'||SURP.priv==='prices')?((FWS.prev&&FWS.prev.bizBU>0)?(FWS.prev.bizBUptf||0)/FWS.prev.bizBU:0):1;  // the PTFs' share: BU PTF members spent last year / all BU accepted
+    var spPh=yr===0?1:SURP.swYear!=null?(yr>=SURP.swYear?2:1):((PDON?(SURP.K<=0||PDS.c0+SPS.capPA/SURP.K>=1):SPS.capPA>=SURP.K)?2:1);if(spPh===2&&SPS.sw<0)SPS.sw=yr;  // plan step 2: with PTF capacity on, when c reaches 1  // year 0 has no pool  // d101: phase 2 the year after the capital account reaches K
+    var spSh=spPh===1?SURP.p1:SURP.p2,spPtf=spPool*spS,spOwn=spPool-spPtf,spChD=0,spChI=0;
+    if(PDON&&PROD.speed==='oneyear'){var spChDue=(PDS.borPA||0)*(PROD_CAP_DEP+PROD_CAP_INT)*spN*spIdx+(PDS.debt||0)*spIdx,spChPd=Math.min(spPtf,spChDue);PDS.debt=(spChDue-spChPd)/spIdx;spPtf-=spChPd;  // plan step 15: depreciation plus real interest on borrowed PTF capital, paid from the PTFs' premium first; any shortfall carries
+      spChD=spChPd*PROD_CAP_DEP/(PROD_CAP_DEP+PROD_CAP_INT);spChI=spChPd-spChD;if(tbY){TB.cur.conv+=spChPd;TB.cur.convM+=spChD;}if(PRICE&&PRICE.acc)PRICE.acc.conv+=spChPd;SPS.acc.chD=(SPS.acc.chD||0)+spChD/spIdx;SPS.acc.chI=(SPS.acc.chI||0)+spChI/spIdx;}
+    var spRest=spPtf*Math.max(0,1-spSh[0]-spSh[1]-spSh[2]),spCarryIn=SPS.carry;
+    var spPP=spPtf*spSh[0]+(SURP.rv==='price'?spPtf*spSh[1]:0)+SPS.carry,spRv=SURP.rv==='price'?0:spPtf*spSh[1],spPr=spPtf*spSh[2]+SPS.carryP;SPS.carryP=0;
+    var spCust=SURP.cust==='auto'?((SURP.priv==='owners'||SURP.priv==='prices')?'ptf':'all'):SURP.cust;
+    var spVOn=SURP.priv==='prices',spVW=0,spVP=0,spVSum=0,spVUsed=0;  /* plan step 14 (Oct 2, 2026; d140): private ESPs pass their premium to BU customers as lower prices; workers matched */
+    if(spVOn){if(SPS.carryV===undefined)SPS.carryV=0;spVW=SURP.privWk==='none'?0:spOwn*spSh[2];spVP=spOwn-spVW+SPS.carryV;spPr+=spVW;spOwn=0;}
+    var spMlc=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);if(PRICE)spMlc*=PRICE.bIdx;
+    var spSum=0,spWW=0,spWO=0;
+    if(!ESON)agentSet.forEach(function(a,i){if(a._esU===undefined)a._esU=((i+1)*ESP_GOLD)%1;a._esWk=a._esU<ESP_DEFAULTS.work;});  // ESP payroll off: the same workforce (d72)
+    agentSet.forEach(function(a){  // each customer's essentials at own prices, exactly as the agent loop computes them (start-of-year memberships)
+      var bp=p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief,isC=spCust==='all'||(spCust==='pp'&&((p.ccoOn&&a.inCCO)||(p.ptf&&a.inPTF)))||(spCust==='ptf'&&p.ptf&&a.inPTF)||(spCust==='part'&&p.ccoOn&&a.inCCO),e=0;
+      if(isC){var ef=eShareCur,u=1;
+        if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(rsAlt)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*fShareCur;}
+        if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*hShareCur*u;else ef*=0.65;}
+        e=spMlc*ef;if(SURP.bu==='cash'&&bp)e=Math.max(0,e-Math.min(12*buEff,e));}
+      if(spVOn){var vBu=(bp&&!(p.ptf&&a.inPTF))?Math.max(0,a._spBU||0):0,vE=0;if(vBu>0){vE=eShareCur;if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')vE-=PTH_HOUSING_CUT*hShareCur;else vE*=0.65;}vE*=spMlc;}a._spVw=vBu;a._spVE=vE;spVSum+=vBu;}
+      a._spE=e;a._spCutY=0;a._spPay=0;a._spOwn=0;a._spBU=0;a._spWk=!!a._esWk&&(SURP.wk!=='espPart'||!!(p.ccoOn&&a.inCCO));
+      spSum+=e;if(a._spWk)spWW+=Math.max(0,a._fwW||0);spWO+=Math.max(0,a.wealth);
+    });
+    spDelta=spSum>0?Math.min(1,spPP/spSum):0;var spUsed=spDelta*spSum;SPS.carry=spPP-spUsed;  // d98: one uniform cut, capped at 1; the rest carries
+    if(spVOn){agentSet.forEach(function(a){a._spV=(spVSum>0&&a._spVw>0)?Math.min(spVP*a._spVw/spVSum,a._spVE):0;spVUsed+=a._spV;});SPS.carryV=spVP-spVUsed;}  // plan step 14: shared by last year's BU spent at private ESPs, capped at own essentials; the rest carries
+    if(spWW>0)spProfW=spPr/spWW;else{SPS.carryP=spPr;spPr=0;}
+    var spRestOn=spRest>0&&FWS.prev&&FWS.prev.wSum>0;spRestW=spRestOn?Math.max(0,spRest)/FWS.prev.wSum:0;
+    if(spWO>0)spOwnW=spOwn/spWO;else{SPS.carry+=spOwn;spOwn=0;}
+    agentSet.forEach(function(a){var w=a._fwW||0;a._spOwn=spOwnW*Math.max(0,a.wealth);a._spRest=spRestOn?spRest*w/FWS.prev.wSum:0;a._spPay=(a._spWk&&spWW>0?spPr*Math.max(0,w)/spWW:0)+a._spRest+a._spOwn;});  // shares all 0 under 'same': exactly today's payout (unit)
+    SPS.cap+=spRv;SPS.capPA+=spRv/spIdx/spN;  // d100: the ESP capital account (year-0 dollars per adult for the trigger)
+    if(tbY){TB.cur.conv+=spRv;if(PROD)TB.cur.convM+=spRv;}if(PRICE&&PRICE.acc)PRICE.acc.conv+=spRv;  // plan step 2: reinvestment buys capital goods (output at face)  // d105: reinvestment is part of the conversion premium
+    spA.pool+=spPool/spIdx;spA.own+=spOwn/spIdx;if(spVOn){spA.privW=(spA.privW||0)+spVW/spIdx;spA.privP=(spA.privP||0)+(spVP-SPS.carryV)/spIdx;}spA.ptf+=spPtf/spIdx;spA.rest+=spRest/spIdx;spA.pricePool+=(spPP-spCarryIn)/spIdx;spA.reinv+=spRv/spIdx;spA.carry=SPS.carry/spIdx;
+    if(yr>0){if(spPh===1){spA.d1+=spDelta;spA.n1++;}else{spA.d2+=spDelta;spA.n2++;}spA.yrs++;}
+    SPS.y[yr]={pool:spPool,s:spS,own:spOwn,ptf:spPtf,rest:spRest,carryIn:spCarryIn,pp:spPP,sum:spSum,delta:spDelta,used:spUsed,carryOut:SPS.carry,profit:spPr,reinv:spRv,cap:SPS.cap,capPA:SPS.capPA,phase:spPh,cut:0,freed:0,paid:0,pjFreed:0,privW:spVW,privPool:spVP,privUsed:spVUsed,cutV:0,ch:spChD+spChI,chDue:(typeof spChDue==='number'?spChDue:0)};
+    if(LEDGER){ledAdd(yr,'spPool',spPool);ledAdd(yr,'spOwners',spOwn);ledAdd(yr,'spPricePool',spPP);ledAdd(yr,'spCarry',SPS.carry);ledAdd(yr,'spProfit',spPr);ledAdd(yr,'spReinvest',spRv);ledAdd(yr,'spRest',spRest);}
+  }
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
@@ -770,22 +1032,33 @@ function runYear(agentSet,yr,p,recSt){
       var essF=eShareCur;
       if(p.ptf&&a.inPTF)essF=PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fShareCur;
       if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')essF-=PTH_HOUSING_CUT*hShareCur*rsPtfU;else essF*=0.65;}  // session 5 (d4)
-      var fwBudget=12*buEff,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),fwLeft=fwBudget-fwB;
-      cf=cfPreCCO-fwB/mainLoopCostUSD;a._fwBUm=fwB/12;
+      var fwBudget=12*buEff,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),spC=0,fwB0=fwB;if(tbY)TB.cur.buIss+=fwBudget;  // plan step 3: BU the Source issues (reporting)
+      if(SPON&&a._spE>0&&spDelta>0){var spE=mainLoopCostUSD*essF;  // plan step 1 (d99): the cut lowers essentials; BU buy the discounted essentials first
+        if(SURP.bu==='cash')spC=spDelta*Math.max(0,spE-fwB);else{spC=spDelta*spE;fwB=Math.min(fwBudget,spE-spC);}
+        a._spCutY=spC;var spY=SPS.y[yr];spY.cut+=spC;spY.freed+=fwB0-fwB;SPS.acc.cut+=spC/spIdx;SPS.acc.cutP+=spC/spIdx;SPS.acc.freed+=(fwB0-fwB)/spIdx;SPS.acc.cash+=(spC-(fwB0-fwB))/spIdx;}
+      if(SPON&&a._spV>0){var vSpE=mainLoopCostUSD*essF,vC=Math.min(a._spV,Math.max(0,vSpE-spC)),vB=fwB;  // plan step 14 (d140): a private ESP's lower BU price; BU buy the discounted essentials first, the BU it frees expire
+        if(vC>0){spC+=vC;fwB=Math.min(fwBudget,vSpE-spC);a._spCutY=spC;var vY=SPS.y[yr];vY.cut+=vC;vY.cutV+=vC;vY.freed+=vB-fwB;SPS.acc.cut+=vC/spIdx;SPS.acc.cutP+=vC/spIdx;SPS.acc.cutV=(SPS.acc.cutV||0)+vC/spIdx;SPS.acc.freed+=(vB-fwB)/spIdx;SPS.acc.cash+=(vC-(vB-fwB))/spIdx;}}
+      var fwLeft=fwBudget-fwB;
+      cf=cfPreCCO-fwB/mainLoopCostUSD;if(spC)cf-=spC/mainLoopCostUSD;a._fwBUm=fwB0/12;  // the neutral BLEI gate counts the BU that would be spent without the cut (no price cut enters it)
+      if(SPON){a._spBU=fwB;if(p.ptf&&a.inPTF)FWS.next.bizBUptf=(FWS.next.bizBUptf||0)+fwB;}  // plan step 1: BU accepted by PTFs (PTF members' purchases)
+      if(SPON&&PJON)SPS.y[yr].pjFreed+=(fwB0-fwB)*PROJ.share;
       FWS.next.bizBU+=fwB;FWS.next.expiredBU+=fwLeft;FWS.next.projBU+=fwLeft*FW.directedShare;FWS.next.destroyedBU+=fwLeft*(1-FW.directedShare);
       if(PJON){PJS.next.pool+=fwLeft*PROJ.share;PJS.acc.exp+=fwLeft/pjIdx;PJS.acc.pool+=fwLeft*PROJ.share/pjIdx;}  // N1 (session 15): the same pool, paid as project hiring
       if(LEDGER){ledAdd(yr,'fwBudget',fwBudget);ledAdd(yr,'fwBUSpent',fwB);ledAdd(yr,'fwBUExpired',fwLeft);ledAdd(yr,'fwBUDirected',fwLeft*FW.directedShare);}
-    }
+    } else if(SPON&&a._spE>0&&spDelta>0){var spC2=spDelta*a._spE;cf-=spC2/mainLoopCostUSD;a._spCutY=spC2;SPS.y[yr].cut+=spC2;SPS.acc.cut+=spC2/spIdx;SPS.acc.cash+=spC2/spIdx;if(!a.inCCO)SPS.acc.cutN+=spC2/spIdx;else SPS.acc.cutP+=spC2/spIdx;}  // plan step 1: a customer without BU saves the cut in cash
     var annualWageUSD=a.wage*12*CFG.WAGE_TO_USD*incomeShock;
-    var tbG=0,tbPT=0;if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fShareCur+(p.tb.groc.housing?hShareCur:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
+    var tbG=0,tbPT=0;if(tbY&&COST&&p.ptf&&a.inPTF){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),mainLoopCostUSD*(fShareCur*COST.food+hShareCur*COST.util));a._csFreeY=a._csFree;}  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
+    if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fShareCur+(p.tb.groc.housing?hShareCur:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
     if(LABOR){  // session 4 (A3): the labor-supply response replaces this year's wage earnings (no RNG)
       var lbE0=annualWageUSD,lbBU=0,lbR=0,lbC=a._labC||0,lbU=p.ubi||0;
       if(p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){if(FWON){lbBU=fwB;lbR=fwLeft;}else lbBU=mainLoopCostUSD*(cfPreCCO-cf);}
       var lbBiz=(FWON&&FWS.prev&&FWS.prev.wSum>0)?Math.max(0,FWS.prev.bizNet)/FWS.prev.wSum:0;
       if(ESON&&ESP.rest==='esp')lbBiz=(a._esWk&&ESS.wW>0&&FWS.prev)?Math.max(0,FWS.prev.bizNet)/ESS.wW:0;  // d75 alternative: the ESP's premium reaches its own workers only
+      if(SPON)lbBiz=(a._spWk?spProfW:0)+spRestW;  // plan step 1 (d104): the profit share is a raise for ESP workers only; a remainder paid as today stays a raise for all
       var lbRaise=Math.pow(Math.max(1,a.wage/a._lwNB)*(1+lbBiz)*(ESON?1+a._esX:1),LABOR.eps-LABOR.rho);  // uncompensated: Slutsky e_u = e_c + eta, eta = -rho. Session 19: x the ESP payroll raise (earned: one elasticity, no income effect)
-      var tbQ=tbY?tbLab(a,tbY,lbE0,tbPT+tbG):null;if(tbQ)lbRaise*=tbQ.F;  // session 6: phase-out and contribution rates (one elasticity), extra unconditional dollars (one income effect)
+      var tbQ=tbY?tbLab(a,tbY,lbE0,tbPT+tbG+(SPON?a._spCutY:0)):null;if(tbQ)lbRaise*=tbQ.F;  // session 6: phase-out and contribution rates (one elasticity), extra unconditional dollars (one income effect)
       var lbInc=LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC+(tbQ?LABOR.rho*tbQ.V:0),lbDisp=LABOR.delta*lbC+(tbQ?tbQ.D:0);
+      if(SPON&&a._spOwn>0){lbInc+=LABOR.rho*a._spOwn;if(LABOR.acc)LABOR.acc.cash+=LABOR.rho*a._spOwn;}  // plan step 1: owners' dollars are unconditional (one income effect)
       annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=lbE0;  // session 8 (A5): earnings with no response, for the hours measure
       if(tbQ&&LABOR.acc)LABOR.acc.cash+=LABOR.rho*tbQ.V;
       if(LABOR.acc){var LA=LABOR.acc;LA.n++;if(a.inCCO)LA.nP++;LA.E0+=lbE0;LA.E+=annualWageUSD;LA.raise+=lbE0*(lbRaise-1);LA.cash+=LABOR.rho*lbU;LA.bu+=LABOR.rhoBU*lbBU;LA.buR+=LABOR.rhoR*lbR;
@@ -813,12 +1086,13 @@ function runYear(agentSet,yr,p,recSt){
       a._fwPayY=0;  // session 19: reporting only (the testbed's premium-by-group columns)
       if(FWS.prev&&FWS.prev.wSum>0){var fwPay=FWS.prev.bizNet*(a._fwW||0)/FWS.prev.wSum;
         if(ESON&&ESP.rest==='esp')fwPay=(a._esWk&&ESS.wW>0)?FWS.prev.bizNet*(a._fwW||0)/ESS.wW:0;  // d75 alternative (session 19): a worker cooperative
+        if(SPON){fwPay=a._spPay;SPS.y[yr].paid+=fwPay;SPS.acc.profit+=(fwPay-a._spOwn-a._spRest)/spIdx;if(!a.inCCO)SPS.acc.non+=fwPay/spIdx;if(a._spWk&&yr>0){SPS.acc.wkY1++;SPS.acc.profitN+=(fwPay-a._spOwn-a._spRest)/spIdx;}}  // plan step 1: profit share, owners' dollars and any remainder paid as today
         a.wealth+=fwPay;a.yrConvUSD+=fwPay;yrCashSurplus+=fwPay;FWS.next.bizPaid+=fwPay;a._fwPayY=fwPay;
         if(PRICE)PRICE.acc.conv+=fwPay;if(LEDGER)ledAdd(yr,'fwBizPayout',fwPay);}
       if(ESON){a._esPrY=0;if(a._esC>0){  // session 19 (s38, d73): ESP payroll BU converted at the worker's own rate; the premium over face value is conversion income
         var esTx=pjTax(p,a._esR),esG=PATHWAY_OFF.conversion?0:a._esC*a._esR*esCipB*incomeShock,esPr=PATHWAY_OFF.conversion?0:esG*(1-esTx)-a._esC;
         a.wealth+=esPr;a.yrConvUSD+=esPr;yrCashSurplus+=esPr;a._esPrY=esPr;a._esShk=incomeShock;
-        var esAc=ESS.acc;esAc.conv+=a._esC/esIdx;esAc.gross+=esG/esIdx;esAc.tax+=esG*esTx/esIdx;esAc.prem+=esPr/esIdx;esAc.rateXbu+=a._esR*a._esC/esIdx;
+        if(tbY)TB.cur.ctax+=esG*esTx;var esAc=ESS.acc;esAc.conv+=a._esC/esIdx;esAc.gross+=esG/esIdx;esAc.tax+=esG*esTx/esIdx;esAc.prem+=esPr/esIdx;esAc.rateXbu+=a._esR*a._esC/esIdx;
         if(PRICE)PRICE.acc.conv+=esPr;if(LEDGER){ledAdd(yr,'espGross',esG);ledAdd(yr,'espTax',esG*esTx);ledAdd(yr,'espPremium',esPr);}}}
       a._fwW=annualWageUSD;FWS.next.wSum+=annualWageUSD;
     }
@@ -837,7 +1111,7 @@ function runYear(agentSet,yr,p,recSt){
       if(FWS.prev&&FWS.prev.pwSum>0&&!PJON){  // N1 (session 15): project hiring replaces N2's allocation
         var fwWant=FWS.prev.projBU*(a._fwPW||0)/FWS.prev.pwSum,fwAl=Math.min(capBU,fwWant);
         var fwG=PATHWAY_OFF.conversion?0:fwAl*rateF*cipBF*incomeShock,fwN=fwG*(1-taxF);
-        a.wealth+=fwN;a.yrConvUSD+=fwN;yrCashSurplus+=fwN;totalConversion+=fwN;totalBU+=fwAl;if(LABOR)a._labCn=fwN;
+        if(tbY)TB.cur.ctax+=fwG*taxF;a.wealth+=fwN;a.yrConvUSD+=fwN;yrCashSurplus+=fwN;totalConversion+=fwN;totalBU+=fwAl;if(LABOR)a._labCn=fwN;
         FWS.next.projAlloc+=fwAl;FWS.next.projGross+=fwG;FWS.next.projTax+=fwG*taxF;FWS.next.projNet+=fwN;FWS.next.projLost+=fwWant-fwAl;
         if(PRICE)PRICE.acc.conv+=fwN;
         if(LEDGER){ledAdd(yr,'fwProjBU',fwAl);ledAdd(yr,'fwProjGross',fwG);ledAdd(yr,'fwProjTax',fwG*taxF);ledAdd(yr,'fwProjNet',fwN);ledAdd(yr,'fwProjLost',fwWant-fwAl);ledAdd(yr,'fwProjRateXbu',rateF*fwAl);}
@@ -847,9 +1121,9 @@ function runYear(agentSet,yr,p,recSt){
         var YusdF=a.wage*CFG.WAGE_TO_USD,cBasicF=(dollarCost*cfPreCCO)/12,edcF=(p.pth&&a.inPTH)?CFG.FBS_EDC_RESIDUAL_PTH:CFG.FBS_EDC_RESIDUAL_BASE;
         var fbsF=Math.max(0,YusdF+buEff-cBasicF-edcF*YusdF),lamF=(typeof a.lambda==='number'&&!isNaN(a.lambda))?a.lambda:(CFG.FBS_LAMBDA_LO+CFG.FBS_LAMBDA_HI)/2;
         if(p.cip)lamF*=(1+p.cipDemo*CFG.FBS_CIP_LAMBDA_BOOST);
-        if(uAdvance<1-Math.exp(-lamF*fbsF)&&!PATHWAY_OFF.octave)a.octave++;
+        if(uAdvance<1-Math.exp(-lamF*fbsF)&&!PATHWAY_OFF.octave&&!(OCT&&yr-(a._ocY||0)<OCT.gap)){a.octave++;if(OCT)a._ocY=yr;}  // plan step 6: OCT gap (sensitivity)
       }
-      if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&ptfCapAllows()){a.inPTF=uSzhPtfShare<p.ptfShare;if(a.inPTF&&p.ptfCap)ptfLiveCount++;}
+      if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&ptfCapAllows()){a.inPTF=uSzhPtfShare<p.ptfShare;if(a.inPTF&&p.ptfCap)ptfLiveCount++;if(a.inPTF&&PDON)pdLive++;}else if(PDON&&PROD.speed==='oneyear'&&uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&uSzhPtfShare<p.ptfShare&&(!p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare))PDS.blk++;  // plan step 15: turned away for lack of PTF capacity
     } else if(p.ccoOn&&a.inCCO){
       /* v4.14 parity fix — ported from index.html: this was a step function (decay=0 at
        * expiry=1, decay=0.7 at every other slider value, 2-6 all identical) rather than a
@@ -891,7 +1165,7 @@ function runYear(agentSet,yr,p,recSt){
         var pAdvance=1-Math.exp(-lam*fbs);
         if(uAdvance<pAdvance&&!PATHWAY_OFF.octave)a.octave++;  // v4.21: pathway switch
       }
-      if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&ptfCapAllows()){a.inPTF=uSzhPtfShare<p.ptfShare;if(a.inPTF&&p.ptfCap)ptfLiveCount++;}
+      if(uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&ptfCapAllows()){a.inPTF=uSzhPtfShare<p.ptfShare;if(a.inPTF&&p.ptfCap)ptfLiveCount++;if(a.inPTF&&PDON)pdLive++;}else if(PDON&&PROD.speed==='oneyear'&&uSzhInduce<szhPartBoost&&!a.inPTF&&p.ptf&&uSzhPtfShare<p.ptfShare&&(!p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare))PDS.blk++;  // plan step 15: turned away for lack of PTF capacity
     }
     if(PJON&&p.ccoOn&&a.inCCO){  // N1 (session 15): convert project BU (and a holder's own gift) within octave capacity; the rest is saved
       var pjA=PJS.acc,pjCapR=PROJ.cap?Math.max(0,a._pjCap-(FWON?0:spend)):Infinity,pjE=(a._pjSaved||0)+(a._pjBU||0),pjC1=Math.min(pjE,pjCapR);a._pjSaved=pjE-pjC1;pjCapR-=pjC1;
@@ -899,7 +1173,8 @@ function runYear(agentSet,yr,p,recSt){
       if(PROJ.cap&&pjC1+pjC2>Math.max(0,a._pjCap-(FWON?0:spend))+1e-6)pjA.overCap++;  // project BU fill the capacity the engine's own-spending conversion leaves (that conversion is not capped; at $1,200 BU it never reaches 12,000)
       var pjTx=pjTax(p,a._pjRu),pjG1=PATHWAY_OFF.conversion?0:pjC1*a._pjRu*pjCipB*incomeShock,pjN1=pjG1*(1-pjTx);
       var pjTg=pjTax(p,a._pjR),pjG2=PATHWAY_OFF.conversion?0:pjC2*a._pjR*pjCipB*incomeShock,pjN2=pjG2*(1-pjTg);
-      a.wealth+=pjN1+pjN2;a.yrConvUSD+=pjN1+pjN2;yrCashSurplus+=pjN1+pjN2;totalConversion+=pjN1+pjN2;totalBU+=pjC1+pjC2;
+      if(PROD&&FWON){var pdH=pjC1/pjPay,pdV=pdH*(PROD.match==='face'?pjPay:a.wage*12*CFG.WAGE_TO_USD*incomeShock/PROJ.hrsYr)*(1+(PROD.mat||0));a._pdM=PROD.match==='market'?Math.max(0,pjN1):Math.min(Math.max(0,pjN1),pdV);a._pdMy=a._pdM;a._pdNy=pjN1;a._pdVy=pdV;}  // plan step 2: project output at the cost of the hours (_pd*y: reporting only)
+      if(tbY)TB.cur.ctax+=pjG1*pjTx+pjG2*pjTg;a.wealth+=pjN1+pjN2;a.yrConvUSD+=pjN1+pjN2;yrCashSurplus+=pjN1+pjN2;totalConversion+=pjN1+pjN2;totalBU+=pjC1+pjC2;
       if(LABOR&&pjN2)a._labCn=(a._labCn||0)+pjN2;  // the holder's gift is an unconditional dollar: the rent channel
       a.yrPjGift=pjN1*pjFg+pjN2;  // d66: gift-funded proceeds, tallied so the testbed can finance them as you go or over the run (the carried share is approximate)
       if(PRICE)PRICE.acc.conv+=pjN1+pjN2;
@@ -922,7 +1197,8 @@ function runYear(agentSet,yr,p,recSt){
     } else if(a.pthTenure){
       a.pthTenure=0;
     }
-    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&ptfCapAllows()){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap){a.inPTF=true;if(p.ptfCap)ptfLiveCount++;}}
+    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&ptfCapAllows()){var ap=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap){a.inPTF=true;if(p.ptfCap)ptfLiveCount++;if(PDON)pdLive++;}}
+    else if(PDON&&PROD.speed==='oneyear'&&p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&(!p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare)){var apB=0.005+CFG.PTF_BASS_Q*ptfAdoptFrac;if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)apB+=0.015;if(uPtfAdopt<apB)PDS.blk++;}  // plan step 15: turned away for lack of PTF capacity
     if(SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='cash'){var scC=SURPLUS_CONSUMPTION_SHARE*Math.max(0,yrCashSurplus);a.wealth-=scC;if(LEDGER)ledAdd(yr,'surplusConsumed',scC);}  // session 1: harness-only
     if(PRICE){  // session 2 (D1/N5): a write-off at the floor is basket consumption that did not happen (unmet need), not spending
       var pmW=a.wealth<CFG.WEALTH_FLOOR?CFG.WEALTH_FLOOR-a.wealth:0,pmB=mainLoopCostUSD*cfPreCCO,pmU=pmB>0?Math.min(1,pmW/pmB):0,A=PRICE.acc;
@@ -938,7 +1214,7 @@ function runYear(agentSet,yr,p,recSt){
     var taxR=Math.min(CFG.PROG_TAX_MAX,bTaxB+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*CFG.PROG_RATE)),taxP=Math.min(CFG.PROG_TAX_MAX,bTaxB);
     var bzB=ESON?nx.bizBU*(1-ESP.lam):nx.bizBU;  // session 19 (d71): with ESP payroll the ESP converts the share it keeps; lam of what it accepted is next year's payroll
     nx.bizGross=bzB*(FW.bizCap*FW.bizRate+(1-FW.bizCap));nx.bizTax=bzB*(FW.bizCap*FW.bizRate*taxR+(1-FW.bizCap)*taxP);
-    nx.bizNet=PATHWAY_OFF.conversion?0:nx.bizGross-nx.bizTax-bzB;  // session 7: the conversion switch also covers business-side conversion (harness-only)
+    nx.bizNet=PATHWAY_OFF.conversion?0:nx.bizGross-nx.bizTax-bzB;if(tbY)TB.cur.ctax+=nx.bizTax;  // plan step 3: conversion tax kept by the Source (reporting)  // session 7: the conversion switch also covers business-side conversion (harness-only)
     if(LEDGER){ledAdd(yr,'fwBizGross',nx.bizGross);ledAdd(yr,'fwBizTax',nx.bizTax);ledAdd(yr,'fwBizPremium',nx.bizNet);}
     if(ESON){ESS.next={pool:nx.bizBU*ESP.lam};ESS.acc.accBU+=nx.bizBU/esIdx;ESS.acc.ownBU+=bzB/esIdx;ESS.y[yr].acc=nx.bizBU;ESS.y[yr].own=bzB;ESS.y[yr].poolNext=ESS.next.pool;
       if(LEDGER){ledAdd(yr,'espOwnBU',bzB);ledAdd(yr,'espPoolNext',ESS.next.pool);}}
@@ -2018,15 +2294,17 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null};
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
   var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0,
-    bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0};  /* session 19 (s38) */
+    bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0, convM:0, buIss:0, ctax:0, cutFree:0};  /* session 19 (s38); convM: plan step 2; buIss, ctax: plan step 3 */
   THETA_DENS = null;
+  var epD0 = housingDistressYear0(agents), epSum = 0;  /* plan step 9: unhoused person-years (reporting only) */
   var BG = tbBleiAcc();  /* session 21 (s41; i10-1): BLEI by group, every year (reporting only, no RNG) */
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
     for (var yr = 0; yr < yMax; yr++){
       PRICE.acc = newPMAcc();
       runYear(agents, yr, p, recPath ? recPath[yr] : CALM0);
-      tbBleiYear(BG, agents, p, o, yr === T - 1);  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
+      tbBleiYear(BG, agents, p, o, yr === T - 1);
+      if (!o.noEP){ var epY = extremePovertyOf(housingDistressOf(agents), epD0, p); epSum += epY ? epY.total/100 : 0; }  /* plan step 9 */  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
       var A = PRICE.acc, C = TB.cur || tbNewAcc(), d = A.n ? A.essD/A.n : 1, tauUsed = TB.tau;
       var wbInc = A.wageBonusNS - wbPrev; wbPrev = A.wageBonusNS;
       var extra = (o.floorUnmatched ? A.unmet : 0) + (1 - o.aw)*(o.awLevel ? A.wageBonus : wbInc);
@@ -2036,21 +2314,24 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       /* d66 (sessions 15-16; issue i7): the launch gift's proceeds are one-time spending. 'payg' (Duke's pick) finances them in the
        * year they are paid, like every other conversion; 'run' spreads them over the remaining years, like the endowment (d26). */
       L.pjg += C.pjg; var gRun = !!(PROJ && PROJ.giftFin === 'run');
-      var need = C.cash + L.endowTot/T + C.bu + (o.fin === 'hybrid' ? 0 : gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv) + C.cap + (1 - o.eP)*(C.cutPT + C.cutG) + C.pthLiq, U;  /* session 7 (d26): hybrid leaves conversion rewards to money creation */
+      var need = C.cash + L.endowTot/T + (o.fin === 'source' ? 0 : C.bu) + (o.fin === 'hybrid' || o.fin === 'source' ? 0 : gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv) + C.cap + (1 - o.eP)*(C.cutPT - C.cutFree + C.cutG) + C.pthLiq, U;  /* plan step 3: the Source pays every conversion (BU face value included) */  /* session 7 (d26): hybrid leaves conversion rewards to money creation */
       /* d24: created money counted by one rule for every design. aT: output matched to transfer dollars (cash, BU spent at face
        * value, the endowment, capital spending); a: output matched to conversion rewards (H1); eP: price-cut efficiency. */
       /* Session 7 (d24 option b, o.buAtA): output matched at a to a converted BU's face value as well as its reward. */
-      if (o.fin === 'money') U = (1 - o.aT)*(C.cash + C.endow + C.cap) + (1 - (o.buAtA ? o.a : o.aT))*C.bu + (1 - o.eP)*(C.cutPT + C.cutG) + (1 - o.a)*C.conv + (o.pthUnmatched ? C.pthLiq : 0) + extra;
+      if (o.fin === 'money') U = (1 - o.aT)*(C.cash + C.endow + C.cap) + (1 - (o.buAtA ? o.a : o.aT))*C.bu + (1 - o.eP)*(C.cutPT - C.cutFree + C.cutG) + (1 - o.a)*(C.conv - C.convM) + (o.pthUnmatched ? C.pthLiq : 0) + extra;
       else if (o.fin === 'tax') U = extra;
-      else if (o.fin === 'hybrid') U = (1 - o.a)*C.conv + extra;  /* session 7 (d26 option c): transfers taxed, conversion rewards created at a */
+      else if (o.fin === 'source') U = (1 - o.a)*((o.faceM ? 0 : C.bu) + C.conv - C.convM) + extra;  /* plan step 3 (S1-S6): the Source's net payout is new money, less output that backs it; faceM: essentials bought with BU count as backed */
+      else if (o.fin === 'hybrid') U = (1 - o.a)*(C.conv - C.convM) + extra;  /* plan step 2: matched output (0 unless PROD) */  /* session 7 (d26 option c): transfers taxed, conversion rewards created at a */
       else U = (1 - o.a)*A.conv + (o.pthUnmatched ? A.pthLiq : 0) + extra;  /* 'none': the session 2-5 rule (transfers and price cuts unfinanced) */
       if (yr === 0){ L.need0 = need; L.base0 = C.base; }
-      L.cost += (C.cash + C.endow + C.bu + C.conv + C.cap + C.cutPT + C.cutG + C.pthLiq)/C.idx;
+      if (MULT && MLS) MLS.push = o.fin === 'source' ? Math.max(0, C.bu + C.conv - C.ctax) : 0;  /* plan step 16: next year's push, the net Source payout */
+      L.cost += (C.cash + C.endow + C.bu + C.conv + C.cap + C.cutPT - C.cutFree + C.cutG + C.pthLiq)/C.idx; L.cutFree += C.cutFree/C.idx;  /* plan step 5: the PTF discount funded by forgone profit is not programme cost */
       L.cash += C.cash/C.idx; L.endow += C.endow/C.idx; L.bu += C.bu/C.idx; L.conv += C.conv/C.idx; L.cutPT += C.cutPT/C.idx; L.cutG += C.cutG/C.idx; L.cap += C.cap/C.idx; L.pth += C.pthLiq/C.idx;
       L.pd += C.pd/C.idx; L.tgt += C.tgt/C.idx; L.tax += C.tax/C.idx; L.need += need/C.idx; L.treas += (C.tax - need)/C.idx; L.f0 += C.f0; L.f1 += C.f1; L.f2 += C.f2; L.n += C.n;
       L.emp += C.emp; L.hrs += C.hrs; L.Er += C.E/C.idx; L.bR += C.bR; L.bP += C.bP;  /* session 8 (A5): employment, hours, real wage earnings */
+      L.convM += C.convM/C.idx; L.buIss += C.buIss/C.idx; L.ctax += C.ctax/C.idx;  /* plan steps 2-3 */
       L.bz += C.bz/C.idx; L.es += C.es/C.idx; L.pyP += C.pyP/C.idx; L.pyN += C.pyN/C.idx; L.esWP += C.esWP/C.idx; L.n1 += C.n1; L.nP1 += C.nP1; L.nN1 += C.nN1; L.nWP1 += C.nWP1;  /* session 19 */
-      if (o.fin === 'tax' || o.fin === 'hybrid') TB.tau = C.base > 0 ? Math.min(o.tauMax, need/C.base) : 0;
+      if (o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source') TB.tau = C.base > 0 ? Math.min(o.tauMax, need/C.base) : 0;
       var PGn = pmGenStep(PG, U, A.Y, o.lamG), capShare = o.ptfCap*(A.n ? A.ptfN/A.n : 0), PE = {};
       CFG.ESSENTIALS.forEach(function(k){
         var cut = !p.ptf ? 0 : PTF_MODE === 'shipped' ? (p.szh ? 0.12 + p.szhCoh*0.04 : 0.12) : (k === 'food' ? PTF_FOOD_CUT[PTF_MODE] : 0);
@@ -2083,6 +2364,10 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   function pjQ(k){ return (PROJ && PJS && PJS.acc.partY > 0) ? PJS.acc[k]/PJS.acc.partY : 0; }  /* N1 (session 15) */
   var pjSv = 0; if (PROJ && PJS && PJS.acc.partY > 0){ agents.forEach(function(a){ pjSv += (a._pjSaved || 0) + (a._pjGiftH || 0); }); pjSv /= Math.max(1, PJS.acc.partY/T); }
   var esOn = !!(ESP && ESS && CONVERSION_MODEL === 'framework'), eA = esOn ? ESS.acc : null;  /* session 19 (s38) */
+  var spOn = !!(SURP && SPS && CONVERSION_MODEL === 'framework'), sA = spOn ? SPS.acc : null;  /* plan step 1 */
+  function spQ(k){ return spOn && L.n1 ? sA[k]/L.n1 : 0; }
+  var jnOn = !!(JOIN && JNS && CONVERSION_MODEL === 'framework' && p.ccoOn); function jnQ(y){ return jnOn && JNS.y[y] ? JNS.y[y].part*100 : 0; }  /* plan step 4 */
+  function pdQ(y, k){ return (PROD && PDS && PDS.y[y] && CONVERSION_MODEL === 'framework') ? PDS.y[y][k]*100 : 0; }  /* plan step 2 */
   var bI = path[T-1].bIdx, mx = 0, tauS = 0;
   for (var t = 1; t < T; t++) mx = Math.max(mx, path[t].bIdx/path[t-1].bIdx - 1);
   path.forEach(function(q){ tauS += q.tau; });
@@ -2108,11 +2393,25 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     esBUW:eA && eA.wkY1 ? eA.alloc/eA.wkY1 : 0, esShare:eA && eA.wage > 0 ? eA.alloc/eA.wage*100 : 0, esRate:eA && eA.conv > 0 ? eA.rateXbu/eA.conv : 0,
     esCapB:eA && eA.partWkY ? eA.capBind/eA.partWkY*100 : 0, esConv:eA && L.n1 ? eA.conv/L.n1 : 0, esRet:eA && L.n1 ? eA.ret/L.n1 : 0,
     /* Session 21 (s41): person-year FGT2 (x100) and size by group; BLEI by group (tbBleiRes adds the b* keys) */
-    gPartF2:gP.f2, gNonF2:gN.f2, gPartK:gP.k, gNonK:gN.k})};
+    gPartF2:gP.f2, gNonF2:gN.f2, gPartK:gP.k, gNonK:gN.k,
+    /* Plan step 1 (Oct 1, 2026): the ESP surplus split, years 1-19, year-0 dollars per adult-year unless stated (0 when SURP is off). spSw: the
+     * first year of phase 2 (99 = never); spCap: the capital account per adult at the end (year-0 $); spD1/spD2: mean cut by phase (%); spNon: share
+     * of the pool reaching non-participants (%, cuts and dollars); spPtfS: the PTFs' share of the pool (%). */
+    spPool:spQ('pool'), spOwn:spQ('own'), spPtfS:spOn && sA.pool > 0 ? sA.ptf/sA.pool*100 : 0, spCut:spQ('cut'), spCutN:spQ('cutN'), spFreed:spQ('freed'), spCash:spQ('cash'),
+    spProfit:spQ('profit'), spProfW:spOn && sA.wkY1 ? sA.profitN/sA.wkY1 : 0, spReinv:spQ('reinv'), spRest:spQ('rest'), spCap:spOn ? SPS.capPA : 0, spSw:spOn ? (SPS.sw < 0 ? 99 : SPS.sw) : 0,
+    spD1:spOn && sA.n1 ? sA.d1/sA.n1*100 : 0, spD2:spOn && sA.n2 ? sA.d2/sA.n2*100 : 0, spNon:spOn && sA.pool > 0 ? (sA.non + sA.cutN)/sA.pool*100 : 0, spCarry:spOn ? sA.carry/n : 0,
+    /* Plan step 2: PTF capacity share at the start of years 5, 10 and 19 and PTF members' share in year 19 (%); matched output as a share of conversion (%) */
+    pdC5:pdQ(5, 'cap'), pdC10:pdQ(10, 'cap'), pdC19:pdQ(T - 1, 'cap'), pdMem19:pdQ(T - 1, 'mem'), pdMatch:L.conv > 0 ? L.convM/L.conv*100 : 0,
+    /* Plan step 3: the Source's ledger, year-0 dollars per adult-year: BU issued, dollars paid at conversion (BU face value spent + conversion
+     * proceeds), conversion tax kept, output backing (matched), and the tax kept as a share of the BU issued (%). */
+    srcIss:L.buIss/NY, srcPay:(L.bu + L.conv)/NY, srcTax:L.ctax/NY, srcM:L.convM/NY, srcCover:L.buIss > 0 ? L.ctax/L.buIss*100 : 0,
+    /* Plan step 4: participation share at years 5, 10 and 19 (%), and joins and leaves over the run per 100 adults */
+    jnP5:jnQ(5), jnP10:jnQ(10), jnP19:jnQ(T - 1), jnJoin:jnOn ? JNS.join/n*100 : 0, jnLeave:jnOn ? JNS.leave/n*100 : 0,
+    csFree:L.cutFree/NY, epPY:epSum/T*100, octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)})};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
-  var tau0 = ((o.fin === 'tax' || o.fin === 'hybrid') && p.tb) ? tbRunCore(p, seed, o, S, 0, 1).tau0 : 0;
+  var tau0 = ((o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source') && p.tb) ? tbRunCore(p, seed, o, S, 0, 1).tau0 : 0;
   return tbRunCore(p, seed, o, S, tau0, p.years);
 }
 var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthReal','fgt0','fgt1','fgt2','fgt0PY','fgt1PY','fgt2PY','cost','cCash','cEndow','cBU','cConv','cCut','cCap','cPth',
@@ -2120,12 +2419,16 @@ var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthRe
   'gPartW','gNonW','gPthW','gLowW','gTopW','pyPoor','everPoor','spellMean','chronic','emp','hrs','Er','giniD','giniX','pLev10','pLev20','realT','bleiR','bleiP',
   'pjNet','pjGift','pjBU','pjExp','pjHrs','pjDisp','pjWork','pjRc','pjSaved',  /* N1 (session 15) */
   'bzPay','esPrem','payPart','payNon','esPremW','esBUW','esShare','esRate','esCapB','esConv','esRet',  /* N1 (session 19, s38) */
-  'gPartF2','gNonF2','gPartK','gNonK'].concat(TB_BLEI_DEFS.reduce(function(r, d){ TB_BLEI_GRPS.forEach(function(g){ ['Py','Cr','20','Md'].forEach(function(m){ r.push('b' + d + g + m); }); }); return r; }, []));  /* session 21 (s41) */
+  'gPartF2','gNonF2','gPartK','gNonK',
+  'spPool','spOwn','spPtfS','spCut','spCutN','spFreed','spCash','spProfit','spProfW','spReinv','spRest','spCap','spSw','spD1','spD2','spNon','spCarry',
+  'pdC5','pdC10','pdC19','pdMem19','pdMatch','srcIss','srcPay','srcTax','srcM','srcCover','jnP5','jnP10','jnP19','jnJoin','jnLeave','csFree','octMean','epPY'].concat(TB_BLEI_DEFS.reduce(function(r, d){ TB_BLEI_GRPS.forEach(function(g){ ['Py','Cr','20','Md'].forEach(function(m){ r.push('b' + d + g + m); }); }); return r; }, []));  /* session 21 (s41) */
 /* Paired study over seeds 1..N (optionally lo..hi). envP: the Compassionism scenario that defines the environment, the essentials
  * supply path (its matched Baseline, as in sessions 2-5) and the groups (participants: latent uCCO < its partRate; PTH members:
  * latent uPTH < its pthUptake, the same agents in every design). cfgs: [{p, o, cm, pw}]; pw switches PATHWAY_OFF entries for that
  * row only (d19). Returns means and per-seed arrays. */
 function tbStudy(cfgs, N, envP, o0, lo){
+  if (o0 && typeof o0.sc === 'number'){ var scS = SURPLUS_CONSUMPTION_SHARE; SURPLUS_CONSUMPTION_SHARE = o0.sc;  /* plan step 7: a study-level spending rule (the supply path and every row) */
+    try { var oS = Object.assign({}, o0); delete oS.sc; return tbStudy(cfgs, N, envP, oS, lo); } finally { SURPLUS_CONSUMPTION_SHARE = scS; } }
   lo = lo || 1; var M = N - lo + 1, grp = {part:envP.partRate, pth:envP.pthUptake};
   var out = cfgs.map(function(){ var r = {_s:{}}; TB_KEYS.forEach(function(k){ r[k] = 0; r._s[k] = new Float64Array(M); }); return r; });
   for (var sd = lo; sd <= N; sd++){
@@ -2135,9 +2438,16 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var g0 = tbSetG(c.g);  /* session 7: per-row engine-question switches (i3), restored below */
       var pj0 = PROJ; if (c.pj) PROJ = Object.assign({}, PROJ_DEFAULTS, c.pj === true ? {} : c.pj);  /* N1 (session 15): project hiring for this row only */
       var es0 = ESP; if (c.es) ESP = Object.assign({}, ESP_DEFAULTS, c.es === true ? {} : c.es);  /* N1 (session 19): ESP payroll for this row only */
+      var sp0 = SURP; if (c.sp) SURP = Object.assign({}, SURP_DEFAULTS, c.sp === true ? {} : c.sp);  /* plan step 1: the ESP surplus split for this row only */
+      var pd0 = PROD; if (c.pd) PROD = Object.assign({}, PROD_DEFAULTS, c.pd === true ? {} : c.pd);  /* plan step 2: the production side for this row only */
+      var sc0 = SURPLUS_CONSUMPTION_SHARE; if (typeof c.sc === 'number') SURPLUS_CONSUMPTION_SHARE = c.sc;  /* plan step 7: the spending rule for this row only */
+      var oc0 = OCT; if (c.oc) OCT = Object.assign({}, OCT_DEFAULTS, c.oc === true ? {} : c.oc);  /* plan step 6 */
+      var cs0 = COST; if (c.cs) COST = Object.assign({}, COST_DEFAULTS, c.cs === true ? {} : c.cs);  /* plan step 5 */
+      var jn0 = JOIN; if (c.jn) JOIN = Object.assign({}, JOIN_DEFAULTS, c.jn === true ? {} : c.jn);  /* plan step 4: joining and leaving for this row only */
+      var ml0 = MULT; if (c.ml) MULT = Object.assign({}, MULT_DEFAULTS, c.ml === true ? {} : c.ml);  /* plan step 16: the spending layer for this row only */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), S).res;
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
-      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; } });
+      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; } });
   }
   return out;
 }
@@ -2208,6 +2518,13 @@ function n1Row(PR, cm, v){
   v = v || {}; var c = {p:PR.cco(), cm:cm, pj:v.gift === 'run' ? {giftFin:'run'} : {}, o:{noDamp:!v.damp}};
   if (!v.raise) c.pw = {octaveWage:true};
   if (cm === 'framework' && v.esp !== false) c.es = v.es || {};
+  if (cm === 'framework' && v.sp) c.sp = v.sp;  /* plan step 1: the ESP surplus split ({} = the defaults) */
+  if (cm === 'framework' && v.pd) c.pd = v.pd;  /* plan step 2: the production side ({} = the defaults) */
+  if (typeof v.sc === 'number') c.sc = v.sc;  /* plan step 7: the spending rule (share of cash surplus consumed) */
+  if (cm === 'framework' && v.oc) c.oc = v.oc;  /* plan step 6: slower octave advancement */
+  if (cm === 'framework' && v.cs) c.cs = v.cs;  /* plan step 5: PTF running costs ({} = the defaults) */
+  if (cm === 'framework' && v.jn) c.jn = v.jn;  /* plan step 4: joining and leaving ({} = the defaults) */
+  if (v.ml) c.ml = v.ml;  /* plan step 16: the spending layer ({} = the defaults) */
   if (v.cap) c.o.ptfCap = v.cap;
   if (v.fin){ c.o.fin = v.fin; c.o.a = v.a || 0; }
   return c;
@@ -2651,6 +2968,508 @@ function s34UnitSuite(){
   return out;
 }
 Object.assign(module.exports, { espUnitSuite, ESP_DEFAULTS, setEsp:function(x){ ESP = x; }, getESS:function(){ return ESS; } });
+/* Plan step 2 (Oct 1, 2026): tests for the production side (PROD). Harness-only; run by `unit`. Bit-identity of every earlier output with PROD
+ * null was checked by diffing full outputs of testbed projcore, esp, match and a5 (3 seeds, three environments) and validate. */
+function prodUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, nr:applyNR6()};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; SPS = null; PDS = null; ESS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; PATHWAY_OFF.octaveWage = false; } }
+  var FI = FULL_INTEGRATION, CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0};
+  function sp(o){ return Object.assign({}, SURP_DEFAULTS, o || {}); }
+  function pd(o){ return Object.assign({}, PROD_DEFAULTS, o || {}); }
+  function es(o){ return Object.assign({}, ESP_DEFAULTS, o || {}); }
+  function pj(o){ return Object.assign({}, PROJ_DEFAULTS, o || {}); }
+  function diffKeys(r1, r2, ks){ return ks.filter(function(k){ return r1[k] !== r2[k]; }); }
+  var NOPD = TB_KEYS.filter(function(k){ return !/^pd/.test(k) && k !== 'srcM'; });  /* srcM (plan step 3) reports the matched output itself */
+  function plain(P, seed, each, before){ CONVERSION_MODEL = 'framework'; RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    RNG = mulberry32(seed); for (var y = 0; y < P.years; y++){ if (before) before(ag, y); runYear(ag, y, P, CALM); if (each) each(ag, y); } return ag; }
+  function tbPair(A, B, cases, fin){
+    var bad = [], v = [];
+    cases.forEach(function(c){ var P = nextRoundPreset(c[0]), S = s3BaseS(P, c[1]), R = tbPresets(c[0]), o = Object.assign({fin:'tax', grp:{part:c[0].partRate, pth:c[0].pthUptake}, noDamp:true}, fin || {});
+      CONVERSION_MODEL = 'framework'; PROJ = pj(); ESP = es(); PATHWAY_OFF.octaveWage = true;
+      SURP = A.sp; PROD = A.pd; var r0 = tbRun(R.cco(), c[1], o, S).res;
+      SURP = B.sp; PROD = B.pd; var r1 = tbRun(R.cco(), c[1], o, S).res;
+      bad = bad.concat(diffKeys(r0, r1, NOPD)); v.push(r0.endoAnn.toFixed(4) + '/' + r1.endoAnn.toFixed(4)); });
+    return {bad:bad, v:v}; }
+  var CASES = [[FI, 1], [ADVERSE_REFERENCE, 1], [STRESS_TEST, 2]];
+  t('off: with PROD null no production state is created and no agent carries a matched-output field (Full Integration, seed 1, split on)', function(){
+    PROD = null; PDS = null; PROJ = pj(); ESP = es(); SURP = sp(); var ag = plain(FI, 1), n = 0;
+    ag.forEach(function(a){ if (a._pdM !== undefined) n++; });
+    return {pass:PDS === null && n === 0, detail:'PDS ' + (PDS === null ? 'null' : 'set') + '; agents with a matched-output field: ' + n};
+  });
+  t('under tax financing, matched output changes nothing: PROD with PTF reach unlimited (cap \'none\') reproduces the split alone exactly on every testbed measure (labor on; Full Integration seed 1, Adverse seed 1, Stress seed 2)', function(){
+    var r = tbPair({sp:sp(), pd:null}, {sp:sp(), pd:pd({cap:'none'})}, CASES);
+    return {pass:r.bad.length === 0, detail:NOPD.length + ' measures compared in 3 runs; differing: ' + (r.bad.length ? r.bad.join(', ') : 'none')};
+  });
+  t('hybrid financing: at a = 1 (H1) matched output changes nothing (exact); at a = 0 it lowers created money, so inflation falls (cap \'none\'; same runs)', function(){
+    var r1 = tbPair({sp:sp(), pd:null}, {sp:sp(), pd:pd({cap:'none'})}, CASES, {fin:'hybrid', a:1}), r0 = tbPair({sp:sp(), pd:null}, {sp:sp(), pd:pd({cap:'none'})}, CASES, {fin:'hybrid', a:0});
+    var lower = r0.v.every(function(x){ var q = x.split('/'); return +q[1] < +q[0]; });
+    return {pass:r1.bad.length === 0 && lower, detail:'a = 1: differing ' + (r1.bad.length ? r1.bad.join(', ') : 'none') + '; a = 0, inflation without / with matched output: ' + r0.v.join(', ')};
+  });
+  t('PTF capacity: c = min(1, c0 + capital per adult / K) from last year\'s account; PTF members never exceed the larger of last year\'s count and c x adults, and never fall (Full Integration and Stress, seed 1)', function(){
+    var bad = 0, e = 0, v = [];
+    [FI, STRESS_TEST].forEach(function(P){ PROJ = pj(); ESP = es(); SURP = sp(); PROD = pd(); var prevM = -1, prevCap = 0;
+      plain(P, 1, function(ag, y){ var m = 0; ag.forEach(function(a){ if (a.inPTF) m++; }); var c = PDS.y[y].cap, want = y === 0 ? Math.min(1, PDS.c0) : Math.min(1, PDS.c0 + prevCap/SURP.K);
+          e = Math.max(e, Math.abs(c - want)); if (m > Math.max(PDS.y[y].mem*P.nAgents, Math.ceil(c*P.nAgents - 1e-9)) + 1e-9 || m < prevM) bad++; prevM = m; prevCap = SPS.capPA; });
+      v.push((P === FI ? 'Full Integration' : 'Stress') + ': c0 ' + (PDS.c0*100).toFixed(1) + '%, c in years 5/10/19 ' + [5, 10, 19].map(function(y){ return (PDS.y[y].cap*100).toFixed(0) + '%'; }).join('/') + ', members in year 19 ' + (PDS.y[19].mem*100).toFixed(1) + '%'); });
+    return {pass:bad === 0 && e < 1e-12, detail:'violations ' + bad + ', largest gap in c ' + e.toExponential(1) + '; ' + v.join('; ')};
+  });
+  t('with capacity unlimited from the start (K = 0), PTF capacity is inert: cap \'ptf\' equals cap \'none\' exactly (tax; same runs)', function(){
+    var r = tbPair({sp:sp({K:0}), pd:pd({cap:'none'})}, {sp:sp({K:0}), pd:pd()}, CASES);
+    return {pass:r.bad.length === 0, detail:'differing: ' + (r.bad.length ? r.bad.join(', ') : 'none')};
+  });
+  t('with PTF capacity on, phase 2 of the split starts the first year c reaches 1 (Full Integration, seed 1; one split for every ESP and the owners rule)', function(){
+    var ok = true, v = [];
+    [sp({priv:'same'}), sp()].forEach(function(q){ PROJ = pj(); ESP = es(); SURP = q; PROD = pd(); plain(FI, 1); var sw = SPS.sw, first = -1;
+      for (var y = 1; y < 20; y++) if (PDS.y[y].cap >= 1){ first = y; break; }
+      if (sw !== first) ok = false; v.push(q.priv + ': switch year ' + sw + ', first year c = 1: ' + first); });
+    return {pass:ok, detail:v.join('; ')};
+  });
+  t('matched output: each worker\'s project output = project hours x their own wage (\'face\': x the contract pay), never above the project conversion paid; the testbed\'s matched line = that sum + reinvestment, every year (Full Integration, seed 1, testbed accounting on)', function(){
+    var worst = 0, gap = 0, n = 0, below = 0, tot = {};
+    ['own', 'face'].forEach(function(m){ PROJ = pj(); ESP = es(); SURP = sp(); PROD = pd({match:m}); TB = {fin:'tax', tau:0, X:0, inkindRho:true, neutralGate:true, cur:null};
+      var P = Object.assign({}, nextRoundPreset(FI), {tb:{}}); tot[m] = 0;
+      plain(P, 1, function(ag, y){ var s = 0; ag.forEach(function(a){ if (a._pdNy > 0){ n++; var want = Math.min(a._pdNy, a._pdVy); worst = Math.max(worst, Math.abs(a._pdMy - want)/want); if (a._pdVy < a._pdNy) below++; s += a._pdMy; } });
+        gap = Math.max(gap, Math.abs(TB.cur.convM - s - SPS.y[y].reinv)/Math.max(1, TB.cur.convM)); tot[m] += s; },
+        function(ag){ ag.forEach(function(a){ a._pdNy = 0; a._pdMy = 0; a._pdVy = 0; }); }); });
+    return {pass:n > 0 && worst < 1e-12 && gap < 1e-12 && below > 0, detail:n + ' project conversions; largest gap from min(paid, hours x value) ' + worst.toExponential(1) + '; matched line vs sum + reinvestment ' + gap.toExponential(1) + '; output below the pay in ' + below + '; project output over the run $' + Math.round(tot.own) + ' (own wage) / $' + Math.round(tot.face) + ' (contract pay)'};
+  });
+  t('random numbers: the production side adds no draw (8 per agent-year, Full Integration, 20 years)', function(){
+    var n = [];
+    [null, pd()].forEach(function(q){ PROD = q; SURP = sp(); ESP = es(); PROJ = pj(); CONVERSION_MODEL = 'framework'; RNG = mulberry32(700004);
+      var ag = makeLatentPopulation(FI.nAgents).map(function(l){ return instantiateAgent(l, FI); }), base = mulberry32(1), k = 0; RNG = function(){ k++; return base(); };
+      for (var y = 0; y < FI.years; y++) runYear(ag, y, FI, CALM); n.push(k); });
+    return {pass:n[0] === n[1] && n[0] === 8*FI.nAgents*FI.years, detail:'draws ' + n.join(' / ') + ' (off / on)'};
+  });
+  return out;
+}
+Object.assign(module.exports, { prodUnitSuite });
+/* Plan step 3 (Oct 1, 2026): tests for the Source financing (TB fin 'source'). Harness-only; run by `unit`. Every earlier output is
+ * byte-identical with the new mode unused (full-output diffs of testbed projcore, esp, match and a5, and validate). */
+function srcUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, nr:applyNR6(), g:tbSetG(TB_PROFILE_G)};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; SPS = null; PDS = null; ESS = null; resetNR6(sv.nr); tbSetG(sv.g); TB = null; LABOR = null; PRICE = null; LEDGER = null; } }
+  var FI = FULL_INTEGRATION;
+  function run(E, sd, v, o){ var P = Object.assign({}, E), PR = tbPresets(P), c = n1Row(PR, 'framework', v); return tbStudy([c], sd, P, Object.assign({fin:'tax', aT:0, a:0, X:0}, o || {}), sd)[0]; }
+  var V = {sp:{}, pd:{}};
+  t('the contribution pays only what the Source does not (PTF and PTH price cuts, PTH appreciation): its need equals those costs, every BU and conversion dollar left out (Full Integration seed 1, Adverse seed 2)', function(){
+    var worst = 0, v = [];
+    [[FI, 1], [ADVERSE_REFERENCE, 2]].forEach(function(c){ var r = run(c[0], c[1], Object.assign({fin:'source', a:0}, V)), want = r.cCash + r.cEndow + r.cCut + r.cCap + r.cPth;
+      worst = Math.max(worst, Math.abs(r.need - want)/Math.max(1, want)); v.push('need $' + Math.round(r.need) + ' = cuts $' + Math.round(r.cCut) + ' + PTH appreciation $' + Math.round(r.cPth) + ' (BU $' + Math.round(r.cBU) + ' and conversion $' + Math.round(r.cConv) + ' left out); contribution ' + (r.tauMean*100).toFixed(1) + '%'); });
+    return {pass:worst < 1e-9, detail:'largest gap ' + worst.toExponential(1) + '; ' + v.join('; ')};
+  });
+  t('new money: at a = 1 (H1) the Source adds none, so there is no endogenous inflation; at a = 0 there is, and counting essentials bought with BU as backed by output lowers it (Full Integration and Adverse, seed 1)', function(){
+    var ok = true, v = [];
+    [FI, ADVERSE_REFERENCE].forEach(function(E){ var h1 = run(E, 1, Object.assign({fin:'source', a:1}, V)), a0 = run(E, 1, Object.assign({fin:'source', a:0}, V)), P = Object.assign({}, E), PR = tbPresets(P), c = n1Row(PR, 'framework', Object.assign({fin:'source', a:0}, V)); c.o.faceM = true;
+      var fm = tbStudy([c], 1, P, {fin:'tax', aT:0, a:0, X:0}, 1)[0];
+      if (!(h1.endoAnn === 0 && a0.endoAnn > fm.endoAnn && fm.endoAnn > 0)) ok = false;
+      v.push((E === FI ? 'Full Integration' : 'Adverse') + ': H1 ' + (h1.endoAnn*100).toFixed(2) + '%, a = 0 ' + (a0.endoAnn*100).toFixed(2) + '%, essentials backed ' + (fm.endoAnn*100).toFixed(2) + '% a year'); });
+    return {pass:ok, detail:v.join('; ')};
+  });
+  t('the Source\'s ledger: dollars paid = BU face value spent + conversion proceeds; tax kept > 0; tax kept / BU issued as reported; BU issued = 12 x BU x participant-years before COLA at reference (Full Integration, seed 1)', function(){
+    var r = run(FI, 1, Object.assign({fin:'source', a:0}, V)), e1 = Math.abs(r.srcPay - r.cBU - r.cConv), e2 = Math.abs(r.srcCover - r.srcTax/r.srcIss*100), want = 12*FI.bu*FI.partRate;
+    return {pass:e1 < 1e-6 && e2 < 1e-9 && r.srcTax > 0 && Math.abs(r.srcIss/want - 1) < 0.05, detail:'paid $' + Math.round(r.srcPay) + ' = BU $' + Math.round(r.cBU) + ' + conversion $' + Math.round(r.cConv) + '; tax kept $' + Math.round(r.srcTax) + ' (' + r.srcCover.toFixed(1) + '% of BU issued $' + Math.round(r.srcIss) + '; 12 x $1,200 x participation ' + Math.round(want) + ')'};
+  });
+  t('the financing mode moves only money: under the Source the contribution is lower than under the wage contribution, and the Source mode draws no random number (Full Integration, seed 1)', function(){
+    var m0 = mulberry32, k = 0, n = [];
+    mulberry32 = function(sd){ var g = m0(sd); return function(){ k++; return g(); }; };
+    try { [{}, {fin:'source', a:0}].forEach(function(f){ k = 0; run(FI, 1, Object.assign({}, f, V)); n.push(k); }); } finally { mulberry32 = m0; }
+    var rt = run(FI, 1, V), rs = run(FI, 1, Object.assign({fin:'source', a:0}, V));
+    return {pass:n[0] === n[1] && n[0] > 0 && rs.tauMean < rt.tauMean, detail:'draws ' + n.join(' / ') + ' (contribution / Source); contribution ' + (rt.tauMean*100).toFixed(1) + '% / ' + (rs.tauMean*100).toFixed(1) + '%'};
+  });
+  return out;
+}
+Object.assign(module.exports, { srcUnitSuite });
+/* Plan step 4 (Oct 1, 2026): tests for joining and leaving (JOIN). Harness-only; run by `unit`. */
+function joinUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, nr:applyNR6(), g:tbSetG(TB_PROFILE_G)};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; JOIN = sv.jn; SPS = null; PDS = null; JNS = null; ESS = null; resetNR6(sv.nr); tbSetG(sv.g); TB = null; LABOR = null; PRICE = null; LEDGER = null; } }
+  var FI = FULL_INTEGRATION, CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0}, V = {sp:{}, pd:{}};
+  function row(E, sd, v){ var P = Object.assign({}, E), PR = tbPresets(P); return tbStudy([n1Row(PR, 'framework', v)], sd, P, {fin:'tax', aT:0, a:0, X:0}, sd)[0]; }
+  var NOJN = TB_KEYS.filter(function(k){ return !/^jn/.test(k); });
+  function plain(P, seed, each){ CONVERSION_MODEL = 'framework'; RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    RNG = mulberry32(seed); for (var y = 0; y < P.years; y++){ runYear(ag, y, P, CALM); if (each) each(ag, y); } return ag; }
+  t('off: with JOIN null no enrolment state is created and participation never changes (Adverse, seed 1, split and production side on)', function(){
+    JOIN = null; JNS = null; SURP = Object.assign({}, SURP_DEFAULTS); PROD = Object.assign({}, PROD_DEFAULTS); PROJ = Object.assign({}, PROJ_DEFAULTS); var ch = 0, prev = null;
+    plain(ADVERSE_REFERENCE, 1, function(ag){ var c = ag.map(function(a){ return a.inCCO ? 1 : 0; }).join(''); if (prev !== null && c !== prev) ch++; prev = c; });
+    return {pass:JNS === null && ch === 0, detail:'JNS ' + (JNS === null ? 'null' : 'set') + '; years in which participation changed: ' + ch};
+  });
+  t('where the BU keep their value (reference, no inflation) the revealed cost reproduces the year-0 rule every year: joining on equals joining off exactly on every testbed measure (Full Integration seeds 1-2)', function(){
+    var bad = [];
+    [1, 2].forEach(function(sd){ var r0 = row(FI, sd, V), r1 = row(FI, sd, Object.assign({jn:{}}, V)); NOJN.forEach(function(k){ if (r0[k] !== r1[k]) bad.push(k); }); if (r1.jnJoin || r1.jnLeave) bad.push('moves'); });
+    return {pass:bad.length === 0, detail:NOJN.length + ' measures; differing: ' + (bad.length ? bad.join(', ') : 'none')};
+  });
+  t('the rule each year: a participant leaves only after the minimum stay (leavers here joined at year 0, so the stay rarely binds); with no cost every adult takes part from year 1 (Adverse, seed 1; stays 1, 2 and 5)', function(){
+    var bad = 0, v = [];
+    [1, 2, 5].forEach(function(st){ JOIN = {cost:'revealed', stay:st}; SURP = Object.assign({}, SURP_DEFAULTS); PROD = Object.assign({}, PROD_DEFAULTS); PROJ = Object.assign({}, PROJ_DEFAULTS); var last = {}, prevIn = null;
+      plain(ADVERSE_REFERENCE, 1, function(ag, y){ ag.forEach(function(a, i){ var was = prevIn ? prevIn[i] : a.inCCO; if (y === 0) last[i] = 0;
+        if (was && !a.inCCO){ if (y - last[i] < st) bad++; last[i] = y; } else if (!was && a.inCCO) last[i] = y; }); prevIn = ag.map(function(a){ return a.inCCO; }); });
+      v.push('stay ' + st + ': leaves ' + JNS.leave + ', joins ' + JNS.join + ', participation in year 19 ' + (JNS.y[19].part*100).toFixed(1) + '%'); });
+    JOIN = {cost:'none', stay:2}; plain(ADVERSE_REFERENCE, 1); var all = JNS.y[1].part === 1 && JNS.y[19].part === 1;
+    return {pass:bad === 0 && all, detail:'leaves before the minimum stay: ' + bad + '; ' + v.join('; ') + '; no cost: everyone from year 1 ' + all};
+  });
+  t('random numbers: joining and leaving adds no draw (Adverse, 20 years)', function(){
+    var n = [];
+    [null, {cost:'revealed', stay:2}].forEach(function(q){ JOIN = q; SURP = Object.assign({}, SURP_DEFAULTS); PROD = Object.assign({}, PROD_DEFAULTS); PROJ = Object.assign({}, PROJ_DEFAULTS); CONVERSION_MODEL = 'framework'; RNG = mulberry32(700004);
+      var P = ADVERSE_REFERENCE, ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); }), base = mulberry32(1), k = 0; RNG = function(){ k++; return base(); };
+      var R = buildRecessionPath(P.years, 1); for (var y = 0; y < P.years; y++) runYear(ag, y, P, R[y]); n.push(k); });
+    return {pass:n[0] === n[1] && n[0] === 8*500*20, detail:'draws ' + n.join(' / ') + ' (off / on)'};
+  });
+  return out;
+}
+Object.assign(module.exports, { joinUnitSuite });
+/* Plan step 5 (Oct 1, 2026): tests for the PTF running-cost accounting (COST). Harness-only; run by `unit`. */
+function costUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, nr:applyNR6(), g:tbSetG(TB_PROFILE_G)};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; JOIN = sv.jn; COST = sv.cs; SPS = null; PDS = null; JNS = null; ESS = null; resetNR6(sv.nr); tbSetG(sv.g); TB = null; LABOR = null; PRICE = null; LEDGER = null; } }
+  var FI = FULL_INTEGRATION, V = {sp:{}, pd:{}};
+  function row(E, sd, v, o){ var P = Object.assign({}, E), PR = tbPresets(P); return tbStudy([n1Row(PR, 'framework', v)], sd, P, Object.assign({fin:'tax', aT:0, a:0, X:0}, o || {}), sd)[0]; }
+  var MONEY = ['cost', 'need', 'treas', 'tax', 'tauMean', 'tauLast', 'csFree', 'pd', 'tgt'];
+  t('accounting only: where financing does not read the cost (unfinanced), the PTF running-cost rule changes no agent and no measure but the cost lines (Full Integration seed 1, Stress seed 2)', function(){
+    var bad = [], v = [];
+    [[FI, 1], [STRESS_TEST, 2]].forEach(function(c){ var r0 = row(c[0], c[1], V, {fin:'none'}), r1 = row(c[0], c[1], Object.assign({cs:{}}, V), {fin:'none'});
+      TB_KEYS.forEach(function(k){ if (MONEY.indexOf(k) < 0 && r0[k] !== r1[k]) bad.push(k); });
+      var e = Math.abs((r0.cost - r1.cost) - r1.csFree); if (e > 1e-6) bad.push('cost gap ' + e);
+      v.push('cost $' + Math.round(r0.cost) + ' -> $' + Math.round(r1.cost) + ' (free part $' + Math.round(r1.csFree) + ')'); });
+    return {pass:bad.length === 0, detail:'differing: ' + (bad.length ? bad.join(', ') : 'none') + '; ' + v.join('; ')};
+  });
+  t('the free part of each PTF member\'s discount = min(the discount, basket x (food share x 4.94% + housing share x 2.60%)); no one outside PTF gets one (Full Integration, NR6 profile, seed 1, 5 years, testbed accounting on)', function(){
+    var worst = 0, n = 0, leak = 0; COST = Object.assign({}, COST_DEFAULTS); SURP = Object.assign({}, SURP_DEFAULTS); PROD = Object.assign({}, PROD_DEFAULTS); PROJ = Object.assign({}, PROJ_DEFAULTS); ESP = Object.assign({}, ESP_DEFAULTS);
+    CONVERSION_MODEL = 'framework'; var P = Object.assign({}, nextRoundPreset(FI), {tb:{}}), tS = CFG.BASKET.taxes, u = 1 - (P.szh ? 0.12 + P.szhCoh*0.04 : 0.12);
+    TB = {fin:'tax', tau:0, X:0, inkindRho:true, neutralGate:true, cur:null};
+    RNG = mulberry32(700004); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); }); RNG = mulberry32(1);
+    for (var y = 0; y < 5; y++){ var mem = ag.map(function(a){ a._csFreeY = 0; return !!a.inPTF; }); runYear(ag, y, P, {active:false, incomeMultiplier:1, yearsLeft:0});
+      ag.forEach(function(a, i){ if (!mem[i]){ if (a._csFreeY) leak++; return; } n++; var mlc = a.yrBasketUSD, want = Math.min(mlc*(1 - tS)*(1 - u), mlc*(CFG.BASKET.food*COST.food + CFG.BASKET.housing*COST.util));
+        worst = Math.max(worst, Math.abs(a._csFreeY - want)/want); }); }
+    return {pass:n > 0 && leak === 0 && worst < 1e-12, detail:n + ' member-years, largest gap ' + worst.toExponential(1) + '; non-members with a free part: ' + leak + ' (DISC_BASE pretax: the discount skips the basket\'s tax share)'};
+  });
+  t('"price cuts free" (eP = 1) leaves no PTF or PTH cut in what the contribution pays: under the Source the contribution falls to the PTH appreciation alone (Full Integration, seed 1)', function(){
+    var r = row(FI, 1, Object.assign({fin:'source', a:0}, V), {eP:1});
+    return {pass:Math.abs(r.need - r.cPth) < 1e-6, detail:'contribution need $' + Math.round(r.need) + ' = PTH appreciation $' + Math.round(r.cPth) + '; rate ' + (r.tauMean*100).toFixed(2) + '%'};
+  });
+  return out;
+}
+Object.assign(module.exports, { costUnitSuite });
+/* Plan step 6 (Oct 1, 2026): tests for the slower-advancement sensitivity (OCT). Harness-only; run by `unit`. */
+function octUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, oc:OCT};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; OCT = sv.oc; PJS = null; } }
+  var FI = FULL_INTEGRATION, CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0};
+  function run(q, each){ OCT = q; PROJ = Object.assign({}, PROJ_DEFAULTS); CONVERSION_MODEL = 'framework'; RNG = mulberry32(700004); var ag = makeLatentPopulation(FI.nAgents).map(function(l){ return instantiateAgent(l, FI); }), base = mulberry32(1), k = 0;
+    RNG = function(){ k++; return base(); }; for (var y = 0; y < FI.years; y++){ var o0 = ag.map(function(a){ return a.octave; }); runYear(ag, y, FI, CALM); if (each) each(ag, y, o0); } return {ag:ag, k:k}; }
+  t('with a gap of N years no participant advances twice within N years, advances are fewer, and no draw is added (Full Integration, seed 1; N = 3 and 1)', function(){
+    var r0 = run(null), bad = 0, adv = {}, v = [];
+    [3, 1].forEach(function(g){ var last = {}, n = 0; var r = run({gap:g}, function(ag, y, o0){ ag.forEach(function(a, i){ if (a.octave > o0[i]){ n++; if ((last[i] !== undefined ? y - last[i] : y) < g) bad++; last[i] = y;  /* the first advance also needs g years from year 0 */ } }); });
+      adv[g] = n; if (r.k !== r0.k) bad++; });
+    var n0 = 0; run(null, function(ag, y, o0){ ag.forEach(function(a, i){ if (a.octave > o0[i]) n0++; }); });
+    return {pass:bad === 0 && adv[3] < n0 && adv[1] <= n0, detail:'violations ' + bad + '; advances over 20 years: today ' + n0 + ', one per year ' + adv[1] + ', one per 3 years ' + adv[3]};
+  });
+  return out;
+}
+Object.assign(module.exports, { octUnitSuite });
+/* Plan step 7 (Oct 1, 2026): tests for the spending rule. Harness-only; run by `unit`. */
+function spendUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {sc:SURPLUS_CONSUMPTION_SHARE, nr:applyNR6(), g:tbSetG(TB_PROFILE_G)};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv.nr); tbSetG(sv.g); SURPLUS_CONSUMPTION_SHARE = sv.sc; LEDGER = null; TB = null; LABOR = null; PRICE = null; } }
+  var FI = FULL_INTEGRATION, PR = tbPresets(FI);
+  t('the sourced share reproduces the 2025 US personal saving rate (5.4%) on the no-programme Baseline at reference (seeds 1-100; the share was derived on these seeds), and the row option restores the profile\'s share afterwards', function(){
+    var W = 0, C = 0, F = 0, X = 0, before = SURPLUS_CONSUMPTION_SHARE;
+    for (var sd = 1; sd <= 100; sd++){ LEDGER = newLedger(); tbStudy([{p:PR.baseline()}], sd, FI, {fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, sd); var T = LEDGER.real; W += T.wage || 0; C += T.cost || 0; F += T.floor || 0; X += T.surplusConsumed || 0; LEDGER = null; }
+    var rate = (W - (C - F) - X)/W;
+    return {pass:Math.abs(rate - 0.054) < 0.002 && SURPLUS_CONSUMPTION_SHARE === before, detail:'saving rate ' + (rate*100).toFixed(2) + '% at share ' + SPEND_SOURCED + '; profile share after the row ' + SURPLUS_CONSUMPTION_SHARE};
+  });
+  return out;
+}
+Object.assign(module.exports, { spendUnitSuite });
+/* Plan step 9 (Oct 1, 2026): tests for the avoided-cost reporting. Harness-only; run by `unit`. */
+function avoidUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {nr:applyNR6(), g:tbSetG(TB_PROFILE_G)};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv.nr); tbSetG(sv.g); TB = null; LABOR = null; PRICE = null; } }
+  var FI = FULL_INTEGRATION, PR = tbPresets(FI);
+  t('reporting only: the unhoused line changes no other testbed measure, and with no programme the year-0 overlay equals the HUD point-in-time rate (Full Integration, seed 1)', function(){
+    var o = {fin:'tax', aT:0, a:0, X:0}, r0 = tbStudy([{p:PR.baseline()}], 1, FI, Object.assign({noEP:true}, o))[0], r1 = tbStudy([{p:PR.baseline()}], 1, FI, o)[0], bad = [];
+    TB_KEYS.forEach(function(k){ if (k !== 'epPY' && r0[k] !== r1[k]) bad.push(k); });
+    var y0 = extremePovertyOf(0.3, 0.3, 'year0').total/100;
+    return {pass:bad.length === 0 && Math.abs(y0 - CFG.EP_Y0_RATE) < 1e-15 && r1.epPY > 0, detail:'differing: ' + (bad.length ? bad.join(', ') : 'none') + '; unhoused share over 20 years, no programme: ' + r1.epPY.toFixed(3) + '%; year-0 rate ' + (y0*100).toFixed(2) + '%; cost per unhoused person-year $' + Math.round(AVOID_HOMELESS.low) + ' to $' + Math.round(AVOID_HOMELESS.high)};
+  });
+  return out;
+}
+Object.assign(module.exports, { avoidUnitSuite });
+Object.assign(module.exports, { SPEND_SOURCED });
+Object.assign(module.exports, { n1Row, SURP_DEFAULTS, setSurp:function(x){ SURP = x; }, getSPS:function(){ return SPS; }, ADVERSE_REFERENCE, STRESS_TEST, PROD_DEFAULTS, setProd:function(x){ PROD = x; }, getPDS:function(){ return PDS; }, JOIN_DEFAULTS, setJoin:function(x){ JOIN = x; }, getJNS:function(){ return JNS; } });
+/* Plan step 1 (Oct 1, 2026): tests for the ESP surplus split (SURP). Harness-only; run by `unit`. Bit-identity of every earlier output with
+ * SURP null was checked by diffing full outputs of testbed projcore, esp, match and a5 (3 seeds, three environments) and validate. */
+function surpUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, nr:applyNR6()};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; SPS = null; ESS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; PATHWAY_OFF.octaveWage = false; } }
+  var FI = FULL_INTEGRATION, CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0};
+  function sp(o){ return Object.assign({}, SURP_DEFAULTS, o || {}); }
+  function es(o){ return Object.assign({}, ESP_DEFAULTS, o || {}); }
+  function pj(o){ return Object.assign({}, PROJ_DEFAULTS, o || {}); }
+  function same(r1, r2, ks){ return ks.filter(function(k){ return r1[k] !== r2[k]; }); }
+  var SPK = TB_KEYS.filter(function(k){ return /^sp/.test(k); }), NOSP = TB_KEYS.filter(function(k){ return SPK.indexOf(k) < 0; });
+  /* a plain framework run (no price module), project hiring and ESP payroll on, with a callback after each year */
+  function plain(P, seed, each, before){ CONVERSION_MODEL = 'framework'; RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    RNG = mulberry32(seed); for (var y = 0; y < P.years; y++){ if (before) before(ag, y); runYear(ag, y, P, CALM); if (each) each(ag, y); } return ag; }
+  function tbPair(cfgA, cfgB, cases){  /* testbed runs (labor on, tax-financed, the main row's switches) under two settings; returns the keys that differ */
+    var bad = [];
+    cases.forEach(function(c){ var P = nextRoundPreset(c[0]), S = s3BaseS(P, c[1]), R = tbPresets(c[0]), o = {fin:'tax', grp:{part:c[0].partRate, pth:c[0].pthUptake}, noDamp:true};
+      CONVERSION_MODEL = 'framework'; PROJ = pj(); PATHWAY_OFF.octaveWage = true;
+      ESP = cfgA.es; SURP = cfgA.sp; var r0 = tbRun(R.cco(), c[1], o, S).res;
+      ESP = cfgB.es; SURP = cfgB.sp; var r1 = tbRun(R.cco(), c[1], o, S).res;
+      bad = bad.concat(same(r0, r1, NOSP)); });
+    return bad; }
+  var CASES = [[FI, 1], [FI, 2], [ADVERSE_REFERENCE, 1], [STRESS_TEST, 3]];
+  t('off: with SURP null no split state is created and no agent carries a split field (Full Integration, seed 1, framework, project hiring and ESP payroll on)', function(){
+    SURP = null; SPS = null; PROJ = pj(); ESP = es(); var ag = plain(FI, 1), n = 0;
+    ag.forEach(function(a){ if (a._spE !== undefined || a._spPay !== undefined || a._spCutY !== undefined) n++; });
+    return {pass:SPS === null && n === 0, detail:'SPS ' + (SPS === null ? 'null' : 'set') + '; agents with a split field: ' + n};
+  });
+  t('shares 0 in both phases (one split for every ESP) reproduce today\'s stand-in exactly on every testbed measure (labor on, tax-financed; Full Integration seeds 1-2, Adverse seed 1, Stress seed 3)', function(){
+    var bad = tbPair({es:es(), sp:null}, {es:es(), sp:sp({priv:'same', p1:[0, 0, 0], p2:[0, 0, 0]})}, CASES);
+    return {pass:bad.length === 0, detail:NOSP.length + ' measures compared in 4 runs; differing: ' + (bad.length ? bad.join(', ') : 'none')};
+  });
+  t('profit share 1 in both phases (one split for every ESP) reproduces ESP payroll\'s worker cooperative (d75 rest \'esp\') exactly on every testbed measure (same runs)', function(){
+    var bad = tbPair({es:es({rest:'esp'}), sp:null}, {es:es(), sp:sp({priv:'same', p1:[0, 0, 1], p2:[0, 0, 1], wk:'esp'})}, CASES);
+    return {pass:bad.length === 0, detail:NOSP.length + ' measures compared in 4 runs; differing: ' + (bad.length ? bad.join(', ') : 'none')};
+  });
+  t('conservation, every year: pool = owners + PTFs\' part; PTFs\' part = price share + reinvestment + profit share + remainder; price pool = cuts used + carried; dollars paid = profit share + owners + remainder; cuts used = delta x customers\' essentials (defaults, \'same\', a remainder row, cuts on cash only; Full Integration and Stress, seed 1)', function(){
+    var worst = 0, v = [];
+    [[FI, sp()], [FI, sp({priv:'same'})], [FI, sp({priv:'same', p1:[1/3, 0, 0], p2:[1/3, 0, 0]})], [STRESS_TEST, sp({bu:'cash'})]].forEach(function(c){ PROJ = pj(); ESP = es(); SURP = c[1]; plain(c[0], 1);
+      var Y = SPS.y, sc = 0, e = 0, carryP = 0;
+      for (var y = 1; y < Y.length; y++){ var q = Y[y]; sc = Math.max(sc, Math.abs(q.pool));
+        var sh = q.phase === 1 ? c[1].p1 : c[1].p2, pr = q.ptf*sh[0] + (c[1].rv === 'price' ? q.ptf*sh[1] : 0);
+        e = Math.max(e, Math.abs(q.pool - q.own - q.ptf), Math.abs(q.pp - pr - q.carryIn), Math.abs(q.pp - q.used - q.carryOut), Math.abs(q.cut - q.used), Math.abs(q.used - q.delta*q.sum),
+          Math.abs(q.paid - (q.profit + q.own + q.rest)), Math.abs(q.ptf*(sh[0] + sh[1] + sh[2]) + q.rest - q.ptf)); }
+      worst = Math.max(worst, e/Math.max(1, sc)); v.push(c[1].priv + '/' + c[1].bu + ' ' + e.toExponential(1)); });
+    return {pass:worst < 1e-9, detail:'largest gap per dollar of pool ' + worst.toExponential(1) + ' (' + v.join('; ') + ')'};
+  });
+  t('each customer\'s cut = delta x their essentials at own prices; for a participant the BU a cut frees = the cut less the cash saving, and they leave the ESP\'s intake and enter the project pool (defaults and \'same\', Full Integration, seed 1, ledger on)', function(){
+    var worst = 0, wf = 0, n = 0, fr = 0;
+    [sp(), sp({priv:'same'})].forEach(function(q){ PROJ = pj(); ESP = es(); SURP = q; LEDGER = newLedger();
+      plain(FI, 1, function(ag, y){ var d = SPS.y[y].delta, f = 0, spent0 = 0;
+        ag.forEach(function(a){ if (a._spCutY > 0){ n++; worst = Math.max(worst, Math.abs(a._spCutY - d*a._spE)/a._spE); }
+          if (FI.ccoOn && a.inCCO) spent0 += 12*a._fwBUm; });
+        var L = LEDGER.y[y]; f = spent0 - L.fwBUSpent; fr += SPS.y[y].freed;
+        wf = Math.max(wf, Math.abs(f - SPS.y[y].freed)/Math.max(1, spent0), Math.abs(SPS.y[y].pjFreed - SPS.y[y].freed)/Math.max(1, spent0)); }); });
+    return {pass:n > 0 && worst < 1e-12 && wf < 1e-12 && fr > 0, detail:n + ' cuts; largest gap from delta x essentials ' + worst.toExponential(1) + ' (relative); BU freed = BU spent without the cut - BU spent, and = BU added to the project pool: gap ' + wf.toExponential(1) + '; BU freed $' + Math.round(fr)};
+  });
+  t('delta <= 1, no cost below zero, carried pool when the cut is capped, and non-customers get no cut (customers \'pp\'; every PTF share to prices on a tiny customer set; Full Integration, seed 1)', function(){
+    var bad = 0, non = 0, nonC = 0, capped = 0, carry = 0;
+    PROJ = pj(); ESP = es(); SURP = sp({priv:'same', cust:'pp'}); plain(FI, 1, function(ag, y){ ag.forEach(function(a){ var c = (FI.ccoOn && a.inCCO) || (FI.ptf && a.inPTF);
+      if (a.yrCostUSD < 0) bad++; if (!a._spE){ non++; if (a._spCutY > 0) nonC++; } }); });
+    var nonA = non;
+    SURP = sp({priv:'same', cust:'ptf', p1:[1, 0, 0], p2:[1, 0, 0]}); plain(Object.assign({}, FI, {ptfShare:0.02}), 1, function(ag, y){ var q = SPS.y[y]; if (q.delta > 1 + 1e-12) bad++; if (q.delta === 1){ capped++; carry = Math.max(carry, q.carryOut); }
+      ag.forEach(function(a){ if (a.yrCostUSD < -1e-9) bad++; }); });
+    return {pass:bad === 0 && nonC === 0 && nonA > 0 && capped > 0 && carry > 0, detail:'violations ' + bad + '; non-customer adult-years ' + nonA + ', cut to a non-customer ' + nonC + '; years with delta = 1: ' + capped + ', largest carried pool $' + Math.round(carry)};
+  });
+  t('phase 2 starts the year after the capital account reaches K; K = Infinity keeps phase 1 for 20 years; K = 0 gives phase 2 from year 1; swYear 10 gives phase 2 from year 10 (Full Integration, seed 1)', function(){
+    var ok = true, v = [];
+    PROJ = pj(); ESP = es(); SURP = sp({priv:'same'}); plain(FI, 1); var Y = SPS.y, sw = SPS.sw, exp = -1;
+    for (var y = 1; y < Y.length; y++) if (Y[y - 1].capPA >= SURP.K){ exp = y; break; }
+    if (sw !== exp || sw < 2) ok = false; v.push('defaults: switch year ' + sw + ' (expected ' + exp + '), capital before it $' + Math.round(Y[sw - 1].capPA) + ' >= $' + SURP.K + ' > $' + Math.round(Y[sw - 2].capPA));
+    for (y = 1; y < Y.length; y++) if (Y[y].phase !== (y >= sw ? 2 : 1)) ok = false;
+    SURP = sp({priv:'same', K:Infinity}); plain(FI, 1); if (SPS.sw !== -1) ok = false; v.push('Infinity: ' + SPS.sw);
+    SURP = sp({priv:'same', K:0}); plain(FI, 1); if (SPS.sw !== 1) ok = false; v.push('0: ' + SPS.sw);
+    SURP = sp({priv:'same', swYear:10}); plain(FI, 1); if (SPS.sw !== 10) ok = false; v.push('swYear 10: ' + SPS.sw);
+    return {pass:ok, detail:v.join('; ')};
+  });
+  t('random numbers: the split adds no draw (8 per agent-year, Full Integration, 20 years, ESP payroll on and off); the engine model is unaffected when SURP is set (testbed, labor on; Full Integration seeds 1-2)', function(){
+    var n = [];
+    [[null, es()], [sp(), es()], [sp(), null]].forEach(function(q){ SURP = q[0]; ESP = q[1]; PROJ = pj(); CONVERSION_MODEL = 'framework'; RNG = mulberry32(700004);
+      var ag = makeLatentPopulation(FI.nAgents).map(function(l){ return instantiateAgent(l, FI); }), base = mulberry32(1), k = 0; RNG = function(){ k++; return base(); };
+      for (var y = 0; y < FI.years; y++) runYear(ag, y, FI, CALM); n.push(k); });
+    var ok = true, P = nextRoundPreset(FI), R = tbPresets(FI);
+    for (var sd = 1; sd <= 2; sd++){ var S = s3BaseS(P, sd); CONVERSION_MODEL = 'engine'; PROJ = pj(); ESP = es();
+      SURP = null; var r0 = tbRun(R.cco(), sd, {fin:'tax', grp:{part:FI.partRate, pth:FI.pthUptake}}, S).res;
+      SURP = sp(); var r1 = tbRun(R.cco(), sd, {fin:'tax', grp:{part:FI.partRate, pth:FI.pthUptake}}, S).res;
+      if (same(r0, r1, TB_KEYS).length) ok = false; }
+    return {pass:ok && n[0] === n[1] && n[1] === n[2] && n[0] === 8*FI.nAgents*FI.years, detail:'draws ' + n.join(' / ') + ' (off / on / on without ESP payroll); engine model: ' + TB_KEYS.length + ' measures identical: ' + ok};
+  });
+  t('accounting (d105): each year the testbed\'s conversion line holds every conversion dollar paid, the cuts used and the reinvestment; the BU-relief line holds the BU spent and not the cut (Full Integration, seed 1, testbed accounting on)', function(){
+    var worst = 0, wb = 0, yrs = 0;
+    PROJ = pj(); ESP = es(); SURP = sp(); LEDGER = newLedger(); TB = {fin:'tax', tau:0, X:0, inkindRho:true, neutralGate:true, cur:null};
+    var P = Object.assign({}, nextRoundPreset(FI), {tb:{}});
+    plain(P, 1, function(ag, y){ var C = TB.cur, conv = 0, cut = 0; ag.forEach(function(a){ conv += a.yrConvUSD || 0; cut += a._spCutY || 0; });
+      var want = conv + cut + SPS.y[y].reinv, L = LEDGER.y[y]; worst = Math.max(worst, Math.abs(C.conv - want)/Math.max(1, want));
+      wb = Math.max(wb, Math.abs(C.bu - (L.fwBUSpent || 0))/Math.max(1, L.fwBUSpent || 0)); if (SPS.y[y].reinv > 0 && cut > 0) yrs++; });
+    return {pass:worst < 1e-9 && wb < 1e-9 && yrs > 0, detail:'conversion line vs dollars paid + cuts + reinvestment: largest gap ' + worst.toExponential(1) + '; BU line vs BU spent: ' + wb.toExponential(1) + '; years with cuts and reinvestment ' + yrs};
+  });
+  t('who is paid: the profit share reaches ESP workers only, in proportion to last year\'s wage; under \'espPart\' participating ESP workers only; owners\' dollars are proportional to positive start-of-year wealth; the PTFs\' share = BU PTF members spent last year / all BU accepted (Full Integration, seed 1)', function(){
+    var leak = 0, got = 0, rat = 0, own = 0, w0 = {};
+    PROJ = pj(); ESP = es(); SURP = sp();
+    plain(FI, 1, function(ag, y){ if (y === 0) return; var r = null, o = null;  /* r: profit share per dollar of last year's wage; o: owners' dollars per dollar of positive wealth */
+      ag.forEach(function(a, i){ var prof = a._spPay - a._spOwn - a._spRest; if (!a._spWk && Math.abs(prof) > 1e-9) leak++;
+        if (a._spWk && prof > 0 && a._spPrevW > 0){ got++; var x = prof/a._spPrevW; if (r === null) r = x; rat = Math.max(rat, Math.abs(x/r - 1)); }
+        if (w0[i] > 0 && a._spOwn > 0){ var z = a._spOwn/w0[i]; if (o === null) o = z; own = Math.max(own, Math.abs(z/o - 1)); } else if (!(w0[i] > 0) && a._spOwn !== 0) leak++; });
+      },
+      function(ag, y){ ag.forEach(function(a, i){ a._spPrevW = Math.max(0, a._fwW || 0); w0[i] = a.wealth; }); });
+    var ok1 = leak === 0 && got > 0 && rat < 1e-9 && own < 1e-9;
+    var lk2 = 0; SURP = sp({wk:'espPart'}); plain(FI, 1, function(ag, y){ ag.forEach(function(a){ if (a._spWk && !a.inCCO) lk2++; }); });
+    return {pass:ok1 && lk2 === 0, detail:'profit or owners\' dollars to the wrong adult: ' + leak + '; ESP worker-years paid ' + got + ', largest spread of share / last wage ' + rat.toExponential(1) + '; owners\' dollars / wealth spread ' + own.toExponential(1) + '; espPart non-participant workers ' + lk2};
+  });
+  t('the PTFs\' share of the pool equals the BU PTF members spent last year over all BU the ESPs accepted, and the private remainder goes to owners (Full Integration and Stress, seed 1)', function(){
+    var worst = 0, v = [];
+    [FI, STRESS_TEST].forEach(function(P){ PROJ = pj(); ESP = es(); SURP = sp(); var bu = 0, bp = 0, prev = null;
+      plain(P, 1, function(ag, y){ var q = SPS.y[y]; if (prev && y > 0) worst = Math.max(worst, Math.abs(q.s - prev), Math.abs(q.own - q.pool*(1 - q.s))/Math.max(1, q.pool));
+        bu = 0; bp = 0; ag.forEach(function(a){ bu += a._spBU; if (P.ptf && a._spPtf0) bp += a._spBU; });
+        prev = bu > 0 ? bp/bu : null; },
+        function(ag, y){ ag.forEach(function(a){ a._spPtf0 = !!a.inPTF; }); });
+      v.push(Math.round(SPS.acc.ptf/Math.max(1e-9, SPS.acc.pool)*1000)/10 + '%'); });
+    return {pass:worst < 1e-12, detail:'largest gap ' + worst.toExponential(1) + '; PTFs\' share of the pool over the run: ' + v.join(' (Full Integration), ') + ' (Stress)'};
+  });
+  t('labor: the profit share is a raise for ESP workers only: with the labor module on, workers\' earnings response rises and non-workers\' is unchanged against the same split with the profit share sent to price cuts (Full Integration, seed 1, 6 years)', function(){
+    var r = {};
+    [[1/3, 1/3, 1/3], [2/3, 1/3, 0]].forEach(function(s, j){ PROJ = pj(); ESP = es(); SURP = sp({priv:'same', p1:s, p2:s}); LABOR = Object.assign({}, LABOR_DEFAULTS, {acc:null}); var wk = 0, nw = 0, nwk = 0, nnw = 0;
+      plain(Object.assign({}, FI, {years:6}), 1, function(ag, y){ if (y === 5) ag.forEach(function(a){ if (!(a._lbE0 > 0)) return; var x = (a.yrWageUSD + 0)/a._lbE0; if (a._spWk){ wk += x; nwk++; } else { nw += x; nnw++; } }); });
+      r[j] = {wk:wk/nwk, nw:nw/nnw}; });
+    return {pass:r[0].wk > r[1].wk, detail:'year-5 earnings / earnings with no response, ESP workers: ' + r[0].wk.toFixed(4) + ' (profit share) vs ' + r[1].wk.toFixed(4) + ' (none); others: ' + r[0].nw.toFixed(4) + ' vs ' + r[1].nw.toFixed(4) + ' (they differ only through prices and the income effect of cuts)'};
+  });
+  return out;
+}
+Object.assign(module.exports, { surpUnitSuite });
+/* Plan step 14 (Oct 2, 2026; d140): tests for the private-ESP correction (SURP.priv 'prices'). Harness-only; run by `unit`. Bit-identity of
+ * every earlier output with priv 'owners' (the default) was checked by diffing the full output of `testbed 10 release ref,adv,st`. */
+function privUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, nr:applyNR6(), rng:RNG};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; SPS = null; ESS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; } }
+  var FI = FULL_INTEGRATION, CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0};
+  function sp(o){ return Object.assign({}, SURP_DEFAULTS, o || {}); }
+  function plain(P, seed, each, count, before){ CONVERSION_MODEL = 'framework'; PROJ = Object.assign({}, PROJ_DEFAULTS); ESP = Object.assign({}, ESP_DEFAULTS);
+    RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    var base = mulberry32(seed), n = {c:0}; RNG = count ? function(){ n.c++; return base(); } : base;
+    for (var y = 0; y < P.years; y++){ if (before) before(ag, y); runYear(ag, y, P, CALM); if (each) each(ag, y); } return count ? n.c : ag; }
+  var ENVS = [[FI, 1], [ADVERSE_REFERENCE, 2], [STRESS_TEST, 3]];
+  t('no owners: under prices no adult receives owners\' dollars in any year (three environments)', function(){ var bad = 0, yrs = 0;
+    ENVS.forEach(function(c){ SURP = sp({priv:'prices'}); plain(c[0], c[1], function(ag, y){ yrs++; ag.forEach(function(a){ if (a._spOwn !== 0) bad++; }); if (SPS.y[y].own !== 0) bad++; }); });
+    return {pass:bad === 0 && yrs > 0, detail:yrs + ' run-years; adult-years with owners\' dollars: ' + bad}; });
+  t('every dollar accounted: each year the private premium = the workers\' match + the private price pool less the carry it brought in', function(){ var worst = 0, n = 0;
+    ENVS.forEach(function(c){ SURP = sp({priv:'prices'}); var cin = 0; plain(c[0], c[1], function(ag, y){ var q = SPS.y[y], priv = q.pool - q.ptf;
+      if (y > 0 && priv > 0){ n++; worst = Math.max(worst, Math.abs(q.privW + (q.privPool - cin) - priv)/priv); } cin = q.privPool - q.privUsed; }); });
+    return {pass:n > 0 && worst < 1e-9, detail:n + ' years with a private premium; worst relative gap ' + worst.toExponential(2)}; });
+  t('workers matched: the match is the PTFs\' profit-share fraction of the private premium (1/3 in phase 1); none under privWk \'none\'', function(){ var worst = 0, n = 0, nz = 0;
+    [sp({priv:'prices'}), sp({priv:'prices', privWk:'none'})].forEach(function(q, k){ SURP = q; plain(FI, 1, function(ag, y){ var r = SPS.y[y], f = r.phase === 1 ? q.p1[2] : q.p2[2], priv = r.pool - r.ptf;
+      if (y > 0){ n++; var want = k === 0 ? priv*f : 0; worst = Math.max(worst, Math.abs(r.privW - want)/Math.max(1, priv)); if (k === 1 && r.privW !== 0) nz++; } }); });
+    return {pass:n > 0 && worst < 1e-12 && nz === 0, detail:n + ' years; worst gap ' + worst.toExponential(2)}; });
+  t('who gets the cut: only participants who are not PTF members and spent BU last year; never more than their own essentials; the pool is never overspent', function(){ var bad = 0, got = 0, over = 0;
+    ENVS.forEach(function(c){ SURP = sp({priv:'prices'}); var m0 = null; plain(c[0], c[1], function(ag, y){ var q = SPS.y[y], used = 0;  /* memberships at the start of the year, when the cut is shared */
+      ag.forEach(function(a, i){ var v = a._spV || 0; used += v; if (v > 0){ got++; if (!(a._spVw > 0) || !m0[i].cco || (m0[i].ptf && c[0].ptf) || v > a._spVE*(1 + 1e-12)) bad++; } });
+      if (used > q.privPool*(1 + 1e-12) + 1e-9) over++; }, false, function(ag){ m0 = ag.map(function(a){ return {ptf:!!a.inPTF, cco:!!a.inCCO}; }); }); });
+    return {pass:bad === 0 && over === 0 && got > 0, detail:got + ' adult-years with a cut; wrong recipient or above own essentials: ' + bad + '; years overspent: ' + over}; });
+  t('the cut is applied: each year the private price cuts taken equal the pool shared out (a non-PTF participant has no PTF cut to collide with)', function(){ var worst = 0, n = 0;
+    ENVS.forEach(function(c){ SURP = sp({priv:'prices'}); plain(c[0], c[1], function(ag, y){ var q = SPS.y[y]; if (q.privUsed > 0){ n++; worst = Math.max(worst, Math.abs(q.cutV - q.privUsed)/q.privUsed); } }); });
+    return {pass:n > 0 && worst < 1e-9, detail:n + ' years; worst relative gap ' + worst.toExponential(2)}; });
+  t('CRN: the correction draws no random numbers (same number of draws as the owners rule; three environments)', function(){ var d = [];
+    ENVS.forEach(function(c){ SURP = sp(); var a = plain(c[0], c[1], null, true); SURP = sp({priv:'prices'}); var b = plain(c[0], c[1], null, true); if (a !== b) d.push(a + ' vs ' + b); });
+    return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'draw counts equal'}; });
+  return out;
+}
+Object.assign(module.exports, { privUnitSuite });
+/* Plan step 15 (Oct 2, 2026; d137-d139): tests for creative output at market value (PROD.match 'market') and capacity within a year
+ * (PROD.speed 'oneyear'). Harness-only; run by `unit`. With the session-30 options (face, reinvest) testbed output is identical (diffed). */
+function v5ProdUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, nr:applyNR6(), rng:RNG};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; SPS = null; PDS = null; ESS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; } }
+  var FI = FULL_INTEGRATION, CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0};
+  function cfg(pd, sp){ SURP = Object.assign({}, SURP_DEFAULTS, sp || {}); PROD = Object.assign({}, PROD_DEFAULTS, pd || {}); }
+  function plain(P, seed, each, count, before){ CONVERSION_MODEL = 'framework'; PROJ = Object.assign({}, PROJ_DEFAULTS); ESP = Object.assign({}, ESP_DEFAULTS);
+    RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    var base = mulberry32(seed), n = {c:0}; RNG = count ? function(){ n.c++; return base(); } : base;
+    for (var y = 0; y < P.years; y++){ if (before) before(ag, y); runYear(ag, y, P, CALM); if (each) each(ag, y); } return count ? n.c : ag; }
+  var ENVS = [[FI, 1], [ADVERSE_REFERENCE, 2], [STRESS_TEST, 3]];
+  t('market: every adult\'s matched project output equals their whole project payout (and never exceeds it under face)', function(){ var bad = 0, n = 0, over = 0;
+    ENVS.forEach(function(c){ cfg({match:'market'}); plain(c[0], c[1], function(ag){ ag.forEach(function(a){ if (a._pdNy > 0){ n++; if (Math.abs(a._pdMy - a._pdNy) > 1e-9*a._pdNy) bad++; } }); });
+      cfg({match:'face'}); plain(c[0], c[1], function(ag){ ag.forEach(function(a){ if (a._pdNy > 0 && a._pdMy > a._pdNy*(1 + 1e-12)) over++; }); }); });
+    return {pass:n > 0 && bad === 0 && over === 0, detail:n + ' adult-years with project pay; mismatched: ' + bad + '; face above payout: ' + over}; });
+  t('oneyear: capacity is never below what reinvestment pays for; the borrowed part is (capacity - owned) x K; last year\'s unmet demand is served', function(){ var bad = 0, n = 0, bor = 0;
+    ENVS.forEach(function(c){ cfg({speed:'oneyear'}); var blk = 0; plain(c[0], c[1], function(ag, y){ var q = PDS.y[y]; n++;
+      if (q.cap < q.own - 1e-12 || Math.abs(q.bor - Math.max(0, q.cap - q.own)*SURP.K) > 1e-6) bad++; if (q.bor > 0) bor++;
+      if (y > 0 && q.cap < Math.min(1, (q.mem*c[0].nAgents + blk)/c[0].nAgents) - 1e-12) bad++; blk = PDS.blk; }, false, function(){ }); });
+    return {pass:n > 0 && bad === 0 && bor > 0, detail:n + ' years; years with borrowed capacity: ' + bor + '; violations: ' + bad}; });
+  t('the capital charge: each year paid + carried shortfall = due; due = borrowed x (depreciation + real interest) x adults x price index + last year\'s shortfall', function(){ var worst = 0, n = 0;
+    ENVS.forEach(function(c){ cfg({speed:'oneyear'}); var debt = 0; plain(c[0], c[1], function(ag, y){ var q = SPS.y[y], b = PDS.y[y].bor; if (q.chDue > 0){ n++;
+      var idx = q.chDue/(b*(PROD_CAP_DEP + PROD_CAP_INT)*c[0].nAgents + debt || 1);
+      worst = Math.max(worst, Math.abs(q.ch + PDS.debt*idx - q.chDue)/q.chDue); } debt = PDS.debt; }); });
+    return {pass:n > 0 && worst < 1e-9, detail:n + ' years with a charge; worst relative gap ' + worst.toExponential(2) + '; rate ' + ((PROD_CAP_DEP + PROD_CAP_INT)*100).toFixed(3) + '%'}; });
+  t('ESP octave cap (d139): the BU an adult spends at ESPs never exceed the essentials they would buy with BU before any price cut', function(){ var bad = 0, n = 0;
+    ENVS.forEach(function(c){ cfg({speed:'oneyear', match:'market'}, {priv:'prices'}); plain(c[0], c[1], function(ag){ ag.forEach(function(a){ if (a._spBU > 0){ n++; if (a._spBU > 12*a._fwBUm*(1 + 1e-12)) bad++; } }); }); });
+    return {pass:n > 0 && bad === 0, detail:n + ' adult-years spending BU; above their essentials: ' + bad}; });
+  t('CRN: market and oneyear draw no random numbers (same number of draws as face and reinvest; three environments)', function(){ var d = [];
+    ENVS.forEach(function(c){ cfg(); var a = plain(c[0], c[1], null, true); cfg({speed:'oneyear', match:'market'}); var b = plain(c[0], c[1], null, true); if (a !== b) d.push(a + ' vs ' + b); });
+    return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'draw counts equal'}; });
+  return out;
+}
+Object.assign(module.exports, { v5ProdUnitSuite });
+/* Plan step 16 (Oct 2, 2026): tests for the spending layer (MULT). Harness-only; run by `unit`. With MULT null testbed output is identical (diffed). */
+function multUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, ml:MULT, nr:applyNR6(), rng:RNG};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; MULT = sv.ml; MLS = null; SPS = null; PDS = null; ESS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; PATHWAY_OFF.octaveWage = false; } }
+  /* one testbed run of the release row with the spending layer at multiplier m (null = off), Source financing; returns per-year MLS and the result */
+  function run(E, seed, m, base, count){ var P = nextRoundPreset(E), S = s3BaseS(P, seed), R = tbPresets(E), o = {fin:'source', a:0, grp:{part:E.partRate, pth:E.pthUptake}, noDamp:true};
+    CONVERSION_MODEL = 'framework'; PROJ = Object.assign({}, PROJ_DEFAULTS); ESP = Object.assign({}, ESP_DEFAULTS); SURP = Object.assign({}, SURP_DEFAULTS, {priv:'prices'});
+    PROD = Object.assign({}, PROD_DEFAULTS, {match:'market', speed:'oneyear'}); PATHWAY_OFF.octaveWage = true; MULT = m === null ? null : Object.assign({}, MULT_DEFAULTS, {m:m}); MLS = null;
+    var res = tbRun(base ? R.baseline() : R.cco(), seed, o, S).res; return {res:res, y:MLS ? MLS.y.slice() : null}; }
+  t('never outside a recession, never above the recession\'s wage loss, and = min(loss, labour share x m x push) inside one (Adverse, Stress)', function(){ var bad = 0, rec = 0, n = 0;
+    [[ADVERSE_REFERENCE, 1], [ADVERSE_REFERENCE, 2], [STRESS_TEST, 3]].forEach(function(c){ var R = run(c[0], c[1], 1.5), path = buildRecessionPath(c[0].years, c[1]);
+      R.y.forEach(function(q, y){ n++; var act = path[y].active && path[y].incomeMultiplier < 1;
+        if (!act && (q.fill !== 0 || q.rest !== 0)) bad++;
+        if (act && q.push > 0){ rec++; if (q.rest > q.loss*(1 + 1e-12) || Math.abs(q.rest - Math.min(q.loss, MULT_LS*1.5*q.push)) > 1e-6*Math.max(1, q.loss) || q.fill < 0 || q.fill > 1 + 1e-12) bad++; } }); });
+    return {pass:n > 0 && rec > 0 && bad === 0, detail:n + ' years; recession years with a push: ' + rec + '; violations: ' + bad}; });
+  t('no programme, no push: the no-programme run gets no fill', function(){ var R = run(ADVERSE_REFERENCE, 1, 1.5, true), f = 0; (R.y || []).forEach(function(q){ if (q.fill !== 0) f++; });
+    return {pass:f === 0, detail:'years with a fill: ' + f}; });
+  t('a higher multiplier never fills less, and a fill never lowers anyone\'s income (Adverse seed 1)', function(){ var lo = run(ADVERSE_REFERENCE, 1, 0.8), hi = run(ADVERSE_REFERENCE, 1, 2.2), bad = 0;
+    lo.y.forEach(function(q, y){ var h = hi.y[y]; if (h.push > 0 && q.push > 0 && Math.abs(h.push - q.push) < 1e-9*q.push && h.fill < q.fill - 1e-12) bad++; if (q.fill < 0) bad++; });
+    return {pass:bad === 0, detail:'violations: ' + bad}; });
+  t('off: MULT null creates no spending-layer state', function(){ var R = run(ADVERSE_REFERENCE, 1, null); return {pass:R.y === null, detail:R.y === null ? 'no state' : 'state created'}; });
+  return out;
+}
+Object.assign(module.exports, { multUnitSuite });
+/* Plan step 17 (Oct 2, 2026): tests for the wider public costs avoided (reporting only). Harness-only; run by `unit`. */
+function avoidWideUnitSuite(){
+  var out = [];
+  function t(name, fn){ try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } }
+  t('nothing in, nothing out: no gap closed and nobody lifted gives zero at every end; a worsening (negative change) also gives zero', function(){ var a = avoidWide(0, 0), b = avoidWide(-500, -0.02);
+    return {pass:a.low === 0 && a.main === 0 && a.high === 0 && b.main === 0 && b.high === 0, detail:'zero and negative inputs'}; });
+  t('low <= main <= high, and main = prisons + health', function(){ var bad = 0; [[1000, 0.01], [8000, 0.2], [0, 0.3], [20000, 0]].forEach(function(c){ var w = avoidWide(c[0], c[1]);
+      if (!(w.low <= w.main && w.main <= w.high) || Math.abs(w.main - w.jail - w.health) > 1e-9) bad++; }); return {pass:bad === 0, detail:'violations: ' + bad}; });
+  t('the sourced constants: prisons $' + AVOID_WIDE.jMain.toFixed(3) + ' and $' + AVOID_WIDE.jHigh.toFixed(3) + ' per gap dollar; hospital $' + AVOID_WIDE.hosp.toFixed(2) + ', psychiatric $' + AVOID_WIDE.psych.toFixed(2) + ', emergency (high only) $' + AVOID_WIDE.erHigh.toFixed(2) + ' per person-year lifted', function(){
+    var ok = Math.abs(AVOID_WIDE.jHigh - 41000/37700) < 1e-12 && Math.abs(AVOID_WIDE.jMain - (0.0070/0.047)*(30200/37700)) < 1e-12 && AVOID_WIDE.hosp > 50 && AVOID_WIDE.hosp < 150;
+    return {pass:ok, detail:'checked against the cited figures'}; });
+  return out;
+}
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS });
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
@@ -2761,7 +3580,55 @@ if (require.main === module) {
     console.log('\n=== s34UnitSuite(): the damping off by default, the capacity term and the N1 rows in match (s34; harness-only) ===');
     ZU.forEach(function(x){ if (!x.pass) zf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + ZU.length + ' run, ' + zf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf) process.exitCode = 1;
+    var SU = surpUnitSuite(), sf = 0;
+    console.log('\n=== surpUnitSuite(): plan step 1, the ESP surplus split (harness-only) ===');
+    SU.forEach(function(x){ if (!x.pass) sf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + SU.length + ' run, ' + sf + ' failed');
+    var PDU = prodUnitSuite(), pdf = 0;
+    console.log('\n=== prodUnitSuite(): plan step 2, the production side (harness-only) ===');
+    PDU.forEach(function(x){ if (!x.pass) pdf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + PDU.length + ' run, ' + pdf + ' failed');
+    var SRU = srcUnitSuite(), srf = 0;
+    console.log('\n=== srcUnitSuite(): plan step 3, the Source financing (harness-only) ===');
+    SRU.forEach(function(x){ if (!x.pass) srf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + SRU.length + ' run, ' + srf + ' failed');
+    var JNU = joinUnitSuite(), jnf = 0;
+    console.log('\n=== joinUnitSuite(): plan step 4, joining and leaving (harness-only) ===');
+    JNU.forEach(function(x){ if (!x.pass) jnf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + JNU.length + ' run, ' + jnf + ' failed');
+    var CSU = costUnitSuite(), csf = 0;
+    console.log('\n=== costUnitSuite(): plan step 5, PTF running costs and PTH capital (harness-only) ===');
+    CSU.forEach(function(x){ if (!x.pass) csf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + CSU.length + ' run, ' + csf + ' failed');
+    var OCU = octUnitSuite(), ocf = 0;
+    console.log('\n=== octUnitSuite(): plan step 6, the octave rule (harness-only) ===');
+    OCU.forEach(function(x){ if (!x.pass) ocf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + OCU.length + ' run, ' + ocf + ' failed');
+    var SPU = spendUnitSuite(), spf = 0;
+    console.log('\n=== spendUnitSuite(): plan step 7, the spending rule (harness-only) ===');
+    SPU.forEach(function(x){ if (!x.pass) spf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + SPU.length + ' run, ' + spf + ' failed');
+    var AVU = avoidUnitSuite(), avf = 0;
+    console.log('\n=== avoidUnitSuite(): plan step 9, public costs of poverty avoided (harness-only) ===');
+    AVU.forEach(function(x){ if (!x.pass) avf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + AVU.length + ' run, ' + avf + ' failed');
+    var PVU = privUnitSuite(), pvf = 0;
+    console.log('\n=== privUnitSuite(): plan step 14, private ESPs pass the premium to BU customers (harness-only) ===');
+    PVU.forEach(function(x){ if (!x.pass) pvf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + PVU.length + ' run, ' + pvf + ' failed');
+    var V5P = v5ProdUnitSuite(), v5f = 0;
+    console.log('\n=== v5ProdUnitSuite(): plan step 15, creative output at market value and capacity within a year (harness-only) ===');
+    V5P.forEach(function(x){ if (!x.pass) v5f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + V5P.length + ' run, ' + v5f + ' failed');
+    var MLU = multUnitSuite(), mlf = 0;
+    console.log('\n=== multUnitSuite(): plan step 16, the spending layer (harness-only) ===');
+    MLU.forEach(function(x){ if (!x.pass) mlf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + MLU.length + ' run, ' + mlf + ' failed');
+    var AWU = avoidWideUnitSuite(), awf = 0;
+    console.log('\n=== avoidWideUnitSuite(): plan step 17, wider public costs avoided (harness-only) ===');
+    AWU.forEach(function(x){ if (!x.pass) awf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + AWU.length + ' run, ' + awf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -3770,7 +4637,14 @@ if (require.main === module) {
      *  match     each Compassionism preset against UBI, NIT and asset endowment matched to its gross cost per adult-year, plus X-Cents
      *            and public grocery at their own cost; tax-financed and money-created (aT = 0; Compassionism also at a = 1); group check.
      *  frontier  cost against basket FGT2 per design family, tax-financed (and money-created with --fin=money).
-     *  esp       (session 19, s38) ESP payroll in the Hub-spec model: today's main row against ESP payroll at the defaults, its
+     *  join      (plan step 4) joining and leaving on step 3's main row. Later steps add sections the same way (stepSection).
+ *  fin       (plan step 3, Oct 1, 2026) the Source financing (BU issued by a Source; conversion paid by it; conversion tax and expired BU
+ *            return to it) against the wage contribution, with H1 and the other readings as sensitivities. Framework model only.
+ *  prod      (plan step 2, Oct 1, 2026) the production side (PTF capacity built by reinvestment; matched output) against the step-1
+ *            row, under tax, hybrid and money financing. Framework model only.
+ *  surp      (plan step 1, Oct 1, 2026) the ESP surplus split in the Hub-spec model against today's main row, its sensitivities, the
+ *            page's other rows with it, and hybrid financing at a = 0 and 1. Framework model only.
+ *  esp       (session 19, s38) ESP payroll in the Hub-spec model: today's main row against ESP payroll at the defaults, its
      *            sensitivities (d71-d75), the page's other rows with it, and hybrid financing at a = 0 and 1. Framework model only.
      *  Session 21 (s41; i10-1): esp, proj and projcore also print BLEI by group beside FGT2 (bleiTables): participants and adults
      *  who chose not to take part, on three readings of BLEI (design-neutral, the design's own, net of the contribution).
@@ -4184,6 +5058,340 @@ if (require.main === module) {
         if (!infl) console.log(D33_NOTE);
       });
     }
+    /* Plan step 1 (Oct 1, 2026): the ESP surplus split restudy (N1-design-esp-surplus.md, Section 8; dev/reports/01-esp-split.md). Hub-spec
+     * model, tax-financed at each row's own cost unless stated, CRN-paired. "today" is the s34 main row (ESP payroll, the premium paid to every
+     * adult by wage). Sensitivities vary one setting of the main row; the "each part alone" rows use one split for every ESP with the rest of
+     * the premium paid as today, as the design's sizing did. Every row is compared on FGT2, basket poverty (person-year FGT0) and wealth poverty. */
+    if (secT === 'surp'){
+      envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, cm = 'framework';
+        var rows = [], T3 = 1/3;
+        function add(l, v, k, vs){ rows.push({l:l, v:v, k:k, vs:vs}); }
+        add('TODAY: the s34 main row (ESP payroll; the ESP\'s premium paid to every adult by wage)', {}, 'today');
+        add('MAIN: the ESP split; private ESPs\' owners keep their premium, PTFs split it (cuts to PTF members)', {sp:{}}, 'main', 'today');
+        add('  one split for every ESP, cuts to every adult (the design\'s d98-d102 defaults)', {sp:{priv:'same'}}, 'same', 'today');
+        add('  owners rule, PTF cuts to every adult (d98)', {sp:{cust:'all'}}, 's', 'main');
+        add('  owners rule, PTF cuts to participants and PTF members', {sp:{cust:'pp'}}, 's', 'main');
+        add('  owners rule, PTF cuts to participants', {sp:{cust:'part'}}, 's', 'main');
+        add('  capacity K with health care ($28,113)', {sp:{K:28113}}, 's', 'main');
+        add('  capacity K at half ($9,431)', {sp:{K:9431}}, 's', 'main');
+        add('  capacity from year 1 (K = 0)', {sp:{K:0}}, 's', 'main');
+        add('  capacity in year 5 (fixed)', {sp:{swYear:5}}, 's', 'main');
+        add('  capacity in year 10 (fixed)', {sp:{swYear:10}}, 's', 'main');
+        add('  capacity never reached (thirds throughout)', {sp:{K:Infinity}}, 's', 'main');
+        add('  cuts on cash purchases only (d99)', {sp:{bu:'cash'}}, 's', 'main');
+        add('  reinvestment\'s share spent as price cuts (d100)', {sp:{rv:'price'}}, 's', 'main');
+        add('  phase-2 worker share 20% (d103)', {sp:{p2:[0.8, 0, 0.2]}}, 's', 'main');
+        add('  phase-2 worker share 60% (d103)', {sp:{p2:[0.4, 0, 0.6]}}, 's', 'main');
+        add('  profit share to participating ESP workers only (d104)', {sp:{wk:'espPart'}}, 's', 'main');
+        add('  one split for every ESP: a third to price cuts alone, the rest paid as today', {sp:{priv:'same', p1:[T3, 0, 0], p2:[T3, 0, 0]}}, 's', 'today');
+        add('  one split for every ESP: a third to reinvestment alone, the rest paid as today', {sp:{priv:'same', p1:[0, T3, 0], p2:[0, T3, 0]}}, 's', 'today');
+        add('  one split for every ESP: a third to profit share alone, the rest paid as today', {sp:{priv:'same', p1:[0, 0, T3], p2:[0, 0, T3]}}, 's', 'today');
+        add('  one split for every ESP, capacity never reached', {sp:{priv:'same', K:Infinity}}, 's', 'same');
+        add('  one split for every ESP, capacity from year 1', {sp:{priv:'same', K:0}}, 's', 'same');
+        add('  page row: the gift financed over the run (d67), split', {gift:'run', sp:{}}, 'run', 'todayRun');
+        add('  today, the gift financed over the run', {gift:'run'}, 'todayRun');
+        add('  page row: SHADED, split with the two former stand-ins on', {raise:true, damp:true, sp:{}}, 'shaded', 'todaySh');
+        add('  today, the two former stand-ins on', {raise:true, damp:true}, 'todaySh');
+        [0, 1].forEach(function(a){ add('  split, hybrid financing, a = ' + a + (a ? ' (H1)' : ''), {fin:'hybrid', a:a, sp:{}}, 'hyb' + a, 'tHyb' + a);
+          add('  today, hybrid financing, a = ' + a + (a ? ' (H1)' : ''), {fin:'hybrid', a:a}, 'tHyb' + a); });
+        var idx = {}; rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
+        var cfg = [{p:PR.baseline()}], lbl = ['No program (Baseline)'];
+        rows.forEach(function(r){ cfg.push(n1Row(PR, cm, r.v)); lbl.push(r.l); });
+        function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
+        var t0 = Date.now(), R = tbStudy(cfg, nT, P, o), B = R[0], TD = R[idx.today], MN = R[idx.main];
+        function ci(d, n){ return sg(d.m, n) + ' [' + sg(d.lo, n) + ', ' + sg(d.hi, n) + ']'; }
+        console.log('\n--- surp (plan step 1): ' + E[0] + ' | ' + MLBL[cm] + ' | tax-financed at own cost unless stated | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+        console.log('Poverty, money and work. FGT2 = person-year basket FGT2 x100 (20-year average); basket poverty = person-year FGT0 (share of adult-years below the basket, %); wealth poverty = year-20 share below the wealth line (%). "vs pair": against the row named in the label\'s group (today, the main row, or the one-split row). Negative = less poverty.');
+        console.log('| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | FGT2 yr 20 vs Baseline | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 |');
+        console.log('|' + Array(15).join('---|'));
+        R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, j = vsI(i), C = j > 0 ? R[j] : null;
+          console.log('| ' + lbl[i] + ' | ' + $(r.cost) + ' | ' + (d ? ci(d) : f2(r.fgt2PY)) + ' | ' + (C ? ci(tbDiff(r, C, 'fgt2PY')) + ' | ' + ci(tbDiff(r, C, 'fgt0PY')) + ' | ' + ci(tbDiff(r, C, 'pov')) : '— | — | —') +
+            ' | ' + (i > 1 ? sg(tbDiff(r, TD, 'fgt2PY').m) : '—') + ' | ' + (i ? sg(tbDiff(r, B, 'fgt2').m) : f2(r.fgt2)) + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + pinf(r.endoAnn) + '% | ' + r.pLev20.toFixed(3) + ' |'); });
+        console.log('\nThe split\'s flows. Years 1-19, year-0 dollars per adult-year unless stated. Pool: the ESP\'s own premium (today\'s payout). Cut: the uniform price cut on customers\' essentials, mean by phase. Switch year: first year of phase 2, mean over seeds (range; seeds where capacity is never reached). Reaching non-participants: share of the pool (cuts and dollars); for today, their share of the payout.');
+        console.log('| Design | Pool | PTFs\' share | Owners\' dollars | Cut, phase 1 / phase 2 | Switch year | Cuts used | to non-participants | BU freed | Cash saved | Project net / participant-yr | Profit share / ESP worker-yr | Reinvestment | Capital / adult, yr 20 | Reaching non-participants |');
+        console.log('|' + Array(16).join('---|'));
+        R.forEach(function(r, i){ if (!i) return; var on = r.spPool > 0, sw = r._s.spSw, nv = 0, lo = 99, hi = 0, m = 0, k = 0;
+          for (var q = 0; q < sw.length; q++){ if (sw[q] >= 99) nv++; else { m += sw[q]; k++; lo = Math.min(lo, sw[q]); hi = Math.max(hi, sw[q]); } }
+          var nonT = (r.gNonK > 0 && r.bzPay > 0) ? r.payNon*r.gNonK/(r.gPartK + r.gNonK)/r.bzPay*100 : 0;
+          console.log('| ' + lbl[i] + ' | ' + (on ? $(r.spPool) : $(r.bzPay)) + ' | ' + (on ? f1(r.spPtfS) + '%' : '—') + ' | ' + (on ? $(r.spOwn) : '—') + ' | ' + (on ? f1(r.spD1) + '% / ' + (r.spD2 > 0 ? f1(r.spD2) + '%' : '—') : '—') +
+            ' | ' + (on ? (k ? f1(m/k) + ' (' + lo + '-' + hi + ')' : '—') + (nv ? '; never in ' + nv : '') : '—') + ' | ' + (on ? $(r.spCut) : '—') + ' | ' + (on ? $(r.spCutN) : '—') + ' | ' + (on ? $(r.spFreed) : '—') + ' | ' + (on ? $(r.spCash) : '—') +
+            ' | ' + $(r.pjNet + r.pjGift) + ' | ' + (on ? $(r.spProfW) : '—') + ' | ' + (on ? $(r.spReinv) : '—') + ' | ' + (on ? $(r.spCap) : '—') + ' | ' + (on ? f1(r.spNon) : f1(nonT) + ' (today)') + '% |'); });
+        console.log('\nGroups: change in real resources per adult-year over 20 years and person-year FGT2 x100, participants / non-participants / bottom third / top third by year-0 wage.');
+        console.log('| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |');
+        console.log('|---|---|---|---|---|');
+        R.forEach(function(r, i){ if (!i) return; var g = function(x, y){ return ['gPartRes', 'gNonRes', 'gLowRes', 'gTopRes'].map(function(k){ var dv = x[k] - y[k]; return (dv >= 0 ? '+' : '-') + $(Math.abs(dv)); }).join(' / '); };
+          console.log('| ' + lbl[i] + ' | ' + g(r, B) + ' | ' + (i !== idx.today ? g(r, TD) + ' | ' + sg(tbDiff(r, TD, 'gPartF2').m) + ' / ' + sg(tbDiff(r, TD, 'gNonF2').m) : '— | —') + ' | ' + grpCell(r, B).split(' | ')[1] + ' |'); });
+        bleiTables(R, lbl, B, function(i){ return i > 1 ? idx.today : -1; }, 'today');
+      });
+    }
+    /* Plan step 2 (Oct 1, 2026): the production side restudy (dev/reports/02-production-side.md). Hub-spec model, CRN-paired. Rows: today's
+     * main row, the step-1 main row (the split), and the split with the production side, under tax financing (where only PTF capacity acts)
+     * and under hybrid and money financing at a = 0 (where matched output lowers created money), with H1 (a = 1) as the sensitivity. */
+    if (secT === 'prod'){
+      envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, cm = 'framework';
+        var rows = [];
+        function add(l, v, k, vs){ rows.push({l:l, v:v, k:k, vs:vs}); }
+        add('TODAY: the s34 main row (ESP payroll; the ESP\'s premium paid to every adult by wage)', {}, 'today');
+        add('STEP 1: the ESP split (owners rule), PTF reach unlimited', {sp:{}}, 's1', 'today');
+        add('MAIN: the ESP split with the production side (PTF capacity built by reinvestment; matched output)', {sp:{}, pd:{}}, 'main', 's1');
+        add('  one split for every ESP, PTF reach unlimited', {sp:{priv:'same'}}, 'same', 'today');
+        add('  one split for every ESP, with the production side', {sp:{priv:'same'}, pd:{}}, 's', 'same');
+        add('  capacity K with health care ($28,113)', {sp:{K:28113}, pd:{}}, 's', 'main');
+        add('  capacity K at half ($9,431)', {sp:{K:9431}, pd:{}}, 's', 'main');
+        add('  the price module\'s capacity term at 1 (PTF cuts add essentials supply; d87)', {sp:{}, pd:{}, cap:1}, 's', 'main');
+        [['hybrid', 0], ['hybrid', 1], ['money', 0]].forEach(function(f){ var tag = ', ' + f[0] + ' financing, a = ' + f[1] + (f[1] ? ' (H1)' : '');
+          add('  step 1' + tag, {sp:{}, fin:f[0], a:f[1]}, 's1' + f[0] + f[1], 'today' + f[0] + f[1]);
+          add('  production side' + tag, {sp:{}, pd:{}, fin:f[0], a:f[1]}, 'pd' + f[0] + f[1], 's1' + f[0] + f[1]);
+          if (!f[1]) add('  production side, project hours at the worker\'s own wage' + tag, {sp:{}, pd:{match:'own'}, fin:f[0], a:f[1]}, 's', 'pd' + f[0] + f[1]);
+          add('  today' + tag, {fin:f[0], a:f[1]}, 'today' + f[0] + f[1]); });
+        var idx = {}; rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
+        var cfg = [{p:PR.baseline()}], lbl = ['No program (Baseline)'];
+        rows.forEach(function(r){ cfg.push(n1Row(PR, cm, r.v)); lbl.push(r.l); });
+        function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
+        var t0 = Date.now(), R = tbStudy(cfg, nT, P, o), B = R[0], TD = R[idx.today];
+        function ci(d, n){ return sg(d.m, n) + ' [' + sg(d.lo, n) + ', ' + sg(d.hi, n) + ']'; }
+        console.log('\n--- prod (plan step 2): ' + E[0] + ' | ' + MLBL[cm] + ' | tax-financed at own cost unless stated | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+        console.log('FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%). "vs pair": against the row named for it (today, step 1, the main row, or the same row without the production side). Negative = less poverty.');
+        console.log('| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | PTF capacity yr 5 / 10 / 19 | PTF members yr 19 | Switch year | Matched output / conversion |');
+        console.log('|' + Array(18).join('---|'));
+        R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, j = vsI(i), C = j > 0 ? R[j] : null, sw = r._s.spSw, nv = 0, m = 0, k = 0;
+          for (var q = 0; q < sw.length; q++){ if (sw[q] >= 99) nv++; else if (sw[q] > 0){ m += sw[q]; k++; } }
+          console.log('| ' + lbl[i] + ' | ' + $(r.cost) + ' | ' + (d ? ci(d) : f2(r.fgt2PY)) + ' | ' + (C ? ci(tbDiff(r, C, 'fgt2PY')) + ' | ' + ci(tbDiff(r, C, 'fgt0PY')) + ' | ' + ci(tbDiff(r, C, 'pov')) : '— | — | —') +
+            ' | ' + (i > 1 ? sg(tbDiff(r, TD, 'fgt2PY').m) : '—') + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.fin !== 'money' ? (r.tauMean*100).toFixed(1) + '%' : '—') + ' | ' + pinf(r.endoAnn) + '% | ' + r.pLev20.toFixed(3) +
+            ' | ' + (r.pdC19 > 0 ? f1(r.pdC5) + '% / ' + f1(r.pdC10) + '% / ' + f1(r.pdC19) + '%' : '—') + ' | ' + (r.pdC19 > 0 ? f1(r.pdMem19) + '%' : '—') + ' | ' + (r.spPool > 0 ? (k ? f1(m/k) : '—') + (nv ? '; never in ' + nv : '') : '—') + ' | ' + (r.pdMatch > 0 ? f1(r.pdMatch) + '%' : '—') + ' |'); });
+        console.log('\nGroups: change in real resources per adult-year over 20 years, participants / non-participants / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.');
+        console.log('| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |');
+        console.log('|---|---|---|---|---|');
+        R.forEach(function(r, i){ if (!i) return; var g = function(x, y){ return ['gPartRes', 'gNonRes', 'gLowRes', 'gTopRes'].map(function(k){ var dv = x[k] - y[k]; return (dv >= 0 ? '+' : '-') + $(Math.abs(dv)); }).join(' / '); };
+          console.log('| ' + lbl[i] + ' | ' + g(r, B) + ' | ' + (i !== idx.today ? g(r, TD) + ' | ' + sg(tbDiff(r, TD, 'gPartF2').m) + ' / ' + sg(tbDiff(r, TD, 'gNonF2').m) : '— | —') + ' | ' + grpCell(r, B).split(' | ')[1] + ' |'); });
+        bleiTables(R, lbl, B, function(i){ return i > 1 ? idx.today : -1; }, 'today');
+      });
+    }
+    /* Plan step 3 (Oct 1, 2026): how Compassionism pays for itself (dev/reports/03a-financing-reading.md, 03-financing.md). Hub-spec model,
+     * CRN-paired. The main row is step 2's row financed by the Source (S1-S6): every conversion paid by the Source, its net payout new money
+     * less the output that backs it, the wage contribution left only for the PTF and PTH price cuts and PTH appreciation. */
+    if (secT === 'fin'){
+      envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, cm = 'framework';
+        var rows = [], S2 = {sp:{}, pd:{}};
+        function add(l, v, k, vs, extra){ rows.push({l:l, v:v, k:k, vs:vs, x:extra}); }
+        add('TODAY: the s34 main row (wage contribution)', {}, 'today');
+        add('STEP 1: the ESP split (wage contribution)', {sp:{}}, 's1', 'today');
+        add('STEP 2: the split with the production side (wage contribution)', S2, 's2', 's1');
+        add('MAIN: step 2 paid for by the Source (S1-S6; a = 0)', Object.assign({fin:'source', a:0}, S2), 'main', 's2');
+        add('  Source, essentials bought with BU counted as backed by output', Object.assign({fin:'source', a:0}, S2), 's', 'main', {faceM:true});
+        add('  Source, H1: every dollar the Source pays backed by output (a = 1)', Object.assign({fin:'source', a:1}, S2), 'h1', 'main');
+        add('  Source, project hours at the worker\'s own wage', {sp:{}, pd:{match:'own'}, fin:'source', a:0}, 's', 'main');
+        add('  Source, one split for every ESP', {sp:{priv:'same'}, pd:{}, fin:'source', a:0}, 's', 'main');
+        add('  hybrid: conversion rewards new money, BU face value paid by the contribution (a = 0)', Object.assign({fin:'hybrid', a:0}, S2), 's', 'main');
+        add('  today\'s row paid for by the Source (a = 0)', {fin:'source', a:0}, 'tsrc', 'today');
+        add('  today\'s row paid for by the Source, H1 (a = 1)', {fin:'source', a:1}, 's', 'today');
+        var idx = {}; rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
+        var cfg = [{p:PR.baseline()}], lbl = ['No program (Baseline)'];
+        rows.forEach(function(r){ var c = n1Row(PR, cm, r.v); if (r.x) Object.assign(c.o, r.x); cfg.push(c); lbl.push(r.l); });
+        function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
+        var t0 = Date.now(), R = tbStudy(cfg, nT, P, o), B = R[0], TD = R[idx.today];
+        function ci(d, n){ return sg(d.m, n) + ' [' + sg(d.lo, n) + ', ' + sg(d.hi, n) + ']'; }
+        console.log('\n--- fin (plan step 3): ' + E[0] + ' | ' + MLBL[cm] + ' | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+        console.log('FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.');
+        console.log('| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Real value of $1 of BU, yr 20 | Median wealth, yr 20 (year-0 $) |');
+        console.log('|' + Array(16).join('---|'));
+        R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, j = vsI(i), C = j > 0 ? R[j] : null;
+          console.log('| ' + lbl[i] + ' | ' + $(r.cost) + ' | ' + (d ? ci(d) : f2(r.fgt2PY)) + ' | ' + (C ? ci(tbDiff(r, C, 'fgt2PY')) + ' | ' + ci(tbDiff(r, C, 'fgt0PY')) + ' | ' + ci(tbDiff(r, C, 'pov')) : '— | — | —') +
+            ' | ' + (i > 1 ? sg(tbDiff(r, TD, 'fgt2PY').m) : '—') + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + pinf(r.endoAnn) + '% | ' + r.pLev20.toFixed(3) +
+            ' | ' + (i ? '$' + r.realT.toFixed(3) : '—') + ' | ' + $(r.medWealthReal) + ' |'); });
+        console.log('\nThe Source\'s ledger, year-0 dollars per adult-year (all rows report it; it pays only where the row says the Source pays). Paid: BU face value spent at ESPs plus every conversion\'s proceeds. Tax kept: conversion tax withheld. Backed: output matched to the payout (step 2: reinvestment and project hours). New money: paid less backed, at a = 0.');
+        console.log('| Design | BU issued | Paid | Tax kept | Tax kept / BU issued | Backed by output | New money (a = 0) | Wage contribution need |');
+        console.log('|---|---|---|---|---|---|---|---|');
+        R.forEach(function(r, i){ if (!i) return; console.log('| ' + lbl[i] + ' | ' + $(r.srcIss) + ' | ' + $(r.srcPay) + ' | ' + $(r.srcTax) + ' | ' + f1(r.srcCover) + '% | ' + $(r.srcM) + ' | ' + $(r.srcPay - r.srcM) + ' | ' + $(r.need) + ' |'); });
+        console.log('\nGroups: change in real resources per adult-year over 20 years, participants / non-participants / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.');
+        console.log('| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |');
+        console.log('|---|---|---|---|---|');
+        R.forEach(function(r, i){ if (!i) return; var g = function(x, y){ return ['gPartRes', 'gNonRes', 'gLowRes', 'gTopRes'].map(function(k){ var dv = x[k] - y[k]; return (dv >= 0 ? '+' : '-') + $(Math.abs(dv)); }).join(' / '); };
+          console.log('| ' + lbl[i] + ' | ' + g(r, B) + ' | ' + (i !== idx.today ? g(r, TD) + ' | ' + sg(tbDiff(r, TD, 'gPartF2').m) + ' / ' + sg(tbDiff(r, TD, 'gNonF2').m) : '— | —') + ' | ' + grpCell(r, B).split(' | ')[1] + ' |'); });
+        bleiTables(R, lbl, B, function(i){ return i > 1 ? idx.today : -1; }, 'today');
+      });
+    }
+    /* Plans steps 4 onward (Oct 1, 2026): one printer for each step's restudy. rows: [{l, v (n1Row options; v.o merged into the row's options), k, vs}];
+     * the first row must be 'today'. ext: extra columns [header, function(r) -> text]. Prints poverty (FGT2, basket and wealth poverty, each
+     * against its pair with a 95% CI), money and work, the extra columns, groups and BLEI by group. */
+    function stepSection(tag, e, rows, ext, base){
+      var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, cm = 'framework', idx = {};
+      rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
+      var cfg = [Object.assign({p:PR.baseline()}, base || {})], lbl = ['No program (Baseline)' + (base && typeof base.sc === 'number' ? ', spending share ' + base.sc : '')];
+      rows.forEach(function(r){ var c = r.base ? Object.assign({p:PR.baseline()}, r.v) : n1Row(PR, cm, r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); cfg.push(c); lbl.push(r.l); });
+      function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
+      var t0 = Date.now(), R = tbStudy(cfg, nT, P, base && typeof base.sc === 'number' ? Object.assign({}, o, {sc:base.sc}) : o), B = R[0], TD = R[idx.today];
+      function ci(d, n){ return sg(d.m, n) + ' [' + sg(d.lo, n) + ', ' + sg(d.hi, n) + ']'; }
+      console.log('\n--- ' + tag + ': ' + E[0] + ' | ' + MLBL[cm] + ' | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
+      /* Plan step 8 (Oct 1, 2026): BLEI leads. Days of basic living an adult's resources cover (20% of wealth + a share of a month's wage + a month of
+       * BU used, over the daily basic cost), at year-0 prices. "Duke's BLEI" is the BLEI paper's definition (the page's: participants' wage share
+       * 0.20 and the lower PTH daily cost); "design-neutral" applies the Baseline's rules to everyone plus one month of the design's regular support. */
+      console.log('BLEI first (plan step 8). Days of basic living covered, year-0 prices. Duke\'s BLEI = the BLEI paper\'s definition (the page\'s); design-neutral = the Baseline\'s rules for everyone plus one month of the design\'s regular support. BLEI poverty = person-years below 30 days. Changes vs Baseline [95% CI]; negative = fewer below the line.');
+      console.log('| Design | Duke\'s BLEI: median days, yr 20 | Duke\'s BLEI poverty (person-years) | vs Baseline [95% CI] | Design-neutral: median days, yr 20 | Design-neutral BLEI poverty | vs Baseline [95% CI] |');
+      console.log('|---|---|---|---|---|---|---|');
+      R.forEach(function(r, i){ var dO = i ? tbDiff(r, B, 'bOAPy') : null, dN = i ? tbDiff(r, B, 'bNAPy') : null;
+        console.log('| ' + lbl[i] + ' | ' + Math.round(r.bOAMd) + ' | ' + f1(r.bOAPy) + '% | ' + (dO ? ci(dO) : '—') + ' | ' + Math.round(r.bNAMd) + ' | ' + f1(r.bNAPy) + '% | ' + (dN ? ci(dN) : '—') + ' |'); });
+      console.log('');
+      console.log('FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.');
+      console.log('| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 |' + ext.map(function(x){ return ' ' + x[0] + ' |'; }).join(''));
+      console.log('|' + Array(14 + ext.length).join('---|'));
+      R.forEach(function(r, i){ var d = i ? tbDiff(r, B, 'fgt2PY') : null, j = vsI(i), C = j > 0 ? R[j] : null; r._B = B;
+        console.log('| ' + lbl[i] + ' | ' + $(r.cost) + ' | ' + (d ? ci(d) : f2(r.fgt2PY)) + ' | ' + (C ? ci(tbDiff(r, C, 'fgt2PY')) + ' | ' + ci(tbDiff(r, C, 'fgt0PY')) + ' | ' + ci(tbDiff(r, C, 'pov')) : '— | — | —') +
+          ' | ' + (i > 1 ? sg(tbDiff(r, TD, 'fgt2PY').m) : '—') + ' | ' + f1(r.fgt0PY) + '% | ' + f1(r.pov) + '% | ' + sg(r.hrs*100, 1) + '% | ' + (r.tauMean*100).toFixed(1) + '% | ' + pinf(r.endoAnn) + '% | ' + r.pLev20.toFixed(3) + ' |' +
+          ext.map(function(x){ return ' ' + (i ? x[1](r) : '—') + ' |'; }).join('')); });
+      console.log('\nGroups: change in real resources per adult-year over 20 years, participants / non-participants (as at year 0) / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.');
+      console.log('| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |');
+      console.log('|---|---|---|---|---|');
+      R.forEach(function(r, i){ if (!i) return; var g = function(x, y){ return ['gPartRes', 'gNonRes', 'gLowRes', 'gTopRes'].map(function(k){ var dv = x[k] - y[k]; return (dv >= 0 ? '+' : '-') + $(Math.abs(dv)); }).join(' / '); };
+        console.log('| ' + lbl[i] + ' | ' + g(r, B) + ' | ' + (i !== idx.today ? g(r, TD) + ' | ' + sg(tbDiff(r, TD, 'gPartF2').m) + ' / ' + sg(tbDiff(r, TD, 'gNonF2').m) : '— | —') + ' | ' + grpCell(r, B).split(' | ')[1] + ' |'); });
+      bleiTables(R, lbl, B, function(i){ return i > 1 ? idx.today : -1; }, 'today');
+      return R;
+    }
+    /* Plan step 4 (Oct 1, 2026): joining and leaving (dev/reports/04-joining.md), on step 3's main row (the Source) and on the wage-contribution row. */
+    if (secT === 'join') envT.forEach(function(e){ var S3 = {sp:{}, pd:{}, fin:'source', a:0}, J = function(x){ return Object.assign({}, S3, {jn:x}); };
+      stepSection('join (plan step 4)', e, [
+        {l:'TODAY: the s34 main row (wage contribution)', v:{}, k:'today'},
+        {l:'STEP 3: split, production side, paid for by the Source', v:S3, k:'s3', vs:'today'},
+        {l:'MAIN: step 3 with open enrolment (revealed cost, minimum stay 2 years)', v:J({}), k:'main', vs:'s3'},
+        {l:'  taking part costs nothing (every adult joins)', v:J({cost:'none'}), k:'s', vs:'main'},
+        {l:'  the cost of taking part fixed in dollars', v:J({cost:'nominal'}), k:'s', vs:'main'},
+        {l:'  minimum stay 1 year', v:J({stay:1}), k:'s', vs:'main'},
+        {l:'  minimum stay 5 years', v:J({stay:5}), k:'s', vs:'main'},
+        {l:'  step 2 (wage contribution), fixed participation', v:{sp:{}, pd:{}}, k:'s2', vs:'today'},
+        {l:'  step 2 (wage contribution) with open enrolment', v:{sp:{}, pd:{}, jn:{}}, k:'s', vs:'s2'},
+        {l:'  step 2 (wage contribution), taking part costs nothing', v:{sp:{}, pd:{}, jn:{cost:'none'}}, k:'s', vs:'s2'}],
+        [['Participation yr 5 / 10 / 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP5) + '% / ' + f1(r.jnP10) + '% / ' + f1(r.jnP19) + '%' : '—'; }],
+         ['Joins / leaves per 100 adults', function(r){ return r.jnP19 > 0 ? f1(r.jnJoin) + ' / ' + f1(r.jnLeave) : '—'; }],
+         ['Real value of $1 of BU, yr 20', function(r){ return '$' + r.realT.toFixed(3); }]]);
+    });
+    /* Plan step 5 (Oct 1, 2026): PTF running costs and PTH capital (dev/reports/05-ptf-pth-costs.md), on step 4's main row. */
+    if (secT === 'cost') envT.forEach(function(e){ var S4 = {sp:{}, pd:{}, fin:'source', a:0, jn:{}}, W = function(x){ return Object.assign({}, S4, x); };
+      stepSection('cost (plan step 5)', e, [
+        {l:'TODAY: the s34 main row (wage contribution)', v:{}, k:'today'},
+        {l:'STEP 4: Source financing, open enrolment', v:S4, k:'s4', vs:'today'},
+        {l:'MAIN: step 4 with PTF running costs from sourced figures', v:W({cs:{}}), k:'main', vs:'s4'},
+        {l:'  price cuts free (every PTF and PTH cut counted as capacity, not a transfer)', v:W({cs:{}, o:{eP:1}}), k:'s', vs:'main'},
+        {l:'  step 2 (wage contribution)', v:{sp:{}, pd:{}}, k:'s2', vs:'today'},
+        {l:'  step 2 (wage contribution) with PTF running costs', v:{sp:{}, pd:{}, cs:{}}, k:'s', vs:'s2'},
+        {l:'  step 2 (wage contribution), price cuts free', v:{sp:{}, pd:{}, cs:{}, o:{eP:1}}, k:'s', vs:'s2'}],
+        [['Price cuts counted (PTF, PTH)', function(r){ return $(r.cCut); }], ['PTF discount funded by forgone profit', function(r){ return $(r.csFree); }],
+         ['Contribution need', function(r){ return $(r.need); }], ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }]]);
+    });
+    /* Plan step 6 (Oct 1, 2026): the octave rule (dev/reports/06-octave-rule.md). Today's rule is kept (step 5's main row); slower advancement is the sensitivity. */
+    if (secT === 'oct') envT.forEach(function(e){ var S5 = {sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}}, W = function(x){ return Object.assign({}, S5, x); };
+      stepSection('oct (plan step 6)', e, [
+        {l:'TODAY: the s34 main row (wage contribution)', v:{}, k:'today'},
+        {l:'MAIN (= step 5): today\'s octave rule (advancement gated by financial stability)', v:S5, k:'main', vs:'today'},
+        {l:'  at most one octave per 2 years', v:W({oc:{gap:2}}), k:'s', vs:'main'},
+        {l:'  at most one octave per 3 years', v:W({oc:{gap:3}}), k:'s', vs:'main'},
+        {l:'  at most one octave per 5 years', v:W({oc:{gap:5}}), k:'s', vs:'main'},
+        {l:'  step 2 (wage contribution), today\'s rule', v:{sp:{}, pd:{}}, k:'s2', vs:'today'},
+        {l:'  step 2 (wage contribution), one octave per 3 years', v:{sp:{}, pd:{}, oc:{gap:3}}, k:'s', vs:'s2'}],
+        [['Mean octave of participants, yr 20', function(r){ return r.octMean.toFixed(2); }], ['Project net / participant-yr', function(r){ return $(r.pjNet + r.pjGift); }]]);
+    });
+    /* Plan step 7 (Oct 1, 2026): the spending rule (dev/reports/07-spending-rule.md). Every row at the sourced share unless stated, Baseline included;
+     * the old placeholder (0.9) and the page's rule (0, save every dollar) as rows, each with its own Baseline row for reference. */
+    if (secT === 'spend') envT.forEach(function(e){ var SC = SPEND_SOURCED, S6 = {sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}}, W = function(x){ return Object.assign({}, S6, x); };
+      stepSection('spend (plan step 7)', e, [
+        {l:'TODAY: the s34 main row (wage contribution), spending share ' + SC, v:{sc:SC}, k:'today'},
+        {l:'STEP 6: step 6\'s main row at the old share (0.9)', v:W({sc:0.9}), k:'s6', vs:'today'},
+        {l:'MAIN: step 6\'s main row at the sourced share (' + SC + ')', v:W({sc:SC}), k:'main', vs:'s6'},
+        {l:'  share matching 2024\'s saving rate (' + SPEND_2024 + ')', v:W({sc:SPEND_2024}), k:'s', vs:'main'},
+        {l:'  save every dollar above the cost of living (the page today, 0)', v:W({sc:0}), k:'s', vs:'main'},
+        {l:'  H1 at the sourced share (every dollar the Source pays backed by output)', v:W({sc:SC, a:1}), k:'s', vs:'main'},
+        {l:'  step 2 (wage contribution) at the sourced share', v:{sp:{}, pd:{}, sc:SC}, k:'s', vs:'today'},
+        {l:'  [reference] no programme at the old share (0.9)', v:{sc:0.9}, base:true, k:'b9'},
+        {l:'  [reference] no programme at 0 (save every dollar)', v:{sc:0}, base:true, k:'b0'}],
+        [['Median wealth, yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }], ['Real value of $1 of BU, yr 20', function(r){ return '$' + r.realT.toFixed(3); }]], {sc:SC});
+    });
+    /* Plan step 8 (Oct 1, 2026): BLEI-led reporting (dev/reports/08-blei.md) on the combined row (steps 1-7), with the rows the release must show. */
+    if (secT === 'blei') envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = {sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC}, W = function(x){ return Object.assign({}, ALL, x); };
+      stepSection('blei (plan step 8)', e, [
+        {l:'TODAY: the s34 main row (wage contribution)', v:{sc:SC}, k:'today'},
+        {l:'MAIN: every mechanism (steps 1-7), paid for by the Source', v:ALL, k:'main', vs:'today'},
+        {l:'  H1: every dollar the Source pays backed by output', v:W({a:1}), k:'s', vs:'main'},
+        {l:'  essentials bought with BU counted as backed by output', v:W({o:{faceM:true}}), k:'s', vs:'main'},
+        {l:'  paid for by the wage contribution', v:W({fin:'tax'}), k:'s', vs:'main'},
+        {l:'  one split for every ESP', v:W({sp:{priv:'same'}}), k:'s', vs:'main'},
+        {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main'},
+        {l:'  price cuts free', v:W({o:{eP:1}}), k:'s', vs:'main'}],
+        [['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }], ['Median wealth, yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC});
+    });
+    /* Plan step 9 (Oct 1, 2026): public costs of poverty avoided (dev/reports/09-avoided-costs.md) beside the programme's cost, on the combined row. */
+    if (secT === 'avoid') envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = {sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC}, W = function(x){ return Object.assign({}, ALL, x); };
+      function av(r){ return (r._B.epPY - r.epPY)/100; }  /* unhoused share of person-years avoided */
+      stepSection('avoid (plan step 9)', e, [
+        {l:'TODAY: the s34 main row (wage contribution)', v:{sc:SC}, k:'today'},
+        {l:'MAIN: every mechanism (steps 1-7), paid for by the Source', v:ALL, k:'main', vs:'today'},
+        {l:'  H1: every dollar the Source pays backed by output', v:W({a:1}), k:'s', vs:'main'},
+        {l:'  paid for by the wage contribution', v:W({fin:'tax'}), k:'s', vs:'main'}],
+        [['Unhoused, share of person-years', function(r){ return (r.epPY).toFixed(3) + '% (no programme ' + r._B.epPY.toFixed(3) + '%)'; }],
+         ['Unhoused person-years avoided per 1,000 adults a year', function(r){ return f2(av(r)*1000); }],
+         ['Public cost avoided per adult-year: low / high (2025 $)', function(r){ return $(av(r)*AVOID_HOMELESS.low) + ' / ' + $(av(r)*AVOID_HOMELESS.high); }],
+         ['Programme cost per adult-year (year-0 $)', function(r){ return $(r.cost); }]], {sc:SC});
+    });
+    /* Plan step 11 (Oct 1, 2026): the restudy with every mechanism in (dev/reports/11-restudy.md). --json=FILE writes the page's precomputed
+     * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
+    if (secT === 'release'){ var RJ = {_meta:{engine:'release candidate (next-release)', seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + ' --json=dev/runs/release-panel.json'}, envs:{}},
+      RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
+      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5) */
+        function av(r){ return (r._B.epPY - r.epPY)/100; }
+        function aw(r){ return avoidWide((r._B.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (r._B.fgt0PY - r.fgt0PY)/100); }
+        var rows = [
+          {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC}, k:'today', j:'v422'},
+          {l:'RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source', v:ALL, k:'main', vs:'today', j:'release'},
+          {l:'  H1: every dollar the Source pays backed by new output', v:W({a:1}), k:'s', vs:'main', j:'h1'},
+          {l:'  essentials bought with BU counted as backed by output', v:W({o:{faceM:true}}), k:'s', vs:'main', j:'face'},
+          {l:'  paid for by a flat contribution on wages instead of the Source', v:W({fin:'tax'}), k:'s', vs:'main', j:'tax'},
+          {l:'  creative projects counted at the cost of their hours, not at market value (the cautious reading)', v:W({pd:{match:'face', speed:'oneyear'}}), k:'s', vs:'main', j:'cost'},
+          {l:'  community-business capacity growing only as reinvestment pays for it (the 5-year rule)', v:W({pd:{match:'market', speed:'reinvest'}}), k:'s', vs:'main', j:'cap5'},
+          {l:'  session 30\'s build: private business owners keep the premium, no spending layer, creative work at cost', v:{sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC}, k:'s', vs:'main', j:'s30'},
+          {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main', j:'all'},
+          {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
+          {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'}];
+        var R = stepSection('release (plan step 11)', e, rows,
+          [['Unhoused person-years avoided per 1,000 adults a year', function(r){ return f2(av(r)*1000); }],
+           ['Public cost avoided per adult-year, low / high', function(r){ return $(av(r)*AVOID_HOMELESS.low) + ' / ' + $(av(r)*AVOID_HOMELESS.high); }],
+           ['Prisons, hospitals and psychiatric care avoided per adult-year: main (prisons + health) / high', function(r){ var w = aw(r); return $(w.main) + ' (' + $(w.jail) + ' + ' + $(w.health) + ') / ' + $(w.high); }],
+           ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
+           ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
+           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC});
+        var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY}, rows:{}};
+        function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
+        rows.forEach(function(rw, i){ var r = R[i + 1]; out.rows[rw.j] = {label:rw.l.trim(), cost:Math.round(r.cost), tau:+(r.tauMean*100).toFixed(1), infl:+(r.endoAnn*100).toFixed(1), pLev20:+r.pLev20.toFixed(3),
+          hrs:+(r.hrs*100).toFixed(1), fgt2PY:+r.fgt2PY.toFixed(2), fgt0PY:+r.fgt0PY.toFixed(1), pov:+r.pov.toFixed(1), bOAPy:+r.bOAPy.toFixed(1), bNAPy:+r.bNAPy.toFixed(1), bOAMd:Math.round(r.bOAMd), bNAMd:Math.round(r.bNAMd),
+          dFgt2:d3(r, 'fgt2PY'), dF0:d3(r, 'fgt0PY'), dPov:d3(r, 'pov'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'),
+          grp:{part:Math.round(r.gPartRes - B.gPartRes), non:Math.round(r.gNonRes - B.gNonRes), low:Math.round(r.gLowRes - B.gLowRes), top:Math.round(r.gTopRes - B.gTopRes)}, worse:grpCell(r, B).split(' | ')[1],
+          unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)}; });
+        RJ.envs[e] = out; });
+      if (RPATH){ require('fs').writeFileSync(RPATH, JSON.stringify(RJ, null, 1)); console.log('\nwrote ' + RPATH); }
+    }
+    /* Plan steps 14-17 (Oct 2, 2026; Duke's four items before v5.0; dev/reports/v5-1 to v5-4): each new mechanism against the session-30
+     * release row (k 'today' here), with its sensitivity rows against the new main row. Rows are added step by step. */
+    if (secT === 'v5') envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = {sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC}, W = function(x){ return Object.assign({}, ALL, x); };
+      var V14 = {sp:{priv:'prices'}}, V15 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}}, V16 = Object.assign({ml:{}}, V15);
+      function av(r){ return (r._B.epPY - r.epPY)/100; }
+      stepSection('v5 (plan steps 14-17)', e, [
+        {l:'RELEASE (session 30): private ESP owners keep the premium', v:ALL, k:'today'},
+        {l:'STEP 14: private ESPs pass the premium to BU customers as lower prices; workers matched (d140)', v:W(V14), k:'main', vs:'today'},
+        {l:'  the whole private premium to prices (no workers\' match)', v:W({sp:{priv:'prices', privWk:'none'}}), k:'s', vs:'main'},
+        {l:'  H1: every dollar the Source pays backed by new output', v:W(Object.assign({a:1}, V14)), k:'s', vs:'main'},
+        {l:'STEP 15: + creative output at market value, capacity within a year (d137-d139)', v:W(V15), k:'s', vs:'main'},
+        {l:'  other reading: creative output at the cost of its hours (session 30 rule)', v:W({sp:V15.sp, pd:{match:'face', speed:'oneyear'}}), k:'s', vs:'main'},
+        {l:'  other reading: capacity only as reinvestment pays for it (the 5-year rule)', v:W({sp:V15.sp, pd:{match:'market', speed:'reinvest'}}), k:'s', vs:'main'},
+        {l:'STEP 16: + the spending layer (recession multiplier 1.5)', v:W(V16), k:'s', vs:'main'},
+        {l:'  low multiplier (0.8)', v:W(Object.assign({}, V15, {ml:{m:0.8}})), k:'s', vs:'main'},
+        {l:'  high multiplier (2.2)', v:W(Object.assign({}, V15, {ml:{m:2.2}})), k:'s', vs:'main'}],
+        [['Prices: rise a year from the programme', function(r){ return f1(r.endoAnn*100) + '%'; }],
+         ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
+         ['Public cost avoided per adult-year (homelessness), low / high', function(r){ return $(av(r)*AVOID_HOMELESS.low) + ' / ' + $(av(r)*AVOID_HOMELESS.high); }],
+         ['Step 17: prisons, hospitals and psychiatric care avoided per adult-year, low / main / high (main: prisons + health)', function(r){ var w = avoidWide((r._B.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (r._B.fgt0PY - r.fgt0PY)/100);
+           return $(w.low) + ' / ' + $(w.main) + ' (' + $(w.jail) + ' + ' + $(w.health) + ') / ' + $(w.high); }],
+         ['All public costs avoided (main, with homelessness low-high), share of programme cost', function(r){ var w = avoidWide((r._B.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (r._B.fgt0PY - r.fgt0PY)/100), lo = w.main + av(r)*AVOID_HOMELESS.low, hi = w.main + av(r)*AVOID_HOMELESS.high;
+           return $(lo) + '-' + $(hi) + ' (' + (r.cost > 0 ? (lo/r.cost*100).toFixed(1) + '-' + (hi/r.cost*100).toFixed(1) + '%' : '—') + ')'; }],
+         ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
+         ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC});
+    });
     if (secT === 'a5'){ var JS = {}, JPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
       envT.forEach(function(e){ var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, infl = P.inflRate > 0;
         var rows = [{l:'Baseline (no program)', p:PR.baseline(), k:'base'}], tg = {};

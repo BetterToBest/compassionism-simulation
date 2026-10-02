@@ -1,0 +1,68 @@
+=== A4 testbed (session 6): seeds 1-500, 500 agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===
+Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment's annuity value, against own cost; x100.
+
+--- blei (plan step 8): Stress Test | Compassionism: hub spec (framework model) | seeds 1-500 | 378 s ---
+BLEI first (plan step 8). Days of basic living covered, year-0 prices. Duke's BLEI = the BLEI paper's definition (the page's); design-neutral = the Baseline's rules for everyone plus one month of the design's regular support. BLEI poverty = person-years below 30 days. Changes vs Baseline [95% CI]; negative = fewer below the line.
+| Design | Duke's BLEI: median days, yr 20 | Duke's BLEI poverty (person-years) | vs Baseline [95% CI] | Design-neutral: median days, yr 20 | Design-neutral BLEI poverty | vs Baseline [95% CI] |
+|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | 3 | 60.0% | — | 3 | 60.0% | — |
+| TODAY: the s34 main row (wage contribution) | 6 | 59.3% | -0.76 [-0.81, -0.70] | 6 | 60.8% | +0.80 [+0.75, +0.85] |
+| MAIN: every mechanism (steps 1-7), paid for by the Source | 6 | 57.0% | -3.04 [-3.12, -2.96] | 6 | 59.2% | -0.87 [-0.94, -0.81] |
+|   H1: every dollar the Source pays backed by output | 5 | 49.4% | -10.61 [-10.69, -10.53] | 5 | 50.4% | -9.66 [-9.73, -9.58] |
+|   essentials bought with BU counted as backed by output | 8 | 53.3% | -6.75 [-6.83, -6.67] | 7 | 55.1% | -4.90 [-4.97, -4.83] |
+|   paid for by the wage contribution | 4 | 62.6% | +2.53 [+2.45, +2.60] | 4 | 64.0% | +3.91 [+3.84, +3.98] |
+|   one split for every ESP | 6 | 56.3% | -3.78 [-3.87, -3.70] | 6 | 58.5% | -1.52 [-1.60, -1.45] |
+|   taking part costs nothing (every adult joins) | 19 | 46.0% | -14.08 [-14.18, -13.97] | 11 | 52.3% | -7.80 [-7.88, -7.71] |
+|   price cuts free | 7 | 55.4% | -4.63 [-4.71, -4.54] | 6 | 57.5% | -2.53 [-2.60, -2.46] |
+
+FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.
+| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Participation yr 19 | Median wealth, yr 20 (year-0 $) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | $0 | 20.63 | — | — | — | — | 78.2% | 82.6% | +0.0% | 0.0% | 0.00% | 1.457 | — | — |
+| TODAY: the s34 main row (wage contribution) | $10,465 | -0.54 [-0.57, -0.52] | — | — | — | — | 80.7% | 85.9% | -7.0% | 30.5% | 0.00% | 1.457 | — | -$6,864 |
+| MAIN: every mechanism (steps 1-7), paid for by the Source | $10,468 | -6.84 [-6.87, -6.80] | -6.29 [-6.34, -6.25] | -13.20 [-13.28, -13.11] | +3.43 [+3.32, +3.54] | -6.29 | 67.5% | 89.4% | -4.8% | 3.5% | 23.25% | 78.591 | 39.9% | -$132 |
+|   H1: every dollar the Source pays backed by output | $8,660 | -5.27 [-5.31, -5.24] | +1.56 [+1.55, +1.58] | +0.74 [+0.71, +0.77] | -15.59 [-15.73, -15.44] | -4.73 | 68.2% | 73.8% | -4.2% | 3.6% | 0.00% | 1.457 | 27.5% | -$6,864 |
+|   essentials bought with BU counted as backed by output | $10,947 | -6.93 [-6.97, -6.89] | -0.09 [-0.10, -0.09] | -1.21 [-1.22, -1.19] | -5.23 [-5.32, -5.15] | -6.38 | 66.3% | 84.1% | -5.0% | 3.7% | 13.13% | 15.269 | 39.9% | -$663 |
+|   paid for by the wage contribution | $8,662 | +2.68 [+2.64, +2.72] | +9.52 [+9.45, +9.59] | +13.20 [+13.11, +13.30] | -4.20 [-4.30, -4.10] | +3.23 | 80.7% | 85.2% | -8.6% | 25.6% | 0.00% | 1.457 | 27.5% | -$6,864 |
+|   one split for every ESP | $10,694 | -9.13 [-9.18, -9.09] | -2.30 [-2.31, -2.28] | +0.54 [+0.49, +0.59] | +2.97 [+2.89, +3.04] | -8.59 | 68.0% | 92.3% | -4.2% | 4.1% | 22.79% | 73.438 | 39.9% | -$142 |
+|   taking part costs nothing (every adult joins) | $21,729 | -13.43 [-13.48, -13.39] | -6.60 [-6.63, -6.56] | -11.39 [-11.47, -11.32] | -1.20 [-1.28, -1.12] | -12.89 | 56.1% | 88.2% | -9.0% | 3.8% | 46.66% | 2125.130 | 100.0% | -$5 |
+|   price cuts free | $10,474 | -7.81 [-7.85, -7.77] | -0.97 [-0.98, -0.96] | -1.85 [-1.87, -1.82] | -1.21 [-1.26, -1.17] | -7.26 | 65.6% | 88.1% | -4.2% | 0.0% | 23.13% | 77.090 | 39.9% | -$134 |
+
+Groups: change in real resources per adult-year over 20 years, participants / non-participants (as at year 0) / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.
+| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |
+|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | +$4,752 / -$4,710 / +$1,867 / -$4,483 | — | — | non (riw), top (riw) |
+| MAIN: every mechanism (steps 1-7), paid for by the Source | +$15,620 / +$3,340 / +$6,106 / +$11,799 | +$10,868 / +$8,050 / +$4,240 / +$16,282 | -5.61 / -6.75 | part (w), non (w), PTH (w), low (w), top (w) |
+|   H1: every dollar the Source pays backed by output | +$11,873 / +$3,308 / +$5,012 / +$9,137 | +$7,121 / +$8,018 / +$3,146 / +$13,620 | -2.13 / -6.46 | none |
+|   essentials bought with BU counted as backed by output | +$16,167 / +$3,696 / +$6,372 / +$12,266 | +$11,415 / +$8,405 / +$4,505 / +$16,749 | -5.74 / -6.82 | non (w), top (w) |
+|   paid for by the wage contribution | +$3,191 / -$5,746 / +$739 / -$5,254 | -$1,561 / -$1,036 / -$1,128 / -$771 | +3.69 / +2.92 | non (riw), top (riw) |
+|   one split for every ESP | +$14,673 / +$3,884 / +$7,823 / +$8,447 | +$9,921 / +$8,594 / +$5,957 / +$12,930 | -6.97 / -9.67 | part (w), non (w), PTH (w), low (w), top (w) |
+|   taking part costs nothing (every adult joins) | +$18,648 / +$17,827 / +$12,878 / +$26,382 | +$13,896 / +$22,537 / +$11,012 / +$30,865 | -6.04 / -17.44 | part (w), non (w), PTH (w), low (w), top (w) |
+|   price cuts free | +$16,869 / +$4,697 / +$6,780 / +$13,848 | +$12,118 / +$9,407 / +$4,913 / +$18,331 | -6.18 / -7.99 | non (w), PTH (w), low (w), top (w) |
+
+BLEI by group (s41), levels. Person-year shares over 20 years unless stated; part = participants, non = adults who chose not to take part (the same adults in every row). N = design-neutral BLEI (heads, d34); O = the design's own BLEI (the page's definition); X = N with income read as wage earnings net of the contribution. BLEI poverty = below 30 days (Crisis + Precarious); Crisis = below 7 days. Days at year-0 prices.
+| Design | Adults: part / non | FGT2 x100: part / non | BLEI poverty N: all / part / non | Crisis N: part / non | BLEI poverty O: all / part / non | BLEI poverty X: all / part / non | Crisis X: part / non | Year 20, BLEI poverty N: part / non | Year 20, median BLEI N (days): part / non |
+|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | 199.4 / 300.6 | 20.65 / 20.62 | 60.0 / 60.0 / 60.1 | 57.7 / 57.7 | 60.0 / 60.0 / 60.1 | 60.1 / 60.0 / 60.1 | 57.7 / 57.7 | 81.1 / 81.1 | 3 / 3 |
+| TODAY: the s34 main row (wage contribution) | 199.4 / 300.6 | 13.01 / 24.79 | 60.8 / 50.9 / 67.5 | 0.0 / 63.2 | 59.3 / 47.1 / 67.4 | 61.0 / 51.1 / 67.6 | 0.0 / 65.4 | 77.6 / 88.8 | 12 / 3 |
+| MAIN: every mechanism (steps 1-7), paid for by the Source | 199.4 / 300.6 | 7.40 / 18.04 | 59.2 / 48.5 / 66.2 | 0.0 / 62.7 | 57.0 / 43.3 / 66.1 | 59.2 / 48.6 / 66.3 | 0.0 / 63.0 | 77.3 / 89.8 | 13 / 3 |
+|   H1: every dollar the Source pays backed by output | 199.4 / 300.6 | 10.88 / 18.33 | 50.4 / 41.2 / 56.5 | 9.2 / 54.2 | 49.4 / 38.9 / 56.4 | 50.4 / 41.3 / 56.5 | 9.2 / 54.3 | 65.1 / 76.5 | 12 / 3 |
+|   essentials bought with BU counted as backed by output | 199.4 / 300.6 | 7.27 / 17.97 | 55.1 / 44.1 / 62.5 | 0.0 / 59.5 | 53.3 / 39.6 / 62.4 | 55.2 / 44.2 / 62.5 | 0.0 / 59.7 | 71.6 / 86.5 | 14 / 3 |
+|   paid for by the wage contribution | 199.4 / 300.6 | 16.70 / 27.71 | 64.0 / 55.1 / 69.9 | 11.3 / 63.7 | 62.6 / 51.7 / 69.8 | 64.1 / 55.2 / 70.0 | 11.7 / 68.1 | 78.5 / 87.7 | 11 / 3 |
+|   one split for every ESP | 199.4 / 300.6 | 6.04 / 15.12 | 58.5 / 47.9 / 65.6 | 0.0 / 61.5 | 56.3 / 42.4 / 65.4 | 58.6 / 48.1 / 65.6 | 0.0 / 61.8 | 79.1 / 90.6 | 13 / 3 |
+|   taking part costs nothing (every adult joins) | 199.4 / 300.6 | 6.97 / 7.35 | 52.3 / 50.9 / 53.1 | 0.0 / 0.9 | 46.0 / 44.7 / 46.8 | 52.4 / 51.1 / 53.3 | 0.0 / 0.9 | 79.8 / 79.9 | 11 / 11 |
+|   price cuts free | 199.4 / 300.6 | 6.82 / 16.80 | 57.5 / 46.8 / 64.6 | 0.0 / 61.3 | 55.4 / 41.7 / 64.5 | 57.6 / 46.9 / 64.7 | 0.0 / 61.3 | 75.1 / 88.3 | 13 / 3 |
+
+BLEI by group (s41), changes in points: part / non, paired over seeds [95% CI on the design-neutral reading]. Negative = fewer adults below the line.
+| Design | vs Baseline: FGT2 x100 | vs Baseline: BLEI poverty N | vs Baseline: Crisis N | vs Baseline: BLEI poverty O | vs Baseline: BLEI poverty X | vs Baseline: Crisis X | vs today: FGT2 x100 | vs today: BLEI poverty N | vs today: Crisis N | vs today: BLEI poverty O | vs today: BLEI poverty X | vs today: Crisis X |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | -7.64 / +4.17 | -9.13 [-9.22, -9.03] / +7.38 [+7.31, +7.45] | -57.67 / +5.51 | -12.94 / +7.32 | -8.94 / +7.55 | -57.66 / +7.71 | — | — | — | — | — | — |
+| MAIN: every mechanism (steps 1-7), paid for by the Source | -13.25 / -2.58 | -11.47 [-11.59, -11.35] / +6.15 [+6.10, +6.21] | -57.67 / +5.01 | -16.76 / +6.06 | -11.39 / +6.20 | -57.66 / +5.32 | -5.61 / -6.75 | -2.34 [-2.42, -2.26] / -1.23 [-1.29, -1.17] | +0.00 / -0.50 | -3.82 / -1.26 | -2.45 / -1.35 | +0.00 / -2.39 |
+|   H1: every dollar the Source pays backed by output | -9.77 / -2.29 | -18.77 [-18.91, -18.63] / -3.61 [-3.65, -3.56] | -48.48 / -3.49 | -21.07 / -3.67 | -18.74 / -3.59 | -48.47 / -3.37 | -2.13 / -6.46 | -9.64 [-9.76, -9.53] / -10.99 [-11.08, -10.90] | +9.19 / -9.00 | -8.13 / -10.99 | -9.80 / -11.13 | +9.20 / -11.08 |
+|   essentials bought with BU counted as backed by output | -13.38 / -2.65 | -15.88 [-16.01, -15.75] / +2.38 [+2.34, +2.42] | -57.67 / +1.81 | -20.40 / +2.30 | -15.81 / +2.41 | -57.66 / +2.02 | -5.74 / -6.82 | -6.75 [-6.85, -6.66] / -5.00 [-5.07, -4.94] | +0.00 / -3.70 | -7.46 / -5.02 | -6.87 / -5.13 | +0.00 / -5.68 |
+|   paid for by the wage contribution | -3.94 / +7.09 | -4.95 [-5.06, -4.85] / +9.79 [+9.68, +9.89] | -46.38 / +5.98 | -8.34 / +9.74 | -4.79 / +9.92 | -45.97 / +10.39 | +3.69 / +2.92 | +4.17 [+4.10, +4.25] / +2.40 [+2.35, +2.46] | +11.30 / +0.47 | +4.60 / +2.41 | +4.15 / +2.38 | +11.70 / +2.68 |
+|   one split for every ESP | -14.60 / -5.51 | -12.07 [-12.20, -11.93] / +5.47 [+5.41, +5.53] | -57.67 / +3.81 | -17.57 / +5.36 | -11.96 / +5.52 | -57.66 / +4.11 | -6.97 / -9.67 | -2.94 [-3.05, -2.84] / -1.91 [-1.99, -1.84] | +0.00 / -1.70 | -4.63 / -1.96 | -3.02 / -2.02 | +0.00 / -3.60 |
+|   taking part costs nothing (every adult joins) | -13.68 / -13.27 | -9.08 [-9.20, -8.95] / -6.95 [-7.05, -6.85] | -57.67 / -56.88 | -15.31 / -13.26 | -8.94 / -6.82 | -57.66 / -56.87 | -6.04 / -17.44 | +0.05 [-0.05, +0.15] / -14.33 [-14.46, -14.21] | +0.00 / -62.39 | -2.38 / -20.58 | +0.00 / -14.36 | +0.00 / -64.57 |
+|   price cuts free | -13.82 / -3.82 | -13.19 [-13.32, -13.06] / +4.55 [+4.49, +4.60] | -57.67 / +3.53 | -18.31 / +4.45 | -13.13 / +4.56 | -57.66 / +3.56 | -6.18 / -7.99 | -4.07 [-4.16, -3.97] / -2.84 [-2.91, -2.77] | +0.00 / -1.98 | -5.37 / -2.87 | -4.20 / -2.98 | +0.00 / -4.15 |
+
+(6.3 min)

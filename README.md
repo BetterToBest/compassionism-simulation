@@ -1,14 +1,15 @@
 # Compassionism Framework Simulation
 
-**Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: see how it does on poverty and work against five other designs on the same simulated people.**
+**Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution: see how it does.**
+
+_The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson's book *Better To Best* and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome._
 
 A research-oriented, browser-based agent-based simulation exploring all five [Compassionism](https://bettertobest.github.io/research-hub/) architectures for comparative policy analysis — no installation required. BLEI-calibrated against US Consumer Expenditure Survey data.
 
-The page opens with a comparison: Compassionism beside a basic income, a negative income tax, an asset endowment, a public grocery network and X-Cents, run on the same simulated adults under the same rules, with each design's description and source beneath it. Two views compare the designs at equal cost and at the size their proponents propose, and every row shows its change in poverty severity per $1,000. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty, with the deepest shortfalls weighted most. The comparison comes from the open policy testbed in `harness.js`, and the page names the command that reproduces it.
+The page opens with Compassionism's results: the same 500 simulated adults followed for 20 years, with the programme and with no programme, in three environments (Reference, Adverse, Stress). Basic living covered (BLEI, days of basic living a person's resources cover) leads, followed by one plain sentence each on poverty, savings, who gains, work, prices, cost and how it is paid, and the public costs of homelessness avoided. Every figure is an average over 500 paired runs with its 95% interval, and the page names the command that reproduces it; a button runs the model live in the browser. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty.
 
 **[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 
-**New to the page?** [Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4) (about six minutes, narrated, with captions) or [read it with screenshots](walkthrough/): what the page shows, how Compassionism works, what the model finds so far, and how to check it or help.
 
 [![checks](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml/badge.svg)](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml)
 

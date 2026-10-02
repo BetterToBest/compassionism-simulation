@@ -1,0 +1,59 @@
+=== A4 testbed (session 6): seeds 1-500, 500 agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===
+Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment's annuity value, against own cost; x100.
+
+--- spend (plan step 7): Reference (Full Integration settings) | Compassionism: hub spec (framework model) | seeds 1-500 | 435 s ---
+FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.
+| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Median wealth, yr 20 (year-0 $) | Real value of $1 of BU, yr 20 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | $0 | 8.04 | — | — | — | — | 55.2% | 52.0% | +0.0% | 0.0% | 0.00% | 1.000 | — | — |
+| TODAY: the s34 main row (wage contribution), spending share 0.593 | $33,904 | +4.10 [+4.03, +4.18] | — | — | — | — | 74.2% | 71.8% | -26.3% | 79.9% | 0.00% | 1.000 | -$9,952 | $1.000 |
+| STEP 6: step 6's main row at the old share (0.9) | $27,635 | -5.73 [-5.77, -5.70] | -9.84 [-9.92, -9.75] | -45.54 [-45.80, -45.27] | +15.49 [+15.27, +15.72] | -9.84 | 28.7% | 87.3% | -6.8% | 5.0% | 39.73% | 581.559 | $7,152 | $1.000 |
+| MAIN: step 6's main row at the sourced share (0.593) | $27,633 | -5.69 [-5.72, -5.65] | +0.04 [+0.04, +0.05] | +1.08 [+1.06, +1.10] | -40.02 [-40.23, -39.81] | -9.79 | 29.8% | 47.3% | -6.6% | 5.0% | 39.73% | 581.371 | $28,244 | $1.000 |
+|   share matching 2024's saving rate (0.554) | $27,633 | -5.69 [-5.72, -5.65] | +0.00 [+0.00, +0.00] | +0.07 [+0.07, +0.07] | -1.80 [-1.85, -1.75] | -9.79 | 29.8% | 45.5% | -6.6% | 5.0% | 39.73% | 581.359 | $30,914 | $1.000 |
+|   save every dollar above the cost of living (the page today, 0) | $27,632 | -5.65 [-5.69, -5.62] | +0.03 [+0.03, +0.04] | +0.66 [+0.65, +0.67] | -12.91 [-13.05, -12.78] | -9.76 | 30.4% | 34.4% | -6.5% | 5.0% | 39.73% | 581.283 | $68,798 | $1.000 |
+|   H1 at the sourced share (every dollar the Source pays backed by output) | $34,286 | -6.19 [-6.23, -6.16] | -0.50 [-0.51, -0.50] | -7.20 [-7.26, -7.13] | -25.77 [-25.95, -25.59] | -10.30 | 22.6% | 21.5% | -6.5% | 5.0% | 0.00% | 1.000 | $261,547 | $1.000 |
+|   step 2 (wage contribution) at the sourced share | $34,649 | +15.97 [+15.86, +16.07] | +11.87 [+11.74, +11.99] | +2.77 [+2.49, +3.05] | +6.16 [+5.86, +6.46] | +11.87 | 77.0% | 78.0% | -35.5% | 83.7% | 0.00% | 1.000 | -$10,000 | $1.000 |
+|   [reference] no programme at the old share (0.9) | $0 | +0.00 [+0.00, +0.00] | — | — | — | -4.10 | 55.2% | 54.7% | +0.0% | 0.0% | 0.00% | 1.000 | -$1,241 | $1.000 |
+|   [reference] no programme at 0 (save every dollar) | $0 | -0.00 [-0.00, -0.00] | — | — | — | -4.10 | 55.1% | 50.4% | +0.0% | 0.0% | 0.00% | 1.000 | $26,546 | $1.000 |
+
+Groups: change in real resources per adult-year over 20 years, participants / non-participants (as at year 0) / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.
+| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |
+|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution), spending share 0.593 | -$6,206 / -$25,793 / +$902 / -$24,537 | — | — | part (riw), non (riw), PTH (riw), top (riw) |
+| STEP 6: step 6's main row at the old share (0.9) | +$24,345 / +$4,932 / +$16,739 / +$24,316 | +$30,551 / +$30,724 / +$15,837 / +$48,853 | -6.43 / -21.91 | part (w), non (w), PTH (w), low (w), top (w) |
+| MAIN: step 6's main row at the sourced share (0.593) | +$24,435 / +$4,607 / +$16,035 / +$25,620 | +$30,641 / +$30,399 / +$15,133 / +$50,157 | -6.40 / -21.81 | non (w), top (w) |
+|   share matching 2024's saving rate (0.554) | +$24,440 / +$4,587 / +$15,992 / +$25,701 | +$30,646 / +$30,380 / +$15,090 / +$50,238 | -6.40 / -21.81 | non (w), top (w) |
+|   save every dollar above the cost of living (the page today, 0) | +$24,483 / +$4,430 / +$15,635 / +$26,378 | +$30,689 / +$30,222 / +$14,733 / +$50,915 | -6.38 / -21.74 | non (w) |
+|   H1 at the sourced share (every dollar the Source pays backed by output) | +$35,460 / +$10,986 / +$22,360 / +$38,990 | +$41,666 / +$36,779 / +$21,458 / +$63,527 | -6.71 / -22.99 | none |
+|   step 2 (wage contribution) at the sourced share | -$7,267 / -$33,900 / +$3,252 / -$32,968 | -$1,061 / -$8,108 / +$2,350 / -$8,431 | +7.91 / +25.75 | part (riw), non (riw), PTH (riw), top (riw) |
+|   [reference] no programme at the old share (0.9) | -$31 / -$30 / +$0 / -$49 | +$6,175 / +$25,763 / -$902 / +$24,487 | +0.46 / -20.26 | part (w), non (w), PTH (w), top (w) |
+|   [reference] no programme at 0 (save every dollar) | +$19 / +$19 / +$0 / +$12 | +$6,225 / +$25,812 / -$902 / +$24,549 | +0.46 / -20.26 | none |
+
+BLEI by group (s41), levels. Person-year shares over 20 years unless stated; part = participants, non = adults who chose not to take part (the same adults in every row). N = design-neutral BLEI (heads, d34); O = the design's own BLEI (the page's definition); X = N with income read as wage earnings net of the contribution. BLEI poverty = below 30 days (Crisis + Precarious); Crisis = below 7 days. Days at year-0 prices.
+| Design | Adults: part / non | FGT2 x100: part / non | BLEI poverty N: all / part / non | Crisis N: part / non | BLEI poverty O: all / part / non | BLEI poverty X: all / part / non | Crisis X: part / non | Year 20, BLEI poverty N: part / non | Year 20, median BLEI N (days): part / non |
+|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | 389.5 / 110.5 | 8.06 / 7.96 | 46.7 / 46.7 / 46.7 | 42.2 / 42.1 | 46.7 / 46.7 / 46.7 | 46.7 / 46.7 / 46.7 | 42.0 / 41.9 | 50.5 / 50.5 | 45 / 68 |
+| TODAY: the s34 main row (wage contribution), spending share 0.593 | 389.5 / 110.5 | 7.60 / 28.22 | 57.2 / 51.0 / 79.0 | 0.0 / 45.2 | 39.0 / 27.7 / 78.9 | 58.1 / 52.0 / 79.5 | 0.0 / 77.7 | 61.3 / 90.7 | 27 / 8 |
+| STEP 6: step 6's main row at the old share (0.9) | 389.5 / 110.5 | 1.17 / 6.31 | 36.1 / 29.1 / 60.7 | 0.0 / 42.8 | 27.4 / 18.2 / 59.8 | 36.7 / 29.8 / 61.2 | 0.0 / 44.4 | 32.7 / 68.0 | 45 / 12 |
+| MAIN: step 6's main row at the sourced share (0.593) | 389.5 / 110.5 | 1.20 / 6.41 | 30.1 / 23.8 / 52.2 | 0.0 / 42.9 | 25.0 / 17.4 / 51.8 | 30.3 / 24.0 / 52.3 | 0.0 / 44.4 | 21.9 / 52.9 | 121 / 24 |
+|   share matching 2024's saving rate (0.554) | 389.5 / 110.5 | 1.20 / 6.42 | 29.9 / 23.6 / 51.9 | 0.0 / 42.9 | 24.9 / 17.3 / 51.5 | 30.1 / 23.8 / 52.0 | 0.0 / 44.4 | 21.5 / 52.3 | 130 / 25 |
+|   save every dollar above the cost of living (the page today, 0) | 389.5 / 110.5 | 1.22 / 6.48 | 28.5 / 22.4 / 49.9 | 0.0 / 43.0 | 24.2 / 16.9 / 49.7 | 28.6 / 22.5 / 50.0 | 0.0 / 44.4 | 18.4 / 47.9 | 266 / 47 |
+|   H1 at the sourced share (every dollar the Source pays backed by output) | 389.5 / 110.5 | 0.88 / 5.24 | 20.3 / 14.9 / 39.3 | 0.0 / 35.0 | 18.2 / 12.2 / 39.1 | 20.3 / 15.0 / 39.3 | 0.0 / 36.0 | 12.2 / 39.0 | 904 / 319 |
+|   step 2 (wage contribution) at the sourced share | 389.5 / 110.5 | 15.51 / 53.98 | 62.2 / 56.3 / 83.1 | 0.0 / 44.2 | 39.6 / 27.3 / 83.0 | 66.8 / 62.1 / 83.4 | 0.0 / 82.3 | 61.4 / 93.0 | 27 / 8 |
+|   [reference] no programme at the old share (0.9) | 389.5 / 110.5 | 8.06 / 7.96 | 47.6 / 47.6 / 47.6 | 42.2 / 42.1 | 47.6 / 47.6 / 47.6 | 47.6 / 47.6 / 47.6 | 42.0 / 42.0 | 51.9 / 51.9 | 21 / 33 |
+|   [reference] no programme at 0 (save every dollar) | 389.5 / 110.5 | 8.06 / 7.96 | 46.0 / 46.0 / 46.0 | 42.2 / 42.1 | 46.0 / 46.0 / 46.0 | 46.0 / 46.0 / 46.0 | 42.0 / 41.9 | 48.9 / 48.9 | 94 / 130 |
+
+BLEI by group (s41), changes in points: part / non, paired over seeds [95% CI on the design-neutral reading]. Negative = fewer adults below the line.
+| Design | vs Baseline: FGT2 x100 | vs Baseline: BLEI poverty N | vs Baseline: Crisis N | vs Baseline: BLEI poverty O | vs Baseline: BLEI poverty X | vs Baseline: Crisis X | vs today: FGT2 x100 | vs today: BLEI poverty N | vs today: Crisis N | vs today: BLEI poverty O | vs today: BLEI poverty X | vs today: Crisis X |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution), spending share 0.593 | -0.46 / +20.26 | +4.26 [+4.09, +4.44] / +32.35 [+32.03, +32.67] | -42.22 / +3.09 | -19.08 / +32.25 | +5.25 / +32.84 | -42.02 / +35.76 | — | — | — | — | — | — |
+| STEP 6: step 6's main row at the old share (0.9) | -6.89 / -1.65 | -17.60 [-17.74, -17.47] / +14.02 [+13.80, +14.23] | -42.20 / +0.64 | -28.57 / +13.09 | -16.94 / +14.48 | -41.99 / +2.48 | -6.43 / -21.91 | -21.87 [-22.05, -21.69] / -18.33 [-18.57, -18.09] | +0.02 / -2.45 | -9.49 / -19.16 | -22.18 / -18.36 | +0.02 / -33.27 |
+| MAIN: step 6's main row at the sourced share (0.593) | -6.86 / -1.55 | -22.92 [-23.07, -22.77] / +5.49 [+5.32, +5.66] | -42.20 / +0.78 | -29.38 / +5.15 | -22.73 / +5.63 | -41.99 / +2.48 | -6.40 / -21.81 | -27.18 [-27.38, -26.98] / -26.86 [-27.17, -26.56] | +0.02 / -2.32 | -10.30 / -27.11 | -27.97 / -27.22 | +0.02 / -33.28 |
+|   share matching 2024's saving rate (0.554) | -6.86 / -1.55 | -23.09 [-23.25, -22.94] / +5.20 [+5.03, +5.37] | -42.20 / +0.78 | -29.43 / +4.87 | -22.91 / +5.33 | -41.99 / +2.47 | -6.40 / -21.81 | -27.36 [-27.56, -27.16] / -27.15 [-27.46, -26.84] | +0.02 / -2.31 | -10.34 / -27.39 | -28.16 / -27.51 | +0.02 / -33.29 |
+|   save every dollar above the cost of living (the page today, 0) | -6.84 / -1.48 | -24.34 [-24.49, -24.18] / +3.25 [+3.08, +3.43] | -42.20 / +0.87 | -29.80 / +3.02 | -24.22 / +3.33 | -41.99 / +2.45 | -6.38 / -21.74 | -28.60 [-28.80, -28.40] / -29.10 [-29.41, -28.78] | +0.02 / -2.23 | -10.71 / -29.23 | -29.47 / -29.51 | +0.02 / -33.30 |
+|   H1 at the sourced share (every dollar the Source pays backed by output) | -7.18 / -2.73 | -31.82 [-32.00, -31.65] / -7.42 [-7.60, -7.25] | -42.21 / -7.11 | -34.53 / -7.54 | -31.77 / -7.38 | -42.00 / -5.92 | -6.71 / -22.99 | -36.08 [-36.30, -35.87] / -39.77 [-40.11, -39.44] | +0.01 / -10.20 | -15.45 / -39.80 | -37.02 / -40.22 | +0.01 / -41.67 |
+|   step 2 (wage contribution) at the sourced share | +7.45 / +46.01 | +9.54 [+9.38, +9.70] / +36.39 [+36.06, +36.73] | -42.22 / +2.06 | -19.48 / +36.30 | +15.36 / +36.69 | -42.02 / +40.33 | +7.91 / +25.75 | +5.28 [+5.11, +5.44] / +4.04 [+3.84, +4.25] | +0.00 / -1.03 | -0.40 / +4.04 | +10.11 / +3.85 | +0.00 / +4.57 |
+|   [reference] no programme at the old share (0.9) | +0.00 / +0.00 | +0.88 [+0.86, +0.90] / +0.88 [+0.83, +0.93] | +0.00 / +0.00 | +0.88 / +0.88 | +0.88 / +0.88 | +0.02 / +0.03 | +0.46 / -20.26 | -3.38 [-3.56, -3.21] / -31.47 [-31.79, -31.15] | +42.23 / -3.09 | +19.96 / -31.37 | -4.37 / -31.96 | +42.04 / -35.73 |
+|   [reference] no programme at 0 (save every dollar) | -0.00 / -0.00 | -0.72 [-0.73, -0.70] / -0.72 [-0.75, -0.68] | -0.01 / -0.01 | -0.72 / -0.72 | -0.72 / -0.72 | -0.05 / -0.05 | +0.46 / -20.26 | -4.98 [-5.15, -4.80] / -33.07 [-33.39, -32.75] | +42.22 / -3.10 | +18.37 / -32.97 | -5.96 / -33.56 | +41.97 / -35.81 |
+
+(7.2 min)

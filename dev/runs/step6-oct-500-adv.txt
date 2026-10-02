@@ -1,0 +1,51 @@
+=== A4 testbed (session 6): seeds 1-500, 500 agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===
+Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment's annuity value, against own cost; x100.
+
+--- oct (plan step 6): Adverse Environment | Compassionism: hub spec (framework model) | seeds 1-500 | 438 s ---
+FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.
+| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Mean octave of participants, yr 20 | Project net / participant-yr |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline) | $0 | 20.66 | — | — | — | — | 78.2% | 87.1% | +0.0% | 0.0% | 0.00% | 1.457 | — | — |
+| TODAY: the s34 main row (wage contribution) | $28,422 | -0.34 [-0.42, -0.26] | — | — | — | — | 84.9% | 89.6% | -30.1% | 83.0% | 0.00% | 1.457 | 5.67 | $157 |
+| MAIN (= step 5): today's octave rule (advancement gated by financial stability) | $26,105 | -14.21 [-14.27, -14.16] | -13.87 [-13.91, -13.83] | -34.69 [-34.85, -34.54] | +9.23 [+9.12, +9.33] | -13.87 | 50.2% | 98.8% | -10.3% | 7.5% | 50.99% | 3714.576 | 5.95 | $656 |
+|   at most one octave per 2 years | $25,714 | -14.21 [-14.27, -14.16] | -0.00 [-0.01, -0.00] | +0.12 [+0.10, +0.13] | +0.01 [+0.00, +0.02] | -13.87 | 50.4% | 98.8% | -10.6% | 7.5% | 50.65% | 3559.021 | 5.94 | $625 |
+|   at most one octave per 3 years | $25,468 | -14.19 [-14.25, -14.14] | +0.02 [+0.01, +0.02] | +0.42 [+0.40, +0.45] | -0.01 [-0.02, +0.01] | -13.85 | 50.7% | 98.8% | -10.9% | 7.6% | 50.55% | 3514.093 | 5.89 | $640 |
+|   at most one octave per 5 years | $25,298 | -14.13 [-14.19, -14.08] | +0.08 [+0.07, +0.08] | +0.84 [+0.81, +0.87] | -0.02 [-0.04, +0.00] | -13.79 | 51.1% | 98.8% | -11.2% | 7.6% | 50.52% | 3504.344 | 4.13 | $620 |
+|   step 2 (wage contribution), today's rule | $28,410 | +11.45 [+11.35, +11.56] | +11.79 [+11.74, +11.85] | -3.96 [-4.05, -3.87] | -4.96 [-5.08, -4.84] | +11.79 | 81.0% | 84.6% | -39.5% | 83.8% | 0.00% | 1.457 | 5.67 | $505 |
+|   step 2 (wage contribution), one octave per 3 years | $27,402 | +11.85 [+11.74, +11.95] | +0.39 [+0.38, +0.40] | +1.68 [+1.65, +1.71] | +1.57 [+1.52, +1.63] | +12.18 | 82.7% | 86.2% | -39.7% | 83.7% | 0.00% | 1.457 | 5.00 | $424 |
+
+Groups: change in real resources per adult-year over 20 years, participants / non-participants (as at year 0) / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.
+| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |
+|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | +$1,411 / -$14,370 / +$4,142 / -$9,875 | — | — | part (i), non (riw), PTH (i), top (riw) |
+| MAIN (= step 5): today's octave rule (advancement gated by financial stability) | +$25,172 / +$6,425 / +$16,535 / +$27,283 | +$23,761 / +$20,795 / +$12,393 / +$37,158 | -11.28 / -23.00 | part (w), non (w), PTH (w), low (w), top (w) |
+|   at most one octave per 2 years | +$24,473 / +$6,646 / +$16,394 / +$26,334 | +$23,062 / +$21,016 / +$12,252 / +$36,209 | -11.27 / -23.04 | part (w), non (w), PTH (w), low (w), top (w) |
+|   at most one octave per 3 years | +$23,885 / +$6,970 / +$16,178 / +$25,900 | +$22,474 / +$21,340 / +$12,036 / +$35,775 | -11.23 / -23.11 | part (w), non (w), PTH (w), low (w), top (w) |
+|   at most one octave per 5 years | +$23,424 / +$7,271 / +$15,921 / +$25,746 | +$22,013 / +$21,641 / +$11,779 / +$35,621 | -11.13 / -23.17 | part (w), non (w), PTH (w), low (w), top (w) |
+|   step 2 (wage contribution), today's rule | +$559 / -$18,520 / +$6,993 / -$16,895 | -$852 / -$4,150 / +$2,852 / -$7,020 | +9.52 / +19.82 | non (riw), PTH (r), top (riw) |
+|   step 2 (wage contribution), one octave per 3 years | -$844 / -$18,125 / +$6,804 / -$18,847 | -$2,255 / -$3,755 / +$2,662 / -$8,972 | +10.13 / +19.44 | part (ri), non (riw), PTH (ri), top (riw) |
+
+BLEI by group (s41), levels. Person-year shares over 20 years unless stated; part = participants, non = adults who chose not to take part (the same adults in every row). N = design-neutral BLEI (heads, d34); O = the design's own BLEI (the page's definition); X = N with income read as wage earnings net of the contribution. BLEI poverty = below 30 days (Crisis + Precarious); Crisis = below 7 days. Days at year-0 prices.
+| Design | Adults: part / non | FGT2 x100: part / non | BLEI poverty N: all / part / non | Crisis N: part / non | BLEI poverty O: all / part / non | BLEI poverty X: all / part / non | Crisis X: part / non | Year 20, BLEI poverty N: part / non | Year 20, median BLEI N (days): part / non |
+|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline) | 389.5 / 110.5 | 20.67 / 20.62 | 62.0 / 62.0 / 62.0 | 59.1 / 59.0 | 62.0 / 62.0 / 62.0 | 62.0 / 62.1 / 62.0 | 59.1 / 59.1 | 84.9 / 85.0 | 3 / 3 |
+| TODAY: the s34 main row (wage contribution) | 389.5 / 110.5 | 15.24 / 38.21 | 68.4 / 63.9 / 84.0 | 0.0 / 68.7 | 57.0 / 49.4 / 83.9 | 69.0 / 64.6 / 84.5 | 0.0 / 82.7 | 84.7 / 97.7 | 15 / 3 |
+| MAIN (= step 5): today's octave rule (advancement gated by financial stability) | 389.5 / 110.5 | 3.96 / 15.21 | 55.7 / 50.2 / 75.1 | 0.0 / 63.4 | 42.8 / 33.8 / 74.5 | 56.5 / 51.1 / 75.5 | 0.0 / 64.6 | 82.4 / 95.4 | 14 / 3 |
+|   at most one octave per 2 years | 389.5 / 110.5 | 3.97 / 15.16 | 55.8 / 50.4 / 74.7 | 0.0 / 63.2 | 42.8 / 33.9 / 74.1 | 56.6 / 51.3 / 75.2 | 0.0 / 64.3 | 82.4 / 95.4 | 14 / 3 |
+|   at most one octave per 3 years | 389.5 / 110.5 | 4.01 / 15.10 | 56.0 / 50.8 / 74.4 | 0.0 / 62.9 | 43.0 / 34.3 / 73.8 | 56.9 / 51.8 / 74.9 | 0.0 / 64.0 | 82.5 / 95.2 | 14 / 3 |
+|   at most one octave per 5 years | 389.5 / 110.5 | 4.11 / 15.03 | 56.3 / 51.3 / 74.1 | 0.0 / 62.6 | 43.3 / 34.7 / 73.5 | 57.2 / 52.3 / 74.6 | 0.0 / 63.6 | 82.8 / 94.9 | 13 / 3 |
+|   step 2 (wage contribution), today's rule | 389.5 / 110.5 | 24.76 / 58.02 | 70.5 / 66.6 / 83.9 | 0.0 / 66.1 | 56.0 / 48.1 / 83.8 | 71.3 / 67.7 / 84.1 | 0.0 / 83.0 | 80.6 / 93.5 | 15 / 3 |
+|   step 2 (wage contribution), one octave per 3 years | 389.5 / 110.5 | 25.37 / 57.65 | 72.3 / 69.1 / 83.6 | 0.0 / 65.9 | 57.1 / 49.6 / 83.5 | 73.2 / 70.1 / 83.8 | 0.0 / 82.7 | 82.6 / 93.1 | 15 / 3 |
+
+BLEI by group (s41), changes in points: part / non, paired over seeds [95% CI on the design-neutral reading]. Negative = fewer adults below the line.
+| Design | vs Baseline: FGT2 x100 | vs Baseline: BLEI poverty N | vs Baseline: Crisis N | vs Baseline: BLEI poverty O | vs Baseline: BLEI poverty X | vs Baseline: Crisis X | vs today: FGT2 x100 | vs today: BLEI poverty N | vs today: Crisis N | vs today: BLEI poverty O | vs today: BLEI poverty X | vs today: Crisis X |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | -5.43 / +17.59 | +1.91 [+1.79, +2.02] / +22.07 [+21.84, +22.31] | -59.08 / +9.71 | -12.64 / +21.98 | +2.55 / +22.47 | -59.10 / +23.66 | — | — | — | — | — | — |
+| MAIN (= step 5): today's octave rule (advancement gated by financial stability) | -16.71 / -5.41 | -11.84 [-11.94, -11.73] / +13.11 [+12.95, +13.27] | -59.04 / +4.40 | -28.26 / +12.51 | -10.91 / +13.52 | -59.06 / +5.53 | -11.28 / -23.00 | -13.74 [-13.87, -13.62] / -8.96 [-9.10, -8.82] | +0.04 / -5.30 | -15.62 / -9.46 | -13.46 / -8.95 | +0.04 / -18.13 |
+|   at most one octave per 2 years | -16.70 / -5.45 | -11.65 [-11.75, -11.54] / +12.76 [+12.61, +12.92] | -59.04 / +4.15 | -28.09 / +12.17 | -10.72 / +13.19 | -59.06 / +5.25 | -11.27 / -23.04 | -13.55 [-13.68, -13.43] / -9.31 [-9.45, -9.17] | +0.04 / -5.55 | -15.45 / -9.81 | -13.27 / -9.29 | +0.04 / -18.41 |
+|   at most one octave per 3 years | -16.66 / -5.52 | -11.21 [-11.31, -11.11] / +12.43 [+12.28, +12.59] | -59.04 / +3.84 | -27.74 / +11.82 | -10.26 / +12.87 | -59.06 / +4.89 | -11.23 / -23.11 | -13.12 [-13.24, -13.00] / -9.64 [-9.78, -9.50] | +0.04 / -5.86 | -15.10 / -10.15 | -12.81 / -9.61 | +0.04 / -18.77 |
+|   at most one octave per 5 years | -16.56 / -5.58 | -10.78 [-10.87, -10.68] / +12.15 [+12.00, +12.31] | -59.04 / +3.57 | -27.33 / +11.54 | -9.80 / +12.59 | -59.06 / +4.58 | -11.13 / -23.17 | -12.69 [-12.80, -12.57] / -9.92 [-10.07, -9.78] | +0.04 / -6.14 | -14.69 / -10.44 | -12.35 / -9.88 | +0.04 / -19.07 |
+|   step 2 (wage contribution), today's rule | +4.09 / +37.41 | +4.61 [+4.45, +4.78] / +21.92 [+21.64, +22.21] | -59.08 / +7.06 | -13.92 / +21.85 | +5.63 / +22.13 | -59.10 / +23.94 | +9.52 / +19.82 | +2.71 [+2.60, +2.81] / -0.15 [-0.29, -0.01] | +0.00 / -2.65 | -1.28 / -0.13 | +3.08 / -0.35 | +0.00 / +0.28 |
+|   step 2 (wage contribution), one octave per 3 years | +4.70 / +37.03 | +7.04 [+6.87, +7.20] / +21.61 [+21.32, +21.89] | -59.08 / +6.86 | -12.45 / +21.54 | +8.09 / +21.81 | -59.10 / +23.62 | +10.13 / +19.44 | +5.13 [+5.01, +5.25] / -0.47 [-0.61, -0.32] | +0.00 / -2.85 | +0.19 / -0.43 | +5.54 / -0.66 | +0.00 / -0.03 |
+
+(7.3 min)

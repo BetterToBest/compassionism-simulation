@@ -1,0 +1,82 @@
+=== A4 testbed (session 6): seeds 1-500, 500 agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===
+Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment's annuity value, against own cost; x100.
+
+--- fin (plan step 3): Adverse Environment | Compassionism: hub spec (framework model) | seeds 1-500 | 317 s ---
+FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.
+| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Real value of $1 of BU, yr 20 | Median wealth, yr 20 (year-0 $) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline) | $0 | 20.66 | — | — | — | — | 78.2% | 87.1% | +0.0% | 0.0% | 0.00% | 1.457 | — | -$6,864 |
+| TODAY: the s34 main row (wage contribution) | $28,422 | -0.34 [-0.42, -0.26] | — | — | — | — | 84.9% | 89.6% | -30.1% | 83.0% | 0.00% | 1.457 | $0.686 | -$6,864 |
+| STEP 1: the ESP split (wage contribution) | $28,494 | +11.41 [+11.30, +11.51] | +11.75 [+11.69, +11.80] | -3.87 [-3.96, -3.78] | -4.85 [-4.97, -4.73] | +11.75 | 81.1% | 84.7% | -39.4% | 83.8% | 0.00% | 1.457 | $0.686 | -$6,864 |
+| STEP 2: the split with the production side (wage contribution) | $28,410 | +11.45 [+11.35, +11.56] | +0.05 [+0.03, +0.07] | -0.09 [-0.10, -0.08] | -0.11 [-0.13, -0.08] | +11.79 | 81.0% | 84.6% | -39.5% | 83.8% | 0.00% | 1.457 | $0.686 | -$6,864 |
+| MAIN: step 2 paid for by the Source (S1-S6; a = 0) | $26,282 | -14.14 [-14.19, -14.08] | -25.59 [-25.66, -25.52] | -30.49 [-30.64, -30.33] | +14.19 [+14.09, +14.30] | -13.80 | 50.5% | 98.8% | -10.4% | 8.0% | 51.05% | 3742.101 | $1.000 | -$3 |
+|   Source, essentials bought with BU counted as backed by output | $28,734 | -14.57 [-14.63, -14.51] | -0.43 [-0.43, -0.42] | -3.87 [-3.90, -3.84] | -2.93 [-3.00, -2.87] | -14.23 | 46.6% | 95.9% | -10.6% | 8.1% | 29.62% | 202.636 | $1.000 | -$50 |
+|   Source, H1: every dollar the Source pays backed by output (a = 1) | $28,292 | -13.77 [-13.83, -13.71] | +0.37 [+0.36, +0.38] | -4.36 [-4.41, -4.31] | -39.53 [-39.74, -39.33] | -13.43 | 46.1% | 59.3% | -11.3% | 8.5% | 0.00% | 1.457 | $0.686 | -$5,843 |
+|   Source, project hours at the worker's own wage | $26,278 | -14.14 [-14.19, -14.08] | +0.00 [+0.00, +0.00] | +0.00 [+0.00, +0.00] | +0.01 [+0.00, +0.01] | -13.80 | 50.5% | 98.8% | -10.4% | 8.0% | 51.10% | 3765.832 | $1.000 | -$3 |
+|   Source, one split for every ESP | $26,430 | -16.80 [-16.86, -16.74] | -2.66 [-2.68, -2.64] | -4.25 [-4.32, -4.18] | +0.90 [+0.86, +0.93] | -16.46 | 46.2% | 99.7% | -8.0% | 7.7% | 53.49% | 5082.605 | $1.000 | -$2 |
+|   hybrid: conversion rewards new money, BU face value paid by the contribution (a = 0) | $28,507 | -6.49 [-6.54, -6.43] | +7.65 [+7.59, +7.72] | +16.88 [+16.78, +16.98] | -1.38 [-1.43, -1.32] | -6.15 | 67.4% | 97.4% | -19.7% | 45.6% | 31.50% | 266.972 | $1.000 | -$38 |
+|   today's row paid for by the Source (a = 0) | $26,591 | -16.88 [-16.95, -16.82] | -16.55 [-16.59, -16.50] | -43.92 [-44.06, -43.77] | +9.84 [+9.74, +9.95] | -16.55 | 41.0% | 99.4% | -1.7% | 7.5% | 47.84% | 2478.258 | $1.000 | -$4 |
+|   today's row paid for by the Source, H1 (a = 1) | $28,263 | -15.98 [-16.04, -15.92] | -15.64 [-15.69, -15.60] | -44.33 [-44.47, -44.19] | -36.92 [-37.12, -36.71] | -15.64 | 40.6% | 52.7% | -1.8% | 7.8% | 0.00% | 1.457 | $0.686 | $16,218 |
+
+The Source's ledger, year-0 dollars per adult-year (all rows report it; it pays only where the row says the Source pays). Paid: BU face value spent at ESPs plus every conversion's proceeds. Tax kept: conversion tax withheld. Backed: output matched to the payout (step 2: reinvestment and project hours). New money: paid less backed, at a = 0.
+| Design | BU issued | Paid | Tax kept | Tax kept / BU issued | Backed by output | New money (a = 0) | Wage contribution need |
+|---|---|---|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | $9,353 | $25,403 | $3,716 | 39.7% | $0 | $25,403 | $28,422 |
+| STEP 1: the ESP split (wage contribution) | $9,353 | $25,472 | $3,754 | 40.1% | $0 | $25,472 | $28,494 |
+| STEP 2: the split with the production side (wage contribution) | $9,353 | $25,468 | $3,752 | 40.1% | $910 | $24,558 | $28,410 |
+| MAIN: step 2 paid for by the Source (S1-S6; a = 0) | $11,217 | $23,626 | $3,779 | 33.7% | $921 | $22,705 | $2,656 |
+|   Source, essentials bought with BU counted as backed by output | $11,205 | $26,052 | $4,170 | 37.2% | $984 | $25,067 | $2,682 |
+|   Source, H1: every dollar the Source pays backed by output (a = 1) | $9,353 | $25,447 | $3,740 | 40.0% | $908 | $24,538 | $2,846 |
+|   Source, project hours at the worker's own wage | $11,217 | $23,622 | $3,778 | 33.7% | $893 | $22,729 | $2,656 |
+|   Source, one split for every ESP | $11,217 | $23,775 | $4,065 | 36.2% | $1,306 | $22,469 | $2,655 |
+|   hybrid: conversion rewards new money, BU face value paid by the contribution (a = 0) | $11,205 | $25,809 | $4,125 | 36.8% | $979 | $24,830 | $13,674 |
+|   today's row paid for by the Source (a = 0) | $11,217 | $23,855 | $3,743 | 33.4% | $0 | $23,855 | $2,736 |
+|   today's row paid for by the Source, H1 (a = 1) | $9,353 | $25,370 | $3,694 | 39.5% | $0 | $25,370 | $2,892 |
+
+Groups: change in real resources per adult-year over 20 years, participants / non-participants / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.
+| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |
+|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | +$1,411 / -$14,370 / +$4,142 / -$9,875 | — | — | part (i), non (riw), PTH (i), top (riw) |
+| STEP 1: the ESP split (wage contribution) | +$460 / -$18,566 / +$6,906 / -$16,982 | -$951 / -$4,196 / +$2,765 / -$7,107 | +9.52 / +19.62 | non (riw), PTH (ri), top (riw) |
+| STEP 2: the split with the production side (wage contribution) | +$559 / -$18,520 / +$6,993 / -$16,895 | -$852 / -$4,150 / +$2,852 / -$7,020 | +9.52 / +19.82 | non (riw), PTH (r), top (riw) |
+| MAIN: step 2 paid for by the Source (S1-S6; a = 0) | +$25,011 / +$6,225 / +$16,455 / +$27,009 | +$23,600 / +$20,595 / +$12,313 / +$36,885 | -11.24 / -22.83 | part (w), non (w), PTH (w), low (w), top (w) |
+|   Source, essentials bought with BU counted as backed by output | +$27,974 / +$7,337 / +$18,529 / +$29,519 | +$26,563 / +$21,707 / +$14,388 / +$39,394 | -11.67 / -23.24 | part (w), non (w), PTH (w), low (w), top (w) |
+|   Source, H1: every dollar the Source pays backed by output (a = 1) | +$27,013 / +$9,243 / +$18,449 / +$28,054 | +$25,602 / +$23,613 / +$14,308 / +$37,929 | -10.45 / -23.93 | none |
+|   Source, project hours at the worker's own wage | +$25,007 / +$6,224 / +$16,453 / +$27,005 | +$23,596 / +$20,594 / +$12,311 / +$36,880 | -11.24 / -22.83 | part (w), non (w), PTH (w), low (w), top (w) |
+|   Source, one split for every ESP | +$25,747 / +$9,116 / +$20,138 / +$24,228 | +$24,336 / +$23,486 / +$15,996 / +$34,103 | -13.27 / -27.71 | part (w), non (w), PTH (w), low (w), top (w) |
+|   hybrid: conversion rewards new money, BU face value paid by the contribution (a = 0) | +$14,451 / -$7,472 / +$12,023 / +$7,030 | +$13,040 / +$6,898 / +$7,881 / +$16,905 | -6.06 / -6.40 | part (w), non (riw), PTH (w), top (iw) |
+|   today's row paid for by the Source (a = 0) | +$28,535 / +$13,412 / +$19,215 / +$32,307 | +$27,124 / +$27,781 / +$15,073 / +$42,182 | -12.98 / -29.11 | part (w), non (w), PTH (w), low (w), top (w) |
+|   today's row paid for by the Source, H1 (a = 1) | +$30,590 / +$15,290 / +$18,848 / +$36,826 | +$29,179 / +$29,660 / +$14,706 / +$46,701 | -11.94 / -28.67 | none |
+
+BLEI by group (s41), levels. Person-year shares over 20 years unless stated; part = participants, non = adults who chose not to take part (the same adults in every row). N = design-neutral BLEI (heads, d34); O = the design's own BLEI (the page's definition); X = N with income read as wage earnings net of the contribution. BLEI poverty = below 30 days (Crisis + Precarious); Crisis = below 7 days. Days at year-0 prices.
+| Design | Adults: part / non | FGT2 x100: part / non | BLEI poverty N: all / part / non | Crisis N: part / non | BLEI poverty O: all / part / non | BLEI poverty X: all / part / non | Crisis X: part / non | Year 20, BLEI poverty N: part / non | Year 20, median BLEI N (days): part / non |
+|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline) | 389.5 / 110.5 | 20.67 / 20.62 | 62.0 / 62.0 / 62.0 | 59.1 / 59.0 | 62.0 / 62.0 / 62.0 | 62.0 / 62.1 / 62.0 | 59.1 / 59.1 | 84.9 / 85.0 | 3 / 3 |
+| TODAY: the s34 main row (wage contribution) | 389.5 / 110.5 | 15.24 / 38.21 | 68.4 / 63.9 / 84.0 | 0.0 / 68.7 | 57.0 / 49.4 / 83.9 | 69.0 / 64.6 / 84.5 | 0.0 / 82.7 | 84.7 / 97.7 | 15 / 3 |
+| STEP 1: the ESP split (wage contribution) | 389.5 / 110.5 | 24.76 / 57.82 | 70.5 / 66.6 / 83.9 | 0.0 / 66.1 | 56.0 / 48.1 / 83.9 | 71.3 / 67.7 / 84.2 | 0.0 / 83.0 | 80.7 / 93.5 | 15 / 3 |
+| STEP 2: the split with the production side (wage contribution) | 389.5 / 110.5 | 24.76 / 58.02 | 70.5 / 66.6 / 83.9 | 0.0 / 66.1 | 56.0 / 48.1 / 83.8 | 71.3 / 67.7 / 84.1 | 0.0 / 83.0 | 80.6 / 93.5 | 15 / 3 |
+| MAIN: step 2 paid for by the Source (S1-S6; a = 0) | 389.5 / 110.5 | 4.00 / 15.37 | 55.9 / 50.4 / 75.2 | 0.0 / 63.6 | 42.9 / 33.9 / 74.6 | 56.7 / 51.3 / 75.7 | 0.0 / 64.8 | 82.6 / 95.5 | 14 / 3 |
+|   Source, essentials bought with BU counted as backed by output | 389.5 / 110.5 | 3.57 / 14.96 | 45.7 / 39.4 / 67.6 | 0.0 / 59.7 | 37.6 / 29.2 / 67.1 | 46.2 / 40.0 / 68.0 | 0.0 / 60.6 | 70.5 / 93.6 | 16 / 3 |
+|   Source, H1: every dollar the Source pays backed by output (a = 1) | 389.5 / 110.5 | 4.79 / 14.28 | 33.7 / 28.4 / 52.3 | 0.0 / 49.5 | 29.6 / 23.2 / 52.2 | 33.8 / 28.5 / 52.4 | 0.0 / 49.8 | 49.8 / 72.7 | 39 / 3 |
+|   Source, project hours at the worker's own wage | 389.5 / 110.5 | 4.00 / 15.37 | 55.9 / 50.4 / 75.2 | 0.0 / 63.6 | 42.9 / 33.9 / 74.6 | 56.7 / 51.4 / 75.7 | 0.0 / 64.8 | 82.7 / 95.6 | 14 / 3 |
+|   Source, one split for every ESP | 389.5 / 110.5 | 1.97 / 10.50 | 56.5 / 51.1 / 75.5 | 0.0 / 60.6 | 40.5 / 30.8 / 74.8 | 57.3 / 52.1 / 75.8 | 0.0 / 61.5 | 87.0 / 96.6 | 13 / 3 |
+|   hybrid: conversion rewards new money, BU face value paid by the contribution (a = 0) | 389.5 / 110.5 | 9.18 / 31.80 | 62.5 / 57.3 / 81.0 | 0.0 / 67.6 | 50.0 / 41.3 / 80.8 | 63.7 / 58.5 / 81.7 | 0.0 / 78.4 | 85.6 / 98.6 | 15 / 3 |
+|   today's row paid for by the Source (a = 0) | 389.5 / 110.5 | 2.26 / 9.10 | 50.6 / 44.9 / 70.5 | 0.0 / 54.3 | 37.1 / 27.9 / 69.7 | 51.1 / 45.5 / 70.7 | 0.0 / 54.5 | 80.2 / 93.6 | 14 / 3 |
+|   today's row paid for by the Source, H1 (a = 1) | 389.5 / 110.5 | 3.30 / 9.53 | 26.5 / 21.8 / 43.3 | 0.0 / 40.0 | 23.4 / 17.8 / 43.1 | 26.6 / 21.9 / 43.4 | 0.0 / 40.0 | 41.9 / 64.7 | 103 / 3 |
+
+BLEI by group (s41), changes in points: part / non, paired over seeds [95% CI on the design-neutral reading]. Negative = fewer adults below the line.
+| Design | vs Baseline: FGT2 x100 | vs Baseline: BLEI poverty N | vs Baseline: Crisis N | vs Baseline: BLEI poverty O | vs Baseline: BLEI poverty X | vs Baseline: Crisis X | vs today: FGT2 x100 | vs today: BLEI poverty N | vs today: Crisis N | vs today: BLEI poverty O | vs today: BLEI poverty X | vs today: Crisis X |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | -5.43 / +17.59 | +1.91 [+1.79, +2.02] / +22.07 [+21.84, +22.31] | -59.08 / +9.71 | -12.64 / +21.98 | +2.55 / +22.47 | -59.10 / +23.66 | — | — | — | — | — | — |
+| STEP 1: the ESP split (wage contribution) | +4.09 / +37.21 | +4.60 [+4.44, +4.76] / +21.96 [+21.67, +22.24] | -59.08 / +7.10 | -13.93 / +21.89 | +5.62 / +22.16 | -59.10 / +23.98 | +9.52 / +19.62 | +2.69 [+2.58, +2.80] / -0.12 [-0.26, +0.03] | +0.00 / -2.61 | -1.29 / -0.09 | +3.07 / -0.31 | +0.00 / +0.32 |
+| STEP 2: the split with the production side (wage contribution) | +4.09 / +37.41 | +4.61 [+4.45, +4.78] / +21.92 [+21.64, +22.21] | -59.08 / +7.06 | -13.92 / +21.85 | +5.63 / +22.13 | -59.10 / +23.94 | +9.52 / +19.82 | +2.71 [+2.60, +2.81] / -0.15 [-0.29, -0.01] | +0.00 / -2.65 | -1.28 / -0.13 | +3.08 / -0.35 | +0.00 / +0.28 |
+| MAIN: step 2 paid for by the Source (S1-S6; a = 0) | -16.66 / -5.24 | -11.67 [-11.77, -11.57] / +13.25 [+13.09, +13.41] | -59.08 / +4.57 | -28.14 / +12.65 | -10.71 / +13.68 | -59.10 / +5.78 | -11.24 / -22.83 | -13.58 [-13.70, -13.45] / -8.82 [-8.96, -8.68] | +0.00 / -5.14 | -15.50 / -9.33 | -13.26 / -8.80 | +0.00 / -17.88 |
+|   Source, essentials bought with BU counted as backed by output | -17.10 / -5.65 | -22.60 [-22.73, -22.48] / +5.62 [+5.50, +5.74] | -59.08 / +0.65 | -32.87 / +5.11 | -22.05 / +5.97 | -59.10 / +1.50 | -11.67 / -23.24 | -24.51 [-24.65, -24.38] / -16.45 [-16.63, -16.28] | +0.00 / -9.05 | -20.22 / -16.86 | -24.60 / -16.50 | +0.00 / -22.15 |
+|   Source, H1: every dollar the Source pays backed by output (a = 1) | -15.88 / -6.34 | -33.59 [-33.73, -33.44] / -9.65 [-9.79, -9.50] | -59.08 / -9.54 | -38.82 / -9.81 | -33.51 / -9.58 | -59.10 / -9.23 | -10.45 / -23.93 | -35.49 [-35.64, -35.35] / -31.72 [-31.99, -31.46] | +0.00 / -19.25 | -26.17 / -31.79 | -36.06 / -32.05 | +0.00 / -32.89 |
+|   Source, project hours at the worker's own wage | -16.66 / -5.24 | -11.65 [-11.76, -11.55] / +13.26 [+13.10, +13.42] | -59.08 / +4.57 | -28.14 / +12.65 | -10.70 / +13.68 | -59.10 / +5.78 | -11.24 / -22.83 | -13.56 [-13.68, -13.44] / -8.82 [-8.96, -8.68] | +0.00 / -5.13 | -15.49 / -9.32 | -13.25 / -8.79 | +0.00 / -17.87 |
+|   Source, one split for every ESP | -18.70 / -10.12 | -10.98 [-11.08, -10.87] / +13.49 [+13.32, +13.66] | -59.08 / +1.57 | -31.26 / +12.81 | -9.96 / +13.84 | -59.10 / +2.49 | -13.27 / -27.71 | -12.88 [-13.02, -12.75] / -8.58 [-8.74, -8.43] | +0.00 / -8.14 | -18.62 / -9.17 | -12.51 / -8.64 | +0.00 / -21.17 |
+|   hybrid: conversion rewards new money, BU face value paid by the contribution (a = 0) | -11.49 / +11.19 | -4.77 [-4.89, -4.65] / +19.03 [+18.83, +19.23] | -59.08 / +8.58 | -20.76 / +18.82 | -3.50 / +19.73 | -59.10 / +19.33 | -6.06 / -6.40 | -6.68 [-6.81, -6.55] / -3.04 [-3.14, -2.95] | +0.00 / -1.12 | -8.12 / -3.16 | -6.05 / -2.74 | +0.00 / -4.32 |
+|   today's row paid for by the Source (a = 0) | -18.41 / -11.52 | -17.10 [-17.21, -16.99] / +8.52 [+8.39, +8.64] | -59.08 / -4.71 | -34.18 / +7.70 | -16.51 / +8.72 | -59.10 / -4.59 | -12.98 / -29.11 | -19.01 [-19.14, -18.88] / -13.56 [-13.74, -13.38] | +0.00 / -14.42 | -21.54 / -14.28 | -19.06 / -13.75 | +0.00 / -28.24 |
+|   today's row paid for by the Source, H1 (a = 1) | -17.37 / -11.08 | -40.24 [-40.41, -40.08] / -18.67 [-18.87, -18.47] | -59.08 / -19.07 | -44.24 / -18.88 | -40.19 / -18.64 | -59.10 / -19.04 | -11.94 / -28.67 | -42.15 [-42.30, -42.01] / -40.75 [-41.04, -40.45] | +0.00 / -28.77 | -31.60 / -40.86 | -42.74 / -41.11 | +0.00 / -42.70 |
+
+(5.3 min)

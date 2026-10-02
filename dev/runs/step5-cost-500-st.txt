@@ -1,0 +1,51 @@
+=== A4 testbed (session 6): seeds 1-500, 500 agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===
+Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment's annuity value, against own cost; x100.
+
+--- cost (plan step 5): Stress Test | Compassionism: hub spec (framework model) | seeds 1-500 | 215 s ---
+FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.
+| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Price cuts counted (PTF, PTH) | PTF discount funded by forgone profit | Contribution need | Participation yr 19 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline) | $0 | 20.66 | — | — | — | — | 78.2% | 87.1% | +0.0% | 0.0% | 0.00% | 1.457 | — | — | — | — |
+| TODAY: the s34 main row (wage contribution) | $10,471 | -0.54 [-0.56, -0.52] | — | — | — | — | 80.7% | 90.2% | -7.0% | 30.6% | 0.00% | 1.457 | $1,681 | $0 | $10,471 | — |
+| STEP 4: Source financing, open enrolment | $10,553 | -6.94 [-6.98, -6.90] | -6.40 [-6.45, -6.35] | -14.22 [-14.31, -14.14] | +7.80 [+7.66, +7.93] | -6.40 | 66.5% | 98.0% | -5.0% | 3.8% | 23.26% | 78.718 | $1,267 | $0 | $1,281 | 39.9% |
+| MAIN: step 4 with PTF running costs from sourced figures | $10,468 | -7.01 [-7.05, -6.98] | -0.07 [-0.08, -0.07] | -0.12 [-0.13, -0.12] | -0.02 [-0.02, -0.01] | -6.47 | 66.4% | 98.0% | -5.0% | 3.5% | 23.25% | 78.607 | $1,267 | $85 | $1,196 | 39.9% |
+|   price cuts free (every PTF and PTH cut counted as capacity, not a transfer) | $10,474 | -7.98 [-8.02, -7.93] | -0.96 [-0.97, -0.95] | -1.86 [-1.89, -1.84] | -0.27 [-0.29, -0.24] | -7.44 | 64.5% | 97.7% | -4.4% | 0.0% | 23.13% | 77.109 | $1,267 | $85 | $14 | 39.9% |
+|   step 2 (wage contribution) | $10,111 | +3.52 [+3.46, +3.57] | +4.06 [+4.02, +4.09] | -0.10 [-0.16, -0.05] | -1.50 [-1.60, -1.40] | +4.06 | 80.6% | 88.7% | -10.7% | 30.8% | 0.00% | 1.457 | $1,330 | $0 | $10,111 | — |
+|   step 2 (wage contribution) with PTF running costs | $10,019 | +3.36 [+3.31, +3.42] | -0.15 [-0.15, -0.15] | -0.12 [-0.12, -0.12] | -0.15 [-0.17, -0.14] | +3.90 | 80.5% | 88.5% | -10.6% | 30.5% | 0.00% | 1.457 | $1,330 | $91 | $10,019 | — |
+|   step 2 (wage contribution), price cuts free | $10,019 | +1.46 [+1.42, +1.51] | -2.05 [-2.08, -2.03] | -1.92 [-1.94, -1.89] | -1.92 [-1.98, -1.86] | +2.00 | 78.7% | 86.8% | -9.6% | 26.2% | 0.00% | 1.457 | $1,330 | $91 | $8,780 | — |
+
+Groups: change in real resources per adult-year over 20 years, participants / non-participants (as at year 0) / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.
+| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |
+|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | +$4,756 / -$4,710 / +$1,862 / -$4,460 | — | — | non (riw), top (riw) |
+| STEP 4: Source financing, open enrolment | +$15,408 / +$3,373 / +$6,475 / +$10,654 | +$10,652 / +$8,083 / +$4,613 / +$15,113 | -5.71 / -6.87 | part (w), non (w), PTH (w), top (w) |
+| MAIN: step 4 with PTF running costs from sourced figures | +$15,496 / +$3,468 / +$6,521 / +$10,799 | +$10,740 / +$8,178 / +$4,660 / +$15,259 | -5.75 / -6.96 | part (w), non (w), PTH (w), top (w) |
+|   price cuts free (every PTF and PTH cut counted as capacity, not a transfer) | +$16,754 / +$4,817 / +$7,185 / +$12,869 | +$11,998 / +$9,527 / +$5,323 / +$17,329 | -6.32 / -8.19 | part (w), non (w), PTH (w), top (w) |
+|   step 2 (wage contribution) | +$3,742 / -$6,819 / +$1,215 / -$7,187 | -$1,015 / -$2,109 / -$646 / -$2,727 | +2.53 / +5.08 | non (riw), top (riw) |
+|   step 2 (wage contribution) with PTF running costs | +$3,847 / -$6,710 / +$1,266 / -$7,011 | -$910 / -$2,000 / -$596 / -$2,551 | +2.42 / +4.90 | non (riw), top (riw) |
+|   step 2 (wage contribution), price cuts free | +$5,293 / -$5,209 / +$1,964 / -$4,584 | +$537 / -$499 / +$103 / -$124 | +1.07 / +2.63 | non (riw), top (riw) |
+
+BLEI by group (s41), levels. Person-year shares over 20 years unless stated; part = participants, non = adults who chose not to take part (the same adults in every row). N = design-neutral BLEI (heads, d34); O = the design's own BLEI (the page's definition); X = N with income read as wage earnings net of the contribution. BLEI poverty = below 30 days (Crisis + Precarious); Crisis = below 7 days. Days at year-0 prices.
+| Design | Adults: part / non | FGT2 x100: part / non | BLEI poverty N: all / part / non | Crisis N: part / non | BLEI poverty O: all / part / non | BLEI poverty X: all / part / non | Crisis X: part / non | Year 20, BLEI poverty N: part / non | Year 20, median BLEI N (days): part / non |
+|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline) | 199.4 / 300.6 | 20.67 / 20.65 | 62.0 / 62.0 / 62.0 | 59.1 / 59.1 | 62.0 / 62.0 / 62.0 | 62.0 / 62.0 / 62.1 | 59.1 / 59.1 | 85.0 / 85.0 | 3 / 3 |
+| TODAY: the s34 main row (wage contribution) | 199.4 / 300.6 | 13.04 / 24.83 | 62.8 / 53.1 / 69.2 | 0.0 / 64.1 | 61.1 / 49.0 / 69.1 | 63.0 / 53.4 / 69.4 | 0.0 / 66.8 | 82.8 / 91.6 | 12 / 3 |
+| STEP 4: Source financing, open enrolment | 199.4 / 300.6 | 7.33 / 17.96 | 61.8 / 51.0 / 69.0 | 0.0 / 63.0 | 59.0 / 44.3 / 68.8 | 62.0 / 51.2 / 69.1 | 0.0 / 63.5 | 81.8 / 93.1 | 13 / 3 |
+| MAIN: step 4 with PTF running costs from sourced figures | 199.4 / 300.6 | 7.29 / 17.86 | 61.7 / 50.9 / 68.9 | 0.0 / 62.9 | 58.9 / 44.2 / 68.7 | 61.9 / 51.1 / 69.0 | 0.0 / 63.4 | 81.7 / 93.0 | 13 / 3 |
+|   price cuts free (every PTF and PTH cut counted as capacity, not a transfer) | 199.4 / 300.6 | 6.72 / 16.64 | 60.3 / 49.3 / 67.6 | 0.0 / 61.6 | 57.5 / 42.8 / 67.4 | 60.4 / 49.5 / 67.6 | 0.0 / 61.7 | 80.0 / 92.1 | 13 / 3 |
+|   step 2 (wage contribution) | 199.4 / 300.6 | 15.56 / 29.90 | 65.7 / 56.3 / 71.8 | 0.0 / 64.2 | 63.8 / 51.9 / 71.8 | 65.9 / 56.6 / 72.1 | 0.0 / 69.9 | 81.9 / 90.8 | 12 / 3 |
+|   step 2 (wage contribution) with PTF running costs | 199.4 / 300.6 | 15.45 / 29.72 | 65.5 / 56.2 / 71.7 | 0.0 / 64.2 | 63.7 / 51.7 / 71.7 | 65.8 / 56.4 / 72.0 | 0.0 / 69.8 | 81.7 / 90.7 | 12 / 3 |
+|   step 2 (wage contribution), price cuts free | 199.4 / 300.6 | 14.11 / 27.45 | 63.7 / 54.1 / 70.1 | 0.0 / 63.4 | 62.0 / 49.9 / 70.0 | 63.9 / 54.4 / 70.3 | 0.0 / 68.0 | 79.2 / 89.1 | 12 / 3 |
+
+BLEI by group (s41), changes in points: part / non, paired over seeds [95% CI on the design-neutral reading]. Negative = fewer adults below the line.
+| Design | vs Baseline: FGT2 x100 | vs Baseline: BLEI poverty N | vs Baseline: Crisis N | vs Baseline: BLEI poverty O | vs Baseline: BLEI poverty X | vs Baseline: Crisis X | vs today: FGT2 x100 | vs today: BLEI poverty N | vs today: Crisis N | vs today: BLEI poverty O | vs today: BLEI poverty X | vs today: Crisis X |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| TODAY: the s34 main row (wage contribution) | -7.64 / +4.18 | -8.86 [-8.95, -8.77] / +7.12 [+7.05, +7.18] | -59.05 / +5.01 | -13.03 / +7.04 | -8.61 / +7.35 | -59.07 / +7.66 | — | — | — | — | — | — |
+| STEP 4: Source financing, open enrolment | -13.34 / -2.69 | -11.04 [-11.15, -10.93] / +6.94 [+6.87, +7.01] | -59.05 / +3.88 | -17.67 / +6.74 | -10.79 / +7.08 | -59.07 / +4.37 | -5.71 / -6.87 | -2.18 [-2.24, -2.11] / -0.18 [-0.23, -0.13] | +0.00 / -1.13 | -4.64 / -0.30 | -2.18 / -0.27 | +0.00 / -3.29 |
+| MAIN: step 4 with PTF running costs from sourced figures | -13.39 / -2.79 | -11.14 [-11.25, -11.03] / +6.85 [+6.79, +6.92] | -59.05 / +3.80 | -17.77 / +6.66 | -10.90 / +6.99 | -59.07 / +4.26 | -5.75 / -6.96 | -2.28 [-2.34, -2.22] / -0.26 [-0.31, -0.21] | +0.00 / -1.21 | -4.74 / -0.38 | -2.29 / -0.36 | +0.00 / -3.40 |
+|   price cuts free (every PTF and PTH cut counted as capacity, not a transfer) | -13.96 / -4.01 | -12.72 [-12.83, -12.60] / +5.52 [+5.46, +5.59] | -59.05 / +2.47 | -19.25 / +5.31 | -12.56 / +5.58 | -59.07 / +2.54 | -6.32 / -8.19 | -3.85 [-3.93, -3.78] / -1.59 [-1.65, -1.54] | +0.00 / -2.54 | -6.22 / -1.73 | -3.96 / -1.77 | +0.00 / -5.12 |
+|   step 2 (wage contribution) | -5.11 / +9.25 | -5.69 [-5.80, -5.57] / +9.81 [+9.70, +9.91] | -59.05 / +5.11 | -10.14 / +9.74 | -5.46 / +10.01 | -59.07 / +10.77 | +2.53 / +5.08 | +3.17 [+3.09, +3.25] / +2.69 [+2.62, +2.75] | +0.00 / +0.10 | +2.89 / +2.70 | +3.15 / +2.65 | +0.00 / +3.11 |
+|   step 2 (wage contribution) with PTF running costs | -5.22 / +9.07 | -5.82 [-5.94, -5.70] / +9.70 [+9.60, +9.80] | -59.05 / +5.07 | -10.26 / +9.64 | -5.59 / +9.90 | -59.07 / +10.66 | +2.42 / +4.90 | +3.04 [+2.96, +3.12] / +2.58 [+2.52, +2.65] | +0.00 / +0.06 | +2.76 / +2.60 | +3.02 / +2.54 | +0.00 / +3.00 |
+|   step 2 (wage contribution), price cuts free | -6.57 / +6.80 | -7.86 [-7.98, -7.74] / +8.05 [+7.95, +8.15] | -59.05 / +4.29 | -12.08 / +7.98 | -7.65 / +8.23 | -59.07 / +8.91 | +1.07 / +2.63 | +1.00 [+0.93, +1.08] / +0.93 [+0.87, +0.99] | +0.00 / -0.72 | +0.94 / +0.94 | +0.96 / +0.88 | +0.00 / +1.25 |
+
+(3.6 min)

@@ -444,8 +444,8 @@ function phase5(done) {
   wv.dispatchEvent(new wv.Event('DOMContentLoaded'));
   const labels = [...wv.document.querySelectorAll('.meta-ver')].map(e => e.textContent);
   const hd = (wv.document.querySelector('.hd-title') || {}).textContent || '';
-  check('v4.17: every visible version label reads META.VERSION (header, footer, assumptions panel)',
-    labels.length >= 3 && labels.every(t => t === 'v' + wv.META.VERSION) && hd.indexOf('v' + wv.META.VERSION) >= 0 && wv.document.title.indexOf('v' + wv.META.VERSION) >= 0,
+  check('v4.17: every visible version label reads META.VERSION (header, footer; the assumptions panel moved to the replication page at the release, plan step 12)',
+    labels.length >= 2 && labels.every(t => t === 'v' + wv.META.VERSION) && hd.indexOf('v' + wv.META.VERSION) >= 0 && wv.document.title.indexOf('v' + wv.META.VERSION) >= 0,
     'labels=' + JSON.stringify(labels) + ' header="' + hd.trim().slice(-12) + '" (v4.16: header/footer hardcoded v4.15)');
   check('v4.17: the 55% participation warning and sensitivity row no longer claim a network collapse',
     !/network threshold not met/.test(html) && !/network effects collapse/.test(html));
@@ -712,7 +712,7 @@ function phase8(done) {
   // 8b. tooltips reachable by keyboard and exposed to assistive technology
   const tips = [...d.querySelectorAll('[data-tip]')];
   const icons = tips.filter(el => el.tagName !== 'A' && el.tagName !== 'BUTTON'), hosts = tips.filter(el => el.tagName === 'A' || el.tagName === 'BUTTON');
-  const iconsOK = icons.length >= 15 && icons.every(el => el.getAttribute('tabindex') === '0' && el.getAttribute('role') === 'img' && el.getAttribute('aria-label') === el.getAttribute('data-tip'));
+  const iconsOK = icons.length >= 10 &&  /* plan step 12: the comparison's tooltips left with it */ icons.every(el => el.getAttribute('tabindex') === '0' && el.getAttribute('role') === 'img' && el.getAttribute('aria-label') === el.getAttribute('data-tip'));
   const hostsOK = hosts.length >= 14 && hosts.every(el => { const dd = $(el.getAttribute('aria-describedby') || ''); return !!dd && dd.textContent === el.getAttribute('data-tip'); });
   const nDesc = $('tip-desc') ? $('tip-desc').children.length : -1;
   if (typeof w.initA11y === 'function') w.initA11y();
@@ -880,7 +880,7 @@ function phase10(done) {
   check('session 7: the replication page\'s canonical address is in this repository', canon === NEW && !!ld && ld.url === NEW, 'canonical=' + canon);
   const links = [...w.document.querySelectorAll('a[href*="replication"]')].map(a => a.getAttribute('href'));
   check('session 7: every index.html link to the replication page points here, none to the Hub\'s old address',
-    links.length >= 4 && links.every(h => h === NEW), links.length + ' links' + (links.some(h => h !== NEW) ? '; stale: ' + links.filter(h => h !== NEW).join(', ') : ''));
+    links.length >= 4 && links.every(h => h.split('#')[0] === NEW),  /* plan step 12: a link may name a section */ links.length + ' links' + (links.some(h => h !== NEW) ? '; stale: ' + links.filter(h => h !== NEW).join(', ') : ''));
   phase11(done);  // session 8: the front door
 }
 
@@ -890,66 +890,77 @@ function phase10(done) {
  * from the testbed's a5 output; wherever Compassionism is shown, the row with its two unsourced mechanisms switched off
  * (the octave wage raise, d19; the PTF/PTH inflation damping, d33) must sit directly beneath it. */
 function phase11(done) {
-  console.log('\n--- Phase 11: the front door (session 8) ---');
-  const w = makeWindow(), d = w.document, fdEl = d.getElementById('front-door');
-  if (!fdEl || typeof w.fdRender !== 'function') { check('session 8: the front door exists', false, 'no #front-door or fdRender (pre-session 8 page)'); return done(); }
-  w.fdInit();  // its DOMContentLoaded handler runs only when a check dispatches the event (see makeWindow)
+  console.log('\n--- Phase 11: the front door (plan step 12; session 8 before it) ---');
+  const H = require('./harness.js'), w = makeWindow(), d = w.document, fdEl = d.getElementById('front-door');
+  if (!fdEl || typeof w.relRender !== 'function') { check('step 12: the release front door exists', false, 'no #front-door or relRender'); return done(); }
+  w.relInit();  // its DOMContentLoaded handler runs only when a check dispatches the event (see makeWindow)
   const q = (d.getElementById('fd-q') || {}).textContent || '', qs = q.trim();
   const readme = fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8').split('\n').filter(l => l.trim())[1] || '';
-  check('session 8 (d41, session 11: a question or a statement): the first screen states in one sentence what the tool tests, before the layout, and README.md opens with the same sentence',
+  check('the first screen states in one sentence what the tool tests, before the layout, and README.md opens with the same sentence',
     /^[^.?!]+[.?]$/.test(qs) && fdEl.compareDocumentPosition(d.querySelector('.layout')) === 4 && readme.replace(/\*\*/g, '').trim() === qs,
     '"' + qs.slice(0, 70) + '..."; README line 2 ' + (readme.replace(/\*\*/g, '').trim() === qs ? 'matches' : 'differs: ' + readme.slice(0, 60)));
-  let D = null; try { D = JSON.parse(d.getElementById('fd-data').textContent); } catch (e) {}
-  const envs = D && D.envs ? Object.keys(D.envs) : [];
-  check('session 8: the comparison data parses and covers all three environments, both models and both views (session 11: equal cost, proposed size), each with the Baseline, Compassionism, its top-up variant and the five comparators, grocery as planned and at scale',
-    envs.join() === 'ref,adv,st' && envs.every(e => ['rows', 'prop'].every(v => D.envs[e][v] && ['engine', 'framework'].every(m => { const k = (D.envs[e][v][m] || []).map(r => r.k);
-      return ['base', 'cco', 'corr', 'top', 'ubi', 'nit', 'endow', 'groc', 'grocP', 'xc'].every(x => k.indexOf(x) >= 0); }))),
-    'environments: ' + envs.join(', ') + '; engine v' + (D && D._meta ? D._meta.engine : '?'));
-  let honest = true, seen = 0, bad = [];
-  ['ref', 'adv', 'st'].forEach(e => ['engine', 'framework'].forEach(m => ['cost', 'prop'].forEach(v => [false, true].forEach(sens => {
-    w.FD.env = e; w.FD.m = m; w.FD.v = v; w.FD.sens = sens; w.fdRender();
-    const ks = [...d.querySelectorAll('#fd-rows tr')].map(tr => tr.getAttribute('data-k')), i = ks.indexOf('cco');
-    seen++; if (i < 0 || ks[i + 1] !== 'corr' || ks[0] !== 'base' || (sens !== ks.some(k => /^(d19|d33|hyb0|hyb1|topc|xc0|xcH)$/.test(k)) && (sens || e !== 'ref'))) { honest = false; bad.push(e + '/' + m + '/' + v + '/' + sens + ': ' + ks.join(' ')); } }))));
-  w.FD.env = 'ref'; w.FD.m = 'engine'; w.FD.v = 'cost'; w.FD.sens = false; w.fdRender();
-  check('session 8: in every environment, model and view, the Compassionism row is followed directly by the same design with its two theoretical mechanisms off, and sensitivity rows appear only when asked for',
-    honest && seen === 24, honest ? seen + ' views rendered' : bad.join('; '));
-  const src = (d.getElementById('fd-src') || {}).textContent || '';
-  check('session 8: the comparison names its source (engine version, seeds) and the command that reproduces it',
-    D && D._meta && src.indexOf('engine v' + D._meta.engine) >= 0 && /node harness\.js testbed \d+ a5 ref/.test(src), src.slice(0, 120));
-  const cav = d.getElementById('uncertainty-notice'), runSrc = w.runSim.toString();
-  check('session 8: there is one caveats box, it sits in the front door, and a run no longer hides it',
-    !!cav && fdEl.contains(cav) && d.querySelectorAll('#uncertainty-notice').length === 1 && cav.style.display !== 'none' && runSrc.indexOf("'uncertainty-notice'") < 0,
-    cav ? 'inside front door: ' + fdEl.contains(cav) : 'missing');
+  const ATTR = 'The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson\'s book Better To Best and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.';
+  const at = (d.getElementById('fd-attr') || {}).textContent || '', rd = fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8').replace(/[*_]/g, ''), rp = new JSDOM(fs.readFileSync(path.join(path.dirname(FILE), 'replication.html'), 'utf8')).window.document.body.textContent.replace(/\s+/g, ' ');
+  check('step 12: the attribution (CLAUDE.md wording) sits directly under the title, and in the README and on the replication page',
+    at.replace(/\s+/g, ' ').trim() === ATTR && d.getElementById('fd-q').nextElementSibling === d.getElementById('fd-attr') && rd.replace(/\s+/g, ' ').indexOf(ATTR) >= 0 && rp.indexOf(ATTR) >= 0,
+    'page ' + (at.replace(/\s+/g, ' ').trim() === ATTR ? 'ok' : 'DIFFERS') + '; README ' + (rd.replace(/\s+/g, ' ').indexOf(ATTR) >= 0 ? 'ok' : 'missing') + '; replication ' + (rp.indexOf(ATTR) >= 0 ? 'ok' : 'missing'));
+  let D = null; try { D = JSON.parse(d.getElementById('rel-data').textContent); } catch (e) {}
+  const envs = D && D.envs ? Object.keys(D.envs) : [], NEEDR = ['release', 'h1', 'face', 'cost', 'cap5', 'tax', 'all', 'free', 'standins', 's30', 'v422'];  /* plan step 18: the v5.0 readings */
+  check('step 12: the 500-seed panel parses, covers all three environments with every reading, and names its command',
+    envs.join() === 'ref,adv,st' && envs.every(e => NEEDR.every(k => D.envs[e].rows[k] && D.envs[e].rows[k].dBO.length === 3)) && D._meta && D._meta.seeds === 500 && /node harness\.js testbed 500 release/.test(D._meta.command || ''),
+    'environments: ' + envs.join(', ') + '; seeds ' + (D && D._meta ? D._meta.seeds : '?'));
+  const txts = {}; ['ref', 'adv', 'st'].forEach(e => { w.relSet(e); txts[e] = (d.getElementById('rel-out') || {}).textContent || ''; });
+  const blFirst = ['ref', 'adv', 'st'].every(e => { const t = txts[e]; const i = t.indexOf('Basic living covered'); return i >= 0 && i < t.indexOf('Living below the cost of living') && /design-neutral/.test(t) && /Savings\./.test(t) && /Who gains/.test(t) && /Work\./.test(t) && /Prices\./.test(t) && /Cost and how it is paid/.test(t) && /Public costs avoided/.test(t) && /optimistic end/.test(t); });
+  const rows = d.querySelectorAll('#rel-rows tr').length, srcT = (d.getElementById('rel-src') || {}).textContent || '';
+  check('step 12: every environment opens with BLEI (Duke\'s definition, the design-neutral reading beside it), then one sentence each on poverty, savings, groups, work, prices, cost and avoided costs, the optimistic end, the other readings and the command',
+    blFirst && rows === NEEDR.length && /500 paired runs/.test(srcT) && /node harness\.js testbed 500 release/.test(srcT), 'sentences ' + (blFirst ? 'in order' : 'MISSING') + '; readings ' + rows + '; source "' + srcT.slice(0, 60) + '"');
+  const conf = ['ref', 'adv', 'st'].map(e => { const r = D.envs[e].rows.release; const ok = r.dF0[2] < 0 && r.dPov[2] < 0 && r.dBO[2] < 0; return e + ':' + (ok ? 'confirmed' : 'not') + (/A confirmed gain/.test(txts[e]) === ok ? '' : ' MISLABELLED'); });
+  check('step 12: the panel calls a gain confirmed only where basket poverty, wealth poverty and BLEI poverty all fall (95% intervals below zero)', conf.every(x => !/MISLABELLED/.test(x)), conf.join(', '));
+  w.relSet('adv'); const si = d.getElementById('rel-seed'); si.value = '3'; const st0 = w.setTimeout; w.setTimeout = function (f) { f(); }; w.relRun(); w.setTimeout = st0;
+  const live = w.REL.last, hR = (function(){ const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G); try { const P = Object.assign({}, H.ADVERSE_REFERENCE), PR = H.tbPresets(P);
+    return H.tbStudy([{p:PR.baseline()}, H.n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, H.REL_V5))], 3, P, {fin:'tax', aT:0, a:0, X:0, sc:H.SPEND_SOURCED}, 3); } finally { H.resetNR6(svN); H.tbSetG(svG); } })();
+  const liveOK = !!live && live.seed === 3 && live.x.r.bOAPy === hR[1].bOAPy && live.x.b.pov === hR[0].pov && live.x.r.cost === hR[1].cost && /Basic living covered/.test((d.getElementById('rel-live-out') || {}).textContent || '');
+  check('step 12: "Run it yourself" runs the page\'s release engine and matches harness.js on the same seed (Adverse, seed 3), and the earlier settings stay restored after it',
+    liveOK && w.SURPLUS_CONSUMPTION_SHARE === 0 && w.CONVERSION_MODEL === 'engine', live ? 'BLEI poverty page ' + live.x.r.bOAPy.toFixed(2) + ' / harness ' + hR[1].bOAPy.toFixed(2) + '; spending share after ' + w.SURPLUS_CONSUMPTION_SHARE : 'no run');
+  const vis = fdEl.textContent + ' ' + fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8');
+  const lim = [...d.querySelectorAll('#uncertainty-notice li')].length, draft = fs.existsSync(path.join(path.dirname(FILE), 'dev', 'drafts', 'compare-designs.html'));
+  check('step 12: the comparison has left the page (no table, no "other designs", no walk-through link in the README; saved unlinked in dev/drafts/), and a short list of limits remains',
+    !d.getElementById('fd-table') && !d.getElementById('fd-data') && !/other designs/i.test(vis) && !/walk-?through/i.test(fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8')) && draft && lim >= 5 && lim <= 8,
+    'limits ' + lim + '; draft ' + (draft ? 'saved' : 'MISSING'));
   const chips = [...d.querySelectorAll('#fd-live .fd-chip')].map(b => (b.getAttribute('onclick').match(/fdRun\('(\w+)'\)/) || [])[1]);
   const saveRun = w.runSim; let ran = 0; w.runSim = function () { ran++; }; w.fdRun('adverse'); w.runSim = saveRun;
-  const pbA = d.getElementById('pb-adverse'), live = d.getElementById('fd-live');
-  check('session 8: the preset picker offers the six presets, and a pick loads that preset into the controls and runs it',
-    chips.length === 6 && chips.every(c => w.PRESET_IDS.indexOf(c) >= 0) && ran === 1 && w.ST.shock === true && pbA && /pbtn-active/.test(pbA.className) && live && !live.hidden,
-    'chips: ' + chips.join(', ') + '; runs started ' + ran + '; shock ' + w.ST.shock);
-  const meth = [...fdEl.querySelectorAll('.fd-meth a')].map(a => a.getAttribute('href'));
-  check('session 8: the front door links to the method (the replication page) and the code',
-    meth.indexOf('https://bettertobest.github.io/compassionism-simulation/replication.html') >= 0 && meth.some(h => /github\.com\/BetterToBest\/compassionism-simulation/.test(h)), meth.join(', '));
-  // v4.22: "What each design is". Every design shown has an entry; every comparator entry cites a source with a link (X-Cents its
-  // Academia paper); every row label, in every environment, model and view, links to an entry that exists; fdAbout opens the panel.
-  const about = d.getElementById('fd-about'), need = ['base', 'cco', 'ubi', 'nit', 'endow', 'groc', 'xc'], ent = need.map(k => d.getElementById('fd-about-' + k));
-  const srcOK = need.filter(k => k !== 'base').every(k => { const e = d.getElementById('fd-about-' + k); return !!e && e.querySelectorAll('.fd-srcs a[href^="https://"]').length >= 1; });
-  const xcE = d.getElementById('fd-about-xc'), xcOK = !!xcE && [...xcE.querySelectorAll('a')].some(a => /academia\.edu\/144441020\//.test(a.getAttribute('href')));
-  let linksOK = true, nLinks = 0;
-  ['ref', 'adv', 'st'].forEach(e => ['engine', 'framework'].forEach(m => ['cost', 'prop'].forEach(v => { w.FD.env = e; w.FD.m = m; w.FD.v = v; w.FD.sens = true; w.fdRender();
-    [...d.querySelectorAll('#fd-rows tr')].forEach(tr => { const a = tr.querySelector('.fd-lnk'); nLinks++; if (!a || a.tagName !== 'BUTTON' || !d.getElementById(a.getAttribute('data-go') || '')) linksOK = false; }); })));
-  w.FD.env = 'ref'; w.FD.m = 'engine'; w.FD.v = 'cost'; w.FD.sens = false; w.fdRender();
-  if (about) about.open = false; const ret = typeof w.fdAbout === 'function' ? w.fdAbout('nit') : true;
-  check('v4.22: every design in the comparison has an entry under "What each design is", each comparator cites a linked source (X-Cents its Academia paper), and every row label links to its entry',
-    !!about && ent.every(Boolean) && srcOK && xcOK && linksOK && nLinks > 0 && about.open === true && ret === false,
-    ent.filter(Boolean).length + '/' + need.length + ' entries; sources ' + (srcOK ? 'linked' : 'MISSING') + '; X-Cents paper ' + (xcOK ? 'linked' : 'MISSING') + '; ' + nLinks + ' row labels, links ' + (linksOK ? 'resolve' : 'BROKEN'));
-  // session 11: the view switch changes the comparators (not Compassionism), every costed row states its change per $1,000, the X-Cents
-  // entry links the framework's site, and no visible text calls the two mechanisms unsourced (Duke: "theoretical, yet to be empirically tested").
-  function cells(v){ w.FD.v = v; w.fdRender(); const o = {}; [...d.querySelectorAll('#fd-rows tr')].forEach(tr => { o[tr.getAttribute('data-k')] = tr.children[1].textContent; }); return o; }
-  const cc = cells('cost'), cp = cells('prop'); w.FD.v = 'cost'; w.fdRender();
-  const per = Object.keys(cc).filter(k => k !== 'base' && k !== 'grocP').every(k => /per \$1,000/.test(cc[k]));
-  const vis = fdEl.textContent, xs = !!xcE && [...xcE.querySelectorAll('a')].some(a => a.getAttribute('href') === 'https://bettertobest.github.io/x-cents/');
-  check('session 11: the view switch changes the comparators and not Compassionism; every costed row states its change per $1,000; X-Cents links its site; no visible text calls the two mechanisms unsourced; no link on the page is a same-page fragment (in-page links are buttons)',
-    cc.cco === cp.cco && cc.ubi !== cp.ubi && cc.nit !== cp.nit && per && xs && !/unsourced|no documented source/i.test(vis) && /theoretical, yet to be empirically tested/.test(vis) && d.querySelectorAll('a[href^="#"]').length === 0,
-    'Compassionism ' + (cc.cco === cp.cco ? 'same' : 'DIFFERS') + ' in both views; basic income ' + (cc.ubi !== cp.ubi ? 'differs' : 'SAME') + '; per $1,000 ' + (per ? 'on every row' : 'MISSING') + '; X-Cents site ' + (xs ? 'linked' : 'MISSING'));
+  const pbA = d.getElementById('pb-adverse');
+  check('step 12: the earlier engine\'s presets stay available, labelled as the v4.22 engine, and a pick loads that preset and runs it',
+    chips.length === 6 && chips.every(c => w.PRESET_IDS.indexOf(c) >= 0) && ran === 1 && w.ST.shock === true && pbA && /pbtn-active/.test(pbA.className) && /v4\.22 engine/.test((d.getElementById('fd-old') || {}).textContent || ''),
+    'chips: ' + chips.join(', ') + '; runs started ' + ran);
+  const fourGone = !/Four Measures/.test(d.body.innerHTML), buOK = !/redeemable at PTF|redeemable below market price at PTF/.test((d.getElementById('sec-glossary') || {}).textContent || 'missing') && !!d.getElementById('sec-glossary'), distOK = !/efficiency losses from reducing market competition/.test(d.body.innerHTML);
+  check('step 12: the three wording fixes: the poverty card is "Five Measures" everywhere; the BU glossary no longer says BU are spent at PTFs only; the 30% PTF caution is labelled a placeholder with no efficiency loss in the model',
+    fourGone && buOK && distOK, 'Five Measures ' + fourGone + '; BU glossary ' + buOK + '; 30% label ' + distOK);
+  phase12(done);  // plan step 10: the release engine
+}
+
+/* ── Phase 12 (plan step 10, Oct 1, 2026): the release engine. dev/tools/port_engine.py copies harness.js's engine (the Hub-spec model,
+ * project hiring, ESP payroll, the ESP split, the production side, joining and leaving, PTF running costs, the octave rule, the spending
+ * rule, the price, labour and financing modules, and the testbed runner) into index.html verbatim, in place of the page's runYear. Two
+ * checks keep the copies equal: every ported function's source text matches harness.js, and the release configuration (every mechanism,
+ * paid for by the Source, at the sourced spending share) gives identical results on the same seeds in all three environments. */
+function phase12(done) {
+  console.log('\n--- Phase 12: the release engine (plan step 10) ---');
+  const H = require('./harness.js'), w = makeWindow(), html = fs.readFileSync(FILE, 'utf8');
+  const blk = html.slice(html.indexOf('RELEASE ENGINE: ported verbatim'), html.indexOf('END RELEASE ENGINE')) + html.slice(html.indexOf('plan step 10: harness.js version'), html.indexOf('plan step 10: harness.js version') + 2000);
+  const fnames = [...blk.matchAll(/^function ([A-Za-z_$][\w$]*)/gm)].map(m => m[1]), hsrc = fs.readFileSync(path.join(path.dirname(FILE), 'harness.js'), 'utf8');
+  const diff = fnames.filter(n => { const re = new RegExp('^function ' + n.replace(/\$/g, '\\$') + '\\(', 'm'), a = blk.search(re), b = hsrc.search(re);
+    if (a < 0 || b < 0) return true; const grab = (t, i) => { let d = 0, j = t.indexOf('{', i); for (; j < t.length; j++){ if (t[j] === '{') d++; else if (t[j] === '}' && --d === 0) break; } return t.slice(i, j + 1); };
+    return grab(blk, a) !== grab(hsrc, b); });
+  check('step 10: every function in the page\'s release engine is a verbatim copy of harness.js (rerun dev/tools/port_engine.py after an engine change)',
+    fnames.length > 40 && diff.length === 0, fnames.length + ' functions; differing: ' + (diff.length ? diff.join(', ') : 'none'));
+  function rel(X, envName, seeds){ const svN = X.applyNR6(), svG = X.tbSetG(X.TB_PROFILE_G); try { const P = Object.assign({}, X[envName]), PR = X.tbPresets(P);
+      const ALL = {sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}}, cfg = [{p:PR.baseline()}, X.n1Row(PR, 'framework', ALL), X.n1Row(PR, 'framework', Object.assign({}, ALL, {a:1}))];
+      return X.tbStudy(cfg, seeds, P, {fin:'tax', aT:0, a:0, X:0, sc:X.SPEND_SOURCED}); } finally { X.resetNR6(svN); X.tbSetG(svG); } }
+  const bad = [], keys = H.TB_KEYS; let n = 0, fg = [];
+  ['FULL_INTEGRATION', 'ADVERSE_REFERENCE', 'STRESS_TEST'].forEach(e => { const a = rel(w, e, 2), b = rel(H, e, 2);
+    a.forEach((r, i) => keys.forEach(k => { n++; for (let s = 0; s < 2; s++) if (r._s[k][s] !== b[i]._s[k][s]) { bad.push(e + ' row ' + i + ' ' + k); break; } })); fg.push(e + ' ' + (a[1].fgt2PY - a[0].fgt2PY).toFixed(2)); });
+  check('step 10: page and harness agree on the release run, every measure, same seeds (seeds 1-2; Reference, Adverse and Stress; no programme, the release row and H1)',
+    bad.length === 0, n + ' measure-rows compared; differing: ' + (bad.length ? bad.slice(0, 5).join('; ') : 'none') + '; poverty severity vs no programme: ' + fg.join(', '));
   done();
 }
