@@ -1,127 +1,87 @@
-# Walk-through: the Compassionism Framework Simulation (v4.22)
+# Walk-through: the Compassionism Framework Simulation (v5.0)
 
 <!-- Written by walkthrough/make_walkthrough.py. Edit the captions there and rebuild; edits here are overwritten. -->
 
 [![The walk-through video](img/poster.jpg)](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)
 
-**[Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (6:22, narrated by a synthetic voice, with captions; [caption file](captions.vtt)). The same tour follows as text, one screenshot per step.
+**[Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (5:14, narrated by a synthetic voice, with captions; [caption file](captions.vtt)). The same tour follows as text, one screenshot per step.
 
-It covers what the page shows, how Compassionism works, what the model finds so far, how to run a scenario, how to check the work, and how to help. Every figure below is read from the page's own comparison data when the tour is built (`python3 walkthrough/make_walkthrough.py`), so it matches the page it was built from. The figures are results of the model under its stated assumptions, not forecasts.
+It covers what the page shows, how Compassionism works, what the model finds so far (including where the gain is not confirmed), how to run a scenario, what the model cannot tell you, how to check the work, and how to help. Every figure below is read from the page's own results data when the tour is built (`python3 walkthrough/make_walkthrough.py`; the script is `tour.json`, see [UPDATING.md](UPDATING.md)), so it matches the page it was built from. The figures are results of the model under its stated assumptions, not forecasts.
 
 ## 1. What the page is for
 
 ![The page's opening sentence, highlighted](img/01-headline.png)
 
-The first screen says what the tool is for: set Compassionism beside five other anti-poverty designs and see how each does on poverty and work.
+The first screen says what the tool is for: to see how Compassionism does at eradicating extreme poverty, and at rewarding participation and contribution.
 
-![The subtitle: the rules every design shares, highlighted](img/02-rules.png)
+![The attribution paragraph, highlighted](img/02-attribution.png)
 
-Every design runs on the same 500 simulated adults for 20 years, is paid for the same way, and faces the same rules for how people respond.
+Duke Johnson wrote the concepts. Claude, an AI model made by Anthropic, engineered the math and code. No independent economist has reviewed the model yet, and the code is open for anyone to check.
 
-![The "Read this first" caveats box, highlighted](img/03-caveats.png)
+![The subtitle describing the 500 adults, 20 years and three environments, highlighted](img/03-rules.png)
 
-Read this first: it is an exploratory model, not a forecast. Its results show what its assumptions imply, not that the assumptions are true.
+The model follows the same 500 simulated adults for 20 years, once with Compassionism and once with no programme, in three environments. Figures are averages over 500 paired runs.
 
 ## 2. How Compassionism works
 
-![The design panel's description of Compassionism, highlighted](img/04-design.png)
+![The 'What Compassionism is' list, highlighted](img/04-what.png)
 
-Each participant receives a monthly allowance of Basic Units (BU): a restricted currency for essentials that expires if it is not used. BU can be converted to dollars at elevated rates, set by market demand and by the quality of work the community validates through creative collectives. A participant's octave is their conversion capacity: a safeguard against exploitation, and an open ceiling for creators whose work draws demand. Wage work is still paid in dollars. Community-owned businesses and housing (PTF, PTH) lower living costs, zone coordination (SZH) adds a cooperative benefit, and a civic portal (CIP) runs the currency and the votes. Taking part is open to every adult. In the model, 78% do at the reference settings, and each adult's choice holds for all 20 years.
+Every adult who takes part receives a monthly allowance of Basic Units, or BU: a currency that only buys essentials, and expires if it is not used. Expired BU can be converted to dollars at higher rates, for work the community values. Unused BU go to community projects, which hire participants and pay them at the converted rate. A person's octave sets how much they can convert; it rises with their financial stability. Essential-service businesses accept BU, and community-owned ones lower prices and add capacity within a year when demand outgrows them. Creative projects offer their work to members far below market price. Spending also creates jobs in recessions. Any adult can join or leave each year. A Source, the Treasury, issues the BU and pays for every conversion. Where the Hub is silent, the page labels the choice as Claude's reading of the design.
 
-## 3. Reading the comparison
+## 3. What the model finds
 
-![The comparison table at reference settings and equal cost, with Compassionism's row marked](img/05-table.png)
+![The reference-environment results, highlighted](img/05-ref.png)
 
-Each row is a design. Cost is per adult per year, shown with the wage contribution that pays for it and the change in poverty per $1,000.
+At the reference settings, 18.7% of adult-years fall below 30 days of basic living with Compassionism, against 46.7% with no programme. Living below the cost of living falls from 55.2% to 22.0%, and the share with too little wealth at year 20 falls from 52.0% to 35.7%. Adults who take part gain about 30,300 dollars a year in real resources. Adults who do not take part lose about 800 dollars a year. The cost is about 29,600 dollars per adult a year, and prices rise 34.9% a year, because the model treats conversion as new money with little output behind it. If every dollar the Source pays were backed by new output, prices would stay flat and the gains would be larger. The decisive unknown is how much output conversion rewards call forth.
 
-![The comparison table with the poverty-severity tooltip open](img/06-measure.png)
+![The Adverse Environment results, highlighted](img/06-adverse.png)
 
-The main measure is poverty severity: each adult's shortfall below a living-wage basket, squared so the deepest count most, averaged over 20 years. Beside it: the final year alone, the share of adults in poverty, hours worked, and any group left worse off than with no program.
+In the Adverse Environment, with recessions and inflation, fewer adults fall below 30 days of basic living: 33.1% against 60.0%. But too little wealth rises from 82.6% to 87.1%.
 
-![The table's controls, highlighted](img/07-controls.png)
+![The Stress Test results, highlighted](img/07-stress.png)
 
-The controls switch the environment, compare the designs at equal cost or at the size their proponents propose, and model Compassionism as coded or as specified on the Hub.
+In the Stress Test it is the same: below 30 days of basic living falls from 60.0% to 54.9%, but too little wealth rises from 82.6% to 90.6%. The gain is not confirmed there, and the page says so.
 
-![The proposed-size view, with the basic income and negative income tax rows marked](img/08-proposed.png)
+![The table of other readings of the design, open](img/08-other.png)
 
-At proposed size, the basic income pays $12,000 a year and the negative income tax guarantees the 2026 poverty guideline for one adult, $15,960.
+Below the results, other readings of the design sit side by side, including full backing by output, creative work counted at cost, and the earlier engine, so you can see how much each choice matters.
 
-## 4. What the model finds so far
+## 4. Run it yourself
 
-![Compassionism, basic income and negative income tax rows marked, reference settings](img/09-headline-result.png)
+![The 'Run it yourself' control and its result](img/09-run.png)
 
-At the reference settings and equal cost, Compassionism as coded cuts poverty severity by 3.21 points, against 1.60 for a basic income and 2.30 for a negative income tax.
+Press Run it yourself to run one seed of 500 adults, with and without the programme, in your browser. A single run varies more than the 500-run averages. Enter a seed to repeat a run exactly: the same seed gives the same result.
 
-![Compassionism's row and the shaded row without its two theoretical mechanisms, marked](img/10-mechanisms.png)
+## 5. What it cannot tell you
 
-The shaded row switches off two mechanisms that are theoretical, yet to be empirically tested, and cost nothing in the model: a yearly wage raise per octave, and slower inflation. At reference, with no inflation, only the wage raise acts. Without it the cut falls from 3.21 to 1.78, about 45% less.
+![The 'Limits, in short' box, highlighted](img/10-limits.png)
 
-![The same two rows in the Adverse Environment](img/11-adverse.png)
+What the model cannot tell you: it has single adults only, no children or households, no places, and a simple rule for prices. It is an exploratory model, not a forecast.
 
-In the Adverse Environment, with recessions and 2% inflation, the two carry about 79% of the cut: 7.67 falls to 1.62. The next round replaces them or switches them off.
+![The note about the earlier engine, highlighted](img/11-earlier.png)
 
-![The mechanisms-off row and the basic income row, marked](img/12-without.png)
-
-Without them, Compassionism still does better than a basic income of equal cost, in all three environments.
-
-![The mechanisms-off row and the negative income tax row, marked](img/13-nit.png)
-
-The negative income tax cuts severity more at reference, 2.30, by focusing on the deepest shortfalls, but it raises the share in poverty from 55% to 81% and cuts hours by 22%.
-
-![Compassionism's row and the needs-based top-up row, marked](img/14-topup.png)
-
-A variant that moves a tenth of the flat allowance into a top-up for low earners cuts a little more: 3.38.
-
-![The worse-off cells for Compassionism and the basic income, marked](img/15-who-pays.png)
-
-Someone always pays. Each design is funded by a contribution on wages; under Compassionism the cost falls mainly on adults who chose not to take part, about $5,800 a year.
-
-![Compassionism as specified on the Hub, marked](img/16-hub-scale.png)
-
-At the scale specified on the Hub, Compassionism costs about $32,000 per adult a year, which would take a contribution of 61% of wages.
-
-![The caveats box, highlighted](img/17-limits.png)
-
-What the model cannot test: whether conversion rewards pay for new output (it has no production side), households and children, or savings from poverty removed.
-
-## 5. Run a scenario yourself
-
-![The live tab's scenario presets, highlighted](img/18-live.png)
-
-Compassionism's own scenarios run live in your browser: pick a preset, or change any control and press Run Simulation.
-
-![The live simulation: controls on the left, results on the right](img/19-results.png)
-
-Each run follows 500 adults year by year and reports poverty, wealth and the BLEI: how many days of basic living each adult's resources cover.
-
-![The Poverty by five measures panel](img/20-panels.png)
-
-Panels below show poverty by five measures, BLEI tiers over time, participants beside non-participants, and what each system contributes. These live runs use the engine's own settings, not the comparison's testbed profile, so their figures differ from the table's.
-
-![The Assumptions, ODD Protocol and Known Limitations panel, highlighted](img/21-assumptions.png)
-
-At the foot of the page: the assumptions, the ODD protocol, known limitations and references.
+The earlier engine, v4.22, stays below for exploration, with its own settings and presets. Its figures differ from the results above.
 
 ## 6. Check the work
 
-![The Replication framework page](img/22-replication.png)
+![The Replication framework page](img/12-replication.png)
 
-The Replication framework page holds the formulas, the calibration and the full version history.
+The Replication framework page holds the formulas, the calibration, the assumptions and the full version history.
 
 ```
 git clone https://github.com/BetterToBest/compassionism-simulation
 cd compassionism-simulation && npm install
 npm test                              # validate, unit and domtest
-node harness.js testbed 500 a5 ref    # the comparison table, reference environment
+node harness.js testbed 500 release ref,adv,st   # the page's figures
 ```
 
-The simulation is one HTML file. harness.js runs the same engine from the command line; the comparison table comes from node harness.js testbed 500 a5 ref. npm test runs the three checks, validate, unit and domtest, and GitHub runs them on every push.
+The simulation is one HTML file. harness.js runs the same engine from the command line; the figures on the page come from node harness.js testbed 500 release ref,adv,st. npm test runs the three checks, validate, unit and domtest, and GitHub runs them on every push.
 
 ## 7. Help improve it
 
 Ways to contribute, from [CONTRIBUTING.md](../CONTRIBUTING.md#how-to-contribute): scenario testing (the highest-value contribution), calibration with cited sources, reproducibility testing, model architecture feedback, code, and peer review.
 
-Contributions most wanted: sources for the untested constants, scenario tests from places you know, reproductions, and critiques of the design. Changes follow the project rules: the old behaviour stays behind a switch, results are compared on 500 paired seeds, and no constant is tuned to hit a target. Open an issue or a pull request on GitHub. CONTRIBUTING.md explains how.
+Contributions most wanted: sources for the untested constants, scenario tests from places you know, reproductions, and critiques of the design. Open an issue or a pull request on GitHub. CONTRIBUTING.md explains how.
 
 ## Links
 
