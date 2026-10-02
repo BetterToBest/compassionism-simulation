@@ -1,34 +1,32 @@
 #!/usr/bin/env python3
-"""Build the page walk-through from index.html: a captioned video, its caption files and a written tour.
+"""Build the page walk-through from index.html and walkthrough/tour.json: a captioned, narrated video, its caption files and a written tour.
 
 Run from the repository root:
 
-    python3 walkthrough/make_walkthrough.py
+    python3 walkthrough/make_walkthrough.py            # narrated (the default)
+    python3 walkthrough/make_walkthrough.py --silent   # captions only, no sound
 
-Needs Python 3.9+, Playwright for Python with Chromium (pip install playwright, then
-python -m playwright install chromium), and ffmpeg on the PATH. The page loads Chart.js and
-its fonts from the web, so the build needs a network connection. None of this is part of
-`npm test`: the simulation itself still needs nothing but a browser.
+THE SCRIPT IS walkthrough/tour.json: edit the caption text there, never here and never in README.md (which this script
+overwrites). walkthrough/UPDATING.md says how to change a sentence, add a shot or refresh the figures. Figures written
+{like_this} in a caption are read from the page's own data (#rel-data in index.html) when the video is built, so a page
+whose results were regenerated carries the new figures. A caption's "needs" lists conditions its wording depends on; the
+build stops, naming the caption, if one no longer holds (for example "the gain is confirmed" after a result turns).
 
-Narration (s39, session 16): each caption is read aloud by a synthetic voice, Kokoro-82M
-(Apache-2.0) through kokoro-onnx (pip install kokoro-onnx soundfile), voice af_heart, an
-American-English female voice. The model files (about 340 MB) are downloaded on the first
-run into ~/.cache/compassionism-walkthrough/ and are not part of the repository. A caption
-stays on screen for its reading time or its narration, whichever is longer, so the captions,
-the voice and the video share one clock. SPOKEN below says how the voice reads acronyms,
-file names and dollar figures; the captions themselves are unchanged. --silent builds the
-video with no sound, as before.
+Needs Python 3.9+, ffmpeg on the PATH, and: pip install playwright pillow numpy kokoro-onnx soundfile, then
+python -m playwright install chromium. The page loads Chart.js and its fonts from the web, so the build needs a network
+connection. None of this is part of `npm test`: the simulation itself still needs nothing but a browser.
 
-It takes several minutes (most of it the video encode). Writes into walkthrough/: walkthrough.mp4, captions.vtt, captions.srt, README.md (the written
-tour) and img/ (one screenshot per shot, plus the poster).
+Narration (s39, d68): each caption is read aloud by the same synthetic voice as the first walk-through, Kokoro-82M
+(Apache-2.0) through kokoro-onnx, voice af_heart, an American-English female voice. The model files (about 340 MB) are
+downloaded on the first run into ~/.cache/compassionism-walkthrough/ and are not part of the repository. Each spoken
+caption is cached there too, so after an edit only the changed captions are voiced again. A caption stays on screen for
+its reading time or its narration, whichever is longer, so the captions, the voice and the video share one clock.
+SPOKEN below says how the voice reads acronyms, file names and dollar figures; the captions themselves are unchanged.
 
-Every figure in the captions is read from the front door's own data (#fd-data in index.html),
-so a rebuild after the comparison is regenerated carries the new figures. The wording around
-them makes claims ("still does better", "cuts more"); each such caption lists the conditions
-that make its wording true, and the build stops, naming the caption, if one no longer holds.
-Edit the captions here, never in README.md, which this script overwrites.
+Writes into walkthrough/: walkthrough.mp4, captions.vtt, captions.srt, README.md (the written tour) and img/ (one screenshot
+per shot, plus the poster).
 """
-import base64, functools, http.server, io, json, os, re, shutil, subprocess, sys, tempfile, threading
+import base64, functools, hashlib, http.server, io, json, os, re, shutil, subprocess, sys, tempfile, threading
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 OUT = os.path.join(ROOT, 'walkthrough')
@@ -52,9 +50,10 @@ CACHE = os.path.join(os.path.expanduser('~'), '.cache', 'compassionism-walkthrou
 SPOKEN = [   # (pattern, replacement): how the voice reads the caption text; the on-screen captions are unchanged
     (r'\bv(\d+\.\d+)\b', r'version \1'),            # v4.22 -> version 4.22
     (r'\$([\d,]+)', r'\1 dollars'),                    # $5,800 -> 5,800 dollars (the voice would say "dollar five thousand")
+    (r'\bH1\b', 'H 1'), (r'\bPTF\b', 'P T F'), (r'\bPTH\b', 'P T H'), (r'\bSZH\b', 'S Z H'),
     (r'\bBU\b', 'B U'), (r'\bCIP\b', 'C I P'), (r'\bBLEI\b', 'B L E I'),   # spelled out (the voice would say "boo", "sip", "blay")
     (r'\b2026\b', 'twenty twenty-six'),
-    (r'harness\.js', 'harness dot J S'), (r'CONTRIBUTING\.md', 'contributing dot M D'), (r'\bdomtest\b', 'dom test'),
+    (r'harness\.js', 'harness dot J S'), (r'\bnpm\b', 'N P M'), (r'CONTRIBUTING\.md', 'contributing dot M D'), (r'\bdomtest\b', 'dom test'),
 ]
 
 def spoken(text):
@@ -76,10 +75,16 @@ def narrate(texts):
             print('downloading %s (first run only)' % f, flush=True)
             urllib.request.urlretrieve(KOKORO_URL + f, dst + '.part'); os.replace(dst + '.part', dst)
     k = Kokoro(*[os.path.join(CACHE, f) for f in KOKORO_FILES])
+    import numpy as np
+    cdir = os.path.join(CACHE, 'clips'); os.makedirs(cdir, exist_ok=True)
     clips, sr = [], None
-    for i, t in enumerate(texts):
-        a, sr = k.create(spoken(t), voice=VOICE, speed=SPEED, lang='en-us')
-        clips.append(a); print('voice %d of %d: %.1f s' % (i + 1, len(texts), len(a) / sr), flush=True)
+    for i, t in enumerate(texts):   # a clip is cached by what is spoken, voice and speed, so an edit re-voices only that caption
+        sp = spoken(t); key = hashlib.sha1(('%s|%s|%s' % (VOICE, SPEED, sp)).encode('utf-8')).hexdigest()[:20]; f = os.path.join(cdir, key + '.npz')
+        if os.path.exists(f):
+            z = np.load(f); a, sr = z['a'], int(z['sr']); tag = 'cached'
+        else:
+            a, sr = k.create(sp, voice=VOICE, speed=SPEED, lang='en-us'); np.savez(f, a=a, sr=sr); tag = 'new'
+        clips.append(a); print('voice %d of %d: %.1f s (%s)' % (i + 1, len(texts), len(a) / sr, tag), flush=True)
     return clips, sr
 
 def write_audio(clips, sr, durs, path):
@@ -91,165 +96,52 @@ def write_audio(clips, sr, durs, path):
     peak = float(np.max(np.abs(track))) or 1.0
     sf.write(path, track[:int(round(total * sr))] * min(1.0, 0.89 / peak), sr, subtype='PCM_16')
 
-# ---------------------------------------------------------------- the front door's data
-def load_fd():
-    html = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
-    m = re.search(r'<script type="application/json" id="fd-data">(.*?)</script>', html, re.S)
-    if not m:
-        sys.exit('index.html has no #fd-data block: the walk-through describes the front door and cannot be built without it')
-    return json.loads(m.group(1)), html
-
-FD, HTML = load_fd()
-ENGINE_VERSION = FD['_meta']['engine']
+# ---------------------------------------------------------------- the page's data and the script
+HTML = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
+_m = re.search(r'<script type="application/json" id="rel-data">(.*?)</script>', HTML, re.S)
+if not _m:
+    sys.exit('index.html has no #rel-data block: the walk-through describes the release results and cannot be built without it')
+REL = json.loads(_m.group(1))
+VERSION = re.search(r"VERSION:'([^']+)'", HTML).group(1)
 HEADLINE = re.sub(r'<[^>]+>', '', re.search(r'<h1 class="fd-q" id="fd-q">(.*?)</h1>', HTML, re.S).group(1)).strip()
+TOUR = json.load(open(os.path.join(OUT, 'tour.json'), encoding='utf-8'))
+CH, SHOTS, ALT = TOUR['chapters'], TOUR['shots'], TOUR['alt']
 
-def row(env, k, view='cost', model='engine'):
-    rows = FD['envs'][env]['rows' if view == 'cost' else 'prop'][model]
-    for r in rows:
-        if r['k'] == k:
-            return r
-    sys.exit('no row %r in %s/%s/%s' % (k, env, view, model))
-
-def dp(env, k, **kw): return row(env, k, **kw)['dp'][0]   # change in 20-year poverty severity (FGT2 x 100) vs no program
-def cut(env, k, **kw): return '%.2f' % abs(dp(env, k, **kw))
-def pct(x): return '%d%%' % round(x)
-def worse_dollars(env, k, group, **kw):
-    s = re.sub(r'<[^>]+>', '', row(env, k, **kw)['worse'])
-    m = re.search(re.escape(group) + r'[^$]*\$([\d,]+) a year', s)
-    return int(m.group(1).replace(',', '')) if m else None
-def about(x, step):
-    return '{:,}'.format(int(round(x / float(step)) * step))
-
+def rel(env, k='release'): return REL['envs'][env]['rows'][k]
+def base(env): return REL['envs'][env]['base']
+def pct(x): return '%.1f%%' % x
+def about(x, step): return '{:,}'.format(int(round(x / float(step)) * step))
+R, A, S = rel('ref'), rel('adv'), rel('st')
 V = {
-    'ref_cco': cut('ref', 'cco'), 'ref_ubi': cut('ref', 'ubi'), 'ref_nit': cut('ref', 'nit'),
-    'ref_corr': cut('ref', 'corr'), 'ref_top': cut('ref', 'top'),
-    'adv_cco': cut('adv', 'cco'), 'adv_corr': cut('adv', 'corr'),
-    'share_ref': pct(100 * (1 - dp('ref', 'corr') / dp('ref', 'cco'))),
-    'share_adv': pct(100 * (1 - dp('adv', 'corr') / dp('adv', 'cco'))),
-    'base_f0': pct(row('ref', 'base')['f0']), 'nit_f0': pct(row('ref', 'nit')['f0']),
-    'nit_hrs': pct(abs(row('ref', 'nit')['hrs'])),
-    'cco_nonpart': about(worse_dollars('ref', 'cco', 'Adults who chose not to take part') or 0, 100),
-    'fw_cost': about(row('ref', 'cco', model='framework')['cost'], 1000),
-    'fw_tau': pct(row('ref', 'cco', model='framework')['tau']),
-    'agents': FD['_meta']['agents'],
+    'ver': VERSION, 'agents': REL['_meta']['agents'],
+    'ref_bo': pct(R['bOAPy']), 'base_bo': pct(base('ref')['bOAPy']),
+    'ref_f0': pct(R['fgt0PY']), 'base_f0': pct(base('ref')['fgt0PY']),
+    'ref_pov': pct(R['pov']), 'base_pov': pct(base('ref')['pov']),
+    'ref_part': about(R['grp']['part'], 100), 'ref_non': about(abs(R['grp']['non']), 100),
+    'ref_cost': about(R['cost'], 100), 'ref_infl': pct(R['infl']),
+    'adv_bo': pct(A['bOAPy']), 'adv_base_bo': pct(base('adv')['bOAPy']), 'adv_pov': pct(A['pov']), 'adv_base_pov': pct(base('adv')['pov']),
+    'st_bo': pct(S['bOAPy']), 'st_base_bo': pct(base('st')['bOAPy']), 'st_pov': pct(S['pov']), 'st_base_pov': pct(base('st')['pov']),
 }
-ENVS = ('ref', 'adv', 'st')
 CHECKS = {   # the conditions each caption's wording depends on
-    'no inflation at reference': 'no inflation' in FD['envs']['ref']['name'],
-    'Adverse has inflation': '2% inflation' in FD['envs']['adv']['name'],
-    'mechanisms-off beats basic income in every environment': all(dp(e, 'corr') < dp(e, 'ubi') for e in ENVS),
-    'negative income tax cuts more than mechanisms-off at reference': dp('ref', 'nit') < dp('ref', 'corr'),
-    'negative income tax raises the share in poverty': row('ref', 'nit')['f0'] > row('ref', 'base')['f0'],
-    'top-up cuts more than the flat design': dp('ref', 'top') < dp('ref', 'cco'),
-    'non-participants bear the cost': worse_dollars('ref', 'cco', 'Adults who chose not to take part') is not None,
-    'proposed basic income is $12,000': '$12,000' in row('ref', 'ubi', view='prop')['label'],
-    'proposed NIT guarantee is $15,960': '$15,960' in row('ref', 'nit', view='prop')['label'],
-    'live presets use 500 adults': 'agents:500' in HTML,
+    'reference confirmed gain': R['dBO'][0] < 0 and R['dF0'][0] < 0 and R['dPov'][0] < 0,
+    'non-participants lose at reference': R['grp']['non'] < 0 < R['grp']['part'],
+    'prices rise at reference': R['infl'] > 0,
+    'H1 flat prices at reference': rel('ref', 'h1')['infl'] == 0 and rel('ref', 'h1')['dPov'][0] < R['dPov'][0],
+    'adverse wealth worse': A['dBO'][0] < 0 and A['dPov'][0] > 0,
+    'stress wealth worse': S['dBO'][0] < 0 and S['dPov'][0] > 0,
 }
 
-# ---------------------------------------------------------------- the tour
-# state: tab ('cmp'/'live'), env, v ('cost'/'prop'), m ('engine'/'framework'), about (open the design panel)
-# scroll: a selector brought to `off` CSS px below the top, or 0; dim: one element spotlit, the rest dimmed;
-# mark: rows or cells outlined; hover: an element hovered (tooltips); card: a full-frame card instead of the page.
-# Each caption is (text, [conditions from CHECKS its wording needs]).
-CH = ['What the page is for', 'How Compassionism works', 'Reading the comparison', 'What the model finds so far',
-      'Run a scenario yourself', 'Check the work', 'Help improve it']
-ROWS = lambda *ks: ['#fd-rows tr[data-k="%s"]' % k for k in ks]
-
-SHOTS = [
-    dict(id='title', card='title', caps=[('A walk-through of the Compassionism Framework Simulation, v{ver}: what the page shows, how the model works, what it finds so far, and how to check it or help.', [])]),
-    dict(id='headline', ch=1, scroll=0, dim='#fd-q', caps=[
-        ('The first screen says what the tool is for: set Compassionism beside five other anti-poverty designs and see how each does on poverty and work.', [])]),
-    dict(id='rules', ch=1, scroll=0, dim='.fd-sub', caps=[
-        ('Every design runs on the same {agents} simulated adults for 20 years, is paid for the same way, and faces the same rules for how people respond.', [])]),
-    dict(id='caveats', ch=1, scroll='#uncertainty-notice', off=12, dim='#uncertainty-notice', caps=[
-        ('Read this first: it is an exploratory model, not a forecast. Its results show what its assumptions imply, not that the assumptions are true.', [])]),
-    dict(id='design', ch=2, about=True, scroll='#fd-about-cco', off=16, dim='#fd-about-cco', caps=[
-        ('Each participant receives a monthly allowance of Basic Units (BU): a restricted currency for essentials that expires if it is not used.', []),
-        ('BU can be converted to dollars at elevated rates, set by market demand and by the quality of work the community validates through creative collectives.', []),
-        ("A participant's octave is their conversion capacity: a safeguard against exploitation, and an open ceiling for creators whose work draws demand.", []),
-        ('Wage work is still paid in dollars. Community-owned businesses and housing (PTF, PTH) lower living costs, zone coordination (SZH) adds a cooperative benefit, and a civic portal (CIP) runs the currency and the votes.', []),
-        ("Taking part is open to every adult. In the model, 78% do at the reference settings, and each adult's choice holds for all 20 years.", [])]),
-    dict(id='table', ch=3, scroll='.fd-tabs', off=8, mark=ROWS('cco'), caps=[
-        ('Each row is a design. Cost is per adult per year, shown with the wage contribution that pays for it and the change in poverty per $1,000.', [])]),
-    dict(id='measure', ch=3, scroll='.fd-tabs', off=8, hover='#fd-table thead th:nth-child(3) .abbr-link', caps=[
-        ("The main measure is poverty severity: each adult's shortfall below a living-wage basket, squared so the deepest count most, averaged over 20 years.", []),
-        ('Beside it: the final year alone, the share of adults in poverty, hours worked, and any group left worse off than with no program.', [])]),
-    dict(id='controls', ch=3, scroll='.fd-tabs', off=8, dim='.fd-ctl', caps=[
-        ('The controls switch the environment, compare the designs at equal cost or at the size their proponents propose, and model Compassionism as coded or as specified on the Hub.', [])]),
-    dict(id='proposed', ch=3, v='prop', scroll='.fd-tabs', off=8, mark=ROWS('ubi', 'nit'), caps=[
-        ('At proposed size, the basic income pays $12,000 a year and the negative income tax guarantees the 2026 poverty guideline for one adult, $15,960.',
-         ['proposed basic income is $12,000', 'proposed NIT guarantee is $15,960'])]),
-    dict(id='headline-result', ch=4, scroll='.fd-tabs', off=8, mark=ROWS('cco', 'ubi', 'nit'), caps=[
-        ('At the reference settings and equal cost, Compassionism as coded cuts poverty severity by {ref_cco} points, against {ref_ubi} for a basic income and {ref_nit} for a negative income tax.', [])]),
-    dict(id='mechanisms', ch=4, scroll='.fd-tabs', off=8, mark=ROWS('cco', 'corr'), caps=[
-        ('The shaded row switches off two mechanisms that are theoretical, yet to be empirically tested, and cost nothing in the model: a yearly wage raise per octave, and slower inflation.', []),
-        ('At reference, with no inflation, only the wage raise acts. Without it the cut falls from {ref_cco} to {ref_corr}, about {share_ref} less.', ['no inflation at reference'])]),
-    dict(id='adverse', ch=4, env='adv', scroll='.fd-tabs', off=8, mark=ROWS('cco', 'corr'), caps=[
-        ('In the Adverse Environment, with recessions and 2% inflation, the two carry about {share_adv} of the cut: {adv_cco} falls to {adv_corr}. The next round replaces them or switches them off.', ['Adverse has inflation'])]),
-    dict(id='without', ch=4, scroll='.fd-tabs', off=8, mark=ROWS('corr', 'ubi'), caps=[
-        ('Without them, Compassionism still does better than a basic income of equal cost, in all three environments.', ['mechanisms-off beats basic income in every environment'])]),
-    dict(id='nit', ch=4, scroll='.fd-tabs', off=8, mark=ROWS('corr', 'nit'), caps=[
-        ('The negative income tax cuts severity more at reference, {ref_nit}, by focusing on the deepest shortfalls, but it raises the share in poverty from {base_f0} to {nit_f0} and cuts hours by {nit_hrs}.',
-         ['negative income tax cuts more than mechanisms-off at reference', 'negative income tax raises the share in poverty'])]),
-    dict(id='topup', ch=4, scroll='.fd-tabs', off=8, mark=ROWS('cco', 'top'), caps=[
-        ('A variant that moves a tenth of the flat allowance into a top-up for low earners cuts a little more: {ref_top}.', ['top-up cuts more than the flat design'])]),
-    dict(id='who-pays', ch=4, scroll='.fd-tabs', off=8, mark=['#fd-rows tr[data-k="cco"] td:last-child', '#fd-rows tr[data-k="ubi"] td:last-child'], caps=[
-        ('Someone always pays. Each design is funded by a contribution on wages; under Compassionism the cost falls mainly on adults who chose not to take part, about ${cco_nonpart} a year.',
-         ['non-participants bear the cost'])]),
-    dict(id='hub-scale', ch=4, m='framework', scroll='.fd-tabs', off=8, mark=ROWS('cco'), caps=[
-        ('At the scale specified on the Hub, Compassionism costs about ${fw_cost} per adult a year, which would take a contribution of {fw_tau} of wages.', [])]),
-    dict(id='limits', ch=4, scroll='#uncertainty-notice', off=12, dim='#uncertainty-notice', caps=[
-        ('What the model cannot test: whether conversion rewards pay for new output (it has no production side), households and children, or savings from poverty removed.', [])]),
-    dict(id='live', ch=5, tab='live', scroll='.fd-tabs', off=8, dim='.fd-chips', caps=[
-        ("Compassionism's own scenarios run live in your browser: pick a preset, or change any control and press Run Simulation.", ['live presets use 500 adults'])]),
-    dict(id='results', ch=5, tab='live', scroll='.layout', off=6, caps=[
-        ("Each run follows {agents} adults year by year and reports poverty, wealth and the BLEI: how many days of basic living each adult's resources cover.", [])]),
-    dict(id='panels', ch=5, tab='live', scroll='#sec-poverty4', off=20, caps=[
-        ('Panels below show poverty by five measures, BLEI tiers over time, participants beside non-participants, and what each system contributes.', []),
-        ("These live runs use the engine's own settings, not the comparison's testbed profile, so their figures differ from the table's.", [])]),
-    dict(id='assumptions', ch=5, tab='live', scroll='#sec-assumptions', off=300, dim='#sec-assumptions', caps=[
-        ('At the foot of the page: the assumptions, the ODD protocol, known limitations and references.', [])]),
-    dict(id='replication', ch=6, url='replication.html', scroll=0, caps=[
-        ('The Replication framework page holds the formulas, the calibration and the full version history.', [])]),
-    dict(id='checks', ch=6, card='terminal', caps=[
-        ('The simulation is one HTML file. harness.js runs the same engine from the command line; the comparison table comes from node harness.js testbed 500 a5 ref.', []),
-        ('npm test runs the three checks, validate, unit and domtest, and GitHub runs them on every push.', [])]),
-    dict(id='contribute', ch=7, card='contribute', caps=[
-        ('Contributions most wanted: sources for the untested constants, scenario tests from places you know, reproductions, and critiques of the design.', []),
-        ('Changes follow the project rules: the old behaviour stays behind a switch, results are compared on 500 paired seeds, and no constant is tuned to hit a target.', []),
-        ('Open an issue or a pull request on GitHub. CONTRIBUTING.md explains how.', [])]),
-    dict(id='end', card='end', caps=[('Open the simulation, read the code, and test the claims yourself.', [])]),
-]
-
-ALT = {  # alt text for the written tour's screenshots
-    'headline': "The page's opening sentence, highlighted", 'rules': 'The subtitle: the rules every design shares, highlighted',
-    'caveats': 'The "Read this first" caveats box, highlighted', 'design': "The design panel's description of Compassionism, highlighted",
-    'table': "The comparison table at reference settings and equal cost, with Compassionism's row marked",
-    'measure': 'The comparison table with the poverty-severity tooltip open', 'controls': "The table's controls, highlighted",
-    'proposed': 'The proposed-size view, with the basic income and negative income tax rows marked',
-    'headline-result': 'Compassionism, basic income and negative income tax rows marked, reference settings',
-    'mechanisms': "Compassionism's row and the shaded row without its two theoretical mechanisms, marked",
-    'adverse': 'The same two rows in the Adverse Environment', 'without': 'The mechanisms-off row and the basic income row, marked',
-    'nit': 'The mechanisms-off row and the negative income tax row, marked', 'topup': "Compassionism's row and the needs-based top-up row, marked",
-    'who-pays': 'The worse-off cells for Compassionism and the basic income, marked', 'hub-scale': 'Compassionism as specified on the Hub, marked',
-    'limits': 'The caveats box, highlighted', 'live': "The live tab's scenario presets, highlighted",
-    'results': 'The live simulation: controls on the left, results on the right', 'panels': 'The Poverty by five measures panel',
-    'assumptions': 'The Assumptions, ODD Protocol and Known Limitations panel, highlighted', 'replication': 'The Replication framework page',
-}
-
-def fill(text):
-    return text.format(ver=ENGINE_VERSION, **V)
+def fill(text): return text.format(**V)
 
 def verify():
     bad = []
     for s in SHOTS:
-        for text, needs in s['caps']:
-            for n in needs:
+        for c in s['caps']:
+            for n in c.get('needs', []):
                 if not CHECKS[n]:
-                    bad.append('shot %r, caption "%s...": "%s" no longer holds' % (s['id'], text[:60], n))
+                    bad.append('shot %r, caption "%s...": "%s" no longer holds' % (s['id'], c['t'][:60], n))
     if bad:
-        sys.exit('The front door\'s data no longer supports these captions; rewrite them before rebuilding:\n  ' + '\n  '.join(bad))
+        sys.exit("The page's data no longer supports these captions; rewrite them in walkthrough/tour.json before rebuilding:\n  " + '\n  '.join(bad))
 
 # ---------------------------------------------------------------- page capture
 SPOT_CSS = """
@@ -261,26 +153,30 @@ tr.wt-mark, td.wt-mark{outline:3px solid #D99A00!important;outline-offset:-3px}
 
 APPLY = """(s) => {
   document.querySelectorAll('.wt-dim,.wt-mark').forEach(e => e.classList.remove('wt-dim','wt-mark'));
-  if (window.fdTab) fdTab(s.tab || 'cmp');
-  if (window.fdSet) { fdSet('env', s.env || 'ref'); fdSet('v', s.v || 'cost'); fdSet('m', s.m || 'engine'); fdSet('sens', false); }
-  const sens = document.getElementById('fd-sens'); if (sens) sens.checked = false;
-  const ab = document.getElementById('fd-about'); if (ab) ab.open = !!s.about;
-  const tw = document.querySelector('.fd-tw'); if (tw) tw.scrollTop = 0;
+  if (window.relSet) relSet(s.env || 'ref');
+  const mo = document.getElementById('rel-more'); if (mo) mo.open = !!s.more;
+  const old = document.getElementById('fd-old'); if (old) old.open = false;
+  const live = document.getElementById('rel-live-out'); if (live && !s.run) live.innerHTML = '';
   if (s.scroll === 0 || s.scroll === undefined) window.scrollTo(0, 0);
   else { const e = document.querySelector(s.scroll); if (!e) return 'missing ' + s.scroll;
-         if (e.tagName === 'DETAILS') e.open = false;
+         if (e.tagName === 'DETAILS' && !s.more) e.open = false;
          window.scrollTo(0, e.getBoundingClientRect().top + window.scrollY - (s.off || 0)); }
   if (s.dim) { const e = document.querySelector(s.dim); if (!e) return 'missing ' + s.dim; e.classList.add('wt-dim'); }
-  const marks = [];
-  for (const sel of (s.mark || [])) { const e = document.querySelector(sel); if (!e) return 'missing ' + sel; e.classList.add('wt-mark'); marks.push(e); }
-  if (marks.length) {   // bring every marked row into view, keeping as much of the table's head in view as possible
-    const top = Math.min(...marks.map(e => e.getBoundingClientRect().top)), bot = Math.max(...marks.map(e => e.getBoundingClientRect().bottom));
-    if (bot > window.innerHeight - 12) window.scrollBy(0, Math.min(top - 60, bot - window.innerHeight + 24));
-    const b2 = Math.max(...marks.map(e => e.getBoundingClientRect().bottom));
-    if (b2 > window.innerHeight + 4) return 'marked rows do not fit in the viewport';
-  }
+  const d = s.dim && document.querySelector(s.dim);
+  if (d) { const r = d.getBoundingClientRect(); if (r.height > window.innerHeight - 24) return 'spotlit element is taller than the viewport: ' + s.dim; if (r.bottom > window.innerHeight - 8) window.scrollBy(0, r.bottom - window.innerHeight + 24); }
   return 'ok';
 }"""
+
+def launch(pw):
+    """Chromium: Playwright's own build if installed, else a pre-installed one (PLAYWRIGHT_BROWSERS_PATH, the sandbox's /opt/pw-browsers)."""
+    import glob
+    try:
+        return pw.chromium.launch()
+    except Exception:
+        found = sorted(glob.glob(os.path.join(os.environ.get('PLAYWRIGHT_BROWSERS_PATH', '/opt/pw-browsers'), 'chromium-*', 'chrome-linux*', 'chrome')))
+        if not found:
+            raise
+        return pw.chromium.launch(executable_path=found[-1])
 
 def serve(root):
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=root)
@@ -290,8 +186,8 @@ def serve(root):
     return httpd, 'http://127.0.0.1:%d/' % httpd.server_address[1]
 
 def capture(pw, base):
-    b = pw.chromium.launch()
-    ctx = b.new_context(viewport={'width': VW, 'height': VH}, device_scale_factor=DSF, color_scheme='light')
+    b = launch(pw)
+    ctx = b.new_context(viewport={'width': VW, 'height': VH}, device_scale_factor=DSF, color_scheme='light', ignore_https_errors=True)
     pg = ctx.new_page()
     shots, current = {}, None
     for s in SHOTS:
@@ -302,13 +198,14 @@ def capture(pw, base):
             pg.goto(url, wait_until='networkidle'); pg.wait_for_timeout(3500)
             pg.add_style_tag(content=SPOT_CSS); current = url
         pg.mouse.move(2, VH - 2)
-        state = {k: s[k] for k in ('tab', 'env', 'v', 'm', 'about', 'scroll', 'off', 'dim', 'mark') if k in s}
+        state = {k: s[k] for k in ('env', 'more', 'run', 'scroll', 'off', 'dim') if k in s}
         res = pg.evaluate(APPLY, state)
         if res != 'ok':
             sys.exit('shot %r: %s' % (s['id'], res))
         pg.wait_for_timeout(500)
-        if s.get('hover'):
-            pg.hover(s['hover']); pg.wait_for_timeout(500)
+        if s.get('run'):   # a fixed seed, so the live run on screen is the same every build
+            pg.fill('#rel-seed', '42'); pg.click('#rel-run-btn'); pg.wait_for_selector('#rel-live-out .fd-note', timeout=120000); pg.wait_for_timeout(500)
+            pg.evaluate(APPLY, state)
         shots[s['id']] = pg.screenshot(type='png')
     b.close()
     return shots
@@ -331,7 +228,7 @@ def card_html(kind):
     if kind == 'title':
         return ("<div style='padding:150px 140px'><div style='font-size:30px;color:#5CC2B6;font-weight:700;letter-spacing:.06em;text-transform:uppercase'>A walk-through · v%s</div>"
                 "<div style='font-size:92px;font-weight:700;line-height:1.05;margin-top:26px'>Compassionism<br>Framework Simulation</div>"
-                "<div style='font-size:36px;line-height:1.45;margin-top:40px;color:#B9C8C2;max-width:1500px'>%s</div></div>") % (ENGINE_VERSION, esc(HEADLINE))
+                "<div style='font-size:36px;line-height:1.45;margin-top:40px;color:#B9C8C2;max-width:1500px'>%s</div></div>") % (VERSION, esc(HEADLINE))
     if kind == 'end':
         items = [('Open the simulation', PAGE_URL), ('Code and checks', REPO_URL), ('Replication framework', PAGE_URL + 'replication.html'),
                  ('Archive', 'doi.org/10.17605/OSF.IO/QWTE2')]
@@ -340,7 +237,7 @@ def card_html(kind):
     if kind == 'terminal':
         lines = [('$', 'git clone %s' % REPO_URL.replace('https://', 'https://')), ('$', 'cd compassionism-simulation && npm install'),
                  ('$', 'npm test'), ('', 'VALIDATION PASSED: the documented regressions and all preset fixtures reproduce exactly.'),
-                 ('', '95 checks, all passed'), ('$', 'node harness.js testbed 500 a5 ref'), ('', '# the comparison table, reference environment, 500 paired seeds')]
+                 ('$', 'node harness.js testbed 500 release ref,adv,st'), ('', '# the figures on the page: 500 paired seeds, three environments')]
         body = ''.join("<div style='white-space:pre'><span style='color:#5CC2B6'>%s </span>%s</div>" % (p, esc(t)) if p else
                        "<div style='white-space:pre;color:#98A8A2'>  %s</div>" % esc(t) for p, t in lines)
         return ("<div style='padding:90px 110px'><div style='font-size:30px;color:#5CC2B6;font-weight:700;letter-spacing:.06em;text-transform:uppercase'>Reproduce it</div>"
@@ -359,7 +256,7 @@ def card_html(kind):
     raise ValueError(kind)
 
 def caption_list():
-    return [(s, fill(t)) for s in SHOTS for t, _ in s['caps']]
+    return [(s, fill(c['t'])) for s in SHOTS for c in s['caps']]
 
 def render_frames(pw, shots, tmp, voice=None):
     caps = caption_list()
@@ -368,7 +265,7 @@ def render_frames(pw, shots, tmp, voice=None):
         clips, sr = voice
         durs = [max(d, (LEAD0 if i == 0 else LEAD) + len(a) / sr + TAIL) for i, (d, a) in enumerate(zip(durs, clips))]
     total, t0, frames, cues = sum(durs), 0.0, [], []
-    b = pw.chromium.launch(); pg = b.new_page(viewport={'width': W, 'height': H})
+    b = launch(pw); pg = b.new_page(viewport={'width': W, 'height': H}, ignore_https_errors=True)
     for i, ((s, text), d) in enumerate(zip(caps, durs)):
         if 'card' in s:
             top = "<div style='position:absolute;left:0;top:0;width:%dpx;height:%dpx'>%s</div>" % (W, H - BAND, card_html(s['card']))
@@ -403,7 +300,7 @@ def build_video(frames, total, tmp, audio=None):
     aud = ['-i', audio, '-map', '0:v', '-map', '1:a', '-c:a', 'aac', '-b:a', '96k', '-af', 'afade=t=out:st=%.2f:d=0.8' % (total - 0.8)] if audio else []
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', lst] + aud + ['-vf', vf,
                     '-c:v', 'libx264', '-preset', 'medium', '-tune', 'stillimage', '-crf', '21', '-movflags', '+faststart', '-t', '%.3f' % total,
-                    '-metadata', 'title=Compassionism Framework Simulation: a walk-through (v%s)' % ENGINE_VERSION,
+                    '-metadata', 'title=Compassionism Framework Simulation: a walk-through (v%s)' % VERSION,
                     os.path.join(OUT, 'walkthrough.mp4')], check=True)
 
 def save_images(shots, poster):
@@ -422,12 +319,12 @@ def save_images(shots, poster):
 
 def write_tour(names, total):
     mins = '%d:%02d' % (total // 60, total % 60)
-    out = ['# Walk-through: the Compassionism Framework Simulation (v%s)' % ENGINE_VERSION, '',
+    out = ['# Walk-through: the Compassionism Framework Simulation (v%s)' % VERSION, '',
            '<!-- Written by walkthrough/make_walkthrough.py. Edit the captions there and rebuild; edits here are overwritten. -->', '',
            '[![The walk-through video](img/poster.jpg)](%s)' % VIDEO_URL, '',
            '**[Watch the walk-through](%s)** (%s, %s; [caption file](captions.vtt)). The same tour follows as text, one screenshot per step.' % (VIDEO_URL, mins, 'captions on screen, no sound' if SILENT else 'narrated by a synthetic voice, with captions'), '',
-           'It covers what the page shows, how Compassionism works, what the model finds so far, how to run a scenario, how to check the work, and how to help. '
-           'Every figure below is read from the page\'s own comparison data when the tour is built (`python3 walkthrough/make_walkthrough.py`), so it matches the page it was built from. '
+           'It covers what the page shows, how Compassionism works, what the model finds so far (including where the gain is not confirmed), how to run a scenario, what the model cannot tell you, how to check the work, and how to help. '
+           'Every figure below is read from the page\'s own results data when the tour is built (`python3 walkthrough/make_walkthrough.py`; the script is `tour.json`, see [UPDATING.md](UPDATING.md)), so it matches the page it was built from. '
            'The figures are results of the model under its stated assumptions, not forecasts.', '']
     for c, title in enumerate(CH, 1):
         out += ['## %d. %s' % (c, title), '']
@@ -436,11 +333,11 @@ def write_tour(names, total):
                 out += ['![%s](img/%s)' % (ALT.get(s['id'], s['id']), names[s['id']]), '']
             if s.get('card') == 'terminal':
                 out += ['```', 'git clone %s' % REPO_URL, 'cd compassionism-simulation && npm install', 'npm test                              # validate, unit and domtest',
-                        'node harness.js testbed 500 a5 ref    # the comparison table, reference environment', '```', '']
+                        'node harness.js testbed 500 release ref,adv,st   # the page\'s figures', '```', '']
             if s.get('card') == 'contribute':
                 out += ['Ways to contribute, from [CONTRIBUTING.md](../CONTRIBUTING.md#how-to-contribute): scenario testing (the highest-value contribution), '
                         'calibration with cited sources, reproducibility testing, model architecture feedback, code, and peer review.', '']
-            out += [' '.join(fill(t) for t, _ in s['caps']), '']
+            out += [' '.join(fill(c['t']) for c in s['caps']), '']
     out += ['## Links', '', '- Simulation: %s' % PAGE_URL, '- Code and checks: %s' % REPO_URL, '- Replication framework: %sreplication.html' % PAGE_URL,
             '- Archive: https://doi.org/10.17605/OSF.IO/QWTE2', '']
     open(os.path.join(OUT, 'README.md'), 'w', encoding='utf-8').write('\n'.join(out))
@@ -464,7 +361,7 @@ def main():
         build_video(frames, total, tmp, audio)
         names = save_images(shots, frames[0][0])
         write_tour(names, total)
-        print('walk-through built: %d captions, %d:%02d, engine v%s, %s' % (len(cues), total // 60, total % 60, ENGINE_VERSION, 'no sound' if SILENT else 'voice ' + VOICE))
+        print('walk-through built: %d captions, %d:%02d, v%s, %s' % (len(cues), total // 60, total % 60, VERSION, 'no sound' if SILENT else 'voice ' + VOICE))
     finally:
         httpd.shutdown(); shutil.rmtree(tmp, ignore_errors=True)
 

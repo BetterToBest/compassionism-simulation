@@ -10,6 +10,8 @@ The page opens with Compassionism's results: the same 500 simulated adults follo
 
 **[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 
+**[▶ Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (narrated by a synthetic voice, with captions) · [the same tour as text](walkthrough/README.md)
+
 
 [![checks](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml/badge.svg)](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml)
 

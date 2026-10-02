@@ -36,3 +36,12 @@ Duke's order (ledger, Oct 2): these replace step 11's restudy as the one the rel
 - Oct 2: the project ledger (claude.ai artifact KMdxWQ5KAefQVFxQA236pV, project "sim") recorded Duke's answer that only participating ESP workers share in the PTF profit share; the repo kit had the older default. Applied from the step-11 restudy on (DECISIONS, "Correction from the project ledger"). The step-11 figures in the reports, the panel, CONTRIBUTING and the replication page are from the rerun.
 
 - Session 30 (Oct 1, 2026): no GitHub write access (see Setup). Commits are local on `next-release`; a bundle `next-release.bundle` is sent to Duke at milestones (`git fetch next-release.bundle next-release` restores it). Commands for the three checks (from `.github/workflows/checks.yml`): `npm install --no-audit --no-fund`, then `node harness.js validate`, `node harness.js unit`, `node domtest.js`.
+
+## Session 32 (Oct 2, 2026): clarity polish and walk-through
+
+- [x] 19. Clarity polish (ledger i13): "What Compassionism is" now says *expired* BU can be converted to dollars at higher rates, for work the community values (DECISIONS, Session 32). Wording only.
+- [x] 20. New walk-through (s65): `walkthrough/tour.json` is the script; `walkthrough/make_walkthrough.py` builds `walkthrough.mp4` (5:14, 27 captions, same Kokoro `af_heart` voice), captions, written tour and screenshots from the live page; `walkthrough/UPDATING.md` says how to change it. A collapsed player sits at the top of the page; the README links it; domtest's step-12 check now expects both. Limits are told as plainly as gains (Adverse and Stress wealth poverty worse; non-participants lose about $800 a year at Reference; prices +34.9% a year).
+- [ ] 21. Link the "compare" page from the page once that work is complete (ledger i13).
+- [ ] 22. Hub index files in `BetterToBest/research-hub` (dev/RELEASE.md step 5); outreach drafts (s37).
+
+Notes: pushes to the session branch worked this session (PR #1 on `claude/loving-maxwell-crvgjr`); `apply-v5.0.1.zip` carries the same files for the apply workflow if the PR route is not used. To rebuild the video: `pip install playwright pillow numpy kokoro-onnx soundfile`, then `python3 walkthrough/make_walkthrough.py`.

@@ -1,146 +1,110 @@
 WEBVTT
 
 1
-00:00:00.000 --> 00:00:11.853
-A walk-through of the Compassionism Framework Simulation, v4.22: what the page shows, how the model works, what it finds so far, and how to check it or help.
+00:00:00.000 --> 00:00:11.917
+A walk-through of the Compassionism Framework Simulation, v5.0: what the page shows, how the model works, what it finds so far, and how to check it or help.
 
 2
-00:00:11.853 --> 00:00:21.685
-The first screen says what the tool is for: set Compassionism beside five other anti-poverty designs and see how each does on poverty and work.
+00:00:11.917 --> 00:00:22.389
+The first screen says what the tool is for: to see how Compassionism does at eradicating extreme poverty, and at rewarding participation and contribution.
 
 3
-00:00:21.685 --> 00:00:32.113
-Every design runs on the same 500 simulated adults for 20 years, is paid for the same way, and faces the same rules for how people respond.
+00:00:22.389 --> 00:00:36.252
+Duke Johnson wrote the concepts. Claude, an AI model made by Anthropic, engineered the math and code. No independent economist has reviewed the model yet, and the code is open for anyone to check.
 
 4
-00:00:32.113 --> 00:00:41.753
-Read this first: it is an exploratory model, not a forecast. Its results show what its assumptions imply, not that the assumptions are true.
+00:00:36.252 --> 00:00:50.137
+The model follows the same 500 simulated adults for 20 years, once with Compassionism and once with no programme, in three environments. Figures are averages over 500 paired runs.
 
 5
-00:00:41.753 --> 00:00:51.755
-Each participant receives a monthly allowance of Basic Units (BU): a restricted currency for essentials that expires if it is not used.
+00:00:50.137 --> 00:01:01.013
+Every adult who takes part receives a monthly allowance of Basic Units, or BU: a currency that only buys essentials, and expires if it is not used.
 
 6
-00:00:51.755 --> 00:01:01.757
-BU can be converted to dollars at elevated rates, set by market demand and by the quality of work the community validates through creative collectives.
+00:01:01.013 --> 00:01:13.554
+Expired BU can be converted to dollars at higher rates, for work the community values. Unused BU go to community projects, which hire participants and pay them at the converted rate.
 
 7
-00:01:01.757 --> 00:01:11.972
-A participant's octave is their conversion capacity: a safeguard against exploitation, and an open ceiling for creators whose work draws demand.
+00:01:13.554 --> 00:01:29.252
+A person's octave sets how much they can convert; it rises with their financial stability. Essential-service businesses accept BU, and community-owned ones lower prices and add capacity within a year when demand outgrows them.
 
 8
-00:01:11.972 --> 00:01:28.971
-Wage work is still paid in dollars. Community-owned businesses and housing (PTF, PTH) lower living costs, zone coordination (SZH) adds a cooperative benefit, and a civic portal (CIP) runs the currency and the votes.
+00:01:29.252 --> 00:01:40.427
+Creative projects offer their work to members far below market price. Spending also creates jobs in recessions. Any adult can join or leave each year.
 
 9
-00:01:28.971 --> 00:01:38.845
-Taking part is open to every adult. In the model, 78% do at the reference settings, and each adult's choice holds for all 20 years.
+00:01:40.427 --> 00:01:50.835
+A Source, the Treasury, issues the BU and pays for every conversion. Where the Hub is silent, the page labels the choice as Claude's reading of the design.
 
 10
-00:01:38.845 --> 00:01:49.359
-Each row is a design. Cost is per adult per year, shown with the wage contribution that pays for it and the change in poverty per $1,000.
+00:01:50.835 --> 00:02:02.757
+At the reference settings, 18.7% of adult-years fall below 30 days of basic living with Compassionism, against 46.7% with no programme.
 
 11
-00:01:49.359 --> 00:01:59.511
-The main measure is poverty severity: each adult's shortfall below a living-wage basket, squared so the deepest count most, averaged over 20 years.
+00:02:02.757 --> 00:02:17.175
+Living below the cost of living falls from 55.2% to 22.0%, and the share with too little wealth at year 20 falls from 52.0% to 35.7%.
 
 12
-00:01:59.511 --> 00:02:08.318
-Beside it: the final year alone, the share of adults in poverty, hours worked, and any group left worse off than with no program.
+00:02:17.175 --> 00:02:27.710
+Adults who take part gain about 30,300 dollars a year in real resources. Adults who do not take part lose about 800 dollars a year.
 
 13
-00:02:08.318 --> 00:02:20.432
-The controls switch the environment, compare the designs at equal cost or at the size their proponents propose, and model Compassionism as coded or as specified on the Hub.
+00:02:27.710 --> 00:02:40.613
+The cost is about 29,600 dollars per adult a year, and prices rise 34.9% a year, because the model treats conversion as new money with little output behind it.
 
 14
-00:02:20.432 --> 00:02:34.125
-At proposed size, the basic income pays $12,000 a year and the negative income tax guarantees the 2026 poverty guideline for one adult, $15,960.
+00:02:40.613 --> 00:02:53.111
+If every dollar the Source pays were backed by new output, prices would stay flat and the gains would be larger. The decisive unknown is how much output conversion rewards call forth.
 
 15
-00:02:34.125 --> 00:02:48.948
-At the reference settings and equal cost, Compassionism as coded cuts poverty severity by 3.21 points, against 1.60 for a basic income and 2.30 for a negative income tax.
+00:02:53.111 --> 00:03:10.580
+In the Adverse Environment, with recessions and inflation, fewer adults fall below 30 days of basic living: 33.1% against 60.0%. But too little wealth rises from 82.6% to 87.1%.
 
 16
-00:02:48.948 --> 00:03:01.297
-The shaded row switches off two mechanisms that are theoretical, yet to be empirically tested, and cost nothing in the model: a yearly wage raise per octave, and slower inflation.
+00:03:10.580 --> 00:03:29.051
+In the Stress Test it is the same: below 30 days of basic living falls from 60.0% to 54.9%, but too little wealth rises from 82.6% to 90.6%. The gain is not confirmed there, and the page says so.
 
 17
-00:03:01.297 --> 00:03:12.557
-At reference, with no inflation, only the wage raise acts. Without it the cut falls from 3.21 to 1.78, about 45% less.
+00:03:29.051 --> 00:03:42.275
+Below the results, other readings of the design sit side by side, including full backing by output, creative work counted at cost, and the earlier engine, so you can see how much each choice matters.
 
 18
-00:03:12.557 --> 00:03:27.274
-In the Adverse Environment, with recessions and 2% inflation, the two carry about 79% of the cut: 7.67 falls to 1.62. The next round replaces them or switches them off.
+00:03:42.275 --> 00:03:53.194
+Press Run it yourself to run one seed of 500 adults, with and without the programme, in your browser. A single run varies more than the 500-run averages.
 
 19
-00:03:27.274 --> 00:03:34.545
-Without them, Compassionism still does better than a basic income of equal cost, in all three environments.
+00:03:53.194 --> 00:03:58.588
+Enter a seed to repeat a run exactly: the same seed gives the same result.
 
 20
-00:03:34.545 --> 00:03:50.137
-The negative income tax cuts severity more at reference, 2.30, by focusing on the deepest shortfalls, but it raises the share in poverty from 55% to 81% and cuts hours by 22%.
+00:03:58.588 --> 00:04:10.361
+What the model cannot tell you: it has single adults only, no children or households, no places, and a simple rule for prices. It is an exploratory model, not a forecast.
 
 21
-00:03:50.137 --> 00:03:57.920
-A variant that moves a tenth of the flat allowance into a top-up for low earners cuts a little more: 3.38.
+00:04:10.361 --> 00:04:21.024
+The earlier engine, v4.22, stays below for exploration, with its own settings and presets. Its figures differ from the results above.
 
 22
-00:03:57.920 --> 00:04:11.826
-Someone always pays. Each design is funded by a contribution on wages; under Compassionism the cost falls mainly on adults who chose not to take part, about $5,800 a year.
+00:04:21.024 --> 00:04:28.573
+The Replication framework page holds the formulas, the calibration, the assumptions and the full version history.
 
 23
-00:04:11.826 --> 00:04:22.681
-At the scale specified on the Hub, Compassionism costs about $32,000 per adult a year, which would take a contribution of 61% of wages.
+00:04:28.573 --> 00:04:43.631
+The simulation is one HTML file. harness.js runs the same engine from the command line; the figures on the page come from node harness.js testbed 500 release ref,adv,st.
 
 24
-00:04:22.681 --> 00:04:33.750
-What the model cannot test: whether conversion rewards pay for new output (it has no production side), households and children, or savings from poverty removed.
-
-25
-00:04:33.750 --> 00:04:42.237
-Compassionism's own scenarios run live in your browser: pick a preset, or change any control and press Run Simulation.
-
-26
-00:04:42.237 --> 00:04:53.519
-Each run follows 500 adults year by year and reports poverty, wealth and the BLEI: how many days of basic living each adult's resources cover.
-
-27
-00:04:53.519 --> 00:05:03.799
-Panels below show poverty by five measures, BLEI tiers over time, participants beside non-participants, and what each system contributes.
-
-28
-00:05:03.799 --> 00:05:12.073
-These live runs use the engine's own settings, not the comparison's testbed profile, so their figures differ from the table's.
-
-29
-00:05:12.073 --> 00:05:18.768
-At the foot of the page: the assumptions, the ODD protocol, known limitations and references.
-
-30
-00:05:18.768 --> 00:05:25.250
-The Replication framework page holds the formulas, the calibration and the full version history.
-
-31
-00:05:25.250 --> 00:05:39.988
-The simulation is one HTML file. harness.js runs the same engine from the command line; the comparison table comes from node harness.js testbed 500 a5 ref.
-
-32
-00:05:39.988 --> 00:05:47.707
+00:04:43.631 --> 00:04:51.329
 npm test runs the three checks, validate, unit and domtest, and GitHub runs them on every push.
 
-33
-00:05:47.707 --> 00:05:57.795
+25
+00:04:51.329 --> 00:05:01.416
 Contributions most wanted: sources for the untested constants, scenario tests from places you know, reproductions, and critiques of the design.
 
-34
-00:05:57.795 --> 00:06:08.821
-Changes follow the project rules: the old behaviour stays behind a switch, results are compared on 500 paired seeds, and no constant is tuned to hit a target.
-
-35
-00:06:08.821 --> 00:06:15.111
+26
+00:05:01.416 --> 00:05:07.706
 Open an issue or a pull request on GitHub. CONTRIBUTING.md explains how.
 
-36
-00:06:15.111 --> 00:06:22.111
+27
+00:05:07.706 --> 00:05:14.706
 Open the simulation, read the code, and test the claims yourself.
 

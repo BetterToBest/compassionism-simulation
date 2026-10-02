@@ -924,8 +924,8 @@ function phase11(done) {
     liveOK && w.SURPLUS_CONSUMPTION_SHARE === 0 && w.CONVERSION_MODEL === 'engine', live ? 'BLEI poverty page ' + live.x.r.bOAPy.toFixed(2) + ' / harness ' + hR[1].bOAPy.toFixed(2) + '; spending share after ' + w.SURPLUS_CONSUMPTION_SHARE : 'no run');
   const vis = fdEl.textContent + ' ' + fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8');
   const lim = [...d.querySelectorAll('#uncertainty-notice li')].length, draft = fs.existsSync(path.join(path.dirname(FILE), 'dev', 'drafts', 'compare-designs.html'));
-  check('step 12: the comparison has left the page (no table, no "other designs", no walk-through link in the README; saved unlinked in dev/drafts/), and a short list of limits remains',
-    !d.getElementById('fd-table') && !d.getElementById('fd-data') && !/other designs/i.test(vis) && !/walk-?through/i.test(fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8')) && draft && lim >= 5 && lim <= 8,
+  check('step 12: the comparison has left the page (no table, no "other designs", saved unlinked in dev/drafts/), the walk-through (v5.0, s65) is linked from the README and plays from the top of the page, and a short list of limits remains',
+    !d.getElementById('fd-table') && !d.getElementById('fd-data') && !/other designs/i.test(vis) && /walkthrough\/walkthrough\.mp4/.test(fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8')) && !!d.querySelector('#fd-video video source[src="walkthrough/walkthrough.mp4"]') && draft && lim >= 5 && lim <= 8,
     'limits ' + lim + '; draft ' + (draft ? 'saved' : 'MISSING'));
   const chips = [...d.querySelectorAll('#fd-live .fd-chip')].map(b => (b.getAttribute('onclick').match(/fdRun\('(\w+)'\)/) || [])[1]);
   const saveRun = w.runSim; let ran = 0; w.runSim = function () { ran++; }; w.fdRun('adverse'); w.runSim = saveRun;
