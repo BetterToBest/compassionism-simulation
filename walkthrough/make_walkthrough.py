@@ -153,7 +153,7 @@ tr.wt-mark, td.wt-mark{outline:3px solid #D99A00!important;outline-offset:-3px}
 
 APPLY = """(s) => {
   document.querySelectorAll('.wt-dim,.wt-mark').forEach(e => e.classList.remove('wt-dim','wt-mark'));
-  relSet(s.env || 'ref');
+  if (window.relSet) relSet(s.env || 'ref');
   const mo = document.getElementById('rel-more'); if (mo) mo.open = !!s.more;
   const old = document.getElementById('fd-old'); if (old) old.open = false;
   const live = document.getElementById('rel-live-out'); if (live && !s.run) live.innerHTML = '';
@@ -187,7 +187,7 @@ def serve(root):
 
 def capture(pw, base):
     b = launch(pw)
-    ctx = b.new_context(viewport={'width': VW, 'height': VH}, device_scale_factor=DSF, color_scheme='light')
+    ctx = b.new_context(viewport={'width': VW, 'height': VH}, device_scale_factor=DSF, color_scheme='light', ignore_https_errors=True)
     pg = ctx.new_page()
     shots, current = {}, None
     for s in SHOTS:
@@ -265,7 +265,7 @@ def render_frames(pw, shots, tmp, voice=None):
         clips, sr = voice
         durs = [max(d, (LEAD0 if i == 0 else LEAD) + len(a) / sr + TAIL) for i, (d, a) in enumerate(zip(durs, clips))]
     total, t0, frames, cues = sum(durs), 0.0, [], []
-    b = launch(pw); pg = b.new_page(viewport={'width': W, 'height': H})
+    b = launch(pw); pg = b.new_page(viewport={'width': W, 'height': H}, ignore_https_errors=True)
     for i, ((s, text), d) in enumerate(zip(caps, durs)):
         if 'card' in s:
             top = "<div style='position:absolute;left:0;top:0;width:%dpx;height:%dpx'>%s</div>" % (W, H - BAND, card_html(s['card']))
