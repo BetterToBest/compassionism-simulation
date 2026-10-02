@@ -34,6 +34,12 @@
     {"id": "stress", "ch": 3, "env": "st", "scroll": "#rel-panel", "off": 8, "dim": "#rel-out", "caps": [
       {"t": "In the Stress Test it is the same: below 30 days of basic living falls from {st_base_bo} to {st_bo}, but too little wealth rises from {st_base_pov} to {st_pov}. The gain is not confirmed there, and the page says so.",
        "needs": ["stress wealth worse"]}]},
+    {"id": "forty", "ch": 3, "yrs": 40, "scroll": "#rel-panel", "off": 8, "dim": "#rel-out", "caps": [
+      {"t": "The Years switch runs the same adults for 40 years instead of 20. They do not age in the model, so this shows where the same rules lead, not a lifetime."},
+      {"t": "At the reference settings the gains grow: {ref40_bo} of adult-years fall below 30 days of basic living, against {base40_bo}, and too little wealth at year 40 falls from {base40_pov} to {ref40_pov}.",
+       "needs": ["40 years: reference confirmed gain"]},
+      {"t": "In the Adverse Environment and the Stress Test, too little wealth is still worse with the programme over 40 years: {adv40_pov} against {adv40_base_pov} in Adverse, as prices keep rising and savings earn no interest.",
+       "needs": ["40 years: adverse and stress wealth worse"]}]},
     {"id": "other", "ch": 3, "more": true, "scroll": "#rel-more", "off": 8, "dim": "#rel-more", "caps": [
       {"t": "Below the results, other readings of the design sit side by side, including full backing by output, creative work counted at cost, and the earlier engine, so you can see how much each choice matters."}]},
     {"id": "run", "ch": 4, "run": true, "scroll": "#rel-live", "off": 8, "dim": "#rel-live", "caps": [
@@ -57,11 +63,12 @@
   "alt": {
     "headline": "The page's opening sentence, highlighted",
     "attribution": "The attribution paragraph, highlighted",
-    "rules": "The subtitle describing the 500 adults, 20 years and three environments, highlighted",
+    "rules": "The subtitle describing the 500 adults, 20 or 40 years and three environments, highlighted",
     "what": "The 'What Compassionism is' list, highlighted",
     "ref": "The reference-environment results, highlighted",
     "adverse": "The Adverse Environment results, highlighted",
     "stress": "The Stress Test results, highlighted",
+    "forty": "The reference results over 40 years, highlighted",
     "other": "The table of other readings of the design, open",
     "run": "The 'Run it yourself' control and its result",
     "limits": "The 'Limits, in short' box, highlighted",

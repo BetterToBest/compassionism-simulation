@@ -51,6 +51,7 @@ SPOKEN = [   # (pattern, replacement): how the voice reads the caption text; the
     (r'\bv(\d+\.\d+)\b', r'version \1'),            # v4.22 -> version 4.22
     (r'\$([\d,]+)', r'\1 dollars'),                    # $5,800 -> 5,800 dollars (the voice would say "dollar five thousand")
     (r'\bH1\b', 'H 1'), (r'\bPTF\b', 'P T F'), (r'\bPTH\b', 'P T H'), (r'\bSZH\b', 'S Z H'),
+    (r'\bESPs\b', 'E S Ps'), (r'\bESP\b', 'E S P'),   # session 33: essential-service providers
     (r'\bBU\b', 'B U'), (r'\bCIP\b', 'C I P'), (r'\bBLEI\b', 'B L E I'),   # spelled out (the voice would say "boo", "sip", "blay")
     (r'\b2026\b', 'twenty twenty-six'),
     (r'harness\.js', 'harness dot J S'), (r'\bnpm\b', 'N P M'), (r'CONTRIBUTING\.md', 'contributing dot M D'), (r'\bdomtest\b', 'dom test'),
