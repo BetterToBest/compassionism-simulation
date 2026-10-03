@@ -100,6 +100,13 @@ The check that the page and the Node copy of the model agree now covers the no-p
 - The figures on the front door can be downloaded (CSV or JSON), with the version and the command that reproduces them; a view can be linked (`?env=adv&years=40`); the numbers of tests quoted in the README and CONTRIBUTING are checked by the tests themselves, so they cannot drift again.
 - The walk-through video was rebuilt (same voice, new figures, title card v5.1). The builder always rebuilds the whole video from the page, so the narration was regenerated too.
 
+## 5b. For the next model round (your decision d146 in the ledger)
+
+Two findings from this release belong at the top of that round:
+
+1. **The no-programme run against US data.** The model's no-programme Gini of disposable income is 0.29 (Reference) to 0.38 (Adverse and Stress) at 20 years, below the Hub's starting 0.48. Checking the baseline against US data is already on the list; this is the first number to check.
+2. **Savings and the indexing rule.** The wealth-poverty weakness in the Adverse and Stress environments is tied to two rules about prices: savings are not protected from inflation, and the BU is indexed only above 5% a year. The backing-share chart shows that with the BU indexed every year the fully backed Adverse Environment's wealth poverty falls from 52.5% to 31.8%. Both rules are the Hub's design as modelled; the round should look at them together.
+
 ## 6. Limits
 
 - No independent economist has reviewed any of this.
