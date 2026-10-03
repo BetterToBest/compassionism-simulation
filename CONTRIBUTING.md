@@ -133,6 +133,41 @@ Decision d46 replaces the engine's octave wage raise (0.3% a year of extra wage 
 - **The engine in `index.html` is unchanged**, and so is the page. Per d65 the main Compassionism row changes at the N1 release (s35).
 - **Checks.** `validate` passes, `unit` passes (the new suite 9 of 9), and `domtest` passes all 95.
 
+## v5.1 Release Notes
+
+**Released as v5.1 (Oct 3, 2026): the mechanics release from the external audit pass.** Delivered as a pull request into `main` (merging is the release); it follows v5.0.1 (the text, version-label and test fixes from the same audit), which is a separate pull request. The plain-words report for Duke is `dev/reports/v5-8-audit-fixes-and-v5-1.md`; every decision is in `dev/DECISIONS.md` (Session 34).
+
+### What changed in the model
+
+**V5-02: the framework BLEI gate reads this year's BU.** `runYear` called the gate that decides the wage-growth bonus before writing this year's `a._fwBUm`, so from year 1 it read last year's value (73% of framework agent-years differ in the release rows). Fixed behind a switch (`GATE_CURRENT`; row option `gc`; on in `REL_V5` and in every row of the release panel, including the two former readings, so each comparison differs only by the named change). Off: full-output diffs against v5.0 identical (12 seeds, three environments at 20 years and Reference at 40; JSON byte-identical). On: the hoisted value equals the engine's later assignment in about 4.9 million framework agent-years, 0 mismatches. At 500 seeds it lowers the design-neutral BLEI poverty reading by 0.9, 1.8 and 0.3 points over 20 years (Reference, Adverse, Stress Test) and 0.7, 2.0 and 0.2 over 40; every other headline figure moves by 0.1 point or less.
+
+| Environment, years | Design-neutral reading before | after |
+|---|---|---|
+| Reference, 20 years | 22.1% | 21.2% (−0.9 points) |
+| Adverse, 20 years | 40.3% | 38.5% (−1.8 points) |
+| Stress Test, 20 years | 56.9% | 56.6% (−0.3 points) |
+| Reference, 40 years | 17.1% | 16.4% (−0.7 points) |
+| Adverse, 40 years | 63.1% | 61.1% (−2.0 points) |
+| Stress Test, 40 years | 75.1% | 74.9% (−0.2 points) |
+
+### What changed in the reporting
+
+- **Price level (F3).** The exported panels carry the mean, the median over seeds (`pLevEndMed`) and the 10th and 90th percentiles; the key `pLev20` is gone from the export (the engine keeps it internally). The front door gives the typical run and its range, and above 1,000 times today's says the price rule runs away, a limit of the model and not a forecast; the replication page carries the exact figures.
+- **The Hub's targets (E1).** Gini (`giniD`, `giniX`) and extreme poverty (`epPY`) are in the panel rows; the front door and the replication page set the Hub's Year 7 targets (poverty under 2%, Gini 0.25 to 0.30; Integrated Implementation Roadmap) beside the results, with the caveats that change how they read. No poverty measure comes near 2%; the model's no-programme Gini is already below the Hub's 0.48 start. One reading, the Adverse Environment's Gini counting price cuts at 20 years (0.2495), is on the 0.25 line and is labelled so; the small-sample correction is still not applied (see "Gini small-sample bias" above).
+- **Provenance manifest (E5, V5-08).** Each panel's `_meta.manifest`: commit, clean-tree flag, SHA-256 of `harness.js`, of the page's ported engine and of `index.html` with the panels blanked, and the Node version. `domtest` checks that the engine hash equals the page's, that the panels come from one clean commit, and (where the commit is present) that `harness.js` at it hashes to the recorded value.
+- **The backing-share curve (E2).** One static chart on the replication page: the change in wealth poverty against no programme and the programme's inflation, at 0, 0.25, 0.5, 0.75 and 1 of the Source's payout backed by new output, 500 paired seeds per environment. The end points are the release and H1 rows exactly. **Finding:** in the Adverse and Stress environments the curve bends at the right end because the model indexes the BU to prices only above 5% a year (the Hub's Inflation Surge Protocol) and outside inflation is 2%: fully backed, the BU is never indexed and loses real value. With the BU indexed every year the fully backed Adverse Environment gives wealth poverty 31.8% (52.5% as modelled) and cost-of-living poverty 33.0% (48.9%); `dev/tools/cola_check.js`. So H1 is held back by that rule there; the page says so.
+- **Front door:** deep links (`?env=adv&years=40`, E4), CSV and JSON download of the view with the version, command and manifest (E3), and the optimistic-end sentence points to the chart.
+
+### What changed in the checks
+
+- **Parity (V5-04).** The page-versus-harness check now runs the no-programme baseline and all eleven readings (154 measures each) in three environments at 20 and 40 years, and compares every top-level name the two share (170: 85 values, 85 functions). Allow-listed differences, each with its reason and required to still be present: `CFG` (two display-only poverty-line keys), `TIERS` (colours and classes), and three functions found beyond the audit's count, none of which enters the release run (`getTier`, `drawAutomationRisk`, `incomeBasketMetrics`). Shown to fail on three deliberate breaks of a page copy.
+- **Feature matrix (V5-05).** `matrixUnitSuite`: the framework model alone, then with project hiring, ESP payroll, the other framework modules, the price module, price and labour, and every module together (the twelve release rows): deterministic, finite, the BU, ESP and testbed identities hold, exactly 8 random draws per agent-year with no module changing the count, no dependence between rows, no switch left changed. Shown to fail on three injected faults.
+- **Counts that cannot drift (E6).** The numbers of `unit` tests (<!-- count:unit -->146<!-- /count -->) and `domtest` checks (<!-- count:domtest -->112<!-- /count -->) quoted in README.md and CONTRIBUTING.md are checked by the tests themselves; `--write-counts` refreshes them.
+
+### How the figures were made
+
+All from commit `6c68ad9` with a clean tree, Node v22, one process per environment and horizon, paired seeds 1-500: `node harness.js testbed 500 release ENV --json=dev/runs/release-panel-ENV.json` and the same with `--years=40` (`release-panel-40-ENV.json`), logs `dev/runs/v51-release-500-ENV.txt` and `v51-release40-500-ENV.txt`, merged by `python3 dev/tools/merge_panel.py` (and `40`) and written to the replication page by `python3 dev/tools/release_figs.py`. The backing-share runs: `node harness.js testbed 500 backing ENV --json=dev/runs/backing-share-ENV.json` (commit `b0bcc0d`), merged by `python3 dev/tools/backing_chart.py`. The indexing check: `node dev/tools/cola_check.js adv` and `st`. The walk-through was rebuilt with `python3 walkthrough/make_walkthrough.py` (it reads its figures from the page, so the narration was regenerated).
+
 ## v5.0.1 Release Notes
 
 **v5.0.1 (Oct 3, 2026): the external audit pass on v5.0, applied as a pull request.** Text, tests and three page fixes; the engine is unchanged and every shipped figure is bit-identical. Prompted by two external audits of v5.0 (xAI and ChatGPT) and a third pass that checked their claims by running the code. The `v5.0` tag still points at the commit with the stale version fields; it is not moved. This version is the corrected citation.
@@ -2778,7 +2813,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. If you change a function that exists in both `index.html` and `harness.js`, change both identically: `domtest.js` Phase 8 compares their source (comments and whitespace ignored) and fails on any drift outside five listed, intentional differences. If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->0<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->146<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->112<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->146<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -2872,7 +2907,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.0.1*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.1*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

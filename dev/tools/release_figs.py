@@ -8,6 +8,12 @@ level is the median over seeds with its 10th to 90th percentile range and the me
 panel's manifest.
 """
 import json, os, re
+from decimal import Decimal, ROUND_HALF_UP
+
+
+def fx(x, d=1):
+    # the digits JavaScript's toFixed gives (domtest compares them): the number's exact value rounded, ties up; Python's % formatting rounds ties to even
+    return ('-' if x < 0 and Decimal(abs(x)).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP) != 0 else '') + str(Decimal(abs(x)).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP))
 names = {'ref': 'Reference', 'adv': 'Adverse', 'st': 'Stress Test'}
 
 def lev(x):
@@ -41,7 +47,7 @@ def put(P, start, rows):
     a = P.index(start); t0 = P.index('<tbody>', a) + len('<tbody>'); t1 = P.index('</tbody>', t0)
     return P[:t0] + '\n' + '\n'.join(rows) + '\n' + P[t1:]
 
-def pct(x, d=1): return ('%.' + str(d) + 'f%%') % x
+def pct(x, d=1): return fx(x, d) + '%'
 
 def near(g):
     # within 0.002 of a line: 500 adults (the Gini formula reads 0.2% low; the mean of 500 seeds has its own sampling error) cannot place it on either side
@@ -55,9 +61,9 @@ def targets_rows(D20, D40):
     for Y, D in ((20, D20), (40, D40)):
         for e in ['ref', 'adv', 'st']:
             E = D['envs'][e]; b = E['base']; r = E['rows']['release']
-            rows.append('<tr><td>%d</td><td>%s</td><td>%s vs %s</td><td>%s vs %s</td><td>%s vs %s</td><td>%s vs %s</td><td>%.3f vs %.3f<br><small>%s</small></td><td>%.3f vs %.3f<br><small>%s</small></td></tr>' % (
+            rows.append('<tr><td>%d</td><td>%s</td><td>%s vs %s</td><td>%s vs %s</td><td>%s vs %s</td><td>%s vs %s</td><td>%s vs %s<br><small>%s</small></td><td>%s vs %s<br><small>%s</small></td></tr>' % (
                 Y, names[e], pct(r['fgt0PY']), pct(b['fgt0PY']), pct(r['bOAPy']), pct(b['bOAPy']), pct(r['pov']), pct(b['pov']), pct(r['epPY'], 2), pct(b['epPY'], 2),
-                r['giniD'], b['giniD'], verdict(r['giniD']), r['giniX'], b['giniX'], verdict(r['giniX'])))
+                fx(r['giniD'], 3), fx(b['giniD'], 3), verdict(r['giniD']), fx(r['giniX'], 3), fx(b['giniX'], 3), verdict(r['giniX'])))
     return rows
 
 TG_HEAD = ('<h3 id="rel-targets-h">Against the Hub&rsquo;s own targets (audit E1, v5.1)</h3>\n  <p>The Research Hub sets two targets for Year 7 of a programme: a poverty rate under 2% (from about 12%) and a Gini coefficient of 0.25 to 0.30 (from 0.48), in the '

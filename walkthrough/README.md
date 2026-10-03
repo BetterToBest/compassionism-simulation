@@ -1,4 +1,4 @@
-# Walk-through: the Compassionism Framework Simulation (v5.0)
+# Walk-through: the Compassionism Framework Simulation (v5.1)
 
 <!-- Written by walkthrough/make_walkthrough.py. Edit the captions there and rebuild; edits here are overwritten. -->
 

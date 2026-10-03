@@ -1118,10 +1118,27 @@ function phase13(done) {
       eq(rel, 'cost_per_adult_a_year_usd', rr.cost) && eq(rel, 'gini_disposable_income', rr.giniD) && eq(rel, 'unhoused_pct', rr.epPY) && eq(base, 'too_little_wealth_pct', E.base.pov) && eq(base, 'gini_with_price_cuts', E.base.giniX) && base[col('below_30_days_change_pts')] === '' && body.length === 12 && body[1][0] === 'release')) exProb.push(tag + ' csv numbers');
     exInfo = jx.text.length + ' + ' + cx.text.length + ' characters (last view)'; }));
   const clicked = [], wdl = makeWindow(); wdl.relInit(); wdl.URL.createObjectURL = () => 'blob:test'; wdl.URL.revokeObjectURL = () => {}; wdl.HTMLAnchorElement.prototype.click = function () { clicked.push(this.download + ' ' + this.getAttribute('href')); };
-  wdl.relSet('adv'); wdl.relYears(40); wdl.document.getElementById('rel-dl-csv').click(); wdl.document.getElementById('rel-dl-json').click();
-  const btnOK = clicked.length === 2 && clicked[0] === 'compassionism-v' + wdl.META.VERSION + '-adv-40y.csv blob:test' && clicked[1] === 'compassionism-v' + wdl.META.VERSION + '-adv-40y.json blob:test';
+  wdl.relSet('adv'); wdl.relYears(40); const wired = ['csv', 'json'].every(f => wdl.document.getElementById('rel-dl-' + f).getAttribute('onclick') === "relDownload('" + f + "')" && wdl.document.getElementById('rel-dl-' + f).tagName === 'BUTTON'); wdl.relDownload('csv'); wdl.relDownload('json');  // the page's inline onclick handlers do not run under jsdom's outside-only scripts, so the functions they name are called directly
+  const btnOK = wired && clicked.length === 2 && clicked[0] === 'compassionism-v' + wdl.META.VERSION + '-adv-40y.csv blob:test' && clicked[1] === 'compassionism-v' + wdl.META.VERSION + '-adv-40y.json blob:test';
   check('audit E3 (v5.1): "Download this view" gives a CSV and a JSON for each of the six views, with the version, the command, the build manifest and every number equal to the panel\'s, and the buttons download the right file names',
     exProb.length === 0 && btnOK, exProb.length ? exProb.slice(0, 4).join('; ') : '6 views x 2 formats match the panels (' + exInfo + '); buttons: ' + clicked.join(' | '));
+  /* v5.1 (audit E2): the backing-share chart on the replication page is the data in dev/runs/backing-share.json: two panels (never one chart with two y axes), three series each, five points each; the table
+   * view carries every number; both end points equal the panel's own release and H1 rows (same paired seeds, same build of the engine); inflation falls as more is backed; and the manifest names a clean commit and the page's engine. */
+  const BS = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'backing-share.json'), 'utf8')), BK = ['a0', 'a25', 'a50', 'a75', 'a100'], bsProb = [];
+  const bsFig = repDoc.getElementById('backing-chart'), bsSvgs = bsFig ? [...bsFig.querySelectorAll('svg.bs-svg')] : [], bsTab = [...repDoc.querySelectorAll('.bs-table tbody tr')].map(x => [...x.children].map(c => c.textContent));
+  const sgn = (x, d) => { const t = Math.abs(x).toFixed(d === undefined ? 1 : d); return (x > 0 && +t !== 0 ? '+' : x < 0 && +t !== 0 ? '−' : '') + t; };
+  if (bsSvgs.length !== 2 || !bsSvgs.every(sv => sv.getAttribute('role') === 'img' && sv.querySelector('title') && sv.querySelector('desc') && sv.querySelectorAll('polyline').length === 3 && sv.querySelectorAll('.bs-dot').length === 15)) bsProb.push('chart structure');
+  if (!bsFig || ['Reference', 'Adverse', 'Stress Test'].some(n => bsFig.querySelector('.bs-legend').textContent.indexOf(n) < 0)) bsProb.push('legend');
+  if (BS._meta.seeds !== 500 || BS._meta.years !== 20 || JSON.stringify(BS._meta.shares) !== '[0,0.25,0.5,0.75,1]') bsProb.push('meta');
+  if (bsTab.length !== 5) bsProb.push('table rows'); else BK.forEach((k, i) => { const c = bsTab[i], e3 = ENVN.map(e => BS.envs[e].rows[k]);
+    const okRow = c[1] === (e3[0].a*100) + '%' && ENVN.every((e, j) => c[2 + j] === sgn(e3[j].dPov[0]) + ' (' + sgn(e3[j].dPov[1]) + ' to ' + sgn(e3[j].dPov[2]) + ')' && c[5 + j] === e3[j].infl.toFixed(1) + '%') && c[0] === (k === 'a0' ? 'Release row' : k === 'a100' ? 'H1' : '');
+    if (!okRow) bsProb.push('table row ' + k); });
+  ENVN.forEach(e => { const R = BS.envs[e].rows, pr = P20.envs[e].rows, same = (a, b) => ['pov', 'fgt0PY', 'bOAPy', 'bNAPy', 'infl', 'pLevEnd', 'pLevEndMed', 'pLevEndP10', 'pLevEndP90', 'cost', 'srcPay', 'srcM'].every(q => a[q] === b[q]);
+    if (!same(R.a0, pr.release)) bsProb.push(e + ' a=0 is not the release row'); if (!same(R.a100, pr.h1)) bsProb.push(e + ' a=1 is not the H1 row');
+    for (let i = 1; i < BK.length; i++) if (R[BK[i]].infl > R[BK[i - 1]].infl + 1e-9) bsProb.push(e + ' inflation rises with the backed share'); if (R.a100.infl !== 0) bsProb.push(e + ' programme inflation at a=1 is not zero'); });
+  const bm = BS._meta.manifest || {}; if (!hexOK(bm.commit, 40) || bm.dirty !== false || bm.engineBlockSha256 !== blkSha) bsProb.push('manifest (commit ' + (bm.commit || '?').slice(0, 8) + ', dirty ' + bm.dirty + ', engine ' + (bm.engineBlockSha256 === blkSha ? 'equals the page\'s' : 'DIFFERS') + ')');
+  check('audit E2 (v5.1): the backing-share chart is the 500-seed data (two panels of three series and five points, the table carries every number), its end points are the release and H1 rows exactly, inflation falls as more is backed, and its manifest names a clean commit and the page\'s engine',
+    bsProb.length === 0, bsProb.length ? bsProb.slice(0, 5).join('; ') : 'a = 0, 0.25, 0.5, 0.75, 1 in three environments; commit ' + bm.commit.slice(0, 8) + '; Adverse change in wealth poverty ' + BK.map(k => sgn(BS.envs.adv.rows[k].dPov[0])).join(' / ') + ' points');
   const wn = makeWindow('', {noChart: true});
   let ok = true, why = '';
   try { wn.applyPreset('reference'); wn.runSim(); } catch (e) { ok = false; why = e.message; }

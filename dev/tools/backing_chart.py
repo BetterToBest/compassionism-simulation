@@ -12,6 +12,7 @@ the paired change. Right: the programme's own inflation a year. Three environmen
 palette, validated in light and dark with the all-pairs check), told apart also by marker shape and by direct labels; a table of the numbers sits beside it.
 """
 import json, re, sys
+from decimal import Decimal, ROUND_HALF_UP
 
 ENVS = [('ref', 'Reference'), ('adv', 'Adverse'), ('st', 'Stress Test')]
 KEYS = ['a0', 'a25', 'a50', 'a75', 'a100']
@@ -30,8 +31,12 @@ def load():
     json.dump(out, open('dev/runs/backing-share.json', 'w'), indent=1)
     return out
 
+def fx(x, d=1):
+    # the digits JavaScript's toFixed gives: round the number's exact value, ties up (Python's % formatting rounds ties to even, so -16.25 would read 16.2, not 16.3)
+    return str(Decimal(abs(x)).quantize(Decimal(1).scaleb(-d), rounding=ROUND_HALF_UP))
+
 def sg(x, d=1):
-    s = ('%.' + str(d) + 'f') % abs(x)
+    s = fx(x, d)
     return ('+' if x > 0 and float(s) != 0 else MINUS if x < 0 and float(s) != 0 else '') + s
 
 def crossing(pts):
@@ -105,6 +110,27 @@ CSS = """<style>
 @media (forced-colors:active){.bs-line,.bs-wh{stroke:CanvasText!important}.bs-dot{fill:CanvasText!important}}
 </style>"""
 
+def bend_text(D):
+    """why the right end of the curve bends in the Adverse Environment and the Stress Test, from dev/tools/cola_check.js's own files"""
+    try:
+        C = {e: json.load(open('dev/runs/cola-check-%s.json' % e)) for e in ('adv', 'st')}
+    except FileNotFoundError:
+        return ''
+    R = {e: D['envs'][e]['rows'] for e in ('adv', 'st')}
+    worse = [e for e in ('adv', 'st') if R[e]['a100']['fgt0PY'] > R[e]['a75']['fgt0PY']]
+    if not worse:
+        return ''
+    nm = {'adv': 'Adverse Environment', 'st': 'Stress Test'}
+    bits = []
+    for e in ('adv', 'st'):
+        m, y = C[e]['rows']['modelled_a100'], C[e]['rows']['every_year_a100']
+        bits.append('%s: wealth poverty %.1f%% (as modelled %.1f%%), cost-of-living poverty %.1f%% (%.1f%%), programme cost $%s a year ($%s)' % (nm[e], y['pov'], m['pov'], y['fgt0PY'], m['fgt0PY'], format(y['cost'], ','), format(m['cost'], ',')))
+    return ('The right end bends in the %s: from a = 0.75 to a = 1 poverty on the cost-of-living and BLEI measures gets worse and the programme costs less, although more of the payout is backed. '
+            'The cause is the model&rsquo;s indexing rule (the Hub&rsquo;s Inflation Surge Protocol): the BU is indexed to prices only in a year when prices rise faster than 5%%. '
+            'Outside inflation in these two environments is 2%%, so once the programme adds none of its own (a = 1) the BU is never indexed and loses real value, whereas at a = 0.75 the programme&rsquo;s own inflation (%.0f%% a year in the Adverse Environment) keeps the rule on. '
+            'With the BU indexed every year, a = 1 gives (%d seeds, <code>dev/tools/cola_check.js</code>) &mdash; %s. So in these two environments the H1 end is held back by the indexing rule, not by backing; that is a finding about the rule, not a proposal to change it, which is the Hub&rsquo;s design.' % (
+                ' and the '.join(nm[e] for e in worse), R['adv']['a75']['infl'], C['adv']['_meta']['seeds'], '; '.join(bits)))
+
 def build(D):
     cols = {'ref': '--bs-s1', 'adv': '--bs-s2', 'st': '--bs-s3'}
     shapes = {'ref': 'circle', 'adv': 'square', 'st': 'triangle'}
@@ -118,7 +144,7 @@ def build(D):
     ymin = 10 * int((lo - 9.999) // 10); ymax = max(10, 10 * int((hi + 9.999) // 10))
     imax = max(10, 10 * int((max(p[1] for s in iser for p in s[3]) + 9.999) // 10))
     f1 = lambda y, tick=False: (('%d' % y) if y == 0 else sg(y, 0)) if tick else sg(y, 1) + ' points'
-    f2 = lambda y, tick=False: ('%d%%' % y) if tick else '%.1f%% a year' % y
+    f2 = lambda y, tick=False: ('%d%%' % y) if tick else fx(y, 1) + '%% a year'
     A = panel('Wealth poverty against no programme', 'Adults with too little wealth, year %d. Above zero: worse.' % years, 'Change, percentage points', wser, ymin, ymax, 10, f1, 'right', True, 'bs-w')
     Bp = panel('Programme inflation', 'Price rise the programme itself causes (all three reach zero at a = 1).', 'Programme inflation, % a year', iser, 0, imax, 10, f2, 'left', False, 'bs-i')
     legend = '<div class="bs-legend" aria-label="Environments">' + ''.join(
@@ -139,18 +165,19 @@ def build(D):
         else:
             bits.append('%s: %s than no programme below a of about %.2f and %s above it' % (nm, 'worse' if pts[e][0][1] > 0 else 'better', c, 'better' if pts[e][0][1] > 0 else 'worse'))
     s2 = 'Where the change crosses zero (linear interpolation between the five points): ' + '; '.join(bits) + '.'
-    s3 = 'Programme inflation falls from %.1f%%, %.1f%% and %.1f%% a year (Reference, Adverse, Stress Test) at a = 0 to %.1f%%, %.1f%% and %.1f%% at a = 1.' % (
-        r0['ref']['infl'], r0['adv']['infl'], r0['st']['infl'], r1['ref']['infl'], r1['adv']['infl'], r1['st']['infl'])
-    rows = ''.join('<tr><td>%s</td><td>%g%%</td><td>%s</td><td>%s</td><td>%s</td><td>%.1f%%</td><td>%.1f%%</td><td>%.1f%%</td></tr>' % (
+    s3 = 'Programme inflation falls from %s%%, %s%% and %s%% a year (Reference, Adverse, Stress Test) at a = 0 to %s%%, %s%% and %s%% at a = 1.' % (
+        fx(r0['ref']['infl']), fx(r0['adv']['infl']), fx(r0['st']['infl']), fx(r1['ref']['infl']), fx(r1['adv']['infl']), fx(r1['st']['infl']))
+    rows = ''.join('<tr><td>%s</td><td>%g%%</td><td>%s</td><td>%s</td><td>%s</td><td>%s%%</td><td>%s%%</td><td>%s%%</td></tr>' % (
         'Release row' if k == 'a0' else 'H1' if k == 'a100' else '', D['envs']['ref']['rows'][k]['a'] * 100,
         *['%s (%s to %s)' % (sg(D['envs'][e]['rows'][k]['dPov'][0]), sg(D['envs'][e]['rows'][k]['dPov'][1]), sg(D['envs'][e]['rows'][k]['dPov'][2])) for e, _ in ENVS],
-        *[D['envs'][e]['rows'][k]['infl'] for e, _ in ENVS]) for k in KEYS)
+        *[fx(D['envs'][e]['rows'][k]['infl']) for e, _ in ENVS]) for k in KEYS)
     table = ('<details class="bs-details"><summary>Show the numbers</summary><div class="bs-tw"><table class="bs-table"><thead><tr><th>Reading</th><th>Backed share a</th><th>Reference: change in wealth poverty, points (95%% interval)</th><th>Adverse</th><th>Stress Test</th>'
              '<th>Reference: programme inflation a year</th><th>Adverse</th><th>Stress Test</th></tr></thead><tbody>%s</tbody></table></div></details>' % rows)
     head = ('<h3 id="backing-share">The decisive unknown: how much of what the Source pays out new output backs (audit E2, v5.1)</h3>\n  <p>The release row assumes none of the Source&rsquo;s net payout is backed by new output; H1 assumes all of it is. The model parameter <code>a</code> is the share in between. '
             'This sweeps it at 0, 0.25, 0.5, 0.75 and 1 on the same %d paired seeds of %d adults over %d years, in each environment, with every other mechanism as in the release row; the two end points are the release and H1 rows of the tables above, to the last digit. '
             'The whiskers are the 95%% interval of the paired change against no programme. It is a sweep of a design parameter, not a forecast: the Hub does not give the share, and nothing in the model fixes it.</p>' % (seeds, D['_meta']['agents'], years))
-    cap = ('<p class="bs-cap">%s %s %s Reproduce: <code>%s</code></p>' % (s1, s2, s3, D['_meta']['command']))
+    s4 = bend_text(D)
+    cap = ('<p class="bs-cap">%s %s %s %s Reproduce: <code>%s</code></p>' % (s1, s2, s3, s4, D['_meta']['command']))
     fig = ('<figure class="bs-chart" id="backing-chart" aria-label="Backing-share curve">%s%s\n<div class="bs-panels">\n%s\n%s\n</div></figure>' % (CSS, legend, A, Bp))
     return '<!-- backing-share:begin -->\n  ' + head + '\n  ' + fig + '\n  ' + cap + '\n  ' + table + '\n  <!-- backing-share:end -->'
 
