@@ -3486,7 +3486,23 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
-Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite });
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite });
+
+/* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is
+ * not changed. Reporting only: no engine code calls it. */
+function quantileOf(arr, q){ var v = Array.prototype.slice.call(arr).sort(function(x, y){ return x - y; }), h = (v.length - 1)*q, lo = Math.floor(h), hi = Math.ceil(h); return v[lo] + (v[hi] - v[lo])*(h - lo); }
+function reportUnitSuite(){
+  var out = [];
+  function t(name, fn){ try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } }
+  t('quantileOf: matches the linear-interpolation percentile on known values (median 2.5, 10th 1.3, 90th 3.7 of 1..4), ignores input order, leaves its input alone, and handles one value', function(){
+    var a = [4, 1, 3, 2], c = a.slice(), ok = Math.abs(quantileOf(a, 0.5) - 2.5) < 1e-12 && Math.abs(quantileOf(a, 0.1) - 1.3) < 1e-12 && Math.abs(quantileOf(a, 0.9) - 3.7) < 1e-12 &&
+      quantileOf(a, 0) === 1 && quantileOf(a, 1) === 4 && quantileOf([7], 0.9) === 7 && a.join() === c.join() && quantileOf(new Float64Array([3, 1, 2]), 0.5) === 2;
+    return {pass:ok, detail:'median ' + quantileOf(a, 0.5) + ', 10th ' + quantileOf(a, 0.1) + ', 90th ' + quantileOf(a, 0.9)}; });
+  t('quantileOf: on a compounding quantity the mean sits above the median (the reason the panel now reports the median), and 10th <= median <= 90th', function(){
+    var x = []; for (var i = 0; i < 101; i++) x.push(Math.exp(i/10)); var m = x.reduce(function(s, v){ return s + v; }, 0)/x.length, md = quantileOf(x, 0.5);
+    return {pass:m > md && quantileOf(x, 0.1) <= md && md <= quantileOf(x, 0.9), detail:'mean ' + m.toFixed(1) + ' above median ' + md.toFixed(1)}; });
+  return out;
+}
 
 /* Audit V5-02 (v5.1; Oct 3, 2026): tests for the BLEI gate reading this year's BU (GATE_CURRENT). Harness-only; run by `unit`. The defect: runYear called the
  * gate before writing this year's a._fwBUm, so in framework mode it read last year's. The tests watch the value the gate reads (agentBLEI's first call for an agent
@@ -3694,11 +3710,15 @@ if (require.main === module) {
     console.log('\n=== avoidWideUnitSuite(): plan step 17, wider public costs avoided (harness-only) ===');
     AWU.forEach(function(x){ if (!x.pass) awf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + AWU.length + ' run, ' + awf + ' failed');
+    var RPU = reportUnitSuite(), rpf = 0;
+    console.log('\n=== reportUnitSuite(): audit F3, the price-level median and percentiles in the panel (harness-only) ===');
+    RPU.forEach(function(x){ if (!x.pass) rpf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + RPU.length + ' run, ' + rpf + ' failed');
     var GCU = gateUnitSuite(), gcf = 0;
     console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
     GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -5409,6 +5429,8 @@ if (require.main === module) {
     if (secT === 'release'){ var RJ = {_meta:{engine:'release candidate (next-release)', seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
       envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5) */
+        /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
+         * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
         function av(r){ return (r._B.epPY - r.epPY)/100; }
         function aw(r){ return avoidWide((r._B.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (r._B.fgt0PY - r.fgt0PY)/100); }
         var rows = [
@@ -5430,9 +5452,10 @@ if (require.main === module) {
            ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
            ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC});
-        var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY}, rows:{}};
+        var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
         function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
-        rows.forEach(function(rw, i){ var r = R[i + 1]; out.rows[rw.j] = {label:rw.l.trim(), cost:Math.round(r.cost), tau:+(r.tauMean*100).toFixed(1), infl:+(r.endoAnn*100).toFixed(1), pLev20:+r.pLev20.toFixed(3),
+        rows.forEach(function(rw, i){ var r = R[i + 1]; out.rows[rw.j] = {label:rw.l.trim(), cost:Math.round(r.cost), tau:+(r.tauMean*100).toFixed(1), infl:+(r.endoAnn*100).toFixed(1), pLevEnd:+r.pLev20.toFixed(3), pLevEndMed:+quantileOf(r._s.pLev20, 0.5).toFixed(3), pLevEndP10:+quantileOf(r._s.pLev20, 0.1).toFixed(3), pLevEndP90:+quantileOf(r._s.pLev20, 0.9).toFixed(3),
+          giniD:+r.giniD.toFixed(4), giniX:+r.giniX.toFixed(4), epPY:+r.epPY.toFixed(3),  /* v5.1 (audit E1): Gini of disposable income (and with in-kind price cuts) at the last year, mean over seeds; unhoused share of person-years (the model's extreme-poverty figure) */
           hrs:+(r.hrs*100).toFixed(1), fgt2PY:+r.fgt2PY.toFixed(2), fgt0PY:+r.fgt0PY.toFixed(1), pov:+r.pov.toFixed(1), bOAPy:+r.bOAPy.toFixed(1), bNAPy:+r.bNAPy.toFixed(1), bOAMd:Math.round(r.bOAMd), bNAMd:Math.round(r.bNAMd),
           dFgt2:d3(r, 'fgt2PY'), dF0:d3(r, 'fgt0PY'), dPov:d3(r, 'pov'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'),
           grp:{part:Math.round(r.gPartRes - B.gPartRes), non:Math.round(r.gNonRes - B.gNonRes), low:Math.round(r.gLowRes - B.gLowRes), top:Math.round(r.gTopRes - B.gTopRes)}, worse:grpCell(r, B).split(' | ')[1],
