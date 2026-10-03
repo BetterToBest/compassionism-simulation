@@ -125,6 +125,38 @@ FX_HEAD = ('<p id="rel-fixed-h">Poverty lines fixed in dollars (v5.2). The main 
            'so a line means the same living standard every year. Held fixed in dollars instead, the lines fall behind prices and the shares read lower; this table shows by how much (Compassionism, with no programme below).</p>\n  ')
 FX_TABLE = ('<table class="rel-t" id="rel-fx"><thead><tr><th>Years</th><th>Environment</th><th>Too little wealth at the last year: moved with prices vs fixed</th><th>Below 30 days of basic living over the run (BLEI paper): moved vs fixed</th><th>Below the official poverty line at the last year: moved vs fixed</th></tr></thead><tbody></tbody></table>')
 
+# v5.2 round: the readings added in this round, each against its own no-programme pair where it has one (a mechanism that is not design-specific applies to the
+# no-programme run too). Each step appends its keys; the table is written after the fixed-dollar table.
+V52_READINGS = ['release', 'sav', 'sav0', 'idx', 'h1', 'h1idx', 'h1both']
+
+def sg(x, d=1):
+    t = fx(x, d)
+    return t.replace('-', '&minus;') if t.startswith('-') else ('+' + t if x > 0 and t.strip('0.') else t)
+
+def ci_cell(d):
+    return '%s <small>(%s to %s)</small>' % (sg(d[0]), sg(d[1]), sg(d[2]))
+
+def readings_rows(D20, D40):
+    rows = []
+    for Y, D in ((20, D20), (40, D40)):
+        for e in ['ref', 'adv', 'st']:
+            E = D['envs'][e]
+            for k in V52_READINGS:
+                r = E['rows'].get(k)
+                if not r: continue
+                b = E['bases'][r['vsBase']] if r.get('vsBase') else E['base']
+                note = ('interest paid $%s per adult a year (today&rsquo;s dollars), $%s of it above inflation' % (format(r['svInt'], ','), format(r['svIntR'], ','))) if r.get('svInt') is not None else ''
+                rows.append('<tr><td>%d</td><td>%s</td><td>%s%s</td><td>%s vs %s<br><small>%s</small></td><td>%s</td><td>%s</td><td>%s%%</td><td>$%s</td><td>%s</td></tr>' % (
+                    Y, names[e], r['label'], '<br><small>against no programme with the same savings rule</small>' if r.get('vsBase') else '', pct(r['pov']), pct(b['pov']), ci_cell(r['dPov']), ci_cell(r['dF0']), ci_cell(r['dBO']), fx(r['infl'], 1), format(r['cost'], ','), note))
+    return rows
+
+RD_HEAD = ('<h3 id="rel-v52-h">Readings added in v5.2</h3>\n  <p id="rel-v52-p">Each reading beside the main row, over 500 paired seeds. A reading that changes something outside the design (savings that keep up with prices) applies to the no-programme run too, '
+           'so its changes are against no programme with the same rule. Savings that keep up with prices: each year every adult&rsquo;s savings earn the year&rsquo;s price rise plus 0.97% (the average real yield on 10-year inflation-protected Treasury bonds, 2003&ndash;2025, FRED DFII10); '
+           'the interest is reinvested, and the model does not say who pays it (it is not counted as new money in the price rule), so the reading measures how much of a result is the missing protection of savings. '
+           'The BU indexed every year: the Hub indexes the BU to prices only in a year when they rise faster than 5% (the main reading, Duke&rsquo;s answer of Oct 3); this reading indexes it every year.</p>\n  ')
+RD_TABLE = ('<table class="rel-t" id="rel-v52"><thead><tr><th>Years</th><th>Environment</th><th>Reading</th><th>Too little wealth at the last year, and the change (95% interval)</th><th>Below the cost of living, change</th>'
+            '<th>Below 30 days of basic living (BLEI), change</th><th>Programme inflation a year</th><th>Cost per adult a year</th><th>Note</th></tr></thead><tbody></tbody></table>')
+
 TG_HEAD = ('<h3 id="rel-targets-h">Against the Hub&rsquo;s own targets (audit E1, v5.1)</h3>\n  <p>The Research Hub sets two targets for Year 7 of a programme: a poverty rate under 2% (from about 12%) and a Gini coefficient of 0.25 to 0.30 (from 0.48), in the '
            '<a href="https://bettertobest.github.io/research-hub/integrated-implementation-roadmap.html" rel="noopener">Integrated Implementation Roadmap</a> (Success Metrics by Year 7; Appendix I). '
            'Each cell gives Compassionism against no programme, over 500 paired seeds, at the last year of the run (the adult-year measures are averages over the run). '
@@ -187,6 +219,12 @@ if os.path.exists('dev/runs/release-panel-40.json'):
         P = P[:end] + '\n  ' + FX_HEAD + FX_TABLE + P[end:]
         P = put(P, '<table class="rel-t" id="rel-fx">', fixed_rows(D20, D40))
         print('\n'.join(fixed_rows(D20, D40)))
+        # v5.2: the readings added in this round, once, after the fixed-dollar table
+        P = re.sub(r'\s*<h3 id="rel-v52-h">.*?</h3>\s*<p id="rel-v52-p">.*?</p>\s*<table class="rel-t" id="rel-v52">.*?</table>', '', P, flags=re.S)
+        end = P.index('</table>', P.index('<table class="rel-t" id="rel-fx">')) + len('</table>')
+        P = P[:end] + '\n  ' + RD_HEAD + RD_TABLE + P[end:]
+        P = put(P, '<table class="rel-t" id="rel-v52">', readings_rows(D20, D40))
+        print('\n'.join(readings_rows(D20, D40)[:3]))
     # the provenance line, once, right after the price note
     pv = provenance(D20, D40)
     if pv:

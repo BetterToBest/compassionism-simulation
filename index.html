@@ -2742,12 +2742,15 @@ function relCi(d){return d?' <span class="fd-ci">(change '+fdSg(d[0],1)+' points
 function relPct(x){return (+x).toFixed(1)+'%';}
 function relLev(x){return x>=10?Math.round(x).toLocaleString('en-US'):(+x).toFixed(2);}  /* a price level, in times today's prices */
 /* One everyday sentence per result; b = no programme, r = the release row, h = the H1 row (optional). */
-function relSentences(b,r,h,T){
-  T=T||20;
+function relSentences(b,r,h,T,X){
+  T=T||20;X=X||{};
   var s=[],better=function(d){return d&&(d.length>2?d[2]<0:d[0]<0);},worse=function(d){return d&&(d.length>2?d[1]>0:d[0]>0);};
   s.push('<p><strong>Basic living covered.</strong> With Compassionism, '+relPct(r.bOAPy)+' of adult-years fall below 30 days of basic living, against '+relPct(b.bOAPy)+' with no programme'+relCi(r.dBO)+'. On the design-neutral reading (the same rules for everyone), '+relPct(r.bNAPy)+' against '+relPct(b.bNAPy)+relCi(r.dBN)+'. The typical adult’s resources cover '+Math.round(r.bOAMd)+' days at year '+T+', against '+Math.round(b.bOAMd)+'.</p>');
   s.push('<p><strong>Living below the cost of living.</strong> '+relPct(r.fgt0PY)+' of adult-years, against '+relPct(b.fgt0PY)+relCi(r.dF0)+'; how far below people fall (poverty severity) changes by '+fdSg(r.dFgt2[0])+(r.dFgt2.length>2?' <span class="fd-ci">(95% interval '+fdSg(r.dFgt2[1])+' to '+fdSg(r.dFgt2[2])+')</span>':'')+'.</p>');
   s.push('<p><strong>Savings.</strong> '+relPct(r.pov)+' of adults end with too little wealth at year '+T+', against '+relPct(b.pov)+relCi(r.dPov)+'.</p>');
+  /* v5.2 step 3: savings that keep up with prices, a reading in both runs (X.sav against its own no-programme row X.savB) */
+  if(X.sav&&X.savB)s.push('<p class="fd-note"><strong>If savings kept up with prices.</strong> The model has no bank: savings earn nothing, so when prices rise they lose value. If every adult’s savings earned the year’s price rise plus 0.97% (the average real yield on inflation-protected US Treasury bonds), with and without the programme, '+relPct(X.sav.pov)+' of adults would end with too little wealth at year '+T+', against '+relPct(X.savB.pov)+' with no programme'+relCi(X.sav.dPov)+'. '+
+    'That interest would come to about '+fdMoney(X.sav.svInt)+' per adult a year in today’s dollars ('+fdMoney(X.sav.svIntR)+' of it above inflation)'+(X.sav.svInt>r.cost?', more than the programme itself costs,':'')+' and the model does not say who would pay it, so this reading shows how much of the savings result is the missing protection of savings, not a version of the design that works as it stands.</p>');
   var ok=better(r.dF0)&&better(r.dPov)&&better(r.dBO),mixed=(better(r.dF0)||better(r.dBO))&&worse(r.dPov);
   s.push('<p class="'+(ok?'fd-good':'fd-bad')+'"><strong>'+(ok?'A confirmed gain:':mixed?'Not a confirmed gain:':'No confirmed gain:')+'</strong> '+(ok?'fewer people below the cost of living, fewer below 30 days of basic living, and fewer with too little wealth.':mixed?'fewer people live below the cost of living, but more end with too little wealth'+(r.infl>0?', because prices rise and savings are not protected from inflation':'')+'.':'the measures do not all improve.')+'</p>');
   if(r.grp)s.push('<p><strong>Who gains.</strong> Real resources a year against no programme: adults who took part '+fdMoney(r.grp.part)+', adults who did not '+fdMoney(r.grp.non)+', the poorest third by starting wage '+fdMoney(r.grp.low)+', the richest third '+fdMoney(r.grp.top)+'.'+(r.live?relLiveWorse(r):relWorse(r.worse))+'</p>');
@@ -2759,7 +2762,7 @@ function relSentences(b,r,h,T){
   s.push('<p><strong>Prices.</strong> '+(r.infl>0?'The programme raises prices by '+(+r.infl).toFixed(1)+'% a year; '+(lev>1000?'the model’s price rule has no central bank, no interest rate and no protection for savings, so in this environment prices run away, to more than 1,000 times today’s by year '+T+(typ?' in the typical run':'')+'. That is a limit of the model, not a forecast; the exact 500-seed figures are on the replication page':'by year '+T+(typ?' the typical run (the median of the 500) is '+relLev(lev)+' times today’s, and nine runs in ten fall between '+relLev(r.pLevEndP10)+' and '+(r.pLevEndP90>1000?'more than 1,000':relLev(r.pLevEndP90)):' they are '+relLev(lev)+' times today’s'))+'. The allowance keeps its value through the cost-of-living adjustment; savings do not.':'The programme adds no inflation of its own.')+'</p>');
   s.push('<p><strong>Cost and how it is paid.</strong> '+fdMoney(r.cost)+' per adult a year (today’s dollars). The Source pays '+fdMoney(r.srcPay)+' at conversion and keeps '+fdMoney(r.srcTax)+' in conversion tax; '+fdMoney(r.srcM)+' of it is backed by new output (capacity built and project work). A flat contribution of '+(+r.tau).toFixed(1)+'% of wages pays for the community price cuts.</p>');
   if(r.avoidHi!==undefined)s.push('<p><strong>Public costs avoided.</strong> Homelessness falls by '+(+r.unhousedAvoided).toFixed(1)+' person-years per 1,000 adults a year, saving '+fdMoney(r.avoidLo)+' to '+fdMoney(r.avoidHi)+' per adult a year in shelter, health care and justice costs.'+(r.avoidW!==undefined?' Fewer people in prison and fewer hospital and psychiatric stays save about '+fdMoney(r.avoidW)+' more'+(r.avoidWHi!==undefined?' (up to '+fdMoney(r.avoidWHi)+' if the largest published prison effect applied to everyone)':'')+'.':'')+' Together these are a small share of the programme’s cost.</p>');
-  if(h)s.push('<p><strong>The optimistic end.</strong> If every dollar the Source pays were backed by new output, prices would not rise from the programme, '+relPct(h.bOAPy)+' of adult-years would fall below 30 days of basic living, and '+relPct(h.pov)+' of adults would end with too little wealth (no programme: '+relPct(b.pov)+').'+(REL.env!=='ref'?' In this environment that end is held back by a rule of the model: the BU is indexed to prices only in a year when prices rise faster than 5%, so with 2% outside inflation and none from the programme it loses value over the years.':'')+' <a href="replication.html#backing-share">The replication page draws the points in between</a>, from none of the Source’s payout backed by new output to all of it.</p>');
+  if(h)s.push('<p><strong>The optimistic end.</strong> If every dollar the Source pays were backed by new output, prices would not rise from the programme, '+relPct(h.bOAPy)+' of adult-years would fall below 30 days of basic living, and '+relPct(h.pov)+' of adults would end with too little wealth (no programme: '+relPct(b.pov)+').'+(REL.env!=='ref'?' In this environment that end is held back by a rule of the model: the BU is indexed to prices only in a year when prices rise faster than 5%, so with 2% outside inflation and none from the programme it loses value over the years.'+(X.h1idx?' With the BU indexed every year instead, '+relPct(X.h1idx.pov)+' would end with too little wealth, and the programme would cost '+fdMoney(X.h1idx.cost)+' per adult a year instead of '+fdMoney(h.cost)+'.':''):'')+' <a href="replication.html#backing-share">The replication page draws the points in between</a>, from none of the Source’s payout backed by new output to all of it.</p>');
   return s.join('');
 }
 /* v5.1 (audit E1): the Hub's own targets beside what the model reaches. Source: the Research Hub's Integrated Implementation Roadmap, "Success Metrics by Year 7" and Appendix I:
@@ -2820,10 +2823,10 @@ function relRender(){
   var out=document.getElementById('rel-out');if(!out)return;var D=REL.data,n=document.getElementById('rel-env-note'),lk=document.getElementById('rel-link');if(lk)try{lk.setAttribute('href',relViewSearch()+'#front-door');}catch(x){}if(n)n.textContent=REL_ENV_NOTE[REL.env]||'';
   if(REL.yrs===40)D=REL.data40;var th=document.getElementById('rel-th-pov');if(th)th.textContent='Too little wealth, year '+REL.yrs;
   if(!D||!D.envs||!D.envs[REL.env]){out.innerHTML='<p>Results not available.</p>';var t0=document.getElementById('rel-tg-out');if(t0)t0.innerHTML='';return;}
-  var E=D.envs[REL.env],R=E.rows;out.innerHTML=(REL.yrs===40?'<p class="fd-note">Over 40 years: the same adults followed for twice as long. The adults do not age in the model, so this shows where the same rules lead, not a life course.</p>':'')+relSentences(E.base,R.release,R.h1,REL.yrs);
+  var E=D.envs[REL.env],R=E.rows;out.innerHTML=(REL.yrs===40?'<p class="fd-note">Over 40 years: the same adults followed for twice as long. The adults do not age in the model, so this shows where the same rules lead, not a life course.</p>':'')+relSentences(E.base,R.release,R.h1,REL.yrs,{sav:R.sav,savB:E.bases&&E.bases.sv,h1idx:R.h1idx});
   var tgo=document.getElementById('rel-tg-out');if(tgo)tgo.innerHTML=relTargets(E.base,R.release,REL.yrs);  /* v5.1 (audit E1): its own block under the sentences, so the walk-through's spotlight on the sentences keeps its height */
-  var tb=document.getElementById('rel-rows'),h='',ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422'];
-  ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
+  var tb=document.getElementById('rel-rows'),h='',ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both'];  /* v5.2 step 3: + the savings and indexing readings (a row with vsBase is read against no programme with the same savings rule) */
+  ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+(r.vsBase?'<span class="fd-ci">against no programme with the same savings rule</span>':'')+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
   if(tb)tb.innerHTML=h;
   var src=document.getElementById('rel-src'),M=D._meta||{};if(src)src.innerHTML='Figures: '+(M.seeds||500)+' paired runs of '+(M.agents||500)+' simulated adults per environment, written '+(M.written||'')+'. Reproduce: <code>'+(M.command||'node harness.js testbed 500 release ref,adv,st')+'</code>.';
 }
@@ -2852,7 +2855,7 @@ function relSyncUrl(){try{var a=document.getElementById('rel-link'),q=relViewSea
 /* v5.1 (audit E3): the figures on view, as a file. JSON: the panel's rows for this environment and horizon, with a _meta block (simulation, version, view, seeds, agents, the command that
  * reproduces them and the build manifest). CSV: the same, one row per reading, the _meta as # comment lines on top. No date is written, so the same view gives the same file. */
 function relCsvCell(x){var t=(x===undefined||x===null)?'':String(x);return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;}
-var REL_CSV_ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422'];
+var REL_CSV_ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both'];
 function relExport(fmt){
   var D=REL.yrs===40?REL.data40:REL.data,E=D&&D.envs&&D.envs[REL.env];if(!E)return null;var M=D._meta||{},stem='compassionism-v'+META.VERSION+'-'+REL.env+'-'+REL.yrs+'y';
   var meta={simulation:'Compassionism Framework Simulation',version:META.VERSION,environment:E.name,environmentKey:REL.env,years:REL.yrs,seeds:M.seeds,agents:M.agents,written:M.written,command:M.command,manifest:M.manifest||null,
@@ -4078,6 +4081,17 @@ var COST_DEFAULTS = {food:0.0494, util:0.0260};
 var JOIN = null;
 var JOIN_DEFAULTS = {cost:'revealed', stay:2};
 var JNS = null;
+/* v5.2 round, step 3 (Oct 3, 2026; ledger s82; dev/DECISIONS.md, Session 35): SAVINGS THAT KEEP UP WITH PRICES. null = off (every earlier run). When an object, each
+ * year from year 1 every adult's savings (positive wealth) earn interest equal to the year's price rise plus a real rate:  W x ((P_t / P_t-1) x (1 + r) - 1),
+ * where P is the model's price level (outside inflation x the price module's basket index, the one the cost of living reads) and r = SAVE.r. It applies to every
+ * adult in every run that sets it, the no-programme run included; it is not design-specific. Debts (negative wealth) are left as they are unless SAVE.debt = 'same'.
+ *  r  0.0097: the average real yield on 10-year Treasury Inflation-Protected Securities, 2003-2025 (FRED series DFII10, daily, 5,753 observations, mean
+ *     0.972%; sources/tips_real_rate.py). Readings: 0 (savings that only keep their value) and 0.0196 (the 2025 average).
+ * The interest is added to savings at the start of the year, before the year's income and costs (it revalues last year's savings into this year's prices); it is
+ * reinvested, so it does not enter the year's income measures, the spending share or the labour response. Where it comes from is not modelled: it is read as paid
+ * by borrowers and the economy outside the 500 adults, as in a banking system, so it does not enter the price rule as new money (a stated limit: the reading shows
+ * how much of a result is the missing protection of savings, not a model of a bank). No random draw is added. SVS holds the run's state (reset at year 0). */
+var SAVE = null, SAVE_DEFAULTS = {r:0.0097, debt:'none'}, SVS = null;
 function spNewAcc(){ return {pool:0, own:0, ptf:0, rest:0, pricePool:0, cut:0, cutN:0, cutP:0, freed:0, cash:0, carry:0, profit:0, profitN:0, reinv:0, wkY:0, wkY1:0,
   d1:0, n1:0, d2:0, n2:0, non:0, yrs:0}; }
 /* PRICE (A2 issuance and price module): null = off (index.html). When an object, runYear() reprices the basket by
@@ -4384,6 +4398,7 @@ function runYear(agentSet,yr,p,recSt){
    * up to the full price index in any year that rate exceeds p.colaThresh (Inflation Surge Protocol, 5% in D6). */
   if(PRICE){var pmFull=Math.pow(1+inflRate,yr)*PRICE.bIdx;if(p.cola&&pmFull/PRICE.lastFull-1>(p.colaThresh||0))PRICE.colaLevel=pmFull;PRICE.lastFull=pmFull;colaF=p.cola?PRICE.colaLevel:1;}
   var buEff=p.bu*stabM*colaF;
+  var svF=0;if(SAVE){var svP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);if(yr===0||!SVS)SVS={prevP:svP,intR:0,realR:0};else svF=(svP/SVS.prevP)*(1+SAVE.r)-1;var svPp=SVS.prevP;SVS.prevP=svP;}  // v5.2 step 3: savings that keep up with prices (no RNG)
   var tbY=(TB&&p.tb)?tbYear(p,colaF):null;  // session 6 (A4 testbed): null unless TB and p.tb are both set (harness-only; no RNG)
   if(JOIN&&CONVERSION_MODEL==='framework'&&p.ccoOn){  /* plan step 4: open enrolment (no RNG) */
     if(yr===0||!JNS){JNS={y:[],join:0,leave:0};agentSet.forEach(function(a){a._jnY=0;});}
@@ -4524,6 +4539,7 @@ function runYear(agentSet,yr,p,recSt){
   }
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
+    if(svF!==0&&(a.wealth>0||(a.wealth<0&&SAVE.debt==='same'))){var svI=a.wealth*svF;a.wealth+=svI;SVS.intR+=svI/svP;SVS.realR+=a.wealth/(1+svF)*SAVE.r/svPp;if(LEDGER)ledAdd(yr,'saveInterest',svI);}  // v5.2 step 3
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
     var agentVar=0.90+RNG()*0.20,incomeShock=popShock*agentVar;
     var uSpendFrac=0.60+RNG()*0.30;
@@ -5094,7 +5110,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     srcIss:L.buIss/NY, srcPay:(L.bu + L.conv)/NY, srcTax:L.ctax/NY, srcM:L.convM/NY, srcCover:L.buIss > 0 ? L.ctax/L.buIss*100 : 0,
     /* Plan step 4: participation share at years 5, 10 and 19 (%), and joins and leaves over the run per 100 adults */
     jnP5:jnQ(5), jnP10:jnQ(10), jnP19:jnQ(T - 1), jnJoin:jnOn ? JNS.join/n*100 : 0, jnLeave:jnOn ? JNS.leave/n*100 : 0,
-    csFree:L.cutFree/NY, epPY:epSum/T*100, octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)}))};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
+    csFree:L.cutFree/NY, epPY:epSum/T*100, svInt:SAVE && SVS ? SVS.intR/NY : 0, svIntR:SAVE && SVS ? SVS.realR/NY : 0, octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)}))};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
@@ -5108,7 +5124,7 @@ var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthRe
   'bzPay','esPrem','payPart','payNon','esPremW','esBUW','esShare','esRate','esCapB','esConv','esRet',  /* N1 (session 19, s38) */
   'gPartF2','gNonF2','gPartK','gNonK',
   'spPool','spOwn','spPtfS','spCut','spCutN','spFreed','spCash','spProfit','spProfW','spReinv','spRest','spCap','spSw','spD1','spD2','spNon','spCarry',
-  'pdC5','pdC10','pdC19','pdMem19','pdMatch','srcIss','srcPay','srcTax','srcM','srcCover','jnP5','jnP10','jnP19','jnJoin','jnLeave','csFree','octMean','epPY'].concat(TB_REP_KEYS, TB_BLEI_DEFS.reduce(function(r, d){ TB_BLEI_GRPS.forEach(function(g){ ['Py','Cr','20','Md'].forEach(function(m){ r.push('b' + d + g + m); }); }); return r; }, []));  /* session 21 (s41) */
+  'pdC5','pdC10','pdC19','pdMem19','pdMatch','srcIss','srcPay','srcTax','srcM','srcCover','jnP5','jnP10','jnP19','jnJoin','jnLeave','csFree','octMean','epPY','svInt','svIntR'].concat(TB_REP_KEYS, TB_BLEI_DEFS.reduce(function(r, d){ TB_BLEI_GRPS.forEach(function(g){ ['Py','Cr','20','Md'].forEach(function(m){ r.push('b' + d + g + m); }); }); return r; }, []));  /* session 21 (s41) */
 /* Paired study over seeds 1..N (optionally lo..hi). envP: the Compassionism scenario that defines the environment, the essentials
  * supply path (its matched Baseline, as in sessions 2-5) and the groups (participants: latent uCCO < its partRate; PTH members:
  * latent uPTH < its pthUptake, the same agents in every design). cfgs: [{p, o, cm, pw}]; pw switches PATHWAY_OFF entries for that
@@ -5133,9 +5149,10 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var jn0 = JOIN; if (c.jn) JOIN = Object.assign({}, JOIN_DEFAULTS, c.jn === true ? {} : c.jn);  /* plan step 4: joining and leaving for this row only */
       var ml0 = MULT; if (c.ml) MULT = Object.assign({}, MULT_DEFAULTS, c.ml === true ? {} : c.ml);  /* plan step 16: the spending layer for this row only */
       var gc0 = GATE_CURRENT; if (typeof c.gc === 'boolean') GATE_CURRENT = c.gc;  /* audit V5-02: the framework BLEI gate reads this year's BU, for this row only */
+      var sv0 = SAVE; if (c.sv) SAVE = Object.assign({}, SAVE_DEFAULTS, c.sv === true ? {} : c.sv);  /* v5.2 step 3: savings that keep up with prices, for this row only (no programme rows too) */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), S).res;
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
-      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; } });
+      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; } });
   }
   return out;
 }
@@ -5210,6 +5227,8 @@ function n1Row(PR, cm, v){
   if (cm === 'framework' && v.jn) c.jn = v.jn;  /* plan step 4: joining and leaving ({} = the defaults) */
   if (v.ml) c.ml = v.ml;  /* plan step 16: the spending layer ({} = the defaults) */
   if (typeof v.gc === 'boolean') c.gc = v.gc;  /* audit V5-02: the BLEI gate reads this year's BU (framework only) */
+  if (v.sv) c.sv = v.sv;  /* v5.2 step 3: savings that keep up with prices ({} = the defaults) */
+  if (v.ci) c.p.colaThresh = -1;  /* v5.2 step 3 (Duke's answer d147): the BU indexed to prices every year, not only in a year prices rise faster than 5% (the Hub's rule, the main reading) */
   if (v.cap) c.o.ptfCap = v.cap;
   if (v.fin){ c.o.fin = v.fin; c.o.a = v.a || 0; }
   return c;
