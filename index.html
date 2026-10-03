@@ -284,6 +284,8 @@ table.fd-t{border-collapse:collapse;width:100%;min-width:880px;table-layout:fixe
 .fd-t tr.fd-corr td{background:var(--gold-bg)}
 .fd-t tr.fd-sens td{font-size:11.5px}.fd-t tr.fd-sens td:first-child{padding-left:1.4rem;color:var(--text2)}
 .fd-note{font-size:11px;color:var(--text3);margin-top:.5rem;line-height:1.55}
+.fd-ctl .fd-lnk{font-size:12px;color:var(--text2);border-bottom:1px dotted var(--text3);text-decoration:none;margin-left:.4rem}.fd-ctl .fd-lnk:hover,.fd-ctl .fd-lnk:focus-visible{color:var(--accent);border-bottom-color:var(--accent)}
+.fd-dl{margin-top:.6rem;display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}.fd-dl .fd-chip{text-align:center}
 .fd-note code,.fd-side code{font-size:10.5px;background:var(--bg2);border:.5px solid var(--border2);border-radius:4px;padding:0 4px}
 .fd-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.45rem}
 .fd-chip{font:inherit;text-align:left;font-size:12px;padding:.55rem .7rem;border-radius:var(--rs);border:.5px solid var(--border);background:var(--bg2);color:var(--text);cursor:pointer;line-height:1.35}
@@ -380,11 +382,13 @@ table.fd-t{border-collapse:collapse;width:100%;min-width:880px;table-layout:fixe
       <span class="fd-seg" role="group" aria-label="Environment"><button type="button" id="rel-env-ref" aria-pressed="true" onclick="relSet('ref')">Reference</button><button type="button" id="rel-env-adv" aria-pressed="false" onclick="relSet('adv')">Adverse</button><button type="button" id="rel-env-st" aria-pressed="false" onclick="relSet('st')">Stress Test</button></span>
       <span>Years</span>
       <span class="fd-seg" role="group" aria-label="Years"><button type="button" id="rel-yrs-20" aria-pressed="true" onclick="relYears(20)">20</button><button type="button" id="rel-yrs-40" aria-pressed="false" onclick="relYears(40)">40</button></span>
+      <a id="rel-link" class="fd-lnk" href="?env=ref&amp;years=20#front-door" title="Open this environment and number of years directly; copy the address to cite it">Link to this view</a>
      </div>
      <p class="fd-note" id="rel-env-note"></p>
      <div id="rel-out" class="rel-out" aria-live="polite"></div>
      <details class="fd-about" id="rel-more"><summary>Other readings of the design, side by side</summary><div class="fd-tw"><table class="fd-t" id="rel-table"><thead><tr><th scope="col">Reading</th><th scope="col">Below 30 days of basic living (your BLEI; design-neutral), change vs no programme</th><th scope="col">Below the cost of living</th><th scope="col" id="rel-th-pov">Too little wealth, year 20</th><th scope="col">Prices, rise a year</th><th scope="col">Cost per adult a year</th></tr></thead><tbody id="rel-rows"></tbody></table></div></details>
      <p class="fd-note" id="rel-src"></p>
+     <p class="fd-dl"><button type="button" class="fd-chip" id="rel-dl-csv" onclick="relDownload('csv')">Download this view (CSV)</button> <button type="button" class="fd-chip" id="rel-dl-json" onclick="relDownload('json')">Download this view (JSON)</button> <span class="fd-note">The figures above for this environment and number of years, with the version, the command that reproduces them and the build fingerprint.</span></p>
     </div>
     <div class="fd-rel" id="rel-live">
      <button type="button" class="run-btn" id="rel-run-btn" onclick="relRun()">▶ Run it yourself</button>
@@ -2732,6 +2736,7 @@ function fdTab(){}
 function fdRun(name){try{applyPreset(name);var o=document.getElementById('fd-old');if(o)o.open=true;runSim();var st=document.querySelector('.status-bar');if(st&&st.scrollIntoView)st.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){console.error(e);}}
 function relCi(d){return d?' <span class="fd-ci">(change '+fdSg(d[0],1)+' points'+(d.length>2?', 95% interval '+fdSg(d[1],1)+' to '+fdSg(d[2],1):'')+')</span>':'';}
 function relPct(x){return (+x).toFixed(1)+'%';}
+function relLev(x){return x>=10?Math.round(x).toLocaleString('en-US'):(+x).toFixed(2);}  /* a price level, in times today's prices */
 /* One everyday sentence per result; b = no programme, r = the release row, h = the H1 row (optional). */
 function relSentences(b,r,h,T){
   T=T||20;
@@ -2743,13 +2748,30 @@ function relSentences(b,r,h,T){
   s.push('<p class="'+(ok?'fd-good':'fd-bad')+'"><strong>'+(ok?'A confirmed gain:':mixed?'Not a confirmed gain:':'No confirmed gain:')+'</strong> '+(ok?'fewer people below the cost of living, fewer below 30 days of basic living, and fewer with too little wealth.':mixed?'fewer people live below the cost of living, but more end with too little wealth'+(r.infl>0?', because prices rise and savings are not protected from inflation':'')+'.':'the measures do not all improve.')+'</p>');
   if(r.grp)s.push('<p><strong>Who gains.</strong> Real resources a year against no programme: adults who took part '+fdMoney(r.grp.part)+', adults who did not '+fdMoney(r.grp.non)+', the poorest third by starting wage '+fdMoney(r.grp.low)+', the richest third '+fdMoney(r.grp.top)+'.'+(r.live?relLiveWorse(r):relWorse(r.worse))+'</p>');
   s.push('<p><strong>Work.</strong> Hours worked change by '+fdSg(r.hrs,1)+'% (people work '+(r.hrs<-5?'less':'a little less')+' when they receive money they did not work for, by the rate measured in the largest US study of unconditional cash).</p>');
-  /* v5.0.1 (audit finding F3): above 1,000 times today's the figure is an artefact of the price rule, so the sentence says so instead of printing it;
-   * the exact figure stays on the replication page. */
-  s.push('<p><strong>Prices.</strong> '+(r.infl>0?'The programme raises prices by '+(+r.infl).toFixed(1)+'% a year; '+(r.pLev20>1000?'the model’s price rule has no central bank, no interest rate and no protection for savings, so in this environment prices run away, to more than 1,000 times today’s by year '+T+'. That is a limit of the model, not a forecast; the exact 500-seed figure is on the replication page':'by year '+T+' they are '+(r.pLev20>=10?Math.round(r.pLev20).toLocaleString('en-US'):(+r.pLev20).toFixed(2))+' times today’s')+'. The allowance keeps its value through the cost-of-living adjustment; savings do not.':'The programme adds no inflation of its own.')+'</p>');
+  /* v5.1 (audit F3): a compounding quantity, so the sentence gives the typical run (the median over the 500 seeds) and where nine runs in ten fall (10th to 90th percentile), not the mean.
+   * Where the typical run is above 1,000 times today's the figure is an artefact of the price rule, so the sentence says so instead of printing it; the exact figures stay on the replication page.
+   * A single live run has no range: its own figure is shown (or the same words above 1,000). */
+  var lev=r.pLevEndMed!==undefined?r.pLevEndMed:r.pLevEnd,typ=r.pLevEndMed!==undefined;
+  s.push('<p><strong>Prices.</strong> '+(r.infl>0?'The programme raises prices by '+(+r.infl).toFixed(1)+'% a year; '+(lev>1000?'the model’s price rule has no central bank, no interest rate and no protection for savings, so in this environment prices run away, to more than 1,000 times today’s by year '+T+(typ?' in the typical run':'')+'. That is a limit of the model, not a forecast; the exact 500-seed figures are on the replication page':'by year '+T+(typ?' the typical run (the median of the 500) is '+relLev(lev)+' times today’s, and nine runs in ten fall between '+relLev(r.pLevEndP10)+' and '+(r.pLevEndP90>1000?'more than 1,000':relLev(r.pLevEndP90)):' they are '+relLev(lev)+' times today’s'))+'. The allowance keeps its value through the cost-of-living adjustment; savings do not.':'The programme adds no inflation of its own.')+'</p>');
   s.push('<p><strong>Cost and how it is paid.</strong> '+fdMoney(r.cost)+' per adult a year (today’s dollars). The Source pays '+fdMoney(r.srcPay)+' at conversion and keeps '+fdMoney(r.srcTax)+' in conversion tax; '+fdMoney(r.srcM)+' of it is backed by new output (capacity built and project work). A flat contribution of '+(+r.tau).toFixed(1)+'% of wages pays for the community price cuts.</p>');
   if(r.avoidHi!==undefined)s.push('<p><strong>Public costs avoided.</strong> Homelessness falls by '+(+r.unhousedAvoided).toFixed(1)+' person-years per 1,000 adults a year, saving '+fdMoney(r.avoidLo)+' to '+fdMoney(r.avoidHi)+' per adult a year in shelter, health care and justice costs.'+(r.avoidW!==undefined?' Fewer people in prison and fewer hospital and psychiatric stays save about '+fdMoney(r.avoidW)+' more'+(r.avoidWHi!==undefined?' (up to '+fdMoney(r.avoidWHi)+' if the largest published prison effect applied to everyone)':'')+'.':'')+' Together these are a small share of the programme’s cost.</p>');
-  if(h)s.push('<p><strong>The optimistic end.</strong> If every dollar the Source pays were backed by new output, prices would not rise from the programme, '+relPct(h.bOAPy)+' of adult-years would fall below 30 days of basic living, and '+relPct(h.pov)+' of adults would end with too little wealth (no programme: '+relPct(b.pov)+').</p>');
+  if(h)s.push('<p><strong>The optimistic end.</strong> If every dollar the Source pays were backed by new output, prices would not rise from the programme, '+relPct(h.bOAPy)+' of adult-years would fall below 30 days of basic living, and '+relPct(h.pov)+' of adults would end with too little wealth (no programme: '+relPct(b.pov)+'). <a href="replication.html#backing-share">The replication page draws the points in between</a>, from none of the Source’s payout backed by new output to all of it.</p>');
   return s.join('');
+}
+/* v5.1 (audit E1): the Hub's own targets beside what the model reaches. Source: the Research Hub's Integrated Implementation Roadmap, "Success Metrics by Year 7" and Appendix I:
+ * poverty rate under 2% (from about 12%) and Gini coefficient 0.25 to 0.30 (from 0.48). The Hub does not say which poverty measure its rate is, so the target is shown against each of the
+ * model's measures. The model's Gini is that of one year's disposable income across the 500 adults (earnings plus transfers less the contribution), the like-for-like figure for the Hub's 0.48 start. */
+var REL_HUB={pov:2,giniLo:0.25,giniHi:0.30,url:'https://bettertobest.github.io/research-hub/integrated-implementation-roadmap.html'};
+function relGiniVerdict(g){return g<=REL_HUB.giniLo?'at or below 0.25':g<=REL_HUB.giniHi?'between 0.25 and 0.30':'above 0.30';}
+function relTargets(b,r,T){
+  var h='',pv=function(x){return x<REL_HUB.pov?'met':'not met';};
+  [['Below the cost of living (share of adult-years)','fgt0PY',1],['Below 30 days of basic living (BLEI; share of adult-years)','bOAPy',1],['Too little wealth at year '+T+' (share of adults)','pov',1],['Unhoused, the model’s extreme-poverty figure (share of person-years)','epPY',2]].forEach(function(x){
+    h+='<tr><td>'+x[0]+'</td><td>under 2%</td><td>'+(+b[x[1]]).toFixed(x[2])+'%</td><td>'+(+r[x[1]]).toFixed(x[2])+'%</td><td>'+pv(r[x[1]])+'</td></tr>';});
+  [['Gini coefficient of disposable income, year '+T,'giniD'],['Gini coefficient counting the value of price cuts too','giniX']].forEach(function(x){
+    h+='<tr><td>'+x[0]+'</td><td>0.25 to 0.30</td><td>'+(+b[x[1]]).toFixed(3)+'</td><td>'+(+r[x[1]]).toFixed(3)+'</td><td>'+relGiniVerdict(r[x[1]])+'</td></tr>';});
+  return '<div class="fd-targets" id="rel-targets"><p><strong>Against the Hub’s own targets.</strong> The Research Hub sets two targets for Year 7 of a programme: a poverty rate under 2% (from about 12%) and a Gini coefficient of 0.25 to 0.30 (from 0.48). This table shows what the model reaches by year '+T+'.</p>'+
+    '<div class="fd-tw"><table class="fd-t" aria-label="The Hub’s Year 7 targets against the model’s results, with no programme and with Compassionism"><thead><tr><th scope="col">Measure</th><th scope="col">Hub target</th><th scope="col">No programme</th><th scope="col">Compassionism</th><th scope="col">Target</th></tr></thead><tbody>'+h+'</tbody></table></div>'+
+    '<p class="fd-note">The Hub does not say which poverty measure its rate is, so the same 2% is shown against each of the model’s. They are stricter than the official rate (the Hub starts from about 12%; with no programme the model reads '+Math.round(b.pov)+'% on the wealth measure and '+Math.round(b.fgt0PY)+'% on the cost-of-living measure here), so none of them is the Hub’s rate. The unhoused figure starts from 0.22% at year 0 by construction, so it sits under 2% whatever the programme does. The model’s no-programme Gini ('+(+b.giniD).toFixed(2)+') is already below the Hub’s starting 0.48, so the model does not start where the Hub’s path starts; do not read the Gini rows as a test of that path. The Gini formula reads about 0.2% low with 500 adults; no verdict above depends on that. Source: the Hub’s <a href="'+REL_HUB.url+'" rel="noopener">Integrated Implementation Roadmap</a> (Success Metrics by Year 7; Appendix I).</p></div>';
 }
 /* "part (w), non (riw)" -> plain words: which group is worse off than with no programme, and on which test (r resources, i income poverty, w wealth poverty). */
 /* Audit fix (finding 1, Oct 2, 2026): a single live run carried worse:'none', so its text said "No group is worse off ... on any test" even when its own
@@ -2764,13 +2786,13 @@ function relWorse(w){if(!w||w==='none')return ' No group is worse off than with 
   var G={part:'adults who took part',non:'adults who did not',PTH:'community-housing members',low:'the poorest third',top:'the richest third'},T={r:'less real income',i:'more income poverty',w:'more wealth poverty'};
   var parts=w.split(',').map(function(x){var m=x.trim().match(/^(\w+) \((\w+)\)$/);if(!m)return x.trim();return (G[m[1]]||m[1])+' ('+m[2].split('').map(function(c){return T[c]||c;}).join(', ')+')';});
   return ' Worse off than with no programme: '+parts.join('; ')+'.';}
-function relYears(y){REL.yrs=y===40?40:20;[20,40].forEach(function(k){var b=document.getElementById('rel-yrs-'+k);if(b)b.setAttribute('aria-pressed',k===REL.yrs?'true':'false');});relRender();}
-function relSet(e){REL.env=e;['ref','adv','st'].forEach(function(k){var b=document.getElementById('rel-env-'+k);if(b)b.setAttribute('aria-pressed',k===e?'true':'false');});relRender();}
+function relYears(y){REL.yrs=y===40?40:20;[20,40].forEach(function(k){var b=document.getElementById('rel-yrs-'+k);if(b)b.setAttribute('aria-pressed',k===REL.yrs?'true':'false');});relRender();relSyncUrl();}
+function relSet(e){REL.env=e;['ref','adv','st'].forEach(function(k){var b=document.getElementById('rel-env-'+k);if(b)b.setAttribute('aria-pressed',k===e?'true':'false');});relRender();relSyncUrl();}
 function relRender(){
-  var out=document.getElementById('rel-out');if(!out)return;var D=REL.data,n=document.getElementById('rel-env-note');if(n)n.textContent=REL_ENV_NOTE[REL.env]||'';
+  var out=document.getElementById('rel-out');if(!out)return;var D=REL.data,n=document.getElementById('rel-env-note'),lk=document.getElementById('rel-link');if(lk)try{lk.setAttribute('href',relViewSearch()+'#front-door');}catch(x){}if(n)n.textContent=REL_ENV_NOTE[REL.env]||'';
   if(REL.yrs===40)D=REL.data40;var th=document.getElementById('rel-th-pov');if(th)th.textContent='Too little wealth, year '+REL.yrs;
   if(!D||!D.envs||!D.envs[REL.env]){out.innerHTML='<p>Results not available.</p>';return;}
-  var E=D.envs[REL.env],R=E.rows;out.innerHTML=(REL.yrs===40?'<p class="fd-note">Over 40 years: the same adults followed for twice as long. The adults do not age in the model, so this shows where the same rules lead, not a life course.</p>':'')+relSentences(E.base,R.release,R.h1,REL.yrs);
+  var E=D.envs[REL.env],R=E.rows;out.innerHTML=(REL.yrs===40?'<p class="fd-note">Over 40 years: the same adults followed for twice as long. The adults do not age in the model, so this shows where the same rules lead, not a life course.</p>':'')+relSentences(E.base,R.release,R.h1,REL.yrs)+relTargets(E.base,R.release,REL.yrs);  /* v5.1 (audit E1) */
   var tb=document.getElementById('rel-rows'),h='',ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422'];
   ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
   if(tb)tb.innerHTML=h;
@@ -2783,7 +2805,7 @@ function relLiveRows(env,seed){
     var R=tbStudy([{p:PR.baseline()},n1Row(PR,'framework',ALL)],seed,P,{fin:'tax',aT:0,a:0,X:0,sc:SPEND_SOURCED},seed);
     var b=R[0],r=R[1],d=function(k){return [r[k]-b[k]];},av=(b.epPY-r.epPY)/100;
     return {b:{bOAPy:b.bOAPy,bNAPy:b.bNAPy,bOAMd:b.bOAMd,fgt0PY:b.fgt0PY,pov:b.pov},r:{bOAPy:r.bOAPy,bNAPy:r.bNAPy,bOAMd:r.bOAMd,fgt0PY:r.fgt0PY,pov:r.pov,dBO:d('bOAPy'),dBN:d('bNAPy'),dF0:d('fgt0PY'),dPov:d('pov'),dFgt2:d('fgt2PY'),
-      grp:{part:r.gPartRes-b.gPartRes,non:r.gNonRes-b.gNonRes,low:r.gLowRes-b.gLowRes,top:r.gTopRes-b.gTopRes},worse:'none',live:true,hrs:r.hrs*100,infl:r.endoAnn*100,pLev20:r.pLev20,cost:r.cost,srcPay:r.srcPay,srcTax:r.srcTax,srcM:r.srcM,tau:r.tauMean*100,
+      grp:{part:r.gPartRes-b.gPartRes,non:r.gNonRes-b.gNonRes,low:r.gLowRes-b.gLowRes,top:r.gTopRes-b.gTopRes},worse:'none',live:true,hrs:r.hrs*100,infl:r.endoAnn*100,pLevEnd:r.pLev20,cost:r.cost,srcPay:r.srcPay,srcTax:r.srcTax,srcM:r.srcM,tau:r.tauMean*100,
       unhousedAvoided:av*1000,avoidLo:av*AVOID_HOMELESS.low,avoidHi:av*AVOID_HOMELESS.high,avoidW:avoidWide((b.fgt1PY-r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL,(b.fgt0PY-r.fgt0PY)/100).main}};
   }finally{resetNR6(svN);tbSetG(svG);}
 }
@@ -2792,7 +2814,36 @@ function relRun(){
   if(out)out.innerHTML='<p>Running seed '+seed+'…</p>';
   setTimeout(function(){try{var x=relLiveRows(REL.env,seed);if(out){out.innerHTML='<p class="fd-note">One run, seed '+seed+', '+REL.yrs+' years. '+(REL_ENV_NOTE[REL.env]||'')+'</p>'+relSentences(x.b,x.r,null,REL.yrs).replace(/<p class="fd-(good|bad)">[\s\S]*?<\/p>/,'');} REL.last={seed:seed,x:x};}catch(e){if(out)out.innerHTML='<p>The run failed: '+e.message+'</p>';console.error(e);}},20);
 }
-function relInit(){var el=document.getElementById('rel-data'),e4=document.getElementById('rel-data-40');try{REL.data=JSON.parse(el?el.textContent:'{}');}catch(e){REL.data=null;}try{REL.data40=JSON.parse(e4?e4.textContent:'{}');}catch(e){REL.data40=null;}relRender();}
+/* v5.1 (audit E4): a view can be cited. ?env=ref|adv|st&years=20|40 opens that environment and horizon (anything else is ignored, so every other address works as before); choosing a
+ * view rewrites the address to say so, and "Link to this view" carries it. Other query keys (the earlier engine's shared settings) are kept as they are. */
+function relFromUrl(){try{var qs=new URLSearchParams(window.location.search),e=qs.get('env'),y=qs.get('years');if(e==='ref'||e==='adv'||e==='st')REL.env=e;if(y==='20'||y==='40')REL.yrs=+y;}catch(x){}
+  ['ref','adv','st'].forEach(function(k){var b=document.getElementById('rel-env-'+k);if(b)b.setAttribute('aria-pressed',k===REL.env?'true':'false');});[20,40].forEach(function(k){var b=document.getElementById('rel-yrs-'+k);if(b)b.setAttribute('aria-pressed',k===REL.yrs?'true':'false');});}
+function relViewSearch(){var u=new URL(window.location.href);u.searchParams.set('env',REL.env);u.searchParams.set('years',REL.yrs);return u.search;}
+function relSyncUrl(){try{var a=document.getElementById('rel-link'),q=relViewSearch();if(a)a.setAttribute('href',q+'#front-door');if(window.history&&history.replaceState)history.replaceState(null,'',window.location.pathname+q+window.location.hash);}catch(x){}}
+/* v5.1 (audit E3): the figures on view, as a file. JSON: the panel's rows for this environment and horizon, with a _meta block (simulation, version, view, seeds, agents, the command that
+ * reproduces them and the build manifest). CSV: the same, one row per reading, the _meta as # comment lines on top. No date is written, so the same view gives the same file. */
+function relCsvCell(x){var t=(x===undefined||x===null)?'':String(x);return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;}
+var REL_CSV_ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422'];
+function relExport(fmt){
+  var D=REL.yrs===40?REL.data40:REL.data,E=D&&D.envs&&D.envs[REL.env];if(!E)return null;var M=D._meta||{},stem='compassionism-v'+META.VERSION+'-'+REL.env+'-'+REL.yrs+'y';
+  var meta={simulation:'Compassionism Framework Simulation',version:META.VERSION,environment:E.name,environmentKey:REL.env,years:REL.yrs,seeds:M.seeds,agents:M.agents,written:M.written,command:M.command,manifest:M.manifest||null,
+    source:'the 500-seed panel embedded in index.html (#rel-data'+(REL.yrs===40?'-40':'')+')',note:'Changes are against no programme on the same paired seeds; intervals are 95%. Poverty and cost figures are shares of adult-years or adults, in percent; cost is dollars per adult a year (year-0 dollars).'};
+  if(fmt==='json')return {name:stem+'.json',mime:'application/json',text:JSON.stringify({_meta:meta,base:E.base,rows:E.rows},null,1)+'\n'};
+  var C=[['reading',function(r,k){return k;}],['label',function(r){return r.label;}],['below_30_days_of_basic_living_pct',function(r){return r.bOAPy;}],['below_30_days_change_pts',function(r){return r.dBO&&r.dBO[0];}],['below_30_days_change_lo',function(r){return r.dBO&&r.dBO[1];}],['below_30_days_change_hi',function(r){return r.dBO&&r.dBO[2];}],
+    ['design_neutral_below_30_days_pct',function(r){return r.bNAPy;}],['design_neutral_change_pts',function(r){return r.dBN&&r.dBN[0];}],['design_neutral_change_lo',function(r){return r.dBN&&r.dBN[1];}],['design_neutral_change_hi',function(r){return r.dBN&&r.dBN[2];}],
+    ['below_cost_of_living_pct',function(r){return r.fgt0PY;}],['below_cost_of_living_change_pts',function(r){return r.dF0&&r.dF0[0];}],['below_cost_of_living_change_lo',function(r){return r.dF0&&r.dF0[1];}],['below_cost_of_living_change_hi',function(r){return r.dF0&&r.dF0[2];}],
+    ['too_little_wealth_pct',function(r){return r.pov;}],['too_little_wealth_change_pts',function(r){return r.dPov&&r.dPov[0];}],['too_little_wealth_change_lo',function(r){return r.dPov&&r.dPov[1];}],['too_little_wealth_change_hi',function(r){return r.dPov&&r.dPov[2];}],
+    ['programme_inflation_pct_a_year',function(r){return r.infl;}],['price_level_median',function(r){return r.pLevEndMed;}],['price_level_p10',function(r){return r.pLevEndP10;}],['price_level_p90',function(r){return r.pLevEndP90;}],['price_level_mean',function(r){return r.pLevEnd;}],
+    ['cost_per_adult_a_year_usd',function(r){return r.cost;}],['gini_disposable_income',function(r){return r.giniD;}],['gini_with_price_cuts',function(r){return r.giniX;}],['unhoused_pct',function(r){return r.epPY;}],['hours_change_pct',function(r){return r.hrs;}]];
+  var L=['# '+meta.simulation+' v'+meta.version+': '+meta.environment+', '+meta.years+' years','# '+meta.seeds+' paired seeds of '+meta.agents+' adults, written '+meta.written+'; source: '+meta.source,'# Reproduce: '+meta.command];
+  if(meta.manifest)L.push('# Build: commit '+meta.manifest.commit+(meta.manifest.dirty?' (tracked files differed)':'')+', Node '+meta.manifest.node+', harness.js SHA-256 '+meta.manifest.harnessSha256+', engine block SHA-256 '+meta.manifest.engineBlockSha256);
+  L.push('# '+meta.note,C.map(function(c){return c[0];}).join(','));
+  var br={reading:'no_programme',label:'No programme',below_30_days_of_basic_living_pct:E.base.bOAPy,design_neutral_below_30_days_pct:E.base.bNAPy,below_cost_of_living_pct:E.base.fgt0PY,too_little_wealth_pct:E.base.pov,gini_disposable_income:E.base.giniD,gini_with_price_cuts:E.base.giniX,unhoused_pct:E.base.epPY};  /* the no-programme reading: the panel's base row */
+  L.push(C.map(function(c){return relCsvCell(br[c[0]]);}).join(','));
+  REL_CSV_ORDER.forEach(function(k){var r=E.rows[k];if(r)L.push(C.map(function(c){return relCsvCell(c[1](r,k));}).join(','));});
+  return {name:stem+'.csv',mime:'text/csv',text:L.join('\n')+'\n'};}
+function relDownload(fmt){var x=relExport(fmt);if(!x)return;var b=new Blob([x.text],{type:x.mime+';charset=utf-8'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=x.name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1000);}
+function relInit(){var el=document.getElementById('rel-data'),e4=document.getElementById('rel-data-40');try{REL.data=JSON.parse(el?el.textContent:'{}');}catch(e){REL.data=null;}try{REL.data40=JSON.parse(e4?e4.textContent:'{}');}catch(e){REL.data40=null;}relFromUrl();relRender();}
 window.addEventListener('DOMContentLoaded',relInit);
 var SLIDER_KEYS=['bu','oct','exp','tax','mult','agents','part','yrs','ptf','pth','szh','cip','infl','stabm','stabk','stabth','emtk','colath'];  // v4.19: +stabilizer sliders
 /* v4.6: ptfCapOn added for the new feedback-clamped-adoption toggle (see PTF section) —

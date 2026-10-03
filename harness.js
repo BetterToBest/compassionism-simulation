@@ -3486,7 +3486,7 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
-Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, matrixUnitSuite });
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, matrixUnitSuite, docCounts });
 
 /* The eleven readings of the release panel (v5.0's main row, H1 and the nine others), as plain row options for n1Row. Top-level so the release section of `testbed` and
  * domtest's page-versus-harness parity check build the same rows (v5.1, audit V5-04). SC is the spending share (SPEND_SOURCED). Pure data: no engine state is read. */
@@ -3505,6 +3505,15 @@ function releaseRows(SC){
     {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
     {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'}];
 }
+/* Audit E6 (v5.1): the test counts quoted in README.md and CONTRIBUTING.md are written between <!-- count:KIND -->...<!-- /count --> markers (KIND = unit or domtest) and checked by the tests
+ * themselves, so they cannot drift: docCounts(kind, n) lists the quoted numbers and which are stale; with write = true it rewrites them. `node harness.js unit --write-counts` and
+ * `node domtest.js --write-counts` refresh them. Reporting only: nothing in the engine calls it. */
+function docCounts(kind, n, write){
+  var fs = require('fs'), path = require('path'), out = {found:[], stale:[]}, re = new RegExp('(<!-- count:' + kind + ' -->)(\\d+)(<!-- /count -->)', 'g');
+  ['README.md', 'CONTRIBUTING.md'].forEach(function(f){ var p = path.join(__dirname, f), t = fs.readFileSync(p, 'utf8'), changed = false;
+    t = t.replace(re, function(m, a, d, c){ out.found.push(f + ': ' + d); if (+d !== n){ out.stale.push(f + ': ' + d); if (write){ changed = true; return a + n + c; } } return m; });
+    if (changed) fs.writeFileSync(p, t); });
+  return out; }
 /* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is
  * not changed. Reporting only: no engine code calls it. */
 function quantileOf(arr, q){ var v = Array.prototype.slice.call(arr).sort(function(x, y){ return x - y; }), h = (v.length - 1)*q, lo = Math.floor(h), hi = Math.ceil(h); return v[lo] + (v[hi] - v[lo])*(h - lo); }
@@ -3730,6 +3739,8 @@ if (require.main === module) {
   }
 
   if (mode === 'unit') {
+    var UC = 0, ulog = console.log;  /* audit E6: count the tests run (PASS and FAIL lines; page-only SKIP lines are not tests run) */
+    console.log = function(x){ if (typeof x === 'string' && /^  (PASS|FAIL)  /.test(x)) UC++; return ulog.apply(console, arguments); };
     /* v4.20: the pure-function suite against this file. domtest.js Phase 8 runs the same suite
      * against index.html, including the five page-only functions skipped here. */
     var U = unitSuite(unitTargets()), nf = 0;
@@ -3836,6 +3847,10 @@ if (require.main === module) {
     GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
     if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf) process.exitCode = 1;
+    console.log = ulog;
+    var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
+    console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
+    if (cc.found.length === 0 || (cc.stale.length > 0 && !wc)) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -5568,6 +5583,25 @@ if (require.main === module) {
           unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)}; });
         RJ.envs[e] = out; });
       if (RPATH){ require('fs').writeFileSync(RPATH, JSON.stringify(RJ, null, 1)); console.log('\nwrote ' + RPATH); }
+    }
+    /* Audit E2 (v5.1; Oct 3, 2026): the backing-share curve. The page's decisive unknown is how much of what the Source pays out new output backs (the release row says none, H1 says all; the
+     * harness parameter a is the fractional share, (1 - a) of the Source's net payout being new money). This runs the release row at a = 0, 0.25, 0.5, 0.75, 1 on the same paired seeds,
+     * so the two end points are the panel's own release and H1 rows (the writer checks that they equal them to the last digit when a panel file is given with --check=FILE), and
+     * --json=FILE writes the points with 95% intervals against no programme. One process per environment (node harness.js testbed 500 backing ref --json=...), merged by dev/tools/backing_chart.py. */
+    if (secT === 'backing'){ var BJ = {_meta:{engine:'release engine (harness.js testbed, section backing)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, shares:[0, 0.25, 0.5, 0.75, 1],
+        command:'node harness.js testbed ' + nT + ' backing ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/backing-share-ENV.json'}, envs:{}},
+      BPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
+      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };
+        var rows = BJ._meta.shares.map(function(a, i){ return {l:'a = ' + a + (a === 0 ? ' (the release row: nothing the Source pays is backed by new output)' : a === 1 ? ' (H1: every Source dollar backed by new output)' : ''), v:W({a:a}), k:i === 0 ? 'today' : 's', vs:'today', j:'a' + Math.round(a*100)}; });  /* the release row (a = 0) is the comparison row every other point is read against */
+        var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], {sc:SC});
+        var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, epPY:B.epPY}, rows:{}};
+        function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
+        function d3p(r, k){ var x = tbDiff(r, B, k); return [+(x.m*100).toFixed(2), +(x.lo*100).toFixed(2), +(x.hi*100).toFixed(2)]; }  /* a rate as percentage points a year */
+        rows.forEach(function(rw, i){ var r = R[i + 1]; out.rows[rw.j] = {a:BJ._meta.shares[i], pov:+r.pov.toFixed(1), fgt0PY:+r.fgt0PY.toFixed(1), bOAPy:+r.bOAPy.toFixed(1), bNAPy:+r.bNAPy.toFixed(1), infl:+(r.endoAnn*100).toFixed(1),
+          pLevEnd:+r.pLev20.toFixed(3), pLevEndMed:+quantileOf(r._s.pLev20, 0.5).toFixed(3), pLevEndP10:+quantileOf(r._s.pLev20, 0.1).toFixed(3), pLevEndP90:+quantileOf(r._s.pLev20, 0.9).toFixed(3),
+          cost:Math.round(r.cost), srcPay:Math.round(r.srcPay), srcM:Math.round(r.srcM), dPov:d3(r, 'pov'), dF0:d3(r, 'fgt0PY'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'), dInfl:d3p(r, 'endoAnn')}; });
+        BJ.envs[e] = out; });
+      if (BPATH){ require('fs').writeFileSync(BPATH, JSON.stringify(BJ, null, 1)); console.log('\nwrote ' + BPATH); }
     }
     /* Plan steps 14-17 (Oct 2, 2026; Duke's four items before v5.0; dev/reports/v5-1 to v5-4): each new mechanism against the session-30
      * release row (k 'today' here), with its sensitivity rows against the new main row. Rows are added step by step. */

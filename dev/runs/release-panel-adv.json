@@ -1,9 +1,18 @@
 {
  "_meta": {
-  "engine": "release candidate (next-release)",
+  "engine": "release engine (harness.js testbed, section release)",
+  "manifest": {
+   "commit": "6c68ad94535d3d5dd3e5445aeb1c07a1ca20a3f2",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "59e754f82f3451da76e60bb1f7a617d3346f826caf37a9b6e3cbba873c9359e3",
+   "engineBlockSha256": "31177f73382cd980fdd263590eb3b57d38040e681950777e8c40ef7dc7309a04",
+   "indexSha256": "82d5fa6164d12a8406544f87e3178c0b12916a8b0fe6a6bb1370d32e5238b1cc"
+  },
   "seeds": 500,
   "agents": 500,
-  "written": "2026-10-02",
+  "written": "2026-10-03",
+  "years": 20,
   "command": "node harness.js testbed 500 release adv --json=dev/runs/release-panel.json"
  },
  "envs": {
@@ -17,7 +26,9 @@
     "bNAPy": 60.04995999999995,
     "bOAMd": 2.5914041572976774,
     "bNAMd": 2.5914041572976774,
-    "epPY": 0.6111420121127444
+    "epPY": 0.6111420121127444,
+    "giniD": 0.37807472630488365,
+    "giniX": 0.37807472630488365
    },
    "rows": {
     "v422": {
@@ -25,7 +36,13 @@
      "cost": 28418,
      "tau": 83,
      "infl": 0,
-     "pLev20": 1.457,
+     "pLevEnd": 1.457,
+     "pLevEndMed": 1.457,
+     "pLevEndP10": 1.457,
+     "pLevEndP90": 1.457,
+     "giniD": 0.4736,
+     "giniX": 0.3048,
+     "epPY": 0.478,
      "hrs": -30.1,
      "fgt2PY": 20.32,
      "fgt0PY": 84.9,
@@ -40,7 +57,7 @@
       -0.23
      ],
      "dF0": [
-      6.76,
+      6.75,
       6.63,
       6.88
      ],
@@ -52,17 +69,17 @@
      "dBO": [
       -4.04,
       -4.2,
-      -3.88
+      -3.89
      ],
      "dBN": [
-      6.36,
-      6.25,
-      6.48
+      6.32,
+      6.2,
+      6.43
      ],
      "grp": {
-      "part": 1385,
-      "non": -14402,
-      "low": 4136,
+      "part": 1386,
+      "non": -14403,
+      "low": 4137,
       "top": -9949
      },
      "worse": "part (iw), non (riw), PTH (iw), top (riw)",
@@ -81,27 +98,33 @@
     },
     "release": {
      "label": "RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source",
-     "cost": 27678,
+     "cost": 27677,
      "tau": 7.1,
-     "infl": 45.6,
-     "pLev20": 1850.925,
+     "infl": 45.5,
+     "pLevEnd": 1848.032,
+     "pLevEndMed": 1824.35,
+     "pLevEndP10": 1460.204,
+     "pLevEndP90": 2286.889,
+     "giniD": 0.3501,
+     "giniX": 0.2495,
+     "epPY": 0.35,
      "hrs": -6.8,
-     "fgt2PY": 4.6,
+     "fgt2PY": 4.59,
      "fgt0PY": 42.1,
      "pov": 87.1,
      "bOAPy": 33.1,
-     "bNAPy": 40.3,
+     "bNAPy": 38.5,
      "bOAMd": 25,
-     "bNAMd": 14,
+     "bNAMd": 20,
      "dFgt2": [
-      -16.03,
-      -16.1,
-      -15.96
+      -16.04,
+      -16.11,
+      -15.97
      ],
      "dF0": [
-      -36.03,
-      -36.17,
-      -35.89
+      -36.06,
+      -36.2,
+      -35.92
      ],
      "dPov": [
       4.42,
@@ -109,32 +132,32 @@
       4.57
      ],
      "dBO": [
-      -26.94,
-      -27.12,
-      -26.77
+      -26.97,
+      -27.14,
+      -26.8
      ],
      "dBN": [
-      -19.78,
-      -19.92,
-      -19.63
+      -21.59,
+      -21.74,
+      -21.43
      ],
      "grp": {
-      "part": 30548,
-      "non": 2080,
-      "low": 21927,
-      "top": 26739
+      "part": 30562,
+      "non": 2081,
+      "low": 21953,
+      "top": 26742
      },
      "worse": "part (w), non (w), PTH (w), top (w)",
-     "unhousedAvoided": 2.6,
+     "unhousedAvoided": 2.61,
      "avoidLo": 27,
      "avoidHi": 262,
-     "avoidW": 1499,
-     "avoidWHi": 13371,
-     "avoidJail": 1462,
+     "avoidW": 1500,
+     "avoidWHi": 13378,
+     "avoidJail": 1463,
      "avoidHealth": 37,
-     "srcPay": 25180,
+     "srcPay": 25181,
      "srcTax": 4631,
-     "srcM": 4904,
+     "srcM": 4905,
      "part19": 77.8,
      "medWealth": -6
     },
@@ -143,7 +166,13 @@
      "cost": 25607,
      "tau": 7.5,
      "infl": 0,
-     "pLev20": 1.457,
+     "pLevEnd": 1.457,
+     "pLevEndMed": 1.457,
+     "pLevEndP10": 1.457,
+     "pLevEndP90": 1.457,
+     "giniD": 0.4689,
+     "giniX": 0.3441,
+     "epPY": 0.294,
      "hrs": -5.3,
      "fgt2PY": 7.8,
      "fgt0PY": 48.9,
@@ -165,7 +194,7 @@
      "dPov": [
       -30.11,
       -30.3,
-      -29.92
+      -29.93
      ],
      "dBO": [
       -33.08,
@@ -173,85 +202,91 @@
       -32.91
      ],
      "dBN": [
-      -31.01,
-      -31.17,
-      -30.84
+      -31.05,
+      -31.21,
+      -30.89
      ],
      "grp": {
-      "part": 28525,
+      "part": 28528,
       "non": 2372,
-      "low": 18941,
-      "top": 26476
+      "low": 18944,
+      "top": 26477
      },
      "worse": "none",
      "unhousedAvoided": 3.17,
      "avoidLo": 33,
      "avoidHi": 319,
      "avoidW": 1178,
-     "avoidWHi": 10499,
+     "avoidWHi": 10500,
      "avoidJail": 1148,
      "avoidHealth": 30,
      "srcPay": 22952,
-     "srcTax": 3932,
+     "srcTax": 3933,
      "srcM": 5106,
      "part19": 53.4,
-     "medWealth": 9848
+     "medWealth": 9890
     },
     "face": {
      "label": "essentials bought with BU counted as backed by output",
-     "cost": 30807,
+     "cost": 30805,
      "tau": 7.2,
      "infl": 25.2,
-     "pLev20": 104.174,
-     "hrs": -5.8,
-     "fgt2PY": 4.58,
+     "pLevEnd": 104.112,
+     "pLevEndMed": 103.583,
+     "pLevEndP10": 90.941,
+     "pLevEndP90": 118.532,
+     "giniD": 0.4159,
+     "giniX": 0.292,
+     "epPY": 0.303,
+     "hrs": -5.7,
+     "fgt2PY": 4.57,
      "fgt0PY": 39.6,
      "pov": 74.3,
      "bOAPy": 28.5,
-     "bNAPy": 33.3,
+     "bNAPy": 32.5,
      "bOAMd": 32,
-     "bNAMd": 16,
+     "bNAMd": 21,
      "dFgt2": [
-      -16.05,
+      -16.06,
       -16.13,
-      -15.98
+      -15.99
      ],
      "dF0": [
-      -38.54,
-      -38.69,
-      -38.4
+      -38.57,
+      -38.71,
+      -38.42
      ],
      "dPov": [
-      -8.35,
-      -8.5,
-      -8.19
+      -8.36,
+      -8.51,
+      -8.2
      ],
      "dBO": [
-      -31.52,
-      -31.7,
-      -31.35
+      -31.54,
+      -31.72,
+      -31.37
      ],
      "dBN": [
-      -26.76,
-      -26.92,
-      -26.6
+      -27.51,
+      -27.67,
+      -27.35
      ],
      "grp": {
-      "part": 34799,
-      "non": 2362,
-      "low": 24049,
-      "top": 31401
+      "part": 34813,
+      "non": 2363,
+      "low": 24076,
+      "top": 31405
      },
      "worse": "non (w)",
      "unhousedAvoided": 3.08,
      "avoidLo": 32,
-     "avoidHi": 309,
+     "avoidHi": 310,
      "avoidW": 1518,
-     "avoidWHi": 13520,
-     "avoidJail": 1478,
+     "avoidWHi": 13527,
+     "avoidJail": 1479,
      "avoidHealth": 40,
      "srcPay": 28282,
-     "srcTax": 5401,
+     "srcTax": 5400,
      "srcM": 6673,
      "part19": 77.8,
      "medWealth": -68
@@ -261,7 +296,13 @@
      "cost": 25607,
      "tau": 82.6,
      "infl": 0,
-     "pLev20": 1.457,
+     "pLevEnd": 1.457,
+     "pLevEndMed": 1.457,
+     "pLevEndP10": 1.457,
+     "pLevEndP90": 1.457,
+     "giniD": 0.8019,
+     "giniX": 0.4419,
+     "epPY": 0.55,
      "hrs": -33.3,
      "fgt2PY": 33.8,
      "fgt0PY": 83,
@@ -273,7 +314,7 @@
      "dFgt2": [
       13.17,
       13.07,
-      13.28
+      13.27
      ],
      "dF0": [
       4.82,
@@ -291,14 +332,14 @@
       -0.94
      ],
      "dBN": [
-      8.86,
-      8.73,
-      8.99
+      8.81,
+      8.68,
+      8.94
      ],
      "grp": {
-      "part": 124,
+      "part": 125,
       "non": -26146,
-      "low": 4819,
+      "low": 4820,
       "top": -19285
      },
      "worse": "part (w), non (riw), PTH (riw), top (riw)",
@@ -317,27 +358,33 @@
     },
     "cost": {
      "label": "creative projects counted at the cost of their hours, not at market value (the cautious reading)",
-     "cost": 26901,
+     "cost": 26900,
      "tau": 7.1,
      "infl": 52,
-     "pLev20": 4220.903,
+     "pLevEnd": 4215.045,
+     "pLevEndMed": 4160.987,
+     "pLevEndP10": 3312.664,
+     "pLevEndP90": 5167.773,
+     "giniD": 0.3495,
+     "giniX": 0.2463,
+     "epPY": 0.362,
      "hrs": -7,
      "fgt2PY": 4.65,
      "fgt0PY": 43.1,
      "pov": 89.6,
-     "bOAPy": 34.3,
-     "bNAPy": 42.2,
+     "bOAPy": 34.2,
+     "bNAPy": 40,
      "bOAMd": 25,
-     "bNAMd": 13,
+     "bNAMd": 20,
      "dFgt2": [
       -15.98,
       -16.05,
       -15.91
      ],
      "dF0": [
-      -35.09,
-      -35.23,
-      -34.95
+      -35.12,
+      -35.26,
+      -34.98
      ],
      "dPov": [
       7,
@@ -345,30 +392,30 @@
       7.15
      ],
      "dBO": [
-      -25.79,
-      -25.96,
-      -25.62
+      -25.82,
+      -25.99,
+      -25.64
      ],
      "dBN": [
-      -17.81,
-      -17.95,
-      -17.67
+      -20.04,
+      -20.19,
+      -19.89
      ],
      "grp": {
-      "part": 29580,
-      "non": 2067,
-      "low": 21352,
-      "top": 25796
+      "part": 29595,
+      "non": 2069,
+      "low": 21378,
+      "top": 25800
      },
      "worse": "part (w), non (w), PTH (w), top (w)",
      "unhousedAvoided": 2.49,
      "avoidLo": 26,
      "avoidHi": 251,
      "avoidW": 1486,
-     "avoidWHi": 13255,
+     "avoidWHi": 13263,
      "avoidJail": 1450,
      "avoidHealth": 36,
-     "srcPay": 24408,
+     "srcPay": 24409,
      "srcTax": 4442,
      "srcM": 1591,
      "part19": 77.8,
@@ -376,27 +423,33 @@
     },
     "cap5": {
      "label": "community-business capacity growing only as reinvestment pays for it (the 5-year rule)",
-     "cost": 27678,
+     "cost": 27677,
      "tau": 7.1,
-     "infl": 45.6,
-     "pLev20": 1850.925,
+     "infl": 45.5,
+     "pLevEnd": 1848.032,
+     "pLevEndMed": 1824.35,
+     "pLevEndP10": 1460.204,
+     "pLevEndP90": 2286.889,
+     "giniD": 0.3501,
+     "giniX": 0.2495,
+     "epPY": 0.35,
      "hrs": -6.8,
-     "fgt2PY": 4.6,
+     "fgt2PY": 4.59,
      "fgt0PY": 42.1,
      "pov": 87.1,
      "bOAPy": 33.1,
-     "bNAPy": 40.3,
+     "bNAPy": 38.5,
      "bOAMd": 25,
-     "bNAMd": 14,
+     "bNAMd": 20,
      "dFgt2": [
-      -16.03,
-      -16.1,
-      -15.96
+      -16.04,
+      -16.11,
+      -15.97
      ],
      "dF0": [
-      -36.03,
-      -36.17,
-      -35.89
+      -36.06,
+      -36.2,
+      -35.92
      ],
      "dPov": [
       4.42,
@@ -404,89 +457,95 @@
       4.57
      ],
      "dBO": [
-      -26.94,
-      -27.12,
-      -26.77
+      -26.97,
+      -27.14,
+      -26.8
      ],
      "dBN": [
-      -19.78,
-      -19.92,
-      -19.63
+      -21.59,
+      -21.74,
+      -21.43
      ],
      "grp": {
-      "part": 30548,
-      "non": 2080,
-      "low": 21927,
-      "top": 26739
+      "part": 30562,
+      "non": 2081,
+      "low": 21953,
+      "top": 26742
      },
      "worse": "part (w), non (w), PTH (w), top (w)",
-     "unhousedAvoided": 2.6,
+     "unhousedAvoided": 2.61,
      "avoidLo": 27,
      "avoidHi": 262,
-     "avoidW": 1499,
-     "avoidWHi": 13371,
-     "avoidJail": 1462,
+     "avoidW": 1500,
+     "avoidWHi": 13378,
+     "avoidJail": 1463,
      "avoidHealth": 37,
-     "srcPay": 25180,
+     "srcPay": 25181,
      "srcTax": 4631,
-     "srcM": 4904,
+     "srcM": 4905,
      "part19": 77.8,
      "medWealth": -6
     },
     "s30": {
      "label": "session 30's build: private business owners keep the premium, no spending layer, creative work at cost",
-     "cost": 26106,
+     "cost": 26105,
      "tau": 7.5,
      "infl": 51,
-     "pLev20": 3715.433,
-     "hrs": -10.2,
-     "fgt2PY": 6.71,
+     "pLevEnd": 3708.761,
+     "pLevEndMed": 3664.654,
+     "pLevEndP10": 2921.219,
+     "pLevEndP90": 4602.916,
+     "giniD": 0.4376,
+     "giniX": 0.3091,
+     "epPY": 0.452,
+     "hrs": -10.1,
+     "fgt2PY": 6.7,
      "fgt0PY": 51.7,
      "pov": 87,
      "bOAPy": 41,
-     "bNAPy": 48.9,
+     "bNAPy": 47.6,
      "bOAMd": 24,
-     "bNAMd": 13,
+     "bNAMd": 20,
      "dFgt2": [
-      -13.92,
+      -13.93,
       -13.98,
       -13.87
      ],
      "dF0": [
-      -26.46,
-      -26.57,
-      -26.34
+      -26.48,
+      -26.59,
+      -26.36
      ],
      "dPov": [
       4.34,
-      4.2,
+      4.19,
       4.48
      ],
      "dBO": [
-      -19.02,
-      -19.16,
-      -18.88
+      -19.04,
+      -19.18,
+      -18.9
      ],
      "dBN": [
-      -11.15,
-      -11.26,
-      -11.04
+      -12.46,
+      -12.57,
+      -12.35
      ],
      "grp": {
-      "part": 25636,
-      "non": 4655,
-      "low": 15938,
-      "top": 28344
+      "part": 25653,
+      "non": 4659,
+      "low": 15963,
+      "top": 28353
      },
      "worse": "part (w), non (w), PTH (w), low (w), top (w)",
      "unhousedAvoided": 1.59,
      "avoidLo": 17,
      "avoidHi": 160,
-     "avoidW": 1205,
-     "avoidWHi": 10768,
-     "avoidJail": 1178,
+     "avoidW": 1206,
+     "avoidWHi": 10777,
+     "avoidJail": 1179,
      "avoidHealth": 27,
-     "srcPay": 23613,
+     "srcPay": 23614,
      "srcTax": 3774,
      "srcM": 920,
      "part19": 77.8,
@@ -494,27 +553,33 @@
     },
     "all": {
      "label": "taking part costs nothing (every adult joins)",
-     "cost": 33105,
+     "cost": 33104,
      "tau": 7.1,
      "infl": 54.9,
-     "pLev20": 6024.552,
+     "pLevEnd": 6012.951,
+     "pLevEndMed": 5923.22,
+     "pLevEndP10": 4870.616,
+     "pLevEndP90": 7191.983,
+     "giniD": 0.3328,
+     "giniX": 0.1938,
+     "epPY": 0.274,
      "hrs": -8.1,
-     "fgt2PY": 1.4,
+     "fgt2PY": 1.39,
      "fgt0PY": 33.2,
      "pov": 85.9,
      "bOAPy": 23.6,
-     "bNAPy": 34.4,
+     "bNAPy": 31.2,
      "bOAMd": 42,
-     "bNAMd": 15,
+     "bNAMd": 23,
      "dFgt2": [
-      -19.23,
-      -19.3,
+      -19.24,
+      -19.31,
       -19.16
      ],
      "dF0": [
-      -44.94,
-      -45.08,
-      -44.79
+      -44.99,
+      -45.14,
+      -44.84
      ],
      "dPov": [
       3.25,
@@ -522,86 +587,92 @@
       3.4
      ],
      "dBO": [
-      -36.45,
-      -36.62,
-      -36.28
+      -36.49,
+      -36.66,
+      -36.32
      ],
      "dBN": [
-      -25.63,
-      -25.78,
-      -25.48
+      -28.86,
+      -29.02,
+      -28.71
      ],
      "grp": {
-      "part": 29766,
-      "non": 28232,
-      "low": 26373,
-      "top": 32734
+      "part": 29781,
+      "non": 28258,
+      "low": 26411,
+      "top": 32739
      },
      "worse": "part (w), non (w), PTH (w), top (w)",
      "unhousedAvoided": 3.37,
      "avoidLo": 35,
      "avoidHi": 339,
-     "avoidW": 1836,
-     "avoidWHi": 16368,
-     "avoidJail": 1790,
+     "avoidW": 1837,
+     "avoidWHi": 16380,
+     "avoidJail": 1791,
      "avoidHealth": 46,
-     "srcPay": 30639,
+     "srcPay": 30641,
      "srcTax": 5655,
      "srcM": 5336,
      "part19": 100,
-     "medWealth": 503
+     "medWealth": 510
     },
     "free": {
      "label": "price cuts free (PTF and PTH cuts counted as capacity, not a transfer)",
-     "cost": 27737,
+     "cost": 27736,
      "tau": 0,
      "infl": 45.1,
-     "pLev20": 1737.352,
-     "hrs": -5.6,
-     "fgt2PY": 3.89,
+     "pLevEnd": 1735.018,
+     "pLevEndMed": 1715.991,
+     "pLevEndP10": 1372.025,
+     "pLevEndP90": 2148.443,
+     "giniD": 0.3461,
+     "giniX": 0.2508,
+     "epPY": 0.333,
+     "hrs": -5.5,
+     "fgt2PY": 3.88,
      "fgt0PY": 37.9,
      "pov": 83.2,
-     "bOAPy": 30.2,
-     "bNAPy": 36.6,
+     "bOAPy": 30.1,
+     "bNAPy": 34.9,
      "bOAMd": 32,
-     "bNAMd": 14,
+     "bNAMd": 21,
      "dFgt2": [
-      -16.74,
-      -16.81,
+      -16.75,
+      -16.82,
       -16.67
      ],
      "dF0": [
-      -40.29,
-      -40.44,
-      -40.14
+      -40.31,
+      -40.47,
+      -40.16
      ],
      "dPov": [
-      0.57,
-      0.41,
+      0.58,
+      0.42,
       0.74
      ],
      "dBO": [
-      -29.89,
-      -30.06,
-      -29.71
+      -29.91,
+      -30.09,
+      -29.73
      ],
      "dBN": [
-      -23.41,
-      -23.57,
-      -23.26
+      -25.15,
+      -25.3,
+      -24.99
      ],
      "grp": {
-      "part": 33378,
-      "non": 4939,
-      "low": 23356,
-      "top": 31298
+      "part": 33389,
+      "non": 4938,
+      "low": 23379,
+      "top": 31296
      },
      "worse": "non (w), PTH (w), top (w)",
      "unhousedAvoided": 2.78,
      "avoidLo": 29,
-     "avoidHi": 279,
-     "avoidW": 1590,
-     "avoidWHi": 14164,
+     "avoidHi": 280,
+     "avoidW": 1591,
+     "avoidWHi": 14170,
      "avoidJail": 1549,
      "avoidHealth": 41,
      "srcPay": 25241,
@@ -612,62 +683,68 @@
     },
     "standins": {
      "label": "the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)",
-     "cost": 28414,
+     "cost": 28413,
      "tau": 6.1,
      "infl": 40.6,
-     "pLev20": 882.95,
+     "pLevEnd": 882.043,
+     "pLevEndMed": 873.636,
+     "pLevEndP10": 709.77,
+     "pLevEndP90": 1074.453,
+     "giniD": 0.3427,
+     "giniX": 0.2652,
+     "epPY": 0.283,
      "hrs": -3.8,
-     "fgt2PY": 3.7,
+     "fgt2PY": 3.69,
      "fgt0PY": 33.7,
      "pov": 71.1,
      "bOAPy": 27.1,
-     "bNAPy": 32.5,
+     "bNAPy": 31,
      "bOAMd": 52,
-     "bNAMd": 35,
+     "bNAMd": 40,
      "dFgt2": [
-      -16.93,
+      -16.94,
       -17.01,
       -16.86
      ],
      "dF0": [
-      -44.48,
-      -44.64,
-      -44.32
+      -44.52,
+      -44.68,
+      -44.36
      ],
      "dPov": [
-      -11.52,
+      -11.53,
       -11.71,
-      -11.33
+      -11.34
      ],
      "dBO": [
-      -32.93,
-      -33.11,
-      -32.75
+      -32.96,
+      -33.14,
+      -32.78
      ],
      "dBN": [
-      -27.59,
-      -27.75,
-      -27.43
+      -29.03,
+      -29.2,
+      -28.87
      ],
      "grp": {
-      "part": 37107,
+      "part": 37122,
       "non": 4591,
-      "low": 25016,
-      "top": 35533
+      "low": 25045,
+      "top": 35534
      },
      "worse": "non (w)",
      "unhousedAvoided": 3.28,
      "avoidLo": 34,
      "avoidHi": 330,
-     "avoidW": 1641,
-     "avoidWHi": 14600,
-     "avoidJail": 1596,
+     "avoidW": 1642,
+     "avoidWHi": 14607,
+     "avoidJail": 1597,
      "avoidHealth": 46,
-     "srcPay": 25915,
+     "srcPay": 25916,
      "srcTax": 4820,
      "srcM": 5356,
      "part19": 77.8,
-     "medWealth": 6782
+     "medWealth": 6799
     }
    }
   }

@@ -114,7 +114,7 @@ let JSDOM;
 try { ({ JSDOM } = require('jsdom')); }
 catch (e) { console.error('domtest.js needs jsdom:  npm install jsdom'); process.exit(3); }
 
-const FILE = process.argv[2] || path.join(__dirname, 'index.html');
+const FILE = process.argv.slice(2).filter(a => a.indexOf('--') !== 0)[0] || path.join(__dirname, 'index.html');  // v5.1: flags such as --write-counts are not a file
 const html = fs.readFileSync(FILE, 'utf8');
 
 let fails = 0, checks = 0;
@@ -426,6 +426,10 @@ function phase4() {
   });
 }
 function finish4() { phase5(function () {
+  /* v5.1 (audit E6): the number of checks quoted in README.md and CONTRIBUTING.md is verified here so it cannot drift (this check counts itself); --write-counts rewrites it. */
+  const HC = require('./harness.js'), nChecks = checks + 1, wc = process.argv.indexOf('--write-counts') >= 0, cc = HC.docCounts('domtest', nChecks, wc);
+  check('audit E6 (v5.1): the number of domtest checks quoted in README.md and CONTRIBUTING.md equals the number run (' + nChecks + ')', cc.found.length >= 2 && (cc.stale.length === 0 || wc),
+    cc.found.length < 2 ? 'markers found: ' + cc.found.length + ' (need one in each file)' : cc.stale.length === 0 ? 'quoted in ' + cc.found.join(', ') : wc ? 'rewritten (was ' + cc.stale.join(', ') + ')' : 'STALE: ' + cc.stale.join(', ') + '; run node domtest.js --write-counts');
   console.log('\n' + checks + ' checks, ' + (fails ? fails + ' FAILED' : 'all passed'));
   process.exit(fails ? 1 : 0);
 }); }
@@ -1035,20 +1039,87 @@ function phase13(done) {
     if (loses && /No group is worse off than with no programme on any test/.test(txt)) bad.push(e[0] + ' seed 1');
     if (loses && !/Worse off than with no programme in this run/.test(txt)) bad.push(e[0] + ' seed 1 (no loss named)'); });
   check('audit finding 1: live runs (Reference and Adverse, seed 1) state the losses their own numbers show', bad.length === 0, bad.length ? bad.join('; ') : 'both consistent');
-  /* v5.0.1 (audit finding F3): above 1,000 times today's the Prices sentence names the price rule and says "a limit of the model, not a forecast" instead of
-   * printing the number; below 1,000 it prints it; and the replication page carries the exact figure from the panel for every environment and horizon. */
-  const root = path.dirname(FILE), P20 = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'release-panel.json'), 'utf8')), P40 = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'release-panel-40.json'), 'utf8'));
-  const priceText = (Pn, e, T) => { const E = Pn.envs[e], t = w.relSentences(E.base, E.rows.release, null, T).replace(/<\/p>/g, '\n').replace(/<[^>]+>/g, '').split('\n').filter(l => /^Prices\./.test(l))[0] || ''; return t; };
-  const fmt = x => x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(2);
-  const repDoc = new JSDOM(fs.readFileSync(path.join(root, 'replication.html'), 'utf8')).window.document;
-  const cellsOf = id => [...repDoc.querySelectorAll(id).length ? repDoc.querySelectorAll(id + ' tbody tr') : []].map(tr => tr.children[5].textContent);
-  const repOK = [['table.rel-t:not(#rel-t40)', P20], ['#rel-t40', P40]].every(([sel, Pn]) => { const got = cellsOf(sel); return got.length === 3 && ['ref', 'adv', 'st'].every((e, i) => got[i] === fmt(Pn.envs[e].rows.release.pLev20) + '\u00d7'); });
+  /* v5.1 (audit F3, E1, E5): the regenerated 500-seed panels. (a) every row carries the price level as mean, median and 10th/90th percentiles under the new key names (the old key
+   * pLev20 is gone from the export); the Prices sentence gives the typical run and its range, and above 1,000 times today's names the price rule and says "a limit of the model, not a forecast"
+   * with no figure; the replication page carries the exact figures. (b) the Hub-target table is on the front door for every environment and horizon, with the sourced targets, the
+   * panel's own numbers and the right verdicts, and on the replication page for all six combinations. (c) no Gini verdict depends on the small-sample bias of the Gini formula.
+   * (d) the manifest. */
+  const root = path.dirname(FILE), HB = require('./harness.js'), P20 = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'release-panel.json'), 'utf8')), P40 = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'release-panel-40.json'), 'utf8'));
+  const wr = makeWindow(); wr.relInit(); const dr = wr.document, ENVN = ['ref', 'adv', 'st'], ROWS = ['release', 'h1', 'face', 'cost', 'cap5', 'tax', 'all', 'free', 'standins', 's30', 'v422'];
+  const emb20 = JSON.parse(dr.getElementById('rel-data').textContent), emb40 = JSON.parse(dr.getElementById('rel-data-40').textContent);
+  const fmtLev = x => x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(2);
+  const keysOK = [P20, P40].every(Pn => ENVN.every(e => ROWS.every(k => { const r = Pn.envs[e].rows[k]; return r && ['pLevEnd', 'pLevEndMed', 'pLevEndP10', 'pLevEndP90', 'giniD', 'giniX', 'epPY'].every(q => typeof r[q] === 'number' && isFinite(r[q])) && !('pLev20' in r) &&
+    r.pLevEndP10 <= r.pLevEndMed && r.pLevEndMed <= r.pLevEndP90 && r.pLevEnd > 0; }) && ['giniD', 'giniX', 'epPY'].every(q => typeof Pn.envs[e].base[q] === 'number')));
+  const prices = (env, yrs) => { wr.relSet(env); wr.relYears(yrs); return [...dr.querySelectorAll('#rel-out p')].map(p => p.textContent).filter(t => /^Prices\./.test(t))[0] || ''; };
   const pr = [];
-  [[P20, 20], [P40, 40]].forEach(([Pn, T]) => ['ref', 'adv', 'st'].forEach(e => { const L = Pn.envs[e].rows.release.pLev20, t = priceText(Pn, e, T);
-    if (L > 1000) { if (!(/no central bank, no interest rate and no protection for savings/.test(t) && /limit of the model, not a forecast/.test(t) && /exact 500-seed figure is on the replication page/.test(t)) || t.indexOf(fmt(L)) >= 0) pr.push(e + ' ' + T + 'y high'); }
-    else if (t.indexOf(fmt(L) + ' times today') < 0 || /limit of the model/.test(t)) pr.push(e + ' ' + T + 'y low'); }));
-  check('audit finding F3 (v5.0.1): above 1,000 times today\'s the Prices sentence says the price rule runs away, a model limit and not a forecast, with no figure; below it prints the figure; the replication page keeps the exact figure',
-    pr.length === 0 && repOK, 'sentences ' + (pr.length ? 'WRONG: ' + pr.join(', ') : 'ok (' + [P20, P40].map(Pn => ['ref', 'adv', 'st'].map(e => fmt(Pn.envs[e].rows.release.pLev20)).join(' / ')).join(' ; ') + ')') + '; replication table ' + (repOK ? 'matches the panel' : 'DIFFERS'));
+  [[20, P20], [40, P40]].forEach(([yrs, Pn]) => ENVN.forEach(e => { const r = Pn.envs[e].rows.release, t = prices(e, yrs);
+    if (r.pLevEndMed > 1000) { if (!(/no central bank, no interest rate and no protection for savings/.test(t) && /limit of the model, not a forecast/.test(t) && /exact 500-seed figures are on the replication page/.test(t)) || t.indexOf(fmtLev(r.pLevEndMed)) >= 0 || t.indexOf(fmtLev(r.pLevEnd)) >= 0) pr.push(e + ' ' + yrs + 'y high'); }
+    else if (t.indexOf('the typical run (the median of the 500) is ' + fmtLev(r.pLevEndMed) + ' times today') < 0 || t.indexOf('nine runs in ten fall between ' + fmtLev(r.pLevEndP10) + ' and ') < 0 || /limit of the model/.test(t)) pr.push(e + ' ' + yrs + 'y low'); }));
+  wr.relYears(20); wr.relSet('ref');
+  const repDoc = new JSDOM(fs.readFileSync(path.join(root, 'replication.html'), 'utf8')).window.document, tcell = (sel, i, j) => (repDoc.querySelectorAll(sel + ' tbody tr')[i] || {children: []}).children[j];
+  const levCellOK = [['table.rel-t:not(#rel-t40):not(#rel-tg)', P20], ['#rel-t40', P40]].every(([sel, Pn]) => ENVN.every((e, i) => { const r = Pn.envs[e].rows.release, c = tcell(sel, i, 5), tx = c ? c.textContent.replace(/\s+/g, ' ') : '';
+    return tx.indexOf(fmtLev(r.pLevEndMed) + '×') === 0 && tx.indexOf('10th–90th percentile ' + fmtLev(r.pLevEndP10) + '–' + fmtLev(r.pLevEndP90)) > 0 && tx.indexOf('mean ' + fmtLev(r.pLevEnd)) > 0; }));
+  check('audit F3 (v5.1): the panels carry the price level as mean, median and 10th/90th percentiles (the key pLev20 is gone from the export); the Prices sentence gives the typical run and its range, and above 1,000 times today\'s says the price rule runs away, a model limit and not a forecast, with no figure; the replication page keeps the exact figures',
+    keysOK && pr.length === 0 && levCellOK, 'keys ' + (keysOK ? 'ok' : 'MISSING') + '; sentences ' + (pr.length ? 'WRONG: ' + pr.join(', ') : 'ok (median ' + [P20, P40].map(Pn => ENVN.map(e => fmtLev(Pn.envs[e].rows.release.pLevEndMed)).join(' / ')).join(' ; ') + ')') + '; replication cells ' + (levCellOK ? 'match' : 'DIFFER'));
+  /* (b) the Hub-target table */
+  const verd = g => g <= 0.25 ? 'at or below 0.25' : g <= 0.30 ? 'between 0.25 and 0.30' : 'above 0.30', tb = [];
+  [[20, emb20], [40, emb40]].forEach(([yrs, Pn]) => ENVN.forEach(e => { wr.relSet(e); wr.relYears(yrs); const E = Pn.envs[e], b = E.base, r = E.rows.release, el = dr.getElementById('rel-targets'), tr = el ? [...el.querySelectorAll('tbody tr')].map(x => [...x.children].map(c => c.textContent)) : [], tx = el ? el.textContent : '';
+    const want = [['fgt0PY', 1], ['bOAPy', 1], ['pov', 1], ['epPY', 2]].map(q => [(+b[q[0]]).toFixed(q[1]) + '%', (+r[q[0]]).toFixed(q[1]) + '%', r[q[0]] < 2 ? 'met' : 'not met']).concat([['giniD', 'giniD'], ['giniX', 'giniX']].map(q => [(+b[q[0]]).toFixed(3), (+r[q[0]]).toFixed(3), verd(r[q[0]])]));
+    const okRows = tr.length === 6 && tr.every((c, i) => c[2] === want[i][0] && c[3] === want[i][1] && c[4] === want[i][2] && (i < 4 ? c[1] === 'under 2%' : c[1] === '0.25 to 0.30'));
+    const a = el ? el.querySelector('a') : null;
+    if (!(okRows && /Year 7/.test(tx) && a && a.getAttribute('href') === 'https://bettertobest.github.io/research-hub/integrated-implementation-roadmap.html' && /Integrated Implementation Roadmap/.test(tx) && /starts from 0\.22% at year 0 by construction/.test(tx) && new RegExp('by year ' + yrs).test(tx))) tb.push(e + ' ' + yrs + 'y'); }));
+  wr.relYears(20); wr.relSet('ref');
+  const tgRows = [...repDoc.querySelectorAll('#rel-tg tbody tr')].map(x => [...x.children].map(c => c.textContent.replace(/\s+/g, ' ')));
+  const tgOK = tgRows.length === 6 && [[20, P20], [40, P40]].every(([yrs, Pn], yi) => ENVN.every((e, ei) => { const c = tgRows[yi * 3 + ei], b = Pn.envs[e].base, r = Pn.envs[e].rows.release;
+    return c && +c[0] === yrs && c[2] === r.fgt0PY.toFixed(1) + '% vs ' + b.fgt0PY.toFixed(1) + '%' && c[3] === r.bOAPy.toFixed(1) + '% vs ' + b.bOAPy.toFixed(1) + '%' && c[4] === r.pov.toFixed(1) + '% vs ' + b.pov.toFixed(1) + '%' && c[5] === r.epPY.toFixed(2) + '% vs ' + b.epPY.toFixed(2) + '%' &&
+      c[6].indexOf(r.giniD.toFixed(3) + ' vs ' + b.giniD.toFixed(3)) === 0 && c[6].indexOf(verd(r.giniD)) > 0 && c[7].indexOf(r.giniX.toFixed(3) + ' vs ' + b.giniX.toFixed(3)) === 0 && c[7].indexOf(verd(r.giniX)) > 0; }));
+  check('audit E1 (v5.1): the Hub\'s Year 7 targets (poverty under 2%, Gini 0.25 to 0.30) are shown against the model\'s results on the front door for every environment and horizon, with the source named and linked, the panel\'s own numbers and the right verdicts, and on the replication page for all six combinations',
+    keysOK && tb.length === 0 && tgOK, 'front door ' + (tb.length ? 'WRONG: ' + tb.join(', ') : 'ok in 6 views') + '; replication table ' + (tgOK ? 'matches the panels' : 'DIFFERS') + '; Gini (cash / with price cuts), release row: ' + [[20, P20], [40, P40]].map(([y, Pn]) => y + 'y ' + ENVN.map(e => Pn.envs[e].rows.release.giniD.toFixed(3) + '/' + Pn.envs[e].rows.release.giniX.toFixed(3)).join(' ')).join('; '));
+  /* (c) the Gini formula's small-sample bias (n/(n-1) with n adults) changes no verdict on any figure the table shows */
+  const flips = [], close = [];
+  [[20, P20], [40, P40]].forEach(([yrs, Pn]) => { const n = Pn._meta.agents; ENVN.forEach(e => { [['base', Pn.envs[e].base], ['release', Pn.envs[e].rows.release]].forEach(([nm, r]) => ['giniD', 'giniX'].forEach(q => { const g = r[q]; if (verd(g) !== verd(g*n/(n - 1))) flips.push(yrs + 'y ' + e + ' ' + nm + ' ' + q + ' ' + g); [0.25, 0.30].forEach(L => { if (Math.abs(g - L) < 0.002) close.push(yrs + 'y ' + e + ' ' + nm + ' ' + q + ' ' + g.toFixed(4)); }); })); }); });
+  check('audit E1 (v5.1): the small-sample bias of the Gini formula (a factor n/(n-1), 0.2% at 500 adults) changes no verdict in the table', flips.length === 0, flips.length ? 'FLIPS: ' + flips.join('; ') : 'no verdict changes' + (close.length ? '; within 0.002 of a line: ' + close.join(', ') : '; no figure within 0.002 of a line'));
+  /* (d) the manifest: every field well formed, shipped panels come from a committed tree, the engine hash is the page's, both panels from one build, the embedded panels equal dev/runs, and (where the commit is in this clone) harness.js at that commit hashes to the recorded value */
+  const cp = require('child_process'), page = fs.readFileSync(FILE, 'utf8'), blk = HB.pageEngineBlock(page), blkSha = blk ? HB.sha256Of(blk) : null, hexOK = (x, n) => typeof x === 'string' && new RegExp('^[0-9a-f]{' + n + '}$').test(x);
+  const mans = [P20._meta.manifest, P40._meta.manifest], emb = [emb20, emb40], mProb = [];
+  mans.forEach((m, i) => { const t = i ? '40y' : '20y'; if (!m) { mProb.push(t + ' no manifest'); return; }
+    if (!hexOK(m.commit, 40)) mProb.push(t + ' commit'); if (m.dirty !== false) mProb.push(t + ' dirty is ' + m.dirty + ' (a shipped panel must come from a committed tree)'); if (!/^v\d+\.\d+\.\d+$/.test(m.node || '')) mProb.push(t + ' node');
+    ['harnessSha256', 'engineBlockSha256', 'indexSha256'].forEach(k => { if (!hexOK(m[k], 64)) mProb.push(t + ' ' + k); }); if (m.engineBlockSha256 !== blkSha) mProb.push(t + ' engine block hash differs from the page\'s (the engine changed after these panels were made: regenerate them)');
+    if (JSON.stringify(emb[i]._meta.manifest) !== JSON.stringify(m)) mProb.push(t + ' embedded manifest differs from dev/runs'); });
+  if (mans[0] && mans[1]) ['commit', 'harnessSha256', 'engineBlockSha256', 'node'].forEach(k => { if (mans[0][k] !== mans[1][k]) mProb.push('the two panels differ in ' + k); });
+  const embEq = [[P20, emb20], [P40, emb40]].every(([a, b]) => ENVN.every(e => JSON.stringify(a.envs[e].rows.release) === JSON.stringify(b.envs[e].rows.release) && JSON.stringify(a.envs[e].base) === JSON.stringify(b.envs[e].base)));
+  if (!embEq) mProb.push('embedded panels differ from dev/runs');
+  let gitNote = 'not checkable here (commit not in this clone)';
+  try { const h = cp.execFileSync('git', ['show', mans[0].commit + ':harness.js'], {cwd: root, stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64*1024*1024}); if (HB.sha256Of(h) !== mans[0].harnessSha256) mProb.push('harness.js at commit ' + mans[0].commit.slice(0, 8) + ' does not hash to the recorded value'); else gitNote = 'harness.js at commit ' + mans[0].commit.slice(0, 8) + ' hashes to the recorded value'; } catch (e) {}
+  check('audit E5 / V5-08 (v5.1): each panel\'s manifest names a commit (clean tree), the Node version and file hashes; the engine hash equals the page\'s, both panels come from one build, and the embedded panels equal the files in dev/runs',
+    mProb.length === 0, mProb.length ? mProb.slice(0, 4).join('; ') : 'commit ' + mans[0].commit.slice(0, 8) + ', Node ' + mans[0].node + ', engine block ' + mans[0].engineBlockSha256.slice(0, 12) + '; ' + gitNote);
+  /* v5.1 (audit E4): deep links. ?env=&years= opens that view; anything else is ignored; choosing a view rewrites the address but keeps other keys; the link on the page reopens the same view. */
+  const dl = q => { const x = makeWindow(q); x.relInit(); return x; }, pressed = (x, id) => x.document.getElementById(id).getAttribute('aria-pressed') === 'true';
+  const wa = dl('?env=adv&years=40'), wb = dl('?env=zzz&years=7'), wc = dl('?bu=900&env=st'); wc.relYears(40);
+  const linkA = wa.document.getElementById('rel-link').getAttribute('href'), wd = dl(linkA.replace(/#.*$/, '')), qc = new wc.URLSearchParams(wc.location.search);
+  const txtA = (wa.document.getElementById('rel-out') || {}).textContent || '', thA = wa.document.getElementById('rel-th-pov').textContent;
+  const dlOK = wa.REL.env === 'adv' && wa.REL.yrs === 40 && pressed(wa, 'rel-env-adv') && !pressed(wa, 'rel-env-ref') && pressed(wa, 'rel-yrs-40') && !pressed(wa, 'rel-yrs-20') && /at year 40/.test(txtA) && thA === 'Too little wealth, year 40' && /env=adv/.test(linkA) && /years=40/.test(linkA) &&
+    wb.REL.env === 'ref' && wb.REL.yrs === 20 && pressed(wb, 'rel-env-ref') && pressed(wb, 'rel-yrs-20') && wc.REL.env === 'st' && wc.REL.yrs === 40 && qc.get('bu') === '900' && qc.get('env') === 'st' && qc.get('years') === '40' &&
+    wd.REL.env === 'adv' && wd.REL.yrs === 40 && ((wd.document.getElementById('rel-out') || {}).textContent || '') === txtA;
+  check('audit E4 (v5.1): ?env=adv&years=40 opens that view (buttons, text and link agree), bad values are ignored, choosing a view rewrites the address and keeps other keys, and the page\'s own link reopens the same view',
+    dlOK, 'adv/40: ' + wa.REL.env + '/' + wa.REL.yrs + '; bad values: ' + wb.REL.env + '/' + wb.REL.yrs + '; kept bu=' + qc.get('bu') + ' and now ' + wc.location.search + '; link ' + linkA);
+  /* v5.1 (audit E3): the figures on view as a file. JSON and CSV for each of the six views carry the version, the command and the manifest, and every number equals the panel's. */
+  const csvRows = t => t.split('\n').filter(l => l && l[0] !== '#').map(l => { const o = []; let cur = '', q = false; for (let i = 0; i < l.length; i++) { const ch = l[i]; if (q) { if (ch === '"' && l[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; } else if (ch === '"') q = true; else if (ch === ',') { o.push(cur); cur = ''; } else cur += ch; } o.push(cur); return o; });
+  const exProb = []; let exInfo = '';
+  [[20, emb20], [40, emb40]].forEach(([yrs, Pn]) => ENVN.forEach(e => { wr.relSet(e); wr.relYears(yrs); const E = Pn.envs[e], jx = wr.relExport('json'), cx = wr.relExport('csv'), tag = e + ' ' + yrs + 'y';
+    let J = null; try { J = JSON.parse(jx.text); } catch (x) {}
+    if (!J || J._meta.version !== wr.META.VERSION || J._meta.command !== Pn._meta.command || J._meta.years !== yrs || J._meta.environmentKey !== e || JSON.stringify(J._meta.manifest) !== JSON.stringify(Pn._meta.manifest) || JSON.stringify(J.rows) !== JSON.stringify(E.rows) || JSON.stringify(J.base) !== JSON.stringify(E.base) || jx.name !== 'compassionism-v' + wr.META.VERSION + '-' + e + '-' + yrs + 'y.json') exProb.push(tag + ' json');
+    const com = cx.text.split('\n').filter(l => l[0] === '#').join('\n'), R = csvRows(cx.text), head = R[0] || [], col = n => head.indexOf(n), body = R.slice(1), rel = body.find(r => r[0] === 'release') || [], base = body.find(r => r[0] === 'no_programme') || [], rr = E.rows.release;
+    if (!(R.length === 13 && R.every(r => r.length === head.length) && com.indexOf('v' + wr.META.VERSION) > 0 && com.indexOf('Reproduce: ' + Pn._meta.command) > 0 && com.indexOf('commit ' + Pn._meta.manifest.commit) > 0 && cx.name === 'compassionism-v' + wr.META.VERSION + '-' + e + '-' + yrs + 'y.csv')) exProb.push(tag + ' csv shape');
+    const eq = (row, c, v) => +row[col(c)] === v;
+    if (!(eq(rel, 'too_little_wealth_pct', rr.pov) && eq(rel, 'too_little_wealth_change_lo', rr.dPov[1]) && eq(rel, 'below_30_days_change_hi', rr.dBO[2]) && eq(rel, 'design_neutral_change_pts', rr.dBN[0]) && eq(rel, 'programme_inflation_pct_a_year', rr.infl) && eq(rel, 'price_level_median', rr.pLevEndMed) && eq(rel, 'price_level_p90', rr.pLevEndP90) &&
+      eq(rel, 'cost_per_adult_a_year_usd', rr.cost) && eq(rel, 'gini_disposable_income', rr.giniD) && eq(rel, 'unhoused_pct', rr.epPY) && eq(base, 'too_little_wealth_pct', E.base.pov) && eq(base, 'gini_with_price_cuts', E.base.giniX) && base[col('below_30_days_change_pts')] === '' && body.length === 12 && body[1][0] === 'release')) exProb.push(tag + ' csv numbers');
+    exInfo = jx.text.length + ' + ' + cx.text.length + ' characters (last view)'; }));
+  const clicked = [], wdl = makeWindow(); wdl.relInit(); wdl.URL.createObjectURL = () => 'blob:test'; wdl.URL.revokeObjectURL = () => {}; wdl.HTMLAnchorElement.prototype.click = function () { clicked.push(this.download + ' ' + this.getAttribute('href')); };
+  wdl.relSet('adv'); wdl.relYears(40); wdl.document.getElementById('rel-dl-csv').click(); wdl.document.getElementById('rel-dl-json').click();
+  const btnOK = clicked.length === 2 && clicked[0] === 'compassionism-v' + wdl.META.VERSION + '-adv-40y.csv blob:test' && clicked[1] === 'compassionism-v' + wdl.META.VERSION + '-adv-40y.json blob:test';
+  check('audit E3 (v5.1): "Download this view" gives a CSV and a JSON for each of the six views, with the version, the command, the build manifest and every number equal to the panel\'s, and the buttons download the right file names',
+    exProb.length === 0 && btnOK, exProb.length ? exProb.slice(0, 4).join('; ') : '6 views x 2 formats match the panels (' + exInfo + '); buttons: ' + clicked.join(' | '));
   const wn = makeWindow('', {noChart: true});
   let ok = true, why = '';
   try { wn.applyPreset('reference'); wn.runSim(); } catch (e) { ok = false; why = e.message; }
