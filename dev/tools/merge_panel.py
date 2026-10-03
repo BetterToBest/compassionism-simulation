@@ -21,7 +21,7 @@ YF = ' --years=' + Y if Y else ''
 out['_meta']['command'] = 'node harness.js testbed %d release ref,adv,st%s (one process per environment: release ref%s --json=dev/runs/release-panel%s-ref.json, and adv, st; then python3 dev/tools/merge_panel.py%s)' % (out['_meta']['seeds'], YF, YF, SUF, ' ' + Y if Y else '')
 def rnd(x, nd=3):
     if isinstance(x, float): return round(x, nd)
-    if isinstance(x, dict): return {k: rnd(v, 4 if k in ('giniD', 'giniX') else nd) for k, v in x.items()}  # v5.1: Gini keeps four decimals (E1)
+    if isinstance(x, dict): return {k: rnd(v, 4 if k.lower().find('gini') >= 0 else nd) for k, v in x.items()}  # v5.1: Gini keeps four decimals (E1); v5.2: every Gini key (giniW, giniWN, y7GiniD, ...)
     if isinstance(x, list): return [rnd(v, nd) for v in x]
     return x
 out = rnd(out)

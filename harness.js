@@ -134,6 +134,10 @@ var CFG = {
 };
 CFG.FBS_HALF_SAT_LO = Math.log(2) / CFG.FBS_LAMBDA_HI;
 CFG.FBS_HALF_SAT_HI = Math.log(2) / CFG.FBS_LAMBDA_LO;
+/* v5.2 round, step 2 (Oct 3, 2026; Duke's answer d148). The US official poverty threshold for one person under 65 in 2025 (the model's year 0 is in 2025 dollars):
+ * $16,749 (US Census Bureau, Poverty Thresholds for 2025 by Size of Family and Number of Related Children Under 18 Years, "one person (unrelated individual), under 65
+ * years"; quoted in Congressional Research Service, Poverty in 2025, IN12737, Sept 16, 2026). Read only by the v5.2 reporting option (tbRepYear); no engine rule reads it. */
+CFG.POVERTY_THRESHOLD_ONE = 16749;
 
 var RNG = Math.random;
 /* v4.16: counterfactual switch for the PTH appreciation-accounting question logged in
@@ -458,6 +462,9 @@ var SPEND_SOURCED = 0.593, SPEND_2024 = 0.554;
 /* Plan step 18 (Oct 2, 2026): the v5.0 release row's switches beyond session 30's: private ESPs pass their premium to BU customers (step 14),
  * creative output at market value and capacity within a year (step 15), the spending layer (step 16). Read by the testbed's release section and the page. */
 var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}, gc:true};  /* v5.1 (audit V5-02): gc:true = the framework BLEI gate reads this year's BU; every release-panel row carries it */
+/* v5.2 round (Oct 3, 2026): the study-level options the v5.2 release panel adds to every row, the no-programme row included (step 2: the Year 7 and poverty-line reporting
+ * and the n/(n - 1) Gini correction; reporting only). The testbed's release section uses them unless run with --v51. */
+var REL_V52_STUDY = {rep52:true, giniNN1:true};
 /* Plan step 9 (Oct 1, 2026; dev/reports/09-avoided-costs.md): PUBLIC COSTS OF POVERTY AVOIDED, reported beside the programme's cost (no feedback
  * into the model). Homelessness (with the health care and justice costs that come with it): the model's extreme-poverty overlay (v4.18: HUD
  * 2025 AHAR point-in-time rate, scaled by housing distress against year 0) gives unhoused person-years; each is costed at two sourced ends:
@@ -581,7 +588,7 @@ var TB = null;
  * assigns later (checked equal in every agent-year by the unit suite), so the gate reads this year's spend. false (the default) is bit-identical to v5.0. A
  * testbed row sets it with c.gc (n1Row option gc); v5.1's release row turns it on (REL_V5). No random draw is added or moved. */
 var GATE_CURRENT = false;
-var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true};
+var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true, rep52:false, giniNN1:false};  /* v5.2 step 2: rep52 (the Year 7 and federal-poverty-line reporting) and giniNN1 (the n/(n - 1) Gini correction), reporting only, off by default */
 function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, convM:0, buIss:0, ctax:0, cutFree:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0,
   bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0}; }  /* session 19 (s38): business premium and ESP payroll by group, years 1-19 (reporting only) */
 function tbYear(p, colaF){
@@ -649,6 +656,47 @@ function tbBleiRes(BG, R){
   TB_BLEI_DEFS.forEach(function(d, di){ TB_BLEI_GRPS.forEach(function(g, gi){ var j = di*3 + gi, k = 'b' + d + g;
     R[k + 'Py'] = BG.py[j] ? BG.pov[j]/BG.py[j]*100 : 0; R[k + 'Cr'] = BG.py[j] ? BG.cri[j]/BG.py[j]*100 : 0; R[k + '20'] = BG.n20[j] ? BG.pov20[j]/BG.n20[j]*100 : 0; R[k + 'Md'] = medianOf(BG.v20[j]); }); });
   return R;
+}
+/* v5.2 round, step 2 (Oct 3, 2026; Duke's answers d148 and d149; dev/DECISIONS.md, Session 35). Reporting only: no random draw and no state any rule reads. With the testbed
+ * option rep52 (off by default, so every earlier figure and table is unchanged) a run also records:
+ *  - the share of adults below the US official poverty line (CFG.POVERTY_THRESHOLD_ONE, one person under 65, 2025 dollars), indexed each year to the model's price level
+ *    the way the Census indexes its thresholds to prices: "fpl" on the official measure's own income (money income before tax: wage earnings, conversion proceeds and
+ *    cash transfers; the BU, like food stamps in the official measure, are not money income), and "fplX" on resources closer to the Census Supplemental Poverty Measure
+ *    (disposable income after the contribution plus the value of the BU and the price cuts, a._tbExt), still against the official threshold;
+ *  - each measure at Year 7 (year index 6, the Research Hub's date for its targets) and at the run's last year: those two poverty-line shares, the shares below the cost of
+ *    living, below 30 days of basic living (BLEI, the BLEI paper's own reading and the design-neutral one) and with too little wealth, the unhoused share, and four Ginis:
+ *    disposable income (giniD), income counting the value of price cuts (giniX), wealth with debts counted as zero (giniW, the convention of the income Ginis and of the
+ *    BLEI paper's wealth Gini) and wealth with debts kept (giniWN, the Survey of Consumer Finances convention; it can exceed 1);
+ *  - the same shares on fixed-dollar lines ("Nom": the wealth line, the 30-day BLEI line and the poverty threshold not moved with prices), to show what the price indexing
+ *    of the lines does; the main readings move with the price level (decision D2, session 2);
+ *  - person-year shares over the run for the poverty-line measures and the fixed-dollar BLEI readings.
+ * giniNN1 multiplies every Gini of the run by n/(n - 1), which removes the sample Gini's downward bias with n adults (0.2% at 500); off, every Gini is as before. */
+var TB_REP_SNAP = ['fpl', 'fplX', 'fplNom', 'f0', 'bO', 'bN', 'bONom', 'bNNom', 'pov', 'povNom', 'ep', 'giniD', 'giniX', 'giniW', 'giniWN'];
+var TB_REP_KEYS = ['fplPY', 'fplXPY', 'fplNomPY', 'bOAPyNom', 'bNAPyNom'].concat(TB_REP_SNAP.map(function(k){ return 'y7' + k.charAt(0).toUpperCase() + k.slice(1); }), TB_REP_SNAP.map(function(k){ return 'e' + k.charAt(0).toUpperCase() + k.slice(1); }));
+function tbCashIncome(a){ return (+a.yrWageUSD || 0) + (+a.yrConvUSD || 0) + (+a.yrUbiUSD || 0) + (+a.yrTbCash || 0); }
+/* A Gini that keeps negative values (debts) as they are: the sorted-rank formula equals the mean absolute difference over twice the mean for any values with a positive total. */
+function giniOfArrNeg(x){ var v = x.map(function(z){ return +z || 0; }).sort(function(a, b){ return a - b; }), n = v.length, t = 0, w = 0;
+  for (var i = 0; i < n; i++){ t += v[i]; w += (i + 1)*v[i]; } return n > 0 && t > 0 ? 2*w/(n*t) - (n + 1)/n : 0; }
+function tbRepAcc(){ return {n:0, fpl:0, fplX:0, fplNom:0, bONom:0, bNNom:0, y7:null, end:null}; }
+function tbRepYear(R, agents, p, o, yr, T, ep){
+  var n = agents.length, lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL, thr = CFG.POVERTY_THRESHOLD_ONE, L30 = CFG.BLEI_PRECARIOUS_MAX;
+  var s = {fpl:0, fplX:0, fplNom:0, f0:0, bO:0, bN:0, bONom:0, bNNom:0, pov:0, povNom:0};
+  for (var i = 0; i < n; i++){ var a = agents[i], c = tbCashIncome(a), bo = agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf), bn = agentBLEI(a, 0, false, false, false, 0, false) + (a._tbM || 0)/CFG.BASE_DAILY_COST;
+    if (c < thr*lf) s.fpl++; if (c < thr) s.fplNom++; if ((a._tbExt || 0) < thr*lf) s.fplX++; if ((a._tbGap || 0) > 0) s.f0++;
+    if (bo/lf < L30) s.bO++; if (bn/lf < L30) s.bN++; if (bo < L30) s.bONom++; if (bn < L30) s.bNNom++;
+    if (a.wealth < CFG.POVERTY_LINE*lf) s.pov++; if (a.wealth < CFG.POVERTY_LINE) s.povNom++; }
+  R.n += n; R.fpl += s.fpl; R.fplX += s.fplX; R.fplNom += s.fplNom; R.bONom += s.bONom; R.bNNom += s.bNNom;
+  if (yr === 6 || yr === T - 1){ var gc = o.giniNN1 && n > 1 ? n/(n - 1) : 1, q = {ep:ep};
+    Object.keys(s).forEach(function(k){ q[k] = s[k]/n*100; });
+    q.giniD = giniOfArr(agents.map(function(a){ return a._tbDisp || 0; }))*gc; q.giniX = giniOfArr(agents.map(function(a){ return a._tbExt || 0; }))*gc;
+    q.giniW = giniOfArr(agents.map(function(a){ return a.wealth; }))*gc; q.giniWN = giniOfArrNeg(agents.map(function(a){ return a.wealth; }))*gc;
+    if (yr === 6) R.y7 = q; if (yr === T - 1) R.end = q; }
+}
+function tbRepRes(R, out){
+  function pc(k){ return R && R.n ? R[k]/R.n*100 : 0; }
+  out.fplPY = pc('fpl'); out.fplXPY = pc('fplX'); out.fplNomPY = pc('fplNom'); out.bOAPyNom = pc('bONom'); out.bNAPyNom = pc('bNNom');
+  TB_REP_SNAP.forEach(function(k){ var K = k.charAt(0).toUpperCase() + k.slice(1); out['y7' + K] = R && R.y7 ? R.y7[k] : 0; out['e' + K] = R && R.end ? R.end[k] : 0; });
+  return out;
 }
 function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   var C = TB.cur, idx = mlc/CFG.LIVING_WAGE_ANNUAL, conv = +a.yrConvUSD || 0;
@@ -2313,6 +2361,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   THETA_DENS = null;
   var epD0 = housingDistressYear0(agents), epSum = 0;  /* plan step 9: unhoused person-years (reporting only) */
   var BG = tbBleiAcc();  /* session 21 (s41; i10-1): BLEI by group, every year (reporting only, no RNG) */
+  var R52 = o.rep52 ? tbRepAcc() : null;  /* v5.2 step 2: Year 7, the poverty line, fixed-dollar lines, the wealth Gini (reporting only, no RNG) */
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
     for (var yr = 0; yr < yMax; yr++){
@@ -2320,6 +2369,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       runYear(agents, yr, p, recPath ? recPath[yr] : CALM0);
       tbBleiYear(BG, agents, p, o, yr === T - 1);
       if (!o.noEP){ var epY = extremePovertyOf(housingDistressOf(agents), epD0, p); epSum += epY ? epY.total/100 : 0; }  /* plan step 9 */  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
+      if (R52) tbRepYear(R52, agents, p, o, yr, T, (!o.noEP && epY) ? epY.total : 0);  /* v5.2 step 2 */
       var A = PRICE.acc, C = TB.cur || tbNewAcc(), d = A.n ? A.essD/A.n : 1, tauUsed = TB.tau;
       var wbInc = A.wageBonusNS - wbPrev; wbPrev = A.wageBonusNS;
       var extra = (o.floorUnmatched ? A.unmet : 0) + (1 - o.aw)*(o.awLevel ? A.wageBonus : wbInc);
@@ -2374,7 +2424,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var gP = grpOf(function(a){ return a._tbPart; }), gN = grpOf(function(a){ return !a._tbPart; }), gH = grpOf(function(a){ return a._tbPTH; }), gL = grpOf(function(a){ return a._tbLow; }), gT = grpOf(function(a){ return a._tbTop; });
   /* Session 8 (A5): spells, persistence, and the year-20 income distribution (reporting only). */
   var sp = 0, spY = 0, ever = 0, chron = 0; agents.forEach(function(a){ sp += a._tbSp || 0; spY += a._tbF0 || 0; if (a._tbF0 > 0) ever++; if ((a._tbF0 || 0) >= T/2) chron++; });
-  var giniD = giniOfArr(agents.map(function(a){ return a._tbDisp || 0; })), giniX = giniOfArr(agents.map(function(a){ return a._tbExt || 0; }));
+  var gcF = o.giniNN1 && n > 1 ? n/(n - 1) : 1;  /* v5.2 step 2: the n/(n - 1) correction (x 1 exactly when off) */
+  var giniD = giniOfArr(agents.map(function(a){ return a._tbDisp || 0; }))*gcF, giniX = giniOfArr(agents.map(function(a){ return a._tbExt || 0; }))*gcF;
   var pT = path[T-1], p10 = path[Math.min(T-1, 9)], realT = (p.cola ? pT.colaLevel : 1)/pT.full;
   function pjQ(k){ return (PROJ && PJS && PJS.acc.partY > 0) ? PJS.acc[k]/PJS.acc.partY : 0; }  /* N1 (session 15) */
   var pjSv = 0; if (PROJ && PJS && PJS.acc.partY > 0){ agents.forEach(function(a){ pjSv += (a._pjSaved || 0) + (a._pjGiftH || 0); }); pjSv /= Math.max(1, PJS.acc.partY/T); }
@@ -2386,7 +2437,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var bI = path[T-1].bIdx, mx = 0, tauS = 0;
   for (var t = 1; t < T; t++) mx = Math.max(mx, path[t].bIdx/path[t-1].bIdx - 1);
   path.forEach(function(q){ tauS += q.tau; });
-  return {path:path, res:tbBleiRes(BG, {
+  return {path:path, res:tbRepRes(R52, tbBleiRes(BG, {
     endoAnn:Math.pow(bI, 1/(T - 1)) - 1, endoMax:mx, pov:pov/n*100, bleiPov:bpov/n*100, nbleiPov:nbpov/n*100, tgt:L.pd > 0 ? L.tgt/L.pd : 0, medWealthReal:medianOf(agents.map(function(a){ return a.wealth; }))/full,
     fgt0:g0/n*100, fgt1:g1/n*100, fgt2:g2/n*100, fgt0PY:L.f0/L.n*100, fgt1PY:L.f1/L.n*100, fgt2PY:L.f2/L.n*100,
     cost:L.cost/NY, cCash:L.cash/NY, cEndow:L.endow/NY, cBU:L.bu/NY, cConv:L.conv/NY, cCut:(L.cutPT + L.cutG)/NY, cCap:L.cap/NY, cPth:L.pth/NY,
@@ -2422,7 +2473,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     srcIss:L.buIss/NY, srcPay:(L.bu + L.conv)/NY, srcTax:L.ctax/NY, srcM:L.convM/NY, srcCover:L.buIss > 0 ? L.ctax/L.buIss*100 : 0,
     /* Plan step 4: participation share at years 5, 10 and 19 (%), and joins and leaves over the run per 100 adults */
     jnP5:jnQ(5), jnP10:jnQ(10), jnP19:jnQ(T - 1), jnJoin:jnOn ? JNS.join/n*100 : 0, jnLeave:jnOn ? JNS.leave/n*100 : 0,
-    csFree:L.cutFree/NY, epPY:epSum/T*100, octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)})};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
+    csFree:L.cutFree/NY, epPY:epSum/T*100, octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)}))};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
@@ -2436,7 +2487,7 @@ var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthRe
   'bzPay','esPrem','payPart','payNon','esPremW','esBUW','esShare','esRate','esCapB','esConv','esRet',  /* N1 (session 19, s38) */
   'gPartF2','gNonF2','gPartK','gNonK',
   'spPool','spOwn','spPtfS','spCut','spCutN','spFreed','spCash','spProfit','spProfW','spReinv','spRest','spCap','spSw','spD1','spD2','spNon','spCarry',
-  'pdC5','pdC10','pdC19','pdMem19','pdMatch','srcIss','srcPay','srcTax','srcM','srcCover','jnP5','jnP10','jnP19','jnJoin','jnLeave','csFree','octMean','epPY'].concat(TB_BLEI_DEFS.reduce(function(r, d){ TB_BLEI_GRPS.forEach(function(g){ ['Py','Cr','20','Md'].forEach(function(m){ r.push('b' + d + g + m); }); }); return r; }, []));  /* session 21 (s41) */
+  'pdC5','pdC10','pdC19','pdMem19','pdMatch','srcIss','srcPay','srcTax','srcM','srcCover','jnP5','jnP10','jnP19','jnJoin','jnLeave','csFree','octMean','epPY'].concat(TB_REP_KEYS, TB_BLEI_DEFS.reduce(function(r, d){ TB_BLEI_GRPS.forEach(function(g){ ['Py','Cr','20','Md'].forEach(function(m){ r.push('b' + d + g + m); }); }); return r; }, []));  /* session 21 (s41) */
 /* Paired study over seeds 1..N (optionally lo..hi). envP: the Compassionism scenario that defines the environment, the essentials
  * supply path (its matched Baseline, as in sessions 2-5) and the groups (participants: latent uCCO < its partRate; PTH members:
  * latent uPTH < its pthUptake, the same agents in every design). cfgs: [{p, o, cm, pw}]; pw switches PATHWAY_OFF entries for that
@@ -3486,7 +3537,7 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
-Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, matrixUnitSuite, docCounts });
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, matrixUnitSuite, docCounts, v52UnitSuite, REL_V52_STUDY, tbRepYear, giniOfArrNeg, TB_REP_KEYS, TB_REP_SNAP });
 
 /* The eleven readings of the release panel (v5.0's main row, H1 and the nine others), as plain row options for n1Row. Top-level so the release section of `testbed` and
  * domtest's page-versus-harness parity check build the same rows (v5.1, audit V5-04). SC is the spending share (SPEND_SOURCED). Pure data: no engine state is read. */
@@ -3675,6 +3726,59 @@ function gateUnitSuite(){
   return out;
 }
 
+/* v5.2 round (Oct 3, 2026; dev/DECISIONS.md, Session 35): tests for the round's switches, added step by step. Harness-only; run by `unit`.
+ * Step 2: the reporting option rep52 (Year 7, the official poverty line, fixed-dollar lines, the wealth Gini) and the Gini correction giniNN1. */
+function v52UnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { tbRepYear = sv.ry; mulberry32 = sv.mb; CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; JOIN = sv.jn; COST = sv.cs; MULT = sv.ml; GATE_CURRENT = sv.gc; SPS = null; PDS = null; ESS = null; JNS = null; MLS = null;
+      resetNR6(sv.nr); tbSetG(sv.g); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; } }
+  var SO = {fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, OLD = TB_KEYS.filter(function(k){ return TB_REP_KEYS.indexOf(k) < 0; });
+  function cfgOf(P){ var PR = tbPresets(P), c = n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5)); c.sc = SPEND_SOURCED; return [{p:PR.baseline(), sc:SPEND_SOURCED}, c]; }
+  function study(P, seed, extra){ return tbStudy(cfgOf(P), seed, P, Object.assign({}, SO, extra || {}), seed); }
+  function same(x, y, keys){ return keys.filter(function(k){ return !(x[k] === y[k] || (x[k] !== x[k] && y[k] !== y[k])); }); }
+  function rel(a, b){ return Math.abs(a - b)/Math.max(1e-12, Math.abs(a), Math.abs(b)); }
+  t('step 2, reporting only: with rep52 on, every earlier testbed measure equals the run without it bit for bit, in both rows (no programme and the release row), and the number of random draws is unchanged; with it off the new measures are 0 (Adverse, seed 2)', function(){
+    var P = Object.assign({}, ADVERSE_REFERENCE), orig = mulberry32, n = [0, 0], k = 0; study(P, 2);  /* warm the supply-path cache (s3BaseS), so both counted studies draw the same way */
+    mulberry32 = function(sd){ var f = orig(sd); return function(){ n[k]++; return f(); }; };
+    try { var A = study(P, 2); k = 1; var B = study(P, 2, {rep52:true}); } finally { mulberry32 = orig; }
+    var d = same(A[0], B[0], OLD).concat(same(A[1], B[1], OLD)), zero = TB_REP_KEYS.every(function(q){ return A[0][q] === 0 && A[1][q] === 0; }), moved = TB_REP_KEYS.some(function(q){ return B[1][q] !== 0; });
+    return {pass:d.length === 0 && n[0] === n[1] && zero && moved, detail:'earlier measures differing: ' + (d.length ? d.slice(0, 5).join(', ') : 'none') + '; draws ' + n[0] + ' and ' + n[1] + '; new measures 0 when off: ' + zero + ', filled when on: ' + moved}; });
+  t('step 2, consistency: at the last year the new snapshot equals the testbed\'s own end-of-run figures (BLEI under 30 days on both readings, too little wealth, below the cost of living, both income Ginis), with and without the Gini correction (Reference seed 1, Stress seed 3)', function(){ var bad = [];
+    [[FULL_INTEGRATION, 1], [STRESS_TEST, 3]].forEach(function(c){ [false, true].forEach(function(nn){ var R = study(Object.assign({}, c[0]), c[1], {rep52:true, giniNN1:nn});
+      R.forEach(function(r, i){ [['eBO', 'bleiPov'], ['eBN', 'nbleiPov'], ['ePov', 'pov'], ['eF0', 'fgt0'], ['eGiniD', 'giniD'], ['eGiniX', 'giniX']].forEach(function(q){ if (rel(r[q[0]], r[q[1]]) > 1e-12) bad.push(c[1] + '/' + i + '/' + nn + ' ' + q[0] + ' ' + r[q[0]] + ' vs ' + r[q[1]]); }); }); }); });
+    return {pass:bad.length === 0, detail:bad.length ? bad.slice(0, 4).join('; ') : 'all equal (2 environments x 2 rows x correction off/on)'}; });
+  t('step 2, Year 7 is year index 6: in a 7-year run the Year 7 snapshot is the last year\'s, and in a 20-year run it differs from it (Reference seed 1)', function(){
+    var P7 = Object.assign({}, FULL_INTEGRATION, {years:7}), R7 = study(P7, 1, {rep52:true}), R20 = study(Object.assign({}, FULL_INTEGRATION), 1, {rep52:true});
+    var eq = TB_REP_SNAP.every(function(k){ var K = k.charAt(0).toUpperCase() + k.slice(1); return R7[1]['y7' + K] === R7[1]['e' + K]; }), df = TB_REP_SNAP.some(function(k){ var K = k.charAt(0).toUpperCase() + k.slice(1); return R20[1]['y7' + K] !== R20[1]['e' + K]; });
+    return {pass:eq && df, detail:'7-year run: Year 7 = last year ' + eq + '; 20-year run differs: ' + df}; });
+  t('step 2, the Gini correction multiplies every Gini of a run by n/(n - 1) and changes nothing else (Reference seed 1)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION), A = study(P, 1, {rep52:true}), B = study(P, 1, {rep52:true, giniNN1:true}), f = P.nAgents/(P.nAgents - 1), bad = [];
+    var G = ['giniD', 'giniX', 'y7GiniD', 'y7GiniX', 'y7GiniW', 'y7GiniWN', 'eGiniD', 'eGiniX', 'eGiniW', 'eGiniWN'];
+    [0, 1].forEach(function(i){ G.forEach(function(k){ if (A[i][k] > 0 && rel(B[i][k], A[i][k]*f) > 1e-12) bad.push(i + ' ' + k); }); bad = bad.concat(same(A[i], B[i], TB_KEYS.filter(function(k){ return G.indexOf(k) < 0; })).map(function(k){ return i + ' ' + k + ' moved'; })); });
+    return {pass:bad.length === 0, detail:bad.length ? bad.slice(0, 4).join('; ') : 'factor ' + f.toFixed(6) + ' on all ' + G.length + ' Ginis, both rows; nothing else moved; release row income Gini ' + A[1].giniD.toFixed(4) + ' -> ' + B[1].giniD.toFixed(4)}; });
+  t('step 2, the official poverty line by hand: at the last year, the share of adults whose money income (earnings + conversion proceeds + cash transfers) is under $16,749 x the price level equals the snapshot, and the fixed-dollar line catches no more adults than the indexed one while prices are above today\'s (release row, Adverse seed 2)', function(){
+    var P = Object.assign({}, ADVERSE_REFERENCE), hand = [], orig = tbRepYear;
+    tbRepYear = function(R, agents, p, o, yr, T, ep){ if (yr === T - 1){ var lf = agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL, c = 0, cn = 0; agents.forEach(function(a){ var m = (a.yrWageUSD || 0) + (a.yrConvUSD || 0) + (a.yrUbiUSD || 0) + (a.yrTbCash || 0); if (m < 16749*lf) c++; if (m < 16749) cn++; }); hand.push([c/agents.length*100, cn/agents.length*100, lf]); } return orig(R, agents, p, o, yr, T, ep); };
+    try { var R = study(P, 2, {rep52:true}); } finally { tbRepYear = orig; }
+    var ok = hand.length === 2 && rel(R[0].eFpl, hand[0][0]) < 1e-12 && rel(R[1].eFpl, hand[1][0]) < 1e-12 && R[1].eFplNom === hand[1][1] && (hand[1][2] < 1 || R[1].eFplNom <= R[1].eFpl);
+    return {pass:ok, detail:'no programme ' + R[0].eFpl.toFixed(1) + '% (hand ' + (hand[0] ? hand[0][0].toFixed(1) : '?') + '%); release ' + R[1].eFpl.toFixed(1) + '% (hand ' + (hand[1] ? hand[1][0].toFixed(1) : '?') + '%), fixed-dollar ' + R[1].eFplNom.toFixed(1) + '% at price level ' + (hand[1] ? hand[1][2].toFixed(2) : '?')}; });
+  t('step 2, fixed-dollar lines: with the testbed\'s lines option set to nominal, every fixed-dollar reading equals the main one (Adverse seed 2)', function(){
+    var R = study(Object.assign({}, ADVERSE_REFERENCE), 2, {rep52:true, lines:'nominal'}), bad = [];
+    R.forEach(function(r, i){ [['eFplNom', 'eFpl'], ['ePovNom', 'ePov'], ['eBONom', 'eBO'], ['eBNNom', 'eBN'], ['bOAPyNom', 'bOAPy'], ['bNAPyNom', 'bNAPy'], ['fplNomPY', 'fplPY'], ['y7PovNom', 'y7Pov']].forEach(function(q){ if (rel(r[q[0]], r[q[1]]) > 1e-12) bad.push(i + ' ' + q[0]); }); });
+    return {pass:bad.length === 0, detail:bad.length ? bad.join(', ') : 'equal in both rows'}; });
+  t('step 2, giniOfArrNeg: equals giniOfArr on values with no debts; with debts it equals the mean absolute difference over twice the mean (300 random arrays), and can exceed 1', function(){
+    var g = mulberry32(52), bad = 0, over = false;
+    for (var i = 0; i < 300; i++){ var n = 2 + Math.floor(g()*40), x = [], y = []; for (var j = 0; j < n; j++){ x.push(g()*1000); y.push(g()*1000 - 300); }
+      if (Math.abs(giniOfArrNeg(x) - giniOfArr(x)) > 1e-12) bad++;
+      var m = y.reduce(function(s, v){ return s + v; }, 0)/n, d = 0; y.forEach(function(a){ y.forEach(function(b){ d += Math.abs(a - b); }); });
+      if (m > 0){ var want = d/(2*n*n*m); if (Math.abs(giniOfArrNeg(y) - want) > 1e-9*Math.max(1, want)) bad++; if (want > 1) over = true; } }
+    return {pass:bad === 0 && over && giniOfArrNeg([-5, 0, 10]) > 1, detail:'mismatches ' + bad + '; a value above 1 seen: ' + over}; });
+  return out;
+}
+
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
   /* v4.21: `--agents=N` sets the population of every run in every mode (default 500, the page's
@@ -3842,11 +3946,15 @@ if (require.main === module) {
     console.log('\n=== matrixUnitSuite(): audit V5-05, the feature matrix: framework alone, each module added, every module together (harness-only) ===');
     MXU.forEach(function(x){ if (!x.pass) mxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + MXU.length + ' run, ' + mxf + ' failed');
+    var V52U = v52UnitSuite(), v52f = 0;
+    console.log('\n=== v52UnitSuite(): the v5.2 round (harness-only) ===');
+    V52U.forEach(function(x){ if (!x.pass) v52f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + V52U.length + ' run, ' + v52f + ' failed');
     var GCU = gateUnitSuite(), gcf = 0;
     console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
     GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
@@ -5440,13 +5548,34 @@ if (require.main === module) {
     /* Plans steps 4 onward (Oct 1, 2026): one printer for each step's restudy. rows: [{l, v (n1Row options; v.o merged into the row's options), k, vs}];
      * the first row must be 'today'. ext: extra columns [header, function(r) -> text]. Prints poverty (FGT2, basket and wealth poverty, each
      * against its pair with a 95% CI), money and work, the extra columns, groups and BLEI by group. */
+    /* v5.2 round, step 2 (Oct 3, 2026): the panel's Year 7 and poverty-line block for one row (r) against no programme (B; null for the no-programme row itself), and its
+     * printed table. Shares in percent, Ginis to 4 decimals; d* are paired changes against no programme with 95% intervals. */
+    function rep52Keys(r, B){ var K = {}, f = function(x, d){ return +(+x).toFixed(d); };
+      ['y7', 'e'].forEach(function(t){ var q = K[t === 'y7' ? 'y7' : 'end'] = {};
+        TB_REP_SNAP.forEach(function(k){ var key = t + k.charAt(0).toUpperCase() + k.slice(1); q[k] = /^gini/.test(k) ? f(r[key], 4) : f(r[key], k === 'ep' ? 3 : 1); }); });
+      K.py = {fpl:f(r.fplPY, 1), fplX:f(r.fplXPY, 1), fplNom:f(r.fplNomPY, 1), bONom:f(r.bOAPyNom, 1), bNNom:f(r.bNAPyNom, 1)};
+      if (B){ var d3 = function(k){ var x = tbDiff(r, B, k), q = /Gini/.test(k) ? 4 : 2; return [+x.m.toFixed(q), +x.lo.toFixed(q), +x.hi.toFixed(q)]; };
+        K.d = {y7Fpl:d3('y7Fpl'), eFpl:d3('eFpl'), fplPY:d3('fplPY'), y7FplX:d3('y7FplX'), eFplX:d3('eFplX'), y7BO:d3('y7BO'), eBO:d3('eBO'), y7F0:d3('y7F0'), y7Pov:d3('y7Pov'), y7GiniD:d3('y7GiniD'), eGiniW:d3('eGiniW')}; }
+      return K; }
+    function rep52Print(R, lbl, envName, T){
+      var p1 = function(x){ return (+x).toFixed(1) + '%'; }, g3 = function(x){ return (+x).toFixed(3); };
+      console.log('\nv5.2 reporting (step 2): the Hub\'s Year 7 targets (poverty rate under 2%, from about 12%; Gini 0.25-0.30, from 0.48; the BLEI paper\'s wealth Gini target 0.25) against ' + envName + ', at Year 7 and year ' + T + '. Shares of adults in that year. Poverty line: the official threshold for one person ($' + CFG.POVERTY_THRESHOLD_ONE.toLocaleString('en-US') + ', 2025), moved with the price level; "money income" = earnings, conversion proceeds and cash transfers before tax; "SPM-style" = income after the contribution plus the value of BU and price cuts. Ginis carry the n/(n - 1) correction.');
+      console.log('| Design | Below the poverty line, money income: yr 7 / yr ' + T + ' / person-years | SPM-style: yr 7 / yr ' + T + ' | Below the cost of living: yr 7 / yr ' + T + ' | BLEI under 30 days (paper; neutral): yr 7 / yr ' + T + ' | Too little wealth: yr 7 / yr ' + T + ' | Unhoused: yr 7 / yr ' + T + ' | Income Gini: yr 7 / yr ' + T + ' | Wealth Gini (debts as 0; debts kept): yr 7 / yr ' + T + ' |');
+      console.log('|---|---|---|---|---|---|---|---|---|');
+      R.forEach(function(r, i){ console.log('| ' + lbl[i] + ' | ' + p1(r.y7Fpl) + ' / ' + p1(r.eFpl) + ' / ' + p1(r.fplPY) + ' | ' + p1(r.y7FplX) + ' / ' + p1(r.eFplX) + ' | ' + p1(r.y7F0) + ' / ' + p1(r.eF0) + ' | ' + p1(r.y7BO) + '; ' + p1(r.y7BN) + ' / ' + p1(r.eBO) + '; ' + p1(r.eBN) +
+        ' | ' + p1(r.y7Pov) + ' / ' + p1(r.ePov) + ' | ' + (+r.y7Ep).toFixed(2) + '% / ' + (+r.eEp).toFixed(2) + '% | ' + g3(r.y7GiniD) + ' / ' + g3(r.eGiniD) + ' | ' + g3(r.y7GiniW) + '; ' + g3(r.y7GiniWN) + ' / ' + g3(r.eGiniW) + '; ' + g3(r.eGiniWN) + ' |'); });
+      console.log('\nFixed-dollar lines (not moved with prices; the main readings above move with the price level): too little wealth at year ' + T + ', BLEI under 30 days over the run (paper; neutral), below the poverty line at year ' + T + '.');
+      console.log('| Design | Too little wealth: price-indexed / fixed | BLEI person-years, paper: indexed / fixed | neutral: indexed / fixed | Poverty line, money income: indexed / fixed |');
+      console.log('|---|---|---|---|---|');
+      R.forEach(function(r, i){ console.log('| ' + lbl[i] + ' | ' + p1(r.ePov) + ' / ' + p1(r.ePovNom) + ' | ' + p1(r.bOAPy) + ' / ' + p1(r.bOAPyNom) + ' | ' + p1(r.bNAPy) + ' / ' + p1(r.bNAPyNom) + ' | ' + p1(r.eFpl) + ' / ' + p1(r.eFplNom) + ' |'); });
+    }
     function stepSection(tag, e, rows, ext, base){
       var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, cm = 'framework', idx = {};
       rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
       var cfg = [Object.assign({p:PR.baseline()}, base || {})], lbl = ['No program (Baseline)' + (base && typeof base.sc === 'number' ? ', spending share ' + base.sc : '')];
       rows.forEach(function(r){ var c = r.base ? Object.assign({p:PR.baseline()}, r.v) : n1Row(PR, cm, r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); cfg.push(c); lbl.push(r.l); });
       function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
-      var t0 = Date.now(), R = tbStudy(cfg, nT, P, base && typeof base.sc === 'number' ? Object.assign({}, o, {sc:base.sc}) : o), B = R[0], TD = R[idx.today];
+      var t0 = Date.now(), R = tbStudy(cfg, nT, P, Object.assign({}, o, base && base.so || {}, base && typeof base.sc === 'number' ? {sc:base.sc} : {})), B = R[0], TD = R[idx.today];  /* v5.2: base.so = extra study-level options (the v5.2 reporting) */
       function ci(d, n){ return sg(d.m, n) + ' [' + sg(d.lo, n) + ', ' + sg(d.hi, n) + ']'; }
       console.log('\n--- ' + tag + ': ' + E[0] + ' | ' + MLBL[cm] + ' | seeds 1-' + nT + ' | ' + ((Date.now() - t0)/1000).toFixed(0) + ' s ---');
       /* Plan step 8 (Oct 1, 2026): BLEI leads. Days of basic living an adult's resources cover (20% of wealth + a share of a month's wage + a month of
@@ -5560,6 +5689,8 @@ if (require.main === module) {
      * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
     if (secT === 'release'){ var RJ = {_meta:{engine:'release engine (harness.js testbed, section release)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
+      var V52 = process.argv.indexOf('--v51') < 0, SO52 = V52 ? REL_V52_STUDY : {};  /* v5.2: the round's reporting is on unless --v51 asks for the v5.1 panel exactly (the bit-identity check) */
+      if (V52) RJ._meta.v52 = {report:Object.assign({}, SO52), thresholdOne2025:CFG.POVERTY_THRESHOLD_ONE};
       envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
@@ -5572,15 +5703,17 @@ if (require.main === module) {
            ['Prisons, hospitals and psychiatric care avoided per adult-year: main (prisons + health) / high', function(r){ var w = aw(r); return $(w.main) + ' (' + $(w.jail) + ' + ' + $(w.health) + ') / ' + $(w.high); }],
            ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
-           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC});
+           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC, so:SO52});
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
+        if (V52){ rep52Print(R, ['No programme'].concat(rows.map(function(rw){ return rw.l.trim(); })), E[0], YRS > 0 ? YRS : 20); out.base.rep = rep52Keys(B, null); }
         function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
         rows.forEach(function(rw, i){ var r = R[i + 1]; out.rows[rw.j] = {label:rw.l.trim(), cost:Math.round(r.cost), tau:+(r.tauMean*100).toFixed(1), infl:+(r.endoAnn*100).toFixed(1), pLevEnd:+r.pLev20.toFixed(3), pLevEndMed:+quantileOf(r._s.pLev20, 0.5).toFixed(3), pLevEndP10:+quantileOf(r._s.pLev20, 0.1).toFixed(3), pLevEndP90:+quantileOf(r._s.pLev20, 0.9).toFixed(3),
           giniD:+r.giniD.toFixed(4), giniX:+r.giniX.toFixed(4), epPY:+r.epPY.toFixed(3),  /* v5.1 (audit E1): Gini of disposable income (and with in-kind price cuts) at the last year, mean over seeds; unhoused share of person-years (the model's extreme-poverty figure) */
           hrs:+(r.hrs*100).toFixed(1), fgt2PY:+r.fgt2PY.toFixed(2), fgt0PY:+r.fgt0PY.toFixed(1), pov:+r.pov.toFixed(1), bOAPy:+r.bOAPy.toFixed(1), bNAPy:+r.bNAPy.toFixed(1), bOAMd:Math.round(r.bOAMd), bNAMd:Math.round(r.bNAMd),
           dFgt2:d3(r, 'fgt2PY'), dF0:d3(r, 'fgt0PY'), dPov:d3(r, 'pov'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'),
           grp:{part:Math.round(r.gPartRes - B.gPartRes), non:Math.round(r.gNonRes - B.gNonRes), low:Math.round(r.gLowRes - B.gLowRes), top:Math.round(r.gTopRes - B.gTopRes)}, worse:grpCell(r, B).split(' | ')[1],
-          unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)}; });
+          unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)};
+          if (V52) out.rows[rw.j].rep = rep52Keys(r, B); });
         RJ.envs[e] = out; });
       if (RPATH){ require('fs').writeFileSync(RPATH, JSON.stringify(RJ, null, 1)); console.log('\nwrote ' + RPATH); }
     }
