@@ -3486,7 +3486,7 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
-Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows });
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, matrixUnitSuite });
 
 /* The eleven readings of the release panel (v5.0's main row, H1 and the nine others), as plain row options for n1Row. Top-level so the release section of `testbed` and
  * domtest's page-versus-harness parity check build the same rows (v5.1, audit V5-04). SC is the spending share (SPEND_SOURCED). Pure data: no engine state is read. */
@@ -3550,6 +3550,70 @@ function reportUnitSuite(){
     finally { fs.rmSync(root, {recursive:true, force:true}); } });
   t('manifest: in this repository runManifest names a 40-character commit and whether the tracked files differ from it', function(){ var m = runManifest();
     return {pass:/^[0-9a-f]{40}$/.test(m.commit || '') && typeof m.dirty === 'boolean' && /^[0-9a-f]{64}$/.test(m.harnessSha256) && /^[0-9a-f]{64}$/.test(m.engineBlockSha256 || ''), detail:'commit ' + (m.commit || '').slice(0, 8) + (m.dirty ? ' (tracked files differ)' : ' (clean)')}; });
+  return out;
+}
+
+/* Audit V5-05 (v5.1; Oct 3, 2026): a feature-matrix smoke test. The framework model alone, then with project hiring, ESP payroll, the other framework modules, the price
+ * module, the labour module, and every module together (the release rows, in the testbed). In every combination: the run is deterministic (a second run is identical in every
+ * output), nothing is NaN or infinite, the accounting identities that hold by construction still hold (the BU budget is spent or expires; directed = expired x share; the ESP
+ * pool and gross-pay identities; the testbed's cost breakdown, treasury and Source lines), and no module draws a random number (the draw count is the same in every combination of an
+ * environment, and a row's result does not depend on the other rows in its study). Harness-only; run by `unit`. */
+function matrixUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), rng:RNG, mb:mulberry32};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { mulberry32 = sv.mb; CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; JOIN = sv.jn; COST = sv.cs; MULT = sv.ml; GATE_CURRENT = sv.gc; SPS = null; PDS = null; ESS = null; JNS = null; MLS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; } }
+  var CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0}, ENVS = [[FULL_INTEGRATION, 1], [ADVERSE_REFERENCE, 2], [STRESS_TEST, 3]];
+  function modules(m){ PROJ = m.pj ? Object.assign({}, PROJ_DEFAULTS) : null; ESP = m.es ? Object.assign({}, ESP_DEFAULTS) : null; SURP = m.fw ? Object.assign({}, SURP_DEFAULTS, {priv:'prices'}) : null;
+    PROD = m.fw ? Object.assign({}, PROD_DEFAULTS, {match:'market', speed:'oneyear'}) : null; JOIN = m.fw ? Object.assign({}, JOIN_DEFAULTS) : null; }
+  var PLAIN = [{n:'framework alone', m:{}}, {n:'+ project hiring', m:{pj:1}}, {n:'+ ESP payroll', m:{pj:1, es:1}}, {n:'+ every other framework module (surplus split, production, joining)', m:{pj:1, es:1, fw:1}}];
+  function plain(P, seed, m){ CONVERSION_MODEL = 'framework'; GATE_CURRENT = true; modules(m); LEDGER = newLedger(); RNG = mulberry32(seed + 700003);
+    var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); }), base = mulberry32(seed), n = 0; RNG = function(){ n++; return base(); };
+    for (var y = 0; y < P.years; y++) runYear(ag, y, P, CALM);
+    var led = LEDGER; LEDGER = null; return {ag:ag, draws:n, led:led}; }
+  function rel(a, b){ return Math.abs(a - b)/Math.max(1, Math.abs(a), Math.abs(b)); }
+  function finiteAgents(ag){ var bad = 0; ag.forEach(function(a){ Object.keys(a).forEach(function(k){ if (typeof a[k] === 'number' && !isFinite(a[k])) bad++; }); }); return bad; }
+  function sig(ag, only){ return ag.map(function(a){ return (only || Object.keys(a)).slice().sort().map(function(k){ var v = a[k]; return typeof v === 'number' ? (Object.is(v, -0) ? '-0' : String(v)) : typeof v === 'object' ? '' : String(v); }).join('|'); }).join('\n'); }
+  function ledgerErrs(T, m){ var e = [];
+    if (rel(T.fwBUSpent + T.fwBUExpired, T.fwBudget) > 1e-12) e.push('BU budget');
+    if (rel(T.fwBUDirected, FW.directedShare*T.fwBUExpired) > 1e-12) e.push('directed share');
+    if (m.es){ if (Math.abs(T.espGross - T.espTax - T.espConvBU - T.espPremium)/Math.max(1, T.espGross) > 1e-9) e.push('ESP gross pay'); if (rel(T.espPoolPaid, T.espConvBU + T.espRetBU) > 1e-9) e.push('ESP pool'); }
+    return e; }
+  t('framework alone and with each module added (project hiring, ESP payroll, the other framework modules): deterministic, finite, and the BU and ESP accounting identities hold (three environments)', function(){ var bad = [], runs = 0;
+    ENVS.forEach(function(c){ PLAIN.forEach(function(cf){ var a = plain(c[0], c[1], cf.m), b = plain(c[0], c[1], cf.m); runs++;
+      if (sig(a.ag) !== sig(b.ag)) bad.push(cf.n + ' not deterministic'); if (finiteAgents(a.ag) > 0) bad.push(cf.n + ' non-finite agent value'); var le = ledgerErrs(a.led.tot, cf.m); if (le.length) bad.push(cf.n + ': ' + le.join(', ')); }); });
+    return {pass:bad.length === 0, detail:runs + ' combinations, each run twice; problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  t('CRN: no framework module draws a random number (the draw count is the same with every combination added, in each environment, and is 8 per agent-year plus the population\'s own draws)', function(){ var d = [], info = [];
+    ENVS.forEach(function(c){ var n0 = plain(c[0], c[1], {}).draws, per = n0/(c[0].nAgents*c[0].years); info.push(per.toFixed(3) + ' per agent-year');
+      PLAIN.slice(1).forEach(function(cf){ var n = plain(c[0], c[1], cf.m).draws; if (n !== n0) d.push(cf.n + ' ' + n + ' vs ' + n0); }); });
+    return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'equal in every combination; framework alone: ' + info.join(', ')}; });
+  t('with the price module, then the price and labour modules together: deterministic, finite, and an agent\'s results match the module-free run exactly when the module\'s coefficients are zero (framework, three environments)', function(){ var bad = [];
+    ENVS.forEach(function(c){ CONVERSION_MODEL = 'framework'; GATE_CURRENT = true; modules({pj:1, es:1, fw:1}); var S = priceRun(c[0], c[1], {}, null).D;
+      [['price', {a:0.5}], ['price + labour', {a:0.5, labor:Object.assign({}, LABOR_DEFAULTS)}]].forEach(function(cf){ modules({pj:1, es:1, fw:1}); var a = priceRun(c[0], c[1], cf[1], S), b = priceRun(c[0], c[1], cf[1], S);
+        if (sig(a.agents) !== sig(b.agents) || JSON.stringify(a.res) !== JSON.stringify(b.res)) bad.push(cf[0] + ' not deterministic');
+        if (finiteAgents(a.agents) > 0) bad.push(cf[0] + ' non-finite agent value'); var nb = 0; Object.keys(a.res).forEach(function(k){ if (typeof a.res[k] === 'number' && !isFinite(a.res[k])) nb++; }); if (nb) bad.push(cf[0] + ' non-finite result'); });
+      var z = Object.assign({}, LABOR_DEFAULTS, {rho:0, rhoBU:0, rhoR:0, eps:0, delta:0}); modules({pj:1, es:1, fw:1}); var p0 = priceRun(c[0], c[1], {a:0.5}, S), pz = priceRun(c[0], c[1], {a:0.5, labor:z}, S);
+      var keys0 = Object.keys(p0.agents[0]); if (sig(p0.agents, keys0) !== sig(pz.agents, keys0)) bad.push('zero labour coefficients change the run'); });  /* the labour run also carries its own bookkeeping keys (_lwNB, _lbE0, _labC, _labCn); compare on the module-free run's keys */
+    return {pass:bad.length === 0, detail:'problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  var TBO = {fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED};
+  function rows(P, SC){ var PR = tbPresets(P); return [Object.assign({p:PR.baseline()}, {sc:SC})].concat(releaseRows(SC).map(function(r){ var c = n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return c; })); }
+  function study(P, cfg, seed){ var svG = tbSetG(TB_PROFILE_G); try { return tbStudy(cfg, seed, P, TBO, seed); } finally { tbSetG(svG); } }
+  t('every module together (the twelve release-panel rows): deterministic, no NaN or infinite value in any output, shares and Ginis in range, and the testbed\'s accounting lines add up (cost breakdown, treasury = contribution - need, Source payout = BU + conversions)', function(){ var bad = [], n = 0;
+    ENVS.forEach(function(c){ var P = Object.assign({}, c[0]), cfg = rows(P, SPEND_SOURCED), a = study(P, cfg, c[1]), b = study(P, cfg, c[1]);
+      a.forEach(function(r, i){ n++; TB_KEYS.forEach(function(k){ var x = r[k], y = b[i][k]; if (!(x === y || (x !== x && y !== y))) bad.push('row ' + i + ' ' + k + ' not deterministic'); if (typeof x === 'number' && !isFinite(x)) bad.push('row ' + i + ' ' + k + ' not finite'); });
+        ['pov', 'fgt0PY', 'bOAPy', 'bNAPy', 'emp', 'epPY'].forEach(function(k){ if (r[k] < -1e-9 || r[k] > 100 + 1e-9) bad.push('row ' + i + ' ' + k + ' out of range'); }); ['giniD', 'giniX'].forEach(function(k){ if (r[k] < 0 || r[k] > 1) bad.push('row ' + i + ' ' + k + ' out of range'); });
+        if (rel(r.cost, r.cCash + r.cEndow + r.cBU + r.cConv + r.cCap + r.cCut - r.csFree + r.cPth) > 1e-9) bad.push('row ' + i + ' cost breakdown');
+        if (rel(r.treas, r.tax - r.need) > 1e-9) bad.push('row ' + i + ' treasury'); if (rel(r.srcPay, r.cBU + r.cConv) > 1e-9) bad.push('row ' + i + ' Source payout'); }); });
+    return {pass:bad.length === 0, detail:n + ' rows (3 environments x 12), each study run twice; problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  function switches(){ return {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, oc:OCT, gc:GATE_CURRENT, sc:SURPLUS_CONSUMPTION_SHARE, pw:JSON.stringify(PATHWAY_OFF), g:JSON.stringify(tbSetG(undefined))}; }
+  t('every module together: no module draws a random number (every row of the release panel, programme or not, uses the same count), a row\'s result does not depend on the other rows in its study, and a study leaves every module switch as it found it (no switch leaks)', function(){ var bad = [], cnt = [];
+    ENVS.forEach(function(c){ var P = Object.assign({}, c[0]), cfg = rows(P, SPEND_SOURCED), sw0 = switches(), full = study(P, cfg, c[1]), sw1 = switches(), orig = mulberry32, draws = [];
+      Object.keys(sw0).forEach(function(k){ if (sw0[k] !== sw1[k]) bad.push('a study left the ' + k + ' switch changed'); });
+      cfg.forEach(function(cf, i){ var n = 0; mulberry32 = function(sd){ var f = orig(sd); return function(){ n++; return f(); }; }; try { var one = study(P, [cf], c[1]); } finally { mulberry32 = orig; } draws.push(n);
+        TB_KEYS.forEach(function(k){ var x = one[0][k], y = full[i][k]; if (!(x === y || (x !== x && y !== y))) bad.push('env ' + c[1] + ' row ' + i + ' ' + k + ' depends on the other rows'); }); });
+      if (draws.some(function(x){ return x !== draws[0]; })) bad.push('env ' + c[1] + ' draw counts differ: ' + draws.join(',')); cnt.push(draws[0]); });
+    return {pass:bad.length === 0, detail:'draws per row (one seed) ' + cnt.join(' / ') + '; problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
   return out;
 }
 
@@ -3763,11 +3827,15 @@ if (require.main === module) {
     console.log('\n=== reportUnitSuite(): audit F3 and E5, price-level median and percentiles in the panel, and its provenance manifest (harness-only) ===');
     RPU.forEach(function(x){ if (!x.pass) rpf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + RPU.length + ' run, ' + rpf + ' failed');
+    var MXU = matrixUnitSuite(), mxf = 0;
+    console.log('\n=== matrixUnitSuite(): audit V5-05, the feature matrix: framework alone, each module added, every module together (harness-only) ===');
+    MXU.forEach(function(x){ if (!x.pass) mxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + MXU.length + ' run, ' + mxf + ' failed');
     var GCU = gateUnitSuite(), gcf = 0;
     console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
     GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
