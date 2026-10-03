@@ -43,8 +43,12 @@ def put(P, start, rows):
 
 def pct(x, d=1): return ('%.' + str(d) + 'f%%') % x
 
+def near(g):
+    # within 0.002 of a line: 500 adults (the Gini formula reads 0.2% low; the mean of 500 seeds has its own sampling error) cannot place it on either side
+    return abs(g - 0.25) < 0.002 or abs(g - 0.30) < 0.002
+
 def verdict(g):
-    return 'at or below 0.25' if g <= 0.25 else 'between 0.25 and 0.30' if g <= 0.30 else 'above 0.30'
+    return ('at or below 0.25' if g <= 0.25 else 'between 0.25 and 0.30' if g <= 0.30 else 'above 0.30') + (' (on the line: within 0.002)' if near(g) else '')
 
 def targets_rows(D20, D40):
     rows = []
@@ -62,7 +66,7 @@ TG_HEAD = ('<h3 id="rel-targets-h">Against the Hub&rsquo;s own targets (audit E1
            'The Hub does not say which poverty measure its rate is, so the 2% line is read against each of the model&rsquo;s; they are stricter than the official rate (the Hub starts from about 12%), so none of them is the Hub&rsquo;s rate. '
            'The unhoused figure (the model&rsquo;s extreme-poverty figure) starts from 0.22% at year 0 by construction, so it sits under 2% whatever the programme does. '
            'The Gini is that of one year&rsquo;s disposable income across the 500 adults (earnings plus transfers, less the contribution; the second figure also counts the value of price cuts), the like-for-like figure for the Hub&rsquo;s 0.48 start; the model&rsquo;s no-programme Gini is already below 0.48, so the model does not start where the Hub&rsquo;s path starts. '
-           'The Gini formula reads about 0.2% low with 500 adults; no verdict depends on it (checked by <code>domtest</code>).</p>\n  ')
+           'The Gini formula reads about 0.2% low with 500 adults, and a mean over 500 runs has its own sampling error, so a reading within 0.002 of a line is labelled as on it; <code>domtest</code> checks that the formula\'s bias changes no other verdict.</p>\n  ')
 TG_TABLE = ('<table class="rel-t" id="rel-tg"><thead><tr><th>Years</th><th>Environment</th><th>Below the cost of living (target under 2%)</th><th>Below 30 days of basic living (under 2%)</th>'
             '<th>Too little wealth at the last year (under 2%)</th><th>Unhoused, extreme poverty (under 2%)</th><th>Gini of disposable income (0.25 to 0.30)</th><th>Gini counting price cuts (0.25 to 0.30)</th></tr></thead><tbody></tbody></table>')
 

@@ -399,6 +399,141 @@ footer{border-top:.5px solid var(--rule);background:var(--surface)}
 <tr><td>Stress Test</td><td>72.3% vs 75.1%</td><td>79.3% vs 86.7%</td><td>98.8% vs 94.5%</td><td>36.4%</td><td>450,461&times;</td><td>93.0%</td><td>$10,687</td></tr>
 </tbody></table>
   <p id="rel-price-note">The price-level column is the mean over seeds of a compounding quantity, in times today&rsquo;s prices at the last year. Above 1,000 times, the figure shows the model&rsquo;s price rule running away (it has no central bank, no interest rate and no protection for savings), a limit of the model and not a forecast; the front door therefore says so in words and keeps the exact figure here. The mean runs above the typical seed (the external audit of Oct 2, 2026 measured 1.24 times the median at 40 years in the Adverse Environment, over 40 seeds); the next release will show the median and a range.</p>
+  <!-- backing-share:begin -->
+  <h3 id="backing-share">The decisive unknown: how much of what the Source pays out new output backs (audit E2, v5.1)</h3>
+  <p>The release row assumes none of the Source&rsquo;s net payout is backed by new output; H1 assumes all of it is. The model parameter <code>a</code> is the share in between. This sweeps it at 0, 0.25, 0.5, 0.75 and 1 on the same 500 paired seeds of 500 adults over 20 years, in each environment, with every other mechanism as in the release row; the two end points are the release and H1 rows of the tables above, to the last digit. The whiskers are the 95% interval of the paired change against no programme. It is a sweep of a design parameter, not a forecast: the Hub does not give the share, and nothing in the model fixes it.</p>
+  <figure class="bs-chart" id="backing-chart" aria-label="Backing-share curve"><style>
+.bs-chart{--bs-surface:#fcfcfb;--bs-ink:#0b0b0b;--bs-ink2:#52514e;--bs-grid:#e3e2dc;--bs-axis:#9a9992;--bs-s1:#2a78d6;--bs-s2:#eb6834;--bs-s3:#1baf7a;background:var(--bs-surface);color:var(--bs-ink);border:1px solid var(--bs-grid);border-radius:10px;padding:14px 14px 10px;margin:.8rem 0}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .bs-chart{--bs-surface:#1a1a19;--bs-ink:#fff;--bs-ink2:#c3c2b7;--bs-grid:#2c2c2a;--bs-axis:#6f6e68;--bs-s1:#3987e5;--bs-s2:#d95926;--bs-s3:#199e70}}
+:root[data-theme="dark"] .bs-chart{--bs-surface:#1a1a19;--bs-ink:#fff;--bs-ink2:#c3c2b7;--bs-grid:#2c2c2a;--bs-axis:#6f6e68;--bs-s1:#3987e5;--bs-s2:#d95926;--bs-s3:#199e70}
+.bs-panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:6px 18px}
+.bs-svg{width:100%;height:auto;display:block;font-family:inherit}
+.bs-t{font-size:13.5px;font-weight:600;fill:var(--bs-ink)}.bs-tick{font-size:11.5px;fill:var(--bs-ink2);font-variant-numeric:tabular-nums}.bs-ax{font-size:11.5px;fill:var(--bs-ink2)}
+.bs-sub{font-size:11.5px;fill:var(--bs-ink2)}.bs-note{font-size:11.5px;fill:var(--bs-ink2)}.bs-lab{font-size:12.5px;fill:var(--bs-ink)}
+.bs-grid{stroke:var(--bs-grid);stroke-width:1}.bs-axis{stroke:var(--bs-axis);stroke-width:1}
+.bs-line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}.bs-wh{stroke-width:1.5;stroke-opacity:.6}
+.bs-dot{stroke:var(--bs-surface);stroke-width:2;paint-order:stroke}
+.bs-legend{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0 0 6px;font-size:13px;color:var(--bs-ink)}.bs-legend span{display:inline-flex;align-items:center;gap:6px}
+.bs-key{width:14px;height:14px;display:inline-block}
+.bs-cap{font-size:12.5px;color:var(--bs-ink2);margin:8px 2px 0;line-height:1.5}.bs-cap code{overflow-wrap:anywhere;white-space:normal}.bs-tw{overflow-x:auto;max-width:100%}
+.bs-table{border-collapse:collapse;font-size:12.5px;margin:.5rem 0;font-variant-numeric:tabular-nums}.bs-table th,.bs-table td{border:1px solid var(--bs-grid);padding:.25rem .5rem;text-align:left}
+@media (forced-colors:active){.bs-line,.bs-wh{stroke:CanvasText!important}.bs-dot{fill:CanvasText!important}}
+</style><div class="bs-legend" aria-label="Environments"><span><svg class="bs-key" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5" style="fill:var(--bs-s1)"/></svg>Reference</span><span><svg class="bs-key" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="2" width="10" height="10" style="fill:var(--bs-s2)"/></svg>Adverse</span><span><svg class="bs-key" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5L13 12.5H1Z" style="fill:var(--bs-s3)"/></svg>Stress Test</span></div>
+<div class="bs-panels">
+<svg viewBox="0 0 520 348" role="img" aria-labelledby="bs-w-t bs-w-d" class="bs-svg">
+<title id="bs-w-t">Wealth poverty against no programme</title>
+<desc id="bs-w-d">Change, percentage points. Reference: a = 0, −16.2 points, a = 0.25, −21.8 points, a = 0.5, −29.1 points, a = 0.75, −34.5 points, a = 1, −36.5 points; Adverse: a = 0, +4.4 points, a = 0.25, −1.9 points, a = 0.5, −11.8 points, a = 0.75, −31.6 points, a = 1, −30.1 points; Stress Test: a = 0, +7.9 points, a = 0.25, +5.2 points, a = 0.5, +1.1 points, a = 0.75, −5.6 points, a = 1, −10.1 points</desc>
+<text x="60" y="22" class="bs-t">Wealth poverty against no programme</text>
+<text x="60" y="40" class="bs-sub">Adults with too little wealth, year 20. Above zero: worse.</text>
+<line x1="60" x2="424" y1="290.0" y2="290.0" class="bs-grid"/>
+<text x="52" y="294.0" class="bs-tick" text-anchor="end">−50</text>
+<line x1="60" x2="424" y1="252.3" y2="252.3" class="bs-grid"/>
+<text x="52" y="256.3" class="bs-tick" text-anchor="end">−40</text>
+<line x1="60" x2="424" y1="214.7" y2="214.7" class="bs-grid"/>
+<text x="52" y="218.7" class="bs-tick" text-anchor="end">−30</text>
+<line x1="60" x2="424" y1="177.0" y2="177.0" class="bs-grid"/>
+<text x="52" y="181.0" class="bs-tick" text-anchor="end">−20</text>
+<line x1="60" x2="424" y1="139.3" y2="139.3" class="bs-grid"/>
+<text x="52" y="143.3" class="bs-tick" text-anchor="end">−10</text>
+<line x1="60" x2="424" y1="101.7" y2="101.7" class="bs-axis"/>
+<text x="52" y="105.7" class="bs-tick" text-anchor="end">0</text>
+<line x1="60" x2="424" y1="64.0" y2="64.0" class="bs-grid"/>
+<text x="52" y="68.0" class="bs-tick" text-anchor="end">+10</text>
+<text x="60.0" y="308" class="bs-tick" text-anchor="middle">0%</text>
+<text x="151.0" y="308" class="bs-tick" text-anchor="middle">25%</text>
+<text x="242.0" y="308" class="bs-tick" text-anchor="middle">50%</text>
+<text x="333.0" y="308" class="bs-tick" text-anchor="middle">75%</text>
+<text x="424.0" y="308" class="bs-tick" text-anchor="middle">100%</text>
+<text x="242.0" y="334" class="bs-ax" text-anchor="middle">Share of the Source&rsquo;s net payout backed by new output (a)</text>
+<text x="14" y="177.0" class="bs-ax" text-anchor="middle" transform="rotate(-90 14 177.0)">Change, percentage points</text>
+<text x="432" y="105.7" class="bs-note">no programme</text>
+<polyline points="60.0,162.9 151.0,183.6 242.0,211.2 333.0,231.7 424.0,239.3" class="bs-line" style="stroke:var(--bs-s1)"/>
+<line x1="60.0" x2="60.0" y1="163.6" y2="162.2" class="bs-wh" style="stroke:var(--bs-s1)"/>
+<line x1="151.0" x2="151.0" y1="184.3" y2="183.0" class="bs-wh" style="stroke:var(--bs-s1)"/>
+<line x1="242.0" x2="242.0" y1="211.8" y2="210.4" class="bs-wh" style="stroke:var(--bs-s1)"/>
+<line x1="333.0" x2="333.0" y1="232.4" y2="230.9" class="bs-wh" style="stroke:var(--bs-s1)"/>
+<line x1="424.0" x2="424.0" y1="240.0" y2="238.5" class="bs-wh" style="stroke:var(--bs-s1)"/>
+<circle cx="60.0" cy="162.9" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 0: −16.2 points (95% interval −16.4 points to −16.1 points)</title></circle>
+<circle cx="151.0" cy="183.6" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 0.25: −21.8 points (95% interval −21.9 points to −21.6 points)</title></circle>
+<circle cx="242.0" cy="211.2" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 0.5: −29.1 points (95% interval −29.2 points to −28.9 points)</title></circle>
+<circle cx="333.0" cy="231.7" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 0.75: −34.5 points (95% interval −34.7 points to −34.3 points)</title></circle>
+<circle cx="424.0" cy="239.3" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 1: −36.5 points (95% interval −36.7 points to −36.3 points)</title></circle>
+<text x="436.0" y="243.3" class="bs-lab">Reference</text>
+<polyline points="60.0,85.0 151.0,109.0 242.0,146.2 333.0,220.6 424.0,215.1" class="bs-line" style="stroke:var(--bs-s2)"/>
+<line x1="60.0" x2="60.0" y1="85.6" y2="84.5" class="bs-wh" style="stroke:var(--bs-s2)"/>
+<line x1="151.0" x2="151.0" y1="109.5" y2="108.4" class="bs-wh" style="stroke:var(--bs-s2)"/>
+<line x1="242.0" x2="242.0" y1="146.8" y2="145.5" class="bs-wh" style="stroke:var(--bs-s2)"/>
+<line x1="333.0" x2="333.0" y1="221.4" y2="219.8" class="bs-wh" style="stroke:var(--bs-s2)"/>
+<line x1="424.0" x2="424.0" y1="215.8" y2="214.4" class="bs-wh" style="stroke:var(--bs-s2)"/>
+<rect x="55.5" y="80.5" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 0: +4.4 points (95% interval +4.3 points to +4.6 points)</title></rect>
+<rect x="146.5" y="104.5" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 0.25: −1.9 points (95% interval −2.1 points to −1.8 points)</title></rect>
+<rect x="237.5" y="141.7" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 0.5: −11.8 points (95% interval −12.0 points to −11.7 points)</title></rect>
+<rect x="328.5" y="216.1" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 0.75: −31.6 points (95% interval −31.8 points to −31.4 points)</title></rect>
+<rect x="419.5" y="210.6" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 1: −30.1 points (95% interval −30.3 points to −29.9 points)</title></rect>
+<text x="436.0" y="219.1" class="bs-lab">Adverse</text>
+<polyline points="60.0,71.8 151.0,82.0 242.0,97.6 333.0,122.9 424.0,139.5" class="bs-line" style="stroke:var(--bs-s3)"/>
+<line x1="60.0" x2="60.0" y1="72.3" y2="71.2" class="bs-wh" style="stroke:var(--bs-s3)"/>
+<line x1="151.0" x2="151.0" y1="82.5" y2="81.5" class="bs-wh" style="stroke:var(--bs-s3)"/>
+<line x1="242.0" x2="242.0" y1="98.2" y2="97.1" class="bs-wh" style="stroke:var(--bs-s3)"/>
+<line x1="333.0" x2="333.0" y1="123.4" y2="122.3" class="bs-wh" style="stroke:var(--bs-s3)"/>
+<line x1="424.0" x2="424.0" y1="140.0" y2="139.0" class="bs-wh" style="stroke:var(--bs-s3)"/>
+<path d="M60.0 66.3L65.5 76.3L54.5 76.3Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 0: +7.9 points (95% interval +7.8 points to +8.1 points)</title></path>
+<path d="M151.0 76.5L156.5 86.5L145.5 86.5Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 0.25: +5.2 points (95% interval +5.1 points to +5.3 points)</title></path>
+<path d="M242.0 92.1L247.5 102.1L236.5 102.1Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 0.5: +1.1 points (95% interval +0.9 points to +1.2 points)</title></path>
+<path d="M333.0 117.4L338.5 127.4L327.5 127.4Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 0.75: −5.6 points (95% interval −5.8 points to −5.5 points)</title></path>
+<path d="M424.0 134.0L429.5 144.0L418.5 144.0Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 1: −10.1 points (95% interval −10.2 points to −9.9 points)</title></path>
+<text x="436.0" y="143.5" class="bs-lab">Stress Test</text>
+</svg>
+<svg viewBox="0 0 520 348" role="img" aria-labelledby="bs-i-t bs-i-d" class="bs-svg">
+<title id="bs-i-t">Programme inflation</title>
+<desc id="bs-i-d">Programme inflation, % a year. Reference: a = 0, 34.9% a year, a = 0.25, 26.0% a year, a = 0.5, 17.0% a year, a = 0.75, 8.3% a year, a = 1, 0.0% a year; Adverse: a = 0, 45.5% a year, a = 0.25, 34.2% a year, a = 0.5, 22.5% a year, a = 0.75, 10.9% a year, a = 1, 0.0% a year; Stress Test: a = 0, 23.8% a year, a = 0.25, 18.3% a year, a = 0.5, 12.5% a year, a = 0.75, 6.4% a year, a = 1, 0.0% a year</desc>
+<text x="60" y="22" class="bs-t">Programme inflation</text>
+<text x="60" y="40" class="bs-sub">Price rise the programme itself causes (all three reach zero at a = 1).</text>
+<line x1="60" x2="424" y1="290.0" y2="290.0" class="bs-grid"/>
+<text x="52" y="294.0" class="bs-tick" text-anchor="end">0%</text>
+<line x1="60" x2="424" y1="244.8" y2="244.8" class="bs-grid"/>
+<text x="52" y="248.8" class="bs-tick" text-anchor="end">10%</text>
+<line x1="60" x2="424" y1="199.6" y2="199.6" class="bs-grid"/>
+<text x="52" y="203.6" class="bs-tick" text-anchor="end">20%</text>
+<line x1="60" x2="424" y1="154.4" y2="154.4" class="bs-grid"/>
+<text x="52" y="158.4" class="bs-tick" text-anchor="end">30%</text>
+<line x1="60" x2="424" y1="109.2" y2="109.2" class="bs-grid"/>
+<text x="52" y="113.2" class="bs-tick" text-anchor="end">40%</text>
+<line x1="60" x2="424" y1="64.0" y2="64.0" class="bs-grid"/>
+<text x="52" y="68.0" class="bs-tick" text-anchor="end">50%</text>
+<text x="60.0" y="308" class="bs-tick" text-anchor="middle">0%</text>
+<text x="151.0" y="308" class="bs-tick" text-anchor="middle">25%</text>
+<text x="242.0" y="308" class="bs-tick" text-anchor="middle">50%</text>
+<text x="333.0" y="308" class="bs-tick" text-anchor="middle">75%</text>
+<text x="424.0" y="308" class="bs-tick" text-anchor="middle">100%</text>
+<text x="242.0" y="334" class="bs-ax" text-anchor="middle">Share of the Source&rsquo;s net payout backed by new output (a)</text>
+<text x="14" y="177.0" class="bs-ax" text-anchor="middle" transform="rotate(-90 14 177.0)">Programme inflation, % a year</text>
+<polyline points="60.0,132.3 151.0,172.5 242.0,213.2 333.0,252.5 424.0,290.0" class="bs-line" style="stroke:var(--bs-s1)"/>
+<circle cx="60.0" cy="132.3" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 0: 34.9% a year</title></circle>
+<circle cx="151.0" cy="172.5" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 0.25: 26.0% a year</title></circle>
+<circle cx="242.0" cy="213.2" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 0.5: 17.0% a year</title></circle>
+<circle cx="333.0" cy="252.5" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 0.75: 8.3% a year</title></circle>
+<circle cx="424.0" cy="290.0" r="4.5" class="bs-dot" style="fill:var(--bs-s1)"><title>Reference, a = 1: 0.0% a year</title></circle>
+<text x="70.0" y="123.3" class="bs-lab">Reference</text>
+<polyline points="60.0,84.3 151.0,135.4 242.0,188.3 333.0,240.7 424.0,290.0" class="bs-line" style="stroke:var(--bs-s2)"/>
+<rect x="55.5" y="79.8" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 0: 45.5% a year</title></rect>
+<rect x="146.5" y="130.9" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 0.25: 34.2% a year</title></rect>
+<rect x="237.5" y="183.8" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 0.5: 22.5% a year</title></rect>
+<rect x="328.5" y="236.2" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 0.75: 10.9% a year</title></rect>
+<rect x="419.5" y="285.5" width="9" height="9" class="bs-dot" style="fill:var(--bs-s2)"><title>Adverse, a = 1: 0.0% a year</title></rect>
+<text x="70.0" y="75.3" class="bs-lab">Adverse</text>
+<polyline points="60.0,182.4 151.0,207.3 242.0,233.5 333.0,261.1 424.0,290.0" class="bs-line" style="stroke:var(--bs-s3)"/>
+<path d="M60.0 176.9L65.5 186.9L54.5 186.9Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 0: 23.8% a year</title></path>
+<path d="M151.0 201.8L156.5 211.8L145.5 211.8Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 0.25: 18.3% a year</title></path>
+<path d="M242.0 228.0L247.5 238.0L236.5 238.0Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 0.5: 12.5% a year</title></path>
+<path d="M333.0 255.6L338.5 265.6L327.5 265.6Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 0.75: 6.4% a year</title></path>
+<path d="M424.0 284.5L429.5 294.5L418.5 294.5Z" class="bs-dot" style="fill:var(--bs-s3)"><title>Stress Test, a = 1: 0.0% a year</title></path>
+<text x="70.0" y="173.4" class="bs-lab">Stress Test</text>
+</svg>
+</div></figure>
+  <p class="bs-cap">At the release reading (a = 0) the share of adults with too little wealth at year 20 changes against no programme by −16.2 points in the Reference Environment, +4.4 in the Adverse Environment and +7.9 in the Stress Test (better, worse and worse than no programme); at a = 1 (H1) by −36.5, −30.1 and −10.1. Where the change crosses zero (linear interpolation between the five points): Reference: better than no programme at every point; Adverse: worse than no programme below a of about 0.17 and better above it; Stress Test: worse than no programme below a of about 0.54 and better above it. Programme inflation falls from 34.9%, 45.5% and 23.8% a year (Reference, Adverse, Stress Test) at a = 0 to 0.0%, 0.0% and 0.0% at a = 1. Reproduce: <code>node harness.js testbed 500 backing ref,adv,st (one process per environment: backing ref --json=dev/runs/backing-share-ref.json, and adv, st; then python3 dev/tools/backing_chart.py)</code></p>
+  <details class="bs-details"><summary>Show the numbers</summary><div class="bs-tw"><table class="bs-table"><thead><tr><th>Reading</th><th>Backed share a</th><th>Reference: change in wealth poverty, points (95% interval)</th><th>Adverse</th><th>Stress Test</th><th>Reference: programme inflation a year</th><th>Adverse</th><th>Stress Test</th></tr></thead><tbody><tr><td>Release row</td><td>0%</td><td>−16.2 (−16.4 to −16.1)</td><td>+4.4 (+4.3 to +4.6)</td><td>+7.9 (+7.8 to +8.1)</td><td>34.9%</td><td>45.5%</td><td>23.8%</td></tr><tr><td></td><td>25%</td><td>−21.8 (−21.9 to −21.6)</td><td>−1.9 (−2.1 to −1.8)</td><td>+5.2 (+5.1 to +5.3)</td><td>26.0%</td><td>34.2%</td><td>18.3%</td></tr><tr><td></td><td>50%</td><td>−29.1 (−29.2 to −28.9)</td><td>−11.8 (−12.0 to −11.7)</td><td>+1.1 (+0.9 to +1.2)</td><td>17.0%</td><td>22.5%</td><td>12.5%</td></tr><tr><td></td><td>75%</td><td>−34.5 (−34.7 to −34.3)</td><td>−31.6 (−31.8 to −31.4)</td><td>−5.6 (−5.8 to −5.5)</td><td>8.3%</td><td>10.9%</td><td>6.4%</td></tr><tr><td>H1</td><td>100%</td><td>−36.5 (−36.7 to −36.3)</td><td>−30.1 (−30.3 to −29.9)</td><td>−10.1 (−10.2 to −9.9)</td><td>0.0%</td><td>0.0%</td><td>0.0%</td></tr></tbody></table></div></details>
+  <!-- backing-share:end -->
   <p>The gain is confirmed on all three poverty measures at reference. In the Adverse Environment and the Stress Test income poverty and BLEI poverty fall, but more adults end with too little wealth than with no programme, because prices rise and savings are not protected from inflation. The decisive unknown is how much new output conversion rewards call forth. v5.0 adds four items to the earlier release candidate: private essential-service businesses pass what conversion adds to their BU customers as lower prices; creative projects' output counts at market value (Claude's reading of the design; the cost of their hours is the cautious reading); community businesses add capacity within a year; and the programme's spending fills the idle capacity recessions leave. Public costs avoided now include prisons, hospital and psychiatric care.</p>
 </section>
 
