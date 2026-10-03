@@ -57,7 +57,7 @@ The simulation itself documents its own current controls, presets, calibration c
 
 This README intentionally stays stable across releases. For anything tied to a specific version:
 
-- **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/compassionism-simulation/replication.html) has the full line-by-line changelog, newest first, for every release.
+- **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/compassionism-simulation/replication.html) has the full line-by-line changelog, newest first, for every release; each release's detailed notes are in [CHANGELOG.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CHANGELOG.md) (the current release's in CONTRIBUTING.md).
 - **Current output metrics and large-N study results** — the Replication Framework's Performance Comparison section, refreshed after any mechanics-changing release.
 - **Formulas as currently implemented** — the Replication Framework's Mathematical Framework section, and the simulation's own source comments.
 - **Open questions, known limitations, and how to contribute** — [CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md), which tracks unresolved calibration items, model-architecture feedback, and good-first-issues.
