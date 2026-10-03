@@ -457,7 +457,7 @@ var PDS = null;
 var SPEND_SOURCED = 0.593, SPEND_2024 = 0.554;
 /* Plan step 18 (Oct 2, 2026): the v5.0 release row's switches beyond session 30's: private ESPs pass their premium to BU customers (step 14),
  * creative output at market value and capacity within a year (step 15), the spending layer (step 16). Read by the testbed's release section and the page. */
-var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}};
+var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}, gc:true};  /* v5.1 (audit V5-02): gc:true = the framework BLEI gate reads this year's BU; every release-panel row carries it */
 /* Plan step 9 (Oct 1, 2026; dev/reports/09-avoided-costs.md): PUBLIC COSTS OF POVERTY AVOIDED, reported beside the programme's cost (no feedback
  * into the model). Homelessness (with the health care and justice costs that come with it): the model's extreme-poverty overlay (v4.18: HUD
  * 2025 AHAR point-in-time rate, scaled by housing distress against year 0) gives unhoused person-years; each is costed at two sourced ends:
@@ -575,6 +575,12 @@ function setRestudy(o){ var old = {THETA_GATE:THETA_GATE, PTH_MODE:PTH_MODE, DIS
  *  - A uniform cost ledger (TB.cur, per year) and basket FGT0-2 on income including transfers, less the contribution, plus the
  *    endowment's annuity value, against the agent's own cost (gross basket less in-kind cuts). */
 var TB = null;
+/* Audit V5-02 (v5.1; Oct 3, 2026). In framework mode the BLEI gate on the wage-growth bonus (agentBLEI, and tbGate in the testbed) reads a._fwBUm, the BU an
+ * agent spends on essentials. runYear used to call the gate before writing this year's _fwBUm, so from year 1 the gate read last year's value (the stale value
+ * differed from the current one in about 73% of framework agent-years). GATE_CURRENT = true writes the same value first, with the same expression the engine
+ * assigns later (checked equal in every agent-year by the unit suite), so the gate reads this year's spend. false (the default) is bit-identical to v5.0. A
+ * testbed row sets it with c.gc (n1Row option gc); v5.1's release row turns it on (REL_V5). No random draw is added or moved. */
+var GATE_CURRENT = false;
 var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true};
 function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, convM:0, buIss:0, ctax:0, cutFree:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0,
   bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0}; }  /* session 19 (s38): business premium and ESP payroll by group, years 1-19 (reporting only) */
@@ -734,7 +740,7 @@ function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh,ptfOn){
   var liquid=Math.max(0,(isNaN(a.wealth)?0:a.wealth)*0.20);
   var gammaV=(ccoOn&&a.inCCO)?0.20:0.12;
   var mInc=Math.max(isNaN(a.wage)?1:a.wage,0.1)*CFG.WAGE_TO_USD;
-  var buFood=(ccoOn&&a.inCCO&&buAlloc>0)?((CONVERSION_MODEL==='framework'&&a._fwBUm!==undefined)?a._fwBUm:buAlloc*(990/1200)):0;  // session 2, N3: framework credits one month of the BU actually spent on essentials
+  var buFood=(ccoOn&&a.inCCO&&buAlloc>0)?((CONVERSION_MODEL==='framework'&&a._fwBUm!==undefined)?a._fwBUm:buAlloc*(990/1200)):0;  // session 2, N3: framework credits one month of the BU the agent spends on essentials (fwB0 in runYear: the budget capped at essentials, before any price cut; audit V5-02: this year's with GATE_CURRENT)
   var szhD=szhOn?szhCoh*CFG.SZH_ALL_RESIDENTS:0;
   if(szhOn&&ptfOn&&a.inPTF)szhD+=szhTheta(THETA_GATE==='density'&&THETA_DENS!==null?THETA_DENS:szhCoh)*0.20;  // session 5 (C08): harness-only gate
   var baseCost=(ccoOn&&a.inCCO&&pthOn&&a.inPTH)?CFG.CCO_PTH_DAILY_COST:CFG.BASE_DAILY_COST;
@@ -993,6 +999,13 @@ function runYear(agentSet,yr,p,recSt){
     var uSzhPtfShare=RNG();
     var uPthAppr=RNG();
     var uPtfAdopt=RNG();
+    if(GATE_CURRENT&&FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // audit V5-02: the framework BLEI gate reads THIS year's BU spend, not last year's (same expression as fwB0 below)
+      var gEss=eShareCur;
+      if(p.ptf&&a.inPTF)gEss=PTF_MODE==='shipped'?gEss*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):gEss-PTF_FOOD_CUT[PTF_MODE]*fShareCur;
+      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')gEss-=PTH_HOUSING_CUT*hShareCur*(rsAlt&&p.ptf&&a.inPTF&&PTF_MODE==='shipped'?1-(p.szh?0.12+p.szhCoh*0.04:0.12):1);else gEss*=0.65;}
+      var gCost=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);if(PRICE)gCost*=PRICE.bIdx;
+      a._fwBUm=Math.min(12*buEff,gCost*gEss)/12;
+    }
     var bleiCheck=agentBLEI(a,buEff,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
     var tbNB=tbY?tbGate(a,p,buEff,tbY):0,wg=CFG.WAGE_BASE_GROWTH,bleiGate=(tbY&&TB.neutralGate)?tbNB:bleiCheck;  // session 6 (d28): design-neutral gate for the wage bonus (testbed only)
     var bleiProg=0;a._bleiR=0;a._bleiP=0;  // session 9 (i3-2): harness-only attribution of the BLEI raise (no RNG)
@@ -2447,9 +2460,10 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var cs0 = COST; if (c.cs) COST = Object.assign({}, COST_DEFAULTS, c.cs === true ? {} : c.cs);  /* plan step 5 */
       var jn0 = JOIN; if (c.jn) JOIN = Object.assign({}, JOIN_DEFAULTS, c.jn === true ? {} : c.jn);  /* plan step 4: joining and leaving for this row only */
       var ml0 = MULT; if (c.ml) MULT = Object.assign({}, MULT_DEFAULTS, c.ml === true ? {} : c.ml);  /* plan step 16: the spending layer for this row only */
+      var gc0 = GATE_CURRENT; if (typeof c.gc === 'boolean') GATE_CURRENT = c.gc;  /* audit V5-02: the framework BLEI gate reads this year's BU, for this row only */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), S).res;
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
-      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; } });
+      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; } });
   }
   return out;
 }
@@ -2527,6 +2541,7 @@ function n1Row(PR, cm, v){
   if (cm === 'framework' && v.cs) c.cs = v.cs;  /* plan step 5: PTF running costs ({} = the defaults) */
   if (cm === 'framework' && v.jn) c.jn = v.jn;  /* plan step 4: joining and leaving ({} = the defaults) */
   if (v.ml) c.ml = v.ml;  /* plan step 16: the spending layer ({} = the defaults) */
+  if (typeof v.gc === 'boolean') c.gc = v.gc;  /* audit V5-02: the BLEI gate reads this year's BU (framework only) */
   if (v.cap) c.o.ptfCap = v.cap;
   if (v.fin){ c.o.fin = v.fin; c.o.a = v.a || 0; }
   return c;
@@ -3471,7 +3486,56 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
-Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS });
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite });
+
+/* Audit V5-02 (v5.1; Oct 3, 2026): tests for the BLEI gate reading this year's BU (GATE_CURRENT). Harness-only; run by `unit`. The defect: runYear called the
+ * gate before writing this year's a._fwBUm, so in framework mode it read last year's. The tests watch the value the gate reads (agentBLEI's first call for an agent
+ * in a year) against the value the engine ends the year with. With the switch off the two differ (the defect, shown so the "on" test can fail); with it on they
+ * are equal in every participating agent-year; the engine model is untouched; no random draw is added; the testbed row option sets and restores the switch. */
+function gateUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, gc:GATE_CURRENT, nr:applyNR6(), rng:RNG, bl:agentBLEI};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { agentBLEI = sv.bl; CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; GATE_CURRENT = sv.gc; SPS = null; PDS = null; ESS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; } }
+  /* BU indexed to prices (COLA at 3% a year), so the BU a participant spends changes every year: the case in which the stale gate differs (in the release rows the price module moves it the same way). */
+  function cola(P){ return Object.assign({}, P, {cola:true, colaThresh:0.02, inflRate:Math.max(P.inflRate || 0, 0.03)}); }
+  var CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0}, ENVS = [[cola(FULL_INTEGRATION), 1], [cola(ADVERSE_REFERENCE), 2], [cola(STRESS_TEST), 3]];
+  function run(P, seed, cm, gc, each, count){ CONVERSION_MODEL = cm; GATE_CURRENT = gc; PROJ = Object.assign({}, PROJ_DEFAULTS); ESP = Object.assign({}, ESP_DEFAULTS);
+    SURP = Object.assign({}, SURP_DEFAULTS, {priv:'prices'}); PROD = Object.assign({}, PROD_DEFAULTS, {match:'market', speed:'oneyear'});
+    RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    var base = mulberry32(seed), n = {c:0}; RNG = count ? function(){ n.c++; return base(); } : base;
+    for (var y = 0; y < P.years; y++){ runYear(ag, y, P, CALM); if (each) each(ag, y); } return count ? n.c : ag; }
+  /* the value agentBLEI reads for each participating agent in a year (its first call), against the value the year ends with */
+  function gap(P, seed, gc){ var seen = new Map(), n = 0, stale = 0, undef = 0, orig = agentBLEI;
+    agentBLEI = function(a, buAlloc, ccoOn){ if (ccoOn && a.inCCO && buAlloc > 0 && !seen.has(a)) seen.set(a, a._fwBUm); return orig.apply(this, arguments); };
+    try { run(P, seed, 'framework', gc, function(){ seen.forEach(function(v, a){ n++; if (v === undefined) undef++; else if (Math.abs(v - a._fwBUm) > 1e-12*Math.max(1, Math.abs(a._fwBUm))) stale++; else if (a._fwBUm === undefined) undef++; }); seen.clear(); }); }
+    finally { agentBLEI = orig; } return {n:n, stale:stale, undef:undef}; }
+  t('off (the defect): in framework runs the gate reads a value other than the year\'s own in many participating agent-years', function(){ var tot = 0, st = 0, un = 0;
+    ENVS.forEach(function(c){ var g = gap(c[0], c[1], false); tot += g.n; st += g.stale; un += g.undef; });
+    return {pass:tot > 0 && (st + un)/tot > 0.3, detail:tot + ' agent-years: stale ' + st + ', not yet written ' + un + ' (' + ((st + un)/tot*100).toFixed(1) + '%)'}; });
+  t('on: the gate reads this year\'s own BU spend in every participating agent-year (three environments)', function(){ var tot = 0, st = 0, un = 0;
+    ENVS.forEach(function(c){ var g = gap(c[0], c[1], true); tot += g.n; st += g.stale; un += g.undef; });
+    return {pass:tot > 0 && st === 0 && un === 0, detail:tot + ' agent-years; differing from the year\'s own value: ' + st + '; not yet written: ' + un}; });
+  t('engine model: GATE_CURRENT changes nothing outside framework mode (same agents, bit for bit, three environments)', function(){ var bad = 0;
+    ENVS.forEach(function(c){ var a = run(c[0], c[1], 'engine', false), b = run(c[0], c[1], 'engine', true);
+      for (var i = 0; i < a.length; i++) if (a[i].wealth !== b[i].wealth || a[i].wage !== b[i].wage) bad++; });
+    return {pass:bad === 0, detail:'agents differing: ' + bad}; });
+  t('CRN: on and off draw the same number of random numbers (three environments)', function(){ var d = [];
+    ENVS.forEach(function(c){ var a = run(c[0], c[1], 'framework', false, null, true), b = run(c[0], c[1], 'framework', true, null, true); if (a !== b) d.push(a + ' vs ' + b); });
+    return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'draw counts equal'}; });
+  t('on is wired: it moves the framework outcomes in at least one environment (so the switch does something)', function(){ var mv = 0;
+    ENVS.forEach(function(c){ var a = run(c[0], c[1], 'framework', false), b = run(c[0], c[1], 'framework', true), s0 = 0, s1 = 0; a.forEach(function(x, i){ s0 += x.wealth; s1 += b[i].wealth; }); if (s0 !== s1) mv++; });
+    return {pass:mv > 0, detail:'environments where mean wealth moved: ' + mv + ' of 3'}; });
+  t('testbed rows: the row option gc sets the switch for that row only and restores it; a row without it equals gc:false bit for bit', function(){
+    var sv = {nr:applyNR6(), g:tbSetG(TB_PROFILE_G)};
+    try { var P = Object.assign({}, ADVERSE_REFERENCE), PR = tbPresets(P), V = Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5, {gc:undefined});
+      var before = GATE_CURRENT, R = tbStudy([n1Row(PR, 'framework', V), n1Row(PR, 'framework', Object.assign({}, V, {gc:false})), n1Row(PR, 'framework', Object.assign({}, V, {gc:true}))], 2, P, {fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, 1);
+      var same = TB_KEYS.every(function(k){ return R[0][k] === R[1][k] || (R[0][k] !== R[0][k] && R[1][k] !== R[1][k]); }), moved = TB_KEYS.some(function(k){ return R[2][k] !== R[1][k]; });
+      return {pass:GATE_CURRENT === before && GATE_CURRENT === false && same && moved, detail:'default row equals gc:false: ' + same + '; gc:true moves some measure: ' + moved + '; switch after: ' + GATE_CURRENT}; }
+    finally { applyRule(sv.nr.rule); setRestudy(sv.nr.rs); tbSetG(sv.g); } });
+  return out;
+}
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
@@ -3630,7 +3694,11 @@ if (require.main === module) {
     console.log('\n=== avoidWideUnitSuite(): plan step 17, wider public costs avoided (harness-only) ===');
     AWU.forEach(function(x){ if (!x.pass) awf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + AWU.length + ' run, ' + awf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf) process.exitCode = 1;
+    var GCU = gateUnitSuite(), gcf = 0;
+    console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
+    GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -5344,14 +5412,14 @@ if (require.main === module) {
         function av(r){ return (r._B.epPY - r.epPY)/100; }
         function aw(r){ return avoidWide((r._B.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (r._B.fgt0PY - r.fgt0PY)/100); }
         var rows = [
-          {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC}, k:'today', j:'v422'},
+          {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC, gc:true}, k:'today', j:'v422'},
           {l:'RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source', v:ALL, k:'main', vs:'today', j:'release'},
           {l:'  H1: every dollar the Source pays backed by new output', v:W({a:1}), k:'s', vs:'main', j:'h1'},
           {l:'  essentials bought with BU counted as backed by output', v:W({o:{faceM:true}}), k:'s', vs:'main', j:'face'},
           {l:'  paid for by a flat contribution on wages instead of the Source', v:W({fin:'tax'}), k:'s', vs:'main', j:'tax'},
           {l:'  creative projects counted at the cost of their hours, not at market value (the cautious reading)', v:W({pd:{match:'face', speed:'oneyear'}}), k:'s', vs:'main', j:'cost'},
           {l:'  community-business capacity growing only as reinvestment pays for it (the 5-year rule)', v:W({pd:{match:'market', speed:'reinvest'}}), k:'s', vs:'main', j:'cap5'},
-          {l:'  session 30\'s build: private business owners keep the premium, no spending layer, creative work at cost', v:{sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC}, k:'s', vs:'main', j:'s30'},
+          {l:'  session 30\'s build: private business owners keep the premium, no spending layer, creative work at cost', v:{sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC, gc:true}, k:'s', vs:'main', j:'s30'},
           {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main', j:'all'},
           {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
           {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'}];
