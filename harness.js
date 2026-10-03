@@ -457,7 +457,7 @@ var PDS = null;
 var SPEND_SOURCED = 0.593, SPEND_2024 = 0.554;
 /* Plan step 18 (Oct 2, 2026): the v5.0 release row's switches beyond session 30's: private ESPs pass their premium to BU customers (step 14),
  * creative output at market value and capacity within a year (step 15), the spending layer (step 16). Read by the testbed's release section and the page. */
-var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}};
+var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}, gc:true};  /* v5.1 (audit V5-02): gc:true = the framework BLEI gate reads this year's BU; every release-panel row carries it */
 /* Plan step 9 (Oct 1, 2026; dev/reports/09-avoided-costs.md): PUBLIC COSTS OF POVERTY AVOIDED, reported beside the programme's cost (no feedback
  * into the model). Homelessness (with the health care and justice costs that come with it): the model's extreme-poverty overlay (v4.18: HUD
  * 2025 AHAR point-in-time rate, scaled by housing distress against year 0) gives unhoused person-years; each is costed at two sourced ends:
@@ -575,6 +575,12 @@ function setRestudy(o){ var old = {THETA_GATE:THETA_GATE, PTH_MODE:PTH_MODE, DIS
  *  - A uniform cost ledger (TB.cur, per year) and basket FGT0-2 on income including transfers, less the contribution, plus the
  *    endowment's annuity value, against the agent's own cost (gross basket less in-kind cuts). */
 var TB = null;
+/* Audit V5-02 (v5.1; Oct 3, 2026). In framework mode the BLEI gate on the wage-growth bonus (agentBLEI, and tbGate in the testbed) reads a._fwBUm, the BU an
+ * agent spends on essentials. runYear used to call the gate before writing this year's _fwBUm, so from year 1 the gate read last year's value (the stale value
+ * differed from the current one in about 73% of framework agent-years). GATE_CURRENT = true writes the same value first, with the same expression the engine
+ * assigns later (checked equal in every agent-year by the unit suite), so the gate reads this year's spend. false (the default) is bit-identical to v5.0. A
+ * testbed row sets it with c.gc (n1Row option gc); v5.1's release row turns it on (REL_V5). No random draw is added or moved. */
+var GATE_CURRENT = false;
 var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true};
 function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, convM:0, buIss:0, ctax:0, cutFree:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0,
   bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0}; }  /* session 19 (s38): business premium and ESP payroll by group, years 1-19 (reporting only) */
@@ -734,7 +740,7 @@ function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh,ptfOn){
   var liquid=Math.max(0,(isNaN(a.wealth)?0:a.wealth)*0.20);
   var gammaV=(ccoOn&&a.inCCO)?0.20:0.12;
   var mInc=Math.max(isNaN(a.wage)?1:a.wage,0.1)*CFG.WAGE_TO_USD;
-  var buFood=(ccoOn&&a.inCCO&&buAlloc>0)?((CONVERSION_MODEL==='framework'&&a._fwBUm!==undefined)?a._fwBUm:buAlloc*(990/1200)):0;  // session 2, N3: framework credits one month of the BU actually spent on essentials
+  var buFood=(ccoOn&&a.inCCO&&buAlloc>0)?((CONVERSION_MODEL==='framework'&&a._fwBUm!==undefined)?a._fwBUm:buAlloc*(990/1200)):0;  // session 2, N3: framework credits one month of the BU the agent spends on essentials (fwB0 in runYear: the budget capped at essentials, before any price cut; audit V5-02: this year's with GATE_CURRENT)
   var szhD=szhOn?szhCoh*CFG.SZH_ALL_RESIDENTS:0;
   if(szhOn&&ptfOn&&a.inPTF)szhD+=szhTheta(THETA_GATE==='density'&&THETA_DENS!==null?THETA_DENS:szhCoh)*0.20;  // session 5 (C08): harness-only gate
   var baseCost=(ccoOn&&a.inCCO&&pthOn&&a.inPTH)?CFG.CCO_PTH_DAILY_COST:CFG.BASE_DAILY_COST;
@@ -993,6 +999,13 @@ function runYear(agentSet,yr,p,recSt){
     var uSzhPtfShare=RNG();
     var uPthAppr=RNG();
     var uPtfAdopt=RNG();
+    if(GATE_CURRENT&&FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // audit V5-02: the framework BLEI gate reads THIS year's BU spend, not last year's (same expression as fwB0 below)
+      var gEss=eShareCur;
+      if(p.ptf&&a.inPTF)gEss=PTF_MODE==='shipped'?gEss*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):gEss-PTF_FOOD_CUT[PTF_MODE]*fShareCur;
+      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')gEss-=PTH_HOUSING_CUT*hShareCur*(rsAlt&&p.ptf&&a.inPTF&&PTF_MODE==='shipped'?1-(p.szh?0.12+p.szhCoh*0.04:0.12):1);else gEss*=0.65;}
+      var gCost=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);if(PRICE)gCost*=PRICE.bIdx;
+      a._fwBUm=Math.min(12*buEff,gCost*gEss)/12;
+    }
     var bleiCheck=agentBLEI(a,buEff,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
     var tbNB=tbY?tbGate(a,p,buEff,tbY):0,wg=CFG.WAGE_BASE_GROWTH,bleiGate=(tbY&&TB.neutralGate)?tbNB:bleiCheck;  // session 6 (d28): design-neutral gate for the wage bonus (testbed only)
     var bleiProg=0;a._bleiR=0;a._bleiP=0;  // session 9 (i3-2): harness-only attribution of the BLEI raise (no RNG)
@@ -2447,9 +2460,10 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var cs0 = COST; if (c.cs) COST = Object.assign({}, COST_DEFAULTS, c.cs === true ? {} : c.cs);  /* plan step 5 */
       var jn0 = JOIN; if (c.jn) JOIN = Object.assign({}, JOIN_DEFAULTS, c.jn === true ? {} : c.jn);  /* plan step 4: joining and leaving for this row only */
       var ml0 = MULT; if (c.ml) MULT = Object.assign({}, MULT_DEFAULTS, c.ml === true ? {} : c.ml);  /* plan step 16: the spending layer for this row only */
+      var gc0 = GATE_CURRENT; if (typeof c.gc === 'boolean') GATE_CURRENT = c.gc;  /* audit V5-02: the framework BLEI gate reads this year's BU, for this row only */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), S).res;
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
-      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; } });
+      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; } });
   }
   return out;
 }
@@ -2527,6 +2541,7 @@ function n1Row(PR, cm, v){
   if (cm === 'framework' && v.cs) c.cs = v.cs;  /* plan step 5: PTF running costs ({} = the defaults) */
   if (cm === 'framework' && v.jn) c.jn = v.jn;  /* plan step 4: joining and leaving ({} = the defaults) */
   if (v.ml) c.ml = v.ml;  /* plan step 16: the spending layer ({} = the defaults) */
+  if (typeof v.gc === 'boolean') c.gc = v.gc;  /* audit V5-02: the BLEI gate reads this year's BU (framework only) */
   if (v.cap) c.o.ptfCap = v.cap;
   if (v.fin){ c.o.fin = v.fin; c.o.a = v.a || 0; }
   return c;
@@ -3471,7 +3486,194 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
-Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS });
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, matrixUnitSuite, docCounts });
+
+/* The eleven readings of the release panel (v5.0's main row, H1 and the nine others), as plain row options for n1Row. Top-level so the release section of `testbed` and
+ * domtest's page-versus-harness parity check build the same rows (v5.1, audit V5-04). SC is the spending share (SPEND_SOURCED). Pure data: no engine state is read. */
+function releaseRows(SC){
+  var ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };
+  return [
+    {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC, gc:true}, k:'today', j:'v422'},
+    {l:'RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source', v:ALL, k:'main', vs:'today', j:'release'},
+    {l:'  H1: every dollar the Source pays backed by new output', v:W({a:1}), k:'s', vs:'main', j:'h1'},
+    {l:'  essentials bought with BU counted as backed by output', v:W({o:{faceM:true}}), k:'s', vs:'main', j:'face'},
+    {l:'  paid for by a flat contribution on wages instead of the Source', v:W({fin:'tax'}), k:'s', vs:'main', j:'tax'},
+    {l:'  creative projects counted at the cost of their hours, not at market value (the cautious reading)', v:W({pd:{match:'face', speed:'oneyear'}}), k:'s', vs:'main', j:'cost'},
+    {l:'  community-business capacity growing only as reinvestment pays for it (the 5-year rule)', v:W({pd:{match:'market', speed:'reinvest'}}), k:'s', vs:'main', j:'cap5'},
+    {l:'  session 30\'s build: private business owners keep the premium, no spending layer, creative work at cost', v:{sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC, gc:true}, k:'s', vs:'main', j:'s30'},
+    {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main', j:'all'},
+    {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
+    {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'}];
+}
+/* Audit E6 (v5.1): the test counts quoted in README.md and CONTRIBUTING.md are written between <!-- count:KIND -->...<!-- /count --> markers (KIND = unit or domtest) and checked by the tests
+ * themselves, so they cannot drift: docCounts(kind, n) lists the quoted numbers and which are stale; with write = true it rewrites them. `node harness.js unit --write-counts` and
+ * `node domtest.js --write-counts` refresh them. Reporting only: nothing in the engine calls it. */
+function docCounts(kind, n, write){
+  var fs = require('fs'), path = require('path'), out = {found:[], stale:[]}, re = new RegExp('(<!-- count:' + kind + ' -->)(\\d+)(<!-- /count -->)', 'g');
+  ['README.md', 'CONTRIBUTING.md'].forEach(function(f){ var p = path.join(__dirname, f), t = fs.readFileSync(p, 'utf8'), changed = false;
+    t = t.replace(re, function(m, a, d, c){ out.found.push(f + ': ' + d); if (+d !== n){ out.stale.push(f + ': ' + d); if (write){ changed = true; return a + n + c; } } return m; });
+    if (changed) fs.writeFileSync(p, t); });
+  return out; }
+/* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is
+ * not changed. Reporting only: no engine code calls it. */
+function quantileOf(arr, q){ var v = Array.prototype.slice.call(arr).sort(function(x, y){ return x - y; }), h = (v.length - 1)*q, lo = Math.floor(h), hi = Math.ceil(h); return v[lo] + (v[hi] - v[lo])*(h - lo); }
+/* Audit E5 / V5-08 (v5.1): a machine-readable provenance manifest for the exported panels. pageEngineBlock(src) returns the release-engine block that
+ * dev/tools/port_engine.py writes into index.html (markers included), or null; runManifest() fingerprints the run: the git commit (and whether tracked files differed
+ * from it), SHA-256 of harness.js as run, of the page's engine block (the part of index.html the panel's numbers come from), and of index.html with the two embedded
+ * panels blanked (the panels are written into it after the run), and the Node version. Reporting only: nothing in the engine calls these. */
+var PAGE_ENGINE_BEGIN = '/* ==== RELEASE ENGINE: ported verbatim from harness.js by dev/tools/port_engine.py (plan step 10). Do not edit here. ==== */', PAGE_ENGINE_END = '/* ==== END RELEASE ENGINE ==== */';
+function pageEngineBlock(src){ var a = src.indexOf(PAGE_ENGINE_BEGIN), b = src.indexOf(PAGE_ENGINE_END); return a >= 0 && b > a ? src.slice(a, b + PAGE_ENGINE_END.length) : null; }
+function sha256Of(x){ return require('crypto').createHash('sha256').update(x).digest('hex'); }
+function runManifest(root){
+  var fs = require('fs'), path = require('path'), cp = require('child_process'); root = root || __dirname;
+  var H = fs.readFileSync(path.join(root, 'harness.js')), I = fs.readFileSync(path.join(root, 'index.html'), 'utf8'), blk = pageEngineBlock(I);
+  function git(args){ try { return cp.execFileSync('git', args, {cwd:root, stdio:['ignore', 'pipe', 'ignore']}).toString(); } catch (e){ return null; } }
+  var head = git(['rev-parse', 'HEAD']), st = git(['status', '--porcelain', '--untracked-files=no']);
+  return {commit:head === null ? null : head.trim(), dirty:st === null ? null : st.trim().length > 0, node:process.version, harnessSha256:sha256Of(H), engineBlockSha256:blk === null ? null : sha256Of(blk),
+    indexSha256:sha256Of(I.replace(/(<script type="application\/json" id="rel-data(?:-40)?">)[\s\S]*?(<\/script>)/g, '$1$2')),
+    };
+}
+function reportUnitSuite(){
+  var out = [];
+  function t(name, fn){ try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } }
+  t('quantileOf: matches the linear-interpolation percentile on known values (median 2.5, 10th 1.3, 90th 3.7 of 1..4), ignores input order, leaves its input alone, and handles one value', function(){
+    var a = [4, 1, 3, 2], c = a.slice(), ok = Math.abs(quantileOf(a, 0.5) - 2.5) < 1e-12 && Math.abs(quantileOf(a, 0.1) - 1.3) < 1e-12 && Math.abs(quantileOf(a, 0.9) - 3.7) < 1e-12 &&
+      quantileOf(a, 0) === 1 && quantileOf(a, 1) === 4 && quantileOf([7], 0.9) === 7 && a.join() === c.join() && quantileOf(new Float64Array([3, 1, 2]), 0.5) === 2;
+    return {pass:ok, detail:'median ' + quantileOf(a, 0.5) + ', 10th ' + quantileOf(a, 0.1) + ', 90th ' + quantileOf(a, 0.9)}; });
+  t('quantileOf: on a compounding quantity the mean sits above the median (the reason the panel now reports the median), and 10th <= median <= 90th', function(){
+    var x = []; for (var i = 0; i < 101; i++) x.push(Math.exp(i/10)); var m = x.reduce(function(s, v){ return s + v; }, 0)/x.length, md = quantileOf(x, 0.5);
+    return {pass:m > md && quantileOf(x, 0.1) <= md && md <= quantileOf(x, 0.9), detail:'mean ' + m.toFixed(1) + ' above median ' + md.toFixed(1)}; });
+  t('manifest: pageEngineBlock cuts the page\'s engine block between its markers (and returns null if a marker is missing or out of order); the real page has one', function(){
+    var fs = require('fs'), src = fs.readFileSync(require('path').join(__dirname, 'index.html'), 'utf8'), b = pageEngineBlock(src), ok = !!b && b.indexOf(PAGE_ENGINE_BEGIN) === 0 && b.lastIndexOf(PAGE_ENGINE_END) === b.length - PAGE_ENGINE_END.length;
+    ok = ok && pageEngineBlock('x ' + PAGE_ENGINE_BEGIN + ' y ' + PAGE_ENGINE_END + ' z') === PAGE_ENGINE_BEGIN + ' y ' + PAGE_ENGINE_END && pageEngineBlock(PAGE_ENGINE_END + PAGE_ENGINE_BEGIN) === null && pageEngineBlock(PAGE_ENGINE_BEGIN) === null && pageEngineBlock('') === null;
+    return {pass:ok, detail:'block of ' + (b ? b.length : 0) + ' characters'}; });
+  t('manifest: runManifest fingerprints the files (SHA-256 of harness.js and of the page\'s engine block recompute; index.html\'s hash ignores the two embedded panels and nothing else), records the Node version, and gives null, not a guess, when there is no git checkout', function(){
+    var fs = require('fs'), os = require('os'), path = require('path'), root = fs.mkdtempSync(path.join(os.tmpdir(), 'mf-'));
+    try { var page = 'head\n<script type="application/json" id="rel-data">{"a":1}</script>\n<script type="application/json" id="rel-data-40">{"b":2}</script>\n' + PAGE_ENGINE_BEGIN + '\nvar x=1;\n' + PAGE_ENGINE_END + '\ntail\n';
+      fs.writeFileSync(path.join(root, 'harness.js'), 'harness text'); fs.writeFileSync(path.join(root, 'index.html'), page);
+      var m1 = runManifest(root); fs.writeFileSync(path.join(root, 'index.html'), page.replace('{"a":1}', '{"a":2,"c":[3]}').replace('{"b":2}', '{}'));
+      var m2 = runManifest(root); fs.writeFileSync(path.join(root, 'index.html'), page.replace('var x=1;', 'var x=2;')); var m3 = runManifest(root);
+      var ok = m1.harnessSha256 === sha256Of('harness text') && m1.engineBlockSha256 === sha256Of(PAGE_ENGINE_BEGIN + '\nvar x=1;\n' + PAGE_ENGINE_END) && m1.indexSha256 === m2.indexSha256 && m1.engineBlockSha256 === m2.engineBlockSha256 &&
+        m3.engineBlockSha256 !== m1.engineBlockSha256 && m3.indexSha256 !== m1.indexSha256 && m1.node === process.version && m1.commit === null && m1.dirty === null && /^[0-9a-f]{64}$/.test(m1.indexSha256);
+      return {pass:ok, detail:'panels blanked in the page hash: ' + (m1.indexSha256 === m2.indexSha256) + '; an engine edit changes both: ' + (m3.engineBlockSha256 !== m1.engineBlockSha256 && m3.indexSha256 !== m1.indexSha256) + '; no checkout gives commit ' + m1.commit}; }
+    finally { fs.rmSync(root, {recursive:true, force:true}); } });
+  t('manifest: in this repository runManifest names a 40-character commit and whether the tracked files differ from it', function(){ var m = runManifest();
+    return {pass:/^[0-9a-f]{40}$/.test(m.commit || '') && typeof m.dirty === 'boolean' && /^[0-9a-f]{64}$/.test(m.harnessSha256) && /^[0-9a-f]{64}$/.test(m.engineBlockSha256 || ''), detail:'commit ' + (m.commit || '').slice(0, 8) + (m.dirty ? ' (tracked files differ)' : ' (clean)')}; });
+  return out;
+}
+
+/* Audit V5-05 (v5.1; Oct 3, 2026): a feature-matrix smoke test. The framework model alone, then with project hiring, ESP payroll, the other framework modules, the price
+ * module, the labour module, and every module together (the release rows, in the testbed). In every combination: the run is deterministic (a second run is identical in every
+ * output), nothing is NaN or infinite, the accounting identities that hold by construction still hold (the BU budget is spent or expires; directed = expired x share; the ESP
+ * pool and gross-pay identities; the testbed's cost breakdown, treasury and Source lines), and no module draws a random number (the draw count is the same in every combination of an
+ * environment, and a row's result does not depend on the other rows in its study). Harness-only; run by `unit`. */
+function matrixUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), rng:RNG, mb:mulberry32};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { mulberry32 = sv.mb; CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; JOIN = sv.jn; COST = sv.cs; MULT = sv.ml; GATE_CURRENT = sv.gc; SPS = null; PDS = null; ESS = null; JNS = null; MLS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; } }
+  var CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0}, ENVS = [[FULL_INTEGRATION, 1], [ADVERSE_REFERENCE, 2], [STRESS_TEST, 3]];
+  function modules(m){ PROJ = m.pj ? Object.assign({}, PROJ_DEFAULTS) : null; ESP = m.es ? Object.assign({}, ESP_DEFAULTS) : null; SURP = m.fw ? Object.assign({}, SURP_DEFAULTS, {priv:'prices'}) : null;
+    PROD = m.fw ? Object.assign({}, PROD_DEFAULTS, {match:'market', speed:'oneyear'}) : null; JOIN = m.fw ? Object.assign({}, JOIN_DEFAULTS) : null; }
+  var PLAIN = [{n:'framework alone', m:{}}, {n:'+ project hiring', m:{pj:1}}, {n:'+ ESP payroll', m:{pj:1, es:1}}, {n:'+ every other framework module (surplus split, production, joining)', m:{pj:1, es:1, fw:1}}];
+  function plain(P, seed, m){ CONVERSION_MODEL = 'framework'; GATE_CURRENT = true; modules(m); LEDGER = newLedger(); RNG = mulberry32(seed + 700003);
+    var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); }), base = mulberry32(seed), n = 0; RNG = function(){ n++; return base(); };
+    for (var y = 0; y < P.years; y++) runYear(ag, y, P, CALM);
+    var led = LEDGER; LEDGER = null; return {ag:ag, draws:n, led:led}; }
+  function rel(a, b){ return Math.abs(a - b)/Math.max(1, Math.abs(a), Math.abs(b)); }
+  function finiteAgents(ag){ var bad = 0; ag.forEach(function(a){ Object.keys(a).forEach(function(k){ if (typeof a[k] === 'number' && !isFinite(a[k])) bad++; }); }); return bad; }
+  function sig(ag, only){ return ag.map(function(a){ return (only || Object.keys(a)).slice().sort().map(function(k){ var v = a[k]; return typeof v === 'number' ? (Object.is(v, -0) ? '-0' : String(v)) : typeof v === 'object' ? '' : String(v); }).join('|'); }).join('\n'); }
+  function ledgerErrs(T, m){ var e = [];
+    if (rel(T.fwBUSpent + T.fwBUExpired, T.fwBudget) > 1e-12) e.push('BU budget');
+    if (rel(T.fwBUDirected, FW.directedShare*T.fwBUExpired) > 1e-12) e.push('directed share');
+    if (m.es){ if (Math.abs(T.espGross - T.espTax - T.espConvBU - T.espPremium)/Math.max(1, T.espGross) > 1e-9) e.push('ESP gross pay'); if (rel(T.espPoolPaid, T.espConvBU + T.espRetBU) > 1e-9) e.push('ESP pool'); }
+    return e; }
+  t('framework alone and with each module added (project hiring, ESP payroll, the other framework modules): deterministic, finite, and the BU and ESP accounting identities hold (three environments)', function(){ var bad = [], runs = 0;
+    ENVS.forEach(function(c){ PLAIN.forEach(function(cf){ var a = plain(c[0], c[1], cf.m), b = plain(c[0], c[1], cf.m); runs++;
+      if (sig(a.ag) !== sig(b.ag)) bad.push(cf.n + ' not deterministic'); if (finiteAgents(a.ag) > 0) bad.push(cf.n + ' non-finite agent value'); var le = ledgerErrs(a.led.tot, cf.m); if (le.length) bad.push(cf.n + ': ' + le.join(', ')); }); });
+    return {pass:bad.length === 0, detail:runs + ' combinations, each run twice; problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  t('CRN: no framework module draws a random number (the draw count is the same with every combination added, in each environment, and is 8 per agent-year plus the population\'s own draws)', function(){ var d = [], info = [];
+    ENVS.forEach(function(c){ var n0 = plain(c[0], c[1], {}).draws, per = n0/(c[0].nAgents*c[0].years); info.push(per.toFixed(3) + ' per agent-year');
+      PLAIN.slice(1).forEach(function(cf){ var n = plain(c[0], c[1], cf.m).draws; if (n !== n0) d.push(cf.n + ' ' + n + ' vs ' + n0); }); });
+    return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'equal in every combination; framework alone: ' + info.join(', ')}; });
+  t('with the price module, then the price and labour modules together: deterministic, finite, and an agent\'s results match the module-free run exactly when the module\'s coefficients are zero (framework, three environments)', function(){ var bad = [];
+    ENVS.forEach(function(c){ CONVERSION_MODEL = 'framework'; GATE_CURRENT = true; modules({pj:1, es:1, fw:1}); var S = priceRun(c[0], c[1], {}, null).D;
+      [['price', {a:0.5}], ['price + labour', {a:0.5, labor:Object.assign({}, LABOR_DEFAULTS)}]].forEach(function(cf){ modules({pj:1, es:1, fw:1}); var a = priceRun(c[0], c[1], cf[1], S), b = priceRun(c[0], c[1], cf[1], S);
+        if (sig(a.agents) !== sig(b.agents) || JSON.stringify(a.res) !== JSON.stringify(b.res)) bad.push(cf[0] + ' not deterministic');
+        if (finiteAgents(a.agents) > 0) bad.push(cf[0] + ' non-finite agent value'); var nb = 0; Object.keys(a.res).forEach(function(k){ if (typeof a.res[k] === 'number' && !isFinite(a.res[k])) nb++; }); if (nb) bad.push(cf[0] + ' non-finite result'); });
+      var z = Object.assign({}, LABOR_DEFAULTS, {rho:0, rhoBU:0, rhoR:0, eps:0, delta:0}); modules({pj:1, es:1, fw:1}); var p0 = priceRun(c[0], c[1], {a:0.5}, S), pz = priceRun(c[0], c[1], {a:0.5, labor:z}, S);
+      var keys0 = Object.keys(p0.agents[0]); if (sig(p0.agents, keys0) !== sig(pz.agents, keys0)) bad.push('zero labour coefficients change the run'); });  /* the labour run also carries its own bookkeeping keys (_lwNB, _lbE0, _labC, _labCn); compare on the module-free run's keys */
+    return {pass:bad.length === 0, detail:'problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  var TBO = {fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED};
+  function rows(P, SC){ var PR = tbPresets(P); return [Object.assign({p:PR.baseline()}, {sc:SC})].concat(releaseRows(SC).map(function(r){ var c = n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return c; })); }
+  function study(P, cfg, seed){ var svG = tbSetG(TB_PROFILE_G); try { return tbStudy(cfg, seed, P, TBO, seed); } finally { tbSetG(svG); } }
+  t('every module together (the twelve release-panel rows): deterministic, no NaN or infinite value in any output, shares and Ginis in range, and the testbed\'s accounting lines add up (cost breakdown, treasury = contribution - need, Source payout = BU + conversions)', function(){ var bad = [], n = 0;
+    ENVS.forEach(function(c){ var P = Object.assign({}, c[0]), cfg = rows(P, SPEND_SOURCED), a = study(P, cfg, c[1]), b = study(P, cfg, c[1]);
+      a.forEach(function(r, i){ n++; TB_KEYS.forEach(function(k){ var x = r[k], y = b[i][k]; if (!(x === y || (x !== x && y !== y))) bad.push('row ' + i + ' ' + k + ' not deterministic'); if (typeof x === 'number' && !isFinite(x)) bad.push('row ' + i + ' ' + k + ' not finite'); });
+        ['pov', 'fgt0PY', 'bOAPy', 'bNAPy', 'emp', 'epPY'].forEach(function(k){ if (r[k] < -1e-9 || r[k] > 100 + 1e-9) bad.push('row ' + i + ' ' + k + ' out of range'); }); ['giniD', 'giniX'].forEach(function(k){ if (r[k] < 0 || r[k] > 1) bad.push('row ' + i + ' ' + k + ' out of range'); });
+        if (rel(r.cost, r.cCash + r.cEndow + r.cBU + r.cConv + r.cCap + r.cCut - r.csFree + r.cPth) > 1e-9) bad.push('row ' + i + ' cost breakdown');
+        if (rel(r.treas, r.tax - r.need) > 1e-9) bad.push('row ' + i + ' treasury'); if (rel(r.srcPay, r.cBU + r.cConv) > 1e-9) bad.push('row ' + i + ' Source payout'); }); });
+    return {pass:bad.length === 0, detail:n + ' rows (3 environments x 12), each study run twice; problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  function switches(){ return {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, oc:OCT, gc:GATE_CURRENT, sc:SURPLUS_CONSUMPTION_SHARE, pw:JSON.stringify(PATHWAY_OFF), g:JSON.stringify(tbSetG(undefined))}; }
+  t('every module together: no module draws a random number (every row of the release panel, programme or not, uses the same count), a row\'s result does not depend on the other rows in its study, and a study leaves every module switch as it found it (no switch leaks)', function(){ var bad = [], cnt = [];
+    ENVS.forEach(function(c){ var P = Object.assign({}, c[0]), cfg = rows(P, SPEND_SOURCED), sw0 = switches(), full = study(P, cfg, c[1]), sw1 = switches(), orig = mulberry32, draws = [];
+      Object.keys(sw0).forEach(function(k){ if (sw0[k] !== sw1[k]) bad.push('a study left the ' + k + ' switch changed'); });
+      cfg.forEach(function(cf, i){ var n = 0; mulberry32 = function(sd){ var f = orig(sd); return function(){ n++; return f(); }; }; try { var one = study(P, [cf], c[1]); } finally { mulberry32 = orig; } draws.push(n);
+        TB_KEYS.forEach(function(k){ var x = one[0][k], y = full[i][k]; if (!(x === y || (x !== x && y !== y))) bad.push('env ' + c[1] + ' row ' + i + ' ' + k + ' depends on the other rows'); }); });
+      if (draws.some(function(x){ return x !== draws[0]; })) bad.push('env ' + c[1] + ' draw counts differ: ' + draws.join(',')); cnt.push(draws[0]); });
+    return {pass:bad.length === 0, detail:'draws per row (one seed) ' + cnt.join(' / ') + '; problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  return out;
+}
+
+/* Audit V5-02 (v5.1; Oct 3, 2026): tests for the BLEI gate reading this year's BU (GATE_CURRENT). Harness-only; run by `unit`. The defect: runYear called the
+ * gate before writing this year's a._fwBUm, so in framework mode it read last year's. The tests watch the value the gate reads (agentBLEI's first call for an agent
+ * in a year) against the value the engine ends the year with. With the switch off the two differ (the defect, shown so the "on" test can fail); with it on they
+ * are equal in every participating agent-year; the engine model is untouched; no random draw is added; the testbed row option sets and restores the switch. */
+function gateUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, gc:GATE_CURRENT, nr:applyNR6(), rng:RNG, bl:agentBLEI};
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { agentBLEI = sv.bl; CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; GATE_CURRENT = sv.gc; SPS = null; PDS = null; ESS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; } }
+  /* BU indexed to prices (COLA at 3% a year), so the BU a participant spends changes every year: the case in which the stale gate differs (in the release rows the price module moves it the same way). */
+  function cola(P){ return Object.assign({}, P, {cola:true, colaThresh:0.02, inflRate:Math.max(P.inflRate || 0, 0.03)}); }
+  var CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0}, ENVS = [[cola(FULL_INTEGRATION), 1], [cola(ADVERSE_REFERENCE), 2], [cola(STRESS_TEST), 3]];
+  function run(P, seed, cm, gc, each, count){ CONVERSION_MODEL = cm; GATE_CURRENT = gc; PROJ = Object.assign({}, PROJ_DEFAULTS); ESP = Object.assign({}, ESP_DEFAULTS);
+    SURP = Object.assign({}, SURP_DEFAULTS, {priv:'prices'}); PROD = Object.assign({}, PROD_DEFAULTS, {match:'market', speed:'oneyear'});
+    RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
+    var base = mulberry32(seed), n = {c:0}; RNG = count ? function(){ n.c++; return base(); } : base;
+    for (var y = 0; y < P.years; y++){ runYear(ag, y, P, CALM); if (each) each(ag, y); } return count ? n.c : ag; }
+  /* the value agentBLEI reads for each participating agent in a year (its first call), against the value the year ends with */
+  function gap(P, seed, gc){ var seen = new Map(), n = 0, stale = 0, undef = 0, orig = agentBLEI;
+    agentBLEI = function(a, buAlloc, ccoOn){ if (ccoOn && a.inCCO && buAlloc > 0 && !seen.has(a)) seen.set(a, a._fwBUm); return orig.apply(this, arguments); };
+    try { run(P, seed, 'framework', gc, function(){ seen.forEach(function(v, a){ n++; if (v === undefined) undef++; else if (Math.abs(v - a._fwBUm) > 1e-12*Math.max(1, Math.abs(a._fwBUm))) stale++; else if (a._fwBUm === undefined) undef++; }); seen.clear(); }); }
+    finally { agentBLEI = orig; } return {n:n, stale:stale, undef:undef}; }
+  t('off (the defect): in framework runs the gate reads a value other than the year\'s own in many participating agent-years', function(){ var tot = 0, st = 0, un = 0;
+    ENVS.forEach(function(c){ var g = gap(c[0], c[1], false); tot += g.n; st += g.stale; un += g.undef; });
+    return {pass:tot > 0 && (st + un)/tot > 0.3, detail:tot + ' agent-years: stale ' + st + ', not yet written ' + un + ' (' + ((st + un)/tot*100).toFixed(1) + '%)'}; });
+  t('on: the gate reads this year\'s own BU spend in every participating agent-year (three environments)', function(){ var tot = 0, st = 0, un = 0;
+    ENVS.forEach(function(c){ var g = gap(c[0], c[1], true); tot += g.n; st += g.stale; un += g.undef; });
+    return {pass:tot > 0 && st === 0 && un === 0, detail:tot + ' agent-years; differing from the year\'s own value: ' + st + '; not yet written: ' + un}; });
+  t('engine model: GATE_CURRENT changes nothing outside framework mode (same agents, bit for bit, three environments)', function(){ var bad = 0;
+    ENVS.forEach(function(c){ var a = run(c[0], c[1], 'engine', false), b = run(c[0], c[1], 'engine', true);
+      for (var i = 0; i < a.length; i++) if (a[i].wealth !== b[i].wealth || a[i].wage !== b[i].wage) bad++; });
+    return {pass:bad === 0, detail:'agents differing: ' + bad}; });
+  t('CRN: on and off draw the same number of random numbers (three environments)', function(){ var d = [];
+    ENVS.forEach(function(c){ var a = run(c[0], c[1], 'framework', false, null, true), b = run(c[0], c[1], 'framework', true, null, true); if (a !== b) d.push(a + ' vs ' + b); });
+    return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'draw counts equal'}; });
+  t('on is wired: it moves the framework outcomes in at least one environment (so the switch does something)', function(){ var mv = 0;
+    ENVS.forEach(function(c){ var a = run(c[0], c[1], 'framework', false), b = run(c[0], c[1], 'framework', true), s0 = 0, s1 = 0; a.forEach(function(x, i){ s0 += x.wealth; s1 += b[i].wealth; }); if (s0 !== s1) mv++; });
+    return {pass:mv > 0, detail:'environments where mean wealth moved: ' + mv + ' of 3'}; });
+  t('testbed rows: the row option gc sets the switch for that row only and restores it; a row without it equals gc:false bit for bit', function(){
+    var sv = {nr:applyNR6(), g:tbSetG(TB_PROFILE_G)};
+    try { var P = Object.assign({}, ADVERSE_REFERENCE), PR = tbPresets(P), V = Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5, {gc:undefined});
+      var before = GATE_CURRENT, R = tbStudy([n1Row(PR, 'framework', V), n1Row(PR, 'framework', Object.assign({}, V, {gc:false})), n1Row(PR, 'framework', Object.assign({}, V, {gc:true}))], 2, P, {fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, 1);
+      var same = TB_KEYS.every(function(k){ return R[0][k] === R[1][k] || (R[0][k] !== R[0][k] && R[1][k] !== R[1][k]); }), moved = TB_KEYS.some(function(k){ return R[2][k] !== R[1][k]; });
+      return {pass:GATE_CURRENT === before && GATE_CURRENT === false && same && moved, detail:'default row equals gc:false: ' + same + '; gc:true moves some measure: ' + moved + '; switch after: ' + GATE_CURRENT}; }
+    finally { applyRule(sv.nr.rule); setRestudy(sv.nr.rs); tbSetG(sv.g); } });
+  return out;
+}
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 if (require.main === module) {
@@ -3537,6 +3739,8 @@ if (require.main === module) {
   }
 
   if (mode === 'unit') {
+    var UC = 0, ulog = console.log;  /* audit E6: count the tests run (PASS and FAIL lines; page-only SKIP lines are not tests run) */
+    console.log = function(x){ if (typeof x === 'string' && /^  (PASS|FAIL)  /.test(x)) UC++; return ulog.apply(console, arguments); };
     /* v4.20: the pure-function suite against this file. domtest.js Phase 8 runs the same suite
      * against index.html, including the five page-only functions skipped here. */
     var U = unitSuite(unitTargets()), nf = 0;
@@ -3630,7 +3834,23 @@ if (require.main === module) {
     console.log('\n=== avoidWideUnitSuite(): plan step 17, wider public costs avoided (harness-only) ===');
     AWU.forEach(function(x){ if (!x.pass) awf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + AWU.length + ' run, ' + awf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf) process.exitCode = 1;
+    var RPU = reportUnitSuite(), rpf = 0;
+    console.log('\n=== reportUnitSuite(): audit F3 and E5, price-level median and percentiles in the panel, and its provenance manifest (harness-only) ===');
+    RPU.forEach(function(x){ if (!x.pass) rpf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + RPU.length + ' run, ' + rpf + ' failed');
+    var MXU = matrixUnitSuite(), mxf = 0;
+    console.log('\n=== matrixUnitSuite(): audit V5-05, the feature matrix: framework alone, each module added, every module together (harness-only) ===');
+    MXU.forEach(function(x){ if (!x.pass) mxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + MXU.length + ' run, ' + mxf + ' failed');
+    var GCU = gateUnitSuite(), gcf = 0;
+    console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
+    GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf) process.exitCode = 1;
+    console.log = ulog;
+    var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
+    console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
+    if (cc.found.length === 0 || (cc.stale.length > 0 && !wc)) process.exitCode = 1;
   }
 
   if (mode === 'automation') {
@@ -5338,23 +5558,14 @@ if (require.main === module) {
     });
     /* Plan step 11 (Oct 1, 2026): the restudy with every mechanism in (dev/reports/11-restudy.md). --json=FILE writes the page's precomputed
      * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
-    if (secT === 'release'){ var RJ = {_meta:{engine:'release candidate (next-release)', seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
+    if (secT === 'release'){ var RJ = {_meta:{engine:'release engine (harness.js testbed, section release)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
-      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5) */
+      envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
+        /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
+         * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
         function av(r){ return (r._B.epPY - r.epPY)/100; }
         function aw(r){ return avoidWide((r._B.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (r._B.fgt0PY - r.fgt0PY)/100); }
-        var rows = [
-          {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC}, k:'today', j:'v422'},
-          {l:'RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source', v:ALL, k:'main', vs:'today', j:'release'},
-          {l:'  H1: every dollar the Source pays backed by new output', v:W({a:1}), k:'s', vs:'main', j:'h1'},
-          {l:'  essentials bought with BU counted as backed by output', v:W({o:{faceM:true}}), k:'s', vs:'main', j:'face'},
-          {l:'  paid for by a flat contribution on wages instead of the Source', v:W({fin:'tax'}), k:'s', vs:'main', j:'tax'},
-          {l:'  creative projects counted at the cost of their hours, not at market value (the cautious reading)', v:W({pd:{match:'face', speed:'oneyear'}}), k:'s', vs:'main', j:'cost'},
-          {l:'  community-business capacity growing only as reinvestment pays for it (the 5-year rule)', v:W({pd:{match:'market', speed:'reinvest'}}), k:'s', vs:'main', j:'cap5'},
-          {l:'  session 30\'s build: private business owners keep the premium, no spending layer, creative work at cost', v:{sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC}, k:'s', vs:'main', j:'s30'},
-          {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main', j:'all'},
-          {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
-          {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'}];
+        var rows = releaseRows(SC);
         var R = stepSection('release (plan step 11)', e, rows,
           [['Unhoused person-years avoided per 1,000 adults a year', function(r){ return f2(av(r)*1000); }],
            ['Public cost avoided per adult-year, low / high', function(r){ return $(av(r)*AVOID_HOMELESS.low) + ' / ' + $(av(r)*AVOID_HOMELESS.high); }],
@@ -5362,15 +5573,35 @@ if (require.main === module) {
            ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
            ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC});
-        var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY}, rows:{}};
+        var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
         function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
-        rows.forEach(function(rw, i){ var r = R[i + 1]; out.rows[rw.j] = {label:rw.l.trim(), cost:Math.round(r.cost), tau:+(r.tauMean*100).toFixed(1), infl:+(r.endoAnn*100).toFixed(1), pLev20:+r.pLev20.toFixed(3),
+        rows.forEach(function(rw, i){ var r = R[i + 1]; out.rows[rw.j] = {label:rw.l.trim(), cost:Math.round(r.cost), tau:+(r.tauMean*100).toFixed(1), infl:+(r.endoAnn*100).toFixed(1), pLevEnd:+r.pLev20.toFixed(3), pLevEndMed:+quantileOf(r._s.pLev20, 0.5).toFixed(3), pLevEndP10:+quantileOf(r._s.pLev20, 0.1).toFixed(3), pLevEndP90:+quantileOf(r._s.pLev20, 0.9).toFixed(3),
+          giniD:+r.giniD.toFixed(4), giniX:+r.giniX.toFixed(4), epPY:+r.epPY.toFixed(3),  /* v5.1 (audit E1): Gini of disposable income (and with in-kind price cuts) at the last year, mean over seeds; unhoused share of person-years (the model's extreme-poverty figure) */
           hrs:+(r.hrs*100).toFixed(1), fgt2PY:+r.fgt2PY.toFixed(2), fgt0PY:+r.fgt0PY.toFixed(1), pov:+r.pov.toFixed(1), bOAPy:+r.bOAPy.toFixed(1), bNAPy:+r.bNAPy.toFixed(1), bOAMd:Math.round(r.bOAMd), bNAMd:Math.round(r.bNAMd),
           dFgt2:d3(r, 'fgt2PY'), dF0:d3(r, 'fgt0PY'), dPov:d3(r, 'pov'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'),
           grp:{part:Math.round(r.gPartRes - B.gPartRes), non:Math.round(r.gNonRes - B.gNonRes), low:Math.round(r.gLowRes - B.gLowRes), top:Math.round(r.gTopRes - B.gTopRes)}, worse:grpCell(r, B).split(' | ')[1],
           unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)}; });
         RJ.envs[e] = out; });
       if (RPATH){ require('fs').writeFileSync(RPATH, JSON.stringify(RJ, null, 1)); console.log('\nwrote ' + RPATH); }
+    }
+    /* Audit E2 (v5.1; Oct 3, 2026): the backing-share curve. The page's decisive unknown is how much of what the Source pays out new output backs (the release row says none, H1 says all; the
+     * harness parameter a is the fractional share, (1 - a) of the Source's net payout being new money). This runs the release row at a = 0, 0.25, 0.5, 0.75, 1 on the same paired seeds,
+     * so the two end points are the panel's own release and H1 rows (the writer checks that they equal them to the last digit when a panel file is given with --check=FILE), and
+     * --json=FILE writes the points with 95% intervals against no programme. One process per environment (node harness.js testbed 500 backing ref --json=...), merged by dev/tools/backing_chart.py. */
+    if (secT === 'backing'){ var BJ = {_meta:{engine:'release engine (harness.js testbed, section backing)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, shares:[0, 0.25, 0.5, 0.75, 1],
+        command:'node harness.js testbed ' + nT + ' backing ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/backing-share-ENV.json'}, envs:{}},
+      BPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
+      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };
+        var rows = BJ._meta.shares.map(function(a, i){ return {l:'a = ' + a + (a === 0 ? ' (the release row: nothing the Source pays is backed by new output)' : a === 1 ? ' (H1: every Source dollar backed by new output)' : ''), v:W({a:a}), k:i === 0 ? 'today' : 's', vs:'today', j:'a' + Math.round(a*100)}; });  /* the release row (a = 0) is the comparison row every other point is read against */
+        var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], {sc:SC});
+        var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, epPY:B.epPY}, rows:{}};
+        function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
+        function d3p(r, k){ var x = tbDiff(r, B, k); return [+(x.m*100).toFixed(2), +(x.lo*100).toFixed(2), +(x.hi*100).toFixed(2)]; }  /* a rate as percentage points a year */
+        rows.forEach(function(rw, i){ var r = R[i + 1]; out.rows[rw.j] = {a:BJ._meta.shares[i], pov:+r.pov.toFixed(1), fgt0PY:+r.fgt0PY.toFixed(1), bOAPy:+r.bOAPy.toFixed(1), bNAPy:+r.bNAPy.toFixed(1), infl:+(r.endoAnn*100).toFixed(1),
+          pLevEnd:+r.pLev20.toFixed(3), pLevEndMed:+quantileOf(r._s.pLev20, 0.5).toFixed(3), pLevEndP10:+quantileOf(r._s.pLev20, 0.1).toFixed(3), pLevEndP90:+quantileOf(r._s.pLev20, 0.9).toFixed(3),
+          cost:Math.round(r.cost), srcPay:Math.round(r.srcPay), srcM:Math.round(r.srcM), dPov:d3(r, 'pov'), dF0:d3(r, 'fgt0PY'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'), dInfl:d3p(r, 'endoAnn')}; });
+        BJ.envs[e] = out; });
+      if (BPATH){ require('fs').writeFileSync(BPATH, JSON.stringify(BJ, null, 1)); console.log('\nwrote ' + BPATH); }
     }
     /* Plan steps 14-17 (Oct 2, 2026; Duke's four items before v5.0; dev/reports/v5-1 to v5-4): each new mechanism against the session-30
      * release row (k 'today' here), with its sensitivity rows against the new main row. Rows are added step by step. */

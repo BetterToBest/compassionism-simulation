@@ -6,7 +6,7 @@ _The math and code of this simulation were engineered by Claude, an AI model mad
 
 A research-oriented, browser-based agent-based simulation exploring all five [Compassionism](https://bettertobest.github.io/research-hub/) architectures for comparative policy analysis — no installation required. BLEI-calibrated against US Consumer Expenditure Survey data.
 
-The page opens with Compassionism's results: the same 500 simulated adults followed for 20 years (or 40, with the Years switch), with the programme and with no programme, in three environments (Reference, Adverse, Stress). Basic living covered (BLEI, days of basic living a person's resources cover) leads, followed by one plain sentence each on poverty, savings, who gains, work, prices, cost and how it is paid, and the public costs of homelessness avoided. Every figure is an average over 500 paired runs with its 95% interval, and the page names the command that reproduces it; a button runs the model live in the browser. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty.
+The page opens with Compassionism's results: the same 500 simulated adults followed for 20 years (or 40, with the Years switch), with the programme and with no programme, in three environments (Reference, Adverse, Stress). Basic living covered (BLEI, days of basic living a person's resources cover) leads, followed by one plain sentence each on poverty, savings, who gains, work, prices, cost and how it is paid, and the public costs of homelessness avoided. Prices are given as the typical run with the range of nine runs in ten (and, above 1,000 times today's, described as a limit of the model's price rule, not a forecast). A table sets the Research Hub's own Year 7 targets (poverty under 2%, Gini coefficient 0.25 to 0.30) beside what the model reaches. Every figure is an average over 500 paired runs with its 95% interval, and the page names the command that reproduces it; a button runs the model live in the browser. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty.
 
 **[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 
@@ -77,7 +77,7 @@ node domtest.js          # drives index.html in a headless DOM (a few minutes)
 
 Every `harness.js` study mode also accepts `--agents=N`, the population per run (default 500). For example, `node harness.js largen 500 headline --agents=5000` reruns the headline figures at 5,000 agents per run, in about five minutes on one CPU core.
 
-The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see.
+The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->146<!-- /count --> tests and `domtest` <!-- count:domtest -->112<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
 
 ---
 

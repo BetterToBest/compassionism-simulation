@@ -1,0 +1,55 @@
+=== A4 testbed (session 6): seeds 1-500, 500 agents; NR6 profile (D1; d22: theta on PTF density, PTH housing only, discounts skip the tax share; d23: wages indexed to P_G); labor at central values (rho 0.16, eps 0.33, delta 0); d40: N7_BLEI on (BLEI raise attributed to the design where its support carries the adult over the gate); lines deflated (D2); lamG 1 ===
+Gross cost: every program dollar at face value per adult-year, year-0 dollars (cash, BU spent at face value, conversion net of tax, PTF/PTH/grocery price-cut dollars, capital, PTH liquid appreciation). Basket FGT: income incl. transfers, less the contribution, plus an endowment's annuity value, against own cost; x100.
+
+--- backing share (E2): Stress Test | Compassionism: hub spec (framework model) | seeds 1-500 | 535 s ---
+BLEI first (plan step 8). Days of basic living covered, year-0 prices. Duke's BLEI = the BLEI paper's definition (the page's); design-neutral = the Baseline's rules for everyone plus one month of the design's regular support. BLEI poverty = person-years below 30 days. Changes vs Baseline [95% CI]; negative = fewer below the line.
+| Design | Duke's BLEI: median days, yr 20 | Duke's BLEI poverty (person-years) | vs Baseline [95% CI] | Design-neutral: median days, yr 20 | Design-neutral BLEI poverty | vs Baseline [95% CI] |
+|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | 3 | 60.0% | — | 3 | 60.0% | — |
+| a = 0 (the release row: nothing the Source pays is backed by new output) | 6 | 54.9% | -5.13 [-5.26, -5.01] | 5 | 56.6% | -3.42 [-3.53, -3.30] |
+| a = 0.25 | 6 | 53.1% | -6.98 [-7.10, -6.86] | 6 | 54.6% | -5.40 [-5.52, -5.29] |
+| a = 0.5 | 6 | 50.7% | -9.32 [-9.45, -9.20] | 6 | 52.1% | -7.90 [-8.02, -7.78] |
+| a = 0.75 | 8 | 47.7% | -12.30 [-12.43, -12.17] | 8 | 49.0% | -11.06 [-11.18, -10.94] |
+| a = 1 (H1: every Source dollar backed by new output) | 4 | 47.2% | -12.83 [-12.96, -12.70] | 4 | 47.9% | -12.17 [-12.30, -12.05] |
+
+FGT2 = person-year basket FGT2 x100; basket poverty = person-year FGT0 (%); wealth poverty = year-20 share below the wealth line (%); lines move with the price level. "vs pair": against the row named for it. Negative = less poverty.
+| Design | Cost | FGT2 vs Baseline [95% CI] | FGT2 vs pair [95% CI] | Basket poverty vs pair [95% CI] | Wealth poverty vs pair [95% CI] | FGT2 vs today | Basket poverty | Wealth poverty yr 20 | Hours | Contribution | Endogenous inflation | Price level yr 20 | Price level, last year (median over seeds) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | $0 | 20.63 | — | — | — | — | 78.2% | 82.6% | +0.0% | 0.0% | 0.00% | 1.457 | — |
+| a = 0 (the release row: nothing the Source pays is backed by new output) | $10,494 | -8.29 [-8.35, -8.23] | — | — | — | — | 65.6% | 90.6% | -4.3% | 3.4% | 23.83% | 86.100 | 84.44 |
+| a = 0.25 | $10,760 | -8.26 [-8.32, -8.20] | +0.03 [+0.03, +0.03] | -0.38 [-0.38, -0.37] | -2.73 [-2.79, -2.66] | +0.03 | 65.2% | 87.9% | -4.3% | 3.5% | 18.26% | 35.695 | 35.26 |
+| a = 0.5 | $11,062 | -8.22 [-8.29, -8.16] | +0.07 [+0.06, +0.07] | -0.87 [-0.88, -0.85] | -6.87 [-6.98, -6.77] | +0.07 | 64.7% | 83.7% | -4.4% | 3.6% | 12.46% | 13.652 | 13.56 |
+| a = 0.75 | $11,389 | -8.18 [-8.24, -8.12] | +0.11 [+0.11, +0.11] | -1.45 [-1.47, -1.43] | -13.57 [-13.71, -13.43] | +0.11 | 64.1% | 77.0% | -4.6% | 3.6% | 6.38% | 4.725 | 4.72 |
+| a = 1 (H1: every Source dollar backed by new output) | $8,702 | -6.23 [-6.29, -6.18] | +2.06 [+2.04, +2.07] | +1.76 [+1.72, +1.79] | -17.99 [-18.16, -17.83] | +2.06 | 67.3% | 72.6% | -3.7% | 3.5% | 0.00% | 1.457 | 1.46 |
+
+Groups: change in real resources per adult-year over 20 years, participants / non-participants (as at year 0) / bottom third / top third by year-0 wage; and person-year FGT2 x100 by group.
+| Design | Resources vs Baseline | Resources vs today | FGT2 by group vs today: part / non | Worse off vs Baseline |
+|---|---|---|---|---|
+| a = 0 (the release row: nothing the Source pays is backed by new output) | +$21,802 / +$1,033 / +$8,664 / +$9,943 | — | — | non (w), PTH (w), top (w) |
+| a = 0.25 | +$22,376 / +$1,035 / +$8,809 / +$10,272 | +$574 / +$2 / +$145 / +$330 | -0.09 / +0.11 | non (w), PTH (w), top (w) |
+| a = 0.5 | +$23,036 / +$1,049 / +$8,970 / +$10,666 | +$1,233 / +$16 / +$305 / +$723 | -0.20 / +0.24 | non (w), top (w) |
+| a = 0.75 | +$23,753 / +$1,099 / +$9,098 / +$11,167 | +$1,950 / +$66 / +$434 / +$1,225 | -0.28 / +0.37 | non (w) |
+| a = 1 (H1: every Source dollar backed by new output) | +$17,787 / +$1,038 / +$6,872 / +$8,542 | -$4,016 / +$5 / -$1,792 / -$1,401 | +4.01 / +0.76 | none |
+
+BLEI by group (s41), levels. Person-year shares over 20 years unless stated; part = participants, non = adults who chose not to take part (the same adults in every row). N = design-neutral BLEI (heads, d34); O = the design's own BLEI (the page's definition); X = N with income read as wage earnings net of the contribution. BLEI poverty = below 30 days (Crisis + Precarious); Crisis = below 7 days. Days at year-0 prices.
+| Design | Adults: part / non | FGT2 x100: part / non | BLEI poverty N: all / part / non | Crisis N: part / non | BLEI poverty O: all / part / non | BLEI poverty X: all / part / non | Crisis X: part / non | Year 20, BLEI poverty N: part / non | Year 20, median BLEI N (days): part / non |
+|---|---|---|---|---|---|---|---|---|---|
+| No program (Baseline), spending share 0.593 | 199.4 / 300.6 | 20.65 / 20.62 | 60.0 / 60.0 / 60.1 | 57.7 / 57.7 | 60.0 / 60.0 / 60.1 | 60.1 / 60.0 / 60.1 | 57.7 / 57.7 | 81.1 / 81.1 | 3 / 3 |
+| a = 0 (the release row: nothing the Source pays is backed by new output) | 199.4 / 300.6 | 3.54 / 18.18 | 56.6 / 37.7 / 69.2 | 0.0 / 65.2 | 54.9 / 33.5 / 69.1 | 56.7 / 37.8 / 69.2 | 0.0 / 65.5 | 69.2 / 93.2 | 16 / 3 |
+| a = 0.25 | 199.4 / 300.6 | 3.45 / 18.29 | 54.6 / 35.2 / 67.5 | 0.0 / 63.9 | 53.1 / 31.4 / 67.4 | 54.7 / 35.3 / 67.6 | 0.0 / 64.2 | 66.1 / 92.2 | 16 / 3 |
+| a = 0.5 | 199.4 / 300.6 | 3.34 / 18.42 | 52.1 / 32.2 / 65.4 | 0.0 / 62.2 | 50.7 / 28.7 / 65.3 | 52.2 / 32.3 / 65.4 | 0.0 / 62.4 | 60.9 / 90.3 | 17 / 3 |
+| a = 0.75 | 199.4 / 300.6 | 3.25 / 18.55 | 49.0 / 28.6 / 62.5 | 0.0 / 59.7 | 47.7 / 25.6 / 62.5 | 49.0 / 28.7 / 62.6 | 0.0 / 59.8 | 52.7 / 86.7 | 25 / 3 |
+| a = 1 (H1: every Source dollar backed by new output) | 199.4 / 300.6 | 7.55 / 18.94 | 47.9 / 31.3 / 58.9 | 8.8 / 56.5 | 47.2 / 29.7 / 58.8 | 47.9 / 31.3 / 58.9 | 8.8 / 56.6 | 56.0 / 80.1 | 14 / 3 |
+
+BLEI by group (s41), changes in points: part / non, paired over seeds [95% CI on the design-neutral reading]. Negative = fewer adults below the line.
+| Design | vs Baseline: FGT2 x100 | vs Baseline: BLEI poverty N | vs Baseline: Crisis N | vs Baseline: BLEI poverty O | vs Baseline: BLEI poverty X | vs Baseline: Crisis X | vs today: FGT2 x100 | vs today: BLEI poverty N | vs today: Crisis N | vs today: BLEI poverty O | vs today: BLEI poverty X | vs today: Crisis X |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| a = 0 (the release row: nothing the Source pays is backed by new output) | -17.11 / -2.44 | -22.32 [-22.51, -22.13] / +9.12 [+9.02, +9.21] | -57.67 / +7.48 | -26.47 / +9.01 | -22.21 / +9.15 | -57.66 / +7.77 | — | — | — | — | — | — |
+| a = 0.25 | -17.20 / -2.33 | -24.77 [-24.97, -24.57] / +7.45 [+7.35, +7.54] | -57.67 / +6.21 | -28.59 / +7.36 | -24.68 / +7.48 | -57.66 / +6.44 | -0.09 / +0.11 | -2.45 [-2.48, -2.43] / -1.67 [-1.68, -1.66] | +0.00 / -1.27 | -2.13 / -1.66 | -2.47 / -1.67 | +0.00 / -1.33 |
+| a = 0.5 | -17.31 / -2.20 | -27.82 [-28.02, -27.62] / +5.31 [+5.22, +5.40] | -57.67 / +4.47 | -31.26 / +5.23 | -27.74 / +5.33 | -57.66 / +4.63 | -0.20 / +0.24 | -5.50 [-5.54, -5.46] / -3.80 [-3.83, -3.78] | +0.00 / -3.01 | -4.80 / -3.78 | -5.53 / -3.81 | +0.00 / -3.14 |
+| a = 0.75 | -17.39 / -2.07 | -31.42 [-31.64, -31.21] / +2.45 [+2.37, +2.53] | -57.67 / +2.01 | -34.43 / +2.38 | -31.36 / +2.47 | -57.66 / +2.12 | -0.28 / +0.37 | -9.10 [-9.17, -9.03] / -6.67 [-6.71, -6.62] | +0.00 / -5.47 | -7.97 / -6.64 | -9.15 / -6.68 | +0.00 / -5.65 |
+| a = 1 (H1: every Source dollar backed by new output) | -13.10 / -1.68 | -28.73 [-28.93, -28.52] / -1.19 [-1.26, -1.11] | -48.87 / -1.21 | -30.28 / -1.25 | -28.69 / -1.17 | -48.86 / -1.14 | +4.01 / +0.76 | -6.41 [-6.51, -6.31] / -10.30 [-10.37, -10.23] | +8.80 / -8.69 | -3.81 / -10.27 | -6.48 / -10.32 | +8.80 / -8.91 |
+
+wrote dev/runs/backing-share-st.json
+
+(8.9 min)

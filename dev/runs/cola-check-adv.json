@@ -1,0 +1,95 @@
+{
+ "_meta": {
+  "what": "a = 0.75 and a = 1 with the BU indexed only above 5% a year (as modelled) and indexed every year",
+  "env": "adv",
+  "seeds": 500,
+  "years": 20,
+  "manifest": {
+   "commit": "da77ef49cbf60dab6dc0420f1265c2af4dab7786",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "826afa81695e6ad2aefa1e4b45887054bc27ea4439612dcee998c9a0b80ce5ea",
+   "engineBlockSha256": "31177f73382cd980fdd263590eb3b57d38040e681950777e8c40ef7dc7309a04",
+   "indexSha256": "d5f7a6f2d355061a38eeb7e76cade78c6f521ae9e049d08674c4bf12411093f9"
+  },
+  "command": "node dev/tools/cola_check.js adv"
+ },
+ "rows": {
+  "modelled_a75": {
+   "rule": "modelled",
+   "a": 0.75,
+   "cost": 34012,
+   "fgt0PY": 35.3,
+   "bOAPy": 23.3,
+   "pov": 51.1,
+   "infl": 10.9,
+   "dPov": [
+    -31.57,
+    -31.78,
+    -31.37
+   ],
+   "dF0": [
+    -42.84,
+    -43,
+    -42.68
+   ]
+  },
+  "modelled_a100": {
+   "rule": "modelled",
+   "a": 1,
+   "cost": 25607,
+   "fgt0PY": 48.9,
+   "bOAPy": 27,
+   "pov": 52.5,
+   "infl": 0,
+   "dPov": [
+    -30.11,
+    -30.3,
+    -29.93
+   ],
+   "dF0": [
+    -29.24,
+    -29.37,
+    -29.11
+   ]
+  },
+  "every_year_a75": {
+   "rule": "every_year",
+   "a": 0.75,
+   "cost": 34012,
+   "fgt0PY": 35.3,
+   "bOAPy": 23.3,
+   "pov": 51.1,
+   "infl": 10.9,
+   "dPov": [
+    -31.57,
+    -31.78,
+    -31.37
+   ],
+   "dF0": [
+    -42.84,
+    -43,
+    -42.68
+   ]
+  },
+  "every_year_a100": {
+   "rule": "every_year",
+   "a": 1,
+   "cost": 37142,
+   "fgt0PY": 33,
+   "bOAPy": 19.8,
+   "pov": 31.8,
+   "infl": 0,
+   "dPov": [
+    -50.84,
+    -51.06,
+    -50.63
+   ],
+   "dF0": [
+    -45.13,
+    -45.3,
+    -44.96
+   ]
+  }
+ }
+}

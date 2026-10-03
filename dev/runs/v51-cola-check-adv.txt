@@ -1,0 +1,5 @@
+adv modelled_a75 cost 34012 cost-of-living poverty 35.3 BLEI 23.3 wealth poverty 51.1 change vs none -31.57 inflation 10.9
+adv modelled_a100 cost 25607 cost-of-living poverty 48.9 BLEI 27 wealth poverty 52.5 change vs none -30.11 inflation 0
+adv every_year_a75 cost 34012 cost-of-living poverty 35.3 BLEI 23.3 wealth poverty 51.1 change vs none -31.57 inflation 10.9
+adv every_year_a100 cost 37142 cost-of-living poverty 33 BLEI 19.8 wealth poverty 31.8 change vs none -50.84 inflation 0
+wrote /home/user/compassionism-simulation/dev/runs/cola-check-adv.json

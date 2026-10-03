@@ -13,13 +13,16 @@ for e in ['ref', 'adv', 'st']:
     d = json.load(open('dev/runs/release-panel%s-%s.json' % (SUF, e)))
     if out is None:
         out = {'_meta': dict(d['_meta']), 'envs': {}}
+    # v5.1 (audit E5): the three per-environment runs must come from one build, or the merged panel's manifest would be a lie
+    if d['_meta'].get('manifest') != out['_meta'].get('manifest'):
+        sys.exit('merge_panel: the manifests of the per-environment panels differ (commit, file hashes or Node version); rerun all three from one commit')
     out['envs'][e] = d['envs'][e]
 YF = ' --years=' + Y if Y else ''
 out['_meta']['command'] = 'node harness.js testbed %d release ref,adv,st%s (one process per environment: release ref%s --json=dev/runs/release-panel%s-ref.json, and adv, st; then python3 dev/tools/merge_panel.py%s)' % (out['_meta']['seeds'], YF, YF, SUF, ' ' + Y if Y else '')
-def rnd(x):
-    if isinstance(x, float): return round(x, 3)
-    if isinstance(x, dict): return {k: rnd(v) for k, v in x.items()}
-    if isinstance(x, list): return [rnd(v) for v in x]
+def rnd(x, nd=3):
+    if isinstance(x, float): return round(x, nd)
+    if isinstance(x, dict): return {k: rnd(v, 4 if k in ('giniD', 'giniX') else nd) for k, v in x.items()}  # v5.1: Gini keeps four decimals (E1)
+    if isinstance(x, list): return [rnd(v, nd) for v in x]
     return x
 out = rnd(out)
 json.dump(out, open('dev/runs/release-panel%s.json' % SUF, 'w'), indent=1)
