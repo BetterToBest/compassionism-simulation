@@ -41,6 +41,8 @@ jobs:
           C="$(git log --reverse --format=%H -S"VERSION:'$V'" -- index.html | awk 'NR==1')"
           [ -n "$C" ] || { echo "::error::No commit sets VERSION:'$V' in index.html"; exit 1; }
           awk -v h="## $T Release Notes" '$0==h{on=1;next} on&&/^## /{exit} on' CONTRIBUTING.md > notes.md
+          # v5.2: earlier versions' notes moved to CHANGELOG.md (a backfill of an older tag finds them there)
+          [ -s notes.md ] || awk -v h="## $T Release Notes" '$0==h{on=1;next} on&&/^## /{exit} on' CHANGELOG.md > notes.md
           [ -s notes.md ] || echo "See CONTRIBUTING.md for this version's notes." > notes.md
           git tag "$T" "$C"
           git push origin "$T"

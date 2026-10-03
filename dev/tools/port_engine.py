@@ -78,7 +78,7 @@ else:
             if depth == 0: e0 = j + 1; break
 block = BEGIN + '\n' + '\n'.join(merged[i][0] + merged[i][1] for i in sorted(take)) + '\n' + END
 # shared functions whose harness.js version is a superset (identical with every switch off) replace the page's in place
-REPLACE = ['agentBLEI']
+REPLACE = ['agentBLEI', 'housingDistressOf']  # v5.2 step 4: housingDistressOf counts the Social Security benefit (0 without ageing)
 def span(src, name):
     mm = re.search(r'(?m)^function ' + name + r'\(', src); jj = src.index('{', mm.start()); dd = 0
     for kk in range(jj, len(src)):
