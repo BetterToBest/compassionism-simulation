@@ -3486,11 +3486,27 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
-Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite });
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of });
 
 /* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is
  * not changed. Reporting only: no engine code calls it. */
 function quantileOf(arr, q){ var v = Array.prototype.slice.call(arr).sort(function(x, y){ return x - y; }), h = (v.length - 1)*q, lo = Math.floor(h), hi = Math.ceil(h); return v[lo] + (v[hi] - v[lo])*(h - lo); }
+/* Audit E5 / V5-08 (v5.1): a machine-readable provenance manifest for the exported panels. pageEngineBlock(src) returns the release-engine block that
+ * dev/tools/port_engine.py writes into index.html (markers included), or null; runManifest() fingerprints the run: the git commit (and whether tracked files differed
+ * from it), SHA-256 of harness.js as run, of the page's engine block (the part of index.html the panel's numbers come from), and of index.html with the two embedded
+ * panels blanked (the panels are written into it after the run), and the Node version. Reporting only: nothing in the engine calls these. */
+var PAGE_ENGINE_BEGIN = '/* ==== RELEASE ENGINE: ported verbatim from harness.js by dev/tools/port_engine.py (plan step 10). Do not edit here. ==== */', PAGE_ENGINE_END = '/* ==== END RELEASE ENGINE ==== */';
+function pageEngineBlock(src){ var a = src.indexOf(PAGE_ENGINE_BEGIN), b = src.indexOf(PAGE_ENGINE_END); return a >= 0 && b > a ? src.slice(a, b + PAGE_ENGINE_END.length) : null; }
+function sha256Of(x){ return require('crypto').createHash('sha256').update(x).digest('hex'); }
+function runManifest(root){
+  var fs = require('fs'), path = require('path'), cp = require('child_process'); root = root || __dirname;
+  var H = fs.readFileSync(path.join(root, 'harness.js')), I = fs.readFileSync(path.join(root, 'index.html'), 'utf8'), blk = pageEngineBlock(I);
+  function git(args){ try { return cp.execFileSync('git', args, {cwd:root, stdio:['ignore', 'pipe', 'ignore']}).toString(); } catch (e){ return null; } }
+  var head = git(['rev-parse', 'HEAD']), st = git(['status', '--porcelain', '--untracked-files=no']);
+  return {commit:head === null ? null : head.trim(), dirty:st === null ? null : st.trim().length > 0, node:process.version, harnessSha256:sha256Of(H), engineBlockSha256:blk === null ? null : sha256Of(blk),
+    indexSha256:sha256Of(I.replace(/(<script type="application\/json" id="rel-data(?:-40)?">)[\s\S]*?(<\/script>)/g, '$1$2')),
+    };
+}
 function reportUnitSuite(){
   var out = [];
   function t(name, fn){ try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } }
@@ -3501,6 +3517,22 @@ function reportUnitSuite(){
   t('quantileOf: on a compounding quantity the mean sits above the median (the reason the panel now reports the median), and 10th <= median <= 90th', function(){
     var x = []; for (var i = 0; i < 101; i++) x.push(Math.exp(i/10)); var m = x.reduce(function(s, v){ return s + v; }, 0)/x.length, md = quantileOf(x, 0.5);
     return {pass:m > md && quantileOf(x, 0.1) <= md && md <= quantileOf(x, 0.9), detail:'mean ' + m.toFixed(1) + ' above median ' + md.toFixed(1)}; });
+  t('manifest: pageEngineBlock cuts the page\'s engine block between its markers (and returns null if a marker is missing or out of order); the real page has one', function(){
+    var fs = require('fs'), src = fs.readFileSync(require('path').join(__dirname, 'index.html'), 'utf8'), b = pageEngineBlock(src), ok = !!b && b.indexOf(PAGE_ENGINE_BEGIN) === 0 && b.lastIndexOf(PAGE_ENGINE_END) === b.length - PAGE_ENGINE_END.length;
+    ok = ok && pageEngineBlock('x ' + PAGE_ENGINE_BEGIN + ' y ' + PAGE_ENGINE_END + ' z') === PAGE_ENGINE_BEGIN + ' y ' + PAGE_ENGINE_END && pageEngineBlock(PAGE_ENGINE_END + PAGE_ENGINE_BEGIN) === null && pageEngineBlock(PAGE_ENGINE_BEGIN) === null && pageEngineBlock('') === null;
+    return {pass:ok, detail:'block of ' + (b ? b.length : 0) + ' characters'}; });
+  t('manifest: runManifest fingerprints the files (SHA-256 of harness.js and of the page\'s engine block recompute; index.html\'s hash ignores the two embedded panels and nothing else), records the Node version, and gives null, not a guess, when there is no git checkout', function(){
+    var fs = require('fs'), os = require('os'), path = require('path'), root = fs.mkdtempSync(path.join(os.tmpdir(), 'mf-'));
+    try { var page = 'head\n<script type="application/json" id="rel-data">{"a":1}</script>\n<script type="application/json" id="rel-data-40">{"b":2}</script>\n' + PAGE_ENGINE_BEGIN + '\nvar x=1;\n' + PAGE_ENGINE_END + '\ntail\n';
+      fs.writeFileSync(path.join(root, 'harness.js'), 'harness text'); fs.writeFileSync(path.join(root, 'index.html'), page);
+      var m1 = runManifest(root); fs.writeFileSync(path.join(root, 'index.html'), page.replace('{"a":1}', '{"a":2,"c":[3]}').replace('{"b":2}', '{}'));
+      var m2 = runManifest(root); fs.writeFileSync(path.join(root, 'index.html'), page.replace('var x=1;', 'var x=2;')); var m3 = runManifest(root);
+      var ok = m1.harnessSha256 === sha256Of('harness text') && m1.engineBlockSha256 === sha256Of(PAGE_ENGINE_BEGIN + '\nvar x=1;\n' + PAGE_ENGINE_END) && m1.indexSha256 === m2.indexSha256 && m1.engineBlockSha256 === m2.engineBlockSha256 &&
+        m3.engineBlockSha256 !== m1.engineBlockSha256 && m3.indexSha256 !== m1.indexSha256 && m1.node === process.version && m1.commit === null && m1.dirty === null && /^[0-9a-f]{64}$/.test(m1.indexSha256);
+      return {pass:ok, detail:'panels blanked in the page hash: ' + (m1.indexSha256 === m2.indexSha256) + '; an engine edit changes both: ' + (m3.engineBlockSha256 !== m1.engineBlockSha256 && m3.indexSha256 !== m1.indexSha256) + '; no checkout gives commit ' + m1.commit}; }
+    finally { fs.rmSync(root, {recursive:true, force:true}); } });
+  t('manifest: in this repository runManifest names a 40-character commit and whether the tracked files differ from it', function(){ var m = runManifest();
+    return {pass:/^[0-9a-f]{40}$/.test(m.commit || '') && typeof m.dirty === 'boolean' && /^[0-9a-f]{64}$/.test(m.harnessSha256) && /^[0-9a-f]{64}$/.test(m.engineBlockSha256 || ''), detail:'commit ' + (m.commit || '').slice(0, 8) + (m.dirty ? ' (tracked files differ)' : ' (clean)')}; });
   return out;
 }
 
@@ -3711,7 +3743,7 @@ if (require.main === module) {
     AWU.forEach(function(x){ if (!x.pass) awf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + AWU.length + ' run, ' + awf + ' failed');
     var RPU = reportUnitSuite(), rpf = 0;
-    console.log('\n=== reportUnitSuite(): audit F3, the price-level median and percentiles in the panel (harness-only) ===');
+    console.log('\n=== reportUnitSuite(): audit F3 and E5, price-level median and percentiles in the panel, and its provenance manifest (harness-only) ===');
     RPU.forEach(function(x){ if (!x.pass) rpf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + RPU.length + ' run, ' + rpf + ' failed');
     var GCU = gateUnitSuite(), gcf = 0;
@@ -5426,7 +5458,7 @@ if (require.main === module) {
     });
     /* Plan step 11 (Oct 1, 2026): the restudy with every mechanism in (dev/reports/11-restudy.md). --json=FILE writes the page's precomputed
      * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
-    if (secT === 'release'){ var RJ = {_meta:{engine:'release candidate (next-release)', seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
+    if (secT === 'release'){ var RJ = {_meta:{engine:'release engine (harness.js testbed, section release)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
       envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5) */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
