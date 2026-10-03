@@ -133,6 +133,25 @@ Decision d46 replaces the engine's octave wage raise (0.3% a year of extra wage 
 - **The engine in `index.html` is unchanged**, and so is the page. Per d65 the main Compassionism row changes at the N1 release (s35).
 - **Checks.** `validate` passes, `unit` passes (the new suite 9 of 9), and `domtest` passes all 95.
 
+## v5.0.1 Release Notes
+
+**v5.0.1 (Oct 3, 2026): the external audit pass on v5.0, applied as a pull request.** Text, tests and three page fixes; the engine is unchanged and every shipped figure is bit-identical. Prompted by two external audits of v5.0 (xAI and ChatGPT) and a third pass that checked their claims by running the code. The `v5.0` tag still points at the commit with the stale version fields; it is not moved. This version is the corrected citation.
+
+The same fixes were first sent as `apply-audit-v5.0.zip`; that run's checks passed but its commit step failed (`git add` refused the ignored `node_modules` path), so none of them went live until this pull request.
+
+**Fixed in this pass**
+- **A single live run said "No group is worse off than with no programme on any test" whatever its numbers showed.** `relLiveRows` hard-coded `worse:'none'`. In Reference, seeds 1-6, adults who did not take part lose $415-$1,441; in Adverse and Stress, seeds 1-6, wealth poverty rises. A live run now reads the sign of its own group results and its own wealth-poverty change (`relLiveWorse`).
+- **The earlier-engine explorer stalled without Chart.js.** `finish()` threw in `drawThresholdCharts`, and the status bar stuck at "Simulating year 20 of 20…100%". Charts are now no-ops with a visible note when the library is missing.
+- **Static version fields said 4.22 in a 5.0 release:** the page `<title>`, JSON-LD `softwareVersion`, the two static `.meta-ver` labels, the script banner, this file's signature line, and (on the replication page) the JSON-LD name, the seal tooltip, the Python-snapshot caveats and both meta descriptions. `dev/tools/check_versions.js` now fails on any of them (domtest Phase 13), and `set_version.py` writes them.
+- The "mixed result" sentence named inflation as the cause even for runs with none; the results panels are announced to screen readers (`aria-live`).
+- **Price level, wording (F3, first part).** Where the programme's price level passes 1,000 times today's, the front door no longer prints the figure (821,679,717 times at 40 years in the Adverse Environment read like a forecast). It says that the model's price rule has no central bank, no interest rate and no protection for savings, so prices run away in that environment, and that this is a limit of the model, not a forecast. The exact figure moved to a new column of the replication page's two release tables (`dev/tools/release_figs.py`); `domtest` Phase 13 checks both.
+
+**Found, not applied (each changes numbers or the page's claims, so each needs a mechanics-audit release behind a switch)**
+- **Framework BLEI gate timing (ChatGPT V5-02, confirmed).** `agentBLEI` is called before this year's `_fwBUm` is written, so from year 1 the gate reads last year's value. The stale value differs from the current one in about two thirds of agent-years. A switch-gated fix is in `dev/proposals/` with its paired-run comparison. ChatGPT's V5-03 (full budget versus actual spend) does not hold: `fwB0` is already capped at essentials, and `dev/DECISIONS.md` records the choice.
+- **The price level at year 20 (and 40) is an arithmetic mean over seeds of a compounding quantity** and is stored under the key `pLev20` even in the 40-year panel. A median and a range would describe a typical run better (the wording above is the only part of F3 done in this version).
+- **Gini and the Hub's targets (poverty below 2%, Gini at most 0.25) are computed by the release engine (`giniD`, `giniX`) but not exported to the front door.**
+- **Parity coverage:** the behavioural page-versus-harness check uses seeds 1-2, 3 of 11 rows, 20 years only; there is no commit or file-hash manifest in the exported `_meta`.
+
 ## v5.0 Release Notes
 
 **Released Oct 2, 2026 as v5.0** (Duke said "release" on Oct 2; `python3 dev/tools/set_version.py 5.0` set every label). Built on the branch `next-release` in sessions 30 and 31 (Oct 1-2, 2026) following `dev/PLAN.md` and Duke's four added items (Oct 2); every decision is in `dev/DECISIONS.md` and every mechanism has a plain-words report in `dev/reports/`.
@@ -2759,7 +2778,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. If you change a function that exists in both `index.html` and `harness.js`, change both identically: `domtest.js` Phase 8 compares their source (comments and whitespace ignored) and fails on any drift outside five listed, intentional differences. If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (95 checks as of v4.22) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~2–3 minutes (102 checks as of the Oct 2, 2026 audit pass) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -2853,7 +2872,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v4.22*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.0.1*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

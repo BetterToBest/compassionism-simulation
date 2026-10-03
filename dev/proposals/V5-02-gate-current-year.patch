@@ -1,0 +1,24 @@
+--- a/harness.js	2026-10-02 16:25:31.319991085 -0700
++++ b/harness.js	2026-10-02 16:25:31.321554299 -0700
+@@ -575,6 +575,7 @@
+  *  - A uniform cost ledger (TB.cur, per year) and basket FGT0-2 on income including transfers, less the contribution, plus the
+  *    endowment's annuity value, against the agent's own cost (gross basket less in-kind cuts). */
+ var TB = null;
++var GATE_CURRENT = !!process.env.GATE_CURRENT;  // audit V5-02 (proposed): default off
+ var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true};
+ function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, convM:0, buIss:0, ctax:0, cutFree:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0,
+   bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0}; }  /* session 19 (s38): business premium and ESP payroll by group, years 1-19 (reporting only) */
+@@ -993,6 +994,13 @@
+     var uSzhPtfShare=RNG();
+     var uPthAppr=RNG();
+     var uPtfAdopt=RNG();
++    if(GATE_CURRENT&&FWON&&CONVERSION_MODEL==='framework'&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // audit V5-02: the framework BLEI gate reads THIS year's BU, not last year's
++      var _eF=eShareCur;
++      if(p.ptf&&a.inPTF)_eF=PTF_MODE==='shipped'?_eF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):_eF-PTF_FOOD_CUT[PTF_MODE]*fShareCur;
++      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')_eF-=PTH_HOUSING_CUT*hShareCur*(rsAlt&&p.ptf&&a.inPTF&&PTF_MODE==='shipped'?1-(p.szh?0.12+p.szhCoh*0.04:0.12):1);else _eF*=0.65;}
++      var _mc=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);if(PRICE)_mc*=PRICE.bIdx;
++      var _nw=Math.min(12*buEff,_mc*_eF)/12;a._fwBUm=_nw;
++    }
+     var bleiCheck=agentBLEI(a,buEff,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
+     var tbNB=tbY?tbGate(a,p,buEff,tbY):0,wg=CFG.WAGE_BASE_GROWTH,bleiGate=(tbY&&TB.neutralGate)?tbNB:bleiCheck;  // session 6 (d28): design-neutral gate for the wage bonus (testbed only)
+     var bleiProg=0;a._bleiR=0;a._bleiP=0;  // session 9 (i3-2): harness-only attribution of the BLEI raise (no RNG)

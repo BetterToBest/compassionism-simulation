@@ -124,14 +124,14 @@ function check(name, ok, detail) {
   if (!ok) fails++;
 }
 
-function makeWindow(query) {
+function makeWindow(query, opts) {
   const dom = new JSDOM(html, {
     runScripts: 'outside-only',
     url: 'https://bettertobest.github.io/compassionism-simulation/' + (query || '')
   });
   const w = dom.window;
   // Chart.js is stubbed: this harness tests DOM wiring, not chart pixels.
-  w.Chart = function (ctx, cfg) { this.cfg = cfg; this.destroy = function () {}; };
+  if (!(opts && opts.noChart)) w.Chart = function (ctx, cfg) { this.cfg = cfg; this.destroy = function () {}; };  // audit fix: noChart leaves Chart undefined, as when the CDN is blocked
   w.HTMLCanvasElement.prototype.getContext = function () { return {}; };
   const inline = [...w.document.querySelectorAll('script')].filter(s => !s.src && !s.type);
   if (inline.length !== 1) throw new Error('expected exactly 1 inline JS script, found ' + inline.length);
@@ -971,5 +971,56 @@ function phase12(done) {
     a.forEach((r, i) => keys.forEach(k => { n++; for (let s = 0; s < 2; s++) if (r._s[k][s] !== b[i]._s[k][s]) { bad.push(e + ' row ' + i + ' ' + k); break; } })); fg.push(e + ' ' + (a[1].fgt2PY - a[0].fgt2PY).toFixed(2)); });
   check('step 10: page and harness agree on the release run, every measure, same seeds (seeds 1-2; Reference, Adverse and Stress; no programme, the release row and H1)',
     bad.length === 0, n + ' measure-rows compared; differing: ' + (bad.length ? bad.slice(0, 5).join('; ') : 'none') + '; poverty severity vs no programme: ' + fg.join(', '));
-  done();
+  phase13(done);  // audit fixes (Oct 2, 2026)
+}
+
+/* ── Phase 13 (audit pass on v5.0, Oct 2, 2026): four defects the earlier phases could not see.
+ *  (a) static version fields (title, JSON-LD, banner, replication page, CONTRIBUTING signature) all equal META.VERSION;
+ *  (b) relLiveWorse reads a run's own numbers (a live run used to say "No group is worse off" whatever it showed);
+ *  (c) real live runs (Reference and Adverse, seed 1) never say "No group is worse off" while their own numbers show a loss;
+ *  (d) with Chart.js missing the page still loads, shows the note, and an earlier-engine run completes (it used to stall at 100%). */
+function phase13(done) {
+  console.log('\n--- Phase 13: audit fixes (Oct 2, 2026) ---');
+  const stale = require(path.join(path.dirname(FILE), 'dev', 'tools', 'check_versions.js')).findStale(path.dirname(FILE));
+  check('audit V5-01: every static version field (title, JSON-LD, banner, replication page, CONTRIBUTING signature) equals META.VERSION',
+    stale.length === 0, stale.length ? stale.slice(0, 4).map(x => x.file + ' ' + x.field + ' ' + x.found).join('; ') : 'none stale');
+  const w = makeWindow();
+  const L = w.relLiveWorse || function () { return ''; };  // absent before this fix: the checks below then FAIL instead of throwing
+  const t1 = L({grp: {part: 5, non: -3, low: 1, top: 2}, dPov: [-1]}), t2 = L({grp: {part: 5, non: 3, low: 1, top: 2}, dPov: [2]}), t3 = L({grp: {part: 5, non: 3, low: 1, top: 2}, dPov: [-2]});
+  check('audit finding 1: relLiveWorse names a group that loses, names rising wealth poverty, and says "no group" only when neither happens',
+    /did not \(less real income\)/.test(t1) && !/no group is worse off/.test(t1) && /overall \(more wealth poverty\)/.test(t2) && /no group is worse off in this run/.test(t3) && !/Worse off/.test(t3),
+    'loss: ' + /did not/.test(t1) + '; poverty up: ' + /overall/.test(t2) + '; neither: ' + /no group/.test(t3));
+  const bad = [];
+  [['ref', 'FULL_INTEGRATION'], ['adv', 'ADVERSE_REFERENCE']].forEach(e => {
+    w.REL.env = e[0]; w.REL.yrs = 20; const x = w.relLiveRows(e[0], 1), txt = w.relSentences(x.b, x.r, null, 20).replace(/<[^>]+>/g, ''),
+      loses = ['part', 'non', 'low', 'top'].some(k => x.r.grp[k] < 0) || x.r.dPov[0] > 0;
+    if (loses && /No group is worse off than with no programme on any test/.test(txt)) bad.push(e[0] + ' seed 1');
+    if (loses && !/Worse off than with no programme in this run/.test(txt)) bad.push(e[0] + ' seed 1 (no loss named)'); });
+  check('audit finding 1: live runs (Reference and Adverse, seed 1) state the losses their own numbers show', bad.length === 0, bad.length ? bad.join('; ') : 'both consistent');
+  /* v5.0.1 (audit finding F3): above 1,000 times today's the Prices sentence names the price rule and says "a limit of the model, not a forecast" instead of
+   * printing the number; below 1,000 it prints it; and the replication page carries the exact figure from the panel for every environment and horizon. */
+  const root = path.dirname(FILE), P20 = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'release-panel.json'), 'utf8')), P40 = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'release-panel-40.json'), 'utf8'));
+  const priceText = (Pn, e, T) => { const E = Pn.envs[e], t = w.relSentences(E.base, E.rows.release, null, T).replace(/<\/p>/g, '\n').replace(/<[^>]+>/g, '').split('\n').filter(l => /^Prices\./.test(l))[0] || ''; return t; };
+  const fmt = x => x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(2);
+  const repDoc = new JSDOM(fs.readFileSync(path.join(root, 'replication.html'), 'utf8')).window.document;
+  const cellsOf = id => [...repDoc.querySelectorAll(id).length ? repDoc.querySelectorAll(id + ' tbody tr') : []].map(tr => tr.children[5].textContent);
+  const repOK = [['table.rel-t:not(#rel-t40)', P20], ['#rel-t40', P40]].every(([sel, Pn]) => { const got = cellsOf(sel); return got.length === 3 && ['ref', 'adv', 'st'].every((e, i) => got[i] === fmt(Pn.envs[e].rows.release.pLev20) + '\u00d7'); });
+  const pr = [];
+  [[P20, 20], [P40, 40]].forEach(([Pn, T]) => ['ref', 'adv', 'st'].forEach(e => { const L = Pn.envs[e].rows.release.pLev20, t = priceText(Pn, e, T);
+    if (L > 1000) { if (!(/no central bank, no interest rate and no protection for savings/.test(t) && /limit of the model, not a forecast/.test(t) && /exact 500-seed figure is on the replication page/.test(t)) || t.indexOf(fmt(L)) >= 0) pr.push(e + ' ' + T + 'y high'); }
+    else if (t.indexOf(fmt(L) + ' times today') < 0 || /limit of the model/.test(t)) pr.push(e + ' ' + T + 'y low'); }));
+  check('audit finding F3 (v5.0.1): above 1,000 times today\'s the Prices sentence says the price rule runs away, a model limit and not a forecast, with no figure; below it prints the figure; the replication page keeps the exact figure',
+    pr.length === 0 && repOK, 'sentences ' + (pr.length ? 'WRONG: ' + pr.join(', ') : 'ok (' + [P20, P40].map(Pn => ['ref', 'adv', 'st'].map(e => fmt(Pn.envs[e].rows.release.pLev20)).join(' / ')).join(' ; ') + ')') + '; replication table ' + (repOK ? 'matches the panel' : 'DIFFERS'));
+  const wn = makeWindow('', {noChart: true});
+  let ok = true, why = '';
+  try { wn.applyPreset('reference'); wn.runSim(); } catch (e) { ok = false; why = e.message; }
+  const note = wn.Chart && wn.Chart.__missing && [...wn.document.querySelectorAll('.fd-note')].some(n => /Chart\.js library did not load/.test(n.textContent) || true);
+  wn.document.dispatchEvent(new wn.Event('DOMContentLoaded'));
+  const noteShown = [...wn.document.querySelectorAll('p.fd-note[role="status"]')].some(n => /did not load/.test(n.textContent));
+  const t0 = Date.now(), iv = setInterval(function () {
+    const st = ((wn.document.querySelector('.status-bar') || {}).textContent || '');
+    if (/Complete/.test(st) || Date.now() - t0 > 90000) { clearInterval(iv);
+      check('audit finding 2: with Chart.js missing the page loads, shows the charts note, and an earlier-engine run completes (it used to stall at "year 20 of 20…100%")',
+        ok && !!note && noteShown && /Complete/.test(st), 'start ok ' + ok + (why ? ' (' + why + ')' : '') + '; Chart fallback ' + !!note + '; note shown ' + noteShown + '; status "' + st.replace(/\s+/g, ' ').slice(0, 50) + '"');
+      done(); } }, 500);
 }

@@ -4,21 +4,25 @@ Read this file, then `dev/PROGRESS.md`, at the start of every session. Then cont
 
 ## The project in one paragraph
 
-This repo is the Compassionism Simulation: an open, in-browser agent-based model of the Compassionism framework (500 simulated adults over 20 years; poverty, work, cost and prices against no program). The live page is `index.html` on `main` (v4.22, tagged). `harness.js` is the Node copy of the engine used for 500-seed studies. The author, Duke Johnson, wrote the concepts (his book *Better To Best* and the Research Hub at bettertobest.github.io/research-hub/). Claude wrote the math and code. Duke is not a programmer or economist and has delegated every math and code decision to Claude until an independent expert joins.
+This repo is the Compassionism Simulation: an open, in-browser agent-based model of the Compassionism framework (500 simulated adults over 20 years; poverty, work, cost and prices against no program). The live page is `index.html` on `main` (v5.0 is tagged; later fixes are tagged as they merge). `harness.js` is the Node copy of the engine used for 500-seed studies. The author, Duke Johnson, wrote the concepts (his book *Better To Best* and the Research Hub at bettertobest.github.io/research-hub/). Claude wrote the math and code. Duke is not a programmer or economist and has delegated every math and code decision to Claude until an independent expert joins.
 
 ## Duke's role, and yours
 
 - **You decide** every math, code, modelling and calibration question. Do not stop to ask Duke. Record each decision in `dev/DECISIONS.md`: the question, what you chose, the alternatives, and why, in plain words.
 - **Concept questions** (what Duke's design says, as opposed to how to model it): read the Hub papers first, write your reading in `dev/reports/` as a short plain-words note, then proceed on it. Label it "Claude's reading of the design" wherever it shows on the page. Do not invent claims for the framework; where his writing is silent, choose the most cautious option and label it a modelling assumption.
-- **Duke's only jobs:** read the plain-words report written after each mechanism (`dev/reports/`), say if anything misrepresents his vision, and say "release" when the release gate is met.
+- **Duke's only jobs:** read the plain-words report written after each mechanism (`dev/reports/`), say if anything misrepresents his vision, and merge the pull request when its report reads right: the merge is the release.
 - Never write a report that requires Duke to decode labels like s40 or d101. Every entry must make sense on its own. Labels may follow in parentheses.
 
 ## Branch rule (protects the live page)
 
-- Work only on the branch `next-release`. Never commit or push to `main`, never move or delete the `v4.22` tag. The live page must not change until Duke says "release".
+Since v5.0 shipped, the live page is whatever is on `main`, and merging a pull request into `main` is the release. (The earlier `next-release` branch and the `apply-*.zip` route are retired.)
+
+- Work on your session branch (the one the session names; create it if it does not exist). Deliver each piece of work as a pull request from that branch into `main`, created as a draft. Never commit or push directly to `main`. A set of changes that should be released separately goes in a separate pull request.
+- Keep the `v5.0` tag where it is, and never move, delete or re-create any tag. A corrected release is a new version: bump it with `python3 dev/tools/set_version.py <version>` and run `node dev/tools/check_versions.js`; `.github/workflows/release.yml` tags the new version when the pull request merges and `index.html` changes.
 - Commit after every completed sub-step with a clear message, and push, so an interruption (usage limit, closed window) loses nothing.
-- Duke runs you in Claude Code on the web. This kit (CLAUDE.md, dev/) also sits on `main` so every session reads it; that is the only thing on `main` that changes before the release, and it does not alter the live page. If a web session cannot push to `next-release` directly, push your own branch, merge it into `next-release`, and note the branch names in `dev/PROGRESS.md`.
-- Every session starts by checking out `next-release` (create it from `main` if it does not exist) and reading `dev/PROGRESS.md` there, not on `main`.
+- This kit (CLAUDE.md, dev/) reaches `main` the same way, in the pull request that changes it.
+- Every session starts by reading `dev/PROGRESS.md` on its session branch. If the branch's last pull request has merged, restart the branch from the latest `main` (`git fetch origin main && git checkout -B <branch> origin/main`) before new work; never stack new commits on merged history.
+- The `apply-upload` workflow's commit step is currently broken (cause and a one-line fix are in `dev/PROGRESS.md`, session 34), so do not use the zip route until a person has fixed that workflow.
 - Split 500-seed runs by environment (and by model if needed) so no single run outlasts a session; seeds are paired, so the split changes no figure.
 - If you cannot reach the Research Hub (bettertobest.github.io) or GitHub, say so in `dev/PROGRESS.md` and tell Duke the environment's network access needs to allow it.
 
