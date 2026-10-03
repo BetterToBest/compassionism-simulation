@@ -963,14 +963,52 @@ function phase12(done) {
     return grab(blk, a) !== grab(hsrc, b); });
   check('step 10: every function in the page\'s release engine is a verbatim copy of harness.js (rerun dev/tools/port_engine.py after an engine change)',
     fnames.length > 40 && diff.length === 0, fnames.length + ' functions; differing: ' + (diff.length ? diff.join(', ') : 'none'));
-  function rel(X, envName, seeds){ const svN = X.applyNR6(), svG = X.tbSetG(X.TB_PROFILE_G); try { const P = Object.assign({}, X[envName]), PR = X.tbPresets(P);
-      const ALL = {sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}}, cfg = [{p:PR.baseline()}, X.n1Row(PR, 'framework', ALL), X.n1Row(PR, 'framework', Object.assign({}, ALL, {a:1}))];
-      return X.tbStudy(cfg, seeds, P, {fin:'tax', aT:0, a:0, X:0, sc:X.SPEND_SOURCED}); } finally { X.resetNR6(svN); X.tbSetG(svG); } }
-  const bad = [], keys = H.TB_KEYS; let n = 0, fg = [];
-  ['FULL_INTEGRATION', 'ADVERSE_REFERENCE', 'STRESS_TEST'].forEach(e => { const a = rel(w, e, 2), b = rel(H, e, 2);
-    a.forEach((r, i) => keys.forEach(k => { n++; for (let s = 0; s < 2; s++) if (r._s[k][s] !== b[i]._s[k][s]) { bad.push(e + ' row ' + i + ' ' + k); break; } })); fg.push(e + ' ' + (a[1].fgt2PY - a[0].fgt2PY).toFixed(2)); });
-  check('step 10: page and harness agree on the release run, every measure, same seeds (seeds 1-2; Reference, Adverse and Stress; no programme, the release row and H1)',
-    bad.length === 0, n + ' measure-rows compared; differing: ' + (bad.length ? bad.slice(0, 5).join('; ') : 'none') + '; poverty severity vs no programme: ' + fg.join(', '));
+  /* v5.1 (audit V5-04): the behavioural parity check now covers every row of the release panel (the no-programme baseline and the eleven readings, built from harness.js's
+   * releaseRows so the page and the harness run the same row options, including the V5-02 gate), in all three environments, at 20 and at 40 years, on seeds 1-2. */
+  const SC = H.SPEND_SOURCED;
+  function relAll(X, envName, seeds, years){ const svN = X.applyNR6(), svG = X.tbSetG(X.TB_PROFILE_G); try { const P = Object.assign({}, X[envName], years ? {years} : {}), PR = X.tbPresets(P), rows = H.releaseRows(SC);
+      const cfg = [Object.assign({p: PR.baseline()}, {sc: SC})].concat(rows.map(r => { const c = X.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return c; }));
+      return X.tbStudy(cfg, seeds, P, {fin:'tax', aT:0, a:0, X:0, sc:SC}); } finally { X.resetNR6(svN); X.tbSetG(svG); } }
+  const keys = H.TB_KEYS, nRows = H.releaseRows(SC).length + 1; let fg = [];
+  [20, 40].forEach(yrs => { const bad = []; let n = 0, rowsSeen = 0;
+    ['FULL_INTEGRATION', 'ADVERSE_REFERENCE', 'STRESS_TEST'].forEach(e => { const a = relAll(w, e, 2, yrs === 20 ? 0 : yrs), b = relAll(H, e, 2, yrs === 20 ? 0 : yrs); rowsSeen = a.length;
+      a.forEach((r, i) => keys.forEach(k => { n++; for (let s = 0; s < 2; s++) if (r._s[k][s] !== b[i]._s[k][s]) { bad.push(e + ' row ' + i + ' ' + k); break; } })); fg.push(yrs + 'y ' + e + ' ' + (a[2].fgt2PY - a[0].fgt2PY).toFixed(2)); });
+    check('step 10 (v5.1, V5-04): page and harness agree on every row of the release panel, every measure, same seeds (seeds 1-2; Reference, Adverse and Stress; ' + yrs + ' years; the no-programme baseline and all eleven readings)',
+      bad.length === 0 && rowsSeen === nRows && nRows === 12, rowsSeen + ' rows x ' + n/rowsSeen/3 + ' measures x 3 environments compared; differing: ' + (bad.length ? bad.slice(0, 5).join('; ') : 'none') + (yrs === 20 ? '' : '; release poverty severity vs no programme: ' + fg.filter(x => x.startsWith('40')).join(', '))); });
+  /* The bindings fingerprint: every top-level name the page and harness.js share (values and functions) is compared, the values by a canonical serialisation, the functions by their
+   * source (exactly, or with comments and white space removed, which is what a comment-only edit changes). The only differences allowed are the ones listed, each with its reason,
+   * and each must still be there (a stale allow-list entry fails). The names come from the two global scopes (the page's window, harness.js run in a vm context), so no parser is needed. */
+  const vm = require('vm'), root = path.dirname(FILE), blank = new JSDOM('', {runScripts: 'outside-only'}).window, blankNames = new Set(Object.getOwnPropertyNames(blank));
+  const wf = makeWindow(), pageNames = Object.getOwnPropertyNames(wf).filter(n => !blankNames.has(n)), mod = {exports: {}}, req = Object.assign(n => require(n.startsWith('.') ? path.join(root, n) : n), {main: undefined});
+  const shims = ['require', 'module', 'exports', 'process', '__dirname', '__filename', 'console', 'Buffer', 'setTimeout', 'clearTimeout'];
+  const ctx = vm.createContext({require: req, module: mod, exports: mod.exports, process, __dirname: root, __filename: path.join(root, 'harness.js'), console, Buffer, setTimeout, clearTimeout});
+  vm.runInContext(fs.readFileSync(path.join(root, 'harness.js'), 'utf8'), ctx, {filename: 'harness.js'});
+  const builtin = new Set(Object.getOwnPropertyNames(vm.runInContext('globalThis', vm.createContext({}))).concat(shims)), harnessNames = Object.getOwnPropertyNames(ctx).filter(n => !builtin.has(n));
+  const shared = pageNames.filter(n => harnessNames.includes(n)), isFn = n => typeof ctx[n] === 'function';
+  function canon(v, seen) { seen = seen || new Set(); if (v === undefined) return 'undefined'; if (v === null) return 'null'; if (typeof v === 'function') return 'fn:' + v.toString();
+    if (typeof v === 'number') return Object.is(v, -0) ? '-0' : String(v); if (typeof v !== 'object') return typeof v + ':' + JSON.stringify(v); if (seen.has(v)) return '[circular]'; seen.add(v);
+    if (ArrayBuffer.isView(v)) return 'ta:' + Array.prototype.join.call(v, ','); if (Array.isArray(v)) return '[' + v.map(x => canon(x, seen)).join(',') + ']';
+    return '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canon(v[k], seen)).join(',') + '}'; }
+  const strip = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '').replace(/\s+/g, '');
+  const ALLOWED = {
+    CFG: {fn: false, why: 'the page adds two display-only poverty-line keys (FED_POVERTY_LINE_1P, FED_POVERTY_LINE_YEAR)',
+      shape: (pg, hs) => { const only = Object.keys(pg).filter(k => !(k in hs)).sort().join(), back = Object.keys(hs).filter(k => !(k in pg)).length, same = Object.keys(hs).every(k => canon(pg[k]) === canon(hs[k])); return only === 'FED_POVERTY_LINE_1P,FED_POVERTY_LINE_YEAR' && back === 0 && same; }},
+    TIERS: {fn: false, why: 'the page adds a CSS class and a colour to each tier (display only)',
+      shape: (pg, hs) => pg.length === hs.length && pg.every((t, i) => t.name === hs[i].name && t.num === hs[i].num && Object.keys(t).filter(k => !(k in hs[i])).sort().join() === 'cls,color')},
+    getTier: {fn: true, why: 'the page\'s copy also returns the tier\'s CSS class and colour (follows TIERS)'},
+    drawAutomationRisk: {fn: true, why: 'harness.js carries a legacy-sampler branch behind AUTOMATION_SAMPLER_LEGACY (default off, the same default path as the page)'},
+    incomeBasketMetrics: {fn: true, why: 'harness.js adds the UBI term (zero outside the UBI comparators) and orders its guard differently'}};
+  const unexpected = [], commentOnly = [], stale = [], shapeBad = [], present = [];
+  shared.forEach(n => { const a = wf[n], b = ctx[n]; let same, cmt = false;
+    if (isFn(n)) { const x = a.toString(), y = b.toString(); same = x === y; if (!same && strip(x) === strip(y)) { same = true; cmt = true; } } else same = canon(a) === canon(b);
+    if (cmt) commentOnly.push(n);
+    if (!same) { if (ALLOWED[n] && ALLOWED[n].fn === isFn(n)) { present.push(n); if (ALLOWED[n].shape && !ALLOWED[n].shape(a, b)) shapeBad.push(n); } else unexpected.push(n); } });
+  Object.keys(ALLOWED).forEach(n => { if (!present.includes(n)) stale.push(n); });
+  const nVal = shared.filter(n => !isFn(n)).length, nFn = shared.filter(isFn).length;
+  check('step 10 (v5.1, V5-04): every top-level name the page and harness.js share (' + nVal + ' values, ' + nFn + ' functions) is identical, except the allow-listed differences, each of which is still there and has the stated shape',
+    nVal >= 80 && nFn >= 80 && unexpected.length === 0 && stale.length === 0 && shapeBad.length === 0,
+    shared.length + ' shared; allowed differences present: ' + present.join(', ') + '; comment-only differences: ' + commentOnly.length + (commentOnly.length ? ' (' + commentOnly.join(', ') + ')' : '') +
+    (unexpected.length ? '; UNEXPECTED: ' + unexpected.join(', ') : '') + (stale.length ? '; STALE allow-list entries: ' + stale.join(', ') : '') + (shapeBad.length ? '; WRONG SHAPE: ' + shapeBad.join(', ') : ''));
   phase13(done);  // audit fixes (Oct 2, 2026)
 }
 

@@ -3486,8 +3486,25 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
-Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of });
+Object.assign(module.exports, { avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows });
 
+/* The eleven readings of the release panel (v5.0's main row, H1 and the nine others), as plain row options for n1Row. Top-level so the release section of `testbed` and
+ * domtest's page-versus-harness parity check build the same rows (v5.1, audit V5-04). SC is the spending share (SPEND_SOURCED). Pure data: no engine state is read. */
+function releaseRows(SC){
+  var ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };
+  return [
+    {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC, gc:true}, k:'today', j:'v422'},
+    {l:'RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source', v:ALL, k:'main', vs:'today', j:'release'},
+    {l:'  H1: every dollar the Source pays backed by new output', v:W({a:1}), k:'s', vs:'main', j:'h1'},
+    {l:'  essentials bought with BU counted as backed by output', v:W({o:{faceM:true}}), k:'s', vs:'main', j:'face'},
+    {l:'  paid for by a flat contribution on wages instead of the Source', v:W({fin:'tax'}), k:'s', vs:'main', j:'tax'},
+    {l:'  creative projects counted at the cost of their hours, not at market value (the cautious reading)', v:W({pd:{match:'face', speed:'oneyear'}}), k:'s', vs:'main', j:'cost'},
+    {l:'  community-business capacity growing only as reinvestment pays for it (the 5-year rule)', v:W({pd:{match:'market', speed:'reinvest'}}), k:'s', vs:'main', j:'cap5'},
+    {l:'  session 30\'s build: private business owners keep the premium, no spending layer, creative work at cost', v:{sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC, gc:true}, k:'s', vs:'main', j:'s30'},
+    {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main', j:'all'},
+    {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
+    {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'}];
+}
 /* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is
  * not changed. Reporting only: no engine code calls it. */
 function quantileOf(arr, q){ var v = Array.prototype.slice.call(arr).sort(function(x, y){ return x - y; }), h = (v.length - 1)*q, lo = Math.floor(h), hi = Math.ceil(h); return v[lo] + (v[hi] - v[lo])*(h - lo); }
@@ -5460,23 +5477,12 @@ if (require.main === module) {
      * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
     if (secT === 'release'){ var RJ = {_meta:{engine:'release engine (harness.js testbed, section release)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
-      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5) */
+      envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
         function av(r){ return (r._B.epPY - r.epPY)/100; }
         function aw(r){ return avoidWide((r._B.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (r._B.fgt0PY - r.fgt0PY)/100); }
-        var rows = [
-          {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC, gc:true}, k:'today', j:'v422'},
-          {l:'RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source', v:ALL, k:'main', vs:'today', j:'release'},
-          {l:'  H1: every dollar the Source pays backed by new output', v:W({a:1}), k:'s', vs:'main', j:'h1'},
-          {l:'  essentials bought with BU counted as backed by output', v:W({o:{faceM:true}}), k:'s', vs:'main', j:'face'},
-          {l:'  paid for by a flat contribution on wages instead of the Source', v:W({fin:'tax'}), k:'s', vs:'main', j:'tax'},
-          {l:'  creative projects counted at the cost of their hours, not at market value (the cautious reading)', v:W({pd:{match:'face', speed:'oneyear'}}), k:'s', vs:'main', j:'cost'},
-          {l:'  community-business capacity growing only as reinvestment pays for it (the 5-year rule)', v:W({pd:{match:'market', speed:'reinvest'}}), k:'s', vs:'main', j:'cap5'},
-          {l:'  session 30\'s build: private business owners keep the premium, no spending layer, creative work at cost', v:{sp:{}, pd:{}, fin:'source', a:0, jn:{}, cs:{}, sc:SC, gc:true}, k:'s', vs:'main', j:'s30'},
-          {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main', j:'all'},
-          {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
-          {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'}];
+        var rows = releaseRows(SC);
         var R = stepSection('release (plan step 11)', e, rows,
           [['Unhoused person-years avoided per 1,000 adults a year', function(r){ return f2(av(r)*1000); }],
            ['Public cost avoided per adult-year, low / high', function(r){ return $(av(r)*AVOID_HOMELESS.low) + ' / ' + $(av(r)*AVOID_HOMELESS.high); }],
