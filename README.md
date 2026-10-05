@@ -37,19 +37,19 @@ Welfare outcomes are measured against the **Basic Living Economic Index (BLEI)**
 
 ## How to use
 
-**No Python. No installation. Just open `index.html` in any browser.**
+**No Python. No installation. Just open `index.html` in any browser.** The earlier engine (v4.22, with its own settings, presets and charts) is on its own page, `earlier-engine.html`, linked from the front door as "Explore the earlier engine".
 
 ### Option A — Open locally
-1. Download `index.html`
+1. Download `index.html` (and `earlier-engine.html` for the earlier engine)
 2. Double-click — opens in Chrome, Firefox, Safari, or Edge
-3. Adjust controls and click **Run Simulation**
+3. Read the results, or press **Run it yourself**; the earlier engine's controls and **Run Simulation** are on `earlier-engine.html`
 
 ### Option B — Host on GitHub Pages
-1. Upload `index.html` to your repository root
+1. Upload `index.html` and `earlier-engine.html` to your repository root
 2. Go to **Settings → Pages → Source → main branch / root**
 3. Live at `https://yourusername.github.io/compassionism-simulation/`
 
-The simulation itself documents its own current controls, presets, calibration constants, and known limitations in-app — see the collapsible **Assumptions, ODD Protocol & Known Limitations** and **References & Citations** panels at the bottom of the page, which are kept in sync with the shipped code.
+The simulation itself documents its own current controls, presets, calibration constants, and known limitations in-app — see the collapsible **Assumptions, ODD Protocol & Known Limitations** and **References & Citations** panels at the bottom of the earlier engine's page (`earlier-engine.html`), which are kept in sync with the shipped code.
 
 ---
 

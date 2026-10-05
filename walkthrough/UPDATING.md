@@ -6,11 +6,11 @@ The video, its captions and the written tour (`README.md`) are all built from on
 
 1. Open `walkthrough/tour.json` and edit the `"t"` text of a caption. Keep `{figure_names}` in braces where a number belongs; they are filled from the page's own results (`#rel-data` in `index.html`).
 2. Rebuild: `python3 walkthrough/make_walkthrough.py` (about 10 minutes; most of it the video encode).
-3. Put the changed files (`walkthrough/walkthrough.mp4`, `captions.vtt`, `captions.srt`, `README.md`, `img/`) in a zip named `apply-<anything>.zip` and drop it on the repository's main page; the apply workflow checks and commits it.
+3. Commit the changed files (`walkthrough/walkthrough.mp4`, `captions.vtt`, `captions.srt`, `README.md`, `img/`) on a branch and open a pull request into `main` (the zip route is retired; see CLAUDE.md).
 
 ## Add, remove or reorder a shot
 
-Each entry in `"shots"` is one screen. Its caption list `"caps"` is read aloud one caption at a time. Fields: `ch` (chapter number), `yrs` (20 or 40, the Years switch), `scroll` (a CSS selector to bring near the top, or `0`), `dim` (one element to spotlight), `env` (`ref`, `adv` or `st`), `more` (open the "other readings" table), `run` (press "Run it yourself", seed 42), `url` (another page), `card` (a full-frame card: `title`, `terminal`, `contribute`, `end`). Add alt text for the written tour under `"alt"`.
+Each entry in `"shots"` is one screen. Its caption list `"caps"` is read aloud one caption at a time. Fields: `ch` (chapter number), `yrs` (20 or 40, the Years switch), `scroll` (a CSS selector to bring near the top, or `0`), `dim` (one element to spotlight), `env` (`ref`, `adv` or `st`), `more` (open the "other readings" table), `run` (press "Run it yourself", seed 42), `url` (another page), `hide` (CSS selectors to hide for this shot, such as the v5.2 reading notes when a shot's captions do not concern them), `card` (a full-frame card: `title`, `terminal`, `contribute`, `end`). Add alt text for the written tour under `"alt"`.
 
 ## Refresh the figures after the results are regenerated
 

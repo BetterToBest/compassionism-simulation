@@ -1,10 +1,45 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
 
 ---
+
+## v5.1 Release Notes
+
+**Released as v5.1 (Oct 3, 2026): the mechanics release from the external audit pass.** Delivered as a pull request into `main` (merging is the release); it follows v5.0.1 (the text, version-label and test fixes from the same audit), which is a separate pull request. The plain-words report for Duke is `dev/reports/v5-8-audit-fixes-and-v5-1.md`; every decision is in `dev/DECISIONS.md` (Session 34).
+
+### What changed in the model
+
+**V5-02: the framework BLEI gate reads this year's BU.** `runYear` called the gate that decides the wage-growth bonus before writing this year's `a._fwBUm`, so from year 1 it read last year's value (73% of framework agent-years differ in the release rows). Fixed behind a switch (`GATE_CURRENT`; row option `gc`; on in `REL_V5` and in every row of the release panel, including the two former readings, so each comparison differs only by the named change). Off: full-output diffs against v5.0 identical (12 seeds, three environments at 20 years and Reference at 40; JSON byte-identical). On: the hoisted value equals the engine's later assignment in about 4.9 million framework agent-years, 0 mismatches. At 500 seeds it lowers the design-neutral BLEI poverty reading by 0.9, 1.8 and 0.3 points over 20 years (Reference, Adverse, Stress Test) and 0.7, 2.0 and 0.2 over 40; every other headline figure moves by 0.1 point or less.
+
+| Environment, years | Design-neutral reading before | after |
+|---|---|---|
+| Reference, 20 years | 22.1% | 21.2% (−0.9 points) |
+| Adverse, 20 years | 40.3% | 38.5% (−1.8 points) |
+| Stress Test, 20 years | 56.9% | 56.6% (−0.3 points) |
+| Reference, 40 years | 17.1% | 16.4% (−0.7 points) |
+| Adverse, 40 years | 63.1% | 61.1% (−2.0 points) |
+| Stress Test, 40 years | 75.1% | 74.9% (−0.2 points) |
+
+### What changed in the reporting
+
+- **Price level (F3).** The exported panels carry the mean, the median over seeds (`pLevEndMed`) and the 10th and 90th percentiles; the key `pLev20` is gone from the export (the engine keeps it internally). The front door gives the typical run and its range, and above 1,000 times today's says the price rule runs away, a limit of the model and not a forecast; the replication page carries the exact figures.
+- **The Hub's targets (E1).** Gini (`giniD`, `giniX`) and extreme poverty (`epPY`) are in the panel rows; the front door and the replication page set the Hub's Year 7 targets (poverty under 2%, Gini 0.25 to 0.30; Integrated Implementation Roadmap) beside the results, with the caveats that change how they read. No poverty measure comes near 2%; the model's no-programme Gini is already below the Hub's 0.48 start. One reading, the Adverse Environment's Gini counting price cuts at 20 years (0.2495), is on the 0.25 line and is labelled so; the small-sample correction is still not applied (see "Gini small-sample bias" above).
+- **Provenance manifest (E5, V5-08).** Each panel's `_meta.manifest`: commit, clean-tree flag, SHA-256 of `harness.js`, of the page's ported engine and of `index.html` with the panels blanked, and the Node version. `domtest` checks that the engine hash equals the page's, that the panels come from one clean commit, and (where the commit is present) that `harness.js` at it hashes to the recorded value.
+- **The backing-share curve (E2).** One static chart on the replication page: the change in wealth poverty against no programme and the programme's inflation, at 0, 0.25, 0.5, 0.75 and 1 of the Source's payout backed by new output, 500 paired seeds per environment. The end points are the release and H1 rows exactly. **Finding:** in the Adverse and Stress environments the curve bends at the right end because the model indexes the BU to prices only above 5% a year (the Hub's Inflation Surge Protocol) and outside inflation is 2%: fully backed, the BU is never indexed and loses real value. With the BU indexed every year the fully backed Adverse Environment gives wealth poverty 31.8% (52.5% as modelled) and cost-of-living poverty 33.0% (48.9%); `dev/tools/cola_check.js`. So H1 is held back by that rule there; the page says so.
+- **Front door:** deep links (`?env=adv&years=40`, E4), CSV and JSON download of the view with the version, command and manifest (E3), and the optimistic-end sentence points to the chart.
+
+### What changed in the checks
+
+- **Parity (V5-04).** The page-versus-harness check now runs the no-programme baseline and all eleven readings (154 measures each) in three environments at 20 and 40 years, and compares every top-level name the two share (170: 85 values, 85 functions). Allow-listed differences, each with its reason and required to still be present: `CFG` (two display-only poverty-line keys), `TIERS` (colours and classes), and three functions found beyond the audit's count, none of which enters the release run (`getTier`, `drawAutomationRisk`, `incomeBasketMetrics`). Shown to fail on three deliberate breaks of a page copy.
+- **Feature matrix (V5-05).** `matrixUnitSuite`: the framework model alone, then with project hiring, ESP payroll, the other framework modules, the price module, price and labour, and every module together (the twelve release rows): deterministic, finite, the BU, ESP and testbed identities hold, exactly 8 random draws per agent-year with no module changing the count, no dependence between rows, no switch left changed. Shown to fail on three injected faults.
+- **Counts that cannot drift (E6).** The numbers of `unit` tests (146 at v5.1) and `domtest` checks (112 at v5.1) quoted in README.md and CONTRIBUTING.md are checked by the tests themselves; `--write-counts` refreshes them.
+
+### How the figures were made
+
+All from commit `6c68ad9` with a clean tree, Node v22, one process per environment and horizon, paired seeds 1-500: `node harness.js testbed 500 release ENV --json=dev/runs/release-panel-ENV.json` and the same with `--years=40` (`release-panel-40-ENV.json`), logs `dev/runs/v51-release-500-ENV.txt` and `v51-release40-500-ENV.txt`, merged by `python3 dev/tools/merge_panel.py` (and `40`) and written to the replication page by `python3 dev/tools/release_figs.py`. The backing-share runs: `node harness.js testbed 500 backing ENV --json=dev/runs/backing-share-ENV.json` (commit `b0bcc0d`), merged by `python3 dev/tools/backing_chart.py`. The indexing check: `node dev/tools/cola_check.js adv` and `st`. The walk-through was rebuilt with `python3 walkthrough/make_walkthrough.py` (it reads its figures from the page, so the narration was regenerated).
 
 ## v5.0.1 Release Notes
 
