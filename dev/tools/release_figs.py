@@ -127,7 +127,7 @@ FX_TABLE = ('<table class="rel-t" id="rel-fx"><thead><tr><th>Years</th><th>Envir
 
 # v5.2 round: the readings added in this round, each against its own no-programme pair where it has one (a mechanism that is not design-specific applies to the
 # no-programme run too). Each step appends its keys; the table is written after the fixed-dollar table.
-V52_READINGS = ['release', 'sav', 'sav0', 'idx', 'h1', 'h1idx', 'h1both', 'age', 'agenc', 'agenone', 'agepia', 'fixw', 'fixr', 'fixs', 'fixm', 'fixall', 'mid', 'midlo', 'midhi', 'slack', 'slacku6']
+V52_READINGS = ['release', 'sav', 'sav0', 'idx', 'h1', 'h1idx', 'h1both', 'age', 'agenc', 'agenone', 'agepia', 'fixw', 'fixr', 'fixs', 'fixm', 'fixall', 'mid', 'midlo', 'midhi', 'slack', 'slacku6', 'hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun', 'progtax', 'landtax']
 
 def sg(x, d=1):
     t = fx(x, d)
@@ -149,6 +149,9 @@ def readings_rows(D20, D40):
                 if r.get('agRet') is not None: note = '%s%% of adults retired at the last year; mean age %s' % (fx(r['agRet'], 1), fx(r['agAge'], 1))
                 if r.get('bkPY') is not None: note = '%s%% of the Source&rsquo;s payout backed by new output; the payout is %s%% of earned income' % (fx(r['bkA'], 1), fx(r['bkPY'], 1))
                 if r.get('mlNT') is not None: note = 'wages added by putting idle workers to work: $%s per adult a year (today&rsquo;s dollars)' % format(r['mlNT'], ',')
+                if r.get('hcM') is not None: note = 'rents rise %s%% on average where the mark-up applies' % fx(r['hcM'], 1)
+                if r.get('rvX') is not None: note = 'unearned pay not caught $%s, pay clawed back by audits $%s, per adult a year (today&rsquo;s dollars)' % (format(r['rvX'], ','), format(r['rvC'], ','))
+                if r.get('taxCover') is not None: note = 'the tax takes %s%% of wages and pays %s%% of the cost%s' % (fx(r['taxAvg'], 1), fx(r['taxCover'], 1), '' if r['taxCover'] >= 99.5 else '; the Source pays the rest as new money')
                 rows.append('<tr><td>%d</td><td>%s</td><td>%s%s</td><td>%s vs %s<br><small>%s</small></td><td>%s</td><td>%s</td><td>%s%%</td><td>$%s</td><td>%s</td></tr>' % (
                     Y, names[e], r['label'], ('<br><small>against no programme with the same %s</small>' % ('ageing rule' if r['vsBase'].startswith('ag') else 'US-data reading' if r['vsBase'].startswith('lt') else 'savings rule')) if r.get('vsBase') else '', pct(r['pov']), pct(b['pov']), ci_cell(r['dPov']), ci_cell(r['dF0']), ci_cell(r['dBO']), fx(r['infl'], 1), format(r['cost'], ','), note))
     return rows
@@ -162,7 +165,11 @@ RD_HEAD = ('<h3 id="rel-v52-h">Readings added in v5.2</h3>\n  <p id="rel-v52-p">
            'US-data readings: the adults are drawn closer to US data (savings from the Federal Reserve&rsquo;s 2022 Survey of Consumer Finances linked to wages; automation risk linked to wages as in Frey and Osborne&rsquo;s occupations; the survey&rsquo;s wage spread and median wage), with and without the programme (the table of the no-programme run against US data, below, shows what each changes). '
            'The middle backing reading: new output backs the Source&rsquo;s payout up to a share of the year&rsquo;s earned income, 12% (the Kenya cash-transfer study&rsquo;s two-year rollout, Egger et al., <em>Econometrica</em> 2022), with a band from 8% (all of the US&rsquo;s underused labour, BLS U-6, 2025) to 16% (the Kenya study&rsquo;s peak year); '
            'Kenya does not set the US number (the transfers were paid once, from outside the area, into villages with idle capacity), so the main row stays at the cautious end (Claude&rsquo;s reading of the evidence). '
-           'The spending layer in normal years: the programme&rsquo;s spending also puts idle workers to work in years without a recession, up to the part of U-6 above its lowest annual level (1.1% of wages) or, as an upper bound, all of U-6 (8%), at a normal-times multiplier of 0.6 (Ramey and Zubairy 2018).</p>\n  ')
+           'The spending layer in normal years: the programme&rsquo;s spending also puts idle workers to work in years without a recession, up to the part of U-6 above its lowest annual level (1.1% of wages) or, as an upper bound, all of U-6 (8%), at a normal-times multiplier of 0.6 (Ramey and Zubairy 2018). '
+           'Robustness: landlords raising rents where community housing (PTH) does not cover demand, by $0.50 per BU dollar spent on rent for tenants paying with BU (Collinson and Ganong 2018) or by $1.41 for every renter outside PTH (Susin 2002); the studies measured vouchers that covered a minority of renters, so applying them to an allowance that covers most rent is an upper-end reading. '
+           'Mistakes and collusion in the Collectives&rsquo; review of work: 5%, 10% or 20% of conversions at rates above 1&times; are unearned (the work is worth 1&times;), with audits catching half (not specified by the Hub; a labelled design parameter) or none. '
+           'The launch gift paid for over the run: the Source&rsquo;s new money for the gift is spread over the run instead of entering in the years it is paid. '
+           'Other ways to pay (decision C; not specified by the Hub): a progressive income tax with the 2025 federal brackets&rsquo; shape, scaled until it pays for the programme (marginal rates capped at 90%, brackets moving with average earnings), and a land-value tax; the model has no land, so the land tax falls on adults in proportion to their savings. Where a tax cannot raise the cost, the Source pays the rest as new money.</p>\n  ')
 RD_TABLE = ('<table class="rel-t" id="rel-v52"><thead><tr><th>Years</th><th>Environment</th><th>Reading</th><th>Too little wealth at the last year, and the change (95% interval)</th><th>Below the cost of living, change</th>'
             '<th>Below 30 days of basic living (BLEI), change</th><th>Programme inflation a year</th><th>Cost per adult a year</th><th>Note</th></tr></thead><tbody></tbody></table>')
 
