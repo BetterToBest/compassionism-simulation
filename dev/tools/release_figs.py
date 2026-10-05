@@ -127,7 +127,7 @@ FX_TABLE = ('<table class="rel-t" id="rel-fx"><thead><tr><th>Years</th><th>Envir
 
 # v5.2 round: the readings added in this round, each against its own no-programme pair where it has one (a mechanism that is not design-specific applies to the
 # no-programme run too). Each step appends its keys; the table is written after the fixed-dollar table.
-V52_READINGS = ['release', 'sav', 'sav0', 'idx', 'h1', 'h1idx', 'h1both', 'age', 'agenc', 'agenone', 'agepia', 'fixw', 'fixr', 'fixs', 'fixm', 'fixall']
+V52_READINGS = ['release', 'sav', 'sav0', 'idx', 'h1', 'h1idx', 'h1both', 'age', 'agenc', 'agenone', 'agepia', 'fixw', 'fixr', 'fixs', 'fixm', 'fixall', 'mid', 'midlo', 'midhi', 'slack', 'slacku6']
 
 def sg(x, d=1):
     t = fx(x, d)
@@ -147,8 +147,10 @@ def readings_rows(D20, D40):
                 b = E['bases'][r['vsBase']] if r.get('vsBase') else E['base']
                 note = ('interest paid $%s per adult a year (today&rsquo;s dollars), $%s of it above inflation' % (format(r['svInt'], ','), format(r['svIntR'], ','))) if r.get('svInt') is not None else ''
                 if r.get('agRet') is not None: note = '%s%% of adults retired at the last year; mean age %s' % (fx(r['agRet'], 1), fx(r['agAge'], 1))
+                if r.get('bkPY') is not None: note = '%s%% of the Source&rsquo;s payout backed by new output; the payout is %s%% of earned income' % (fx(r['bkA'], 1), fx(r['bkPY'], 1))
+                if r.get('mlNT') is not None: note = 'wages added by putting idle workers to work: $%s per adult a year (today&rsquo;s dollars)' % format(r['mlNT'], ',')
                 rows.append('<tr><td>%d</td><td>%s</td><td>%s%s</td><td>%s vs %s<br><small>%s</small></td><td>%s</td><td>%s</td><td>%s%%</td><td>$%s</td><td>%s</td></tr>' % (
-                    Y, names[e], r['label'], ('<br><small>against no programme with the same %s rule</small>' % ('ageing' if r['vsBase'].startswith('ag') else 'savings')) if r.get('vsBase') else '', pct(r['pov']), pct(b['pov']), ci_cell(r['dPov']), ci_cell(r['dF0']), ci_cell(r['dBO']), fx(r['infl'], 1), format(r['cost'], ','), note))
+                    Y, names[e], r['label'], ('<br><small>against no programme with the same %s</small>' % ('ageing rule' if r['vsBase'].startswith('ag') else 'US-data reading' if r['vsBase'].startswith('lt') else 'savings rule')) if r.get('vsBase') else '', pct(r['pov']), pct(b['pov']), ci_cell(r['dPov']), ci_cell(r['dF0']), ci_cell(r['dBO']), fx(r['infl'], 1), format(r['cost'], ','), note))
     return rows
 
 RD_HEAD = ('<h3 id="rel-v52-h">Readings added in v5.2</h3>\n  <p id="rel-v52-p">Each reading beside the main row, over 500 paired seeds. A reading that changes something outside the design (savings that keep up with prices) applies to the no-programme run too, '
@@ -156,7 +158,11 @@ RD_HEAD = ('<h3 id="rel-v52-h">Readings added in v5.2</h3>\n  <p id="rel-v52-p">
            'the interest is reinvested, and the model does not say who pays it (it is not counted as new money in the price rule), so the reading measures how much of a result is the missing protection of savings. '
            'The BU indexed every year: the Hub indexes the BU to prices only in a year when they rise faster than 5% (the main reading, Duke&rsquo;s answer of Oct 3); this reading indexes it every year. '
            'Ageing: every adult has an age (drawn from the Census population aged 25&ndash;66), retires at 67 on the average Social Security benefit ($24,180 in 2025, moved with prices; or, in one reading, the benefit formula on the adult&rsquo;s own wage), dies at the rates of the 2022 US life table (NCHS; the SSA&rsquo;s own table could not be read from the build environment) and is replaced by a new 25-year-old; it applies to the no-programme run too. '
-           'Retirees keep the BU for life and may convert expired BU through creative work (Claude&rsquo;s reading of the design, decision A); the other readings take that away or take them out of the programme.</p>\n  ')
+           'Retirees keep the BU for life and may convert expired BU through creative work (Claude&rsquo;s reading of the design, decision A); the other readings take that away or take them out of the programme. '
+           'US-data readings: the adults are drawn closer to US data (savings from the Federal Reserve&rsquo;s 2022 Survey of Consumer Finances linked to wages; automation risk linked to wages as in Frey and Osborne&rsquo;s occupations; the survey&rsquo;s wage spread and median wage), with and without the programme (the table of the no-programme run against US data, below, shows what each changes). '
+           'The middle backing reading: new output backs the Source&rsquo;s payout up to a share of the year&rsquo;s earned income, 12% (the Kenya cash-transfer study&rsquo;s two-year rollout, Egger et al., <em>Econometrica</em> 2022), with a band from 8% (all of the US&rsquo;s underused labour, BLS U-6, 2025) to 16% (the Kenya study&rsquo;s peak year); '
+           'Kenya does not set the US number (the transfers were paid once, from outside the area, into villages with idle capacity), so the main row stays at the cautious end (Claude&rsquo;s reading of the evidence). '
+           'The spending layer in normal years: the programme&rsquo;s spending also puts idle workers to work in years without a recession, up to the part of U-6 above its lowest annual level (1.1% of wages) or, as an upper bound, all of U-6 (8%), at a normal-times multiplier of 0.6 (Ramey and Zubairy 2018).</p>\n  ')
 RD_TABLE = ('<table class="rel-t" id="rel-v52"><thead><tr><th>Years</th><th>Environment</th><th>Reading</th><th>Too little wealth at the last year, and the change (95% interval)</th><th>Below the cost of living, change</th>'
             '<th>Below 30 days of basic living (BLEI), change</th><th>Programme inflation a year</th><th>Cost per adult a year</th><th>Note</th></tr></thead><tbody></tbody></table>')
 
