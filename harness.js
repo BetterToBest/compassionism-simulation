@@ -147,13 +147,15 @@ CFG.POVERTY_THRESHOLD_SENIOR = 15440;  /* v5.2 step 5: the same table's threshol
  *  SCF_WAGE_SIGMA        the lognormal spread that gives their wage-income Gini (0.4577): 0.8617 (the model draws log wages with 0.5, a Gini of 0.276). The
  *                        standard deviation of their log wage income is 1.049, but a lognormal with that spread would have a Gini of 0.54, far above theirs,
  *                        because the very low annual wages of part-year workers dominate the log scale; the Gini is the figure the comparison is about.
- *  FO_RISK_WAGE_RHO      the employment-weighted correlation of log median wage with automation probability across Frey and Osborne's 702 occupations,
- *                        -0.65 (CONTRIBUTING.md, Model Architecture Feedback, "tie automationRisk to wage", v4.20), used as the copula correlation. */
+ *  FO_RISK_WAGE_RHO      the employment-weighted normal-score correlation of log median wage with automation probability across Frey and Osborne's
+ *                        occupations (700 with a wage; May 2016 BLS employment), -0.5313: the Gaussian copula's own parameter (sources/fo_risk_wage.py). The
+ *                        figure quoted since v4.20, -0.65, is the plain correlation of log wage with the probability, which mixes the link with the two
+ *                        distributions' shapes. Both are across occupations' median wages, so they overstate the link for one person (a stated limit). */
 CFG.SCF_NETWORTH_PCTL = [-168690,-110095,-78374,-59977,-43453,-42243,-28987,-21813,-17491,-11419,-8325,-4888,-703,22,330,550,1100,2599,4205,4581,4972,6903,7371,8441,9736,10451,11001,12046,12740,13751,14403,15198,16309,18501,20956,23112,25216,27108,29372,33002,36017,39041,43937,46562,48496,53517,57230,60515,67699,70933,76235,78436,83848,87842,92114,101129,108326,111257,121660,132149,137340,145550,153350,157613,166338,173027,183992,194788,211641,228658,238387,248898,262005,277769,289925,300109,320343,342047,376904,422591,454553,463540,486421,503640,524757,568960,631369,740681,798477,839114,907348,979719,1048972,1164655,1385996,1688747,1826853,2170113,2675192,10801768];
 CFG.SCF_WAGE_WEALTH_RHO = 0.3585;
 CFG.SCF_WAGE_SIGMA = 0.8617;
 CFG.SCF_WAGE_MEDIAN = 54698;  /* v5.2 step 5: the comparison group's median wage income, 2025 dollars (the model's year-0 median is 35 x 12 x 100.52 = $39,945 at log mean 3.5) */
-CFG.FO_RISK_WAGE_RHO = -0.65;
+CFG.FO_RISK_WAGE_RHO = -0.5313;
 /* v5.2 round, step 4 (Oct 3, 2026; ledger s83): the ageing switch's inputs (read only when AGE is on; sources/demography.py derives the two arrays).
  *  AGE_WEIGHTS  US resident population at each age 25..66, thousands, July 1, 2024 (Census Bureau, Vintage 2024 national estimates by single year of age,
  *               nc-est2024-agesex-res.csv): the starting ages of the model's working-age adults are drawn in these proportions.
@@ -4028,7 +4030,7 @@ function v52UnitSuite(){
     [0.01, 0.2, 0.5, 0.8, 0.99].forEach(function(u){ if (Math.abs(autoRiskCdf(autoRiskInv(u)) - u) > 1e-9) bad.push('risk ' + u); });
     if (scfWealthQ(0.5) < CFG.SCF_NETWORTH_PCTL[49] || scfWealthQ(0.5) > CFG.SCF_NETWORTH_PCTL[50] || scfWealthQ(0) !== CFG.SCF_NETWORTH_PCTL[0] || scfWealthQ(1) !== CFG.SCF_NETWORTH_PCTL[99]) bad.push('SCF quantiles');
     return {pass:bad.length === 0, detail:bad.length ? bad.join(', ') : 'Phi(1.96) = ' + normCdf(1.96).toFixed(6) + '; SCF median ' + Math.round(scfWealthQ(0.5))}; });
-  t('step 5, the US-data readings draw no random number and hit their targets on 20,000 drawn adults: savings from the SCF (median, share in debt) linked to wages with the SCF correlation, automation risk keeping its distribution but linked to wages at -0.65, and the wage spread and median giving the SCF wage Gini and median wage', function(){
+  t('step 5, the US-data readings draw no random number and hit their targets on 20,000 drawn adults: savings from the SCF (median, share in debt) linked to wages with the SCF correlation, automation risk keeping its distribution but linked to wages with the occupation data\'s normal-score correlation, and the wage spread and median giving the SCF wage Gini and median wage', function(){
     var sv = RNG, n = 0, base = mulberry32(77); RNG = function(){ n++; return base(); }; var L0 = makeLatentPopulation(20000), n0 = n; RNG = sv;
     var L1 = L0.map(function(l){ return Object.assign({}, l); }), cnt = 0; RNG = function(){ cnt++; return 0.5; };
     try { LATENT = {wealth:CFG.SCF_WAGE_WEALTH_RHO, risk:CFG.FO_RISK_WAGE_RHO, wsd:CFG.SCF_WAGE_SIGMA, wmed:CFG.SCF_WAGE_MEDIAN}; L1.forEach(latentAdjust); } finally { LATENT = null; RNG = sv; }
