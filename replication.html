@@ -267,6 +267,8 @@ details[open]::details-content{block-size:auto}
 /* Tables */
 .tscroll{overflow-x:auto;margin:12px 0 18px;border:.5px solid var(--rule);border-radius:var(--r)}
 table{width:100%;border-collapse:collapse;font-size:14px}
+.tw-scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}  /* v5.2 step 8: wide tables scroll in their own box */
+p code,li code,td code,dd code,figcaption code{overflow-wrap:anywhere}  /* v5.2 step 8: long hashes and names wrap on a phone */
 th{font-size:12.5px;font-weight:600;color:var(--ink-2);text-align:left;padding:10px 12px;background:var(--surface-2);border-bottom:.5px solid var(--rule)}
 td{padding:10px 12px;border-bottom:.5px solid var(--rule-2);vertical-align:top}
 tr:last-child td{border-bottom:0}
@@ -2353,6 +2355,11 @@ Phase 3 — National Deployment (Years 6–10):
     b.setAttribute('data-state', open ? 'open' : 'closed'); b.textContent = open ? b.getAttribute('data-close') : b.getAttribute('data-open');
   });
   current();
+  /* v5.2 step 8: a table wider than the page scrolls inside its own box, so the page never scrolls sideways on a phone (390 px) */
+  [].forEach.call(doc.querySelectorAll('table'), function(t){
+    var p = t.parentNode; if (!p || (p.classList && p.classList.contains('tw-scroll'))) return;
+    var w = doc.createElement('div'); w.className = 'tw-scroll'; p.insertBefore(w, t); w.appendChild(t);
+  });
 })();
 
 </script>

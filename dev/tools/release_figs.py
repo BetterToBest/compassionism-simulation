@@ -233,6 +233,20 @@ PRICE_NOTE = ('<p id="rel-price-note">The price-level column gives the typical r
               'and the gap grows with the horizon. Above 1,000 times today&rsquo;s prices the figure shows the model&rsquo;s price rule running away (it has no central bank, no interest rate and no protection for savings), '
               'a limit of the model and not a forecast; the front door says so in words and keeps the exact figures here.</p>')
 
+def price_note(D20, D40):
+    """v5.2 step 8: beside the price levels, what a month of the median wage and of the BU still buys at the last year, in today's dollars (from the panels' year-by-year path)."""
+    names = {'ref': 'Reference', 'adv': 'Adverse', 'st': 'Stress Test'}
+    if not all('path' in D['envs'][e]['rows']['release'] and 'path' in D['envs'][e]['base'] for D in (D20, D40) for e in names): return PRICE_NOTE
+    m = lambda x: '$' + format(int(round(x)), ',')
+    parts = []
+    for yrs, D in ((20, D20), (40, D40)):
+        E = D['envs']
+        wages = ', '.join('%s %s (%s)' % (nm, m(E[e]['rows']['release']['path']['wageR'][-1]), m(E[e]['base']['path']['wageR'][-1])) for e, nm in names.items())
+        bus = ', '.join('%s %s' % (nm, m(E[e]['rows']['release']['path']['buR'][-1])) for e, nm in names.items())
+        parts.append('At year %d a month of the median wage buys %s, and a month of the BU %s.' % (yrs, wages, bus))
+    return PRICE_NOTE[:-4] + (' What a month still buys, in today&rsquo;s dollars (the release row; no programme in brackets): ' + ' '.join(parts) +
+                              ' The year-by-year path is in the panel files and on the front door.</p>')
+
 def provenance(D20, D40):
     m, m4 = D20['_meta'].get('manifest'), D40['_meta'].get('manifest')
     if not m or not m4: return None
@@ -262,7 +276,7 @@ if os.path.exists('dev/runs/release-panel-40.json'):
     P = put(P, T40, rows40)
     print('\n'.join(rows40))
     # the price-level note (replaces the v5.0.1 paragraph)
-    P = re.sub(r'<p id="rel-price-note">.*?</p>', PRICE_NOTE.replace('\\', '\\\\'), P, count=1, flags=re.S)
+    P = re.sub(r'<p id="rel-price-note">.*?</p>', price_note(D20, D40).replace('\\', '\\\\'), P, count=1, flags=re.S)
     # the Hub-target table, once, after the 40-year table; its rows regenerated every time
     V52 = 'rep' in D20['envs']['ref']['rows']['release'] and 'rep' in D40['envs']['ref']['rows']['release']
     head, table, trows = (TG_HEAD_V52, TG_TABLE_V52, targets_rows_v52(D20, D40)) if V52 else (TG_HEAD, TG_TABLE, targets_rows(D20, D40))

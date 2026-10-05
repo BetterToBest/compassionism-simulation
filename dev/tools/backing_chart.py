@@ -46,7 +46,7 @@ def crossing(pts):
             return a0 + (a1 - a0) * (0 - y0) / (y1 - y0)
     return None
 
-def panel(title, sub, ytitle, series, ymin, ymax, step, fmt, labels_at, whiskers, uid):
+def panel(title, sub, ytitle, series, ymin, ymax, step, fmt, labels_at, whiskers, uid, mids=None):
     """series: [(name, colour var, shape, [(a, y, lo, hi)])]"""
     W, H, L, R, T, B = 520, 348, 60, 96, 64, 58
     pw, ph = W - L - R, H - T - B
@@ -89,6 +89,12 @@ def panel(title, sub, ytitle, series, ymin, ymax, step, fmt, labels_at, whiskers
             o.append('<text x="%.1f" y="%.1f" class="bs-lab">%s</text>' % (X(lp[0]) + 12, Y(lp[1]) + 4, n))
         else:
             o.append('<text x="%.1f" y="%.1f" class="bs-lab">%s</text>' % (X(lp[0]) + 10, Y(lp[1]) - 9, n))
+    for n, c, mp in (mids or []):  # v5.2 step 6/8: the middle readings (decision B), hollow diamonds joined by a dashed segment; not part of the five-point curve
+        o.append('<line x1="%.1f" x2="%.1f" y1="%.1f" y2="%.1f" class="bs-midl" style="stroke:var(%s)"/>' % (X(mp[0][0]), X(mp[-1][0]), Y(mp[0][1]), Y(mp[-1][1]), c))
+        for a, y, lbl in mp:
+            cx, cy = X(a), Y(y)
+            o.append('<path d="M%.1f %.1fL%.1f %.1fL%.1f %.1fL%.1f %.1fZ" class="bs-mid" style="stroke:var(%s)"><title>%s, middle reading (%s): %.0f%% of the payout backed, %s</title></path>' % (
+                cx, cy - 5.5, cx + 5.5, cy, cx, cy + 5.5, cx - 5.5, cy, c, n, lbl, a * 100, fmt(y)))
     o.append('</svg>')
     return '\n'.join(o)
 
@@ -102,7 +108,7 @@ CSS = """<style>
 .bs-sub{font-size:11.5px;fill:var(--bs-ink2)}.bs-note{font-size:11.5px;fill:var(--bs-ink2)}.bs-lab{font-size:12.5px;fill:var(--bs-ink)}
 .bs-grid{stroke:var(--bs-grid);stroke-width:1}.bs-axis{stroke:var(--bs-axis);stroke-width:1}
 .bs-line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}.bs-wh{stroke-width:1.5;stroke-opacity:.6}
-.bs-dot{stroke:var(--bs-surface);stroke-width:2;paint-order:stroke}
+.bs-dot{stroke:var(--bs-surface);stroke-width:2;paint-order:stroke}.bs-mid{fill:var(--bs-surface);stroke-width:2}.bs-midl{stroke-width:1.5;stroke-dasharray:4 3;stroke-opacity:.8}
 .bs-legend{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0 0 6px;font-size:13px;color:var(--bs-ink)}.bs-legend span{display:inline-flex;align-items:center;gap:6px}
 .bs-key{width:14px;height:14px;display:inline-block}
 .bs-cap{font-size:12.5px;color:var(--bs-ink2);margin:8px 2px 0;line-height:1.5}.bs-cap code{overflow-wrap:anywhere;white-space:normal}.bs-tw{overflow-x:auto;max-width:100%}
@@ -131,6 +137,21 @@ def bend_text(D):
             'With the BU indexed every year, a = 1 gives (%d seeds, <code>dev/tools/cola_check.js</code>) &mdash; %s. So in these two environments the H1 end is held back by the indexing rule, not by backing; that is a finding about the rule, not a proposal to change it, which is the Hub&rsquo;s design.' % (
                 ' and the '.join(nm[e] for e in worse), R['adv']['a75']['infl'], C['adv']['_meta']['seeds'], '; '.join(bits)))
 
+def mid_rows(D):
+    """v5.2 step 6 (decision B): the middle readings (midlo, mid, midhi) from dev/runs/release-panel.json as (backed share, change in wealth poverty, label), when the
+    panel has them and comes from the same seeds and years as the sweep; otherwise None."""
+    try:
+        Pn = json.load(open('dev/runs/release-panel.json'))
+    except FileNotFoundError:
+        return None
+    if Pn['_meta'].get('seeds') != D['_meta']['seeds'] or (Pn['_meta'].get('years') or 20) != D['_meta']['years']: return None
+    out = {}
+    for e, _ in ENVS:
+        R = Pn['envs'][e]['rows']
+        if not all(k in R and R[k].get('bkA') is not None for k in ('midlo', 'mid', 'midhi')): return None
+        out[e] = [(R[k]['bkA'] / 100, R[k]['dPov'][0], lbl) for k, lbl in (('midlo', '8%'), ('mid', '12%'), ('midhi', '16%'))]
+    return out
+
 def build(D):
     cols = {'ref': '--bs-s1', 'adv': '--bs-s2', 'st': '--bs-s3'}
     shapes = {'ref': 'circle', 'adv': 'square', 'st': 'triangle'}
@@ -145,11 +166,17 @@ def build(D):
     imax = max(10, 10 * int((max(p[1] for s in iser for p in s[3]) + 9.999) // 10))
     f1 = lambda y, tick=False: (('%d' % y) if y == 0 else sg(y, 0)) if tick else sg(y, 1) + ' points'
     f2 = lambda y, tick=False: ('%d%%' % y) if tick else fx(y, 1) + '%% a year'
-    A = panel('Wealth poverty against no programme', 'Adults with too little wealth, year %d. Above zero: worse.' % years, 'Change, percentage points', wser, ymin, ymax, 10, f1, 'right', True, 'bs-w')
+    MID = mid_rows(D)  # v5.2 step 6 (decision B): the middle readings from the release panel, where it has them
+    mids = [(nm, cols[e], MID[e]) for e, nm in ENVS] if MID else None
+    if MID:
+        lo = min([lo] + [p[1] for e in MID for p in MID[e]]); hi = max([hi] + [p[1] for e in MID for p in MID[e]])
+        ymin = 10 * int((lo - 9.999) // 10); ymax = max(10, 10 * int((hi + 9.999) // 10))
+    A = panel('Wealth poverty against no programme', 'Adults with too little wealth, year %d. Above zero: worse.' % years, 'Change, percentage points', wser, ymin, ymax, 10, f1, 'right', True, 'bs-w', mids)
     Bp = panel('Programme inflation', 'Price rise the programme itself causes (all three reach zero at a = 1).', 'Programme inflation, % a year', iser, 0, imax, 10, f2, 'left', False, 'bs-i')
     legend = '<div class="bs-legend" aria-label="Environments">' + ''.join(
         '<span><svg class="bs-key" viewBox="0 0 14 14" aria-hidden="true">%s</svg>%s</span>' % (
-            {'circle': '<circle cx="7" cy="7" r="5" style="fill:var(%s)"/>', 'square': '<rect x="2" y="2" width="10" height="10" style="fill:var(%s)"/>', 'triangle': '<path d="M7 1.5L13 12.5H1Z" style="fill:var(%s)"/>'}[shapes[e]] % cols[e], nm) for e, nm in ENVS) + '</div>'
+            {'circle': '<circle cx="7" cy="7" r="5" style="fill:var(%s)"/>', 'square': '<rect x="2" y="2" width="10" height="10" style="fill:var(%s)"/>', 'triangle': '<path d="M7 1.5L13 12.5H1Z" style="fill:var(%s)"/>'}[shapes[e]] % cols[e], nm) for e, nm in ENVS) + (
+            '<span><svg class="bs-key" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.5L12.5 7L7 12.5L1.5 7Z" style="fill:none;stroke:var(--bs-ink2);stroke-width:1.8"/></svg>Middle reading (Kenya-anchored band)</span>' if MID else '') + '</div>'
     # the words, from the numbers
     pts = {e: [(D['envs'][e]['rows'][k]['a'], D['envs'][e]['rows'][k]['dPov'][0]) for k in KEYS] for e, _ in ENVS}
     r0 = {e: D['envs'][e]['rows']['a0'] for e, _ in ENVS}; r1 = {e: D['envs'][e]['rows']['a100'] for e, _ in ENVS}
@@ -177,6 +204,10 @@ def build(D):
             'This sweeps it at 0, 0.25, 0.5, 0.75 and 1 on the same %d paired seeds of %d adults over %d years, in each environment, with every other mechanism as in the release row; the two end points are the release and H1 rows of the tables above, to the last digit. '
             'The whiskers are the 95%% interval of the paired change against no programme. It is a sweep of a design parameter, not a forecast: the Hub does not give the share, and nothing in the model fixes it.</p>' % (seeds, D['_meta']['agents'], years))
     s4 = bend_text(D)
+    if MID:  # v5.2: the words for the middle band
+        s4 += (' The hollow diamonds are the middle reading (Claude&rsquo;s reading of the evidence, decision B): new output backs the payout up to 8%%, 12%% or 16%% of a year&rsquo;s earned income, anchored by the Kenya cash-transfer study (Egger et al., <em>Econometrica</em> 2022). '
+               'Each sits where its backed share puts it: %s. Kenya does not set the US number (the transfers were paid once, from outside the area, into villages with idle capacity), so the main row stays at a = 0.') % '; '.join(
+            '%s %s%% to %s%% backed, wealth poverty %s to %s points' % (nm, fx(MID[e][0][0] * 100, 0), fx(MID[e][-1][0] * 100, 0), sg(MID[e][0][1]), sg(MID[e][-1][1])) for e, nm in ENVS)
     cap = ('<p class="bs-cap">%s %s %s %s Reproduce: <code>%s</code></p>' % (s1, s2, s3, s4, D['_meta']['command']))
     fig = ('<figure class="bs-chart" id="backing-chart" aria-label="Backing-share curve">%s%s\n<div class="bs-panels">\n%s\n%s\n</div></figure>' % (CSS, legend, A, Bp))
     return '<!-- backing-share:begin -->\n  ' + head + '\n  ' + fig + '\n  ' + cap + '\n  ' + table + '\n  <!-- backing-share:end -->'
