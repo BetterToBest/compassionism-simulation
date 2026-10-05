@@ -116,6 +116,10 @@ catch (e) { console.error('domtest.js needs jsdom:  npm install jsdom'); process
 
 const FILE = process.argv.slice(2).filter(a => a.indexOf('--') !== 0)[0] || path.join(__dirname, 'index.html');  // v5.1: flags such as --write-counts are not a file
 const html = fs.readFileSync(FILE, 'utf8');
+/* v5.2 step 8 (decision D): the earlier engine (v4.22, as coded) has its own page, earlier-engine.html, with the same inline script. Phases 1-9 test the earlier
+ * engine there; from Phase 10 on the checks run on the main page (FILE). makeWindow(query, {page: 'early' | 'front'}) picks one; otherwise the phase's own. */
+const EARLY_FILE = path.join(path.dirname(FILE), 'earlier-engine.html'), htmlEarly = fs.existsSync(EARLY_FILE) ? fs.readFileSync(EARLY_FILE, 'utf8') : html;
+let CUR = htmlEarly;
 
 let fails = 0, checks = 0;
 function check(name, ok, detail) {
@@ -125,7 +129,7 @@ function check(name, ok, detail) {
 }
 
 function makeWindow(query, opts) {
-  const dom = new JSDOM(html, {
+  const dom = new JSDOM(opts && opts.page === 'early' ? htmlEarly : opts && opts.page === 'front' ? html : CUR, {
     runScripts: 'outside-only',
     url: 'https://bettertobest.github.io/compassionism-simulation/' + (query || '')
   });
@@ -156,7 +160,7 @@ function makeWindow(query, opts) {
 }
 
 /* ── Phase 1: synchronous DOM-behaviour checks ─────────────────────────── */
-console.log('=== domtest.js — ' + FILE + ' ===\n--- Phase 1: DOM behaviour ---');
+console.log('=== domtest.js — ' + FILE + ' (Phases 1-9 on ' + (htmlEarly === html ? FILE : EARLY_FILE) + ') ===\n--- Phase 1: DOM behaviour ---');
 const w1 = makeWindow('?bu=900&part=55&ptfOn=1&seed=42&baseInflMatchOn=1');
 const $1 = id => w1.document.getElementById(id);
 
@@ -871,6 +875,7 @@ function phase9(done) {
  * page declares the version in <meta name="sim-version"> and in its JSON-LD, and all of them must equal META.VERSION, so a
  * release that bumps META without the page fails CI. The page's links from index.html must point here, not to the Hub. */
 function phase10(done) {
+  CUR = html;  /* v5.2 step 8: from here on, the main page */
   console.log('\n--- Phase 10: the replication page (session 7) ---');
   const RP = path.join(path.dirname(FILE), 'replication.html'), NEW = 'https://bettertobest.github.io/compassionism-simulation/replication.html';
   if (!fs.existsSync(RP)) { check('session 7: replication.html exists beside index.html', false, 'missing: ' + RP); return done(); }
@@ -901,7 +906,7 @@ function phase11(done) {
   const q = (d.getElementById('fd-q') || {}).textContent || '', qs = q.trim();
   const readme = fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8').split('\n').filter(l => l.trim())[1] || '';
   check('the first screen states in one sentence what the tool tests, before the layout, and README.md opens with the same sentence',
-    /^[^.?!]+[.?]$/.test(qs) && fdEl.compareDocumentPosition(d.querySelector('.layout')) === 4 && readme.replace(/\*\*/g, '').trim() === qs,
+    /^[^.?!]+[.?]$/.test(qs) && fdEl.compareDocumentPosition(d.querySelector('footer')) === 4 /* v5.2 step 8: the earlier engine's layout left for its own page */ && readme.replace(/\*\*/g, '').trim() === qs,
     '"' + qs.slice(0, 70) + '..."; README line 2 ' + (readme.replace(/\*\*/g, '').trim() === qs ? 'matches' : 'differs: ' + readme.slice(0, 60)));
   const ATTR = 'The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson\'s book Better To Best and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.';
   const at = (d.getElementById('fd-attr') || {}).textContent || '', rd = fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8').replace(/[*_]/g, ''), rp = new JSDOM(fs.readFileSync(path.join(path.dirname(FILE), 'replication.html'), 'utf8')).window.document.body.textContent.replace(/\s+/g, ' ');
@@ -940,12 +945,15 @@ function phase11(done) {
   check('step 12: the comparison has left the page (no table, no "other designs", saved unlinked in dev/drafts/), the walk-through (v5.0, s65) is linked from the README and plays from the top of the page, and a short list of limits remains',
     !d.getElementById('fd-table') && !d.getElementById('fd-data') && !/other designs/i.test(vis) && /walkthrough\/walkthrough\.mp4/.test(fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8')) && !!d.querySelector('#fd-video video source[src^="walkthrough/walkthrough.mp4"]') && draft && lim >= 5 && lim <= 8,
     'limits ' + lim + '; draft ' + (draft ? 'saved' : 'MISSING'));
-  const chips = [...d.querySelectorAll('#fd-live .fd-chip')].map(b => (b.getAttribute('onclick').match(/fdRun\('(\w+)'\)/) || [])[1]);
-  const saveRun = w.runSim; let ran = 0; w.runSim = function () { ran++; }; w.fdRun('adverse'); w.runSim = saveRun;
-  const pbA = d.getElementById('pb-adverse');
-  check('step 12: the earlier engine\'s presets stay available, labelled as the v4.22 engine, and a pick loads that preset and runs it',
-    chips.length === 6 && chips.every(c => w.PRESET_IDS.indexOf(c) >= 0) && ran === 1 && w.ST.shock === true && pbA && /pbtn-active/.test(pbA.className) && /v4\.22 engine/.test((d.getElementById('fd-old') || {}).textContent || ''),
-    'chips: ' + chips.join(', ') + '; runs started ' + ran);
+  /* v5.2 step 8 (decision D): the earlier engine moved to its own page, linked from the front door; that page links back, carries the same script as this one
+   * (dev/tools/sync_earlier.py), keeps every preset, and a pick loads that preset and runs it. This page no longer carries the earlier engine's controls. */
+  const we = makeWindow('', {page: 'early'}), de = we.document, ln = d.getElementById('fd-old-link'), back = de.querySelector('#ee-head a[href="index.html"]');
+  const pbs = [...de.querySelectorAll('.preset-grid .pbtn')].map(b => b.id.replace(/^pb-/, '')), scr = h => { const i = h.lastIndexOf('<script>\n'); return h.slice(i, h.indexOf('</script>', i)); };
+  const saveRun = we.runSim; let ran = 0; we.runSim = function () { ran++; }; we.fdRun('adverse'); we.runSim = saveRun;
+  const pbA = de.getElementById('pb-adverse'), same = htmlEarly !== html && scr(htmlEarly) === scr(html), gone = !d.getElementById('pb-reference') && !d.querySelector('.layout');
+  check('step 12 (v5.2 decision D): the earlier engine has its own page, linked as "Explore the earlier engine" and linking back, with the same script as this page; every preset is there, and a pick loads that preset and runs it; this page carries none of its controls',
+    !!ln && ln.getAttribute('href') === 'earlier-engine.html' && /Explore the earlier engine/.test(ln.textContent) && !!back && same && gone && pbs.length === 6 && pbs.every(c => we.PRESET_IDS.indexOf(c) >= 0) && ran === 1 && we.ST.shock === true && pbA && /pbtn-active/.test(pbA.className) && /v4\.22/.test((de.getElementById('ee-head') || {}).textContent || ''),
+    'link ' + (ln ? ln.getAttribute('href') : 'MISSING') + '; back link ' + !!back + '; same script ' + same + '; controls gone here ' + gone + '; presets ' + pbs.join(', ') + '; runs started ' + ran);
   const fourGone = !/Four Measures/.test(d.body.innerHTML), buOK = !/redeemable at PTF|redeemable below market price at PTF/.test((d.getElementById('sec-glossary') || {}).textContent || 'missing') && !!d.getElementById('sec-glossary'), distOK = !/efficiency losses from reducing market competition/.test(d.body.innerHTML);
   check('step 12: the three wording fixes: the poverty card is "Five Measures" everywhere; the BU glossary no longer says BU are spent at PTFs only; the 30% PTF caution is labelled a placeholder with no efficiency loss in the model',
     fourGone && buOK && distOK, 'Five Measures ' + fourGone + '; BU glossary ' + buOK + '; 30% label ' + distOK);
@@ -1088,6 +1096,20 @@ function phase13(done) {
       c[6].indexOf(r.giniD.toFixed(3) + ' vs ' + b.giniD.toFixed(3)) === 0 && c[6].indexOf(verd(r.giniD)) > 0 && c[7].indexOf(r.giniX.toFixed(3) + ' vs ' + b.giniX.toFixed(3)) === 0 && c[7].indexOf(verd(r.giniX)) > 0; }));
   check('audit E1 (v5.1): the Hub\'s Year 7 targets (poverty under 2%, Gini 0.25 to 0.30) are shown against the model\'s results on the front door for every environment and horizon, with the source named and linked, the panel\'s own numbers and the right verdicts, and on the replication page for all six combinations',
     keysOK && tb.length === 0 && tgOK, 'front door ' + (tb.length ? 'WRONG: ' + tb.join(', ') : 'ok in 6 views') + '; replication table ' + (tgOK ? 'matches the panels' : 'DIFFERS') + '; Gini (cash / with price cuts), release row: ' + [[20, P20], [40, P40]].map(([y, Pn]) => y + 'y ' + ENVN.map(e => Pn.envs[e].rows.release.giniD.toFixed(3) + '/' + Pn.envs[e].rows.release.giniX.toFixed(3)).join(' ')).join('; '));
+  /* v5.2 round, step 8: the year-by-year charts and what a month still buys. A panel whose rows carry .path (v5.2) gets three small charts (cost-of-living poverty, median savings,
+   * what a month of the wage and of the BU buys), no programme beside Compassionism, each with a title and a text description, and a table of the numbers; the Prices
+   * sentence says what a month of the median wage and of the BU buys at the last year, from the same path. A panel without .path (v5.1) shows no charts. */
+  const PATH = [emb20, emb40].every(Pn => ENVN.every(e => Pn.envs[e].rows.release.path && Pn.envs[e].base.path)), pathBad = [];
+  [[20, emb20], [40, emb40]].forEach(([yrs, Pn]) => ENVN.forEach(e => { wr.relSet(e); wr.relYears(yrs); const E = Pn.envs[e], el = dr.getElementById('rel-paths'), svg = el ? [...el.querySelectorAll('svg.fd-pc')] : [];
+    if (!PATH){ if (el) pathBad.push(e + ' ' + yrs + 'y charts without a path'); return; }
+    const P = E.rows.release.path, B = E.base.path, n = Math.min(yrs, P.f0.length) - 1, t = prices(e, yrs), money = x => wr.fdMoney(x);
+    const titled = svg.length === 3 && svg.every(g => g.querySelector('title') && g.querySelector('desc') && /year 1/.test(g.querySelector('desc').textContent) && g.querySelectorAll('polyline').length >= 2);
+    const tbl = el.querySelector('table.fd-pt'), cells = tbl ? tbl.querySelectorAll('tbody tr').length : 0;
+    const buys = E.rows.release.infl > 0 ? t.indexOf('a month of the median wage buys what ' + money(P.wageR[n]) + ' bought at the start') > 0 && t.indexOf('with no programme ' + money(B.wageR[n])) > 0 : true;
+    if (!(titled && cells === 7 && buys)) pathBad.push(e + ' ' + yrs + 'y (charts ' + svg.length + ', titled ' + titled + ', table rows ' + cells + ', purchasing power ' + buys + ')'); }));
+  wr.relYears(20); wr.relSet('ref');
+  check('v5.2 step 8: year-by-year charts (cost-of-living poverty, savings, what a month buys) beside no programme in every view, each described in text with a table of the numbers, and the Prices sentence says what a month of the wage and of the BU still buys' + (PATH ? '' : ' (the embedded panels predate the path: no charts shown)'),
+    pathBad.length === 0, pathBad.length ? pathBad.slice(0, 4).join('; ') : (PATH ? '6 views' : 'v5.1 panels: none shown'));
   /* (c) the Gini formula's small-sample bias (n/(n-1) with n adults) may change a verdict only where the table labels the reading as on the line (within 0.002 of it) */
   const flips = [], unlabelled = [], onLine = [];
   /* v5.2: with the correction applied (the panel's _meta.v52.report.giniNN1), the other reading is the uncorrected one, g x (n - 1)/n; the wealth Gini (line 0.25) is checked the same way */
@@ -1159,10 +1181,10 @@ function phase13(done) {
   const bm = BS._meta.manifest || {}; if (!hexOK(bm.commit, 40) || bm.dirty !== false || bm.engineBlockSha256 !== blkSha) bsProb.push('manifest (commit ' + (bm.commit || '?').slice(0, 8) + ', dirty ' + bm.dirty + ', engine ' + (bm.engineBlockSha256 === blkSha ? 'equals the page\'s' : 'DIFFERS') + ')');
   check('audit E2 (v5.1): the backing-share chart is the 500-seed data (two panels of three series and five points, the table carries every number), its end points are the release and H1 rows exactly, inflation falls as more is backed, and its manifest names a clean commit and the page\'s engine',
     bsProb.length === 0, bsProb.length ? bsProb.slice(0, 5).join('; ') : 'a = 0, 0.25, 0.5, 0.75, 1 in three environments; commit ' + bm.commit.slice(0, 8) + '; Adverse change in wealth poverty ' + BK.map(k => sgn(BS.envs.adv.rows[k].dPov[0])).join(' / ') + ' points');
-  const wn = makeWindow('', {noChart: true});
+  const wn = makeWindow('', {noChart: true, page: 'early'});  /* v5.2 step 8: an earlier-engine run, on its page */
   let ok = true, why = '';
   try { wn.applyPreset('reference'); wn.runSim(); } catch (e) { ok = false; why = e.message; }
-  const note = wn.Chart && wn.Chart.__missing && [...wn.document.querySelectorAll('.fd-note')].some(n => /Chart\.js library did not load/.test(n.textContent) || true);
+  const note = !!(wn.Chart && wn.Chart.__missing === true);  /* v5.2 step 8: the earlier engine's page has no other .fd-note to find before the note is added */
   wn.document.dispatchEvent(new wn.Event('DOMContentLoaded'));
   const noteShown = [...wn.document.querySelectorAll('p.fd-note[role="status"]')].some(n => /did not load/.test(n.textContent));
   const t0 = Date.now(), iv = setInterval(function () {

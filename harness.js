@@ -853,14 +853,19 @@ var TB_REP_SNAP = ['fpl', 'fplX', 'fplNom', 'f0', 'bO', 'bN', 'bONom', 'bNNom', 
  * (the re-entry rate after one year out). Counts are summed over the run; ratios are taken after summing over seeds. everFpl: % of adults below the official
  * line at least once. */
 var TB_REP_SPELL = ['sf', 'sc'].reduce(function(r, m){ [1, 2, 3, 4, 5].forEach(function(d){ r.push(m + 'N' + d, m + 'X' + d); }); r.push(m + 'RN', m + 'R'); return r; }, []);
+/* v5.2 step 8: the year-by-year path for the page's small charts (reporting only): each year's share of adults below the cost of living (f0), with too little
+ * wealth (pov), below 30 days of basic living (bO; the BLEI paper's reading), the median savings in today's dollars (medW), what a month of the BU buys in
+ * today's dollars (buR; 0 with no programme), and what a month of the median wage buys in today's dollars (wageR; working adults). Keys p<measure>_<year>. */
+var TB_PATH_M = ['f0', 'pov', 'bO', 'medW', 'buR', 'wageR'], TB_PATH_N = 40;
+var TB_PATH_KEYS = TB_PATH_M.reduce(function(r, m){ for (var t = 0; t < TB_PATH_N; t++) r.push('p' + m + '_' + t); return r; }, []);
 var TB_REP_KEYS = ['fplPY', 'fplXPY', 'fplNomPY', 'bOAPyNom', 'bNAPyNom'].concat(TB_REP_SNAP.map(function(k){ return 'y7' + k.charAt(0).toUpperCase() + k.slice(1); }), TB_REP_SNAP.map(function(k){ return 'e' + k.charAt(0).toUpperCase() + k.slice(1); }),
-  TB_REP_SNAP.map(function(k){ return 'y0' + k.charAt(0).toUpperCase() + k.slice(1); }), TB_REP_SPELL, ['everFpl']);
+  TB_REP_SNAP.map(function(k){ return 'y0' + k.charAt(0).toUpperCase() + k.slice(1); }), TB_REP_SPELL, ['everFpl'], TB_PATH_KEYS);  /* v5.2 step 8: + the year-by-year path */
 function tbCashIncome(a){ return (+a.yrWageUSD || 0) + (+a.yrConvUSD || 0) + (+a.yrUbiUSD || 0) + (+a.yrSSUSD || 0) + (+a.yrTbCash || 0); }
 /* A Gini that keeps negative values (debts) as they are: the sorted-rank formula equals the mean absolute difference over twice the mean for any values with a positive total. */
 function giniOfArrNeg(x){ var v = x.map(function(z){ return +z || 0; }).sort(function(a, b){ return a - b; }), n = v.length, t = 0, w = 0;
   for (var i = 0; i < n; i++){ t += v[i]; w += (i + 1)*v[i]; } return n > 0 && t > 0 ? 2*w/(n*t) - (n + 1)/n : 0; }
 var REP_HOOK = null;  /* v5.2 step 5: an optional reporting hook (dev/tools/us_check.js reads the adults at Year 0, 7 and the last year); null in every run */
-function tbRepAcc(){ return {n:0, fpl:0, fplX:0, fplNom:0, bONom:0, bNNom:0, y7:null, end:null, y0:null, hist:[]}; }
+function tbRepAcc(){ return {n:0, fpl:0, fplX:0, fplNom:0, bONom:0, bNNom:0, y7:null, end:null, y0:null, hist:[], path:{f0:[], pov:[], bO:[], medW:[], buR:[], wageR:[]}}; }
 function tbRepYear(R, agents, p, o, yr, T, ep){
   var n = agents.length, lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL, thr = CFG.POVERTY_THRESHOLD_ONE, L30 = CFG.BLEI_PRECARIOUS_MAX;
   var s = {fpl:0, fplX:0, fplNom:0, f0:0, bO:0, bN:0, bONom:0, bNNom:0, pov:0, povNom:0};
@@ -871,6 +876,9 @@ function tbRepYear(R, agents, p, o, yr, T, ep){
     if (bo/lf < L30) s.bO++; if (bn/lf < L30) s.bN++; if (bo < L30) s.bONom++; if (bn < L30) s.bNNom++;
     if (a.wealth < CFG.POVERTY_LINE*lf) s.pov++; if (a.wealth < CFG.POVERTY_LINE) s.povNom++; }
   R.n += n; R.fpl += s.fpl; R.fplX += s.fplX; R.fplNom += s.fplNom; R.bONom += s.bONom; R.bNNom += s.bNNom;
+  var wk = agents.filter(function(a){ return !a._ret && a.yrWageUSD > 0; }).map(function(a){ return a.yrWageUSD/12/lf; });  /* v5.2 step 8: the year's path */
+  R.path.f0[yr] = s.f0/n*100; R.path.pov[yr] = s.pov/n*100; R.path.bO[yr] = s.bO/n*100; R.path.medW[yr] = quantileOf(agents.map(function(a){ return a.wealth/lf; }), 0.5);
+  R.path.buR[yr] = p.ccoOn && p.bu > 0 && PRICE && PRICE.buY ? PRICE.buY/lf : 0; R.path.wageR[yr] = wk.length ? quantileOf(wk, 0.5) : 0;
   if (REP_HOOK) REP_HOOK(agents, yr, T, lf);
   if (yr === 0 || yr === 6 || yr === T - 1){ var gc = o.giniNN1 && n > 1 ? n/(n - 1) : 1, q = {ep:ep};
     Object.keys(s).forEach(function(k){ q[k] = s[k]/n*100; });
@@ -889,6 +897,7 @@ function tbRepRes(R, out){
   function pc(k){ return R && R.n ? R[k]/R.n*100 : 0; }
   out.fplPY = pc('fpl'); out.fplXPY = pc('fplX'); out.fplNomPY = pc('fplNom'); out.bOAPyNom = pc('bONom'); out.bNAPyNom = pc('bNNom');
   TB_REP_SNAP.forEach(function(k){ var K = k.charAt(0).toUpperCase() + k.slice(1); out['y7' + K] = R && R.y7 ? R.y7[k] : 0; out['e' + K] = R && R.end ? R.end[k] : 0; out['y0' + K] = R && R.y0 ? R.y0[k] : 0; });
+  TB_PATH_M.forEach(function(m){ for (var t = 0; t < TB_PATH_N; t++){ var v = R && R.path[m][t]; out['p' + m + '_' + t] = typeof v === 'number' ? v : 0; } });  /* v5.2 step 8 */
   if (R){ tbRepSpells(R.hist, 'f', out, 'sf'); tbRepSpells(R.hist, 'c', out, 'sc'); out.everFpl = R.hist.length ? R.hist.filter(function(h){ return h.f.some(function(v){ return v; }); }).length/R.hist.length*100 : 0; }
   else { TB_REP_SPELL.forEach(function(k){ out[k] = 0; }); out.everFpl = 0; }
   return out;
@@ -1097,7 +1106,7 @@ function runYear(agentSet,yr,p,recSt){
   /* Session 2, price module only: COLA reads the headline rate, exogenous plus endogenous, year by year, and ratchets BU
    * up to the full price index in any year that rate exceeds p.colaThresh (Inflation Surge Protocol, 5% in D6). */
   if(PRICE){var pmFull=Math.pow(1+inflRate,yr)*PRICE.bIdx;if(p.cola&&pmFull/PRICE.lastFull-1>(p.colaThresh||0))PRICE.colaLevel=pmFull;PRICE.lastFull=pmFull;colaF=p.cola?PRICE.colaLevel:1;}
-  var buEff=p.bu*stabM*colaF;
+  var buEff=p.bu*stabM*colaF;if(PRICE)PRICE.buY=buEff;  // v5.2 step 8: this year's BU a month, for the purchasing-power path (reporting only)
   var agP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);  // v5.2 step 4: the price level the benefit moves with (read only when AGE is on)
   var svF=0;if(SAVE){var svP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);if(yr===0||!SVS)SVS={prevP:svP,intR:0,realR:0};else svF=(svP/SVS.prevP)*(1+SAVE.r)-1;var svPp=SVS.prevP;SVS.prevP=svP;}  // v5.2 step 3: savings that keep up with prices (no RNG)
   var tbY=(TB&&p.tb)?tbYear(p,colaF):null;  // session 6 (A4 testbed): null unless TB and p.tb are both set (harness-only; no RNG)
@@ -5986,6 +5995,7 @@ if (require.main === module) {
      * against its pair with a 95% CI), money and work, the extra columns, groups and BLEI by group. */
     /* v5.2 round, step 2 (Oct 3, 2026): the panel's Year 7 and poverty-line block for one row (r) against no programme (B; null for the no-programme row itself), and its
      * printed table. Shares in percent, Ginis to 4 decimals; d* are paired changes against no programme with 95% intervals. */
+    function path52(r, T){ var o = {}; TB_PATH_M.forEach(function(m){ var d = /^(f0|pov|bO)$/.test(m) ? 1 : 0; o[m] = []; for (var t = 0; t < Math.min(T, TB_PATH_N); t++) o[m].push(+(+r['p' + m + '_' + t]).toFixed(d)); }); return o; }  /* v5.2 step 8: the year-by-year path, means over seeds */
     function rep52Keys(r, B){ var K = {}, f = function(x, d){ return +(+x).toFixed(d); };
       ['y7', 'e'].forEach(function(t){ var q = K[t === 'y7' ? 'y7' : 'end'] = {};
         TB_REP_SNAP.forEach(function(k){ var key = t + k.charAt(0).toUpperCase() + k.slice(1); q[k] = /^gini/.test(k) ? f(r[key], 4) : f(r[key], k === 'ep' ? 3 : 1); }); });
@@ -6142,7 +6152,7 @@ if (require.main === module) {
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
            ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC, so:SO52});
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
-        if (V52){ rep52Print(R, ['No programme'].concat(rows.map(function(rw){ return rw.l.trim(); })), E[0], YRS > 0 ? YRS : 20); out.base.rep = rep52Keys(B, null); }
+        if (V52){ rep52Print(R, ['No programme'].concat(rows.map(function(rw){ return rw.l.trim(); })), E[0], YRS > 0 ? YRS : 20); out.base.rep = rep52Keys(B, null); out.base.path = path52(B, YRS > 0 ? YRS : 20); }
         var BX = {}; rows.forEach(function(rw, i){ if (rw.base) BX[rw.j] = R[i + 1]; });  /* v5.2: the paired no-programme rows */
         function d3(r, k){ var x = tbDiff(r, r._Bk || B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
         if (bases.length){ out.bases = {}; bases.forEach(function(b){ var x = BX[b.j]; out.bases[b.j] = {label:b.l.replace(/^\[reference\] /, ''), fgt2PY:x.fgt2PY, fgt0PY:x.fgt0PY, pov:x.pov, bOAPy:x.bOAPy, bNAPy:x.bNAPy, bOAMd:x.bOAMd, bNAMd:x.bNAMd, epPY:x.epPY, giniD:x.giniD, giniX:x.giniX, svInt:Math.round(x.svInt), svIntR:Math.round(x.svIntR), agRet:+x.agRet.toFixed(1), agAge:+x.agAge.toFixed(1), rep:V52 ? rep52Keys(x, null) : undefined}; }); }
@@ -6152,7 +6162,7 @@ if (require.main === module) {
           dFgt2:d3(r, 'fgt2PY'), dF0:d3(r, 'fgt0PY'), dPov:d3(r, 'pov'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'),
           grp:{part:Math.round(r.gPartRes - (r._Bk || B).gPartRes), non:Math.round(r.gNonRes - (r._Bk || B).gNonRes), low:Math.round(r.gLowRes - (r._Bk || B).gLowRes), top:Math.round(r.gTopRes - (r._Bk || B).gTopRes)}, worse:grpCell(r, r._Bk || B).split(' | ')[1],
           unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)};
-          if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); });
+          if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
         RJ.envs[e] = out; });
       if (RPATH){ require('fs').writeFileSync(RPATH, JSON.stringify(RJ, null, 1)); console.log('\nwrote ' + RPATH); }
     }

@@ -97,3 +97,4 @@ pscript = pscript[:s0] + block + pscript[e0:]
 P = P[:P.index('<script>')] + pscript
 open('index.html', 'w').write(P)
 print('ported', len(take), 'declarations:', ', '.join(sorted(n for i in take for n in declared(merged[i][1]))))
+import os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import sync_earlier; sync_earlier.sync()  # v5.2 step 8 (decision D): earlier-engine.html carries the same script

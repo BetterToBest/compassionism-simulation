@@ -18,6 +18,9 @@ function findStale(root) {
   all('index.html', idx, 'JSON-LD softwareVersion', /"softwareVersion":"([^"]+)"/);
   all('index.html', idx, 'static .meta-ver label', /class="meta-ver">v([^<]+)</);
   all('index.html', idx, 'script banner', /COMPASSIONISM FRAMEWORK SIMULATION\s+v(\d+(?:\.\d+)+)/);
+  const eeF = path.join(root, 'earlier-engine.html'), ee = fs.existsSync(eeF) ? fs.readFileSync(eeF, 'utf8') : null;  /* v5.2 step 8 (decision D): the earlier engine's own page */
+  if (ee){ all('earlier-engine.html', ee, '<title>', /<title>[^<]*? v(\d+(?:\.\d+)+)[^<]*<\/title>/); all('earlier-engine.html', ee, 'JSON-LD softwareVersion', /"softwareVersion":"([^"]+)"/);
+    all('earlier-engine.html', ee, 'static .meta-ver label', /class="meta-ver">v([^<]+)</); all('earlier-engine.html', ee, 'script banner', /COMPASSIONISM FRAMEWORK SIMULATION\s+v(\d+(?:\.\d+)+)/); }
   all('replication.html', rep, 'meta sim-version', /<meta name="sim-version" content="([^"]+)"/);
   all('replication.html', rep, 'JSON-LD name', /"name": "Compassionism Framework Simulation v(\d+(?:\.\d+)+)"/);
   const v1 = rep.match(/"version": "([^"]+)"/);
@@ -26,7 +29,7 @@ function findStale(root) {
   all('replication.html', rep, 'seal tooltip', /describes engine version (\d+(?:\.\d+)+)/);
   const re2 = /(?:now at v|shipped v)(\d+(?:\.\d+)+)/g; let x; while ((x = re2.exec(rep))) if (x[1] !== V) out.push({file: 'replication.html', field: 'Python-snapshot caveat', found: x[1], want: V});
   all('CONTRIBUTING.md', con, 'signature line', /Compassionism Framework Simulation v(\d+(?:\.\d+)+)\*/);
-  for (const [f, src] of [['index.html', idx], ['replication.html', rep]]) for (const d of src.matchAll(/(?:name="description"|property="og:description") content="([^"]*)"/g))
+  for (const [f, src] of [['index.html', idx], ['replication.html', rep]].concat(ee ? [['earlier-engine.html', ee]] : [])) for (const d of src.matchAll(/(?:name="description"|property="og:description") content="([^"]*)"/g))
     if (/\bv\d+\.\d+\b/.test(d[1])) out.push({file: f, field: 'meta description (must not carry a version)', found: (d[1].match(/\bv\d+\.\d+\b/) || [])[0], want: '(none)'});
   return out;
 }
