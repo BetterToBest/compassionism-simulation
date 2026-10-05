@@ -152,6 +152,7 @@ CFG.POVERTY_THRESHOLD_SENIOR = 15440;  /* v5.2 step 5: the same table's threshol
 CFG.SCF_NETWORTH_PCTL = [-168690,-110095,-78374,-59977,-43453,-42243,-28987,-21813,-17491,-11419,-8325,-4888,-703,22,330,550,1100,2599,4205,4581,4972,6903,7371,8441,9736,10451,11001,12046,12740,13751,14403,15198,16309,18501,20956,23112,25216,27108,29372,33002,36017,39041,43937,46562,48496,53517,57230,60515,67699,70933,76235,78436,83848,87842,92114,101129,108326,111257,121660,132149,137340,145550,153350,157613,166338,173027,183992,194788,211641,228658,238387,248898,262005,277769,289925,300109,320343,342047,376904,422591,454553,463540,486421,503640,524757,568960,631369,740681,798477,839114,907348,979719,1048972,1164655,1385996,1688747,1826853,2170113,2675192,10801768];
 CFG.SCF_WAGE_WEALTH_RHO = 0.3585;
 CFG.SCF_WAGE_SIGMA = 0.8617;
+CFG.SCF_WAGE_MEDIAN = 54698;  /* v5.2 step 5: the comparison group's median wage income, 2025 dollars (the model's year-0 median is 35 x 12 x 100.52 = $39,945 at log mean 3.5) */
 CFG.FO_RISK_WAGE_RHO = -0.65;
 /* v5.2 round, step 4 (Oct 3, 2026; ledger s83): the ageing switch's inputs (read only when AGE is on; sources/demography.py derives the two arrays).
  *  AGE_WEIGHTS  US resident population at each age 25..66, thousands, July 1, 2024 (Census Bureau, Vintage 2024 national estimates by single year of age,
@@ -579,7 +580,8 @@ function ssPIA(m){ var b = CFG.SS_BEND_POINTS, x = Math.max(0, m); return 0.9*Ma
  *  wealth  rho > 0: starting savings drawn from the SCF distribution of the comparison group (CFG.SCF_NETWORTH_PCTL), linked to the adult's wage by a Gaussian
  *          copula with correlation rho (CFG.SCF_WAGE_WEALTH_RHO); the model's own draw is lognormal and independent of the wage.
  *  risk    rho < 0: the automation risk keeps its distribution (the CFG.AUTO_* mixture) but is linked to the wage with copula correlation rho (CFG.FO_RISK_WAGE_RHO).
- *  wsd     > 0: log wages spread with this standard deviation (CFG.SCF_WAGE_SIGMA) around the same median, in place of 0.5. */
+ *  wsd     > 0: log wages spread with this standard deviation (CFG.SCF_WAGE_SIGMA) around the same median, in place of 0.5.
+ *  wmed    > 0: wages centred on this annual median in 2025 dollars (CFG.SCF_WAGE_MEDIAN) in place of the model's $39,945 (log mean 3.5 in model units). */
 var LATENT = null;
 function normCdf(z){ var x = Math.abs(z)/Math.SQRT2, t = 1/(1 + 0.5*x), r = t*Math.exp(-x*x - 1.26551223 + t*(1.00002368 + t*(0.37409196 + t*(0.09678418 + t*(-0.18628806 + t*(0.27886807 + t*(-1.13520398 + t*(1.48851587 + t*(-0.82215223 + t*0.17087277)))))))));
   return z >= 0 ? 1 - r/2 : r/2; }  /* the complementary error function of Numerical Recipes (erfcc), relative error < 1.2e-7 everywhere, so the tails stay accurate */
@@ -595,7 +597,7 @@ function scfWealthQ(p){ var Q = CFG.SCF_NETWORTH_PCTL, h = p*100 - 0.5, k = Math
 function latentAdjust(l){ var L = LATENT, zw = (Math.log(l.wage) - 3.5)/0.5;  /* the wage's own normal score (makeLatentAgent draws lognormal(3.5, 0.5)) */
   if (L.risk){ var zr = normInv(autoRiskCdf(l.automationRisk)); l.automationRisk = autoRiskInv(normCdf(L.risk*zw + Math.sqrt(1 - L.risk*L.risk)*zr)); }
   if (L.wealth){ var zq = (Math.log(l.wealth) - CFG.WEALTH_INIT_MU)/CFG.WEALTH_INIT_SIGMA; l.wealth = scfWealthQ(normCdf(L.wealth*zw + Math.sqrt(1 - L.wealth*L.wealth)*zq)); }
-  if (L.wsd) l.wage = Math.exp(3.5 + L.wsd*zw);
+  if (L.wsd || L.wmed) l.wage = Math.exp((L.wmed ? Math.log(L.wmed/(12*CFG.WAGE_TO_USD)) : 3.5) + (L.wsd || 0.5)*zw);
   return l; }
 function ageInit(agents, seed, onNew){
   var r = mulberry32(seed + 600011), cw = [], s = 0, w0 = 0;
@@ -2651,7 +2653,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var gc0 = GATE_CURRENT; if (typeof c.gc === 'boolean') GATE_CURRENT = c.gc;  /* audit V5-02: the framework BLEI gate reads this year's BU, for this row only */
       var sv0 = SAVE; if (c.sv) SAVE = Object.assign({}, SAVE_DEFAULTS, c.sv === true ? {} : c.sv);  /* v5.2 step 3: savings that keep up with prices, for this row only (no programme rows too) */
       var ag0 = AGE; if (c.ag) AGE = Object.assign({}, AGE_DEFAULTS, c.ag === true ? {} : c.ag);  /* v5.2 step 4: ageing, for this row only (no programme rows too) */
-      var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0};  /* v5.2 step 5: {w, r, s} flags */
+      var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0, wmed:c.lt.m ? CFG.SCF_WAGE_MEDIAN : 0};  /* v5.2 step 5: {w, r, s, m} flags */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), S).res;
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
       finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; } });
@@ -3696,7 +3698,8 @@ function releaseBases(SC){
     {l:'[reference] no programme, starting savings drawn from the SCF and linked to wages', v:{sc:SC, lt:{w:1}}, j:'ltw'},
     {l:'[reference] no programme, automation risk linked to wages', v:{sc:SC, lt:{r:1}}, j:'ltr'},
     {l:'[reference] no programme, the SCF\'s wider spread of wages', v:{sc:SC, lt:{s:1}}, j:'lts'},
-    {l:'[reference] no programme, all three US-data fixes', v:{sc:SC, lt:{w:1, r:1, s:1}}, j:'lta'}];
+    {l:'[reference] no programme, wages centred on the US survey\'s median', v:{sc:SC, lt:{m:1}}, j:'ltm'},
+    {l:'[reference] no programme, all four US-data readings', v:{sc:SC, lt:{w:1, r:1, s:1, m:1}}, j:'lta'}];
 }
 function releaseRows(SC, only51){
   var ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };
@@ -3715,7 +3718,8 @@ function releaseRows(SC, only51){
     {l:'  starting savings drawn from the US wealth survey (SCF 2022) and linked to wages', v:W({lt:{w:1}}), k:'s', vs:'main', j:'fixw', bk:'ltw'},
     {l:'  automation risk linked to wages (lower-paid jobs at higher risk, as in the occupation data)', v:W({lt:{r:1}}), k:'s', vs:'main', j:'fixr', bk:'ltr'},
     {l:'  wages spread as widely as in the US wealth survey', v:W({lt:{s:1}}), k:'s', vs:'main', j:'fixs', bk:'lts'},
-    {l:'  all three US-data fixes together', v:W({lt:{w:1, r:1, s:1}}), k:'s', vs:'main', j:'fixall', bk:'lta'}];
+    {l:'  wages centred on the US survey\'s median ($54,698 instead of $39,945)', v:W({lt:{m:1}}), k:'s', vs:'main', j:'fixm', bk:'ltm'},
+    {l:'  all four US-data readings together', v:W({lt:{w:1, r:1, s:1, m:1}}), k:'s', vs:'main', j:'fixall', bk:'lta'}];
   return [
     {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC, gc:true}, k:'today', j:'v422'},
     {l:'RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source', v:ALL, k:'main', vs:'today', j:'release'},
@@ -4024,17 +4028,17 @@ function v52UnitSuite(){
     [0.01, 0.2, 0.5, 0.8, 0.99].forEach(function(u){ if (Math.abs(autoRiskCdf(autoRiskInv(u)) - u) > 1e-9) bad.push('risk ' + u); });
     if (scfWealthQ(0.5) < CFG.SCF_NETWORTH_PCTL[49] || scfWealthQ(0.5) > CFG.SCF_NETWORTH_PCTL[50] || scfWealthQ(0) !== CFG.SCF_NETWORTH_PCTL[0] || scfWealthQ(1) !== CFG.SCF_NETWORTH_PCTL[99]) bad.push('SCF quantiles');
     return {pass:bad.length === 0, detail:bad.length ? bad.join(', ') : 'Phi(1.96) = ' + normCdf(1.96).toFixed(6) + '; SCF median ' + Math.round(scfWealthQ(0.5))}; });
-  t('step 5, the US-data readings draw no random number and hit their targets on 20,000 drawn adults: savings from the SCF (median, share in debt) linked to wages with the SCF correlation, automation risk keeping its distribution but linked to wages at -0.65, and the wage spread giving the SCF wage Gini', function(){
+  t('step 5, the US-data readings draw no random number and hit their targets on 20,000 drawn adults: savings from the SCF (median, share in debt) linked to wages with the SCF correlation, automation risk keeping its distribution but linked to wages at -0.65, and the wage spread and median giving the SCF wage Gini and median wage', function(){
     var sv = RNG, n = 0, base = mulberry32(77); RNG = function(){ n++; return base(); }; var L0 = makeLatentPopulation(20000), n0 = n; RNG = sv;
     var L1 = L0.map(function(l){ return Object.assign({}, l); }), cnt = 0; RNG = function(){ cnt++; return 0.5; };
-    try { LATENT = {wealth:CFG.SCF_WAGE_WEALTH_RHO, risk:CFG.FO_RISK_WAGE_RHO, wsd:CFG.SCF_WAGE_SIGMA}; L1.forEach(latentAdjust); } finally { LATENT = null; RNG = sv; }
+    try { LATENT = {wealth:CFG.SCF_WAGE_WEALTH_RHO, risk:CFG.FO_RISK_WAGE_RHO, wsd:CFG.SCF_WAGE_SIGMA, wmed:CFG.SCF_WAGE_MEDIAN}; L1.forEach(latentAdjust); } finally { LATENT = null; RNG = sv; }
     function rank(x){ var o = x.map(function(v, i){ return [v, i]; }).sort(function(a, b){ return a[0] - b[0]; }), r = new Array(x.length); o.forEach(function(p, k){ r[p[1]] = normInv((k + 0.5)/x.length); }); return r; }
     function corr(a, b){ var n2 = a.length, ma = 0, mb = 0, sab = 0, saa = 0, sbb = 0; for (var i = 0; i < n2; i++){ ma += a[i]/n2; mb += b[i]/n2; } for (i = 0; i < n2; i++){ sab += (a[i] - ma)*(b[i] - mb); saa += (a[i] - ma)*(a[i] - ma); sbb += (b[i] - mb)*(b[i] - mb); } return sab/Math.sqrt(saa*sbb); }
     var zw = L0.map(function(l){ return (Math.log(l.wage) - 3.5)/0.5; }), rw = corr(zw, rank(L1.map(function(l){ return l.wealth; }))), rr = corr(zw, rank(L1.map(function(l){ return l.automationRisk; })));
     var med = quantileOf(L1.map(function(l){ return l.wealth; }), 0.5), neg = L1.filter(function(l){ return l.wealth < 0; }).length/L1.length*100;
-    var m0 = L0.reduce(function(m, l){ return m + l.automationRisk; }, 0)/L0.length, m1 = L1.reduce(function(m, l){ return m + l.automationRisk; }, 0)/L1.length, gw = giniOfArr(L1.map(function(l){ return l.wage; }));
-    var ok = cnt === 0 && Math.abs(rw - CFG.SCF_WAGE_WEALTH_RHO) < 0.03 && Math.abs(rr - CFG.FO_RISK_WAGE_RHO) < 0.03 && Math.abs(med/74422 - 1) < 0.06 && Math.abs(neg - 12.56) < 1.5 && Math.abs(m1 - m0) < 0.01 && Math.abs(gw - 0.4577) < 0.01 && n0 > 0;
-    return {pass:ok, detail:'draws by the readings ' + cnt + '; wage-wealth correlation ' + rw.toFixed(3) + '; wage-risk ' + rr.toFixed(3) + '; median savings $' + Math.round(med) + ', in debt ' + neg.toFixed(1) + '%; mean risk ' + m0.toFixed(3) + ' -> ' + m1.toFixed(3) + '; wage Gini ' + gw.toFixed(3)}; });
+    var m0 = L0.reduce(function(m, l){ return m + l.automationRisk; }, 0)/L0.length, m1 = L1.reduce(function(m, l){ return m + l.automationRisk; }, 0)/L1.length, gw = giniOfArr(L1.map(function(l){ return l.wage; })), wm = quantileOf(L1.map(function(l){ return l.wage; }), 0.5)*12*CFG.WAGE_TO_USD;
+    var ok = cnt === 0 && Math.abs(wm/CFG.SCF_WAGE_MEDIAN - 1) < 0.02 && Math.abs(rw - CFG.SCF_WAGE_WEALTH_RHO) < 0.03 && Math.abs(rr - CFG.FO_RISK_WAGE_RHO) < 0.03 && Math.abs(med/74422 - 1) < 0.06 && Math.abs(neg - 12.56) < 1.5 && Math.abs(m1 - m0) < 0.01 && Math.abs(gw - 0.4577) < 0.01 && n0 > 0;
+    return {pass:ok, detail:'draws by the readings ' + cnt + '; wage-wealth correlation ' + rw.toFixed(3) + '; wage-risk ' + rr.toFixed(3) + '; median savings $' + Math.round(med) + ', in debt ' + neg.toFixed(1) + '%; mean risk ' + m0.toFixed(3) + ' -> ' + m1.toFixed(3) + '; wage Gini ' + gw.toFixed(3) + ', median wage $' + Math.round(wm)}; });
   t('step 5, the readings are paired: the row option lt changes the no-programme row and the release row the same way (the same adults in both), adds no random draw, and is restored after the study (Adverse, seed 2)', function(){
     var P = Object.assign({}, ADVERSE_REFERENCE), PR = tbPresets(P), orig = mulberry32, n = [0, 0], k = 0, c = n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5, {lt:{w:1, r:1, s:1}})); c.sc = SPEND_SOURCED;
     study(P, 2);  /* warm the supply-path cache */

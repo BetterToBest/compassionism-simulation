@@ -2827,8 +2827,8 @@ function relRender(){
   if(!D||!D.envs||!D.envs[REL.env]){out.innerHTML='<p>Results not available.</p>';var t0=document.getElementById('rel-tg-out');if(t0)t0.innerHTML='';return;}
   var E=D.envs[REL.env],R=E.rows;out.innerHTML=(REL.yrs===40?'<p class="fd-note">Over 40 years: the same adults followed for twice as long. In the main reading the adults do not age, so this shows where the same rules lead, not a life course'+(R.age?'; the reading with adults who age, retire and are replaced is below':'')+'.</p>':'')+relSentences(E.base,R.release,R.h1,REL.yrs,{sav:R.sav,savB:E.bases&&E.bases.sv,h1idx:R.h1idx,age:R.age,ageB:E.bases&&E.bases.ag});
   var tgo=document.getElementById('rel-tg-out');if(tgo)tgo.innerHTML=relTargets(E.base,R.release,REL.yrs);  /* v5.1 (audit E1): its own block under the sentences, so the walk-through's spotlight on the sentences keeps its height */
-  var tb=document.getElementById('rel-rows'),h='',ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia'];  /* v5.2 step 3: + the savings and indexing readings (a row with vsBase is read against no programme with the same savings rule) */
-  ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+(r.vsBase?'<span class="fd-ci">against no programme with the same '+(/^ag/.test(r.vsBase)?'ageing':'savings')+' rule</span>':'')+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
+  var tb=document.getElementById('rel-rows'),h='',ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia','fixw','fixr','fixs','fixm','fixall'];  /* v5.2 step 3: + the savings and indexing readings (a row with vsBase is read against no programme with the same savings rule) */
+  ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+(r.vsBase?'<span class="fd-ci">against no programme with the same '+(/^ag/.test(r.vsBase)?'ageing rule':/^lt/.test(r.vsBase)?'US-data reading':'savings rule')+'</span>':'')+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
   if(tb)tb.innerHTML=h;
   var src=document.getElementById('rel-src'),M=D._meta||{};if(src)src.innerHTML='Figures: '+(M.seeds||500)+' paired runs of '+(M.agents||500)+' simulated adults per environment, written '+(M.written||'')+'. Reproduce: <code>'+(M.command||'node harness.js testbed 500 release ref,adv,st')+'</code>.';
 }
@@ -2857,7 +2857,7 @@ function relSyncUrl(){try{var a=document.getElementById('rel-link'),q=relViewSea
 /* v5.1 (audit E3): the figures on view, as a file. JSON: the panel's rows for this environment and horizon, with a _meta block (simulation, version, view, seeds, agents, the command that
  * reproduces them and the build manifest). CSV: the same, one row per reading, the _meta as # comment lines on top. No date is written, so the same view gives the same file. */
 function relCsvCell(x){var t=(x===undefined||x===null)?'':String(x);return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;}
-var REL_CSV_ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia'];
+var REL_CSV_ORDER=['release','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia','fixw','fixr','fixs','fixm','fixall'];
 function relExport(fmt){
   var D=REL.yrs===40?REL.data40:REL.data,E=D&&D.envs&&D.envs[REL.env];if(!E)return null;var M=D._meta||{},stem='compassionism-v'+META.VERSION+'-'+REL.env+'-'+REL.yrs+'y';
   var meta={simulation:'Compassionism Framework Simulation',version:META.VERSION,environment:E.name,environmentKey:REL.env,years:REL.yrs,seeds:M.seeds,agents:M.agents,written:M.written,command:M.command,manifest:M.manifest||null,
@@ -3735,6 +3735,7 @@ CFG.POVERTY_THRESHOLD_SENIOR = 15440;  /* v5.2 step 5: the same table's threshol
 CFG.SCF_NETWORTH_PCTL = [-168690,-110095,-78374,-59977,-43453,-42243,-28987,-21813,-17491,-11419,-8325,-4888,-703,22,330,550,1100,2599,4205,4581,4972,6903,7371,8441,9736,10451,11001,12046,12740,13751,14403,15198,16309,18501,20956,23112,25216,27108,29372,33002,36017,39041,43937,46562,48496,53517,57230,60515,67699,70933,76235,78436,83848,87842,92114,101129,108326,111257,121660,132149,137340,145550,153350,157613,166338,173027,183992,194788,211641,228658,238387,248898,262005,277769,289925,300109,320343,342047,376904,422591,454553,463540,486421,503640,524757,568960,631369,740681,798477,839114,907348,979719,1048972,1164655,1385996,1688747,1826853,2170113,2675192,10801768];
 CFG.SCF_WAGE_WEALTH_RHO = 0.3585;
 CFG.SCF_WAGE_SIGMA = 0.8617;
+CFG.SCF_WAGE_MEDIAN = 54698;  /* v5.2 step 5: the comparison group's median wage income, 2025 dollars (the model's year-0 median is 35 x 12 x 100.52 = $39,945 at log mean 3.5) */
 CFG.FO_RISK_WAGE_RHO = -0.65;
 /* v5.2 round, step 4 (Oct 3, 2026; ledger s83): the ageing switch's inputs (read only when AGE is on; sources/demography.py derives the two arrays).
  *  AGE_WEIGHTS  US resident population at each age 25..66, thousands, July 1, 2024 (Census Bureau, Vintage 2024 national estimates by single year of age,
@@ -4151,7 +4152,8 @@ function ssPIA(m){ var b = CFG.SS_BEND_POINTS, x = Math.max(0, m); return 0.9*Ma
  *  wealth  rho > 0: starting savings drawn from the SCF distribution of the comparison group (CFG.SCF_NETWORTH_PCTL), linked to the adult's wage by a Gaussian
  *          copula with correlation rho (CFG.SCF_WAGE_WEALTH_RHO); the model's own draw is lognormal and independent of the wage.
  *  risk    rho < 0: the automation risk keeps its distribution (the CFG.AUTO_* mixture) but is linked to the wage with copula correlation rho (CFG.FO_RISK_WAGE_RHO).
- *  wsd     > 0: log wages spread with this standard deviation (CFG.SCF_WAGE_SIGMA) around the same median, in place of 0.5. */
+ *  wsd     > 0: log wages spread with this standard deviation (CFG.SCF_WAGE_SIGMA) around the same median, in place of 0.5.
+ *  wmed    > 0: wages centred on this annual median in 2025 dollars (CFG.SCF_WAGE_MEDIAN) in place of the model's $39,945 (log mean 3.5 in model units). */
 var LATENT = null;
 function normCdf(z){ var x = Math.abs(z)/Math.SQRT2, t = 1/(1 + 0.5*x), r = t*Math.exp(-x*x - 1.26551223 + t*(1.00002368 + t*(0.37409196 + t*(0.09678418 + t*(-0.18628806 + t*(0.27886807 + t*(-1.13520398 + t*(1.48851587 + t*(-0.82215223 + t*0.17087277)))))))));
   return z >= 0 ? 1 - r/2 : r/2; }  /* the complementary error function of Numerical Recipes (erfcc), relative error < 1.2e-7 everywhere, so the tails stay accurate */
@@ -4167,7 +4169,7 @@ function scfWealthQ(p){ var Q = CFG.SCF_NETWORTH_PCTL, h = p*100 - 0.5, k = Math
 function latentAdjust(l){ var L = LATENT, zw = (Math.log(l.wage) - 3.5)/0.5;  /* the wage's own normal score (makeLatentAgent draws lognormal(3.5, 0.5)) */
   if (L.risk){ var zr = normInv(autoRiskCdf(l.automationRisk)); l.automationRisk = autoRiskInv(normCdf(L.risk*zw + Math.sqrt(1 - L.risk*L.risk)*zr)); }
   if (L.wealth){ var zq = (Math.log(l.wealth) - CFG.WEALTH_INIT_MU)/CFG.WEALTH_INIT_SIGMA; l.wealth = scfWealthQ(normCdf(L.wealth*zw + Math.sqrt(1 - L.wealth*L.wealth)*zq)); }
-  if (L.wsd) l.wage = Math.exp(3.5 + L.wsd*zw);
+  if (L.wsd || L.wmed) l.wage = Math.exp((L.wmed ? Math.log(L.wmed/(12*CFG.WAGE_TO_USD)) : 3.5) + (L.wsd || 0.5)*zw);
   return l; }
 function ageInit(agents, seed, onNew){
   var r = mulberry32(seed + 600011), cw = [], s = 0, w0 = 0;
@@ -5277,7 +5279,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var gc0 = GATE_CURRENT; if (typeof c.gc === 'boolean') GATE_CURRENT = c.gc;  /* audit V5-02: the framework BLEI gate reads this year's BU, for this row only */
       var sv0 = SAVE; if (c.sv) SAVE = Object.assign({}, SAVE_DEFAULTS, c.sv === true ? {} : c.sv);  /* v5.2 step 3: savings that keep up with prices, for this row only (no programme rows too) */
       var ag0 = AGE; if (c.ag) AGE = Object.assign({}, AGE_DEFAULTS, c.ag === true ? {} : c.ag);  /* v5.2 step 4: ageing, for this row only (no programme rows too) */
-      var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0};  /* v5.2 step 5: {w, r, s} flags */
+      var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0, wmed:c.lt.m ? CFG.SCF_WAGE_MEDIAN : 0};  /* v5.2 step 5: {w, r, s, m} flags */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), S).res;
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
       finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; } });

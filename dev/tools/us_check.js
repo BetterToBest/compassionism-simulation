@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* v5.2 round, step 5 (Oct 3, 2026; ledger s84): the no-programme run checked against US data. Runs the no-programme row (and the readings that close known gaps:
- * savings from the SCF linked to wages, automation risk linked to wages, the SCF's wage spread, all three, and ageing) on paired seeds, and compares it with:
+ * savings from the SCF linked to wages, automation risk linked to wages, the SCF's wage spread, the SCF's wage median, all four, and ageing) on paired seeds,
+ * and compares it with:
  *  - poverty rates, Census Bureau, Poverty in the United States: 2025 (P60-290, Sept 2026): official measure, all people 10.2%, ages 18-64 9.2%, unrelated
  *    individuals 19.0%, all workers 4.3%, full-time year-round workers 1.6%; Supplemental Poverty Measure, all 13.1%, 18-64 12.3%, all workers 7.1%;
  *  - income inequality, Census Bureau, Income in the United States: 2025 (P60-289): household money-income Gini 0.490, post-tax 0.448;
@@ -25,7 +26,7 @@ const US = {
     source: 'Federal Reserve, 2022 Survey of Consumer Finances: single heads, no children, aged 25-66, with wage income (sources/scf_singles.py), 2025 dollars'},
   psid: {exit1: 0.53, exit2: 0.36, exit5: 0.2, reentry1: 0.269, source: 'Stevens (1994), AER Papers and Proceedings 84(2): 34-37, PSID 1970-1987'}};
 const SC = H.SPEND_SOURCED, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
-const ROWS = [['none', {}], ['ltw', {lt: {w: 1}}], ['ltr', {lt: {r: 1}}], ['lts', {lt: {s: 1}}], ['lta', {lt: {w: 1, r: 1, s: 1}}], ['ag', {ag: {}}]];
+const ROWS = [['none', {}], ['ltw', {lt: {w: 1}}], ['ltr', {lt: {r: 1}}], ['lts', {lt: {s: 1}}], ['ltm', {lt: {m: 1}}], ['lta', {lt: {w: 1, r: 1, s: 1, m: 1}}], ['ag', {ag: {}}]];
 function q(a, p){ const v = a.slice().sort((x, y) => x - y), h = (v.length - 1)*p, lo = Math.floor(h), hi = Math.ceil(h); return v[lo] + (v[hi] - v[lo])*(h - lo); }
 function gini(a, keepNeg){ const v = a.map(x => keepNeg ? x : Math.max(0, x)).sort((x, y) => x - y), n = v.length; let t = 0, w = 0; for (let i = 0; i < n; i++){ t += v[i]; w += (i + 1)*v[i]; } return t > 0 ? (2*w/(n*t) - (n + 1)/n)*n/(n - 1) : 0; }
 const out = {_meta: {what: 'the no-programme run against US data', env, seeds: N, years: YRS, manifest: H.runManifest(), command: 'node dev/tools/us_check.js ' + env + ' ' + N + ' ' + YRS}, us: US, rows: {}};

@@ -127,7 +127,7 @@ FX_TABLE = ('<table class="rel-t" id="rel-fx"><thead><tr><th>Years</th><th>Envir
 
 # v5.2 round: the readings added in this round, each against its own no-programme pair where it has one (a mechanism that is not design-specific applies to the
 # no-programme run too). Each step appends its keys; the table is written after the fixed-dollar table.
-V52_READINGS = ['release', 'sav', 'sav0', 'idx', 'h1', 'h1idx', 'h1both', 'age', 'agenc', 'agenone', 'agepia']
+V52_READINGS = ['release', 'sav', 'sav0', 'idx', 'h1', 'h1idx', 'h1both', 'age', 'agenc', 'agenone', 'agepia', 'fixw', 'fixr', 'fixs', 'fixm', 'fixall']
 
 def sg(x, d=1):
     t = fx(x, d)
@@ -159,6 +159,52 @@ RD_HEAD = ('<h3 id="rel-v52-h">Readings added in v5.2</h3>\n  <p id="rel-v52-p">
            'Retirees keep the BU for life and may convert expired BU through creative work (Claude&rsquo;s reading of the design, decision A); the other readings take that away or take them out of the programme.</p>\n  ')
 RD_TABLE = ('<table class="rel-t" id="rel-v52"><thead><tr><th>Years</th><th>Environment</th><th>Reading</th><th>Too little wealth at the last year, and the change (95% interval)</th><th>Below the cost of living, change</th>'
             '<th>Below 30 days of basic living (BLEI), change</th><th>Programme inflation a year</th><th>Cost per adult a year</th><th>Note</th></tr></thead><tbody></tbody></table>')
+
+# v5.2 round, step 5: the no-programme run against US data (dev/runs/us-check-ENV.json, written by dev/tools/us_check.js), a match/gap table.
+def us_tables():
+    if not (os.path.exists('dev/runs/us-check-ref.json') and os.path.exists('dev/runs/us-check-adv.json')): return None
+    R = json.load(open('dev/runs/us-check-ref.json')); A = json.load(open('dev/runs/us-check-adv.json')); U = R['us']
+    r = R['rows']['none']; a = A['rows']['none']
+    def p(x, d=1): return '&ndash;' if x is None else fx(x, d) + '%'
+    def g(x): return '&ndash;' if x is None else fx(x, 3)
+    def m(x): return '&ndash;' if x is None else ('&minus;$' if x < 0 else '$') + format(int(round(abs(x))), ',')
+    def h(x): return '&ndash;' if x is None else fx(x, 2)
+    def row(lbl, us, f, why):
+        return '<tr><td>%s</td><td>%s</td><td>%s / %s / %s</td><td>%s</td><td>%s</td></tr>' % (lbl, us, f(r, 'y0'), f(r, 'y7'), f(r, 'end'), f(a, 'end'), why)
+    rows = [
+        row('Below the official poverty line (money income)', '4.3% of workers; 9.2% of people 18&ndash;64; 19.0% of people living alone or with non-relatives; 10.2% of everyone (2025)', lambda x, t: p(x['fpl'][t]),
+            'The model&rsquo;s adults all work and live alone, with no children and no one out of work, so the like-for-like US figure is workers&rsquo;; the first year matches it.'),
+        row('Below the line on Supplemental-style resources', '7.1% of workers; 12.3% of people 18&ndash;64; 13.1% of everyone', lambda x, t: p(x['spm'][t]),
+            'With no programme the model has no taxes or transfers in resources (taxes and medical costs are in its cost of living), so this equals the line above.'),
+        row('Gini of income', '0.448 after tax, 0.490 before (households)', lambda x, t: g(x['giniD'][t]),
+            'Wages are drawn with a narrow spread (0.5 in logs; a Gini of 0.28). The wage-spread reading (0.8617, the SCF group&rsquo;s wage Gini) gives about 0.46.'),
+        row('Gini of wage income (comparison group)', '0.458', lambda x, t: g(x['wealth'][t]['wageGini']), 'As above.'),
+        row('Median savings (net worth)', m(U['scf']['median']) + ' (comparison group)', lambda x, t: m(x['wealth'][t]['median']),
+            'Starting savings are drawn lognormal (median $36,316), not from the survey, and do not depend on wages; the savings reading draws them from the survey and links them to wages.'),
+        row('Share in debt (net worth below zero)', fx(U['scf']['neg'], 1) + '%', lambda x, t: p(x['wealth'][t]['neg']),
+            'In the model everyone pays the full living-wage basket ($49,370), which two in three adults earn less than (the model&rsquo;s median wage is $39,945, the survey group&rsquo;s $54,698), so many run their savings into debt; in the US people with less income spend less. The largest gap; the wage-median reading narrows it, and no reading here closes it.'),
+        row('Share with savings under $25,000', fx(U['scf']['below25k'], 1) + '%', lambda x, t: p(x['wealth'][t]['below25k']), 'As above.'),
+        row('Gini of wealth (debts kept)', g(U['scf']['giniKept']), lambda x, t: g(x['wealth'][t]['giniKept']), 'The lognormal start has a thinner top than the survey; debts widen the spread as the run goes on.'),
+        row('Leaving poverty in the first year of a spell', h(U['psid']['exit1']) + ' (PSID)', lambda x, t: h(x['spells']['fpl']['exit1']) if t == 'end' else '&ndash;',
+            'Spells use every year of the run; the column shows the whole run. In the model poverty comes from year-to-year swings in pay around a steady wage path, so spells are short and people move in and out often; long US spells come from not working, disability and changes in a household, which the model does not have.'),
+        row('Leaving poverty in the second year', h(U['psid']['exit2']), lambda x, t: h(x['spells']['fpl']['exit2']) if t == 'end' else '&ndash;', 'As above.'),
+        row('Leaving poverty after five years or more', '0.20 or less', lambda x, t: h(x['spells']['fpl']['exit5']) if t == 'end' else '&ndash;', 'As above (few spells reach five years in the model).'),
+        row('Back in poverty after one year out', h(U['psid']['reentry1']), lambda x, t: h(x['spells']['fpl']['reentry1']) if t == 'end' else '&ndash;', 'As above.')]
+    head = ('<h3 id="rel-us-h">The no-programme run against US data (v5.2)</h3>\n  <p id="rel-us-p">The no-programme run is the yardstick for every result, so it is checked here against published US figures: '
+            'poverty rates (Census Bureau, Poverty in the United States: 2025), income inequality (Census Bureau, Income in the United States: 2025), wealth (Federal Reserve, 2022 Survey of Consumer Finances, single adults aged 25&ndash;66 with no children and with wages, the group closest to the model&rsquo;s adults, in 2025 dollars) '
+            'and how poverty spells end (Panel Study of Income Dynamics, Stevens 1994). Model figures are means over %d paired runs of the no-programme run, in the first year, at Year 7 and at year 20 (Reference), and at year 20 in the Adverse Environment; '
+            'poverty uses the official threshold for one person moved with prices. Reproduce: <code>node dev/tools/us_check.js ref %d</code> and <code>adv</code>. No setting was changed to bring a figure closer; where a gap traces to a known choice, a reading beside the main one changes it (next table).</p>\n  ' % (R['_meta']['seeds'], R['_meta']['seeds']))
+    table = ('<table class="rel-t" id="rel-us"><thead><tr><th>Measure</th><th>US figure</th><th>Model, no programme, Reference: first year / Year 7 / year 20</th><th>Adverse, year 20</th><th>Where the gap comes from</th></tr></thead><tbody>\n' + '\n'.join(rows) + '\n</tbody></table>')
+    names2 = [('none', 'As modelled'), ('ltw', 'Savings from the survey, linked to wages'), ('ltr', 'Automation risk linked to wages'), ('lts', 'Wages spread as in the survey'), ('ltm', 'Wages centred on the survey&rsquo;s median'), ('lta', 'All four'), ('ag', 'Adults who age, retire and are replaced')]
+    rows2 = []
+    for k, lbl in names2:
+        x = R['rows'].get(k); y = A['rows'].get(k)
+        if not x or not y: continue
+        rows2.append('<tr><td>%s</td><td>%s / %s</td><td>%s</td><td>%s</td><td>%s</td><td>%s / %s</td><td>%s</td></tr>' % (lbl, m(x['wealth']['y0']['median']), m(x['wealth']['y7']['median']), p(x['wealth']['y7']['neg']), g(x['wealth']['y0']['giniKept']),
+            g(x['giniD']['y7']), p(x['fpl']['y7']), p(y['fpl']['end']), h(x['spells']['fpl']['exit1'])))
+    head2 = '<p id="rel-us2-p">The readings that change a known choice, no programme only (Reference unless stated). Each also runs with the programme, against no programme under the same choice, in the table of v5.2 readings above.</p>\n  '
+    table2 = ('<table class="rel-t" id="rel-us2"><thead><tr><th>Reading</th><th>Median savings: first year / Year 7</th><th>In debt, Year 7</th><th>Wealth Gini, first year</th><th>Income Gini, Year 7</th><th>Below the poverty line: Year 7 / Adverse year 20</th><th>Leaving poverty in a spell&rsquo;s first year</th></tr></thead><tbody>\n' + '\n'.join(rows2) + '\n</tbody></table>')
+    return head + table + '\n  ' + head2 + table2
 
 TG_HEAD = ('<h3 id="rel-targets-h">Against the Hub&rsquo;s own targets (audit E1, v5.1)</h3>\n  <p>The Research Hub sets two targets for Year 7 of a programme: a poverty rate under 2% (from about 12%) and a Gini coefficient of 0.25 to 0.30 (from 0.48), in the '
            '<a href="https://bettertobest.github.io/research-hub/integrated-implementation-roadmap.html" rel="noopener">Integrated Implementation Roadmap</a> (Success Metrics by Year 7; Appendix I). '
@@ -228,6 +274,13 @@ if os.path.exists('dev/runs/release-panel-40.json'):
         P = P[:end] + '\n  ' + RD_HEAD + RD_TABLE + P[end:]
         P = put(P, '<table class="rel-t" id="rel-v52">', readings_rows(D20, D40))
         print('\n'.join(readings_rows(D20, D40)[:3]))
+    # v5.2 step 5: the US-data check, once, after the readings table (or after the Hub-target table for a v5.1 panel)
+    us = us_tables()
+    P = re.sub(r'\s*<h3 id="rel-us-h">.*?</table>\s*<p id="rel-us2-p">.*?</p>\s*<table class="rel-t" id="rel-us2">.*?</table>', '', P, flags=re.S)
+    if us:
+        anchor = '<table class="rel-t" id="rel-v52">' if '<table class="rel-t" id="rel-v52">' in P else '<table class="rel-t" id="rel-tg">'
+        end = P.index('</table>', P.index(anchor)) + len('</table>')
+        P = P[:end] + '\n  ' + us + P[end:]
     # the provenance line, once, right after the price note
     pv = provenance(D20, D40)
     if pv:
