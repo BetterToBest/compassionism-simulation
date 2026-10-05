@@ -5,12 +5,12 @@
   "seeds": 500,
   "years": 20,
   "manifest": {
-   "commit": "da77ef49cbf60dab6dc0420f1265c2af4dab7786",
+   "commit": "42cd8b966e942c8d81e27d6e57b4df3654d38eb4",
    "dirty": false,
    "node": "v22.22.0",
-   "harnessSha256": "826afa81695e6ad2aefa1e4b45887054bc27ea4439612dcee998c9a0b80ce5ea",
-   "engineBlockSha256": "31177f73382cd980fdd263590eb3b57d38040e681950777e8c40ef7dc7309a04",
-   "indexSha256": "d5f7a6f2d355061a38eeb7e76cade78c6f521ae9e049d08674c4bf12411093f9"
+   "harnessSha256": "f3d67659957f8bd72574b99accfb3590a239dcc702e4ed8744041b5f95279ddc",
+   "engineBlockSha256": "2932191258bf53f1b57b4643bc3b472dce53325691516da7c0a473453303558a",
+   "indexSha256": "507e39b468042a4b75e26eba2defec73fea17c93e3f3950db881b8cb5233d93d"
   },
   "command": "node dev/tools/cola_check.js st"
  },
