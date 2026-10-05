@@ -237,21 +237,22 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 | The Gini small-sample bias (v4.21) | Open in v5 | Step 2 applies the n/(n − 1) correction to every Gini and re-checks the Adverse "on the line" reading. |
 | The BLEI floor for CCO+PTH members (v4.21) | Settled by v5 | Both readings are reported: the BLEI paper's own definition and the design-neutral BLEI, which uses the Baseline's daily cost for everyone (plan step 8, `dev/reports/08-blei.md`). Whether a month of flows should count is a question for the BLEI paper. |
 | Settled in v4.20 (four items) | Settled | Still in force: automation-risk sampler, CI on every push, single file with a parity check, tagged releases. |
-| Tie `automationRisk` to wage (v4.20) | Open in v5 | Step 5 adds a labelled reading with risk correlated with wage (−0.65, Frey & Osborne). |
+| Tie `automationRisk` to wage (v4.20) | Open in v5 | A labelled reading since step 5 (risk linked to wage by a Gaussian copula with the occupations' normal-score correlation, −0.53; the −0.65 quoted here since v4.20 is the plain correlation, which mixes in the shapes of the two distributions; `sources/fo_risk_wage.py`). Whether it joins the main row is decided at step 9. |
 | The other variable-length construction draw (v4.20) | Open in v5 | Later. Construction draws are outside the 8-draws-per-agent-year guarantee; ageing (step 4) draws entrants from a separate stream so the guarantee is untouched. |
-| A path-trace diagnostic (v4.20) | Open in v5 | Step 5 records each adult's year-by-year poverty status (spells); a per-channel trace stays later. |
+| A path-trace diagnostic (v4.20) | Open in v5 | Step 5 records each adult's year-by-year poverty status and measures poverty spells (`tbRepSpells`); a per-channel trace stays later. |
 | Progressive disclosure (v4.20) | Open in v5 | Step 8 (advanced panels collapsed; the earlier engine on its own page). |
 | Settled in v4.19 (stabilizer choices) | Earlier engine only | The release rows do not turn the stabilizers on; only the COLA rule (5% Inflation Surge Protocol) carries over. |
-| Stabilizer and relief inputs (v4.19: `STAB_EMERG_TAKEUP`, `CCO_RELIEF_CAP`, the 20% relief) | Earlier engine only | In the release engine BU buy essentials directly (no relief share) and emergency enrolment is off. Step 5 still searches for sources and labels each value. |
+| Stabilizer and relief inputs (v4.19: `STAB_EMERG_TAKEUP`, `CCO_RELIEF_CAP`, the 20% relief) | Earlier engine only | In the release engine BU buy essentials directly (no relief share) and emergency enrolment is off. Step 5 searched for sources and found none for any of the three, so each stays labelled unsourced. The nearest evidence for the take-up: when US states relaxed unemployment-insurance requirements in 2020, the share of eligible jobless workers receiving benefits rose from 27% (2018) to 36% (Forsythe and Yang 2022, Washington Center for Equitable Growth working paper); it is a different programme, so it does not replace the 50%. |
 | A disaster shock (v4.19) | Open in v5 | Later. |
 | Conversion credited once per simulated year (v4.19) | Open in v5 | Later; a stated limit (the release engine is also annual). |
-| Extreme-poverty overlay inputs (v4.18: `EP_VOL_SHARE` and two assumptions) | Open in v5 | The release panel reports this measure (unhoused share). Step 5 searches for a source for `EP_VOL_SHARE`. |
+| Extreme-poverty overlay inputs (v4.18: `EP_VOL_SHARE` and two assumptions) | Open in v5 | The release panel reports this measure (unhoused share). Step 5 searched for a US count of people living unhoused by choice and found none; `EP_VOL_SHARE` (2%) stays labelled unsourced, and `node harness.js extreme` sweeps it from 0 to 5%. |
 | Settled in v4.18 (the name "extreme poverty"; wellness zones) | Settled | Still in force. |
 | Reconcile the papers' headline with the engine (v4.17) | Settled by v5 | The page reads the Hub's own Year 7 targets beside the model's figures (Hub-target table, v5.1); step 2 adds the federal poverty line, Year 7 and a wealth Gini. |
-| The wage distribution versus the living-wage basket (v4.17) | Open in v5 | Step 5 compares the no-programme run with US poverty rates and adds the "starting wealth drawn conditional on wage" reading (this item's option D). |
+| The wage distribution versus the living-wage basket (v4.17) | Open in v5 | Step 5: the model's median wage ($39,945) is below both the basket ($49,370) and the comparable US group's median ($54,698, SCF 2022), and every adult pays the full basket, so with no programme 46% are in debt by Year 7 against 12.6% in the survey (the largest gap with US data). Readings: wages centred on the survey's median, the survey's wage spread, starting savings drawn conditional on wage (this item's option D). |
 | SZH θ read realised PTF density (v4.17) | Settled by v5 | On in the testbed profile (`THETA_GATE 'density'`, decision d12, session 5). |
 | The 55% participation threshold as a dynamic (v4.17) | Open in v5 | Later. Participation is endogenous since plan step 4 (open enrolment), but nothing collapses below 55%. |
 | An endogenous price channel (v4.17) | Settled by v5 | The price module (session 2) and the Source's backing share (plan step 3; the backing-share chart, v5.1). |
+| The PTF/PTH inflation damping (v4.14, v4.15) | Earlier engine only | Off in every release row since session 23 (ledger d86): the price module sets prices instead. Step 5 found no source for the damping's size; it stays labelled unsourced. |
 | Baseline at the scenario's own inflation (v4.16) | Settled by v5 | The no-programme run is compared at each environment's own inflation (release gate; `tbComp`). |
 | PTH appreciation accounting (v4.16) | Open in v5 | Later; it applies to the release engine too (the switch `PTH_APPR_CONSERVE` exists; off). |
 | Tag and release each version (v4.15) | Settled | `release.yml` tags each new version when its pull request merges. |
@@ -261,21 +262,21 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 | CCO/PTH pathway decomposition (v4.14) | Earlier engine only | Done in `harness.js` (`pathways`); the in-page ablation belongs to the earlier engine. |
 | λ heterogeneity (v4.14) | Open in v5 | Later (λ still gates octave advancement in the release engine). |
 | Automation as job transitions; a fuller recession (v4.14) | Open in v5 | Later. Step 6 lets the spending layer reach idle workers in normal years (BLS U-6). |
-| `WEALTH_FLOOR = −$10,000` (v4.3) | Open in v5 | Step 5 compares the no-programme wealth distribution with the Fed's SCF, including the share in debt. |
+| `WEALTH_FLOOR = −$10,000` (v4.3) | Open in v5 | Step 5 compared the no-programme wealth distribution with the SCF 2022: in the survey's comparable group 12.6% are in debt and the 10th percentile is −$10,543, close to the floor; in the model the share in debt grows to 46% by Year 7 (see the row on wages and the basket). |
 | `TARGET_WEALTH`, `TARGET_POVERTY`, `TARGET_GINI` (v4.3) | Earlier engine only | The release page uses the Hub's own targets (Hub-target table); these constants drive only the earlier engine's KPI cards. |
-| Wealth-initialization median versus SCF (v4.7) | Open in v5 | Step 5 (the SCF comparison and the conditional-on-wage reading). |
+| Wealth-initialization median versus SCF (v4.7) | Open in v5 | Step 5: the model's starting median is $36,316 against $74,422 in the SCF's comparable group (single adults aged 25–66 with wages and no children); the reading "starting savings drawn from the SCF and linked to wages" uses the survey's distribution. |
 | A mechanism for low-wage populations (v4.3) | Open in v5 | A design question. The release tables report the bottom third by year-0 wage (group table, plan step 11). |
-| EDC-adjusted Gini versus wealth-init spread | Open in v5 | Step 2 adds a wealth Gini; step 5 compares it with SCF. |
+| EDC-adjusted Gini versus wealth-init spread | Open in v5 | Step 2 added a wealth Gini; step 5 compared it with the SCF: 0.69 in the model's first year against 0.84 in the survey's comparable group (0.81 with the SCF savings reading). |
 | EDC baseline (rent-only) | Earlier engine only | The release engine prices the whole MIT living-wage basket, health care included. |
-| A current-US-policy sibling to the Baseline (v4.12) | Open in v5 | The compare page, after v5.2 (ledger s46). Step 5 says plainly that the no-programme run has no safety net when it is compared with Census rates. |
-| No per-agent history (v4.13) | Open in v5 | Step 5 records each adult's yearly status and measures spell lengths against PSID. |
+| A current-US-policy sibling to the Baseline (v4.12) | Open in v5 | The compare page, after v5.2 (ledger s46). Step 5's US-data table says plainly that the no-programme run has no taxes or transfers, so its Supplemental-style rate equals its official rate. |
+| No per-agent history (v4.13) | Settled by v5 | Step 5 records each adult's yearly poverty status and measures spells against the PSID (Stevens 1994): poverty is more transient in the model (62% leave in a spell's first year against 53%, and 56% still leave after five years against 20% or less). |
 | How far to verify in a real browser (v4.13) | Open in v5 | Step 8 checks layout at 390 px in Chromium (Playwright), as session 34 did for the backing chart. |
 | Conversion not production-constrained | Settled by v5 | Production side (plan step 2), the Source (plan step 3) and the price module. |
 | Initial PTF share not a hard cap (v4.6) | Settled by v5 | PTF membership is limited by PTF capacity (plan step 2; capacity within a year, step 15). |
 | Sobol/LHC sensitivity (v4.6) | Earlier engine only | The LHS export belongs to the earlier engine; a full sensitivity analysis of the release engine is ledger s48 (compare study). |
 | Long-horizon wealth growth unbounded (v4.6) | Open in v5 | The spending rule bounds saving (plan step 7); step 4 adds ageing, retirement and replacement over 40 years. |
 | PTF distortion threshold, 30% | Earlier engine only | The release engine limits PTF by capacity, not by a market-share threshold. |
-| BLEI external validation | Open in v5 | Step 5 (the no-programme run against SCF, CPS and PSID). |
+| BLEI external validation | Open in v5 | Step 5 checked the no-programme run against Census poverty and income figures, the SCF and the PSID (the replication page's US-data table); the BLEI itself has no external counterpart to check against. |
 | PTH liquidity haircut flat (v4.3) | Settled | Resolved in v4.5; the release engine uses the same tenure schedule. |
 | Code license | Settled | Resolved in v4.8. |
 | λ calibration status | Open in v5 | Later. |

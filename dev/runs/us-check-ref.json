@@ -5,15 +5,15 @@
   "seeds": 200,
   "years": 20,
   "manifest": {
-   "commit": "33908f0332d72db6029a2bcb652a2a21501e2a34",
+   "commit": "0af8cc5f71c33a9363e527833604708e48ba3fe9",
    "dirty": false,
    "node": "v22.22.0",
-   "harnessSha256": "e9ebe433adde538b9a5b6344bc566d8f55e0b77ecdbea2a68d7ab830f683c2d0",
-   "engineBlockSha256": "fd45980c2178d59120df0085150f025c8a3fde7604fd23811ce3b4af12482d85",
-   "indexSha256": "40c7d73dec093ee4c2f8176fc5ff18cda113eeaa977b457e636e485ddbff0960"
+   "harnessSha256": "ec9ad77d99306b3d7527dc8458517b8a15545e38e3a61307e12e25eb8da9bdaf",
+   "engineBlockSha256": "9d161d3bd19954b30715bfe9a65ec1336f5759838f8aedfcdb426db5507594c1",
+   "indexSha256": "6a2eb8e4ef56ec996ef304097f80815bb86adca157415a531465f4be027a7e80"
   },
   "command": "node dev/tools/us_check.js ref 200 20",
-  "seconds": 45
+  "seconds": 59
  },
  "us": {
   "official": {
