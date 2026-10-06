@@ -47,7 +47,7 @@ const HISTORY = {
   'replication.html': ['#history', '#page-assumptions']
 };
 
-const PUBLIC = ['index.html', 'earlier-engine.html', 'replication.html', 'findings.html', 'README.md', 'site/findings.js', 'site/simpage.js', 'site/charts.js', 'walkthrough/tour.json'];
+const PUBLIC = ['index.html', 'earlier-engine.html', 'replication.html', 'findings.html', 'README.md', 'MODEL_SPEC.md', 'TESTBED_SPEC.md', 'ODD.md', 'REPRODUCE.md', 'CITATION.cff', 'site/findings.js', 'site/simpage.js', 'site/charts.js', 'walkthrough/tour.json'];
 
 /* JavaScript without its comments (strings, template literals and regular-expression literals are kept as they are). */
 function stripJS(src) {
@@ -69,7 +69,7 @@ function strings(o, acc) { if (typeof o === 'string') acc.push(o); else if (o &&
 function textsOf(rel, JSDOM) {
   const p = path.join(ROOT, rel); if (!fs.existsSync(p)) return [];
   const src = fs.readFileSync(p, 'utf8');
-  if (rel.endsWith('.md')) return [['text', src]];
+  if (rel.endsWith('.md') || rel.endsWith('.cff')) return [['text', src]];
   if (rel.endsWith('.json')) return [['strings', strings(JSON.parse(src), []).join('\n')]];
   if (rel.endsWith('.js')) return [['code', stripJS(src)]];
   const doc = new JSDOM(src).window.document, scripts = [];

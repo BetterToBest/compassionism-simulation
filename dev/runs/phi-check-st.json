@@ -1,0 +1,203 @@
+{
+ "_meta": {
+  "what": "the Phi step: rate and net dollars per BU around the quality threshold, and how many participant adult-years sit near it (diagnostic, audit A7)",
+  "env": "st",
+  "seeds": 500,
+  "manifest": {
+   "commit": "f8427e1a815fbf92aae8da009ac7e0378e534908",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "3231a3e63d7b8e9a9a037f75ce41aaabb217db281132741cc94882be1a69930e",
+   "engineBlockSha256": "2932191258bf53f1b57b4643bc3b472dce53325691516da7c0a473453303558a",
+   "indexSha256": "3baa5747227266b73253c898e6d3a6695d9e2294bcc43adc91f9de7d440d6b7a"
+  },
+  "command": "node dev/tools/phi_check.js st 500",
+  "threshold": 0.7,
+  "phi": 1.618,
+  "seconds": 56
+ },
+ "params": {
+  "maxMult": 6,
+  "maxOct": 4,
+  "tax": 0.18,
+  "cip": true,
+  "cipDemo": 0.3,
+  "phi": true,
+  "medianOctaveNearThreshold": 4
+ },
+ "sweep": [
+  {
+   "qShare": 0.69,
+   "rate": 4.45,
+   "tax": 0.2283,
+   "netPerBU": 3.5578
+  },
+  {
+   "qShare": 0.691,
+   "rate": 4.455,
+   "tax": 0.2285,
+   "netPerBU": 3.5609
+  },
+  {
+   "qShare": 0.692,
+   "rate": 4.46,
+   "tax": 0.2287,
+   "netPerBU": 3.5639
+  },
+  {
+   "qShare": 0.693,
+   "rate": 4.465,
+   "tax": 0.2289,
+   "netPerBU": 3.567
+  },
+  {
+   "qShare": 0.694,
+   "rate": 4.47,
+   "tax": 0.2291,
+   "netPerBU": 3.5701
+  },
+  {
+   "qShare": 0.695,
+   "rate": 4.475,
+   "tax": 0.2293,
+   "netPerBU": 3.5731
+  },
+  {
+   "qShare": 0.696,
+   "rate": 4.48,
+   "tax": 0.2295,
+   "netPerBU": 3.5762
+  },
+  {
+   "qShare": 0.697,
+   "rate": 4.485,
+   "tax": 0.2297,
+   "netPerBU": 3.5793
+  },
+  {
+   "qShare": 0.698,
+   "rate": 4.49,
+   "tax": 0.2299,
+   "netPerBU": 3.5823
+  },
+  {
+   "qShare": 0.699,
+   "rate": 4.495,
+   "tax": 0.2301,
+   "netPerBU": 3.5854
+  },
+  {
+   "qShare": 0.7,
+   "rate": 4.5,
+   "tax": 0.2303,
+   "netPerBU": 3.5884
+  },
+  {
+   "qShare": 0.701,
+   "rate": 7.2891,
+   "tax": 0.3418,
+   "netPerBU": 4.9701
+  },
+  {
+   "qShare": 0.702,
+   "rate": 7.2972,
+   "tax": 0.3422,
+   "netPerBU": 4.9731
+  },
+  {
+   "qShare": 0.703,
+   "rate": 7.3053,
+   "tax": 0.3425,
+   "netPerBU": 4.9762
+  },
+  {
+   "qShare": 0.704,
+   "rate": 7.3134,
+   "tax": 0.3428,
+   "netPerBU": 4.9793
+  },
+  {
+   "qShare": 0.705,
+   "rate": 7.3215,
+   "tax": 0.3431,
+   "netPerBU": 4.9823
+  },
+  {
+   "qShare": 0.706,
+   "rate": 7.3295,
+   "tax": 0.3435,
+   "netPerBU": 4.9854
+  },
+  {
+   "qShare": 0.707,
+   "rate": 7.3376,
+   "tax": 0.3438,
+   "netPerBU": 4.9884
+  },
+  {
+   "qShare": 0.708,
+   "rate": 7.3457,
+   "tax": 0.3441,
+   "netPerBU": 4.9914
+  },
+  {
+   "qShare": 0.709,
+   "rate": 7.3538,
+   "tax": 0.3444,
+   "netPerBU": 4.9945
+  },
+  {
+   "qShare": 0.71,
+   "rate": 7.3619,
+   "tax": 0.3448,
+   "netPerBU": 4.9975
+  }
+ ],
+ "step": {
+  "rateBelow": 4.5,
+  "rateAbove": 7.2891,
+  "rateJump": 1.6198,
+  "netBelow": 3.5884,
+  "netAbove": 4.9701,
+  "netJump": 1.385
+ },
+ "population": {
+  "runs": 1000,
+  "participantYears": 2093910,
+  "shareAbove": 11.2,
+  "shareWithin1pct": 1.365,
+  "shareOfConversionIncomeAbove": 15.69,
+  "bins": {
+   "0.60": 25209,
+   "0.61": 23044,
+   "0.62": 21525,
+   "0.63": 21022,
+   "0.64": 19872,
+   "0.65": 19207,
+   "0.66": 18057,
+   "0.67": 16384,
+   "0.68": 15191,
+   "0.69": 14842,
+   "0.70": 13740,
+   "0.71": 12515,
+   "0.72": 12564,
+   "0.73": 12311,
+   "0.74": 10854,
+   "0.75": 10177,
+   "0.76": 9071,
+   "0.77": 9355,
+   "0.78": 8124,
+   "0.79": 8337
+  }
+ },
+ "income": {
+  "medianParticipant": 280,
+  "meanParticipant": 4974,
+  "justBelow": 5914,
+  "justAbove": 6961,
+  "nBelow": 14842,
+  "nAbove": 13740,
+  "jumpJustAboveOverBelow": 1.177
+ },
+ "formulaAgrees": true
+}

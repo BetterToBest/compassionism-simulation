@@ -60,8 +60,9 @@ The simulation itself documents its own current controls, presets, calibration c
 This README intentionally stays stable across releases. For anything tied to a specific version:
 
 - **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/compassionism-simulation/replication.html) has the full line-by-line changelog, newest first, for every release; each release's detailed notes are in [CHANGELOG.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CHANGELOG.md) (the current release's in CONTRIBUTING.md).
-- **Current output metrics and large-N study results** — the Replication Framework's Performance Comparison section, refreshed after any mechanics-changing release.
-- **Formulas as currently implemented** — the Replication Framework's Mathematical Framework section, and the simulation's own source comments.
+- **Current results** — the [findings explorer](https://bettertobest.github.io/compassionism-simulation/findings.html), every table with CSV and JSON downloads, drawn from one data file per release (`data/releases/`). (The Replication Framework's Performance Comparison section holds the earlier v4.22 engine's large-N figures, as history.)
+- **The model as implemented** — [MODEL_SPEC.md](MODEL_SPEC.md) (the release model only: what is simulated, the order of events in a year, every submodel, the random streams, what each headline measures), [TESTBED_SPEC.md](TESTBED_SPEC.md) (every switch and labelled reading, with its status and the decision that set it), [ODD.md](ODD.md) (the ODD protocol, with each parameter's basis) and [REPRODUCE.md](REPRODUCE.md) (the command, file and fingerprint behind every published table). The Replication Framework's Mathematical Framework section describes the earlier v4.22 engine.
+- **How to cite** — [CITATION.cff](CITATION.cff) (GitHub's "Cite this repository" reads it).
 - **Open questions, known limitations, and how to contribute** — [CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md), which tracks unresolved calibration items, model-architecture feedback, and good-first-issues.
 
 ---
@@ -71,7 +72,7 @@ This README intentionally stays stable across releases. For anything tied to a s
 The simulation needs nothing installed. The checks that keep it honest need Node.js (22 or later) and one development dependency:
 
 ```
-npm install              # installs jsdom, used only by domtest.js
+npm ci                   # installs jsdom (pinned in package-lock.json), used only by domtest.js
 node harness.js validate # the seed-42 reference run, asserted against the documented figures
 node harness.js unit     # pure-function tests
 node domtest.js          # drives index.html in a headless DOM (a few minutes)

@@ -30,8 +30,8 @@ ENVS = [('ref', 'Reference'), ('adv', 'Adverse'), ('st', 'Stress Test')]
 ENV_DESC = {'ref': 'the model\u2019s main settings, with no recessions and no outside inflation',  # the simulation page's own wording (ENV_NOTE in index.html)
             'adv': 'recessions, 2% outside inflation and an automation wave',
             'st': 'the Adverse environment with weaker settings (40% take part, a smaller allowance)'}
-# The figures each release's current (presentation) version describes. v5.2.1 changed only how the v5.2 figures are shown.
-CURRENT = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '5.2.1',
+# The figures each release's current (presentation) version describes. v5.2.1 changed only how the v5.2 figures are shown; v5.2.2 corrected words and added derived figures.
+CURRENT = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '5.2.2',
            'summary': 'The model round: savings that keep up with prices, ageing, the no-programme run against US data, a middle backing reading and robustness readings, each beside an unchanged main result.'}
 BACKFILL = {  # earlier releases whose panels were regenerated from their tags and matched exactly (dev/ADDING-A-RELEASE.md); filled in by --backfill
     'v5.1': {'version': '5.1', 'date': '2026-10-03', 'tag': 'v5.1',

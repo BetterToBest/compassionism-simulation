@@ -40,29 +40,35 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.2.1 Release Notes
+## v5.2.2 Release Notes
 
-**Released as v5.2.1 (Oct 2026): the visual suite, presentation only.** One pull request into `main` (merging is the release). Every figure is unchanged from v5.2: the engine (`harness.js`, the page's ported release engine) is untouched, the two 500-seed panels are byte-identical, and the new check below proves each figure on the pages equals them. Ledger steps s90-s94; decisions d156-d160 (Oct 6), with the round's own decisions in `dev/DECISIONS.md` (Session 36). The plain-words report for Duke is `dev/reports/v5-10-visual-suite.md`.
+**Released as v5.2.2 (Oct 2026): audit fixes, no figure changes.** One pull request into `main` (merging is the release). Three outside audits of v5.2.1 (GPT, Grok, Muse; read Oct 6, 2026) found no engine or figure error; this patch fixes the words and couplings they found and adds the documents a stranger needs to replicate the model. The engine (`harness.js`'s release engine and the page's copy) is unchanged and every 500-seed results file is byte-identical to v5.2; the release data file gains derived figures only. The plain-words report for Duke is `dev/reports/v5-12-audit-fixes-v5-2-2.md`; the round's decisions are in `dev/DECISIONS.md` (Session 37).
 
-### What changed
+### What changed (corrections)
 
-- **One data file per release** (decision d156). `dev/tools/release_data.py` writes `data/releases/v5.2.json` (the two panels unchanged, the backing-share sweep, the US-data check, a catalogue of headline figures with label, value, unit, environment, horizon, basis and a plain meaning, and the explorer's tables and texts, every number a pointer into the file), `data/manifest.json` (the list of releases) and the headline numbers into the pages' text, so they show without JavaScript and to search engines. The recipe for the next release is `dev/ADDING-A-RELEASE.md`.
-- **Extra fields read from the same runs** (`dev/tools/explore_export.js`; `harness.js` unchanged): each year's 10th, 50th and 90th percentile across the 500 runs, savings deciles at Year 7 and the last year, and the 500 adults of run (seed) 1, with and without the programme. The tool checks itself: its yearly means equal the published year-by-year path in every environment and horizon (500 seeds), and the adults' flags add up to the engine's own yearly shares. Files: `data/releases/v5.2/`.
-- **Earlier releases in the version switcher**: v5.0, v5.0.1 and v5.1 were regenerated from their tags (500 seeds, every environment and horizon) and reproduce their published panels exactly (`dev/runs/v521-backfill-check.txt`), so they are listed as earlier releases.
-- **The findings explorer** (`findings.html`, decision d157): three layers (headline cards; a guided read of each result with a chart, "how to read this" and "what it does not show"; every table with CSV and JSON downloads), a version switcher, a sticky section navigation with scroll-spy, and the release, environment, horizon and section in the address.
-- **The simulation page** (decision d158): the walk-through and introduction stay at the top; below them, a sticky mini-navigation and one control strip (environment, 20 or 40 years, with or without Compassionism) drive eight guided sections: the answer in ten seconds, meet the adults (one run's 500 adults with a year scrubber and each adult's life path), how poverty moves over time (with the spread across the runs), who gains, what each part does, what it costs and who pays, how sure we are, and run it yourself. The page's own results text, the Hub-target table, the year-by-year charts, the other readings and the downloads are kept, in expanders.
-- **The replication page**: what is being replicated, how to reproduce it and what the tool includes come first; the current findings are a five-line summary with a link to the explorer; the version history is a timeline of collapsed panels with the v5 releases added. The v5.2 tables moved to the explorer; every old anchor stays on the page and leads there. The earlier engine's headline strip (the v4.4 large-N study), which sat at the top under a v5.2 heading, moved into the version history with an honest label (decision recorded).
-- Shared components for the compare page: `site/charts.js` (hand-written SVG; no new dependency), `site/findings.js`, `site/findings.css`; colours checked for colour-blind readers in light and dark; every chart has a text description, a table view and keyboard access; reduced motion is respected.
+- **"Eight runs in ten"** (Muse F1). The 10th to 90th percentile band of the price level holds eight runs in ten; the page, the earlier-engine page, README and two internal notes said nine. The page now builds the words from the percentile pair it prints, and the page test derives the expected words from the two numbers it finds (it used to assert the wrong words).
+- **The replication page's Known Limitations** (Muse F2). Eight items still described the model before a later fix (the automation-risk sampler, uniform until v4.3; random-number coupling, fixed in v4.3; the v4.4 headline figures; the wealth update's wage units, fixed in v4.3; conversion without a treasury, settled by the release engine; the PTF cap; per-adult history, settled in v5.2; one-at-a-time sensitivity). Each now states what is true and what remains. `dev/tools/check_stale_claims.js` (domtest) fails if any of ten retired claims comes back to a public page.
+- **The wealth line comes from the code** (Muse F3). `node harness.js constants` writes `dev/runs/constants.json`; the release data, the cards' meanings, the US-data table and the page's target table read the $25,000 line from `CFG.POVERTY_LINE`; Phase 14 confirms they agree.
+- **Net wealth** (Muse note). "Too little wealth" counts net wealth, what someone owns minus what they owe; the cards and the replication page's key concepts said savings. Every release file in the version switcher carries the corrected words (their numbers are unchanged).
+- **README** points to the findings explorer for current results (it pointed to the replication page's Performance Comparison, which holds the earlier engine's figures) and to the new specifications.
+
+### What was added
+
+- **Paired effects** (GPT §21): the replication page now says that every change and its 95% interval are computed on the per-run paired difference. The panels do not store per-run values, so the share of runs in which the programme does better waits for v5.3, which stores them.
+- **What the Gini estimates** (GPT §20): stated on the replication page; the uncorrected Gini of the 500 adults themselves is in the release file as a derived figure beside each published Gini (`derived.giniFinite`; 144 catalogue entries).
+- **The Phi step** (GPT §18, diagnostic only): `dev/tools/phi_check.js` and `dev/reports/v5-11-phi-step.md`. At the 70% quality line the conversion rate jumps ×1.62 but what a participant keeps per BU only ×1.27 (Reference), and 0.6% of participant-years sit within 1% of the line (1.4% in the Stress Test). The Hub describes Phi as a tier you qualify for; the threshold stays, its place labelled a modelling assumption.
+- **A specification a stranger can replicate from** (GPT §35-36; Grok): `MODEL_SPEC.md` (the release model only), `TESTBED_SPEC.md` (every switch with its status and decision), `REPRODUCE.md` (the command, file and fingerprint behind every published table; `dev/tools/panel_hash.py`), `ODD.md` (the ODD protocol, Grimm et al. 2020, with each parameter's basis).
+- **For outside reviewers**: `CITATION.cff`; the release workflow attaches a reproduction archive (engine, data, specifications, Node version, `package-lock.json`, now committed) to each tagged release; three `good first issue` issues for open calibration items (BetterToBest/compassionism-simulation#7, #8, #9).
+- **Not in this release** (Duke's choice, ledger d171): the CoMSES submission package waits until after v5.3, so it carries households and children.
 
 ### What changed in the checks
 
-- `domtest`: <!-- count:domtest -->125<!-- /count --> checks. New Phase 14 (`dev/tools/check_figures.js`): the manifest and the release files agree; the current release carries the 500-seed panels unchanged; every pointer in every release file leads to a number; the explore files match the published path; every number on the three pages, as served and as rendered (the simulation page in all six views, the explorer for every release), equals the data; no percentage, dollar figure or price level is typed into the new sections; every anchor of v5.2 still exists; `release_data.py --check` is clean. The Phase 13 checks that read the replication page's tables and backing-share chart now read the explorer's.
-- `dev/tools/set_version.py` and `dev/tools/check_versions.js` cover `findings.html` and the `site/` files' cache keys.
+- `domtest`: <!-- count:domtest -->125<!-- /count --> checks (124 at v5.2.1): the stale-claims check is new; the price-range check derives its words from the percentile pair; Phase 14's meanings check also confirms no amount is typed into a card's meaning and the release file's lines equal the harness's CFG.
+- `dev/tools/set_version.py` and `dev/tools/check_versions.js` cover `CITATION.cff`.
 
 ### Not changed
 
-The figures, the engine, the main row, the readings, the walk-through video (its shots show the v5.2 layout; ledger d151 keeps it until the next model round) and the earlier-engine page.
-
+Every figure, the engine, the main row, the readings, the walk-through video (held until the next model round, d151) and the earlier-engine page's engine.
 
 ---
 
@@ -468,7 +474,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.2.1*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.2.2*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
