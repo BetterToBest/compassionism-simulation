@@ -426,19 +426,46 @@ def headline_html(R, e='ref', Y='20'):
     return render_static(R, '<div class="fx-cards">' + ''.join(cards) + '</div>' + head)
 
 def summary_html(R):
-    """the replication page's five-line summary of the current findings"""
-    t = ('<ul class="fx-sum">'
-         '<li>Reference, 20 years: below the cost of living {{panels.20.envs.ref.rows.release.fgt0PY|p1}} of adult-years with Compassionism against {{panels.20.envs.ref.base.fgt0PY|p1}} with no programme; too little wealth {{panels.20.envs.ref.rows.release.pov|p1}} against {{panels.20.envs.ref.base.pov|p1}}.</li>'
-         '<li>Below 30 days of basic living (BLEI): {{panels.20.envs.ref.rows.release.bOAPy|p1}} against {{panels.20.envs.ref.base.bOAPy|p1}} (Reference), {{panels.20.envs.adv.rows.release.bOAPy|p1}} against {{panels.20.envs.adv.base.bOAPy|p1}} (Adverse), {{panels.20.envs.st.rows.release.bOAPy|p1}} against {{panels.20.envs.st.base.bOAPy|p1}} (Stress Test).</li>'
-         '<li>In the Adverse and Stress environments more adults end with too little wealth than with no programme ({{panels.20.envs.adv.rows.release.pov|p1}} against {{panels.20.envs.adv.base.pov|p1}}; {{panels.20.envs.st.rows.release.pov|p1}} against {{panels.20.envs.st.base.pov|p1}}), because prices rise ({{panels.20.envs.adv.rows.release.infl|p1}} and {{panels.20.envs.st.rows.release.infl|p1}} a year) and savings are not protected.</li>'
-         '<li>The decisive unknown is how much of the Source’s payout new output backs: if all of it were, too little wealth would be {{panels.20.envs.ref.rows.h1.pov|p1}} (Reference). Cost: {{panels.20.envs.ref.rows.release.cost|usd}} per adult a year (Reference).</li>'
-         '</ul>')
-    rep = R['panels']['20']['envs']['ref']['rows']['release'].get('rep')
-    if rep:  # the fifth line, from the numbers: which of the poverty measures meet the Hub's Year 7 target of under 2% (Reference)
-        met = [lbl.lower() for k, lbl, tgt, f, kind in TG_MEASURES if kind == 'pov' and rep['y7'][k] < 2]
-        nmet = [lbl.lower() for k, lbl, tgt, f, kind in TG_MEASURES if kind == 'pov' and rep['y7'][k] >= 2]
-        t = t[:-len('</ul>')] + ('<li>Against the Hub\u2019s Year 7 target of under 2%% poverty (Reference): met on %s; not met on %s (the official line: {{panels.20.envs.ref.rows.release.rep.y7.fpl|p1}}).</li></ul>' % (
-            ', '.join(met) if met else 'no measure', ', '.join(nmet) if nmet else 'no measure'))
+    """the replication page's five-line summary of the current findings; every claim in it is chosen from the numbers"""
+    E = R['panels']['20']['envs']
+    lines = ['Reference, 20 years: below the cost of living {{panels.20.envs.ref.rows.release.fgt0PY|p1}} of adult-years with Compassionism against {{panels.20.envs.ref.base.fgt0PY|p1}} with no programme; too little wealth {{panels.20.envs.ref.rows.release.pov|p1}} against {{panels.20.envs.ref.base.pov|p1}}.',
+             'Below 30 days of basic living (BLEI): ' + ', '.join('{{panels.20.envs.%s.rows.release.bOAPy|p1}} against {{panels.20.envs.%s.base.bOAPy|p1}} (%s)' % (e, e, en) for e, en in ENVS) + '.']
+    w = [(e, en) for e, en in ENVS if E[e]['rows']['release']['pov'] > E[e]['base']['pov']]
+    lines.append(('More adults end with too little wealth than with no programme in ' + '; '.join('%s ({{panels.20.envs.%s.rows.release.pov|p1}} against {{panels.20.envs.%s.base.pov|p1}}; prices rise {{panels.20.envs.%s.rows.release.infl|p1}} a year)' % (en, e, e, e) for e, en in w) +
+                  ': prices rise with the programme’s new money and savings in the model earn nothing.') if w else 'In every environment fewer adults end with too little wealth than with no programme.')
+    lines.append('The decisive unknown is how much of the Source’s payout new output backs: if all of it were, too little wealth would be {{panels.20.envs.ref.rows.h1.pov|p1}} (Reference). Cost: {{panels.20.envs.ref.rows.release.cost|usd}} per adult a year (Reference).')
+    rep = E['ref']['rows']['release'].get('rep')
+    if rep:  # which of the poverty measures meet the Hub's Year 7 target of under 2% (Reference)
+        SH = {'fpl': 'the official poverty line ({{panels.20.envs.ref.rows.release.rep.y7.fpl|p1}})', 'fplX': 'the poverty line on Supplemental-style resources ({{panels.20.envs.ref.rows.release.rep.y7.fplX|p1}})',
+              'bO': '30 days of basic living ({{panels.20.envs.ref.rows.release.rep.y7.bO|p1}})', 'bN': '30 days, design-neutral ({{panels.20.envs.ref.rows.release.rep.y7.bN|p1}})',
+              'f0': 'the cost of living ({{panels.20.envs.ref.rows.release.rep.y7.f0|p1}})', 'pov': 'too little wealth ({{panels.20.envs.ref.rows.release.rep.y7.pov|p1}})', 'ep': 'unhoused ({{panels.20.envs.ref.rows.release.rep.y7.ep|p2}})'}
+        met = [SH[k] for k, lbl, tgt, f, kind in TG_MEASURES if kind == 'pov' and rep['y7'][k] < 2]
+        nmet = [SH[k] for k, lbl, tgt, f, kind in TG_MEASURES if kind == 'pov' and rep['y7'][k] >= 2]
+        lines.append('Against the Hub’s Year 7 target of under 2%% poverty (Reference): met on %s; not met on %s.' % (', '.join(met) if met else 'no measure', ', '.join(nmet) if nmet else 'no measure'))
+    return render_static(R, '<ul class="fx-sum">' + ''.join('<li>' + x + '</li>' for x in lines) + '</ul>')
+
+def concepts_html(R):
+    """the replication page's key concepts: what is being replicated, with every number from the release file"""
+    y40 = ' or {{panels.40._meta.years|int}}' if '40' in R['panels'] else ''
+    t = ('<div class="kc-grid">'
+         '<div class="kc"><h3>The five components</h3><ul>'
+         '<li><strong>CCO, Creative Currency Octaves:</strong> every adult who takes part receives a monthly allowance of Basic Units (BU) that buy only essentials and expire; expired BU convert to dollars at higher rates, for work the community values, through the Creative Collectives.</li>'
+         '<li><strong>PTF, Public Trust Foundations:</strong> community-owned essential-service providers that accept BU and split what they earn between lower prices, new capacity and their workers.</li>'
+         '<li><strong>PTH, Public Trust Housing:</strong> community-owned housing whose payments build the resident\u2019s equity (Acre Equity) instead of paying rent.</li>'
+         '<li><strong>SZH, Social Zone Harmonization:</strong> zone coordination of where community businesses and housing go.</li>'
+         '<li><strong>CIP, Citizens Internet Portal:</strong> the civic platform that runs the currency and the community\u2019s votes.</li></ul></div>'
+         '<div class="kc"><h3>How the runs are set up</h3><ul>'
+         '<li><strong>{{meta.agents|int}} simulated adults</strong>, single and of working age, followed for {{panels.20._meta.years|int}}' + y40 + ' years, once with Compassionism and once with no programme, on the same random draws (common random numbers), so a difference comes from the programme and not from luck.</li>'
+         '<li><strong>{{meta.seeds|int}} paired runs</strong> (seeds 1 to {{meta.seeds|int}}); every figure is their average, with a 95% interval for each change.</li>'
+         '<li><strong>Three environments:</strong> Reference (' + ENV_DESC['ref'] + '); Adverse (' + ENV_DESC['adv'] + '); Stress Test (' + ENV_DESC['st'] + ').</li>'
+         '<li><strong>The main reading</strong> is Compassionism as specified on the Research Hub, every mechanism in, paid for by a Source that issues the BU; cautiously, what the Source pays out is new money except what new output backs. Every other assumption is a labelled reading beside it.</li></ul></div>'
+         '<div class="kc"><h3>The measures</h3><ul>'
+         '<li><strong>Below {{inputs.bleiDays|int}} days of basic living</strong> (the Basic Living Economic Index, BLEI): savings, pay and support cover fewer than {{inputs.bleiDays|int}} days of basic costs. The BLEI paper\u2019s definition, with a design-neutral reading beside it.</li>'
+         '<li><strong>Below the cost of living:</strong> income short of the MIT living-wage basket for one adult.</li>'
+         '<li><strong>Too little wealth:</strong> savings under {{inputs.wealthLine|usd}} in today\u2019s money.</li>'
+         '<li>Also: the US official poverty line ({{inputs.povertyLine2025|usd}} for one person in 2025), the unhoused share, and the spread of income and wealth (Gini).</li>'
+         '<li><strong>Poverty lines move with prices</strong> every year, so a line means the same standard of living; the findings explorer also shows them fixed in dollars.</li></ul></div>'
+         '</div>')
     return render_static(R, t)
 
 def put_block(html, name, block):
@@ -469,7 +496,7 @@ def plan(backfill=None):
             if r['version'] != R['version']: r['status'] = 'earlier'
         ent = {'version': R['version'], 'date': R['date'], 'tag': R['tag'], 'file': 'releases/v%s.json' % R['version'], 'summary': R['summary'], 'status': 'current', 'shownIn': R.get('shownIn')}
         manifest['releases'] = [r for r in manifest['releases'] if r['version'] != R['version']] + [ent]
-        for page, blocks in (('index.html', [('headline', headline_html(R))]), ('findings.html', [('headline', headline_html(R))]), ('replication.html', [('summary', summary_html(R)), ('headline', headline_html(R))])):
+        for page, blocks in (('index.html', [('headline', headline_html(R))]), ('findings.html', [('headline', headline_html(R))]), ('replication.html', [('summary', summary_html(R)), ('concepts', concepts_html(R))])):
             p = os.path.join(ROOT, page)
             if not os.path.exists(p): continue
             H = open(p, encoding='utf-8').read(); H0 = H
