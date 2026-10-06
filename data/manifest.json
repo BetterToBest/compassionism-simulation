@@ -1,0 +1,14 @@
+{
+ "about": "The releases of the Compassionism Simulation’s findings, newest first. Written by dev/tools/release_data.py; see dev/ADDING-A-RELEASE.md.",
+ "releases": [
+  {
+   "version": "5.2",
+   "date": "2026-10-06",
+   "tag": "v5.2",
+   "file": "releases/v5.2.json",
+   "summary": "The model round: savings that keep up with prices, ageing, the no-programme run against US data, a middle backing reading and robustness readings, each beside an unchanged main result.",
+   "status": "current",
+   "shownIn": "5.2.1"
+  }
+ ]
+}

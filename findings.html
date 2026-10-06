@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Findings explorer | Compassionism Framework Simulation v5.2.1</title>
+<meta name="description" content="The Compassionism Simulation's findings, release by release: three headline results, a guided read of each one with a chart, and every table behind them with downloads. 500 simulated adults over 20 or 40 years, with Compassionism and with no programme, in three environments.">
+<meta name="author" content="Duke Johnson, Claude (Anthropic)">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="sim-version" content="5.2.1">
+<link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/findings.html">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bettertobest.github.io/compassionism-simulation/findings.html">
+<meta property="og:title" content="Findings explorer: Compassionism Framework Simulation">
+<meta property="og:description" content="The Compassionism Simulation's findings, release by release: three headline results, a guided read of each one with a chart, and every table behind them with downloads.">
+<meta property="og:site_name" content="Compassionism Simulation">
+<meta property="og:image" content="https://bettertobest.github.io/research-hub/assets/images/og-image-simulation.png">
+<meta name="theme-color" content="#1D9E75">
+<link rel="icon" type="image/svg+xml" href="https://bettertobest.github.io/research-hub/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
+<link rel="stylesheet" href="site/findings.css?v=5.2.1">
+<link rel="preload" href="data/manifest.json" as="fetch" crossorigin>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: findings","softwareVersion":"5.2.1","url":"https://bettertobest.github.io/compassionism-simulation/findings.html",
+ "description":"Release data of the Compassionism Framework Simulation: 500 paired runs of 500 simulated adults, with Compassionism and with no programme, in three environments over 20 or 40 years.",
+ "creator":[{"@type":"Person","name":"Duke Johnson"},{"@type":"Organization","name":"Claude (Anthropic)"}],"license":"https://creativecommons.org/licenses/by/4.0/","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2",
+ "distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://bettertobest.github.io/compassionism-simulation/data/manifest.json"}]}
+</script>
+<style>
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--fx-canvas);color:var(--fx-ink);font:16px/1.6 var(--fx-sans)}
+a{color:var(--fx-accent);text-underline-offset:2px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--fx-surface);padding:6px 12px;border-radius:8px;z-index:400}
+.skip:focus{left:12px}
+.top{background:var(--fx-surface);border-bottom:1px solid var(--fx-rule)}
+.top-in,.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.2;text-decoration:none;color:var(--fx-ink);padding:6px 0}
+.brand b{font-size:15px;font-weight:600}.brand span{font-size:11.5px;color:var(--fx-ink-3)}
+.links{display:flex;gap:6px;flex-wrap:wrap}
+.links a{font-size:12.5px;text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid var(--fx-rule);color:var(--fx-ink-2)}
+.links a:hover{background:var(--fx-surface-2);color:var(--fx-ink)}
+.hero{background:var(--fx-surface);border-bottom:1px solid var(--fx-rule)}
+.hero .wrap{padding-top:34px;padding-bottom:26px}
+h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.12;letter-spacing:-.02em;margin:0 0 10px;font-weight:650}
+.attr{font-size:13.5px;font-style:italic;color:var(--fx-ink-2);max-width:72ch;margin:0 0 12px}
+.lede{font-size:17px;max-width:66ch;margin:0 0 14px}
+main .wrap{padding-bottom:60px}
+.fx-nav .wrap{display:block}
+.layer-h{font-size:13px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--fx-ink-3);margin:30px 0 4px}
+footer{border-top:1px solid var(--fx-rule);background:var(--fx-surface);font-size:13px;color:var(--fx-ink-2)}
+footer .wrap{padding:22px 20px 30px}
+footer p{margin:0 0 6px}
+.cite{font-size:12.5px}
+@media (max-width:560px){.top-in,.wrap{padding:0 16px}.links a:not(.keep){display:none}.lede{font-size:16px}}
+</style>
+</head>
+<body class="fx">
+<a class="skip" href="#content">Skip to the findings</a>
+<header class="top"><div class="top-in">
+  <a class="brand" href="./"><b>Compassionism Simulation</b><span>Findings explorer</span></a>
+  <nav class="links" aria-label="Site"><a class="keep" href="./">Simulation</a><a href="replication.html">Replication</a><a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a><a href="https://bettertobest.github.io/research-hub/">Research Hub</a></nav>
+</div></header>
+<div class="hero"><div class="wrap">
+  <h1>What the simulation finds</h1>
+  <p class="attr" id="attribution">The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson's book <cite>Better To Best</cite> and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.</p>
+  <p class="lede" id="lede">Three plain results first, then a guided read of each with a chart, then every table behind them with downloads. Pick a release, an environment and 20 or 40 years; the address carries your choice, so any view can be shared.</p>
+  <div class="fx-version" id="version-box"><label for="version" class="fx-ctl">Release</label> <select id="version" class="fx-select" aria-describedby="version-sum"><option>loading&hellip;</option></select> <span id="version-badge" class="fx-badge">current</span></div>
+  <p class="fx-note" id="version-sum"></p>
+</div></div>
+
+<nav class="fx-nav" aria-label="Sections and view"><div class="wrap">
+  <div class="fx-nav-in" id="nav-links"><a href="#headline">The answer</a><a href="#results">By environment</a><a href="#targets">Hub targets</a><a href="#fixed">Fixed lines</a><a href="#backing">Backing</a><a href="#readings">How far it moves</a><a href="#us">Against US data</a><a href="#tables">All tables</a></div>
+  <div class="fx-strip-bar" id="controls"></div>
+</div></nav>
+
+<main id="content"><div class="wrap">
+  <p class="layer-h">Layer 1 &middot; The answer</p>
+  <section class="fx-sec" id="headline" aria-labelledby="headline-h">
+    <h2 class="fx-h2" id="headline-h">The answer in three numbers <a class="fx-anchor" href="#headline" aria-label="Link to this section">#</a></h2>
+    <div id="cards"><!-- figs:headline --><div class="fx-cards"><div class="fx-card"><p class="fx-card-k">Below 30 days of basic living</p><p class="fx-card-v"><span class="num" data-src="panels.20.envs.ref.rows.release.bOAPy" data-f="p1">18.7%</span></p><p class="fx-card-vs">with Compassionism, against <span class="num" data-src="panels.20.envs.ref.base.bOAPy" data-f="p1">46.7%</span> with no programme</p><p class="fx-card-d">Change: <span class="num" data-src="panels.20.envs.ref.rows.release.dBO.0" data-f="s1">−28.0</span> points</p><p class="fx-card-m">In a typical year, the share of adults whose savings, pay and support would cover fewer than 30 days of basic living (the BLEI paper’s measure).</p></div><div class="fx-card"><p class="fx-card-k">Below the cost of living</p><p class="fx-card-v"><span class="num" data-src="panels.20.envs.ref.rows.release.fgt0PY" data-f="p1">22.0%</span></p><p class="fx-card-vs">with Compassionism, against <span class="num" data-src="panels.20.envs.ref.base.fgt0PY" data-f="p1">55.2%</span> with no programme</p><p class="fx-card-d">Change: <span class="num" data-src="panels.20.envs.ref.rows.release.dF0.0" data-f="s1">−33.2</span> points</p><p class="fx-card-m">In a typical year, the share of adults whose income falls short of the cost of a basic living (the MIT living-wage basket for one adult).</p></div><div class="fx-card"><p class="fx-card-k">Too little wealth</p><p class="fx-card-v"><span class="num" data-src="panels.20.envs.ref.rows.release.pov" data-f="p1">35.7%</span></p><p class="fx-card-vs">with Compassionism, against <span class="num" data-src="panels.20.envs.ref.base.pov" data-f="p1">52.0%</span> with no programme</p><p class="fx-card-d">Change: <span class="num" data-src="panels.20.envs.ref.rows.release.dPov.0" data-f="s1">−16.3</span> points</p><p class="fx-card-m">At the end of the run, the share of adults with less than $25,000 of savings in today’s money.</p></div></div><p class="fx-static-note">Reference environment, 20 years; averages over <span class="num" data-src="meta.seeds" data-f="int">500</span> paired runs of <span class="num" data-src="meta.agents" data-f="int">500</span> simulated adults (release v5.2 data).</p><!-- /figs:headline --></div>
+    <div id="under"></div>
+    <noscript><p class="fx-banner">The charts and tables on this page need JavaScript. The numbers above are the Reference environment over 20 years; every figure is in the release data file, <a href="data/releases/v5.2.json">data/releases/v5.2.json</a>, listed in <a href="data/manifest.json">data/manifest.json</a>.</p></noscript>
+  </section>
+  <p class="layer-h">Layer 2 &middot; A guided read of each result</p>
+  <div id="stories"></div>
+  <p class="layer-h">Layer 3 &middot; Every table, with downloads</p>
+  <section class="fx-sec" id="tables" aria-labelledby="tables-h">
+    <h2 class="fx-h2" id="tables-h">All tables of this release <a class="fx-anchor" href="#tables" aria-label="Link to this section">#</a></h2>
+    <p class="fx-lead">Every table behind the charts, for all environments and both horizons. Each opens on demand and downloads as CSV or JSON; the JSON gives every number with its path in the release file. The whole release is one file: <a id="release-file" href="data/releases/v5.2.json">data/releases/v5.2.json</a>.</p>
+    <div id="all-tables"></div>
+  </section>
+</div></main>
+
+<footer><div class="wrap">
+  <p>Compassionism Simulation <span class="meta-ver">v5.2.1</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
+  <p><a href="./">Simulation</a> &middot; <a href="replication.html">Replication framework</a> &middot; <a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a> &middot; <a href="https://doi.org/10.17605/OSF.IO/QWTE2">DOI: 10.17605/OSF.IO/QWTE2</a></p>
+  <p class="cite">Suggested citation: Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. <a href="https://doi.org/10.17605/OSF.IO/QWTE2">https://doi.org/10.17605/OSF.IO/QWTE2</a></p>
+</div></footer>
+
+<script src="site/charts.js?v=5.2.1"></script>
+<script src="site/findings.js?v=5.2.1"></script>
+<script>
+/* The explorer: loads data/manifest.json, opens the current release (or ?v=), and renders the three layers from it. The address carries the release,
+ * the environment, the horizon and the section, so any view can be shared. Everything shown comes from the release file (site/findings.js). */
+(function () {
+  'use strict';
+  var F = window.CSF, st = F.readState({env: 'ref', years: '20', measure: 'pov'}), MAN = null, R = null;
+  var $ = function (id) { return document.getElementById(id); };
+  function controls() {
+    var c = $('controls'); c.innerHTML = '';
+    c.appendChild(F.seg('Environment', F.ENVS, st.env, function (v) { st.env = v; F.writeState(st, ['env']); render(); }));
+    var yrs = Object.keys(R.panels).sort(function (a, b) { return a - b; }).map(function (y) { return [y, y + ' years']; });
+    if (yrs.length > 1) c.appendChild(F.seg('Years', yrs, st.years, function (v) { st.years = v; F.writeState(st, ['years']); render(); }));
+  }
+  function render() {
+    if (!R.panels[st.years]) st.years = '20';
+    $('cards').innerHTML = F.cardsHTML(R, st.env, st.years, {count: true});
+    $('under').innerHTML = F.underCards(R, st.env, st.years) + '<p class="fx-static-note">' + F.esc(R.meta.envs[st.env].name) + ': ' + F.esc(R.meta.envs[st.env].about) + '. ' + st.years + ' years; averages over ' + F.num(R, 'meta.seeds', 'int') + ' paired runs of ' + F.num(R, 'meta.agents', 'int') + ' simulated adults.</p>';
+    F.animateCounts($('cards'));
+    var host = $('stories'), y = window.scrollY; host.innerHTML = '';
+    R.stories.forEach(function (s) { host.appendChild(F.storyEl(R, s, st, {onState: function (o) { Object.assign(st, o); F.writeState(st, Object.keys(o)); render(); }})); });
+    F.allTables(R, $('all-tables'));
+    var links = $('nav-links'); Array.prototype.forEach.call(links.querySelectorAll('a'), function (a) { var id = a.getAttribute('href').slice(1); a.hidden = !document.getElementById(id); });
+    window.scrollTo(0, y);
+  }
+  function open(ver) {
+    var ent = MAN.releases.filter(function (r) { return r.version === ver; })[0] || MAN.releases.filter(function (r) { return r.status === 'current'; })[0];
+    $('version-badge').textContent = ent.status === 'current' ? 'current' : 'earlier release'; $('version-badge').className = 'fx-badge' + (ent.status === 'current' ? '' : ' fx-old');
+    $('version-sum').textContent = 'v' + ent.version + ' (' + ent.date + (ent.shownIn ? '; shown here as released in v' + ent.shownIn + ', figures unchanged' : '') + '): ' + ent.summary;
+    $('release-file').href = 'data/' + ent.file; $('release-file').textContent = 'data/' + ent.file;
+    return F.fetchJSON('data/' + ent.file).then(function (d) { R = d; st.v = d.version; F.writeState(st, ['v']); controls(); render();
+      if (location.hash && document.getElementById(location.hash.slice(1))) document.getElementById(location.hash.slice(1)).scrollIntoView(); });
+  }
+  F.fetchJSON('data/manifest.json').then(function (m) {
+    MAN = m; var sel = $('version'); sel.innerHTML = '';
+    m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = 'v' + r.version + ' · ' + r.date + (r.status === 'current' ? ' (current)' : ''); sel.appendChild(o); });
+    var cur = (m.releases.filter(function (r) { return r.version === st.v; })[0] || m.releases.filter(function (r) { return r.status === 'current'; })[0]).version; sel.value = cur;
+    sel.onchange = function () { open(sel.value); };
+    return open(cur);
+  }).then(function () { F.spy(document.querySelector('.fx-nav')); }).catch(function (e) {
+    $('stories').innerHTML = '<p class="fx-banner">The release data could not be loaded (' + F.esc(e.message) + '). If you opened this page as a file, open it through a web server or on the live site; the data is in data/releases/.</p>';
+  });
+})();
+</script>
+</body>
+</html>
