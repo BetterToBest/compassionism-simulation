@@ -19,7 +19,9 @@
   function T() { return +R.panels[yrs()]._meta.years; }
 
   /* ---- data: the page's embedded panels; the extras on demand ---- */
-  function loadPanels() { R.panels['20'] = REL.data; if (REL.data40 && REL.data40.envs) R.panels['40'] = REL.data40; R.meta = {seeds: REL.data._meta.seeds, agents: REL.data._meta.agents}; }
+  function loadPanels() { R.panels['20'] = REL.data; if (REL.data40 && REL.data40.envs) R.panels['40'] = REL.data40; R.meta = {seeds: REL.data._meta.seeds, agents: REL.data._meta.agents};
+    /* v5.2.2 (audit A3): the lines a card's meaning quotes, from the page's own CFG (the release file's inputs are the same CFG values: domtest Phase 14) */
+    var K = window.CFG || {}; R.inputs = {wealthLine: K.POVERTY_LINE, povertyLine2025: K.POVERTY_THRESHOLD_ONE, bleiDays: K.BLEI_PRECARIOUS_MAX}; }
   function manifest() { if (MAN) return Promise.resolve(MAN); return F.fetchJSON('data/manifest.json').then(function (m) { MAN = m; VER = (m.releases.filter(function (r) { return r.status === 'current'; })[0] || m.releases[0]).version; return m; }); }
   function bands(y) { if (R.x.bands[y]) return Promise.resolve(R.x.bands[y]); return manifest().then(function () { return F.fetchJSON('data/releases/v' + VER + '/bands-' + y + '.json'); }).then(function (d) { R.x.bands[y] = d; return d; }); }
   function lives(e, y) { var k = e + '-' + y; if (R.x.lives[k]) return Promise.resolve(R.x.lives[k]); return manifest().then(function () { return F.fetchJSON('data/releases/v' + VER + '/lives-' + k + '.json'); }).then(function (d) { R.x.lives[k] = d; return d; }); }

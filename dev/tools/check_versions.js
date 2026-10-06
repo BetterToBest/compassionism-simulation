@@ -33,6 +33,8 @@ function findStale(root) {
   all('replication.html', rep, 'seal tooltip', /describes engine version (\d+(?:\.\d+)+)/);
   const re2 = /(?:now at v|shipped v)(\d+(?:\.\d+)+)/g; let x; while ((x = re2.exec(rep))) if (x[1] !== V) out.push({file: 'replication.html', field: 'Python-snapshot caveat', found: x[1], want: V});
   all('CONTRIBUTING.md', con, 'signature line', /Compassionism Framework Simulation v(\d+(?:\.\d+)+)\*/);
+  const cfF = path.join(root, 'CITATION.cff');  /* v5.2.2 (audit A9): the citation file */
+  if (fs.existsSync(cfF)) all('CITATION.cff', fs.readFileSync(cfF, 'utf8'), 'version', /\nversion: (\S+)/);
   for (const [f, src] of [['index.html', idx], ['replication.html', rep]].concat(ee ? [['earlier-engine.html', ee]] : [], fd ? [['findings.html', fd]] : [])) for (const d of src.matchAll(/(?:name="description"|property="og:description") content="([^"]*)"/g))
     if (/\bv\d+\.\d+\b/.test(d[1])) out.push({file: f, field: 'meta description (must not carry a version)', found: (d[1].match(/\bv\d+\.\d+\b/) || [])[0], want: '(none)'});
   return out;

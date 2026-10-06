@@ -40,6 +40,10 @@ nq = 0
 for f in ('index.html', 'findings.html'):
     T = open(f).read(); T, k = re.subn(r'((?:src|href)="site/[a-z]+\.(?:js|css)\?v=)[^"]+(")', r'\g<1>' + v + r'\2', T); nq += k; open(f, 'w').write(T)
 print('findings.html title/meta/JSON-LD/label', n9, n9b, n9c, n9d, '| site/ cache keys', nq)
+CF = open('CITATION.cff').read()  # v5.2.2 (audit A9): the citation file's version
+CF, n10 = re.subn(r'(?m)^(version: )\S+$', r'\g<1>' + v, CF)
+open('CITATION.cff', 'w').write(CF)
+print('CITATION.cff version', n10)
 C = open('CONTRIBUTING.md').read()
 C, n8 = re.subn(r'(\*Better To Best Research Hub · Compassionism Framework Simulation v)[^*]+(\*)', r'\g<1>' + v + r'\2', C)
 open('CONTRIBUTING.md', 'w').write(C)

@@ -115,3 +115,30 @@ Duke's prompt for this round (in chat, Oct 6) and the ledger's steps s90-s95; de
 
 Next, in this order (ledger): (1) the compare page (s95), built on `site/` and the release data format (a comparison is a new chart kind and a new section of the release file; `dev/reports/compare-page-plan.md`); (2) children and households (s52); (3) candidates for the main row and results by age group; a v5 attribution study (each part removed in turn) is proposed for that model round (DECISIONS, Session 36). The walk-through video still shows the v5.2 layout (d151: rebuild with the next model round). Outreach (s37) is unblocked.
 
+
+## Session 37 (Oct 6, 2026): v5.2.2 audit fixes (Round A of the v5.3 plan)
+
+Duke's plan prompt: `dev/plans/v5.3-plan-prompt.md` (Round A = v5.2.2, Round B = v5.3 households and children). Ledger decisions d165-d171 read from the dashboard (artifact KMdxWQ5KAefQVFxQA236pV, project "sim"; all confirmed by Duke on Oct 6; d171: CoMSES and the fact sheet after v5.3). Branch `claude/practical-dijkstra-uayxaa` from `main` at `5fe04a7` (v5.2.1). Baseline before any change: `validate` passes, `unit` 171, `domtest` 124 of 124 (about 6.5 minutes for all three). The Research Hub is reachable; its pages were read for A7 (and are needed for B0).
+
+- [x] A1. "Eight runs in ten" (page, earlier-engine page, README, DECISIONS, report v5-8); the page builds the words from the percentile pair (`REL_BAND`); domtest derives them from the numbers it finds.
+- [x] A2. Eight stale Known Limitations items rewritten; `dev/tools/check_stale_claims.js` (10 retired claims) in domtest Phase 14; fails on main's pages (19 hits), passes now.
+- [x] A3. `node harness.js constants` → `dev/runs/constants.json` → `release_data.py`; card meanings carry the wealth line as a token; the US-data label and the page's target table read it; Phase 14 confirms harness, file and release agree.
+- [x] A4. "Net wealth (what someone owns minus what they owe)" on the cards and key concepts; earlier release files backfilled (words only).
+- [x] A5. Intervals are already on the per-seed difference (one line on the replication page). Per-seed values are not stored: the share of runs where the programme does better is part of v5.3 (store per-seed values in the panels).
+- [x] A6. Gini estimand line on the replication page; `derived.giniFinite` and 144 catalogue entries in the release file.
+- [x] A7. `dev/tools/phi_check.js` (500 seeds, three environments, from commit `f8427e1`, clean); `dev/reports/v5-11-phi-step.md`; decision: threshold kept, its place labelled an assumption, swept in v5.4.
+- [x] A8. `MODEL_SPEC.md`, `TESTBED_SPEC.md`, `REPRODUCE.md` (fingerprints by `dev/tools/panel_hash.py`), `ODD.md`.
+- [x] A9. `CITATION.cff`; `release.yml` attaches a reproduction archive; `package-lock.json` committed; issues BetterToBest/compassionism-simulation#7, #8, #9 (good first issue).
+- [ ] A10. CoMSES package: after v5.3 (Duke's d171).
+- [x] Release: version 5.2.2 (`set_version.py`, `check_versions.js`); CONTRIBUTING "v5.2.2 Release Notes" (v5.2.1's moved to CHANGELOG); replication page timeline entry; README pointers; DECISIONS Session 37; report `dev/reports/v5-12-audit-fixes-v5-2-2.md`.
+
+Checks (final): `validate` passes; `unit` 171, 0 failed; `domtest` 125 of 125 (the stale-claims check added); CI green on pull request BetterToBest/compassionism-simulation#10. Reproduction checked: a fresh `node harness.js testbed 500 release ref` at `f8427e1` gives the published fingerprint `1799e859c5e90b1e` (REPRODUCE.md).
+
+## Next: Round B, v5.3 households and children (after the v5.2.2 pull request merges)
+
+Restart the branch from `main` once v5.2.2 has merged (`git fetch origin main && git checkout -B claude/practical-dijkstra-uayxaa origin/main`), then work phase by phase, each phase a commit with tests green, stopping at a phase boundary if the session runs short:
+
+1. B0: `dev/reports/v5-3-design.md`: the Hub's words on children, households, the child allowance, housing per household and inheritance (Hub pages are saved nowhere in the repo; fetch `research-index.json` and the pages again), Claude's reading, predictions written before any run, data sources (CPS ASEC household types, SCF household wealth, MIT baskets by household type, HHS/Census thresholds by size, NCHS fertility). The child allowance: Duke answered d167 (a quarter of the adult BU, flat by age; swept from none to half).
+2. B1: one engine copy (d166). Feasibility done (`dev/reports/v5-3-one-engine-feasibility.md`): a prototype (`dev/drafts/build_from_page.py`) that reads the engine out of index.html reproduces `validate`, `unit` (all but the git-checkout test, from a scratch copy) and the 12-seed release panels in all three environments and the 6-seed 40-year Reference panel to the fingerprint. Build it properly: move the two harness-only branches (`AUTOMATION_SAMPLER_LEGACY` in `drawAutomationRisk`, the UBI term in `incomeBasketMetrics`) into the page; harness.js becomes the loader plus its own code; retire `port_engine.py`; prove with full-output diffs and 500-seed fingerprints.
+3. B2: accounting identities as enforced unit checks (BU life cycle, conversion, Source, PTH, per-person net worth).
+4. B3-B9 as in the plan; B10: 500-seed restudy (store per-seed values for the paired-share table, from A5), predictions checked, v5.3 release.

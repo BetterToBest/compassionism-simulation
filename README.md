@@ -6,7 +6,7 @@ _The math and code of this simulation were engineered by Claude, an AI model mad
 
 A research-oriented, browser-based agent-based simulation exploring all five [Compassionism](https://bettertobest.github.io/research-hub/) architectures for comparative policy analysis — no installation required. BLEI-calibrated against US Consumer Expenditure Survey data.
 
-The page opens with Compassionism's results: the same 500 simulated adults followed for 20 years (or 40, with the Years switch), with the programme and with no programme, in three environments (Reference, Adverse, Stress). Basic living covered (BLEI, days of basic living a person's resources cover) leads, followed by one plain sentence each on poverty, savings, who gains, work, prices, cost and how it is paid, and the public costs of homelessness avoided. Prices are given as the typical run with the range of nine runs in ten (and, above 1,000 times today's, described as a limit of the model's price rule, not a forecast). A table sets the Research Hub's own Year 7 targets (poverty under 2%, Gini coefficient 0.25 to 0.30) beside what the model reaches. Every figure is an average over 500 paired runs with its 95% interval, and the page names the command that reproduces it; a button runs the model live in the browser. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty.
+The page opens with Compassionism's results: the same 500 simulated adults followed for 20 years (or 40, with the Years switch), with the programme and with no programme, in three environments (Reference, Adverse, Stress). Basic living covered (BLEI, days of basic living a person's resources cover) leads, followed by one plain sentence each on poverty, savings, who gains, work, prices, cost and how it is paid, and the public costs of homelessness avoided. Prices are given as the typical run with the range of eight runs in ten (the 10th to 90th percentile) (and, above 1,000 times today's, described as a limit of the model's price rule, not a forecast). A table sets the Research Hub's own Year 7 targets (poverty under 2%, Gini coefficient 0.25 to 0.30) beside what the model reaches. Every figure is an average over 500 paired runs with its 95% interval, and the page names the command that reproduces it; a button runs the model live in the browser. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty.
 
 Since v5.2.1 the results are guided sections under one control strip (environment, 20 or 40 years, with or without Compassionism): the answer in ten seconds, one run's 500 adults with their life paths, how poverty moves over time, who gains, what each part does, what it costs and who pays, how sure we are, and run it yourself. Every result, chart by chart and table by table, with every earlier release, is on the **[findings explorer](https://bettertobest.github.io/compassionism-simulation/findings.html)**. Every number on the pages comes from one data file per release (`data/releases/`, listed in `data/manifest.json`); `dev/ADDING-A-RELEASE.md` says how to add the next one.
 
@@ -60,8 +60,9 @@ The simulation itself documents its own current controls, presets, calibration c
 This README intentionally stays stable across releases. For anything tied to a specific version:
 
 - **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/compassionism-simulation/replication.html) has the full line-by-line changelog, newest first, for every release; each release's detailed notes are in [CHANGELOG.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CHANGELOG.md) (the current release's in CONTRIBUTING.md).
-- **Current output metrics and large-N study results** — the Replication Framework's Performance Comparison section, refreshed after any mechanics-changing release.
-- **Formulas as currently implemented** — the Replication Framework's Mathematical Framework section, and the simulation's own source comments.
+- **Current results** — the [findings explorer](https://bettertobest.github.io/compassionism-simulation/findings.html), every table with CSV and JSON downloads, drawn from one data file per release (`data/releases/`). (The Replication Framework's Performance Comparison section holds the earlier v4.22 engine's large-N figures, as history.)
+- **The model as implemented** — [MODEL_SPEC.md](MODEL_SPEC.md) (the release model only: what is simulated, the order of events in a year, every submodel, the random streams, what each headline measures), [TESTBED_SPEC.md](TESTBED_SPEC.md) (every switch and labelled reading, with its status and the decision that set it), [ODD.md](ODD.md) (the ODD protocol, with each parameter's basis) and [REPRODUCE.md](REPRODUCE.md) (the command, file and fingerprint behind every published table). The Replication Framework's Mathematical Framework section describes the earlier v4.22 engine.
+- **How to cite** — [CITATION.cff](CITATION.cff) (GitHub's "Cite this repository" reads it).
 - **Open questions, known limitations, and how to contribute** — [CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md), which tracks unresolved calibration items, model-architecture feedback, and good-first-issues.
 
 ---
@@ -71,7 +72,7 @@ This README intentionally stays stable across releases. For anything tied to a s
 The simulation needs nothing installed. The checks that keep it honest need Node.js (22 or later) and one development dependency:
 
 ```
-npm install              # installs jsdom, used only by domtest.js
+npm ci                   # installs jsdom (pinned in package-lock.json), used only by domtest.js
 node harness.js validate # the seed-42 reference run, asserted against the documented figures
 node harness.js unit     # pure-function tests
 node domtest.js          # drives index.html in a headless DOM (a few minutes)
@@ -79,7 +80,7 @@ node domtest.js          # drives index.html in a headless DOM (a few minutes)
 
 Every `harness.js` study mode also accepts `--agents=N`, the population per run (default 500). For example, `node harness.js largen 500 headline --agents=5000` reruns the headline figures at 5,000 agents per run, in about five minutes on one CPU core.
 
-The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->171<!-- /count --> tests and `domtest` <!-- count:domtest -->124<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
+The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->171<!-- /count --> tests and `domtest` <!-- count:domtest -->125<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
 
 ---
 

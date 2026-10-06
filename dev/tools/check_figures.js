@@ -12,7 +12,7 @@
  *     site/simpage.js (simulation page: every environment and horizon; explorer: every release in the manifest), equals the data under its format;
  *  6. no unmarked percentage, dollar figure or price level inside the new sections (a number typed into the page would show up here);
  *  7. every anchor the replication and simulation pages had at v5.2 still exists (dev/tools/anchors-v5.2.json);
- *  8. the cards' plain meanings in site/findings.js are the release file's;
+ *  8. the cards' plain meanings in site/findings.js are the release file's (v5.2.2: with no typed amount, and the release file's lines equal the harness's CFG);
  *  9. dev/tools/release_data.py --check: the data files, the manifest and the static blocks are what the generator writes from dev/runs/.
  * Usage: node dev/tools/check_figures.js   (exit 1 on any failure). domtest.js runs it as Phase 14 (module.exports.run). */
 'use strict';
@@ -131,9 +131,14 @@ async function run(opts) {
   add('v5.2.1: every anchor the replication and simulation pages had at v5.2 still exists (outside articles and the OSF record link to them), and no id is used twice', miss.length === 0 && dup.length === 0,
     miss.length || dup.length ? miss.concat(dup.map(x => 'duplicate ' + x)).slice(0, 6).join('; ') : Object.values(A).reduce((s, x) => s + x.length, 0) + ' anchors present');
 
-  /* 8. meanings */
-  const mm = ['bO', 'f0', 'pov'].filter(k => { const f = C.figures.find(x => x.id === 'ref.20.' + k + '.with'); return !f || f.meaning !== F.MEANINGS[k]; });
-  add('v5.2.1: the cards\' plain meanings in site/findings.js are the release file\'s words', mm.length === 0, mm.length ? 'differ: ' + mm.join(', ') : 'three measures');
+  /* 8. meanings. v5.2.2 (audit A3): a number in a meaning is a token into the release file, never typed; the release file's lines are the harness's constants
+   * (node harness.js constants writes dev/runs/constants.json, which dev/tools/release_data.py reads), so the three cannot disagree. */
+  const mm = [], HK = require(path.join(ROOT, 'harness.js')).pageConstants(), KJ = rj('dev/runs/constants.json');
+  Object.values(REL).forEach(R => ['bO', 'f0', 'pov'].forEach(k => { const f = R.figures.find(x => x.id === 'ref.20.' + k + '.with'); if (!f || f.meaning !== F.fillPlain(R, F.MEANINGS[k])) mm.push('v' + R.version + ' ' + k); }));
+  ['bO', 'f0', 'pov'].forEach(k => { if (/\$\s?\d|\d[\d,.]*\s?%/.test(F.MEANINGS[k])) mm.push(k + ' has a typed amount'); });
+  [['POVERTY_LINE', 'wealthLine'], ['POVERTY_THRESHOLD_ONE', 'povertyLine2025'], ['BLEI_PRECARIOUS_MAX', 'bleiDays']].forEach(([h, i]) => { if (HK[h] !== KJ[h] || KJ[h] !== C.inputs[i]) mm.push(h + ': harness ' + HK[h] + ', constants.json ' + KJ[h] + ', release ' + C.inputs[i]); });
+  add('v5.2.1: the cards\' plain meanings in site/findings.js are the release file\'s words, for every release; v5.2.2: no amount is typed into them, and the wealth line, poverty line and BLEI days in the release file are the harness\'s CFG values (node harness.js constants)', mm.length === 0,
+    mm.length ? 'differ: ' + mm.join(', ') : 'three measures in ' + Object.keys(REL).length + ' releases; wealth line ' + F.fmt(C.inputs.wealthLine, 'usd') + ' = CFG.POVERTY_LINE');
 
   /* 9. the generator */
   let g = { status: 1, stdout: '' }; try { g = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'release_data.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }

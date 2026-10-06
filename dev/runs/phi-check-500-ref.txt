@@ -1,0 +1,36 @@
+{
+ "step": {
+  "rateBelow": 6.6,
+  "rateAbove": 10.6917,
+  "rateJump": 1.62,
+  "netBelow": 5.3364,
+  "netAbove": 6.7583,
+  "netJump": 1.2665
+ },
+ "population": {
+  "runs": 1000,
+  "participantYears": 4086649,
+  "shareAbove": 3.72,
+  "shareWithin1pct": 0.584,
+  "shareOfConversionIncomeAbove": 8.41
+ },
+ "income": {
+  "medianParticipant": 6604,
+  "meanParticipant": 13448,
+  "justBelow": 23475,
+  "justAbove": 27096,
+  "nBelow": 12460,
+  "nAbove": 11396,
+  "jumpJustAboveOverBelow": 1.154
+ },
+ "params": {
+  "maxMult": 9,
+  "maxOct": 6,
+  "tax": 0.12,
+  "cip": true,
+  "cipDemo": 0.65,
+  "phi": true,
+  "medianOctaveNearThreshold": 6
+ }
+}
+wrote /home/user/compassionism-simulation/dev/runs/phi-check-ref.json (68 s)

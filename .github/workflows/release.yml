@@ -4,6 +4,9 @@
 # version by editing META.VERSION; this workflow only records it. It never edits a file, so the shipped page and
 # the checks are untouched. Run it by hand (Actions > release > Run workflow) with a version to backfill an older
 # one, e.g. 4.20.
+# v5.2.2 (audit A9): it also attaches a reproduction archive to the release: the engine and pages, the release data and the 500-seed panels, the
+# tools and sources, REPRODUCE.md and the specifications, package.json and package-lock.json, and the Node version the checks ran on
+# (NODE_VERSION.txt), all from the tagged commit. Run by hand with a version, it (re)attaches the archive to that tag's release.
 name: release
 
 on:
@@ -27,7 +30,11 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
       - name: Tag and release the version in META.VERSION, if untagged
+        id: tag
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_VERSION: ${{ inputs.version }}
@@ -37,7 +44,13 @@ jobs:
           V="${V#[vV]}"  # accept 4.20 or v4.20
           [ -n "$V" ] || { echo "::error::No VERSION:'x.y' found in index.html"; exit 1; }
           T="v$V"
-          if git rev-parse -q --verify "refs/tags/$T" >/dev/null; then echo "$T already exists; nothing to do."; exit 0; fi
+          echo "tag=$T" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/$T" >/dev/null; then
+            echo "$T already exists; no new tag."
+            if [ -n "${INPUT_VERSION:-}" ]; then echo "attach=yes" >> "$GITHUB_OUTPUT"; fi  # a manual run re-attaches the archive
+            exit 0
+          fi
+          echo "attach=yes" >> "$GITHUB_OUTPUT"
           C="$(git log --reverse --format=%H -S"VERSION:'$V'" -- index.html | awk 'NR==1')"
           [ -n "$C" ] || { echo "::error::No commit sets VERSION:'$V' in index.html"; exit 1; }
           awk -v h="## $T Release Notes" '$0==h{on=1;next} on&&/^## /{exit} on' CONTRIBUTING.md > notes.md
@@ -48,3 +61,28 @@ jobs:
           git push origin "$T"
           gh release create "$T" --verify-tag --title "$T" --notes-file notes.md
           echo "Tagged $T at $C and published its release."
+      - name: Attach the reproduction archive (v5.2.2, audit A9)
+        if: steps.tag.outputs.attach == 'yes'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          T: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release view "$T" >/dev/null 2>&1 || { echo "::warning::$T has no GitHub release; nothing to attach to."; exit 0; }
+          N="compassionism-simulation-$T"
+          W="$RUNNER_TEMP/$N"; mkdir -p "$W"
+          # Every path that exists at the tag (older tags lack the newer files).
+          P=""
+          for f in index.html earlier-engine.html findings.html replication.html harness.js domtest.js package.json package-lock.json site data dev/runs dev/tools sources \
+                   REPRODUCE.md MODEL_SPEC.md TESTBED_SPEC.md ODD.md CITATION.cff README.md CONTRIBUTING.md CHANGELOG.md LICENSE-CODE.txt; do
+            if git cat-file -e "$T:$f" 2>/dev/null; then P="$P $f"; fi
+          done
+          git archive --format=tar "$T" -- $P | tar -x -C "$W"
+          {
+            echo "Node used by the checks that ran on this release: $(node --version)"
+            echo "The 500-seed panels record the Node version they were made with in data/releases/*.json (meta.manifest.node) and dev/runs/*.json (_meta.manifest.node)."
+            echo "Tag: $T, commit $(git rev-list -n 1 "$T")"
+          } > "$W/NODE_VERSION.txt"
+          (cd "$RUNNER_TEMP" && zip -qr "$N-reproduce.zip" "$N")
+          gh release upload "$T" "$RUNNER_TEMP/$N-reproduce.zip" --clobber
+          echo "Attached $N-reproduce.zip to $T."

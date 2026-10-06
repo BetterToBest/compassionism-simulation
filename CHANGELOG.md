@@ -6,6 +6,31 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.2.1 Release Notes
+
+**Released as v5.2.1 (Oct 2026): the visual suite, presentation only.** One pull request into `main` (merging is the release). Every figure is unchanged from v5.2: the engine (`harness.js`, the page's ported release engine) is untouched, the two 500-seed panels are byte-identical, and the new check below proves each figure on the pages equals them. Ledger steps s90-s94; decisions d156-d160 (Oct 6), with the round's own decisions in `dev/DECISIONS.md` (Session 36). The plain-words report for Duke is `dev/reports/v5-10-visual-suite.md`.
+
+### What changed
+
+- **One data file per release** (decision d156). `dev/tools/release_data.py` writes `data/releases/v5.2.json` (the two panels unchanged, the backing-share sweep, the US-data check, a catalogue of headline figures with label, value, unit, environment, horizon, basis and a plain meaning, and the explorer's tables and texts, every number a pointer into the file), `data/manifest.json` (the list of releases) and the headline numbers into the pages' text, so they show without JavaScript and to search engines. The recipe for the next release is `dev/ADDING-A-RELEASE.md`.
+- **Extra fields read from the same runs** (`dev/tools/explore_export.js`; `harness.js` unchanged): each year's 10th, 50th and 90th percentile across the 500 runs, savings deciles at Year 7 and the last year, and the 500 adults of run (seed) 1, with and without the programme. The tool checks itself: its yearly means equal the published year-by-year path in every environment and horizon (500 seeds), and the adults' flags add up to the engine's own yearly shares. Files: `data/releases/v5.2/`.
+- **Earlier releases in the version switcher**: v5.0, v5.0.1 and v5.1 were regenerated from their tags (500 seeds, every environment and horizon) and reproduce their published panels exactly (`dev/runs/v521-backfill-check.txt`), so they are listed as earlier releases.
+- **The findings explorer** (`findings.html`, decision d157): three layers (headline cards; a guided read of each result with a chart, "how to read this" and "what it does not show"; every table with CSV and JSON downloads), a version switcher, a sticky section navigation with scroll-spy, and the release, environment, horizon and section in the address.
+- **The simulation page** (decision d158): the walk-through and introduction stay at the top; below them, a sticky mini-navigation and one control strip (environment, 20 or 40 years, with or without Compassionism) drive eight guided sections: the answer in ten seconds, meet the adults (one run's 500 adults with a year scrubber and each adult's life path), how poverty moves over time (with the spread across the runs), who gains, what each part does, what it costs and who pays, how sure we are, and run it yourself. The page's own results text, the Hub-target table, the year-by-year charts, the other readings and the downloads are kept, in expanders.
+- **The replication page**: what is being replicated, how to reproduce it and what the tool includes come first; the current findings are a five-line summary with a link to the explorer; the version history is a timeline of collapsed panels with the v5 releases added. The v5.2 tables moved to the explorer; every old anchor stays on the page and leads there. The earlier engine's headline strip (the v4.4 large-N study), which sat at the top under a v5.2 heading, moved into the version history with an honest label (decision recorded).
+- Shared components for the compare page: `site/charts.js` (hand-written SVG; no new dependency), `site/findings.js`, `site/findings.css`; colours checked for colour-blind readers in light and dark; every chart has a text description, a table view and keyboard access; reduced motion is respected.
+
+### What changed in the checks
+
+- `domtest`: 124 checks. New Phase 14 (`dev/tools/check_figures.js`): the manifest and the release files agree; the current release carries the 500-seed panels unchanged; every pointer in every release file leads to a number; the explore files match the published path; every number on the three pages, as served and as rendered (the simulation page in all six views, the explorer for every release), equals the data; no percentage, dollar figure or price level is typed into the new sections; every anchor of v5.2 still exists; `release_data.py --check` is clean. The Phase 13 checks that read the replication page's tables and backing-share chart now read the explorer's.
+- `dev/tools/set_version.py` and `dev/tools/check_versions.js` cover `findings.html` and the `site/` files' cache keys.
+
+### Not changed
+
+The figures, the engine, the main row, the readings, the walk-through video (its shots show the v5.2 layout; ledger d151 keeps it until the next model round) and the earlier-engine page.
+
+---
+
 ## v5.2 Release Notes
 
 **Released as v5.2 (Oct 2026): the model round.** One pull request into `main` (merging is the release). The plain-words report for Duke is `dev/reports/v5-9-round-v5-2.md`; every decision, with the alternatives and the reason, is in `dev/DECISIONS.md` (Session 35). Duke's answers and decisions for the round (Oct 3, 2026) are at the top of `dev/background/ledger-export.md`.

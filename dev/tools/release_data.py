@@ -30,8 +30,8 @@ ENVS = [('ref', 'Reference'), ('adv', 'Adverse'), ('st', 'Stress Test')]
 ENV_DESC = {'ref': 'the model\u2019s main settings, with no recessions and no outside inflation',  # the simulation page's own wording (ENV_NOTE in index.html)
             'adv': 'recessions, 2% outside inflation and an automation wave',
             'st': 'the Adverse environment with weaker settings (40% take part, a smaller allowance)'}
-# The figures each release's current (presentation) version describes. v5.2.1 changed only how the v5.2 figures are shown.
-CURRENT = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '5.2.1',
+# The figures each release's current (presentation) version describes. v5.2.1 changed only how the v5.2 figures are shown; v5.2.2 corrected words and added derived figures.
+CURRENT = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '5.2.2',
            'summary': 'The model round: savings that keep up with prices, ageing, the no-programme run against US data, a middle backing reading and robustness readings, each beside an unchanged main result.'}
 BACKFILL = {  # earlier releases whose panels were regenerated from their tags and matched exactly (dev/ADDING-A-RELEASE.md); filled in by --backfill
     'v5.1': {'version': '5.1', 'date': '2026-10-03', 'tag': 'v5.1',
@@ -52,7 +52,7 @@ def jsround(x):  # JavaScript's Math.round: halves go up (toward +infinity)
 def fmt(x, f):
     if x is None: return '–'
     if f in ('p0', 'p1', 'p2'): return fx(x, int(f[1])).replace('-', MINUS) + '%'
-    if f in ('n0', 'n1', 'n2', 'n3'): return fx(x, int(f[1])).replace('-', MINUS)
+    if f in ('n0', 'n1', 'n2', 'n3', 'n4'): return fx(x, int(f[1])).replace('-', MINUS)
     if f in ('s0', 's1', 's2'):
         t = fx(x, int(f[1]))
         return (MINUS + t[1:]) if t.startswith('-') else ('+' + t if x > 0 and float(t) != 0 else t)
@@ -71,6 +71,10 @@ def T(path, f): return '{{%s|%s}}' % (path, f)
 
 def esc(s): return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
+def render_plain(R, text):
+    """a text's tokens as plain formatted numbers (the catalogue's meanings, the downloads)"""
+    return re.sub(r'\{\{([^|}]+)\|([a-z0-9]+)\}\}', lambda m: fmt(get(R, m.group(1)), m.group(2)), text)
+
 def render_static(R, text):
     """a text's tokens as static HTML: <span class="num" data-src=... data-f=...>formatted</span> (site/findings.js renders them the same way)"""
     return re.sub(r'\{\{([^|}]+)\|([a-z0-9]+)\}\}', lambda m: '<span class="num" data-src="%s" data-f="%s">%s</span>' % (m.group(1), m.group(2), esc(fmt(get(R, m.group(1)), m.group(2)))), text)
@@ -81,8 +85,8 @@ MEAS = [  # key in the catalogue, label, panel key, change key, unit, basis, wha
      'In a typical year, the share of adults whose savings, pay and support would cover fewer than 30 days of basic living (the BLEI paper’s measure).'),
     ('f0', 'Below the cost of living', 'fgt0PY', 'dF0', '% of adult-years',
      'In a typical year, the share of adults whose income falls short of the cost of a basic living (the MIT living-wage basket for one adult).'),
-    ('pov', 'Too little wealth', 'pov', 'dPov', '% of adults at the last year',
-     'At the end of the run, the share of adults with less than $25,000 of savings in today’s money.'),
+    ('pov', 'Too little wealth', 'pov', 'dPov', '% of adults at the last year',  # v5.2.2: the line comes from CFG.POVERTY_LINE (A3) and the measure is net wealth (A4)
+     'At the end of the run, the share of adults with less than {{inputs.wealthLine|usd}} of net wealth (what someone owns minus what they owe) in today’s money.'),
     ('bN', 'Below 30 days of basic living, design-neutral', 'bNAPy', 'dBN', '% of adult-years',
      'The same 30-day measure with the no-programme rules applied to everyone, so the design’s own definitions cannot flatter it.')]
 EXTRA = [  # key, label, panel key in rows.release, unit, format, what it means
@@ -101,8 +105,8 @@ def catalogue(R, Y):
         for k, lbl, pk, dk, unit, mean in MEAS:
             if pk not in E['rows']['release']: continue
             base = 'panels.%s.envs.%s' % (Y, e)
-            out.append({'id': '%s.%s.%s.with' % (e, Y, k), 'label': lbl + ', with Compassionism', 'src': base + '.rows.release.' + pk, 'unit': unit, 'f': 'p1', 'env': e, 'years': int(Y), 'basis': 'simulated', 'meaning': mean})
-            out.append({'id': '%s.%s.%s.without' % (e, Y, k), 'label': lbl + ', no programme', 'src': base + '.base.' + pk, 'unit': unit, 'f': 'p1', 'env': e, 'years': int(Y), 'basis': 'simulated', 'meaning': mean})
+            out.append({'id': '%s.%s.%s.with' % (e, Y, k), 'label': lbl + ', with Compassionism', 'src': base + '.rows.release.' + pk, 'unit': unit, 'f': 'p1', 'env': e, 'years': int(Y), 'basis': 'simulated', 'meaning': render_plain(R, mean)})
+            out.append({'id': '%s.%s.%s.without' % (e, Y, k), 'label': lbl + ', no programme', 'src': base + '.base.' + pk, 'unit': unit, 'f': 'p1', 'env': e, 'years': int(Y), 'basis': 'simulated', 'meaning': render_plain(R, mean)})
             if dk in E['rows']['release']:
                 out.append({'id': '%s.%s.%s.change' % (e, Y, k), 'label': lbl + ', change against no programme', 'src': base + '.rows.release.' + dk + '.0', 'unit': 'percentage points', 'f': 's1', 'env': e, 'years': int(Y), 'basis': 'derived',
                             'ci': [base + '.rows.release.' + dk + '.1', base + '.rows.release.' + dk + '.2'], 'meaning': 'The paired difference over the same 500 runs; the 95% interval is beside it. Negative means fewer people below the line.'})
@@ -220,7 +224,7 @@ US_ROWS = [  # label, US figure text parts (fn of the release), model path suffi
      'Starting savings are drawn lognormal (median $36,316), not from the survey, and do not depend on wages; the savings reading draws them from the survey and links them to wages.'),
     ('Share in debt (net worth below zero)', lambda u: [N('us.ref.us.scf.neg', 'p1')], 'wealth.%s.neg', 'p1',
      'In the model everyone pays the full living-wage basket ($49,370), which two in three adults earn less than (the model’s median wage is $39,945, the survey group’s $54,698), so many run their savings into debt; in the US people with less income spend less. The largest gap; the wage-median reading narrows it, and no reading here closes it.'),
-    ('Share with savings under $25,000', lambda u: [N('us.ref.us.scf.below25k', 'p1')], 'wealth.%s.below25k', 'p1', 'As above.'),
+    (('Share with net wealth under ', N('inputs.wealthLine', 'usd')), lambda u: [N('us.ref.us.scf.below25k', 'p1')], 'wealth.%s.below25k', 'p1', 'As above.'),  # v5.2.2: the line from the data (A3); see US_CUT
     ('Gini of wealth (debts kept)', lambda u: [N('us.ref.us.scf.giniKept', 'n3')], 'wealth.%s.giniKept', 'n3',
      'The lognormal start has a thinner top than the survey; debts widen the spread as the run goes on. With debts kept the Gini can pass 1 when many are in debt (Adverse).'),
     ('Leaving poverty in the first year of a spell', lambda u: [N('us.ref.us.psid.exit1', 'n2'), ' (PSID)'], 'spells.fpl.exit1', 'n2',
@@ -229,8 +233,11 @@ US_ROWS = [  # label, US figure text parts (fn of the release), model path suffi
     ('Leaving poverty after five years or more', lambda u: ['0.20 or less'], 'spells.fpl.exit5', 'n2', 'As above (few spells reach five years in the model).'),
     ('Back in poverty after one year out', lambda u: [N('us.ref.us.psid.reentry1', 'n3')], 'spells.fpl.reentry1', 'n2', 'As above.')]
 
+US_CUT = 25000  # the cut at which dev/tools/us_check.js counts the model's adults and sources/scf_singles.py tabulates the SCF share ("below25k")
+
 def us_tables(R):
     if not R.get('us'): return []
+    if R['inputs']['wealthLine'] != US_CUT: sys.exit('release_data: the wealth line (%s) is not the cut the US-data check used (%s): rerun dev/tools/us_check.js and the SCF tabulation at the new line' % (R['inputs']['wealthLine'], US_CUT))
     rows = []
     for lbl, us, suf, f, why in US_ROWS:
         if '%s' in suf:
@@ -238,7 +245,7 @@ def us_tables(R):
             a = C(N('us.adv.rows.none.' + suf % 'end', f))
         else:
             m = C('– / – / ', N('us.ref.rows.none.' + suf, f)); a = C(N('us.adv.rows.none.' + suf, f))
-        rows.append([C(lbl), C(*us(R)), m, a, C(why)])
+        rows.append([C(*lbl) if isinstance(lbl, tuple) else C(lbl), C(*us(R)), m, a, C(why)])
     t1 = {'id': 'rel-us', 'title': 'The no-programme run against US data', 'columns': ['Measure', 'US figure', 'Model, no programme, Reference: first year / Year 7 / year 20', 'Adverse, year 20', 'Where the gap comes from'], 'rows': rows}
     rows2 = []
     for k, lbl in [('none', 'As modelled'), ('ltw', 'Savings from the survey, linked to wages'), ('ltr', 'Automation risk linked to wages'), ('lts', 'Wages spread as in the survey'), ('ltm', 'Wages centred on the survey’s median'), ('lta', 'All four'), ('ag', 'Adults who age, retire and are replaced')]:
@@ -267,8 +274,52 @@ def crossing(pts):
             return a0 + (a1 - a0) * (0 - y0) / (y1 - y0)
     return None
 
+GINI_K = [('giniD', 'Gini of disposable income'), ('giniX', 'Gini of income counting price cuts'), ('giniW', 'Gini of wealth (debts counted as zero)')]
+
+def gini_finite(R):
+    """v5.2.2 (audit A6): the Gini of the simulated adults themselves, without the n/(n - 1) correction the v5.2 panels apply to every Gini. The mean over
+    the runs is linear, so it is the published figure x (n - 1)/n exactly, up to the panel's four decimals. None for a panel without the correction."""
+    n = R['meta']['agents']; out = {}
+    f = lambda g: round(g * (n - 1) / n, 4)
+    for Y, P in R['panels'].items():
+        if not (P['_meta'].get('v52') or {}).get('report', {}).get('giniNN1'): continue
+        for e, _ in ENVS:
+            if e not in P['envs']: continue
+            E = P['envs'][e]
+            for run, node in (('release', E['rows']['release']), ('base', E['base'])):
+                d = {k: f(node[k]) for k in ('giniD', 'giniX') if k in node}
+                for t in ('y7', 'end'):
+                    if node.get('rep') and t in node['rep']: d[t] = {k: f(node['rep'][t][k]) for k in ('giniD', 'giniX', 'giniW', 'giniWN') if k in node['rep'][t]}
+                out.setdefault(Y, {}).setdefault(e, {})[run] = d
+    if not out: return None
+    return {'n': n, 'how': 'The Gini of the %d simulated adults themselves (a finite-population figure): each published Gini (the sample Gini x n/(n - 1), n = %d) multiplied by (n - 1)/n. '
+            'Derived from the panels, no new runs; it can differ from a direct computation in the fourth decimal because the panels keep four.' % (n, n), 'panels': out}
+
+def gini_figures(R, Y):
+    """catalogue: each headline Gini (Year 7 and the last year, with and without the programme) as published, and beside it the derived Gini of the adults themselves"""
+    G = (R.get('derived') or {}).get('giniFinite')
+    if not G or Y not in G['panels']: return []
+    out = []
+    for e, en in ENVS:
+        if e not in G['panels'][Y]: continue
+        for run, who in (('release', 'with Compassionism'), ('base', 'no programme')):
+            src = 'panels.%s.envs.%s.%s.rep' % (Y, e, 'rows.release' if run == 'release' else 'base')
+            for t, tl in (('y7', 'Year 7'), ('end', 'the last year')):
+                for k, lbl in GINI_K:
+                    if k not in G['panels'][Y][e][run].get(t, {}): continue
+                    base = {'unit': 'Gini (0 = equal, 1 = one adult has everything)', 'f': 'n4', 'env': e, 'years': int(Y)}
+                    out.append(dict(base, id='%s.%s.%s.%s.%s' % (e, Y, k, t, 'with' if run == 'release' else 'without'), label='%s, %s, %s' % (lbl, tl, who), src='%s.%s.%s' % (src, t, k), basis='simulated',
+                                    meaning=render_plain(R, 'As published: the sample Gini of the {{meta.agents|int}} adults multiplied by n/(n − 1), which estimates the Gini of the population the adults are drawn from.')))
+                    out.append(dict(base, id='%s.%s.%s.%s.%s.finite' % (e, Y, k, t, 'with' if run == 'release' else 'without'), label='%s, %s, %s: the %d adults themselves, uncorrected' % (lbl, tl, who, G['n']),
+                                    src='derived.giniFinite.panels.%s.%s.%s.%s.%s' % (Y, e, run, t, k), basis='derived',
+                                    meaning=render_plain(R, 'The Gini of the {{meta.agents|int}} simulated adults themselves, without the small-sample correction: the published figure multiplied by (n − 1)/n.')))
+    for f in out: f['value'] = get(R, f['src'])
+    return out
+
 def derived(R):
     D = {}
+    G = gini_finite(R)
+    if G: D['giniFinite'] = G
     if R.get('backing'):
         for e, en in ENVS:
             pts = [(R['backing']['envs'][e]['rows'][k]['a'], R['backing']['envs'][e]['rows'][k]['dPov'][0]) for k in BK]
@@ -365,6 +416,25 @@ def load_json(src, path):
     except subprocess.CalledProcessError:
         return None
 
+CONST_KEYS = ('POVERTY_LINE', 'POVERTY_THRESHOLD_ONE', 'BLEI_PRECARIOUS_MAX')
+
+def constants(src=None):
+    """the constants the pages quote, from dev/runs/constants.json (written by node harness.js constants, v5.2.2); for an earlier tag, which has no such
+    file, from that tag's own harness.js CFG (a constant the tag's harness lacks falls back to the current file's, which is said in a warning)"""
+    c = load_json(src, 'dev/runs/constants.json')
+    if c is not None: return c
+    if src is None: sys.exit('release_data: dev/runs/constants.json is missing (run node harness.js constants)')
+    import tempfile
+    cur = load_json(None, 'dev/runs/constants.json') or {}
+    with tempfile.TemporaryDirectory() as d:
+        hp = os.path.join(d, 'harness.js')
+        open(hp, 'wb').write(subprocess.check_output(['git', 'show', '%s:harness.js' % src], cwd=ROOT))
+        js = 'const H=require(process.argv[1]);console.log(JSON.stringify(Object.fromEntries(%s.map(k=>[k,H.CFG[k]]))))' % json.dumps(list(CONST_KEYS))
+        got = json.loads(subprocess.check_output(['node', '-e', js, hp], cwd=d, stderr=subprocess.DEVNULL))
+    for k in CONST_KEYS:
+        if got.get(k) is None: got[k] = cur.get(k); print('release_data: %s has no CFG.%s; using the current value %s' % (src, k, got[k]), file=sys.stderr)
+    return got
+
 def build(info, src=None):
     p20 = load_json(src, 'dev/runs/release-panel.json'); p40 = load_json(src, 'dev/runs/release-panel-40.json')
     if p20 is None: sys.exit('release_data: no 20-year panel')
@@ -374,7 +444,8 @@ def build(info, src=None):
     if p40: cmds['40'] = p40['_meta']['command']
     R['meta'] = {'seeds': p20['_meta']['seeds'], 'agents': p20['_meta']['agents'], 'written': p20['_meta'].get('written'), 'engine': p20['_meta'].get('engine'), 'manifest': p20['_meta'].get('manifest'), 'commands': cmds,
                  'envs': {e: {'name': en, 'about': ENV_DESC[e]} for e, en in ENVS}}
-    R['inputs'] = {'wealthLine': 25000, 'povertyLine2025': 16749, 'bleiDays': 30, 'hubPovertyTarget': 2, 'hubGini': [0.25, 0.30], 'hubGiniStart': 0.48,
+    K = constants(src)  # v5.2.2 (audit A3): the lines come from the harness's CFG (node harness.js constants), not from numbers typed here
+    R['inputs'] = {'wealthLine': K['POVERTY_LINE'], 'povertyLine2025': K['POVERTY_THRESHOLD_ONE'], 'bleiDays': K['BLEI_PRECARIOUS_MAX'], 'hubPovertyTarget': 2, 'hubGini': [0.25, 0.30], 'hubGiniStart': 0.48,
                    'sources': {'wealthLine': 'the model’s wealth line (CFG.POVERTY_LINE), moved with prices', 'povertyLine2025': 'US official poverty threshold for one person under 65, 2025 (Census, quoted by CRS IN12737)',
                                'hub': 'Research Hub, Integrated Implementation Roadmap (Success Metrics by Year 7; Appendix I); BLEI paper'}}
     R['panels'] = {'20': p20}
@@ -384,7 +455,7 @@ def build(info, src=None):
     us_r, us_a = load_json(src, 'dev/runs/us-check-ref.json'), load_json(src, 'dev/runs/us-check-adv.json')
     if us_r and us_a: R['us'] = {'ref': us_r, 'adv': us_a}
     R['derived'] = derived(R)
-    R['figures'] = catalogue(R, '20') + (catalogue(R, '40') if p40 else [])
+    R['figures'] = catalogue(R, '20') + (catalogue(R, '40') if p40 else []) + gini_figures(R, '20') + (gini_figures(R, '40') if p40 else [])
     tables = [rel_table(R, '20')] + ([rel_table(R, '40')] if p40 else []) + [t for t in [targets_table(R) if p40 else None, fixed_table(R) if p40 else None, readings_table(R), backing_table(R)] if t] + us_tables(R)
     R['tables'] = tables
     R['text'] = texts(R)
@@ -461,14 +532,17 @@ def concepts_html(R):
          '<li><strong>CIP, Citizens Internet Portal:</strong> the civic platform that runs the currency and the community\u2019s votes.</li></ul></div>'
          '<div class="kc"><h3>How the runs are set up</h3><ul>'
          '<li><strong>{{meta.agents|int}} simulated adults</strong>, single and of working age, followed for {{panels.20._meta.years|int}}' + y40 + ' years, once with Compassionism and once with no programme, on the same random draws (common random numbers), so a difference comes from the programme and not from luck.</li>'
-         '<li><strong>{{meta.seeds|int}} paired runs</strong> (seeds 1 to {{meta.seeds|int}}); every figure is their average, with a 95% interval for each change.</li>'
+         '<li><strong>{{meta.seeds|int}} paired runs</strong> (seeds 1 to {{meta.seeds|int}}); every figure is their average, with a 95% interval for each change. '
+         'Each change is the mean of the per-run differences (Compassionism minus no programme on the same draws), and its 95% interval is computed on those paired differences, not from two separate averages.</li>'
          '<li><strong>Three environments:</strong> Reference (' + ENV_DESC['ref'] + '); Adverse (' + ENV_DESC['adv'] + '); Stress Test (' + ENV_DESC['st'] + ').</li>'
          '<li><strong>The main reading</strong> is Compassionism as specified on the Research Hub, every mechanism in, paid for by a Source that issues the BU; cautiously, what the Source pays out is new money except what new output backs. Every other assumption is a labelled reading beside it.</li></ul></div>'
          '<div class="kc"><h3>The measures</h3><ul>'
          '<li><strong>Below {{inputs.bleiDays|int}} days of basic living</strong> (the Basic Living Economic Index, BLEI): savings, pay and support cover fewer than {{inputs.bleiDays|int}} days of basic costs. The BLEI paper\u2019s definition, with a design-neutral reading beside it.</li>'
          '<li><strong>Below the cost of living:</strong> income short of the MIT living-wage basket for one adult.</li>'
-         '<li><strong>Too little wealth:</strong> savings under {{inputs.wealthLine|usd}} in today\u2019s money.</li>'
+         '<li><strong>Too little wealth:</strong> net wealth (what someone owns minus what they owe) under {{inputs.wealthLine|usd}} in today\u2019s money.</li>'
          '<li>Also: the US official poverty line ({{inputs.povertyLine2025|usd}} for one person in 2025), the unhoused share, and the spread of income and wealth (Gini).</li>'
+         '<li><strong>What each Gini estimates:</strong> every Gini is the sample Gini of the {{meta.agents|int}} adults multiplied by n/(n − 1), with n the number of adults. The adults are a random draw from the model\u2019s population, so the corrected figure estimates the Gini of that population (the one compared with the Hub\u2019s national targets) without the small downward bias of a sample. '
+         'The Gini of the {{meta.agents|int}} adults themselves, without the correction and slightly lower, is in the release file beside it as a derived figure.</li>'
          '<li><strong>Poverty lines move with prices</strong> every year, so a line means the same standard of living; the findings explorer also shows them fixed in dollars.</li></ul></div>'
          '</div>')
     return render_static(R, t)
