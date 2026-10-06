@@ -1,0 +1,273 @@
+/* Compassionism Simulation: shared findings components (v5.2.1, Oct 2026).
+ * Renders a release data file (data/releases/v<version>.json, written by dev/tools/release_data.py) into headline cards, guided reads with charts,
+ * full tables, "view as table" toggles and CSV/JSON downloads. Used by findings.html (the explorer), index.html (the guided sections) and
+ * replication.html; the compare page will reuse it. Nothing here holds a figure: every number is read from the release file through a path
+ * ("src") and printed in a <span class="num" data-src=... data-f=...>, which the figure check (dev/tools/check_figures.js) compares with the data.
+ * A release that lacks a table or a reading simply does not show it, so an older release (or the next one) needs no new code unless it brings a new
+ * kind of figure. */
+(function (root) {
+  'use strict';
+  var ENVS = [['ref', 'Reference'], ['adv', 'Adverse'], ['st', 'Stress Test']], MINUS = '−';
+
+  /* ---- formats: the same digits as dev/tools/release_data.py (JavaScript's toFixed; halves round up) ---- */
+  function fx(x, d) { var t = Math.abs(x).toFixed(d); return (x < 0 && +t !== 0 ? '-' : '') + t; }
+  function fmt(x, f) {
+    if (x === null || x === undefined || (typeof x === 'number' && !isFinite(x))) return '–';
+    if (/^p\d$/.test(f)) return fx(x, +f[1]).replace('-', MINUS) + '%';
+    if (/^n\d$/.test(f)) return fx(x, +f[1]).replace('-', MINUS);
+    if (/^s\d$/.test(f)) { var t = fx(x, +f[1]); return t.charAt(0) === '-' ? MINUS + t.slice(1) : (x > 0 && +t !== 0 ? '+' + t : t); }
+    if (f === 'usd') { var n = Math.round(x); return (n < 0 ? MINUS : '') + '$' + Math.abs(n).toLocaleString('en-US'); }
+    if (f === 'int') { var k = Math.round(x); return (k < 0 ? MINUS : '') + Math.abs(k).toLocaleString('en-US'); }
+    if (f === 'lev') return (x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(2)) + '×';
+    if (f === 'lvn') return x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(2);  /* a price level without the times sign, inside a range */
+    throw new Error('unknown format ' + f);
+  }
+  function get(R, path) { var o = R, ks = String(path).split('.'); for (var i = 0; i < ks.length; i++) { if (o == null) return undefined; o = Array.isArray(o) ? o[+ks[i]] : o[ks[i]]; } return o; }
+  function has(R, path) { return get(R, path) !== undefined; }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function num(R, path, f) { return '<span class="num" data-src="' + esc(path) + '" data-f="' + f + '">' + esc(fmt(get(R, path), f)) + '</span>'; }
+  function text(R, key) { var t = R.text && R.text[key]; if (!t) return ''; return t.replace(/\{\{([^|}]+)\|([a-z0-9]+)\}\}/g, function (m, p, f) { return num(R, p, f); }); }
+  function parts(R, ps) { return (ps || []).map(function (p) { return typeof p === 'string' ? esc(p) : num(R, p.src, p.f); }).join(''); }
+  function plain(R, ps) { return (ps || []).map(function (p) { return typeof p === 'string' ? p : fmt(get(R, p.src), p.f); }).join(''); }
+  function cellHTML(R, c) { return parts(R, c.p) + (c.s ? '<small>' + parts(R, c.s) + '</small>' : ''); }
+  function cellText(R, c) { return plain(R, c.p) + (c.s ? ' (' + plain(R, c.s) + ')' : ''); }
+
+  /* ---- tables ---- */
+  function tableById(R, id) { return (R.tables || []).filter(function (t) { return t.id === id; })[0] || null; }
+  function rowsFor(t, filt) {  /* a table with a filter spec keeps the rows of the chosen horizon and environment */
+    if (!filt || !t.filter) return t.rows;
+    return t.rows.filter(function (r) { return (filt.years == null || t.filter.years == null || r[t.filter.years].p[0] === String(filt.years)) && (filt.env == null || t.filter.env == null || r[t.filter.env].p[0] === envName(filt.env)); });
+  }
+  function envName(e) { for (var i = 0; i < ENVS.length; i++) if (ENVS[i][0] === e) return ENVS[i][1]; return e; }
+  function tableHTML(R, t, filt, caption) {
+    var rs = rowsFor(t, filt);
+    return '<div class="fx-tw" tabindex="0" role="region" data-rel-text="table" aria-label="' + esc(t.title) + '"><table class="fx-table" data-table="' + esc(t.id) + '"><caption>' + esc(caption || t.title) + '</caption><thead><tr>' +
+      t.columns.map(function (c) { return '<th scope="col">' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      rs.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + cellHTML(R, c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+  }
+  function csvOf(R, t, filt) {
+    var q = function (s) { s = String(s); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    return [t.columns.map(q).join(',')].concat(rowsFor(t, filt).map(function (r) { return r.map(function (c) { return q(cellText(R, c)); }).join(','); })).join('\n') + '\n';
+  }
+  function jsonOf(R, t, filt) {  /* the table with each number resolved and its path, so a reader can trace every value */
+    return JSON.stringify({release: R.version, table: t.id, title: t.title, columns: t.columns, rows: rowsFor(t, filt).map(function (r) { return r.map(function (c) {
+      var vals = []; (c.p || []).concat(c.s || []).forEach(function (p) { if (typeof p !== 'string') vals.push({value: get(R, p.src), path: p.src}); }); return {text: cellText(R, c), values: vals}; }); }),
+      source: 'data/releases/v' + R.version + '.json', commands: R.meta && R.meta.commands}, null, 1);
+  }
+  function download(name, body, type) {
+    var b = new Blob([body], {type: type}), a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+  }
+  function tableTools(R, t, filt) {
+    var w = document.createElement('div'); w.className = 'fx-tools';
+    var c = document.createElement('button'); c.type = 'button'; c.className = 'fx-btn'; c.textContent = 'Download CSV';
+    c.onclick = function () { download('compassionism-v' + R.version + '-' + t.id + '.csv', csvOf(R, t, filt), 'text/csv'); };
+    var j = document.createElement('button'); j.type = 'button'; j.className = 'fx-btn'; j.textContent = 'Download JSON';
+    j.onclick = function () { download('compassionism-v' + R.version + '-' + t.id + '.json', jsonOf(R, t, filt), 'application/json'); };
+    w.appendChild(c); w.appendChild(j); return w;
+  }
+
+  /* ---- headline cards (layer 1). The same markup release_data.py writes statically for the default view. ---- */
+  var CARDS = [['bO', 'Below 30 days of basic living', 'bOAPy', 'dBO'], ['f0', 'Below the cost of living', 'fgt0PY', 'dF0'], ['pov', 'Too little wealth', 'pov', 'dPov']];
+  /* the cards' plain meanings; the release file's figure catalogue carries the same words (dev/tools/release_data.py MEAS; the figure check compares them) */
+  var MEANINGS = {bO: 'In a typical year, the share of adults whose savings, pay and support would cover fewer than 30 days of basic living (the BLEI paper\u2019s measure).',
+    f0: 'In a typical year, the share of adults whose income falls short of the cost of a basic living (the MIT living-wage basket for one adult).',
+    pov: 'At the end of the run, the share of adults with less than $25,000 of savings in today\u2019s money.'};
+  function meaningOf(R, id) { var f = (R.figures || []).filter(function (x) { return x.id === id; })[0]; return f ? f.meaning : (MEANINGS[id.split('.')[2]] || ''); }
+  function cardsHTML(R, env, yrs, opt) {
+    opt = opt || {};
+    var b = 'panels.' + yrs + '.envs.' + env, out = '<div class="fx-cards">';
+    CARDS.forEach(function (c) {
+      var d = get(R, b + '.rows.release.' + c[3] + '.0'), worse = d > 0;
+      var wo = opt.view === 'without', big = wo ? b + '.base.' + c[2] : b + '.rows.release.' + c[2], other = wo ? b + '.rows.release.' + c[2] : b + '.base.' + c[2];
+      out += '<div class="fx-card' + (worse ? ' fx-worse' : '') + '"><p class="fx-card-k">' + c[1] + '</p><p class="fx-card-v"' + (opt.count ? ' data-count="1"' : '') + '>' + num(R, big, 'p1') + '</p>' +
+        '<p class="fx-card-vs">' + (wo ? 'with no programme, against ' + num(R, other, 'p1') + ' with Compassionism' : 'with Compassionism, against ' + num(R, other, 'p1') + ' with no programme') + '</p>' +
+        '<p class="fx-card-d">' + (worse ? 'Worse:' : 'Change:') + ' ' + num(R, b + '.rows.release.' + c[3] + '.0', 's1') + ' points</p>' +
+        '<p class="fx-card-m" data-rel-text="meaning">' + esc(meaningOf(R, env + '.' + yrs + '.' + c[0] + '.with')) + '</p></div>';
+    });
+    return out + '</div>';
+  }
+  function underCards(R, env, yrs) {  /* decision 1 (v5.2.1): the price rise and the cost sit directly under the three cards */
+    var r = 'panels.' + yrs + '.envs.' + env + '.rows.release';
+    var lev = has(R, r + '.pLevEndMed') ? 'by the last year the typical run is at ' + num(R, r + '.pLevEndMed', 'lev') : 'by the last year prices are on average at ' + num(R, r + '.pLev20', 'lev');
+    return '<p class="fx-under">The programme raises prices by ' + num(R, r + '.infl', 'p1') + ' a year (the cautious reading); ' + lev +
+      ' today’s prices. Cost: ' + num(R, r + '.cost', 'usd') + ' per adult a year. If every dollar the Source pays were backed by new output (H1), ' + num(R, 'panels.' + yrs + '.envs.' + env + '.rows.h1.pov', 'p1') + ' would end with too little wealth.</p>';
+  }
+  /* counters: the three card values count up once when they come into view; never under reduced motion */
+  function animateCounts(host) {
+    var reduce = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !root.IntersectionObserver || !root.requestAnimationFrame) return;
+    var els = host.querySelectorAll('[data-count] .num'); if (!els.length) return;
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (!e.isIntersecting) return; io.unobserve(e.target); var s = e.target, fin = s.textContent, m = /^(.*?)([\d.,]+)(.*)$/.exec(fin); if (!m) return;
+      var to = parseFloat(m[2].replace(/,/g, '')), dec = (m[2].split('.')[1] || '').length, t0 = null;
+      function step(t) { if (t0 === null) t0 = t; var k = Math.min(1, (t - t0)/700), v = to*(1 - Math.pow(1 - k, 3)); s.textContent = m[1] + v.toFixed(dec) + m[3]; if (k < 1) requestAnimationFrame(step); else s.textContent = fin; }
+      requestAnimationFrame(step); }); }, {threshold: 0.4});
+    Array.prototype.forEach.call(els, function (s) { io.observe(s); });
+  }
+
+  /* ---- URL state: ?v=5.2&env=ref&years=20&view=with#section ---- */
+  function readState(def) {
+    var q = new URLSearchParams(root.location.search), s = Object.assign({}, def);
+    if (q.get('env') && /^(ref|adv|st)$/.test(q.get('env'))) s.env = q.get('env');
+    if (q.get('years') && /^(20|40)$/.test(q.get('years'))) s.years = q.get('years');
+    if (q.get('v') && /^\d+(\.\d+)+$/.test(q.get('v'))) s.v = q.get('v');
+    if (q.get('view') && /^(with|without)$/.test(q.get('view'))) s.view = q.get('view');
+    if (q.get('measure') && /^(pov|f0|bO)$/.test(q.get('measure'))) s.measure = q.get('measure');
+    return s;
+  }
+  function writeState(s, keys) {
+    try { var q = new URLSearchParams(root.location.search); (keys || Object.keys(s)).forEach(function (k) { if (s[k] != null) q.set(k, s[k]); });
+      history.replaceState(null, '', root.location.pathname + '?' + q.toString() + root.location.hash); } catch (e) {}
+  }
+
+  /* ---- segmented control ---- */
+  function seg(label, opts, cur, on) {  /* opts: [[value, text]] */
+    var w = document.createElement('span'); w.className = 'fx-ctl'; var l = document.createElement('span'); l.textContent = label; w.appendChild(l);
+    var g = document.createElement('span'); g.className = 'fx-seg'; g.setAttribute('role', 'group'); g.setAttribute('aria-label', label);
+    opts.forEach(function (o) { var b = document.createElement('button'); b.type = 'button'; b.textContent = o[1]; b.dataset.value = o[0]; b.setAttribute('aria-pressed', String(String(o[0]) === String(cur)));
+      b.onclick = function () { Array.prototype.forEach.call(g.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); }); on(o[0]); }; g.appendChild(b); });
+    w.appendChild(g); return w;
+  }
+
+  /* ---- sticky navigation with scroll-spy ---- */
+  function spy(nav) {
+    var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]')), secs = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+    if (!root.IntersectionObserver) return;
+    var vis = {};
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { vis[e.target.id] = e.isIntersecting ? e.intersectionRatio : 0; });
+      var best = null; secs.forEach(function (s) { if (s && vis[s.id] > 0 && best === null) best = s.id; });
+      if (best) links.forEach(function (a) { var on = a.getAttribute('href') === '#' + best; a.setAttribute('aria-current', on ? 'true' : 'false'); if (on && a.scrollIntoView && nav.querySelector('.fx-nav-in')) { var c = nav.querySelector('.fx-nav-in'), r = a.offsetLeft - c.clientWidth/2 + a.clientWidth/2; c.scrollTo ? c.scrollTo({left: r, behavior: 'auto'}) : (c.scrollLeft = r); } }); },
+      {rootMargin: '-30% 0px -60% 0px', threshold: [0, 0.01]});
+    secs.forEach(function (s) { if (s) io.observe(s); });
+  }
+
+  /* ---- the guided reads' charts (layer 2). Each draws from the release file only. ---- */
+  var MEAS = {pov: ['Too little wealth', 'pov', 'dPov'], f0: ['Below the cost of living', 'fgt0PY', 'dF0'], bO: ['Below 30 days of basic living', 'bOAPy', 'dBO']};
+  var pct = function (v) { return fmt(v, 'p1'); }, pts = function (v) { return fmt(v, 's1') + ' points'; };
+  var CHARTS = {};
+  CHARTS.dumbbell = function (R, host, st) {
+    var P = R.panels[st.years]; if (!P) return false;
+    var rows = [];
+    ENVS.forEach(function (e) { ['bO', 'f0', 'pov'].forEach(function (k) { var E = P.envs[e[0]], M = MEAS[k];
+      rows.push({group: e[1], label: M[0], marks: [{v: E.base[M[1]], cls: 's-without', hollow: true, name: 'no programme'}, {v: E.rows.release[M[1]], cls: 's-with', name: 'Compassionism'}],
+        note: 'Change ' + pts(E.rows.release[M[2]][0]) + ' (95% interval ' + fmt(E.rows.release[M[2]][1], 's1') + ' to ' + fmt(E.rows.release[M[2]][2], 's1') + ')'}); }); });
+    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xMax: 100, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of adults below the line (' + st.years + ' years)',
+      label: 'Compassionism against no programme on three poverty measures in three environments over ' + st.years + ' years',
+      legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+    return true;
+  };
+  function tgt(R) { return R.inputs ? R.inputs.hubPovertyTarget : 2; }
+  function gin(R) { return R.inputs ? R.inputs.hubGini : [0.25, 0.3]; }
+  var TG = [['fpl', 'Official poverty line'], ['fplX', 'Poverty line, Supplemental-style'], ['bO', 'Below 30 days (BLEI paper)'], ['bN', 'Below 30 days (design-neutral)'], ['f0', 'Below the cost of living'], ['pov', 'Too little wealth'], ['ep', 'Unhoused']];
+  CHARTS.targets = function (R, host, st) {
+    var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || !E.rows.release.rep) return false;
+    var rows = [], mk = function (t, k) { return [{v: E.base.rep[t][k], cls: 's-without', hollow: true, name: 'no programme'}, {v: E.rows.release.rep[t][k], cls: 's-with', name: 'Compassionism'}]; };
+    [['y7', 'Year 7 (the Hub’s date)'], ['end', 'Year ' + st.years + ' (last year)']].forEach(function (t) { TG.forEach(function (m) { rows.push({group: t[1], label: m[1], marks: mk(t[0], m[0])}); }); });
+    var g1 = document.createElement('div'), g2 = document.createElement('div'); g1.className = g2.className = 'fx-chart'; host.innerHTML = ''; host.appendChild(g1);
+    var cap = document.createElement('p'); cap.className = 'fx-note'; cap.textContent = 'The spread of income and wealth (Gini), against the Hub’s target band for income (shaded):'; host.appendChild(cap); host.appendChild(g2);
+    root.CSC.responsive(g1, function () { root.CSC.rows(g1, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, strip: {from: 0, to: tgt(R), label: 'Hub target: under ' + tgt(R) + '%'}, xTitle: 'Share of adults below the line that year',
+      label: 'Poverty measures at Year 7 and the last year against the Hub target of under 2 percent, ' + envName(st.env) + ', ' + st.years + ' years', legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+    var gr = []; [['y7', 'Year 7'], ['end', 'Year ' + st.years]].forEach(function (t) { [['giniD', 'Income'], ['giniX', 'Income counting price cuts'], ['giniW', 'Wealth (debts as zero)']].forEach(function (m) { gr.push({group: t[1], label: m[1], marks: mk(t[0], m[0])}); }); });
+    root.CSC.responsive(g2, function () { root.CSC.rows(g2, {rows: gr, xMin: 0, xMax: 1, xFmt: function (v) { return v.toFixed(1); }, tipFmt: function (v) { return fmt(v, 'n3'); }, strip: {from: 0.25, to: 0.30, label: '0.25–0.30'}, xTitle: 'Gini coefficient (0 = equal, 1 = one person has everything)',
+      label: 'Gini coefficients against the Hub target', legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+    return true;
+  };
+  CHARTS.fixed = function (R, host, st) {
+    var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || !E.rows.release.rep) return false;
+    var r = E.rows.release, b = E.base, rows = [];
+    [['Compassionism', r], ['No programme', b]].forEach(function (g) { var x = g[1];
+      rows.push({group: g[0], label: 'Too little wealth, last year', marks: [{v: x.rep.end.povNom, cls: 's-alt', shape: 'diamond', hollow: true, name: 'line fixed in dollars'}, {v: x.rep.end.pov, cls: 's-with', name: 'line moved with prices'}]});
+      rows.push({group: g[0], label: 'Below 30 days, over the run', marks: [{v: x.rep.py.bONom, cls: 's-alt', shape: 'diamond', hollow: true, name: 'line fixed in dollars'}, {v: x.bOAPy, cls: 's-with', name: 'line moved with prices'}]});
+      rows.push({group: g[0], label: 'Official poverty line, last year', marks: [{v: x.rep.end.fplNom, cls: 's-alt', shape: 'diamond', hollow: true, name: 'line fixed in dollars'}, {v: x.rep.end.fpl, cls: 's-with', name: 'line moved with prices'}]}); });
+    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of adults below the line', label: 'Poverty lines moved with prices against lines fixed in dollars, ' + envName(st.env) + ', ' + st.years + ' years',
+      legend: [{label: 'Line moved with prices (the main reading)', cls: 's-with', shape: 'circle'}, {label: 'Line fixed in dollars', cls: 's-alt', shape: 'diamond', hollow: true}]}); });
+    return true;
+  };
+  CHARTS.backing = function (R, host) {
+    var B = R.backing; if (!B) return false;
+    var K = ['a0', 'a25', 'a50', 'a75', 'a100'], xs = K.map(function (k) { return B.envs.ref.rows[k].a; }), cls = {ref: 's-e1', adv: 's-e2', st: 's-e3'}, shp = {ref: 'circle', adv: 'square', st: 'triangle'};
+    var series = ENVS.map(function (e) { var rs = B.envs[e[0]].rows; return {name: e[1], cls: cls[e[0]], shape: shp[e[0]], values: K.map(function (k) { return rs[k].dPov[0]; }), ci: {lo: K.map(function (k) { return rs[k].dPov[1]; }), hi: K.map(function (k) { return rs[k].dPov[2]; })}}; });
+    var extra = [], P = R.panels['20'];
+    ENVS.forEach(function (e) { ['midlo', 'mid', 'midhi'].forEach(function (k) { var r = P && P.envs[e[0]].rows[k]; if (r && r.bkA != null) extra.push({x: r.bkA/100, y: r.dPov[0], cls: cls[e[0]], shape: 'diamond', hollow: true}); }); });
+    var g1 = document.createElement('div'), g2 = document.createElement('div'); g1.className = g2.className = 'fx-chart'; host.innerHTML = ''; host.appendChild(g1);
+    var cap = document.createElement('p'); cap.className = 'fx-note'; cap.textContent = 'The price rise the programme itself causes, at each share:'; host.appendChild(cap); host.appendChild(g2);
+    root.CSC.responsive(g1, function () { root.CSC.xy(g1, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, xTitle: 'Share of the Source’s payout backed by new output (a)', yFmt: function (v) { return (v > 0 ? '+' : v < 0 ? MINUS : '') + Math.abs(v); }, tipFmt: pts,
+      series: series, extra: extra, zero: true, label: 'Change in too little wealth against no programme as the backed share rises from 0 to 1, three environments',
+      legendExtra: extra.length ? [{label: 'Middle reading (the Kenya-anchored band)', cls: 's-without', shape: 'diamond', hollow: true}] : []}); });
+    var inf = ENVS.map(function (e) { var rs = B.envs[e[0]].rows; return {name: e[1], cls: cls[e[0]], shape: shp[e[0]], values: K.map(function (k) { return rs[k].infl; })}; });
+    root.CSC.responsive(g2, function () { root.CSC.xy(g2, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, yFmt: function (v) { return v + '%'; }, tipFmt: function (v) { return fmt(v, 'p1') + ' a year'; }, series: inf, yMin: 0, height: 200, label: 'Programme inflation by backed share', legend: false, endLabels: false}); });
+    return true;
+  };
+  var GROUPS = [['The two ends and the middle backing band', ['h1', 'mid', 'midlo', 'midhi']], ['Savings and the BU', ['sav', 'sav0', 'idx', 'h1idx', 'h1both']], ['Ageing', ['age', 'agenc', 'agenone', 'agepia']],
+    ['Closer to US data', ['fixw', 'fixr', 'fixs', 'fixm', 'fixall']], ['Idle workers in normal years', ['slack', 'slacku6']], ['Robustness risks', ['hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun']],
+    ['Other ways to pay (not specified by the Hub)', ['tax', 'progtax', 'landtax']], ['Other readings of the design', ['face', 'cost', 'cap5', 'all', 'free', 'standins']]];
+  var SHORT = {h1: 'H1: every Source dollar backed', mid: 'Middle backing reading (Kenya-anchored)', midlo: 'Middle band, low end (US idle labour)', midhi: 'Middle band, high end (Kenya peak year)', sav: 'Savings keep up with prices (plus a real yield)', sav0: 'Savings keep only their value',
+    idx: 'BU indexed every year', h1idx: 'H1 with the BU indexed every year', h1both: 'H1 with both', age: 'Adults age, retire and are replaced', agenc: 'Ageing, no conversion after retirement', agenone: 'Ageing, retirees leave the programme', agepia: 'Ageing, benefit from own wage',
+    fixw: 'Savings from the US survey', fixr: 'Automation risk linked to wages', fixs: 'Wages spread as in the survey', fixm: 'Wages centred on the survey median', fixall: 'All four US-data readings', slack: 'Idle labour in normal years', slacku6: 'All of U-6 idle (upper bound)',
+    hcap: 'Rent capture, BU tenants (voucher evidence)', hcaphi: 'Rent capture, every renter (upper end)', rev5: 'Review errors, low (audits catch half)', rev10: 'Review errors, middle', rev20: 'Review errors, high', rev20n: 'Review errors, high, no audits', giftrun: 'Launch gift paid over the run',
+    tax: 'Flat contribution on wages', progtax: 'Progressive income tax', landtax: 'Land-value tax', face: 'BU essentials counted as backed', cost: 'Creative work at the cost of its hours', cap5: 'Capacity only as reinvestment pays', all: 'Taking part costs nothing', free: 'Price cuts free', standins: 'The two former stand-ins on'};
+  function readingsRows(R, yrs, env, k, opts) {
+    var E = R.panels[yrs] && R.panels[yrs].envs[env]; if (!E) return null; var M = MEAS[k], rows = [];
+    GROUPS.forEach(function (G) { G[1].forEach(function (j) { var r = E.rows[j]; if (!r || !r[M[2]]) return; if (opts && opts.only && opts.only.indexOf(j) < 0) return;
+      rows.push({group: G[0], label: SHORT[j] || r.label, marks: [{v: r[M[2]][0], lo: r[M[2]][1], hi: r[M[2]][2], cls: 's-alt', shape: 'circle', name: 'change against no programme'}], note: r.label}); }); });
+    return {rows: rows, main: E.rows.release[M[2]][0]};
+  }
+  CHARTS.readings = function (R, host, st) {
+    var k = st.measure || 'pov', X = readingsRows(R, st.years, st.env, k); if (!X || !X.rows.length) return false;
+    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: X.rows, tipFmt: pts, xFmt: function (v) { return (v > 0 ? '+' : v < 0 ? MINUS : '') + Math.abs(v); }, refs: [{v: X.main, label: 'main row ' + fmt(X.main, 's1')}, {v: 0, label: 'no programme'}],
+      xTitle: MEAS[k][0] + ': change against no programme, points (left is better)', label: 'How far each reading moves the change in ' + MEAS[k][0].toLowerCase() + ', ' + envName(st.env) + ', ' + st.years + ' years',
+      legend: [{label: 'Reading (95% interval)', cls: 's-alt', shape: 'circle'}, {label: 'Vertical line: the main row', cls: 's-without', line: true}]}); });
+    return true;
+  };
+  CHARTS.us = function (R, host) {
+    var U = R.us; if (!U) return false; var n = U.ref.rows.none, us = U.ref.us;
+    var rows = [{label: 'Below the official poverty line', marks: [{v: us.official.workers, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US workers (2025)'}, {v: n.fpl.y0, cls: 's-without', name: 'model, first year'}]},
+      {label: 'Below the line, Supplemental-style', marks: [{v: us.spm.workers, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US workers (2025)'}, {v: n.spm.y0, cls: 's-without', name: 'model, first year'}]},
+      {label: 'In debt (net worth below zero)', marks: [{v: us.scf.neg, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US comparison group (SCF 2022)'}, {v: n.wealth.y0.neg, cls: 's-without', name: 'model, first year'}]},
+      {label: 'Savings under $25,000', marks: [{v: us.scf.below25k, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US comparison group (SCF 2022)'}, {v: n.wealth.y0.below25k, cls: 's-without', name: 'model, first year'}]}];
+    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of adults', label: 'The no-programme run in its first year against US figures',
+      legend: [{label: 'US figure', cls: 's-alt', shape: 'diamond', hollow: true}, {label: 'Model, no programme, first year (Reference)', cls: 's-without', shape: 'circle'}]}); });
+    return true;
+  };
+
+  /* ---- one guided read (layer 2) with its tables (layer 3) ---- */
+  function storyEl(R, s, st, opts) {
+    opts = opts || {};
+    var sec = document.createElement('section'); sec.className = 'fx-sec'; sec.id = s.id; sec.setAttribute('aria-labelledby', s.id + '-h');
+    var needsEnv = /^(targets|fixed|readings)$/.test(s.chart), needsYears = /^(dumbbell|targets|fixed|readings)$/.test(s.chart);
+    var scope = (needsEnv ? envName(st.env) + ', ' : '') + (needsYears ? st.years + ' years' : (s.chart === 'backing' && R.backing ? (R.backing._meta.years + ' years') : ''));
+    sec.innerHTML = '<p class="fx-kicker">' + esc(opts.kicker || 'Guided read') + '</p><h2 class="fx-h2" id="' + s.id + '-h">' + esc(s.title) + ' <a class="fx-anchor" href="#' + s.id + '" aria-label="Link to this section">#</a></h2>' +
+      '<p class="fx-lead" data-rel-text="1">' + text(R, s.id + '.lead') + '</p>';
+    var fig = document.createElement('figure'); fig.className = 'fx-figure';
+    var cap = document.createElement('figcaption'); cap.textContent = scope ? 'Showing: ' + scope + (s.chart === 'readings' ? '; measure: ' + MEAS[st.measure || 'pov'][0].toLowerCase() : '') : ''; fig.appendChild(cap);
+    if (s.chart === 'readings') { var sel = seg('Measure', [['pov', 'Too little wealth'], ['f0', 'Cost of living'], ['bO', '30 days (BLEI)']], st.measure || 'pov', function (v) { st.measure = v; if (opts.onState) opts.onState({measure: v}); });
+      sel.style.margin = '0 0 8px'; fig.appendChild(sel); }
+    var ch = document.createElement('div'); ch.className = 'fx-chart'; ch.setAttribute('data-rel-text', 'chart'); fig.appendChild(ch);
+    sec.appendChild(fig);
+    var ok = CHARTS[s.chart] ? CHARTS[s.chart](R, ch, st) : false;
+    if (!ok) ch.innerHTML = '<p class="fx-note">This release has no data for this chart.</p>';
+    var more = '';
+    if (R.text[s.id + '.read']) more += '<details class="fx-more"><summary>How to read this</summary><div data-rel-text="1">' + text(R, s.id + '.read') + '</div></details>';
+    if (R.text[s.id + '.limits']) more += '<details class="fx-more"><summary>What it does not show</summary><div data-rel-text="1">' + text(R, s.id + '.limits') + '</div></details>';
+    ['prices', 'month', 'provenance'].forEach(function (k) { if (R.text[s.id + '.' + k]) more += '<details class="fx-more"><summary>' + {prices: 'About the price levels', month: 'What a month still buys', provenance: 'Where these figures come from'}[k] + '</summary><div data-rel-text="1">' + text(R, s.id + '.' + k) + '</div></details>'; });
+    var m = document.createElement('div'); m.innerHTML = more; sec.appendChild(m);
+    s.tables.forEach(function (id) { var t = tableById(R, id); if (!t) return;
+      var filt = t.filter ? {years: st.years, env: st.env} : null; if (/^rel-t(20|40)$/.test(id) && id !== 'rel-t' + st.years) return;
+      var d = document.createElement('details'); d.className = 'fx-more fx-tabledet'; d.id = s.id + '-' + id + '-table';
+      d.innerHTML = '<summary>View as table' + (filt ? ' (' + envName(st.env) + ', ' + st.years + ' years)' : '') + '</summary>';
+      var w = document.createElement('div'); w.innerHTML = tableHTML(R, t, filt); w.appendChild(tableTools(R, t, filt)); d.appendChild(w); sec.appendChild(d); });
+    return sec;
+  }
+  function allTables(R, host) {  /* layer 3: every table of the release, unfiltered, with downloads */
+    host.innerHTML = '';
+    (R.tables || []).forEach(function (t) { var d = document.createElement('details'); d.className = 'fx-more'; d.id = 'table-' + t.id;
+      d.innerHTML = '<summary>' + esc(t.title) + ' <span class="fx-note">(' + t.rows.length + ' rows)</span></summary>'; var w = document.createElement('div');
+      d.addEventListener('toggle', function () { if (d.open && !w.firstChild) { w.innerHTML = tableHTML(R, t, null); w.appendChild(tableTools(R, t, null)); } });
+      d.appendChild(w); host.appendChild(d); });
+  }
+  function fetchJSON(url) { return fetch(url, {cache: 'no-cache'}).then(function (r) { if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); }); }
+
+  root.CSF = {fmt: fmt, get: get, has: has, num: num, text: text, esc: esc, cellHTML: cellHTML, tableHTML: tableHTML, tableById: tableById, csvOf: csvOf, jsonOf: jsonOf, download: download, tableTools: tableTools,
+    cardsHTML: cardsHTML, MEANINGS: MEANINGS, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
+    readingsRows: readingsRows, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, GROUPS: GROUPS};
+})(typeof window !== 'undefined' ? window : this);

@@ -1,6 +1,7 @@
 """Plan step 13 (Oct 1, 2026): set the version label everywhere it appears, in one step (domtest checks they all agree).
 
 Usage: python3 dev/tools/set_version.py 5.0
+v5.2.1: also findings.html (title, meta sim-version, JSON-LD, footer label) and the ?v= cache keys of the site/ files on index.html and findings.html.
 Changes: index.html META.VERSION, static <title>, JSON-LD softwareVersion, static .meta-ver labels and script banner; CONTRIBUTING.md signature line;
 replication.html JSON-LD name, seal tooltip and 'now at v' caveats (audit fix V5-01); replication.html <meta name="sim-version">, its JSON-LD "version" (the first one, the page's own) and
 every <span class="repl-ver">. Duke assigns the version; run this only when he says "release".
@@ -28,6 +29,17 @@ R, n5 = re.subn(r'("name": "Compassionism Framework Simulation v)[^"]+(")', r'\g
 R, n6 = re.subn(r'(describes engine version )\d+(?:\.\d+)+', r'\g<1>' + v, R)
 R, n7 = re.subn(r'((?:now at v|shipped v))\d+(?:\.\d+)+', r'\g<1>' + v, R)
 open('replication.html', 'w').write(R)
+# v5.2.1: the findings explorer (findings.html) and the shared files' cache keys on every page
+FD = open('findings.html').read()
+FD, n9 = re.subn(r'(<title>Findings explorer \| Compassionism Framework Simulation v)[^<]+(</title>)', r'\g<1>' + v + r'\2', FD)
+FD, n9b = re.subn(r'(<meta name="sim-version" content=")[^"]+(")', r'\g<1>' + v + r'\2', FD)
+FD, n9c = re.subn(r'("softwareVersion":")[^"]+(")', r'\g<1>' + v + r'\2', FD)
+FD, n9d = re.subn(r'(class="meta-ver">v)[^<]+(</span>)', r'\g<1>' + v + r'\2', FD)
+open('findings.html', 'w').write(FD)
+nq = 0
+for f in ('index.html', 'findings.html'):
+    T = open(f).read(); T, k = re.subn(r'((?:src|href)="site/[a-z]+\.(?:js|css)\?v=)[^"]+(")', r'\g<1>' + v + r'\2', T); nq += k; open(f, 'w').write(T)
+print('findings.html title/meta/JSON-LD/label', n9, n9b, n9c, n9d, '| site/ cache keys', nq)
 C = open('CONTRIBUTING.md').read()
 C, n8 = re.subn(r'(\*Better To Best Research Hub · Compassionism Framework Simulation v)[^*]+(\*)', r'\g<1>' + v + r'\2', C)
 open('CONTRIBUTING.md', 'w').write(C)

@@ -8,7 +8,9 @@ A research-oriented, browser-based agent-based simulation exploring all five [Co
 
 The page opens with Compassionism's results: the same 500 simulated adults followed for 20 years (or 40, with the Years switch), with the programme and with no programme, in three environments (Reference, Adverse, Stress). Basic living covered (BLEI, days of basic living a person's resources cover) leads, followed by one plain sentence each on poverty, savings, who gains, work, prices, cost and how it is paid, and the public costs of homelessness avoided. Prices are given as the typical run with the range of nine runs in ten (and, above 1,000 times today's, described as a limit of the model's price rule, not a forecast). A table sets the Research Hub's own Year 7 targets (poverty under 2%, Gini coefficient 0.25 to 0.30) beside what the model reaches. Every figure is an average over 500 paired runs with its 95% interval, and the page names the command that reproduces it; a button runs the model live in the browser. The model measures poverty, cost and work, not the cultural effects Compassionism aspires to. Poverty is measured against a living-wage basket, a higher bar than extreme poverty.
 
-**[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
+Since v5.2.1 the results are guided sections under one control strip (environment, 20 or 40 years, with or without Compassionism): the answer in ten seconds, one run's 500 adults with their life paths, how poverty moves over time, who gains, what each part does, what it costs and who pays, how sure we are, and run it yourself. Every result, chart by chart and table by table, with every earlier release, is on the **[findings explorer](https://bettertobest.github.io/compassionism-simulation/findings.html)**. Every number on the pages comes from one data file per release (`data/releases/`, listed in `data/manifest.json`); `dev/ADDING-A-RELEASE.md` says how to add the next one.
+
+**[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · **[The findings, chart by chart](https://bettertobest.github.io/compassionism-simulation/findings.html)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 
 **[▶ Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (narrated by a synthetic voice, with captions) · [the same tour as text](walkthrough/README.md)
 
@@ -40,12 +42,12 @@ Welfare outcomes are measured against the **Basic Living Economic Index (BLEI)**
 **No Python. No installation. Just open `index.html` in any browser.** The earlier engine (v4.22, with its own settings, presets and charts) is on its own page, `earlier-engine.html`, linked from the front door as "Explore the earlier engine".
 
 ### Option A — Open locally
-1. Download `index.html` (and `earlier-engine.html` for the earlier engine)
+1. Download the repository (or at least `index.html`, the `site/` and `data/` folders, and `earlier-engine.html` for the earlier engine). `index.html` alone still shows every result and runs the model; the guided sections' charts need `site/`, and the spread across runs and the 500 adults need `data/` served by a web server (browsers do not let a page opened as a file read other files; `python3 -m http.server` in the folder is enough)
 2. Double-click — opens in Chrome, Firefox, Safari, or Edge
 3. Read the results, or press **Run it yourself**; the earlier engine's controls and **Run Simulation** are on `earlier-engine.html`
 
 ### Option B — Host on GitHub Pages
-1. Upload `index.html` and `earlier-engine.html` to your repository root
+1. Upload `index.html`, `findings.html`, `earlier-engine.html`, `replication.html` and the `site/` and `data/` folders to your repository root
 2. Go to **Settings → Pages → Source → main branch / root**
 3. Live at `https://yourusername.github.io/compassionism-simulation/`
 
@@ -77,7 +79,7 @@ node domtest.js          # drives index.html in a headless DOM (a few minutes)
 
 Every `harness.js` study mode also accepts `--agents=N`, the population per run (default 500). For example, `node harness.js largen 500 headline --agents=5000` reruns the headline figures at 5,000 agents per run, in about five minutes on one CPU core.
 
-The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->171<!-- /count --> tests and `domtest` <!-- count:domtest -->113<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
+The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->171<!-- /count --> tests and `domtest` <!-- count:domtest -->124<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
 
 ---
 
