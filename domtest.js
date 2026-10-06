@@ -1059,10 +1059,19 @@ function phase13(done) {
   const keysOK = [P20, P40].every(Pn => ENVN.every(e => ROWS.every(k => { const r = Pn.envs[e].rows[k]; return r && ['pLevEnd', 'pLevEndMed', 'pLevEndP10', 'pLevEndP90', 'giniD', 'giniX', 'epPY'].every(q => typeof r[q] === 'number' && isFinite(r[q])) && !('pLev20' in r) &&
     r.pLevEndP10 <= r.pLevEndMed && r.pLevEndMed <= r.pLevEndP90 && r.pLevEnd > 0; }) && ['giniD', 'giniX', 'epPY'].every(q => typeof Pn.envs[e].base[q] === 'number')));
   const prices = (env, yrs) => { wr.relSet(env); wr.relYears(yrs); return [...dr.querySelectorAll('#rel-out p')].map(p => p.textContent).filter(t => /^Prices\./.test(t))[0] || ''; };
+  /* v5.2.2 (Muse audit F1): v5.1 to v5.2.1 said "nine runs in ten" for the 10th to 90th percentile band, which holds eight in ten, and this check asserted the
+   * same wrong words. It now derives the words from the percentile pair the sentence actually prints: it finds which stored percentile keys (pLevEndP<q>) the two
+   * numbers in the sentence are, and expects the words for hi - lo percent of the runs (p10/p90 => "eight runs in ten", p5/p95 => "nine runs in ten"). */
+  const NUMW = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'all ten'], bandWords = (lo, hi) => { const n = Math.round((hi - lo) / 10); return NUMW[n] + (n === 1 ? ' run' : ' runs') + (n === 10 ? '' : ' in ten'); };
+  const bandSeen = [], bandOK = (r, t) => { const m = /and ((?:\w+ runs? in ten)|all ten runs) fall between ([\d,.]+) and (more than 1,000|[\d,.]+)/.exec(t); if (!m) return false;
+    const qs = Object.keys(r).map(k => /^pLevEndP(\d+)$/.exec(k)).filter(Boolean).map(x => +x[1]), lo = qs.filter(q => fmtLev(r['pLevEndP' + q]) === m[2]),
+      hi = qs.filter(q => m[3] === 'more than 1,000' ? r['pLevEndP' + q] > 1000 : fmtLev(r['pLevEndP' + q]) === m[3]).filter(q => !lo.length || q > lo[0]);
+    if (lo.length !== 1 || hi.length !== 1) return false; bandSeen.push(lo[0] + '/' + hi[0] + ' "' + m[1] + '"'); return m[1] === bandWords(lo[0], hi[0]); };
+  const bandSelf = bandWords(10, 90) === 'eight runs in ten' && bandWords(5, 95) === 'nine runs in ten' && bandWords(25, 75) === 'five runs in ten';
   const pr = [];
   [[20, P20], [40, P40]].forEach(([yrs, Pn]) => ENVN.forEach(e => { const r = Pn.envs[e].rows.release, t = prices(e, yrs);
     if (r.pLevEndMed > 1000) { if (!(/no central bank, no interest rate and no protection for savings/.test(t) && /limit of the model, not a forecast/.test(t) && /exact 500-seed figures are on the replication page/.test(t)) || t.indexOf(fmtLev(r.pLevEndMed)) >= 0 || t.indexOf(fmtLev(r.pLevEnd)) >= 0) pr.push(e + ' ' + yrs + 'y high'); }
-    else if (t.indexOf('the typical run (the median of the 500) is ' + fmtLev(r.pLevEndMed) + ' times today') < 0 || t.indexOf('nine runs in ten fall between ' + fmtLev(r.pLevEndP10) + ' and ') < 0 || /limit of the model/.test(t)) pr.push(e + ' ' + yrs + 'y low'); }));
+    else if (t.indexOf('the typical run (the median of the 500) is ' + fmtLev(r.pLevEndMed) + ' times today') < 0 || !bandOK(r, t) || /limit of the model/.test(t)) pr.push(e + ' ' + yrs + 'y low'); }));
   wr.relYears(20); wr.relSet('ref');
   /* v5.2.1: the v5.2 tables and the backing-share chart moved from the replication page to the findings explorer (findings.html), which renders them from the release
    * data file with site/findings.js and site/charts.js; the checks below read the explorer's rendered tables and chart, with the same assertions as before. */
@@ -1073,8 +1082,9 @@ function phase13(done) {
   const repDoc = expW.document, tcell = (sel, i, j) => (repDoc.querySelectorAll(sel + ' tbody tr')[i] || {children: []}).children[j];
   const levCellOK = [['[data-table="rel-t20"]', P20], ['[data-table="rel-t40"]', P40]].every(([sel, Pn]) => ENVN.every((e, i) => { const r = Pn.envs[e].rows.release, c = tcell(sel, i, 5), tx = c ? c.textContent.replace(/\s+/g, ' ') : '';
     return tx.indexOf(fmtLev(r.pLevEndMed) + '×') === 0 && tx.indexOf('10th–90th percentile ' + fmtLev(r.pLevEndP10) + '–' + fmtLev(r.pLevEndP90)) > 0 && tx.indexOf('mean ' + fmtLev(r.pLevEnd)) > 0; }));
-  check('audit F3 (v5.1): the panels carry the price level as mean, median and 10th/90th percentiles (the key pLev20 is gone from the export); the Prices sentence gives the typical run and its range, and above 1,000 times today\'s says the price rule runs away, a model limit and not a forecast, with no figure; the findings explorer\'s tables keep the exact figures',
-    keysOK && pr.length === 0 && levCellOK, 'keys ' + (keysOK ? 'ok' : 'MISSING') + '; sentences ' + (pr.length ? 'WRONG: ' + pr.join(', ') : 'ok (median ' + [P20, P40].map(Pn => ENVN.map(e => fmtLev(Pn.envs[e].rows.release.pLevEndMed)).join(' / ')).join(' ; ') + ')') + '; explorer cells ' + (levCellOK ? 'match' : 'DIFFER'));
+  check('audit F3 (v5.1): the panels carry the price level as mean, median and 10th/90th percentiles (the key pLev20 is gone from the export); the Prices sentence gives the typical run and its range, in words derived from the percentile pair it prints (v5.2.2, Muse F1), and above 1,000 times today\'s says the price rule runs away, a model limit and not a forecast, with no figure; the findings explorer\'s tables keep the exact figures',
+    keysOK && pr.length === 0 && levCellOK && bandSelf, 'keys ' + (keysOK ? 'ok' : 'MISSING') + '; sentences ' + (pr.length ? 'WRONG: ' + pr.join(', ') : 'ok (median ' + [P20, P40].map(Pn => ENVN.map(e => fmtLev(Pn.envs[e].rows.release.pLevEndMed)).join(' / ')).join(' ; ') + ')') + '; explorer cells ' + (levCellOK ? 'match' : 'DIFFER') +
+    '; range words derived from the percentile pair: ' + (bandSelf ? '' : 'DERIVATION WRONG ') + ([...new Set(bandSeen)].join(', ') || 'none shown'));
   /* (b) the Hub-target table */
   const nearL = g => Math.abs(g - 0.25) < 0.002 || Math.abs(g - 0.30) < 0.002, verd = g => (g <= 0.25 ? 'at or below 0.25' : g <= 0.30 ? 'between 0.25 and 0.30' : 'above 0.30') + (nearL(g) ? ' (on the line: within 0.002)' : ''), plainV = g => g <= 0.25 ? 'low' : g <= 0.30 ? 'mid' : 'high', tb = [];
   /* v5.2 round, step 2: a panel with the v5.2 block (rows carry .rep) gets the v5.2 table: each measure at Year 7 and the last year, Compassionism with no programme beside it, the

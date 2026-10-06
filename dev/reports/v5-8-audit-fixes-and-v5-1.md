@@ -78,9 +78,9 @@ The Adverse Environment's Gini counting price cuts at 20 years is 0.2495, with a
 
 ### 4d. Prices: the typical run, and what runaway means
 
-The price level compounds, so the average over runs sits above the typical run. The page now gives the typical run (the median) and where nine in ten runs fall. Above 1,000 times today's prices, it says the model's price rule has no central bank, no interest rate and no protection for savings, so prices run away in that environment; that is a limit of the model, not a forecast. The exact figures are on the replication page:
+The price level compounds, so the average over runs sits above the typical run. The page now gives the typical run (the median) and where eight in ten runs fall (the 10th to 90th percentile; this report and the page said nine in ten until v5.2.2 corrected it). Above 1,000 times today's prices, it says the model's price rule has no central bank, no interest rate and no protection for savings, so prices run away in that environment; that is a limit of the model, not a forecast. The exact figures are on the replication page:
 
-| Environment, years | Typical run (median) | Nine runs in ten | Mean over seeds |
+| Environment, years | Typical run (median) | Eight runs in ten (10th to 90th percentile) | Mean over seeds |
 |---|---|---|---|
 | Reference, 20 years | 294 times | 246 to 353 | 297 |
 | Adverse, 20 years | 1,824 times | 1,460 to 2,287 | 1,848 |
