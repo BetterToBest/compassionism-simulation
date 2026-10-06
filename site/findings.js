@@ -19,6 +19,7 @@
     if (f === 'usd') { var n = Math.round(x); return (n < 0 ? MINUS : '') + '$' + Math.abs(n).toLocaleString('en-US'); }
     if (f === 'int') { var k = Math.round(x); return (k < 0 ? MINUS : '') + Math.abs(k).toLocaleString('en-US'); }
     if (f === 'lev') return (x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(2)) + '×';
+    if (f === 'lvn') return x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(2);  /* a price level without the times sign, inside a range */
     throw new Error('unknown format ' + f);
   }
   function get(R, path) { var o = R, ks = String(path).split('.'); for (var i = 0; i < ks.length; i++) { if (o == null) return undefined; o = Array.isArray(o) ? o[+ks[i]] : o[ks[i]]; } return o; }
@@ -40,7 +41,7 @@
   function envName(e) { for (var i = 0; i < ENVS.length; i++) if (ENVS[i][0] === e) return ENVS[i][1]; return e; }
   function tableHTML(R, t, filt, caption) {
     var rs = rowsFor(t, filt);
-    return '<div class="fx-tw" tabindex="0" role="region" aria-label="' + esc(t.title) + '"><table class="fx-table" data-table="' + esc(t.id) + '"><caption>' + esc(caption || t.title) + '</caption><thead><tr>' +
+    return '<div class="fx-tw" tabindex="0" role="region" data-rel-text="table" aria-label="' + esc(t.title) + '"><table class="fx-table" data-table="' + esc(t.id) + '"><caption>' + esc(caption || t.title) + '</caption><thead><tr>' +
       t.columns.map(function (c) { return '<th scope="col">' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
       rs.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + cellHTML(R, c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
   }
@@ -82,7 +83,7 @@
       out += '<div class="fx-card' + (worse ? ' fx-worse' : '') + '"><p class="fx-card-k">' + c[1] + '</p><p class="fx-card-v"' + (opt.count ? ' data-count="1"' : '') + '>' + num(R, big, 'p1') + '</p>' +
         '<p class="fx-card-vs">' + (wo ? 'with no programme, against ' + num(R, other, 'p1') + ' with Compassionism' : 'with Compassionism, against ' + num(R, other, 'p1') + ' with no programme') + '</p>' +
         '<p class="fx-card-d">' + (worse ? 'Worse:' : 'Change:') + ' ' + num(R, b + '.rows.release.' + c[3] + '.0', 's1') + ' points</p>' +
-        '<p class="fx-card-m">' + esc(meaningOf(R, env + '.' + yrs + '.' + c[0] + '.with')) + '</p></div>';
+        '<p class="fx-card-m" data-rel-text="meaning">' + esc(meaningOf(R, env + '.' + yrs + '.' + c[0] + '.with')) + '</p></div>';
     });
     return out + '</div>';
   }

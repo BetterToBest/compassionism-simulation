@@ -19,7 +19,7 @@ Usage:
 
 A number in a table or text is {"src": "<path into the release file>", "f": "<format>"}; in a text it is written {{path|format}}. Formats (the same in
 site/findings.js, which renders them): p0 p1 p2 (percent), n1 n2 n3 (plain), s1 s2 (signed, with a true minus sign), usd (whole dollars), int (whole
-number with commas), lev (a price level: whole number with commas from 10 up, else two decimals, then "times").
+number with commas), lev (a price level: whole number with commas from 10 up, else two decimals, then "times"), lvn (the same without "times").
 """
 import json, os, re, subprocess, sys
 from decimal import Decimal, ROUND_HALF_UP, ROUND_FLOOR
@@ -129,7 +129,7 @@ def rel_table(R, Y):
     new = 'pLevEndMed' in P['envs']['ref']['rows']['release']
     for e, en in ENVS:
         b = 'panels.%s.envs.%s' % (Y, e); r = b + '.rows.release'
-        lev = C(N(r + '.pLevEndMed', 'lev'), s=['10th–90th percentile ', N(r + '.pLevEndP10', 'lev'), '–', N(r + '.pLevEndP90', 'lev'), '; mean ', N(r + '.pLevEnd', 'lev')]) if new else C(N(r + '.pLev20', 'lev'))
+        lev = C(N(r + '.pLevEndMed', 'lev'), s=['10th–90th percentile ', N(r + '.pLevEndP10', 'lvn'), '–', N(r + '.pLevEndP90', 'lvn'), '; mean ', N(r + '.pLevEnd', 'lvn')]) if new else C(N(r + '.pLev20', 'lev'))
         rows.append([C(en), C(N(r + '.bOAPy', 'p1'), ' vs ', N(b + '.base.bOAPy', 'p1')), C(N(r + '.fgt0PY', 'p1'), ' vs ', N(b + '.base.fgt0PY', 'p1')), C(N(r + '.pov', 'p1'), ' vs ', N(b + '.base.pov', 'p1')),
                      C(N(r + '.infl', 'p1')), lev, C(N(b + '.rows.h1.pov', 'p1')), C(N(r + '.cost', 'usd'))])
     return {'id': 'rel-t' + Y, 'title': 'Main result, %s years (Compassionism vs no programme)' % Y, 'years': int(Y),
@@ -425,7 +425,7 @@ def headline_html(R, e='ref', Y='20'):
         b = 'panels.%s.envs.%s' % (Y, e)
         d = get(R, b + '.rows.release.%s.0' % dk); worse = d > 0
         cards.append(('<div class="fx-card%s"><p class="fx-card-k">%s</p><p class="fx-card-v">{{%s.rows.release.%s|p1}}</p><p class="fx-card-vs">with Compassionism, against {{%s.base.%s|p1}} with no programme</p>'
-                      '<p class="fx-card-d">%s {{%s.rows.release.%s.0|s1}} points</p><p class="fx-card-m">%s</p></div>') % (
+                      '<p class="fx-card-d">%s {{%s.rows.release.%s.0|s1}} points</p><p class="fx-card-m" data-rel-text="meaning">%s</p></div>') % (
             ' fx-worse' if worse else '', lbl, b, pk, b, pk, 'Worse:' if worse else 'Change:', b, dk, mean))
     head = ('<p class="fx-static-note">%s environment, %s years; averages over {{meta.seeds|int}} paired runs of {{meta.agents|int}} simulated adults (release v%s data).</p>' % (R['meta']['envs'][e]['name'], Y, R['version']))
     return render_static(R, '<div class="fx-cards">' + ''.join(cards) + '</div>' + head)

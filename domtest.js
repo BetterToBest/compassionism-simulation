@@ -1064,11 +1064,17 @@ function phase13(done) {
     if (r.pLevEndMed > 1000) { if (!(/no central bank, no interest rate and no protection for savings/.test(t) && /limit of the model, not a forecast/.test(t) && /exact 500-seed figures are on the replication page/.test(t)) || t.indexOf(fmtLev(r.pLevEndMed)) >= 0 || t.indexOf(fmtLev(r.pLevEnd)) >= 0) pr.push(e + ' ' + yrs + 'y high'); }
     else if (t.indexOf('the typical run (the median of the 500) is ' + fmtLev(r.pLevEndMed) + ' times today') < 0 || t.indexOf('nine runs in ten fall between ' + fmtLev(r.pLevEndP10) + ' and ') < 0 || /limit of the model/.test(t)) pr.push(e + ' ' + yrs + 'y low'); }));
   wr.relYears(20); wr.relSet('ref');
-  const repDoc = new JSDOM(fs.readFileSync(path.join(root, 'replication.html'), 'utf8')).window.document, tcell = (sel, i, j) => (repDoc.querySelectorAll(sel + ' tbody tr')[i] || {children: []}).children[j];
-  const levCellOK = [['table.rel-t:not(#rel-t40):not(#rel-tg)', P20], ['#rel-t40', P40]].every(([sel, Pn]) => ENVN.every((e, i) => { const r = Pn.envs[e].rows.release, c = tcell(sel, i, 5), tx = c ? c.textContent.replace(/\s+/g, ' ') : '';
+  /* v5.2.1: the v5.2 tables and the backing-share chart moved from the replication page to the findings explorer (findings.html), which renders them from the release
+   * data file with site/findings.js and site/charts.js; the checks below read the explorer's rendered tables and chart, with the same assertions as before. */
+  const expW = new JSDOM('<!DOCTYPE html><body></body>', {runScripts: 'outside-only'}).window, MANI = JSON.parse(fs.readFileSync(path.join(root, 'data', 'manifest.json'), 'utf8'));
+  expW.eval(fs.readFileSync(path.join(root, 'site', 'charts.js'), 'utf8')); expW.eval(fs.readFileSync(path.join(root, 'site', 'findings.js'), 'utf8'));
+  const RELF = JSON.parse(fs.readFileSync(path.join(root, 'data', MANI.releases.filter(r => r.status === 'current')[0].file), 'utf8'));
+  expW.document.body.innerHTML = RELF.tables.map(t => expW.CSF.tableHTML(RELF, t, null)).join('') + '<div id="backing-chart"></div>'; expW.CSF.charts.backing(RELF, expW.document.getElementById('backing-chart'));
+  const repDoc = expW.document, tcell = (sel, i, j) => (repDoc.querySelectorAll(sel + ' tbody tr')[i] || {children: []}).children[j];
+  const levCellOK = [['[data-table="rel-t20"]', P20], ['[data-table="rel-t40"]', P40]].every(([sel, Pn]) => ENVN.every((e, i) => { const r = Pn.envs[e].rows.release, c = tcell(sel, i, 5), tx = c ? c.textContent.replace(/\s+/g, ' ') : '';
     return tx.indexOf(fmtLev(r.pLevEndMed) + '×') === 0 && tx.indexOf('10th–90th percentile ' + fmtLev(r.pLevEndP10) + '–' + fmtLev(r.pLevEndP90)) > 0 && tx.indexOf('mean ' + fmtLev(r.pLevEnd)) > 0; }));
-  check('audit F3 (v5.1): the panels carry the price level as mean, median and 10th/90th percentiles (the key pLev20 is gone from the export); the Prices sentence gives the typical run and its range, and above 1,000 times today\'s says the price rule runs away, a model limit and not a forecast, with no figure; the replication page keeps the exact figures',
-    keysOK && pr.length === 0 && levCellOK, 'keys ' + (keysOK ? 'ok' : 'MISSING') + '; sentences ' + (pr.length ? 'WRONG: ' + pr.join(', ') : 'ok (median ' + [P20, P40].map(Pn => ENVN.map(e => fmtLev(Pn.envs[e].rows.release.pLevEndMed)).join(' / ')).join(' ; ') + ')') + '; replication cells ' + (levCellOK ? 'match' : 'DIFFER'));
+  check('audit F3 (v5.1): the panels carry the price level as mean, median and 10th/90th percentiles (the key pLev20 is gone from the export); the Prices sentence gives the typical run and its range, and above 1,000 times today\'s says the price rule runs away, a model limit and not a forecast, with no figure; the findings explorer\'s tables keep the exact figures',
+    keysOK && pr.length === 0 && levCellOK, 'keys ' + (keysOK ? 'ok' : 'MISSING') + '; sentences ' + (pr.length ? 'WRONG: ' + pr.join(', ') : 'ok (median ' + [P20, P40].map(Pn => ENVN.map(e => fmtLev(Pn.envs[e].rows.release.pLevEndMed)).join(' / ')).join(' ; ') + ')') + '; explorer cells ' + (levCellOK ? 'match' : 'DIFFER'));
   /* (b) the Hub-target table */
   const nearL = g => Math.abs(g - 0.25) < 0.002 || Math.abs(g - 0.30) < 0.002, verd = g => (g <= 0.25 ? 'at or below 0.25' : g <= 0.30 ? 'between 0.25 and 0.30' : 'above 0.30') + (nearL(g) ? ' (on the line: within 0.002)' : ''), plainV = g => g <= 0.25 ? 'low' : g <= 0.30 ? 'mid' : 'high', tb = [];
   /* v5.2 round, step 2: a panel with the v5.2 block (rows carry .rep) gets the v5.2 table: each measure at Year 7 and the last year, Compassionism with no programme beside it, the
@@ -1087,15 +1093,15 @@ function phase13(done) {
     const a = el ? el.querySelector('a') : null;
     if (!(okRows && /Year 7/.test(tx) && a && a.getAttribute('href') === 'https://bettertobest.github.io/research-hub/integrated-implementation-roadmap.html' && /Integrated Implementation Roadmap/.test(tx) && /starts from 0\.22% at year 0 by construction/.test(tx) && new RegExp('by year ' + yrs).test(tx))) tb.push(e + ' ' + yrs + 'y'); }));
   wr.relYears(20); wr.relSet('ref');
-  const tgRows = [...repDoc.querySelectorAll('#rel-tg tbody tr')].map(x => [...x.children].map(c => c.textContent.replace(/\s+/g, ' ')));
+  const tgRows = [...repDoc.querySelectorAll('[data-table="rel-tg"] tbody tr')].map(x => [...x.children].map(c => c.textContent.replace(/\s+/g, ' ')));
   const fxJ = (x, d) => (+x).toFixed(d), repCell = (x, bx, d, kind) => fxJ(x, d) + (kind === 'p' ? '%' : '') + ' vs ' + fxJ(bx, d) + (kind === 'p' ? '%' : '') + (kind === 'p' ? (x < 2 ? 'met' : 'not met') : kind === 'g' ? verd(x) : verdW(x));
   const tgOK = V52 ? (tgRows.length === 6 * V52M.length && [[20, P20], [40, P40]].every(([yrs, Pn], yi) => ENVN.every((e, ei) => V52M.every((m, mi) => { const c = tgRows[(yi * 3 + ei) * V52M.length + mi], b = Pn.envs[e].base.rep, r = Pn.envs[e].rows.release.rep;
     return c && +c[0] === yrs && c[4] === repCell(r.y7[m[0]], b.y7[m[0]], m[1], m[2]) && c[5] === repCell(r.end[m[0]], b.end[m[0]], m[1], m[2]); }))))
     : tgRows.length === 6 && [[20, P20], [40, P40]].every(([yrs, Pn], yi) => ENVN.every((e, ei) => { const c = tgRows[yi * 3 + ei], b = Pn.envs[e].base, r = Pn.envs[e].rows.release;
     return c && +c[0] === yrs && c[2] === r.fgt0PY.toFixed(1) + '% vs ' + b.fgt0PY.toFixed(1) + '%' && c[3] === r.bOAPy.toFixed(1) + '% vs ' + b.bOAPy.toFixed(1) + '%' && c[4] === r.pov.toFixed(1) + '% vs ' + b.pov.toFixed(1) + '%' && c[5] === r.epPY.toFixed(2) + '% vs ' + b.epPY.toFixed(2) + '%' &&
       c[6].indexOf(r.giniD.toFixed(3) + ' vs ' + b.giniD.toFixed(3)) === 0 && c[6].indexOf(verd(r.giniD)) > 0 && c[7].indexOf(r.giniX.toFixed(3) + ' vs ' + b.giniX.toFixed(3)) === 0 && c[7].indexOf(verd(r.giniX)) > 0; }));
-  check('audit E1 (v5.1): the Hub\'s Year 7 targets (poverty under 2%, Gini 0.25 to 0.30) are shown against the model\'s results on the front door for every environment and horizon, with the source named and linked, the panel\'s own numbers and the right verdicts, and on the replication page for all six combinations',
-    keysOK && tb.length === 0 && tgOK, 'front door ' + (tb.length ? 'WRONG: ' + tb.join(', ') : 'ok in 6 views') + '; replication table ' + (tgOK ? 'matches the panels' : 'DIFFERS') + '; Gini (cash / with price cuts), release row: ' + [[20, P20], [40, P40]].map(([y, Pn]) => y + 'y ' + ENVN.map(e => Pn.envs[e].rows.release.giniD.toFixed(3) + '/' + Pn.envs[e].rows.release.giniX.toFixed(3)).join(' ')).join('; '));
+  check('audit E1 (v5.1): the Hub\'s Year 7 targets (poverty under 2%, Gini 0.25 to 0.30) are shown against the model\'s results on the front door for every environment and horizon, with the source named and linked, the panel\'s own numbers and the right verdicts, and on the findings explorer for all six combinations',
+    keysOK && tb.length === 0 && tgOK, 'front door ' + (tb.length ? 'WRONG: ' + tb.join(', ') : 'ok in 6 views') + '; explorer table ' + (tgOK ? 'matches the panels' : 'DIFFERS') + '; Gini (cash / with price cuts), release row: ' + [[20, P20], [40, P40]].map(([y, Pn]) => y + 'y ' + ENVN.map(e => Pn.envs[e].rows.release.giniD.toFixed(3) + '/' + Pn.envs[e].rows.release.giniX.toFixed(3)).join(' ')).join('; '));
   /* v5.2 round, step 8: the year-by-year charts and what a month still buys. A panel whose rows carry .path (v5.2) gets three small charts (cost-of-living poverty, median savings,
    * what a month of the wage and of the BU buys), no programme beside Compassionism, each with a title and a text description, and a table of the numbers; the Prices
    * sentence says what a month of the median wage and of the BU buys at the last year, from the same path. A panel without .path (v5.1) shows no charts. */
@@ -1167,19 +1173,19 @@ function phase13(done) {
   /* v5.1 (audit E2): the backing-share chart on the replication page is the data in dev/runs/backing-share.json: two panels (never one chart with two y axes), three series each, five points each; the table
    * view carries every number; both end points equal the panel's own release and H1 rows (same paired seeds, same build of the engine); inflation falls as more is backed; and the manifest names a clean commit and the page's engine. */
   const BS = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'backing-share.json'), 'utf8')), BK = ['a0', 'a25', 'a50', 'a75', 'a100'], bsProb = [];
-  const bsFig = repDoc.getElementById('backing-chart'), bsSvgs = bsFig ? [...bsFig.querySelectorAll('svg.bs-svg')] : [], bsTab = [...repDoc.querySelectorAll('.bs-table tbody tr')].map(x => [...x.children].map(c => c.textContent));
+  const bsFig = repDoc.getElementById('backing-chart'), bsSvgs = bsFig ? [...bsFig.querySelectorAll('svg.fx-svg')] : [], bsTab = [...repDoc.querySelectorAll('[data-table="bs"] tbody tr')].map(x => [...x.children].map(c => c.textContent));
   const sgn = (x, d) => { const t = Math.abs(x).toFixed(d === undefined ? 1 : d); return (x > 0 && +t !== 0 ? '+' : x < 0 && +t !== 0 ? '−' : '') + t; };
-  if (bsSvgs.length !== 2 || !bsSvgs.every(sv => sv.getAttribute('role') === 'img' && sv.querySelector('title') && sv.querySelector('desc') && sv.querySelectorAll('polyline').length === 3 && sv.querySelectorAll('.bs-dot').length === 15)) bsProb.push('chart structure');
-  if (!bsFig || ['Reference', 'Adverse', 'Stress Test'].some(n => bsFig.querySelector('.bs-legend').textContent.indexOf(n) < 0)) bsProb.push('legend');
+  if (bsSvgs.length !== 2 || !bsSvgs.every(sv => sv.getAttribute('role') === 'img' && /backed share|by backed share/.test(sv.getAttribute('aria-label') || '') && sv.querySelectorAll('path.fx-line').length === 3 && sv.querySelectorAll('.fx-mk').length >= 15)) bsProb.push('chart structure');
+  if (!bsFig || ['Reference', 'Adverse', 'Stress Test'].some(n => (bsFig.querySelector('.fx-legend') || {textContent: ''}).textContent.indexOf(n) < 0)) bsProb.push('legend');
   if (BS._meta.seeds !== 500 || BS._meta.years !== 20 || JSON.stringify(BS._meta.shares) !== '[0,0.25,0.5,0.75,1]') bsProb.push('meta');
   if (bsTab.length !== 5) bsProb.push('table rows'); else BK.forEach((k, i) => { const c = bsTab[i], e3 = ENVN.map(e => BS.envs[e].rows[k]);
-    const okRow = c[1] === (e3[0].a*100) + '%' && ENVN.every((e, j) => c[2 + j] === sgn(e3[j].dPov[0]) + ' (' + sgn(e3[j].dPov[1]) + ' to ' + sgn(e3[j].dPov[2]) + ')' && c[5 + j] === e3[j].infl.toFixed(1) + '%') && c[0] === (k === 'a0' ? 'Release row' : k === 'a100' ? 'H1' : '');
+    const okRow = c[1] === e3[0].a.toFixed(2) && ENVN.every((e, j) => c[2 + j] === sgn(e3[j].dPov[0]) + ' (' + sgn(e3[j].dPov[1]) + ' to ' + sgn(e3[j].dPov[2]) + ')' && c[5 + j] === e3[j].infl.toFixed(1) + '%') && c[0] === (k === 'a0' ? 'Release row' : k === 'a100' ? 'H1' : '');
     if (!okRow) bsProb.push('table row ' + k); });
   ENVN.forEach(e => { const R = BS.envs[e].rows, pr = P20.envs[e].rows, same = (a, b) => ['pov', 'fgt0PY', 'bOAPy', 'bNAPy', 'infl', 'pLevEnd', 'pLevEndMed', 'pLevEndP10', 'pLevEndP90', 'cost', 'srcPay', 'srcM'].every(q => a[q] === b[q]);
     if (!same(R.a0, pr.release)) bsProb.push(e + ' a=0 is not the release row'); if (!same(R.a100, pr.h1)) bsProb.push(e + ' a=1 is not the H1 row');
     for (let i = 1; i < BK.length; i++) if (R[BK[i]].infl > R[BK[i - 1]].infl + 1e-9) bsProb.push(e + ' inflation rises with the backed share'); if (R.a100.infl !== 0) bsProb.push(e + ' programme inflation at a=1 is not zero'); });
   const bm = BS._meta.manifest || {}; if (!hexOK(bm.commit, 40) || bm.dirty !== false || bm.engineBlockSha256 !== blkSha) bsProb.push('manifest (commit ' + (bm.commit || '?').slice(0, 8) + ', dirty ' + bm.dirty + ', engine ' + (bm.engineBlockSha256 === blkSha ? 'equals the page\'s' : 'DIFFERS') + ')');
-  check('audit E2 (v5.1): the backing-share chart is the 500-seed data (two panels of three series and five points, the table carries every number), its end points are the release and H1 rows exactly, inflation falls as more is backed, and its manifest names a clean commit and the page\'s engine',
+  check('audit E2 (v5.1; on the findings explorer since v5.2.1): the backing-share chart is the 500-seed data (two charts of three series and five points, the table carries every number), its end points are the release and H1 rows exactly, inflation falls as more is backed, and its manifest names a clean commit and the page\'s engine',
     bsProb.length === 0, bsProb.length ? bsProb.slice(0, 5).join('; ') : 'a = 0, 0.25, 0.5, 0.75, 1 in three environments; commit ' + bm.commit.slice(0, 8) + '; Adverse change in wealth poverty ' + BK.map(k => sgn(BS.envs.adv.rows[k].dPov[0])).join(' / ') + ' points');
   const wn = makeWindow('', {noChart: true, page: 'early'});  /* v5.2 step 8: an earlier-engine run, on its page */
   let ok = true, why = '';
@@ -1192,5 +1198,15 @@ function phase13(done) {
     if (/Complete/.test(st) || Date.now() - t0 > 90000) { clearInterval(iv);
       check('audit finding 2: with Chart.js missing the page loads, shows the charts note, and an earlier-engine run completes (it used to stall at "year 20 of 20…100%")',
         ok && !!note && noteShown && /Complete/.test(st), 'start ok ' + ok + (why ? ' (' + why + ')' : '') + '; Chart fallback ' + !!note + '; note shown ' + noteShown + '; status "' + st.replace(/\s+/g, ' ').slice(0, 50) + '"');
-      done(); } }, 500);
+      phase14(done); } }, 500);
+}
+
+/* ── Phase 14 (v5.2.1, Oct 6, 2026; ledger s90 and s94): every figure on the pages equals the release data. The simulation page's guided sections, the findings
+ * explorer and the replication page's summary print every number from the release data file (data/releases/v<version>.json) with its path; dev/tools/check_figures.js
+ * checks the list of releases against the files, the files against the 500-seed panels, every number on the three pages (static and rendered, every view and release)
+ * against the data, that no figure is typed into the new sections, that every v5.2 anchor still exists, and that the generator's output is current. */
+function phase14(done) {
+  console.log('\n--- Phase 14: every figure on the pages equals the release data (v5.2.1) ---');
+  require(path.join(path.dirname(FILE), 'dev', 'tools', 'check_figures.js')).run().then(r => { r.forEach(x => check(x.name, x.pass, x.detail)); done(); })
+    .catch(e => { check('v5.2.1: the figure check runs', false, String(e && e.stack || e).slice(0, 300)); done(); });
 }
