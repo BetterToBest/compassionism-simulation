@@ -1912,6 +1912,82 @@ function gateUnitSuite(){
 
 /* v5.2 round (Oct 3, 2026; dev/DECISIONS.md, Session 35): tests for the round's switches, added step by step. Harness-only; run by `unit`.
  * Step 2: the reporting option rep52 (Year 7, the official poverty line, fixed-dollar lines, the wealth Gini) and the Gini correction giniNN1. */
+/* v5.3 B2 (Oct 6, 2026; plan item B2; dev/DECISIONS.md Session 39): the accounting identities over the release rows. acctRelCfgs(e) builds every release row
+ * and its no-programme pair exactly as the `testbed release` section does (stepSection: the same presets, n1Row, the study options and the spending share);
+ * acctStudy(envs, seeds, o) runs each row with the engine's runtime check on (ACCT, index.html) and returns, per row, the counts of checks and failures and the
+ * worst relative gap by identity, under the `testbed` mode's profile (acctProfile). o.only: a list of row ids (j); o.g: engine switches set for every row
+ * (tbSetG keys), e.g. {PTH_APPR_CONSERVE:true}.
+ * Reporting only: ACCT draws no random number and no rule reads it (acctUnitSuite checks the results are bit-identical with it on). */
+function acctRelCfgs(e){
+  var P = Object.assign({}, {ref:FULL_INTEGRATION, adv:ADVERSE_REFERENCE, st:STRESS_TEST}[e]), PR = tbPresets(P), SC = SPEND_SOURCED;
+  var rows = releaseRows(SC, false), bases = releaseBases(SC);
+  rows = rows.concat(bases.map(function(b){ return {l:b.l, v:b.v, base:true, j:b.j}; }));
+  var cfg = [{p:PR.baseline(), sc:SC, j:'base', l:'No programme'}];
+  rows.forEach(function(r){ var c = r.base ? Object.assign({p:PR.baseline()}, r.v) : n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); c.j = r.j; c.l = r.l.trim(); cfg.push(c); });
+  return {P:P, cfg:cfg, o:Object.assign({fin:'tax', aT:0, a:0, X:0}, REL_V52_STUDY, {sc:SC})};
+}
+function acctProfile(fn){  /* the `testbed` mode's profile around fn: the debt floor at -$10,000, the NR6 accounting profile and TB_PROFILE_G (as harness.js testbed sets them) */
+  var wf = CFG.WEALTH_FLOOR, svN = applyNR6(), svG = tbSetG(TB_PROFILE_G); CFG.WEALTH_FLOOR = -10000;
+  try { return fn(); } finally { CFG.WEALTH_FLOOR = wf; resetNR6(svN); tbSetG(svG); } }
+function acctStudy(envs, seeds, o){
+  o = o || {}; var out = [];
+  return acctProfile(function(){
+    envs.forEach(function(e){ var S = acctRelCfgs(e);
+      S.cfg.forEach(function(c){ if (o.only && o.only.indexOf(c.j) < 0) return;
+        var c2 = Object.assign({}, c); if (o.g) c2.g = Object.assign({}, c.g || {}, o.g);
+        var A0 = ACCT; ACCT = acctNew();
+        try { tbStudy([c2], seeds, S.P, S.o); out.push({env:e, j:c.j, l:c.l, n:ACCT.n, nFail:ACCT.nFail, worst:ACCT.worst, sum:ACCT.sum, fails:ACCT.fails, lostDeath:ACCT.lostDeath}); }
+        finally { ACCT = A0; } }); });
+    return out; });
+}
+var ACCT_V53 = {PTH_APPR_CONSERVE:true, SURP_CUT_MARKUP:true};  /* v5.3 B2: the two engine corrections the accounting check called for (dev/DECISIONS.md Session 39) */
+var ACCT_IDS = ['money', 'equity', 'bu', 'premium', 'books-bu', 'books-conv', 'books-issued', 'books-prices', 'source'];
+function acctUnitSuite(){
+  var out = [];
+  function t(name, fn){ try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } finally { ACCT = null; LEDGER = null; } }
+  function fails(R){ var f = []; R.forEach(function(r){ Object.keys(r.nFail).forEach(function(k){ f.push(r.env + ' ' + r.j + ': ' + k + ' ' + r.nFail[k] + '/' + r.n[k] + ' (worst ' + r.worst[k].toExponential(1) + ')'); }); }); return f; }
+  function tot(R){ var n = {}, w = {}; R.forEach(function(r){ Object.keys(r.n).forEach(function(k){ n[k] = (n[k] || 0) + r.n[k]; w[k] = Math.max(w[k] || 0, r.worst[k] || 0); }); }); return {n:n, w:w}; }
+  t('v5.3 B2: the accounting check changes nothing: with it on, every result of the release row, its no-programme pair and five readings (ageing, savings with interest, rent mark-up, progressive tax, review errors) is bit-identical, seeds 1-2, three environments', function(){
+    var bad = [], k = 0;
+    acctProfile(function(){ ['ref', 'adv', 'st'].forEach(function(e){ var S = acctRelCfgs(e), cf = S.cfg.filter(function(c){ return ['base', 'release', 'age', 'sav', 'hcap', 'progtax', 'rev20'].indexOf(c.j) >= 0; });
+      var a = tbStudy(cf, 2, S.P, S.o); ACCT = acctNew(); var b; try { b = tbStudy(cf, 2, S.P, S.o); } finally { ACCT = null; }
+      cf.forEach(function(c, i){ TB_KEYS.forEach(function(key){ for (var q = 0; q < 2; q++){ k++; if (!Object.is(a[i]._s[key][q], b[i]._s[key][q])) bad.push(e + ' ' + c.j + ' ' + key); } }); }); }); });
+    return {pass:bad.length === 0, detail:k + ' values compared; differing: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
+  t('v5.3 B2: with the v5.3 corrections (PTH appreciation conserved, the split\'s cut sized on the marked-up rent), every identity holds on every release row and no-programme pair, seed 1, three environments (tolerance 1e-9 of the flows)', function(){
+    var R = acctStudy(['ref', 'adv', 'st'], 1, {g:ACCT_V53}), f = fails(R), T = tot(R), miss = ACCT_IDS.filter(function(k){ return !T.n[k]; });
+    return {pass:f.length === 0 && miss.length === 0, detail:R.length + ' row-environments; checks: ' + ACCT_IDS.map(function(k){ return k + ' ' + (T.n[k] || 0) + ' (worst ' + (T.w[k] || 0).toExponential(1) + ')'; }).join(', ') + (miss.length ? '; never checked: ' + miss.join(', ') : '') + (f.length ? '; FAILURES: ' + f.slice(0, 4).join('; ') : '')}; });
+  t('v5.3 B2: without the corrections (the v5.2 engine) the check finds exactly the two recorded findings and nothing else: Acre Equity on every row with PTH, gap = the cash part of the appreciation to the cent; the split\'s premium only in the two rent mark-up readings, where the cuts exceed the pool', function(){
+    var R = acctStudy(['ref', 'adv', 'st'], 1), other = [], eqRows = 0, prRows = [];
+    R.forEach(function(r){ Object.keys(r.nFail).forEach(function(k){ if (k === 'equity') eqRows++; else if (k === 'premium' && (r.j === 'hcap' || r.j === 'hcaphi')) prRows.push(r.env + ' ' + r.j); else other.push(r.env + ' ' + r.j + ' ' + k); }); });
+    var S = acctRelCfgs('ref'), c = S.cfg.filter(function(x){ return x.j === 'release'; })[0], L = newLedger(), gap, liq, pg;
+    acctProfile(function(){ LEDGER = L; ACCT = acctNew(); tbStudy([c], 1, S.P, S.o); gap = ACCT.sum.equity; liq = L.tot.pthApprLiquid;
+      var H = S.cfg.filter(function(x){ return x.j === 'hcap'; })[0]; ACCT = acctNew(); LEDGER = null; tbStudy([H], 1, S.P, S.o); pg = ACCT.sum.premium; });
+    var ok = other.length === 0 && eqRows > 0 && prRows.length === 6 && Math.abs(gap - liq) <= 1e-9*liq && pg < 0;
+    return {pass:ok, detail:'equity failing on ' + eqRows + ' row-environments; premium failing on ' + prRows.length + ' (' + prRows.join(', ') + '); Reference release row, seed 1: equity gap $' + gap.toFixed(2) + ' vs cash part of the appreciation $' + liq.toFixed(2) + '; rent mark-up reading: premium gap $' + pg.toFixed(0) + ' (negative: cuts above the pool); other failures: ' + (other.length ? other.slice(0, 4).join(', ') : 'none')}; });
+  t('v5.3 B2: outside the testbed, the framework alone and with each module added (project hiring, ESP payroll, then the split, production and joining) and the engine model: the money, equity and BU identities hold, three environments (v5.3 corrections on)', function(){
+    var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, gc:GATE_CURRENT, rng:RNG, g:tbSetG(ACCT_V53)}, bad = [], info = [];
+    try { [[FULL_INTEGRATION, 1], [ADVERSE_REFERENCE, 2], [STRESS_TEST, 3]].forEach(function(cE){
+      [{n:'engine model', cm:'engine'}, {n:'framework alone', m:{}}, {n:'+ project hiring', m:{pj:1}}, {n:'+ ESP payroll', m:{pj:1, es:1}}, {n:'+ every framework module', m:{pj:1, es:1, fw:1}}].forEach(function(cf){
+        var m = cf.m || {}; CONVERSION_MODEL = cf.cm || 'framework'; GATE_CURRENT = true; PROJ = m.pj ? Object.assign({}, PROJ_DEFAULTS) : null; ESP = m.es ? Object.assign({}, ESP_DEFAULTS) : null;
+        SURP = m.fw ? Object.assign({}, SURP_DEFAULTS, {priv:'prices'}) : null; PROD = m.fw ? Object.assign({}, PROD_DEFAULTS, {match:'market', speed:'oneyear'}) : null; JOIN = m.fw ? Object.assign({}, JOIN_DEFAULTS) : null;
+        SPS = null; PDS = null; ESS = null; JNS = null; PJS = null; FWS = null; ACCT = acctNew(); RNG = mulberry32(cE[1] + 700003);
+        var P = cE[0], ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); }), CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0}; RNG = mulberry32(cE[1]);
+        for (var y = 0; y < P.years; y++) runYear(ag, y, P, CALM);
+        var nf = Object.keys(ACCT.nFail); if (nf.length) bad.push(cf.n + ': ' + nf.map(function(k){ return k + ' ' + ACCT.nFail[k]; }).join(', '));
+        if (cE[1] === 1) info.push(cf.n + ' ' + ['money', 'equity', 'bu', 'bu-unallocated', 'premium'].filter(function(k){ return ACCT.n[k]; }).map(function(k){ return k + ' ' + ACCT.n[k]; }).join('/')); }); }); }
+    finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; JOIN = sv.jn; GATE_CURRENT = sv.gc; RNG = sv.rng; tbSetG(sv.g); SPS = null; PDS = null; ESS = null; JNS = null; PJS = null; FWS = null; }
+    return {pass:bad.length === 0, detail:'checks (Reference): ' + info.join('; ') + '; failures: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  t('v5.3 B2: the check catches what it is meant to: a dollar added to each adult\'s wealth outside the recorded flows fails the money identity in every adult-year, and one BU slipped into each participant\'s saved project BU fails the BU stock in every year after the first (Reference, release row, seed 1)', function(){
+    var S = acctRelCfgs('ref'), c = S.cfg.filter(function(x){ return x.j === 'release'; })[0], c2 = Object.assign({}, c, {g:ACCT_V53}), oC = tbCashFlow, oR = pjOwnRate, n1, nY, m1, mY;
+    try { tbCashFlow = function(a){ a.wealth += 1; return oC.apply(this, arguments); };  /* called once for each adult a year, inside the year */
+      ACCT = acctNew(); acctProfile(function(){ tbStudy([c2], 1, S.P, S.o); }); n1 = ACCT.nFail.money || 0; nY = ACCT.n.money; }
+    finally { tbCashFlow = oC; }
+    try { pjOwnRate = function(a){ a._pjSaved = (a._pjSaved || 0) + 1; return oR.apply(this, arguments); }; ACCT = acctNew(); acctProfile(function(){ tbStudy([c2], 1, S.P, S.o); }); m1 = ACCT.nFail.bu || 0; mY = ACCT.n.bu; }
+    finally { pjOwnRate = oR; }
+    return {pass:n1 === nY && nY > 0 && m1 >= mY - 1 && mY > 1, detail:'money: ' + n1 + ' of ' + nY + ' adult-years caught; BU stock: ' + m1 + ' of ' + mY + ' years caught'}; });
+  return out;
+}
+Object.assign(module.exports, { acctRelCfgs, acctStudy, acctProfile, ACCT_V53, acctUnitSuite, acctNew, setAcct:function(x){ ACCT = x; }, getAcct:function(){ return ACCT; } });
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
@@ -2290,11 +2366,15 @@ if (require.main === module) {
     console.log('\n=== v52UnitSuite(): the v5.2 round (harness-only) ===');
     V52U.forEach(function(x){ if (!x.pass) v52f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + V52U.length + ' run, ' + v52f + ' failed');
+    var ACU = acctUnitSuite(), acf = 0;
+    console.log('\n=== acctUnitSuite(): v5.3 B2, the accounting identities over the release rows (harness-only) ===');
+    ACU.forEach(function(x){ if (!x.pass) acf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + ACU.length + ' run, ' + acf + ' failed');
     var GCU = gateUnitSuite(), gcf = 0;
     console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
     GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));

@@ -28,7 +28,7 @@ Since v5.0 shipped, the live page is whatever is on `main`, and merging a pull r
 
 ## Standing guardrails (from earlier sessions; keep all of them)
 
-1. Every new mechanism sits behind a switch; with the switch off, output is bit-identical to before (prove it with full-output diffs).
+1. Every new mechanism sits behind a switch; with the switch off, output is bit-identical to before (prove it with full-output diffs). Between releases, record each engine change with `node dev/tools/engine_lineage.js prove "what changed"` (it reruns the 12-seed release panels and checks their fingerprints), or the page test's provenance check fails.
 2. Before/after comparisons are CRN-paired on seeds 1-500, in the Reference, Adverse and Stress environments.
 3. The three checks run on every change: `validate`, `unit`, `domtest`. Find their exact commands in `.github/workflows/checks.yml`; do not guess.
 4. Eight random draws per agent-year (the CRN guarantee) must hold.

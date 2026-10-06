@@ -1,0 +1,35 @@
+{
+ "_about": "The engine's lineage between releases (dev/tools/engine_lineage.js; DECISIONS Session 39). Each link records an engine change that left every result unchanged: the six 12-seed release panels made by the new engine have the base's fingerprints. domtest accepts a published run file whose engine differs from the page's only through such a chain. The round's release remakes the panels and starts a new base.",
+ "proof": "node harness.js testbed 12 release ENV --json=DIR/r20-ENV.json and the same with --years=40 (DIR/r40-ENV.json), ENV ref, adv, st; fingerprints by dev/tools/panel_hash.py (every result, not the run's own record)",
+ "base": {
+  "engineBlockSha256": "2932191258bf53f1b57b4643bc3b472dce53325691516da7c0a473453303558a",
+  "what": "the engine of the published v5.2 panels (commit 42cd8b9; unchanged in v5.2.1 and v5.2.2)",
+  "fingerprints": {
+   "r20-ref": "dba1bbc6c4a77d9a",
+   "r20-adv": "fe07f39b4c354aa0",
+   "r20-st": "241c6a01ee95b0f3",
+   "r40-ref": "a57c1f757d57e192",
+   "r40-adv": "ec91d48ccb240e66",
+   "r40-st": "1462d0e50fc64d40"
+  },
+  "madeBy": "the v5.2.2 harness at commit 0701615 (v5.3 B1's before-runs, Oct 6, 2026; DECISIONS Session 38)"
+ },
+ "links": [
+  {
+   "from": "2932191258bf53f1b57b4643bc3b472dce53325691516da7c0a473453303558a",
+   "to": "6ef547078f9b48bcb8d41a153f9b4258b8debdca1df62230597e65b4ff10f789",
+   "date": "2026-10-06",
+   "change": "v5.3 B2: the accounting check (ACCT, off by default) and the correction switch SURP_CUT_MARKUP (off by default)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 236
+  }
+ ]
+}

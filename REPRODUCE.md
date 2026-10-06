@@ -44,6 +44,7 @@ Below the cost of living (share of adult-years); too little wealth at the last y
 
 | What | Command | File |
 |---|---|---|
+| The accounting check and its two corrections (v5.3, B2; `dev/reports/v5-13-accounting-check.md`) | `node dev/tools/acct_check.js ENV 500` (ENV `ref`, `adv`, `st`) | `dev/runs/acct-check-ENV.json` |
 | The Phi step (v5.2.2, A7; `dev/reports/v5-11-phi-step.md`) | `node dev/tools/phi_check.js ENV 500` (ENV `ref`, `adv`, `st`) | `dev/runs/phi-check-ENV.json` (fingerprints ref `353830f0bf6e0b50`, adv `eadebbef40935a3e`, st `0415ccac89ed1c6d`) |
 | Savings that keep up with prices (v5.2 step 3) | `node dev/tools/save_check.js ENV 200` | `dev/runs/save-check-ENV.json` |
 | The middle backing reading (v5.2 step 6) | `node dev/tools/backing_check.js ENV 200` | `dev/runs/backing-check-ENV.json` |

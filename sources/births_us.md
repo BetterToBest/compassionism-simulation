@@ -1,6 +1,6 @@
 # US births: national figures (input for v5.3 children, plan item B4)
 
-Given by Duke Johnson on Oct 6, 2026 (pasted from CDC/NCHS FastStats, "Births and Natality"; the data year was not in the paste and is to be confirmed against the NCHS release). cdc.gov refuses connections from the build environment (HTTP 403, Oct 6, 2026), so these figures could not be fetched here directly.
+Given by Duke Johnson on Oct 6, 2026 (pasted from CDC/NCHS FastStats, "Births and Natality"). FastStats cites them to *Births: Final Data for 2024* (National Vital Statistics Reports, vol. 75, no. 2, June 9, 2026), so the data year is 2024. cdc.gov refused connections from the build environment earlier on Oct 6 (HTTP 403) and answered later the same day, so the report itself was read (below).
 
 | Measure | Value |
 |---|---|
@@ -12,4 +12,14 @@ Given by Duke Johnson on Oct 6, 2026 (pasted from CDC/NCHS FastStats, "Births an
 | Births to unmarried mothers | 39.5% |
 | Mean age of the mother at first birth | 27.6 |
 
-How v5.3 uses them: as checks on the model's births (the general fertility rate, the mean age at first birth, the share of births to unmarried mothers, which bears on single-parent households). The births by the mother's age that the model draws from need an age breakdown; the Census Bureau's API now asks for a key, so the breakdown is to come from the Census Bureau's published fertility tables (CPS June supplement or ACS table B13016, women with a birth in the past 12 months by age) or an NCHS copy Duke uploads. Low birthweight and preterm births are not modelled.
+How v5.3 uses them: as checks on the model's births (the general fertility rate, the mean age at first birth, the share of births to unmarried mothers, which bears on single-parent households). Low birthweight and preterm births are not modelled.
+
+## Births by the mother's age, 2024 (what the model draws from)
+
+Source: Osterman, Hamilton, Martin, Driscoll and Valenzuela, *Births: Final Data for 2024*, National Vital Statistics Reports vol. 75 no. 2 (NCHS, June 9, 2026), Table 2, "Birth rates, by age of mother: United States, 2010-2024", row 2024, all races and origins. https://www.cdc.gov/nchs/data/nvsr/nvsr75/nvsr75-02.pdf (read Oct 6, 2026). Births per 1,000 women in the age group a year.
+
+| Age of mother | 10-14 | 15-19 | 20-24 | 25-29 | 30-34 | 35-39 | 40-44 | 45-49 |
+|---|---|---|---|---|---|---|---|---|
+| Births per 1,000 women | 0.2 | 12.6 | 55.8 | 89.5 | 93.7 | 54.3 | 12.7 | 1.1 |
+
+The total fertility rate, 1,599.5 per 1,000 women (the sum of the rates × 5), is in the same row. The 45-49 rate includes births to women 50 and over (the report's note 1).

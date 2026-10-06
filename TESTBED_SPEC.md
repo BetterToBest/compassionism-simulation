@@ -35,11 +35,13 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `HCAP` (landlords capture BU spent on rent) | null / {c, all} | Labelled reading | v5.2 step 7 (decision C) |
 | `REVIEW` (unearned high rates in the Collectives' review) | null / {u, q} | Labelled reading | v5.2 step 7 (decision C) |
 | `FBS_BU_ONCE` | false / true | Sensitivity (i3-1) | session 7 |
-| `PTH_APPR_CONSERVE` (PTH appreciation that conserves wealth) | false / true | Sensitivity; a labelled row is planned for v5.4 | v4.16; Muse audit |
+| `PTH_APPR_CONSERVE` (PTH appreciation that conserves wealth: the cash part of the appreciation leaves the Acre Equity) | false / true | v5.3 correction: true in every v5.3 row (the accounting check, B2, found the cash part counted twice); false reproduces v5.2 | v4.16; Muse audit; DECISIONS Session 39 |
+| `SURP_CUT_MARKUP` (the split's price cut sized on the rent after the landlords' mark-up) | false / true | v5.3 correction: true in every v5.3 row (B2 found the cut handed out more than the pool in the rent mark-up readings); changes nothing without `HCAP`; false reproduces v5.2 | DECISIONS Session 39 |
 | `AUTOMATION_SAMPLER_LEGACY` | false / true | Retired (reproduces v4.19 in `validate`) | v4.20 |
 | `RELIEF_PRICE_LEGACY` | false / true | Retired (reproduces v4.20 in `validate`) | v4.21 |
 | `CCO_RELIEF_FLAT`, `BU_ALLOCATIONS_PER_YEAR` | false, 1 | Earlier engine only (stabiliser studies) | v4.19 |
 | `LEDGER`, `REP_HOOK` | null | Reporting only | A1; v5.2 |
+| `ACCT` (the accounting check) | null / `acctNew()` | Checking only: no draw, nothing any rule reads; results are bit-identical with it on (`acctUnitSuite`). See MODEL_SPEC.md, section 11 | v5.3 B2 |
 
 ## 2. Testbed options (per study or per row)
 
