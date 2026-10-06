@@ -123,7 +123,7 @@
     var y = m.t; last = null;
     spec.rows.forEach(function (r, ri) {
       if (r.group && r.group !== last) { last = r.group; txt(svg, 12, y + 17, r.group, {class: 'fx-group'}); y += gh; }
-      var row = el('g', {class: 'fx-row', tabindex: 0, role: 'listitem'}, svg), cy = narrow ? y + 30 : y + rh/2;
+      var row = el('g', {class: 'fx-row', tabindex: ri === 0 ? 0 : -1, role: 'listitem'}, svg), cy = narrow ? y + 30 : y + rh/2;
       el('rect', {x: 0, y: y, width: W, height: rh, class: 'fx-rowhit'}, row);
       var lab = txt(row, 12, narrow ? y + 13 : cy + 4, r.label, {class: 'fx-rowlbl'});
       if (!narrow && lab.getComputedTextLength && lw) { try { var L = lab.getComputedTextLength(); if (L > lw - 8) { var s = r.label; while (s.length > 4 && lab.getComputedTextLength() > lw - 14) { s = s.slice(0, -2); lab.textContent = s + '…'; } } } catch (e) {} }
@@ -140,6 +140,11 @@
       y += rh;
     });
     svg.setAttribute('role', 'list');
+    /* one Tab stop per chart: the arrow keys move between rows (Home and End to the ends) */
+    var allRows = Array.prototype.slice.call(svg.querySelectorAll('.fx-row'));
+    allRows.forEach(function (rw, i) { rw.addEventListener('keydown', function (ev) { var j = ev.key === 'ArrowDown' || ev.key === 'ArrowRight' ? i + 1 : ev.key === 'ArrowUp' || ev.key === 'ArrowLeft' ? i - 1 : ev.key === 'Home' ? 0 : ev.key === 'End' ? allRows.length - 1 : null;
+      if (j === null) return; ev.preventDefault(); j = Math.max(0, Math.min(allRows.length - 1, j)); rw.setAttribute('tabindex', -1); allRows[j].setAttribute('tabindex', 0); allRows[j].focus(); }); });
+    if (allRows.length) svg.setAttribute('aria-label', (spec.label || '') + '. Use the arrow keys to read each row.');
     if (spec.legend) legend(host, spec.legend);
     return svg;
   }

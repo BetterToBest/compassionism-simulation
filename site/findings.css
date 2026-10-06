@@ -212,3 +212,5 @@ details.fx-more>div{padding:0 14px 12px;font-size:14px;line-height:1.6;color:var
 @media (min-width:1181px){.fd-grid{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}.fd-side .fd-cav ul{columns:2 220px;column-gap:1.2rem}.fd-side .fd-cav li{break-inside:avoid}}
 .fx a{color:var(--fx-accent)}
 .fx-kv b .num{white-space:nowrap}
+.fx-skip{position:absolute;left:-999px;top:8px;z-index:400;background:#fff;color:#0F6E56;padding:6px 12px;border-radius:8px;font:600 14px system-ui,sans-serif}
+.fx-skip:focus{left:12px}

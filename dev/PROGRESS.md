@@ -100,3 +100,18 @@ Duke's prompt for this round (in chat, Oct 3) lists nine steps; the ledger's ste
 ## After v5.2
 
 Next, in this order (ledger): (1) the compare page (Compassionism against current US policy and the other designs, on the same simulated people; ledger s46, `dev/reports/compare-page-plan.md`); (2) children and households, with the child allowance (ledger s52; the Child Tax Credit comparison waits for it); (3) candidates for the main row, each with its 500-seed figures already on the replication page: ageing at 40 years, the "closer to US data" reading, and a spending rule in which people with less income spend less (the debt gap); results by age group, so the ageing result can be read. Outreach (CoMSES, the fact sheet; ledger s37) was waiting for v5.2.
+
+## Session 36 (Oct 6, 2026): the v5.2.1 visual suite (presentation only)
+
+Duke's prompt for this round (in chat, Oct 6) and the ledger's steps s90-s95; decisions d156-d160 taken as selected. Branch `claude/happy-faraday-cdq3ta`, fresh from `main` at `012c8d7` (v5.2). Baseline before any change: `validate` passes, `unit` 171, `domtest` 113 of 113. The plan was shown to Duke first (plan mode) and approved.
+
+- [x] 33. Data (s90): `dev/tools/release_data.py` writes `data/releases/v5.2.json`, `data/manifest.json` and the pages' static figures; `dev/tools/explore_export.js` (harness unchanged) reads the spread across runs, savings deciles and seed 1's 500 adults from the same runs, from commit `4e17968` (clean tree): `node dev/tools/explore_export.js ENV YRS 500 1` (ENV ref/adv/st, YRS 20/40), logs `dev/runs/v521-explore-ENV-YRS.txt`; its self-check passed in all six (means equal the published path). Backfill: v5.0, v5.0.1, v5.1 regenerated from their tags and identical to their published panels (`dev/runs/v521-backfill-check.txt`), so they are in the manifest. Recipe: `dev/ADDING-A-RELEASE.md`.
+- [x] 34. Findings explorer (s91): `findings.html`, with `site/charts.js`, `site/findings.js`, `site/findings.css`.
+- [x] 35. Replication page (s92): what is replicated, reproduce, what the tool includes, current findings (five lines and the explorer link), the version timeline; every old anchor kept and forwarded.
+- [x] 36. Simulation page (s93): eight guided sections under a sticky mini-navigation and one control strip (`site/simpage.js`).
+- [x] 37. Checks and release (s94): `dev/tools/check_figures.js` as domtest Phase 14; the moved Phase 13 checks read the explorer. `validate` passes; `unit` 171, 0 failed; `domtest` 124 of 124. `harness.js`, the page's release engine and every 500-seed results file byte-identical to v5.2. Screenshots at 390 and 1280 px, light and dark, keyboard and reduced-motion passes (report). Version 5.2.1 (`set_version.py`, `check_versions.js`), CONTRIBUTING "v5.2.1 Release Notes", v5.2 notes moved to CHANGELOG, README, status table. Decisions: DECISIONS.md, Session 36. Report: `dev/reports/v5-10-visual-suite.md`.
+
+## After v5.2.1
+
+Next, in this order (ledger): (1) the compare page (s95), built on `site/` and the release data format (a comparison is a new chart kind and a new section of the release file; `dev/reports/compare-page-plan.md`); (2) children and households (s52); (3) candidates for the main row and results by age group; a v5 attribution study (each part removed in turn) is proposed for that model round (DECISIONS, Session 36). The walk-through video still shows the v5.2 layout (d151: rebuild with the next model round). Outreach (s37) is unblocked.
+
