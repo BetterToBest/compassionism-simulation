@@ -132,7 +132,7 @@ Duke's plan prompt: `dev/plans/v5.3-plan-prompt.md` (Round A = v5.2.2, Round B =
 - [ ] A10. CoMSES package: after v5.3 (Duke's d171).
 - [x] Release: version 5.2.2 (`set_version.py`, `check_versions.js`); CONTRIBUTING "v5.2.2 Release Notes" (v5.2.1's moved to CHANGELOG); replication page timeline entry; README pointers; DECISIONS Session 37; report `dev/reports/v5-12-audit-fixes-v5-2-2.md`.
 
-Checks (final): see the pull request. `domtest` is 125 checks (the stale-claims check added).
+Checks (final): `validate` passes; `unit` 171, 0 failed; `domtest` 125 of 125 (the stale-claims check added); CI green on pull request BetterToBest/compassionism-simulation#10. Reproduction checked: a fresh `node harness.js testbed 500 release ref` at `f8427e1` gives the published fingerprint `1799e859c5e90b1e` (REPRODUCE.md).
 
 ## Next: Round B, v5.3 households and children (after the v5.2.2 pull request merges)
 

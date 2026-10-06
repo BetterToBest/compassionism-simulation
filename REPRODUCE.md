@@ -9,7 +9,7 @@ Every number on the simulation page (`index.html`), the findings explorer (`find
 - The three checks: `npm test` (`node harness.js validate`, `node harness.js unit`, `node domtest.js`; about 7 minutes).
 - Run each 500-seed command from a clean checkout of the release commit. One process per environment; they can run side by side (the runs are independent and seeded, so splitting changes no figure). A 20-year release panel takes about 55 minutes per environment and a 40-year one about 95 minutes on one core.
 
-**Fingerprints.** A run file holds its results and, under `_meta`, how and when it was made (commit, date, seconds). A rerun gives the same results but a new `_meta`, so compare `python3 dev/tools/panel_hash.py FILE` (SHA-256 of everything except `_meta`, written canonically; first 16 hex digits below). The v5.2 files were made at commit `42cd8b9` (v5.2); the engine is unchanged in v5.2.1 and v5.2.2, so the same commands at a later release commit give the same fingerprints.
+**Fingerprints.** A run file holds its results and, under `_meta`, how and when it was made (commit, date, seconds). A rerun gives the same results but a new `_meta`, so compare `python3 dev/tools/panel_hash.py FILE` (SHA-256 of everything except `_meta`, written canonically; first 16 hex digits below). The v5.2 files were made at commit `42cd8b9` (v5.2); the engine is unchanged in v5.2.1 and v5.2.2, so the same commands at a later release commit give the same fingerprints. Checked on Oct 6, 2026: `node harness.js testbed 500 release ref` at commit `f8427e1` (the v5.2.2 work, clean tree; 53 minutes) gave `1799e859c5e90b1e`, the published Reference fingerprint, with the same engine-block hash.
 
 ## The release data (v5.2 figures, shown in v5.2.2)
 
