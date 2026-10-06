@@ -1,0 +1,626 @@
+# The project ledger, copied into the repository
+
+Written Oct 3, 2026 (session 35) from the Simulation project in Duke's ledger (claude.ai artifact KMdxWQ5KAefQVFxQA236pV, project "sim", saved 2026-10-03). The ledger stays the place Duke answers questions; this copy makes sure no answer lives only there. Ledger numbers (d for a decision, s for a step, i for an issue) follow each entry in parentheses so the two can be matched; every entry reads on its own without them.
+
+## Duke's answers of Oct 3 that the v5.2 round applies
+
+- **Poverty target.** Report several poverty measures beside the Hub's "poverty rate under 2%" target: the share below the US federal poverty line (the Hub starts from about 12%), a BLEI figure, and the model's existing measures. Report them at Year 7 as well as at 20 and 40 years. (d148)
+- **Inequality target.** Show both an income Gini and a wealth Gini, each against the Hub number that is about it: the Integrated Implementation Roadmap's 0.25-0.30 by Year 7 (from 0.48, an income figure) for income, and the BLEI paper's 0.25 design target for wealth. (d149)
+- **BU indexing.** Keep the Hub's rule as the main reading (the BU is indexed to prices only in a year when prices rise faster than 5%), and add "indexed every year" as one more reading. (d147)
+- **Walk-through.** Add chapters on the Hub's targets and the new charts once results settle, so the narration is recorded once, at the release. (d151)
+- **The zip upload route.** Leave the apply-upload workflow as it is (nothing uses it while pull requests work). (d150)
+
+## The four design decisions for v5.2 (defaults Duke confirmed)
+
+- **A. Retirees under Compassionism.** They keep the full BU for life on top of Social Security. They stop paid essential-service work at 67, but can still convert expired BU through creative work at the rate they have earned (Claude's reading: the BU is a citizen's allowance, not a wage). Alternatives kept as switches: no conversion after retirement; no Compassionism-specific rule (retirees get only Social Security, the same in both runs). (d152)
+- **B. The middle backing reading.** Shown beside the two ends as a labelled middle band, with the Kenya study named and its limits stated; the headline stays the cautious reading. Alternatives: make the middle the headline; no middle reading. (d153)
+- **C. Other ways to pay the Source.** A progressive income tax and a land-value tax, each sized to cover the Source's net payout and marked "not specified by the Hub". Alternatives: only the income tax; neither. (d154)
+- **D. The earlier v4.22 engine.** Moves to its own page, earlier-engine.html, linked from the main page as "Explore the earlier engine"; the v4.22 tag stays the citable copy. Alternatives: keep it collapsed on the main page; remove it from the site. (d155)
+
+## Open items (steps not yet done in the ledger)
+
+- **Housekeeping first: copy the ledger into the repo and sort the open-items list** (s80, todo, group "Next model round: v5.2 (one release, one pull request)"). Claude Code writes the ledger's decisions and open items into dev/background/ledger-export.md, so no answer lives only in the dashboard. CONTRIBUTING.md's 'Model Architecture Feedback' list (about 40 items, written for the earlier v4.22 engine) gets a short table at its top: each item marked settled by v5 (with where), applies only to the earlier engine, or still open in v5 and taken up in this round. The long history moves to CHANGELOG.md; CONTRIBUTING.md keeps how to contribute plus the open items. Text only, no figure changes.
+- **Results reporting the Hub's targets can be read against** (s81, todo, group "Next model round: v5.2 (one release, one pull request)"). From your answers on Oct 3: report several poverty measures beside the Hub's 'under 2%' target, including the share below the US federal poverty line (the Hub's own starting point of about 12%) and a BLEI figure, at Year 7 as well as 20 and 40 years; show an income Gini and a wealth Gini, each against the Hub number that is about it. Claude's math choices: apply the standard small-sample correction to every Gini (moves each by about 0.001), and add a reading with the poverty lines adjusted for price rises (today they are fixed in dollars, which reads slightly low under inflation).
+- **Savings that keep up with prices** (s82, todo, group "Next model round: v5.2 (one release, one pull request)"). In the model savings earn nothing, so when prices rise fast most savings lose their value within a few years; this is the main reason more people end with too little wealth in the Adverse and Stress environments. A switch pays interest equal to the year's inflation plus a small real rate taken from US inflation-protected Treasury yields, for everyone, in the no-programme run too. Built together with the reading where the BU keeps its value every year (your Oct 3 answer kept the Hub's 5% rule as the main reading and asked for this one beside it), because both are about money losing value.
+- **Adults who age, retire and are replaced over 40 years** (s83, todo, group "Next model round: v5.2 (one release, one pull request)"). Each adult gets an age drawn from Census data, retires at 67 with a Social Security benefit (the model already carries the Social Security figures as reference points), may die according to the Social Security life tables, and new 25-year-olds join each year. Behind a switch so today's results stay reproducible; applies to both runs. What a retired adult receives under Compassionism is a decision with a default (see the decisions list).
+- **Check the no-programme run against US data** (s84, todo, group "Next model round: v5.2 (one release, one pull request)"). The no-programme run is the yardstick for every result and has never been checked against the US. Compare it with published facts: how long poverty spells last (Panel Study of Income Dynamics), how wealth is spread (Federal Reserve Survey of Consumer Finances), income inequality (Census; the model's 0.29 to 0.38 sits below the US 0.48), and the Census poverty measures. The match and the gaps go on the replication page. Where a gap traces to a known modelling choice (starting wealth not linked to wages; automation risk not linked to wages, though the data correlate them at -0.65; the six unsourced inputs listed in CONTRIBUTING.md), Claude Code adds a labelled reading that fixes it and looks for sources for the unsourced inputs. No setting is tuned to hit a target.
+- **How much of the conversion money is backed by new output: a middle reading and idle workers** (s85, todo, group "Next model round: v5.2 (one release, one pull request)"). The page shows two ends (almost none backed, or all backed); this is the assumption that changes results most. Add a middle reading anchored by the best real-world evidence, the Kenya cash-transfer study (Egger and others, Econometrica 2022: spending raised local output about 2.5 times the transfer with almost no price rise), stated as a very different economy from the US. Also let the spending layer put some idle workers to work in normal years, not only in recessions, using the Labor Department's broad measure of slack (U-6, about 7 to 8%). How prominently the middle reading is shown is a decision with a default.
+- **Robustness readings an economist will ask about** (s86, todo, group "Next model round: v5.2 (one release, one pull request)"). Each is a labelled reading, never the main row: landlords capturing part of the allowance where community housing does not cover demand (sourced from the US housing-voucher studies, such as Susin 2002); mistakes and collusion in the Collectives' review of work, showing how results change when 5%, 10% or 20% of high conversion rates are unearned; the launch gift paid over the run beside pay as you go (an open item from your earlier request to show both); and other ways to pay the Source (a progressive income tax and a land-value tax), each marked 'not specified by the Hub' (a decision with a default).
+- **Page: show the path over time, and give the earlier engine its own page** (s87, todo, group "Next model round: v5.2 (one release, one pull request)"). Small charts of poverty, savings and real purchasing power year by year, no programme beside Compassionism, so readers see whether things settle or keep changing; wherever the page says how much prices rise, it also says what a month of the allowance and of wages still buys. The earlier v4.22 engine moves to its own page with a link (a decision with a default), so its older labels and figures are not confused with the release results.
+- **Regenerate once, update the replication page and the walk-through, release v5.2** (s88, todo, group "Next model round: v5.2 (one release, one pull request)"). After every result-changing step: one regeneration of the 500-seed results (three environments, 20 and 40 years) from one clean commit with its record, the replication page and CONTRIBUTING.md release notes updated, a plain-words report for you in dev/reports/, and the walk-through rebuilt with chapters on the Hub's targets and the new charts (your Oct 3 answer: record the narration once, after results settle). One pull request into main; you merge it and that is the release.
+- **Add children and households to the model, including Compassionism's child allowance** (s52, todo, group "Later"). Large; touches every module. The Child Tax Credit comparison waits for this and belongs to the comparison study. Earlier notes: Large; touches every module (round close-out, N5). Flat per-adult allowances may look worse per dollar against targeted designs until Compassionism's child allowance is modelled. Session 22: the Child Tax Credit waits here (d92). Session 24: after the development round. Session 28 (d121): by default after the release and named on the page as a limit; including it before the release is d121's second option.
+- **Submit the model to the CoMSES model library, and a Show HN fact sheet (yours to write)** (s37, blocked, group "Waiting: outreach"). Oct 3: now waits for v5.2, so the figures sent out already include savings that keep up with prices, ageing and the check against US data (an outside reviewer's first questions). Earlier notes: Oct 3: now waits for v5.1, so the figures quoted to reporters and model libraries are the corrected ones. The walk-through is ready to go with it. Earlier notes: Waits for the release. Drafts exist but describe the six-design comparison, so they need rewriting for the stand-alone page. Held until the new mechanisms exist. Earlier notes: Unblocked since v4.22 is live. Draft in session 8's outreach/ outputs; you submit. The walk-through can go with it. Show HN stays yours to write by hand (d38). Session 24: stays held until N2 and the framework's financing exist.
+
+No decision in the ledger is unconfirmed, and no issue is open (all 14 are resolved; listed at the end).
+
+
+## Related: the Policy Comparison Study (the "compare" page), open steps
+
+The comparison of Compassionism with other designs is its own project in the ledger; it waits for the settled v5.2 engine (ledger d146). Its open steps:
+
+- Add the public costs of poverty that each design avoids (crime, homelessness services, emergency and institutional health care) (s36, todo)
+- Rebuild the comparison figures and the tour video once the new mechanisms exist (s35, todo)
+- Write the 'Limits and costs' section: where Compassionism costs more than expected or inflates more than the other designs (s42, todo)
+- Test how much of the advantage in the Adverse and Stress runs comes from wages that never rise with prices (s43, todo)
+- Add a stylized 'today's safety net' row (SNAP and EITC) beside the no-program Baseline (s46, blocked)
+- Add more designs: job guarantee, housing voucher or social housing, EITC or wage subsidy (s47, blocked)
+- Find which unsourced assumptions the cross-design results depend on (Sobol or Latin hypercube sensitivity) (s48, blocked)
+- Run 30- and 40-year horizons beside 20 years (s49, blocked)
+
+The ledger's two other projects (the Research Hub corrections and the NEEC research) are outside this repository and are not copied here.
+
+## Every decision in the ledger, with the answer that applies
+
+Oldest first. "Answer" is the confirmed option; "why" is the ledger's own reason for the default. Ledger decisions are numbered with gaps (numbers were also used for drafts that were merged or withdrawn).
+
+- **How should v4.20 release tags get created?** (d1, confirmed)
+  - Answer: A GitHub Actions workflow creates the tag and release when META.version changes
+  - Other options: Duke creates tags in GitHub Releases | A Claude Code session creates them, if its permissions allow
+  - Why: Keeps you out of the repo loop and sidesteps the known Claude Code tag-push limitation; META is already the single source of truth for the version string.
+- **How should the labor-supply module treat BU incentives versus cash?** (d2, confirmed)
+  - Answer: Separate BU and cash parameters, with a UBI-equivalent toggle as a sensitivity check
+  - Other options: Separate parameters only | UBI parameters for both, with a disclosure note
+  - Why: Models your stated position while letting skeptical readers see results under the UBI assumption, which is more persuasive than asserting the difference.
+- **PTH's shipped cut (35% of the basket) is 127% of the housing component. What does PTH cover?** (d4, confirmed)
+  - Answer: Keep 35% for now, disclose it, and test a housing-only cut in the session 5 restudy
+  - Other options: PTH covers more than housing (tell me what), so 35% stays | Switch to a housing-only cut now
+  - Why: Every PTH result rests on it, and only you know the intended scope; testing both costs nothing.
+- **Should PTF, PTH and CCO discounts skip the basket's 18% tax share?** (d5, confirmed)
+  - Answer: Yes, behind a switch, measured in the session 5 restudy
+  - Other options: No, keep whole-basket discounts and disclose
+  - Why: No discount can reduce income and payroll tax, so whole-basket discounts overstate relief by about a fifth.
+- **Pair COLA with wage indexation?** (d6, confirmed)
+  - Answer: Test both in the session 5 restudy; wages stay nominal until then
+  - Other options: Index wages whenever COLA is on | Keep wages nominal
+  - Why: COLA amplifies inflation at low additionality; wage indexation is the matching protection for earners.
+- **The CCO-PTH EDC target (0.025) is an engine input. How should results that use it be labeled?** (d13, confirmed)
+  - Answer: Conditional on the target being met
+  - Other options: Model EDC endogenously in a later round
+  - Why: The simulation assumes the target rather than testing it.
+- **A3: how does conversion enter labor supply?** (d14, confirmed)
+  - Answer: Report a bracket, from rent (income effect, the engine as coded) to full dissipation (project time displaces wage time), plus the most extra conversion the unconverted BU could fund
+  - Other options: Treat conversion as a lump sum only (the engine as coded) | Assume every extra project hour converts (unlimited demand for project output)
+  - Why: The BU budget fixes the pool that conversions draw on, so extra effort mostly competes for the same BU. A bracket shows what is at stake without inventing a production side.
+- **A3: which income-effect rate ρ is central?** (d15, confirmed)
+  - Answer: 0.16 (individual income, w32719 rev. Aug 2026), swept 0–0.3 with 0.28 (household) marked
+  - Other options: 0.28 (household)
+  - Why: Model agents are single adults with no partners, so the individual estimate is like for like.
+- **How should "BU backed by art and creation" enter the price module?** (d18, confirmed)
+  - Answer: Add a price-neutral point: the output per dollar of conversion reward at which the currency keeps its value, letting it exceed 1
+  - Other options: Keep additionality capped at 1
+  - Why: It turns the backing claim into a stated, testable condition instead of an assumption.
+- **The octave wage-growth bonus (0.3% per octave a year, unsourced) drives CCO's labor and poverty edge over a matched-cost UBI. How should comparisons treat it?** (d19, confirmed)
+  - Answer: Report every CCO-versus-comparator result with the bonus on and off until it is sourced
+  - Other options: Keep it on (N7: raises are matched by output) | Remove it from the engine
+  - Why: With it off, CCO alone and UBI are nearly identical on labor (-3.05% vs -3.10%) and poverty in the engine model. Showing both keeps the comparison honest without deleting a design feature.
+- **A2: what is the reference pass-through λ_G of unmatched new money to prices?** (d21, confirmed)
+  - Answer: λ_G = 1, swept 0.25–1.41, with the price-neutral point reported beside every breakeven
+  - Other options: λ_G = 1.41 (quantity theory at US M2 velocity) | Report only the price-neutral point
+  - Why: Only the quantity theory separates pass-through from additionality, and it gives 1.41 on GDP (slightly high on the model's income denominator); low-inflation evidence says weaker. The price-neutral point does not depend on λ_G, so reporting it beside the breakeven removes most of the exposure.
+- **Adopt the three text-versus-engine corrections: θ on realised PTF density (C08), PTH cuts housing only (d4), discounts skip the tax share (d5)?** (d22, confirmed)
+  - Answer: Adopt all three in the next-round profile (the A4 presets run on them); the page changes only when you release it
+  - Other options: Adopt them on the page now | Keep them as sensitivity rows only | PTH covers more than housing (say what), so R3 changes scope first
+  - Why: Each brings the engine in line with the framework text or the MIT basket. Together they raise Full Integration poverty (engine, no price feedback) from 26.3/20.4/9.7% to 31.5/23.2/12.2% (wealth/BLEI/basket) and lower the breakeven from 0.963 to 0.910. Comparator presets should run on the corrected accounting.
+- **Index wages to P_G whenever COLA is on (settles d6)?** (d23, confirmed)
+  - Answer: Yes, in the next-round profile
+  - Other options: Keep wages nominal and report both
+  - Why: Measured in session 5: basket poverty at the breakeven falls from 13.0% to 10.2% (Full Integration, engine), and framework-model inflation at a = 0 falls from 66 to 20 points a year. Nominal wages leave earners carrying all of the price risk.
+- **Where does the replication page live?** (d30, confirmed)
+  - Answer: replication.html at the sim repo root (old Hub address redirects)
+  - Other options: Keep the old name, cco-ptf-simulation-replication.html | A docs/ folder
+  - Why: A short, stable address beside index.html, checked by CI with the engine.
+- **Which figures head the replication page?** (d31, confirmed)
+  - Answer: The page's own v4.21 figures (wealth, BLEI and basket poverty, median wealth, matched Baseline) with tooltips; v4.4 tiles moved word for word into Performance
+  - Other options: Keep the v4.4 tiles at the top | No figures at the top
+  - Why: The v4.4 tiles were three releases stale at the top of a v4.21 page.
+- **Replication page metadata: drop '10,000+ Monte Carlo iterations' from the sharing description and match the sharing title to the page title?** (d32, confirmed)
+  - Answer: Yes (the description now matches the page description)
+  - Other options: Keep both as they were
+  - Why: The page's own JSON-LD abstract calls the 10,000+ figure undocumented and superseded; link previews show this text.
+- **A6: what question does the front door ask (README opens with it too)?** (d35, confirmed)
+  - Answer: Let's try a few more options. It has to read smoothly, and clearly, with an interesting hook. A statement could also work, instead of a question.
+  - Other options: How much could the Compassionism framework reduce poverty, at what cost and for whom, compared with other anti-poverty designs run on the same simulated people under the same rules? | What happens to poverty, cost and work when different anti-poverty designs run on the same simulated people under the same rules? | How much could the Compassionism framework reduce poverty?
+  - Why: Names the flagship, as the round plan asks, and states the comparison and the fairness rule in one sentence. Neutral wording drops the reason the tool exists; the short one hides the comparison.
+- **CoMSES submission and Show HN (plan D9): drafts ready in outreach/** (d38, confirmed)
+  - Answer: Hold both until the front door is released under a version number; then CoMSES with peer review; write the Show HN yourself once live
+  - Other options: Submit to CoMSES now | Hold indefinitely
+  - Why: Each should point at a stable release. HN moderators ask that Show HN text be written by hand with no LLM generating or editing it (dang, tips edited Mar 28, 2026), so the Show HN is a fact sheet, not a post.
+- **Round plan D7 (no recorded outcome): is flat BU a principle, or may Compassionism add a needs-based top-up? The plan needs this before NIT results reach the page, and session 8's front door shows them.** (d39, confirmed)
+  - Answer: Allow a needs-based top-up on top of flat BU; test "Compassionism plus top-up" at matched cost next round (N3) before describing it anywhere
+  - Other options: Keep BU flat as a principle; the page says so beside the NIT row (done in session 9); no top-up tested | Hold NIT results off the page until decided
+  - Why: At reference a matched NIT beats Compassionism without its unsourced mechanisms on 20-year FGT2 (0.20 vs 0.16 per $1,000) by concentrating on the deepest shortfalls, while raising the 20-year poverty rate from 55% to 81%. A top-up changes the framework, so it is your call; the default changes nothing. Session 11 (the disconnect Duke flagged: session 10 read 'test before describing it anywhere' as 'leave it out'): now tested and on the page as its own row (d44).
+- **i3-2: adopt the N7 attribution of the BLEI raise (N7_BLEI) in the testbed profile?** (d40, confirmed)
+  - Answer: Yes: N7_BLEI on in the next-round profile; front door regenerated at the release
+  - Other options: Keep it as a sensitivity switch only
+  - Why: Session 9 (testbed n7): the more accurate attribution, same rule for every design. Engine-scale designs move 0.07 pt of FGT2 or less, hours 0.15 pt or less; only framework-scale cash designs move materially (UBI at $32k: 1.19 pt at yr 20, 0.15 over 20 years, in the fiscal-breakdown regime).
+- **A6 front door (follows d35): which question or statement heads the page (README opens with it too)?** (d41, confirmed)
+  - Answer: Compassionism aims to end extreme poverty while incentivizing participation and contribution: test that claim against five other designs on the same simulated people.
+  - Other options: Dollar for dollar, which does more against poverty: Compassionism, a basic income, or a negative income tax? | What happens when Compassionism and five other anti-poverty designs face the same people under the same rules? | Six anti-poverty designs, one simulated population, one set of rules: see how Compassionism measures up. | Compassionism aims to end extreme poverty while keeping the reward for work: test that claim against five other designs on the same simulated people.
+  - Why: Session 10: option 1 applied on the page and README. The hook is the contest at equal cost, accurate because both comparators are matched to Compassionism's cost; the subtitle names the other three. Options 3 and 4 are statements, so they also need domtest's one-question check changed (one line). Option 4 leads with the framework's claim, but the page measures basket poverty, not extreme poverty.
+- **How are the page's tooltips drawn (fixes your clipped-tooltip screenshot and i4)?** (d42, confirmed)
+  - Answer: One floating box placed by script, with the old CSS boxes kept only as a no-script fallback
+  - Other options: Open only the table's tooltips downward | Remove the table's scroll box
+  - Why: Session 10: option 1 applied. The table's scroll box clipped the CSS boxes, and the hidden boxes widened the page to 421 px on a 390 px phone. Option 2 still clips right-edge tips and leaves i4 open; option 3 breaks the table on phones. Checked in headless Chromium, desktop and touch phone.
+- **d39 follow-up: how does the needs-based top-up appear on the page? (tested in session 11: 10% of the flat allowance moved to extra BU for low-earning participants, reduced by 50 cents per dollar earned, same total cost)** (d44, confirmed)
+  - Answer: Its own row directly beneath Compassionism's mechanisms-off row, with its own mechanisms-off figure in the note; Compassionism's main row unchanged
+  - Other options: Make it the main Compassionism row | Keep it off the page (harness only)
+  - Why: Full seeds (session 11, a5): the top-up deepens the 20-year FGT2 cut in four of six cells (ref engine -3.21 to -3.38, ref Hub -1.76 to -1.87, Adverse engine -7.67 to -7.76, Adverse Hub -4.18 to -5.30) and leaves it about the same in the Stress Test (-3.71 to -3.70; -3.58 to -3.53); it raises the share in poverty and lowers hours in all six (ref engine 45.4 to 47.4%, hours -4.9 to -7.2%). It helps one measure and hurts two, so it sits beside the main row. Shares of 25% and 50% (30-seed sweep) hurt the Hub version.
+- **The engine's octave wage raise (0.3% a year per octave) is not in the design: per Duke, the octave is conversion capacity (a safeguard against exploitation, uncapped for creators with demand), and wage work stays paid in dollars. What happens to it?** (d46, confirmed)
+  - Answer: Label it on the page as the model's stand-in, not the design; in the next round (N1) replace it with a design-faithful mechanism: creative projects hiring participants at elevated conversion rates, paid in expired BU. The Hub-spec model already treats the octave as capacity (it doubles per octave)
+  - Other options: Retire it now; the mechanisms-off row becomes the main Compassionism row | Keep it as is
+  - Why: It carries most of Compassionism's edge in the comparison (about 45% of the coded version's 20-year FGT2 cut at reference, 58% in Adverse), so describing it as the design would overstate what the design has shown. Replacing it needs its own restudy, which is N1's scope.
+- **How does the page describe the contrast with current inflation policy?** (d47, confirmed)
+  - Answer: By mechanism only: central banks steer inflation through the money supply and interest rates; Compassionism aims to hold the cost of basic living steady through community-owned supply (PTF, PTH), then let competition and policy aimed at human flourishing bring prices down
+  - Other options: Also quote critics' characterizations of the Federal Reserve (attributed, with sources)
+  - Why: The target readers are press, policymakers and academics. A mechanism-only contrast makes the same point and keeps readers who would stop at 'legalized organized crime' or 'war for profit'. The 'priceless' cultural value is likewise framed as the framework's intent, not a measured result.
+- **The replication page's 18 section links are same-page links (#section). They work on the live site but misroute in claude.ai's file preview, as the front door's did. Convert them?** (d49, confirmed)
+  - Answer: Keep them as ordinary same-page links; check the page in your own browser or on GitHub Pages
+  - Other options: Convert them to buttons like the front door's (readers lose section links they can share)
+  - Why: The front door's in-page links are now buttons because they open panels (an action), and the preview sent them to new chats. Section navigation is what links are for: shareable, and it works with the back button on the live site.
+- **i5: your revised opening line names culture ('aspires to enhance cultures') and then invites readers to 'test that claim'. The model measures poverty, cost and work. How does the page handle the part it cannot test?** (d51, confirmed)
+  - Answer: Also end the headline by naming what the page measures: '...participation and contribution: see how it does on poverty and work against five other designs on the same simulated people.'
+  - Other options: Add one sentence to the subtitle and README, beside the note on how poverty is measured: 'The model measures poverty, cost and work, not the cultural effects Compassionism aspires to.' Your headline stays word for word (applied in session 12) | Neither: skip index.html; the next session takes the sentence back out of README.md and CONTRIBUTING.md
+  - Why: The page measures poverty, cost, employment and hours. Nothing in it measures culture, and each adult's choice to take part is fixed for 20 years (d50), so a reader from the press or academia could take 'test that claim' to cover more than the model tests. Option 1 fixes that without changing your words and matches d47 (the framework's cultural value framed as its intent, not a measured result). Option 2 fixes it in the headline itself but rewrites your ending. Option 3 leaves it to the design panel, one click away.
+- **s27: the next round's scope (round close-out plan, section 6). N3 is already done: session 11 tested the top-up and put it on the page (d44).** (d52, confirmed)
+  - Answer: N1 first (replace the octave wage raise with the design-faithful mechanism, d46; replace the inflation damping with the price module's PTF capacity term, or retire it; CCO relief's 20% and theta), then N4 (avoided public costs of poverty); decide N2 and N5 after N1
+  - Other options: N1 only | N1, then N2 (a minimal production side)
+  - Why: N1 decides the headline: the octave raise and the damping together carried most of Compassionism's edge (the octave raise alone 45-70%, s11). N4 takes one to two sessions, applies to every design in proportion to the poverty it removes, and closes d29's open gap. N2 is a round of its own, and N1's replacement for the octave raise (creative projects hiring participants at elevated conversion rates, paid in expired BU) builds its first piece, so N2 is better scoped once N1 shows what that piece needs.
+- **N1: what happens to a constant that finds no evidence?** (d53, confirmed)
+  - Answer: Split by kind: a costed design choice (CCO relief's 20%, already charged in the cost ledger) stays on, labelled a design parameter; an assumed effect with no evidence (the damping, theta's stand-in gate, if not replaced) goes off by default and stays one switch away as a sensitivity row
+  - Other options: Off by default for every such constant, shown as a sensitivity (the plan's recommendation) | Keep every one on, labelled | Remove them
+  - Why: The plan treats all four alike, but they differ. The relief's 20% is a policy lever whose cost the testbed already charges (about half of Compassionism's cost, s23), so its size is a design choice like the BU amount. The damping and theta's gate are claims about what the design does, at no cost in the model; that is where evidence is needed. The octave raise is settled by d46 (replaced, not sourced). Turning an effect off moves the page's main Compassionism row, so any change is restudied at 500 paired seeds before the page changes.
+- **Workstream B (the claims ledger and Hub corrections): resume alongside the next round?** (d54, confirmed)
+  - Answer: Keep paused until you have reviewed it against earlier sessions (your Sep 27 instruction)
+  - Other options: Resume alongside N1 | Hold those other projects for now.
+  - Why: You paused it on Sep 27 and moved sessions to the Sim only. Nothing in the Sim's next round depends on it, and the Hub ledger keeps its state.
+- **Now that v4.22 is live, which comes first: the walk-through and demo video (s29) or N1?** (d55, confirmed)
+  - Answer: s29 first, then N1: the method, page tour and replication path are stable, and the findings are shown as the page shows them (the main row with the mechanisms-off row beneath), so N1 can change numbers but not what the video teaches
+  - Other options: N1 first, so the video shows the findings N1 settles
+  - Why: Your Future_Feature note makes the walk-through the next step once v4.22 is live, and CoMSES (d38) is now unblocked, which a walk-through supports. The cost of option 1 is a re-cut of the findings segment if N1 moves the headline; option 2 delays the video two to three sessions.
+- **s29: what form does the walk-through take?** (d56, confirmed)
+  - Answer: Add a synthetic, female Caucasian neutral voice.
+  - Other options: A 5:16 video with captions on screen and no sound, plus the same tour written out with screenshots, both rebuilt from index.html by walkthrough/make_walkthrough.py (applied in session 13) | Add a voice track: you record it from captions.srt, or a synthetic voice is generated and timed to the captions | Host the video on YouTube with captions.srt as its caption file, and link that instead of the copy in the repo
+  - Why: A silent captioned video plays anywhere, including muted autoplay, and needs no narrator; the written tour serves readers, search engines and AI systems that do not watch video. Because both are built from the page, a rebuild after N1 carries the new figures or stops at the sentence N1 made untrue. A voice track (option 2) or YouTube (option 3) can be added later without redoing the tour; YouTube reaches more people, and the repo copy plays from GitHub Pages.
+- **Where is the walk-through linked?** (d57, confirmed)
+  - Answer: README.md now (applied); one line in the page's Method box once you have watched it, so an unreviewed video is not on the front door
+  - Other options: Also on the page now, in the Method box | README.md only
+  - Why: The page is the front door, so a link there reaches more visitors than README does, but the video speaks for the project; session 9 kept unreviewed changes off the page for the same reason. The page link is one line, with no figure or engine change.
+- **N1 scope: where does project hiring go, and what is left for later?** (d58, confirmed)
+  - Answer: Both models, harness-only behind a new PROJ switch; octave wage raise off in the new main configuration and kept as a sensitivity row; ESP payroll (R7) its own step (s38); tips, primary-currency donations and universal issuance not modeled this round, named as limits; the live page's engine unchanged until the N1 release (s35)
+  - Other options: Engine model only | Hub-spec model only | Include ESP payroll now
+  - Why: The raise is in both models. ESP payroll is the Hub-spec model's largest flow ($22,661 per participant a year of business premium, on a placeholder 3x rate), so changing both at once would hide which change moved the row.
+- **Which expired BU fund projects?** (d59, confirmed)
+  - Answer: All of a participant's unspent BU at expiry (directed share 1), swept at 0, 0.5 and 1; the rest would revert to the Treasury at no cost
+  - Other options: Directed share 0.5 by default
+  - Why: The design intends holders to direct unused BU, and nothing says how many will. Share 1 is the most the channel can do: $285 per participant a year in the engine, $223 / $40 / $0 in the Hub spec (reference / Adverse / Stress). The sweep shows how little depends on it.
+- **The 1,000-BU launch gift (rollout plan; your Sep 29 input): how is it converted?** (d60, confirmed)
+  - Answer: Passed forward into year 1's project pool (the plan: gift-forward units convert only through community-approved projects); Collective members who receive it for their work save, trade or convert it
+  - Other options: Each participant converts their own gift at their earned rate in year 1 | No gift (sensitivity)
+  - Why: Your input and the plan agree the gift can't buy essentials; they fit together if holders pass it on. Passing it forward tests the hiring mechanism it is meant to start; holder conversion acts like a one-time cash grant scaled by rate. Both run. Say if you meant holder conversion.
+- **Who is hired for project hours?** (d61, confirmed)
+  - Answer: Willing participants (a project hour pays them more than an hour of their own wage), in proportion to octave capacity x quality
+  - Other options: Capacity x quality among all participants, no willingness test (today's Hub-spec rule) | Lowest wage first | Equal shares among the willing
+  - Why: Capacity x quality is the design's own validation and is already in the code; the willingness test keeps anyone from taking project work that pays less than their job. Octave advancement is FBS-gated, so these weights drift toward higher earners; lowest-wage-first shows the most pro-poor version.
+- **At what rate does a project BU convert?** (d62, confirmed)
+  - Answer: The higher of the worker's own rate and a contract rate equal to the capacity x quality-weighted mean rate of participants, under the engine's progressive tax
+  - Other options: The worker's own rate only (today's Hub-spec rule; the lower bound)
+  - Why: R4 and R5: a worker hired by a member with a higher rate is paid up to that rate, and a worker with a higher rate keeps it. The weighted mean stands in for the hiring member's rate.
+- **Contract pay per project hour, and how project hours count** (d63, confirmed)
+  - Answer: Project hours added on top of wage work (upper bound: the full pay is a gain and hours rise)
+  - Other options: $23.74 BU an hour (the model's $49,370 living wage / 2,080 hours, at par); each project hour replaces an hour of wage work at the worker's own wage; project pay is earned, so no income effect | Pay at the model's median wage per hour ($19.20)
+  - Why: Pay is the Collective's contract choice (this default is Claude's, not yours); it changes hours and who is willing, not the dollars created (pool x rate). Displacement credits only the gain over the job the hour replaces.
+- **How does octave capacity limit project conversion?** (d64, confirmed)
+  - Answer: No cap
+  - Other options: Cap each participant's conversions at 12,000 x 2^octave BU a year (Hub: 1,000 x 2^n a month; engine octave k = Hub octave k+1); save the excess for later years | Excess lost (today's Hub-spec rule)
+  - Why: R6: BU accepted beyond what one can convert can be saved. The sizing shows the cap binds for no one today ($0 lost in all three environments); a unit test still checks it.
+- **What does the page show once project hiring is built?** (d65, confirmed)
+  - Answer: Main Compassionism row: project hiring on, octave wage raise off; a shaded row keeps the raise (the model's former stand-in); the mechanisms-off row stays; the page and walk-through change only at the N1 release (s35), after you see the restudy
+  - Other options: Add project hiring as its own row and leave the main row as it is
+  - Why: d46 said replace. Holding the page change until s35 means one reviewed change instead of two.
+- **How is the one-time 1,000-BU launch gift financed in the testbed?** (d66, confirmed)
+  - Answer: Pay as you go: the year it is converted, which raises the year-2 contribution by about 5 points (engine, reference; session 16 corrected session 15's 'about half a point'). Built in session 16 as the default, with over the run shown beside it (i7)
+  - Other options: Over the run, like the asset endowment (d26): the gift-funded proceeds are spread across the remaining years of the contribution
+  - Why: Your pick (i7): show both, the design as intended (pay as you go) and on equal terms with the endowment (over the run). Session 16, 500 seeds, main row vs raise off: as intended +0.01 ref / +0.09 adv / +0.02 stress (engine), +0.19 / +0.13 / +0.02 (Hub spec); over the run -0.02 / +0.11 / +0.02 and +0.13 / +0.02 / +0.03. The choice moves the row by 0.12 at most; cost counted is the same.
+- **How does the page show the gift paid both ways at the N1 release (s35)?** (d67, confirmed)
+  - Answer: Main Compassionism row pays for the gift as intended (as you go); one row beneath repeats it over the run, labeled as the endowment's rule; the shaded raise-kept and mechanisms-off rows follow the main row
+  - Other options: Main row over the run (the endowment's rule); the as-intended version as the extra row | Both figures in one row
+  - Why: The endowment is the only other one-time spending and cannot be paid as you go (about four times a year's wages in year 0, over the 90% cap), so over the run is the only rule the two can share; the main row shows the design as you intend it. One extra row. Reference, engine: -1.77 as intended, -1.80 over the run; Hub spec +1.44 / +1.38.
+- **Walk-through narration (s39): which voice, and how is BLEI read?** (d68, confirmed)
+  - Answer: Kokoro-82M (Apache-2.0) voice af_heart, American-English female; BLEI read as letters (B L E I)
+  - Other options: Voice af_bella or af_sarah | BLEI read as the word 'blay'
+  - Why: af_heart is Kokoro's best-rated voice; Apache-2.0 means no licensing question for the repo. Each fix to how a word is read is one line in make_walkthrough.py's SPOKEN table. Play the video once before pushing and name any word it says wrongly.
+- **How do sessions deliver files for the repo from now on?** (d69, confirmed)
+  - Answer: One apply-session-NN.zip per session, applied by the apply-upload workflow (folders kept, DELETE.txt for removals, commits only if the three checks pass)
+  - Other options: Loose files uploaded by hand, as before | Pull requests from a branch (needs git on your computer)
+  - Why: The web upload flattens folders and can't unzip; that caused i6 and i8. One zip means one drag, and a failed check leaves main unchanged except for the zip.
+- **s38 scope: where does ESP payroll go, and when does it reach the page?** (d70, confirmed)
+  - Answer: Stay with the default, then once studied, if it looks correct and indeed improves Compassionism, also replace the engine model's own-spending conversion with ESP payroll.
+  - Other options: Hub-spec model only, harness-only behind a new ESP switch (off = bit-identical); the engine's own-spending conversion (A0 flow 5) unchanged. Build and restudy next session, then s34, then s35 releases project hiring, ESP payroll and the damping/theta change together | Also replace the engine model's own-spending conversion with ESP payroll | Release N1 (s35) first with project hiring only; ESP payroll in a later release
+  - Why: The engine has no business conversion to re-specify. One release after all three N1 pieces means one reviewed page change.
+- **Which of the BU an ESP accepts are paid out as wages (payroll share)?** (d71, confirmed)
+  - Answer: 0.20: compensation / revenue in the essential industries, weighted by the basket's essentials (BEA 2024; range 0.15-0.26, swept at both ends and at 1)
+  - Other options: 1: ESPs pass every BU to workers (the upper bound) | A placeholder swept 0-1 with no central value
+  - Why: Derived from BEA GDP-by-industry (Jun 25, 2026 release), compensation / gross output 2024: grocers 0.396, food services 0.337, health care 0.484, utilities 0.161, other real estate 0.070, housing 0.009. The range comes from the unknown rent/utilities split; it leans high because BEA measures a grocer's output as its margin. Script: esp_payroll_share.py.
+- **Who are the ESP workers?** (d72, confirmed)
+  - Answer: 23.0% of adults: BLS jobs in grocers, food services, utilities, real estate and health care / total nonfarm (Aug 2026), assigned by agent index (no RNG draw; the same adults in every design and seed)
+  - Other options: 15.2%: the same without food services | PTF members (the Hub's 'PTF workers'; 35% of adult-years at reference) | Every wage earner (today's payout population)
+  - Why: The Hub's PTF definition names counter-serve restaurants and its cafe example sells meals for BU. Sizing: the workforce changes who gains, not the total ($20,177 vs $20,183 narrow, $20,176 everyone), except PTF members, whose PTF bonus lifts the rate ($20,935). Index assignment gives ESP workers average wages (a limit).
+- **Which ESP workers take BU pay, and at what rate?** (d73, confirmed)
+  - Answer: Participants whose own rate after tax beats par take their share as expired notes and convert at their own rate (octave, quality, Phi, PTF bonus); everyone else is paid in dollars and the ESP converts those BU itself
+  - Other options: Only workers whose own rate beats the ESP's 3x take BU pay (a revenue-maximizing ESP)
+  - Why: R7 ('convert them at their own rates') and R2. Non-participants have no earned rate. The alternative moves fewer BU to workers ($1,339 vs $1,730 per adult-year at reference) at a higher rate (4.87x vs 4.32x); total about the same ($20,377 vs $20,177).
+- **Does octave capacity limit ESP payroll conversion?** (d74, confirmed)
+  - Answer: Yes: 12,000 x 2^octave BU a year, net of project BU; BU above it are paid in dollars (the ESP converts them)
+  - Other options: No cap (as d64 chose for projects) | Cap, with the excess saved for later years (R6)
+  - Why: Your position: the octave is the safeguard tied to business capacity, so it stays on here even though d64 took it off for projects. It binds for 0.0% of ESP worker-years at the defaults (1.4% if every BU goes to workers) because advancement saturates (i9), so the choice barely moves results as the model stands.
+- **What happens to the BU an ESP does not pay out as wages?** (d75, confirmed)
+  - Answer: As today: converted at the flat 3x placeholder (2x and 4x rows exist), the premium paid next year to every adult by wage, labelled as the stand-in for the ESP's other costs and surplus
+  - Other options: Premium paid to the ESP's own workers by wage (a worker cooperative)
+  - Why: R7 re-specifies the wage part only; keeping today's rule for the rest isolates the payroll change. What not-for-profit PTFs and private owners do with the surplus is a later design pass.
+- **What does the page show once ESP payroll is built?** (d76, confirmed)
+  - Answer: At the N1 release (s35) the Hub-spec main row uses ESP payroll; today's rule stays one switch away as a sensitivity row; the page changes only after you see the restudy
+  - Other options: Add ESP payroll as its own row and leave the Hub-spec main row as it is
+  - Why: As d65 did for project hiring: the design's mechanism replaces the stand-in, in one reviewed change.
+- **The ESP's own premium (the d75 stand-in) carries the Hub-spec result. When does it get a design?** (d77, confirmed)
+  - Answer: Release N1 at s35 with it labelled as the stand-in (as d75 set); design it in its own pass after N1 (s40), from your input on what PTFs and private ESPs do with their surplus
+  - Other options: Design it before the N1 release (adds a design session and a build session before s35) | Leave it as the stand-in
+  - Why: Session 19: who receives it moves the Hub-spec main row by up to 19 points (worker-cooperative row: +19.37 ref, +17.55 adv, +2.68 stress). The Hub doesn't say what PTFs do with surplus, so a design needs your input; N1's release already carries three reviewed changes.
+- **Criterion for re-specifying the engine model's own-spending conversion (A0.4: the engine pays the spender; the framework pays the producer)** (d78, confirmed)
+  - Answer: Fidelity: re-specify it to match the design in a later design pass and report the result either way
+  - Other options: Your d70 rule: only if it is correct and improves Compassionism. ESP payroll does not, so the engine keeps its conversion
+  - Why: Default is your d70 pick. I recommend the second option: choosing mechanisms by whether they help the result tilts the comparison, as retuning a constant to a target would; the round has used fidelity so far (d46, d65: project hiring replaced the raise though slightly worse).
+- **Where does esp_payroll_share.py (the derivation of lambda and the ESP workforce share) live?** (d79, confirmed)
+  - Answer: In the repo as sources/esp_payroll_share.py (in apply-session-19.zip); the harness and CONTRIBUTING cite it
+  - Other options: Project files only; the harness and CONTRIBUTING cite BEA and BLS directly (one DELETE.txt line removes it later)
+  - Why: Two constants the harness uses come from it, so a reader of the repo can rerun it (CoMSES, s37). Session 19 re-ran it on BEA's Sep 30 annual update: lambda 0.203 central on both 2024 and 2025 values, unchanged.
+- **Order of the N1 release (s35) and the ESP surplus design (s40): does the Hub-spec row go on the front door before the stand-in has a design?** (d80, confirmed)
+  - Answer: Design s40 first (adds a design session and a build session before s35)
+  - Other options: Keep d77: release at s35 with the ESP premium labelled as the stand-in; design it at s40 afterwards | Release at s35, and show the worker-cooperative bound (d75) as a range beside the Hub-spec main row
+  - Why: The stand-in moves the Hub-spec main row by up to 19 points at reference and in Adverse, and the released Hub-spec reference row is worse than no program (+4.14). Default is your confirmed d77; I recommend the second or third option, because a front-door row that rests on an undesigned component should show its range or wait.
+- **How are the i10 sub-items handled?** (d82, confirmed)
+  - Answer: Also run the framing review now and apply it to the page copy at the N1 release
+  - Other options: Run s41 (BLEI by group) next session; draft s42 and the framing review for your review; publish nothing until you have seen it | Skip the discussion section; keep only s41
+  - Why: You asked for a discussion section on where Compassionism costs more or inflates more. The default reports BLEI first and keeps every wording change under your review.
+- **The net-of-contribution BLEI reading (X, new in s41): what is its status?** (d83, confirmed)
+  - Answer: A labelled sensitivity in the harness tables and restudy notes, beside the design-neutral (heads, d34) and the design's own readings; not on the page
+  - Other options: On the page beside the other two readings | Drop it
+  - Why: BLEI reads the gross wage rate, so the contribution reaches it only through savings; X shows the income channel (non-participants' Crisis share on X: +18 engine, +37 Hub spec at ref). It is a new reading, not the BLEI paper's definition, so it should not head anything.
+- **Where does BLEI by group reach the page at the N1 release (s35)?** (d84, confirmed)
+  - Answer: In words, with its figures, in the Limits and costs section; the table's worse-off test (resources, income poverty, wealth poverty) is unchanged
+  - Other options: Add BLEI poverty as a fourth worse-off test | Add a BLEI-by-group column
+  - Why: The table already has six columns. At 30 days BLEI poverty mostly tracks savings, which the worse-off test already reads through wealth poverty, so a column would repeat it at the cost of width on phones.
+- **s34: the PTF/PTH inflation damping (d53 applied)** (d86, confirmed)
+  - Answer: Off by default in every testbed row, one switch away as a labelled sensitivity row (d53: an assumed effect with no evidence)
+  - Other options: Replace it with the price module's PTF capacity term at its upper bound (1) | Keep it on, labelled
+  - Why: d53 (confirmed) decides it. 500 seeds, main row vs no program, on -> off: engine Adverse -3.11 -> -1.51, Stress -1.94 -> -0.92; Hub spec with ESP payroll Adverse -1.65 -> -0.34, Stress -1.58 -> -0.54; reference unchanged (no exogenous inflation). The capacity term at 0, its evidence-based value, equals off; at 1 it recovers about a fifth. N1-design-damping-theta.md.
+- **s34: how does the price module's PTF capacity term (the supply side the A0 map asked for) appear?** (d87, confirmed)
+  - Answer: Stays at 0 (no evidence); a sensitivity row at 1 in the restudy notes, not on the page
+  - Other options: A row on the page | A central value of 0.5 in the main row
+  - Why: An assumed effect with no cost in the ledger, like the damping, and no evidence on how much of PTF's cut is new capacity. At 1 it moves the main row -0.17 to -0.36 (engine) and lowers year-20 prices 1.4% in Adverse, against the damping's 9.7%.
+- **s34: which Compassionism rows does the page carry once the damping is off (revises d65/d67's set)?** (d88, confirmed)
+  - Answer: Three: the main row (damping off); the gift over the run beneath it; one shaded row with both former stand-ins on (octave raise and damping). The mechanisms-off row goes, because the main row now is it
+  - Other options: Two shaded rows, one per former stand-in | No shaded row; the former stand-ins only in the Limits and costs section
+  - Why: The table has six columns and is read on phones; one shaded row shows what replacing both stand-ins changed (engine Adverse: -1.51 main, -7.67 shaded). The harness keeps each separately.
+- **s34: theta (the SZH conversion add-on, on the realised-density gate since d22)** (d89, confirmed)
+  - Answer: Stays on, labelled a costed design parameter with an unsourced curve; the live page's SZH slider tooltip says it stands in for PTF density; the density gate reaches the live engine only if the live scenarios adopt the testbed profile (N6)
+  - Other options: Switch it off too | Port the density gate into the live engine at s35
+  - Why: It raises conversion rates, which the ledger charges, so under d53 it is a design choice. At realised densities it is inert: above 0 in under 1% of years at about 0.01, and switching it off moves the main row 0.00 [0.00, 0.00] at 500 seeds (Adverse and reference, both models).
+- **When does the N1 release (s35) happen?** (d95, confirmed)
+  - Answer: Defer it: release N1 together with the first development milestone, so the page, a5, frontdoor and walk-through regenerate once
+  - Other options: A lean s35 now: framing corrections and the N1 rows only, no walk-through rebuild | s35 as planned, right after s40
+  - Why: The live v4.22 page is consistent with its own engine, so nothing on it is untrue now. Every page regeneration costs a session; doing it once after the mechanisms exist saves at least one. Supersedes d93's timing.
+- **What do the next sessions build?** (d96, confirmed)
+  - Answer: The development round, in order: s40 ESP surplus split; s51 N2 production side; s45 the framework's own financing (Source/Treasury circuit); s50 dynamic participation; s44 PTF/PTH capacity and balance sheets; s54 BLEI-led reporting; s36 N4 avoided costs; then the release
+  - Other options: N4 first, then the mechanisms | Financing (s45) before N2
+  - Why: Your instruction (Oct 1): develop Compassionism's mechanisms so its effects are produced by modelled mechanisms, not assumed or hidden. N2 comes first after s40 because H1 (output matched) is the configuration where no group is worse off; financing next because the 80% wage contribution drives most losses. Results may still come out modest; that is the price of results others will believe. Each step keeps the guardrails (switches, CRN pairs, the three checks).
+- **s40: what is split?** (d97, confirmed)
+  - Answer: The ESP's own premium: dollars from converting the BU it keeps, less their face value
+  - Other options: Every converted dollar, face value included
+  - Why: Face value pays for the goods sold, as a cash sale would; the premium is the flow today's stand-in pays out.
+- **s40: who gets the price cuts?** (d98, confirmed)
+  - Answer: Every adult, in proportion to essentials spending at own prices
+  - Other options: Participants and PTF members (+2.92 ref, +3.84 adv, +0.78 stress vs the default's +1.16, +3.02, +0.20) | PTF members only (cuts of 77-95%; better in Adverse, +1.50) | Participants only (+4.13, +4.17, +1.15)
+  - Why: d72 counts every essentials-sector job as an ESP job, so ESP sales reach every adult. Chosen for consistency, not the result.
+- **s40: price cuts and BU** (d99, confirmed)
+  - Answer: One price for BU and cash; BU a cut frees expire and go to project hiring
+  - Other options: Cuts on cash purchases only (+1.97, +2.53, +0.06)
+  - Why: An ESP posts one price, and expired BU go to projects under the rules as written. At reference this frees about $1,400 of BU per adult-year, which convert at about 4.8x in project hiring.
+- **s40: what does reinvestment buy?** (d100, confirmed)
+  - Answer: An ESP capital account no household receives; it decides when capacity is reached (d101); its effect on output and prices is designed in N2 (s51), which takes the account as an input; s44 keeps PTF/PTH operating costs
+  - Other options: Spend it as price cuts until capacity is modeled (+0.03, +1.77, -0.92; assumes a full same-year return, unsourced) | Wait for s44 as planned (fifth in the round)
+  - Why: d96: effects from modeled mechanisms, not assumed ones. Added capacity is added output, N2's subject. Reinvestment's third alone costs +4.50, +5.45, +1.60: the model already gives ESPs unlimited capacity free.
+- **s40: when is PTF capacity reached?** (d101, confirmed)
+  - Answer: When cumulative reinvestment per adult (year-0 $) reaches $18,862, the 2025 net capital stock of the Hub's PTF industries (BEA 3.1ESI: grocers, food services, utilities) per adult (Census 18+): phase 2 from year 5 at ref and adv, about year 12 in Stress
+  - Other options: Health care included ($28,113 per adult) | A fixed year (swept 1, 10, 15) | Never (thirds throughout)
+  - Why: The first rule that gives reinvestment a visible effect, and sourced. It moves results most: year 1 +0.13, never +6.88 at ref (+1.91 to +8.62 adv). Duke's estimate of build-out time would check it.
+- **s40: private ESPs** (d102, confirmed)
+  - Answer: Private ESPs pay the profit share of their sales to owners by wealth (restudy sensitivity)
+  - Other options: The same split for every ESP
+  - Why: Duke's answer covers PTFs; the model cannot tell PTFs from private ESPs.
+- **s40: location and charters** (d103, confirmed)
+  - Answer: Shares swept: phase-2 worker share 20% and 60%, reinvestment's third to prices
+  - Other options: Vary shares by a stand-in for location
+  - Why: The model has no places. Phase-2 worker share 20%: +0.27, -0.23, -0.11; 60%: +4.72, +6.59, +0.56.
+- **s40: who receives the profit share, and how it counts** (d104, confirmed)
+  - Answer: Participating ESP workers only
+  - Other options: Every ESP worker, participant or not, by last year's wage; a return to work (raise, no income effect)
+  - Why: Paid in dollars, so no earned rate needed. Fairness rule: one wage elasticity for every change in the return to work.
+- **s40: how the testbed counts the split** (d105, confirmed)
+  - Answer: As conversion: taxed under tax financing, created at a under money and hybrid; the 12% PTF discount unchanged
+  - Other options: Count the price cuts as price-cut dollars (taxed under hybrid too)
+  - Why: All three parts come out of the ESP's conversion premium. Whether the price share replaces the PTF discount is s44's question.
+- **s40: when the split reaches the page** (d106, confirmed)
+  - Answer: At the milestone release (d95) the Hub-spec main row uses the split; today's stand-in stays one switch away as a sensitivity row; the page changes only after Duke sees the restudy
+  - Other options: Its own row, the main row left on the stand-in
+  - Why: As d65 and d76: the design's mechanism replaces the stand-in in one reviewed change.
+- **When the mechanism work resumes: how do privately owned essential-service businesses split their earnings?** (d107, confirmed)
+  - Answer: Owners keep all of a private business's earnings
+  - Other options: Like PTFs on price cuts and reinvestment (their reinvestment counts toward 'enough capacity'); only the profit share goes to owners by wealth | As the first option, but only PTF reinvestment counts toward 'enough capacity' (the switch to 60/40 comes later, which the sizing shows costs the most)
+  - Why: You decided private businesses pay their profit share to owners by wealth. Your design counts 'enough ESPs per town or region', private ones included. Not yet sized. On hold with the mechanism work.
+- **When does the savings rule get redesigned (people save every dollar above the cost of living)?** (d108, confirmed)
+  - Answer: Before the BLEI work, with a switch, sized at 500 seeds
+  - Other options: Leave it for later | Fold it into the BLEI work
+  - Why: BLEI poverty at 30 days is mostly a savings test, and the model saves 44% of income against about 3-6% in the US. The ESP price cuts would free more cash that all becomes saving. On hold with the mechanism work.
+- **Should the live run's no-program comparison use the same inflation rate as your scenario?** (d109, confirmed)
+  - Answer: Yes, by default (switch off if you want the old way)
+  - Other options: No, keep the fixed 3% for the no-program Baseline (today)
+  - Why: Today a Compassionism run at 0% inflation is compared with a Baseline at 3%, so part of the apparent gain is the inflation difference: 24-38% of the gap in the project's own measurement. Matching isolates what the program does. Open since v4.16.
+- **Should the live run use the newer designs for how BU become income (creative projects hiring participants with expired BU; businesses paying workers in BU)?** (d110, confirmed)
+  - Answer: Leave the live run on its current design and say plainly which design it runs until the sim is ready to release all the new design features.
+  - Other options: Yes: the live run adopts them, with the two untested assumptions as switches (see the next question). The build session first confirms the browser engine can carry them | No: leave the live run on its current design and say plainly which design it runs
+  - Why: The newer designs are built and tested in the harness only, as far as the ledger shows. The live run still has each participant converting part of their own BU, which you said is not the design.
+- **Should the version-by-version history move off the main page to the replication page?** (d112, confirmed)
+  - Answer: Yes: the main page keeps a short list of limits and a link; the history lives on the replication page
+  - Other options: No, keep it on the main page
+  - Why: Optional polish. Press, policymakers and academics meet several thousand words of fix history under the runner; the replication page already holds formulas and history. Part of the page rework.
+- **What comes next: new mechanism work, or reworking the simulation page?** (d113, confirmed)
+  - Answer: Rework the simulation page first; pause the new mechanism work and the comparison study
+  - Other options: Keep the mechanism work first, as planned on Oct 1
+  - Why: Your instruction (Oct 1). It reverses the Oct 1 plan to change the page once, after the mechanisms exist, so the page will change twice. The ESP design choices stay on file for when the mechanism work resumes.
+- **Do the comparison study and the simulation of Compassionism get separate ledgers, and does the comparison leave the simulation page now?** (d114, confirmed)
+  - Answer: Yes: a separate 'Policy Comparison Study' ledger (paused); the simulation page becomes a stand-alone simulation of Compassionism now, the comparison page comes later
+  - Other options: Keep one ledger; remove the comparison only when the new page is ready
+  - Why: Your instruction (Oct 1). It reverses what I told you last session, that the table would stay until the page was right. Moved to the comparison ledger: items whose purpose is comparing designs. Kept here: the money, price and labor modules, project hiring, ESP payroll and BLEI by group, since they build Compassionism itself.
+- **How much of the comparison leaves the simulation page?** (d115, confirmed)
+  - Answer: All of it, with no mention of a planned comparison
+  - Other options: All of it: the table, the design descriptions, and every mention of 'other designs' in the headline and page description. The live runner keeps its comparisons with no program and with CCO Only. One sentence in the limits says the page does not compare Compassionism with other designs and that a separate comparison is planned | Keep a short summary of the comparison on the page, with the full study moving later
+  - Why: Your headline currently ends 'against five other designs', so this changes your own opening line; I would end it on what the page measures instead. A planned page is only worth mentioning if it will exist.
+- **Where does the text removed from the page go (the descriptions of each design with their sources)?** (d116, confirmed)
+  - Answer: Saved as an unlinked draft file in the repo for the comparison page to reuse
+  - Other options: Left to the repo's history only
+  - Why: The descriptions took real work to source (Vivalt et al., Moffitt, Ackerman and Alstott, the New York City grocery plan, X-Cents). The repo's history keeps them either way; a draft file is easier to find.
+- **In the live run, what happens to the two untested assumptions: a yearly wage raise for each octave an adult holds, and slower inflation in proportion to PTF and PTH membership?** (d117, confirmed)
+  - Answer: Off by default, each one a switch, labelled as untested
+  - Other options: On by default, labelled as untested | Remove them from the live run
+  - Why: As the page itself says, the two carried most of Compassionism's edge in the comparison: the wage raise 45-70% of the poverty reduction, and the inflation effect 17-32% wherever there is inflation. Neither is in the design (you said the octave sets conversion capacity, not wages). Off by default shows the design's own effect; the switches let readers see the stand-ins.
+- **What happens to the walk-through video, which tours the comparison table?** (d118, confirmed)
+  - Answer: Take its link off the README until a new video is made for the reworked page
+  - Other options: Re-record it for the reworked page in this round | Leave it
+  - Why: Two of its seven chapters cover the comparison and what it finds, which the page will no longer show.
+- **Before you react to the page outline: should it show what the live run's headline numbers become with your Oct 1 choices (the octave wage raise and the inflation slow-down off, and no-program compared at the same inflation)?** (d119, confirmed)
+  - Answer: Leave the two assumptions on in the live run until their replacements are live
+  - Other options: Yes: the outline session runs the live engine both ways (today's defaults and the new ones) and shows the change beside the outline | No: show the outline only; measure the change in the build session
+  - Why: Together these three choices remove most of Compassionism's apparent gain in the live run: the page itself says the wage raise carried 45-70% of the poverty reduction and the inflation slow-down 17-32%, and the matched inflation removes another 24-38% of the gap. The live run keeps its current conversion design until release (your Oct 1 answer), so nothing replaces them yet. You should see the new headline before approving the page around it. Settled by your Oct 1 evening instruction (d120): the live run keeps its current settings until the single release, so no interim headline numbers are measured.
+- **What comes first now: reworking the page, or building every planned mechanism and releasing once?** (d120, confirmed)
+  - Answer: Build every planned mechanism first, then release the reworked page once, with all of it in (your instruction, Oct 1). The live v4.22 page stays as it is until then; v4.22 stays tagged so the release can be reverted
+  - Other options: Rework the page first and add mechanisms later (the earlier Oct 1 plan) | Release in stages, each mechanism as it is finished
+  - Why: Your instruction: you prefer not to show Compassionism in a degraded state, and to update the simulation once with all the planned expansions, however long that takes. It replaces the earlier Oct 1 decision to rework the page first (d113) and moves the removal of the comparison from 'now' to the release (the rest of d114 and d115 stands). It also settles d119 (no interim headline is measured). d109 (the no-program run uses the scenario's own inflation) and d117 (octave wage raise and inflation slow-down off by default, as labelled switches) now take effect at the release, together with the mechanisms meant to replace them; d110 already said the same about the conversion design. Cost: the live page and its comparison table, with the two untested assumptions switched on and disclosed, stay public until the release.
+- **What is in 'everything planned' for the single release?** (d121, confirmed)
+  - Answer: It depends on what the page can handle. Ideally all planned steps, but if the page can't handle it, then we'll reassess.
+  - Other options: The eight steps of the development round (the ESP split, the production side, the framework's own financing, adults joining and leaving, capital and running costs for PTF and PTH, the spending rule, BLEI-led reporting, avoided public costs), plus a rule for how an adult moves up an octave, the port into the page, the page rework and the comparison's removal. Children and households follow in a later release and are named on the page as a limit | As above, plus children and households (including Compassionism's child allowance) before the release | A shorter first release: the ESP split, the production side and the financing; the other steps in a second release
+  - Why: The ledger holds two kinds of 'planned': the development round you set on Oct 1, and a few items open outside it (the octave rule is one). The first option takes both. Children and households touch every module and were scheduled after the round, so including them is your call; otherwise the page lists their absence as a limit. Rough estimate from how long the last round took: about 30 to 40 sessions for the first option, 6 to 10 more for the second. You froze the comparison study earlier because it used up sessions, so I suggest a checkpoint after the production side and the financing steps, where you see where the model stands and decide whether to continue; it costs nothing if you continue. Session 28 (s61): you chose to see what the page can handle first. It can: the planned mechanisms fit in the browser with room to spare (see step s61 for the numbers), so this does not shorten the plan now. What would make me come back to you: a later mechanism that is much slower or larger than I estimate, or a browser that fails the page-versus-harness check.
+- **What has to be true before the page is released?** (d122, confirmed)
+  - Answer: Again we need to decide what the page can handle first before building.
+  - Other options: Every item in scope is built; the whole design is restudied at 500 paired seeds in the three environments (Reference, Adverse, Stress); every gain is confirmed on basket and wealth poverty; the three automatic checks pass; the page agrees with the harness on the same seeds; and you have seen the restudy. Results are shown as they come out | As above, and Compassionism must do better than no program in all three environments | As the first option, but hold the release if any group is worse off in any environment
+  - Why: I read your wish as 'no Compassionism with its own mechanisms missing or replaced by unsourced stand-ins', and the first option enforces that. A results test (the other two) would let the outcome decide what the model contains, which the project has avoided since September (d96: results may still come out modest; that is the price of results others will believe). Where the model stands today shows why it matters: with the two stand-ins off, the Hub-spec model is worse than no program at reference (change in poverty severity +4.14), and the ESP split sized so far adds to that (+1.16) until a production side exists. If the finished design still falls short on some measure, the page says so and the Limits list explains why. If you meant a stronger gate, say so and I will record it. Session 28 (s61): the page-capability check you asked for is done and passed (step s61); the release test itself is still open for you to choose among the first three options.
+- **Which model runs on the released page?** (d123, confirmed)
+  - Answer: Keep the current version live until all the planned expansions are completed, then release it as a new version with explanations.
+  - Other options: One engine, built from the harness's Hub-spec model with every mechanism in scope, kept identical to the harness on the same seeds (a parity check). The older engine model stays in the harness as a labelled sensitivity and on the replication page | Both models, as the comparison table showed them | Keep the page's own engine and add the new mechanisms to it one by one | Precomputed results from the harness shown on the page, with the live run left as it is
+  - Why: The mechanisms built since September (project hiring, ESP payroll, BLEI by group, the damping change) exist only in the harness testbed; the page's own engine does not carry them, and the page itself says the two give different figures. I chose the first option for fidelity, not for its numbers: the Hub-spec model follows the design as the Hub states it, while the engine model pays the spender where the Hub pays the producer (d78), and today the Hub-spec model is the less favourable of the two (+4.14 at reference against -1.77). Two models on a stand-alone page would also ask readers to choose between them. It is the largest build in the plan: the browser must run the price, labor and financing modules and the new mechanisms, with its own restudy and parity checks, as you were told in September (d36). Session 28 (s61) checked it: the browser can carry it (see step s61); the cost is code size and keeping two copies in step, not speed. Under this option the engine model's own-spending conversion (d78) stays a harness-only sensitivity and can wait.
+- **Where does unreleased page work live between sessions?** (d124, confirmed)
+  - Answer: In the repo, in a folder the live site does not publish, checked by each session's tests and screenshots. The live page and the v4.22 tag stay untouched until the release (the build session first confirms the folder is not served)
+  - Other options: An unlinked page on the live site (public to anyone who finds the address) | A separate branch with its own preview (needs a workflow change)
+  - Why: You want nothing half-built to be visible. Files you push by zip go onto the live branch once the checks pass (d69), so a work-in-progress page needs a place the live site does not serve. If the folder turns out to be served, the fallback is a branch.
+- **Does anything change on the live page before the release?** (d125, confirmed)
+  - Answer: No: nothing changes until the release (your preference)
+  - Other options: Only the three wording corrections: the 'Four Measures' card name (it is 'Five'), the BU glossary's 'PTF only', and the 30% efficiency label (checked first) | Remove the comparison now, as decided on Oct 1, and change nothing else | The three corrections plus a one-line notice that the comparison and two assumptions are being replaced
+  - Why: Follows your wish for one update. The cost of waiting: three small wording problems stay live (none changes a figure), and the comparison table, which shows Compassionism's older version, stays public. The last option adds words to the page, so it is a content choice. Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied.
+- **Needs your answer: what counts as new output that backs the BU in the model?** (d126, confirmed)
+  - Answer: Two kinds, each with its own rule: capacity that essential-service businesses build with reinvested earnings (more essentials supplied, so lower prices over time), and project work counted at the cost of the hours and materials it pays for, but not as essentials supply
+  - Other options: Every conversion reward matched dollar for dollar by output (the model's H1 setting), with no mechanism behind it | Your description (add it as an option)
+  - Why: The framework's central claim is that conversion rewards are matched by new output. Today the model can only sweep that assumption between 0 and 1, so the page cannot show whether the claim holds. It is also the one setting where, in earlier runs, no group ended up worse off in the Adverse and Stress environments. The first option is the least I can build without inventing claims for you, and it gives the ESP split's reinvestment (which costs the most until output exists: +4.50 at reference for its third, in the sizing) a visible effect. I need two things from you: what do creative projects produce that holds the currency's value, and does it add to essentials supply or only to what people can buy beyond essentials? And how many years do you expect it to take to build enough PTF capacity to serve a town or region? The sourced rule gives year 5, and that rule moves the results more than anything else (d101). Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied.
+- **Needs your answer: how does Compassionism pay for itself in the model?** (d127, confirmed)
+  - Answer: As the Hub states it: BU issued by a Source/Treasury, with the conversion tax and unspent BU returning to it, replacing the flat wage contribution. I read the Hub's text first and show you my reading before any code
+  - Other options: Keep the flat wage contribution and add the recycling of conversion tax and unspent BU on top | Your description (add it as an option)
+  - Why: Most losses to adults outside the program come from the flat contribution on wages (80% of wages in the Hub-spec model at reference), which is not how the framework says it is paid for; today the conversion tax and unspent BU go nowhere in the model. I have not re-read the Hub's financing text this session, so the first option is a promise to read it, not a summary of it. If one of your documents states the circuit best, name it. Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied.
+- **Needs your answer: how do adults join and leave the program over time?** (d128, confirmed)
+  - Answer: Open enrolment each year: an adult joins when the BU they would receive exceeds what they would pay, and may leave after a minimum period you set; emergency enrolment on shocks stays as built
+  - Other options: A fixed share of adults outside the program joins each year (a swept rate) | Your rule (add it as an option)
+  - Why: Today each adult's choice is fixed for 20 years, so an adult who would gain by joining cannot, and the model creates a group that pays and receives nothing. Hypothesis: letting adults choose shrinks that group and raises cost. I need to know: can a participant leave and rejoin, is there a lock-in period or fee, and what does the Hub say about who decides? Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied. Minimum stay 2 years, rejoining allowed, no fee (a modelling assumption; 1 and 5 years swept).
+- **Needs your answer: how does an adult move up an octave?** (d129, confirmed)
+  - Answer: Keep today's rule (advancement gated by financial stability), label it plainly, and test slower advancement as a sensitivity
+  - Other options: Advance by sustained contribution and community engagement over years, at a pace you give (for example one octave per N years) | Your rule (add it as an option)
+  - Why: In the model nearly everyone reaches the top octave within five years (about 97% to 99% of participants by year 19), so octave capacity limits nothing and conversion rates are set by quality alone (open item i9). The page cannot honestly present the octave as a safeguard against exploitation until advancement has a pace. The Hub says advancement reflects sustained contribution and community engagement, but it gives no pace. Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied.
+- **Needs your answer: who owns and pays for the capital and running costs of PTF and PTH?** (d130, confirmed)
+  - Answer: As the Hub states it; I read the Hub first and show you my reading before any code. PTF capital comes from the ESP split's reinvestment account; running costs and PTH's housing capital are costed from sourced figures (BEA, Census)
+  - Other options: Their price cuts stay free in the model, labelled as a limit | Your description (add it as an option)
+  - Why: Today the price cuts of PTF and PTH cost nothing in the model, which probably flatters Compassionism's cost per point of poverty removed. The ESP split already sets aside reinvestment, so the first option links the two. I need to know: who funds a new PTH building, and do PTH members' payments go back into it? Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied.
+- **Does the main page show the 500-seed results beside the live run?** (d131, confirmed)
+  - Answer: Yes: a small panel of precomputed results (500 seeds, three environments, with intervals), regenerated by the harness at the release and naming its command; the live run is labelled as one run of 500 adults
+  - Other options: Live run only; the 500-seed results live on the replication page
+  - Why: The live run uses one random seed, so its figures wobble from run to run; the 500-seed figures are what the project stands behind. With the comparison table gone, nothing on the main page would show them. The first option keeps the page reproducible, as the old table was. A second reason: the page's figures may differ in the last digit between browsers (Node was tested, not Safari or Firefox), while the harness panel is exact and reproducible. Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied.
+- **Which reading of BLEI heads the page, now that no other design is on it?** (d132, confirmed)
+  - Answer: BLEI as your BLEI paper defines it (it credits BU, the gamma transition and PTH to participants), with the design-neutral reading beside it, labelled
+  - Other options: The design-neutral reading heads, the paper's definition beside it | Basket poverty heads, as today, with BLEI beside it
+  - Why: The design-neutral reading was chosen to head comparisons between designs, so no design was credited for features only Compassionism has (d34). With comparisons off the page that reason no longer applies, and on Sep 27 you said that showing BLEI as your paper defines it shows Compassionism's own value (d28). BLEI at 30 days mostly measures savings, though, so the spending rule (s53) comes first (d108). This belongs to the BLEI-led reporting step (s54); I would settle it with its results in front of you. Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied.
+- **Where does the simulation's engine code live once it grows?** (d133, confirmed)
+  - Answer: Stay with one single file (index.html), as signed off in v4.20; harness.js stays a separate copy, kept equal by the three checks and a new same-seed comparison between page and harness
+  - Other options: Move the engine into one shared file that both the page and harness.js load, so there is only one copy (the single-file rule ends; the page then needs the second file served beside it) | Your choice (add it as an option)
+  - Why: The page would grow from 769 KB to about 0.9 to 1 MB (my estimate), which is fine for browsers. The real cost is that harness.js is a hand copy of the page's engine, and every mechanism added to both is another place for the copies to drift. You signed off the single-file rule in v4.20 (no engine.js) to keep the page easy to download and open; one shared file removes the drift but gives that up. I would keep the single file for this release and revisit it afterward, because moving the engine is itself a risky change to make while the mechanisms are being rebuilt. Decided by Claude under your Oct 1 delegation (math and code are Claude's call); default applied.
+- **Who decides math, code and modelling questions from now on?** (d134, confirmed)
+  - Answer: Claude decides and records each choice in plain words; Duke reads one plain-words report per mechanism and says only if something misrepresents his vision
+  - Other options: Duke answers each question, as before
+  - Why: Your instruction, Oct 1: the math and code are not your field, and you defer them to Claude until an independent expert joins. Concept questions are settled by reading your Hub papers first and labelling the result 'Claude's reading of the design'.
+- **What attribution does the released page carry?** (d135, confirmed)
+  - Answer: Under the title, in the README and on the replication page: the math and code were engineered by Claude (Anthropic) from the concepts in Duke Johnson's book Better To Best and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing; not yet reviewed by an independent economist; code open, expert collaborators welcome
+  - Other options: Your sentence alone, without the review line
+  - Why: Your request, Oct 1. The review line is Claude's addition: journalists and policymakers ask who built a model and who checked it, and saying it first protects credibility. Drop it if you prefer.
+- **Where is the build done, and where does unfinished work live?** (d136, confirmed)
+  - Answer: In Claude Code on the web, on the branch next-release; the kit (CLAUDE.md, dev/) is uploaded to main so every session reads it, which leaves the live page unchanged; code stays off main until you say 'release'
+  - Other options: In chat sessions, with zips applied to the live branch and a folder the live site does not publish (the earlier plan)
+  - Why: Claude Code works in the repo directly, runs the 500-seed studies itself and commits after each sub-step, so a usage-limit stop loses nothing. A branch is the earlier plan's stated fallback and keeps half-built work off the live page. Duke uses Claude Code in the browser on a Chromebook (Oct 1).
+- **Needs your answer: how quickly can community businesses (ESPs) add capacity when demand grows?** (d137, confirmed)
+  - Answer: Show both: within a year on the main run, the 5-year rule as a labelled 'other reading'
+  - Other options: Within a year, as you described: when a town or region is underserved (new developments, city growth, population growth, demand outrunning supply), ESPs add enough capacity the following year to serve it | The rule the build used: capacity counts as reached only once ESPs have reinvested as much per adult as today's grocers, restaurants and utilities hold in buildings and equipment, which takes about 5 years at the reference settings
+  - Why: In plain words: the model has to decide how fast new supply appears once people have BU to spend. Faster supply means less of the new money turns into higher prices. You said ESPs can expand within a year, driven by new developments, city expansion, population growth and underserved markets. The build instead tied capacity to the money ESPs reinvest, which took about 5 years. Showing both keeps the page honest, because 'within a year' is your expectation and the 5-year figure comes from government data on what existing businesses own. If you're happy with the default, just confirm it. Decided by Claude under your Oct 1 delegation; default applied until you answer.
+- **Needs your answer: when someone is paid through a creative project (an invention, a tool, art, a new service), what real value should the model count as backing that payment?** (d138, confirmed)
+  - Answer: In the real life experience, new output is offered to the public like a community chest of sorts, both belonging to the citizens, and offered a lower price than private market goods/services. This is the difference between price and value. For example, open-source software is free, but closed software costs 100/month. Private enterprise gets rich sometimes, but Collective contributors get a higher conversion rate and unlimited octave capacity for offering their software for free or for 1 dollar per month. Likewise, a band can sell out a stadium for ticket prices at $100, but they can offer tickets to collective members for 6 expired BUs. If the band has an earned conversion rate of 9*Phi or 14.56, they stay revenue neutral.
+  - Other options: What customers actually buy from the project: the model counts the market value of what projects sell, using published evidence on how much new output paid creative and project work produces (a range, shown low to high) | The cost of the hours and materials the project paid for (the earlier default; cautious) | The full amount paid out: every converted dollar is matched by output (the most optimistic reading) | Your own description (write it in)
+  - Why: In plain words: a project is paid several times the face value of the BU directed to it (about 4.8 times today). For that payment not to push prices up, the project has to produce something people value at roughly the full payment, not just the BU's face value. Example: if supporters direct $1,000 of BU to a team and it converts to $4,800, the team needs to make about $4,800 worth of goods or services. This is the setting that decides whether savings hold up in the Adverse and Stress environments. One more part, if you can: does project output mostly lower the cost of essentials (like an AI tool that cuts a grocer's costs), or mostly add things people buy beyond essentials (like an album or a game)? Either answer works; it decides which prices it lowers. Decided by Claude under your Oct 1 delegation; default applied until you answer.
+- **Please confirm: does the octave cap mean that, in total, people can only convert as many BU each year as businesses and projects have the capacity to supply?** (d139, confirmed)
+  - Answer: ESPs who accept BUs have octave caps based on their capacity. Individuals and Creative Collective member groups have unlimited octave caps, but they must show their work to earn an elevated conversion rate.
+  - Other options: Yes: each person's conversion is limited by their octave, and the octaves together are limited by real business capacity, so total new money each year cannot exceed what businesses can actually supply | Only per person: the octave limits each individual, with no limit on the total | Your own description (write it in)
+  - Why: In plain words: you said the octave relates to business capacity. If that holds across the whole economy, it is a built-in brake on inflation: the Treasury never pays out more than businesses can turn into real goods and services. The model today limits each person but not the total, which is one reason prices rise 23-51% a year in the cautious reading. Decided by Claude under your Oct 1 delegation; default applied until you answer.
+- **Correction: what do privately owned ESPs do with the conversion premium?** (d140, confirmed)
+  - Answer: Pass it to customers as lower prices and stay revenue neutral (your Oct 1 description: a $9/$12/$15 menu drops to $3/$4/$5 at 3x conversion); owners compete for workers, so their pay matches what a profit-share ESP worker earns
+  - Other options: Owners keep it (what the build did)
+  - Why: The build mis-modeled your design: it had private owners keeping the earnings. Your description makes the premium a price cut for customers. The model has no individual firms, so the wage match is treated as funded by the higher sales the lower prices bring, and the report will say so. A correction, applied; override if needed.
+- **What is the simplified version of Compassionism called in the policy comparison?** (d141, confirmed)
+  - Answer: Compassionism Core (or Compassionism Components) in tables and labels; 'kNot Compassionism' kept as the title idea for an article at the comparison's release
+  - Other options: kNot Compassionism as the label
+  - Why: Your Oct 2 answer. Applies to the comparison study, after v5.0.
+- **How does the next work reach the live page?** (d142, confirmed)
+  - Answer: Claude Code works on its own branch and opens a pull request into main; you merge it, and merging is the release (the route that worked twice on Oct 2). Apply zips stay as a fallback for chat sessions
+  - Other options: Keep using apply zips, after finding out why the last upload's final step failed
+  - Why: The audit zip's upload ran the checks but could not save the result to main, so nothing reached the page. Pull requests from Claude Code worked on Oct 2 and need nothing new from you except the merge.
+- **Which version labels do the next two releases carry?** (d143, confirmed)
+  - Answer: v5.0.1 now, for the audit's text fixes plus everything merged since the v5.0 tag (clarity polish, 40-year view, new video); v5.1 for the release that changes numbers (wage-raise timing fix, typical price level, Hub targets, regenerated results)
+  - Other options: One label, v5.1, for everything, once the numbers are regenerated | Stay at v5.0 until v5.1
+  - Why: The audit found the live page is nine commits past the v5.0 tag, and that tag carries 13 labels saying 4.22. A version someone cites should match what readers see, and an existing tag is never moved, so a new label is the clean fix. A patch number (.0.1) says no results changed; .1 says they did.
+- **In what order are the result-changing items built?** (d144, confirmed)
+  - Answer: Build every change that affects the saved 500-seed results first (wage-raise timing fix, typical price level with a range, inequality and extreme poverty figures, the code-version record), then regenerate the six result sets once
+  - Other options: Follow the audit hand-off's order and regenerate after each item
+  - Why: Each regeneration is six long runs (three environments at 20 and 40 years). The hand-off's order would repeat them at least twice for the same final figures.
+- **How should the page show price levels in the thousands or millions?** (d145, confirmed)
+  - Answer: Now: above 1,000 times today's prices, the page says the model's simple price rule (no central bank, no interest, no protection of savings) makes prices run away in that environment, a limit of the model and not a forecast; the exact figure stays on the replication page. At v5.1: the typical run with a range
+  - Other options: Keep printing the exact figure | Stop showing the price level
+  - Why: The 40-year Adverse view now reads '821,679,717 times today's'. A reporter will quote that as a forecast, and it is also an average pulled up by extreme runs. Keeping the figure on the replication page keeps the record complete.
+- **What comes after v5.1: the next model round or the compare page?** (d146, confirmed)
+  - Answer: The next model round first (savings that keep up with prices, ageing over 40 years, checking the no-programme run against US data), then the compare page on the settled engine
+  - Other options: The compare page first, as session 33 planned
+  - Why: The savings item is the one most likely to change the page's main weakness (more people with too little wealth in the Adverse and Stress environments). Running the comparison's 500-seed restudy before it would mean running it again afterwards. This is a priority call, so it is yours if you prefer the comparison first.
+- **Needs your answer: should the BU keep its value when prices rise more slowly than 5% a year?** (d147, confirmed)
+  - Answer: Keep the Hub's rule as written: the BU is indexed to prices only in a year when prices rise faster than 5%. The page already says the optimistic end is held back by this; Claude adds the 'indexed every year' result as one more reading in the next model round, so readers see both
+  - Other options: Change the model so the BU is indexed every year (a different design from the Hub's rule; every result changes, so it is a new release with all the 500-run results regenerated) | Index the BU above a lower rate than 5% (you name the rate; same cost as the option above)
+  - Why: In the Adverse Environment and the Stress Test outside inflation is 2% a year. When the programme adds none of its own (the fully backed end of the backing-share chart on the replication page) the 5% rule never switches on, and the BU loses about a third of its real value over 20 years. Indexed every year instead, the fully backed Adverse Environment has 31.8% of adults with too little wealth instead of 52.5%, and costs $37,142 per adult a year instead of $25,607 (500 runs each). The default keeps what the Hub's Inflation Surge Protocol says and makes the effect visible; changing the rule is a design call, so it is yours.
+- **Needs your answer: which of the model's poverty measures is the Hub's 'poverty rate under 2%'?** (d148, confirmed)
+  - Answer: I'm not sure what number is most appropriate to use, so perhaps using several measures is more appropriate, including a BLEI figure.
+  - Other options: Keep showing every measure against the 2% line, with the note that none of them is the official rate (the page does this now) | Add the measure the Hub's own numbers use: the share of adults below the US federal poverty line (the Hub starts from about 12%), reported at Year 7 as well as at 20 and 40 years, so its 12%-to-2% path can be compared like for like. New reporting in the next model round | Name one existing measure (for example 'below the cost of living') as the Hub's poverty rate and headline it (tell Claude which)
+  - Why: The Hub's Integrated Implementation Roadmap sets a poverty rate under 2% by Year 7, from about 12%, but does not say which measure it means. The model's measures are stricter than the official rate: with no programme they read 47% to 83% at 20 years, and with the programme none comes near 2% (the lowest is 14.8%, at 40 years). The default changes nothing and says so on the page. The second option is the like-for-like test and what Claude would recommend, but it adds a measure and a choice about the poverty line under inflation, so it waits for you.
+- **Needs your answer: is the Hub's Gini target about income or about wealth?** (d149, confirmed)
+  - Answer: Both: show an income Gini and a wealth Gini, each against the Hub's number that is about it
+  - Other options: Income, which is what the page compares now: the Gini of one year's disposable income. The Roadmap's start of 0.48 is the US income Gini, so this is the like-for-like figure; the BLEI paper's 0.25 is shown only as the lower end of the Roadmap's 0.25 to 0.30 range | Wealth, as in the BLEI paper (its 0.25 is a design target for the wealth Gini adjusted for debts): Claude adds a wealth Gini to the results in the next model round and compares that with the target
+  - Why: The Hub gives two Gini numbers. The Integrated Implementation Roadmap says 0.25 to 0.30 by Year 7, from 0.48 (an income figure). The BLEI paper gives 0.25 as the design target for a debt-adjusted wealth Gini, and itself reports that the simulation measured 0.518 on that measure in an earlier version. The model reports only an income Gini today: 0.29 to 0.38 with no programme at 20 years, already below the Hub's 0.48 start. Claude chose the Roadmap's income reading and the page says in words what it compares; please say if that misrepresents your design.
+- **Should the zip upload route be repaired or retired?** (d150, confirmed)
+  - Answer: Leave it as it is for now (nothing uses it while pull requests work)
+  - Other options: Repair it: delete the two ':(exclude)...' pieces from the 'git add' line in .github/workflows/apply-upload.yml (one line, by hand; the cause is in dev/PROGRESS.md under session 34), so zips work again as the fallback for chat sessions | Retire it: delete the apply-upload workflow and use pull requests only
+  - Why: Decision d142 kept apply zips as a fallback for chat sessions, but the route's last step has failed since the .gitignore added in session 33: the Oct 3 run (37111783449) passed all three checks and then could not save to main. Workflow files change only by hand, so the repair is yours. The default follows d142.
+- **Should the walk-through get chapters on the Hub's targets and the backing-share chart?** (d151, confirmed)
+  - Answer: Not yet: add them when the next model round has settled the results, so the narration is recorded once
+  - Other options: Add them now, as an update to the video (new captions, the same voice, a rebuild)
+  - Why: The v5.1 video was rebuilt with the new version label and the same narration. The Hub-target table and the backing-share chart are on the pages but not in the tour. Each rebuild re-voices every changed caption and replaces a file of about 14 MB in the repository.
+- **When adults age and retire in the model, what does a retired adult receive under Compassionism?** (d152, confirmed)
+  - Answer: Keeps the full BU for life on top of Social Security; stops paid ESP work at 67, but can still convert expired BU through creative work at the rate they have earned (Claude's reading: the BU is a citizen's allowance, not a wage)
+  - Other options: Keeps the BU, but no conversion after retirement | No Compassionism-specific rule: retirees get only Social Security, the same in both runs
+  - Why: The Hub does not say. The ageing step needs a rule; option 1 follows the BU's description as an allowance for every citizen. Each option is a switch, so the others can be shown as readings.
+- **How should the page show the evidence-based middle reading of how much conversion money is backed by new output?** (d153, confirmed)
+  - Answer: Beside the two ends as a labelled middle band, with the Kenya study named and its limits stated; the headline stays the cautious reading
+  - Other options: Make the middle reading the headline, with the two ends as the range | No middle reading; keep only the two ends
+  - Why: A middle figure is what reporters and policy makers will quote, so it needs to be visible; keeping the cautious reading as the headline protects the page from the charge of choosing the friendliest number. Option 2 is stronger for press but easier to attack.
+- **Should the page show other ways of paying for the Source?** (d154, confirmed)
+  - Answer: Yes: a progressive income tax and a land-value tax, each sized to cover the Source's net payout and marked 'not specified by the Hub'
+  - Other options: Only the progressive income tax | No; keep the new-money reading and the flat wage contribution only
+  - Why: Readers will ask what happens if the Source is paid for without discouraging work. These are modelling alternatives, not claims about the design.
+- **Where should the earlier v4.22 engine live?** (d155, confirmed)
+  - Answer: On its own page (earlier-engine.html), linked from the main page as 'Explore the earlier engine'; the v4.22 tag stays the citable copy
+  - Other options: Stay on the main page, collapsed below the results | Remove it from the site; keep it only in the repository history
+  - Why: It fills most of the page below the results, uses older labels (for example 'CCO only'), and its glossary describes the old engine, so newcomers can mix its figures up with the release results.
+
+## Issues (all resolved)
+
+- Replication framework page lives outside the repo (i1, resolved): The replication file should be transferred to the Sim repo. I can add the next updated file, and then maybe add a redirect to the current location on the Research Hub.
+- No outside expert review yet; audits come from other AI systems (i2, resolved): Paste audit reports into Intake to turn findings into issues.
+- Open engine questions (observed, not changed) (i3, resolved): From the A0 flow map and session 3.
+- index.html scrolls sideways on phones (i4, resolved): Pre-existing (shipped v4.21): at 390 px the page was 421 px wide, from invisible tooltip boxes. Fixed in session 10 (v4.22, d42): one floating tooltip placed by script; 390 px at 390 px in headless Chromium.
+- Headline text edited to Compassionism aspires to enhance cultures by eradicating extreme poverty while incentivizing participation and contribution. Update the other places this statement is located, so it matches. You can propose another edit/polish if you want. (i5, resolved): Session 12: the statement had two other copies. README.md line 3 now matches. The session 11 note in CONTRIBUTING.md keeps the old line as the record of d41, and a new Unreleased section records your revision. Because README.md must open with the page's sentence, domtest fails on main as it stands (94 of 95), so the checks run on your edit (589a127) will have failed; the three session 12 files pass all 95. No other copies on the page, the replication page, the Hub repo or the project files. Polish proposed as d51.
+- The session 13 push landed as a zip: session-13-sim-files.zip is in the repo root and its files are not on main (i6, resolved): Sep 29 uploads put the zip's index.html, README.md and CONTRIBUTING.md and session 15's harness.js on main. walkthrough/ is not on main, so README's walk-through links don't resolve; the 10 MB zip is still in the repo root. Session 16 built the narrated video (6:22), so the push is ready once you've played it.
+- Concerning: "New decision d66 (default applied): the one-time launch gift is financed over the run, the way the asset endowment already is. Paying for it in the year it's spent would spike the next year's contribution." Show both, so people see Compassoinism as intended, and on equal measure with the other systems. (i7, resolved): Session 16: built as asked. PROJ.giftFin: 'payg' (your d66 pick, the design as intended, now the default) or 'run' (the endowment's rule, equal terms); testbed projcore runs the page's rows both ways at 500 seeds (N1-core-rows-500.md). The choice moves the main row by 0.12 points at most (Adverse, Hub spec). How the page shows both is d67 (s35). Correction: pay as you go raises the year-2 contribution about 5 points, not the half point session 15 said. Oct 3: the page's main run uses pay as you go (your pick). Whether the page also shows the over-the-run reading beside it is checked in the v5.2 round (step: robustness readings); the compare page will show both on equal terms.
+- Session 16 upload (169e065) flattened the walkthrough folder into the root and replaced README.md with the tour page; domtest fails 94 of 95 (i8, resolved): Session 17: new workflow .github/workflows/apply-upload.yml applies a session's files from one apply-*.zip dropped on the root upload page: keeps folders, removes paths in DELETE.txt, runs the three checks, commits only if all pass. apply-session-16.zip repairs 169e065 (dry run: 95/95, 28 files in walkthrough/, root clean). Session 18: checked main at b1bc475 on a fresh clone: walkthrough/ in place, root clean, validate, unit and domtest (95) pass.
+- Octave advancement saturates, so no octave cap can bind (observed, not changed) (i9, resolved): Session 18 (s38 sizing): in both models the FBS gate lifts most participants to the top octave within five years. Top-octave share of participants, years 5 / 19: reference engine 68% / 99%, Hub spec 62% / 97%; Adverse 66% / 94% and 60% / 89%; Stress 76% / 90% and 70% / 85%. So octave capacity binds for no one on project hiring or ESP payroll (0.0% of ESP worker-years at the defaults), and rates are set mostly by quality. The Hub says advancement reflects sustained contribution and community engagement. An existing engine rule; a candidate for N1 later work or N2. Session 19 restudy: the cap binds for 0.04% of participating ESP worker-years at ref and adv and 0 in stress; under hybrid a = 0 it binds for 0.80% (ref) and 7.85% (adv), because capacity is in nominal BU and is not indexed while prices rise 22-29 pt a year. Session 28: needs your answer (d129). Session 30 (step 6): stays as is, labelled plainly on the page; slower advancement (one octave per 2, 3 or 5 years) tested and barely matters. Resolved.
+- In the latest ESP study, you showed FGT poverty rates, but how does it affect BLEI? Regardless, the results can be framed as a positive aspect to Compassionism. In short, non-participants pay an extra ~Xk/year to ensure a healthy floor, and incentivize greater output that enhances the culture, which would be less than the social costs of poverty/crime. The output is on a public ledger, which should strengthen the BU/CCO currency against inflation in real life. And the study is on terms that compare it to other policies, and is not necessarily how it would play out in reality. Let's continue building/refining the sim, and can open a discussion section relating to studies that show how Compassionism costs more than expected or inflates currency more than the other policies. (i10, resolved): Session 20 reply: BLEI for ESP payroll is not in the restudy; I expect it to move in opposite directions for participants and non-participants. Cost figures: -$5,986 (ref), -$2,777 (adv), -$549 (stress) per adult-year are against today's ESP rule; the close-out's about $5,800 is against no program (engine). Social-cost offsets (d29, s36) and the ledger's effect on inflation are not modelled. Session 21: all three sub-items done. Answer: ESP payroll moves BLEI in opposite directions (Hub spec, design-neutral BLEI poverty vs today, part / non: -0.26 / +4.44 ref, -2.37 / +2.56 adv, -1.09 / +0.68 stress). Against no program non-participants lose far more from the design itself (+16 engine, +33 Hub spec at ref), through the flat wage contribution. Close once you have reviewed the draft and settled d83-d85. Session 30: BLEI now leads every result table and the page, by group too (participants / non-participants), with your definition and the design-neutral reading side by side (dev/reports/08-blei.md). Yours to close.
+- Context Files can be added to the repo if you can't access the Project Box. (i11, resolved): Session 30: the repo had what the build needed (CLAUDE.md, dev/PLAN.md, dev/background/). One thing was only here: your profit-share answer on s40 (participating ESP workers only); it is now applied. Adding this ledger's decisions to the repo (for example a dev/background/ledger-export.md) would stop that happening again.
+- Session 30's finished build is not in the repository, and Claude Code still cannot push (i12, resolved): Session 31 (Oct 2): next-release does not exist on GitHub; session 30's work (steps 1-13 and the restudy) is only in the git bundle it sent in chat. The four new items change that code, so they cannot be built without it. Pushes are refused with error 403 (no GitHub access for Claude on BetterToBest/compassionism-simulation). Session 31, later: you uploaded session 30's bundle in chat; next-release is restored and steps 14-18 are built on it. Pushing is still refused (403), so the result is in next-release-session31.bundle.
+- V.5 is live, but it needs some editing, just a clarity polish. The "What Compassionism is" section states: BU can be converted to dollars at higher rates for work. We need to say Expired BU can be converted... (i13, resolved)
+- The audit pass's fixes did not reach the live page: the upload's final step failed (Oct 3) (i14, resolved): GitHub Actions run 'apply upload #11' (commit b3db350, Oct 3) ran the three checks, then failed in its last step, which saves the result to main. Rerun here, all three checks pass on the zip's files, so the files are fine. The most likely cause is that main no longer accepts direct saves from the workflow (pull requests have been used since Oct 2), but the log needs a GitHub sign-in to confirm. The zip still sits in the repository root; nothing else changed and the live page is as it was. Oct 3: closed. v5.0.1 went live through pull request 3; the error you pasted (git add refusing the ignored node_modules path) is the cause, recorded in dev/PROGRESS.md. You chose to leave the zip route as it is while pull requests work.
+
+## Steps already done (titles only)
+
+- Bring the audit's fixes onto the live page through a pull request, and label the result v5.0.1 (s71)
+- Fix the one-year delay in the check that decides who gets the wage raise (s72)
+- Show prices as the typical run with a range, instead of an average pulled up by extreme runs (s73)
+- Show the Hub's own targets beside the results: inequality (Gini at or below 0.25) and poverty under 2% (s74)
+- Make every figure traceable to the exact code that produced it, and widen the checks (s75)
+- Regenerate the 500-seed results once with all of the above, then release v5.1 (s76)
+- Show the middle answers to the decisive unknown: results when 0%, 25%, 50%, 75% or 100% of conversion payments are matched by new output (s77)
+- Small page conveniences: download the figures shown, links that open a chosen environment and horizon, check counts filled in automatically (s78)
+- Next model round: savings that keep up with prices, adults who age and retire over 40 years, and a check of the no-programme run against US data (s79)
+- Write a plain-words outline of the released page, for you to react to (s55)
+- Check whether the page can run the new models in the browser (done: it can) (s61)
+- Where essential-service businesses' earnings go (the ESP split): designed, not yet built (s40)
+- Add a simple production side, so the model can show whether new output backs the BU (additionality) (s51)
+- Model how Compassionism pays for itself (BU issued by a Source/Treasury, conversion tax recycled) instead of a flat tax on wages (s45)
+- Let adults join or leave the program over time (today each adult's choice is fixed for 20 years) (s50)
+- Give the community-owned businesses and housing (PTF and PTH) real capital and running costs behind their price cuts (s44)
+- Settle how an adult moves up an octave, and build it behind a switch (s60)
+- Let people spend some income above the cost of living (today they save every dollar of it) (s53)
+- Make BLEI (days of basic living covered) the headline measure, and settle how it is read (s54)
+- Show the public costs of poverty that Compassionism avoids (crime, homelessness services, emergency and institutional health care) beside its cost (s59)
+- Port the finished mechanisms into the page's engine, with a check that the page and the harness agree on the same seeds (s62)
+- Restudy the finished Compassionism and write the release's figures (s63)
+- Take the comparison with other designs off the simulation page (s56)
+- Move the version history and calibration notes to the replication page; keep a short list of limits on the main page (s57)
+- Fix three wording problems on the live page (s58)
+- Release: push the reworked page and update README, CONTRIBUTING, the replication page and the Hub index files (s64)
+- Record a new walk-through for the released page (s65)
+- Automatic stabilizer: raise BU during recessions and adverse shocks (s1)
+- Automatic stabilizer: suspend BU expiry during shocks (s2)
+- Automatic stabilizer: emergency enrollment of non-participants (s3)
+- Automatic stabilizer: COLA indexation (Hub Inflation Surge Protocol) (s4)
+- CCO cost relief scales with the BU amount (Option B: 20% at the $1,200 reference) (s5)
+- Recalibrate automationRisk to employment data (s6)
+- CI with jsdom as a dev-only dependency (s7)
+- Engine split, as signed off (s8)
+- Tagged GitHub releases (s9)
+- Update the replication framework page (cco-ptf-simulation-replication.html) (s10)
+- A0 flow map: where money enters, moves and leaves (s15)
+- A1 issuance ledger (reporting only) (s16)
+- Money-creation and price module (A2) (s12)
+- Labor-supply module (A3) (s13)
+- Large-N restudy of A2 and A3; settle their decisions (s17)
+- Adopt the next-round plan and choose its scope (s27)
+- Prepare v4.22: tooltip fix, design sources, d40 rerun, version labels (s28)
+- Page walk-through and demo video, after v4.22 is live (s29)
+- Session 11: your review notes applied (wording, design panel, top-up, grocery scale, X-Cents Power of 1, proposed-size view) (s30)
+- Session 12: carry your revised opening line through (i5) (s31)
+- Session 13: d51's headline ending applied; three stale labels in CONTRIBUTING corrected (s32)
+- N1 session 1: design the replacement for the octave wage raise (d46): creative projects hiring participants at elevated conversion rates, paid in expired BU (s33)
+- N1: the PTF/PTH inflation damping and theta's stand-in gate: replace or switch off by default; label CCO relief's 20% a design parameter (d52, d53) (s34)
+- N1: ESP payroll in expired BU at workers' own rates (your Sep 29 input, R7): re-specify the Hub-spec model's business conversion (s38)
+- Walk-through voice track (d56): a neutral American-English female synthetic voice timed to captions.srt (s39)
+- BLEI by group (participants, non-participants) beside FGT2 in the ESP and core rows (i10-1) (s41)
+- Show the disposable-income Gini and poverty spells for the running scenario on the page (s25)
+- Correct privately owned ESPs: the conversion premium becomes lower prices for customers, with worker pay matched to profit-share ESPs (s66)
+- Count what creative projects produce as backing for the BU, with capacity growth and the octave limit on total conversion (s67)
+- Add a spending layer: spending at businesses raises output and jobs where there is idle capacity (the multiplier effect) (s68)
+- Expand the public costs avoided beyond homelessness: prisons, emergency rooms and ambulances, policing, mental health facilities, child welfare, health care (s69)
+- Restudy at 500 seeds in the three environments with these added, then your read and 'release' (v5.0) (s70)

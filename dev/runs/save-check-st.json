@@ -1,0 +1,257 @@
+{
+ "_meta": {
+  "what": "wealth-poverty gap closed by savings that keep up with prices and by the BU indexed every year",
+  "env": "st",
+  "seeds": 200,
+  "years": 20,
+  "manifest": {
+   "commit": "b5cd1436a2a1b2452d131514cb278669ed6b98c6",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "646cff9c7123870e29a0c9f47ce49f1da65f2d7393d641be6a15f5d312eceefa",
+   "engineBlockSha256": "256af1fcd3f43e41e4d2af6dd6e550c127e248f19a3f7d861d1146b7a64fbc94",
+   "indexSha256": "4ac190f9d00c41a2bb3e8fc4a588af38bc213b8a9dae365d308c955d190faaa6"
+  },
+  "command": "node dev/tools/save_check.js st 200",
+  "seconds": 140
+ },
+ "rows": {
+  "base_none": {
+   "pov": 82.6,
+   "fgt0PY": 78.1,
+   "bOAPy": 60,
+   "svInt": 0,
+   "svIntR": 0
+  },
+  "base_sv": {
+   "pov": 78.4,
+   "fgt0PY": 78.1,
+   "bOAPy": 57.8,
+   "svInt": 1850,
+   "svIntR": 612
+  },
+  "base_sv0": {
+   "pov": 79.8,
+   "fgt0PY": 78.1,
+   "bOAPy": 58.5,
+   "svInt": 1142,
+   "svIntR": 0
+  },
+  "release": {
+   "vs": "none",
+   "pov": 90.4,
+   "dPov": [
+    7.86,
+    7.62,
+    8.11
+   ],
+   "fgt0PY": 65.5,
+   "dF0": [
+    -12.6,
+    -12.77,
+    -12.44
+   ],
+   "bOAPy": 54.9,
+   "dBO": [
+    -5.05,
+    -5.25,
+    -4.85
+   ],
+   "infl": 23.8,
+   "cost": 10478,
+   "svInt": 0,
+   "svIntR": 0,
+   "realT": 1,
+   "gapClosedPct": 0
+  },
+  "sav": {
+   "vs": "sv",
+   "pov": 64.1,
+   "dPov": [
+    -14.24,
+    -14.49,
+    -13.99
+   ],
+   "fgt0PY": 65.5,
+   "dF0": [
+    -12.6,
+    -12.77,
+    -12.44
+   ],
+   "bOAPy": 43.6,
+   "dBO": [
+    -14.16,
+    -14.37,
+    -13.95
+   ],
+   "infl": 23.8,
+   "cost": 10478,
+   "svInt": 19749,
+   "svIntR": 867,
+   "realT": 1,
+   "gapClosedPct": 281
+  },
+  "sav0": {
+   "vs": "sv0",
+   "pov": 65.9,
+   "dPov": [
+    -13.99,
+    -14.23,
+    -13.75
+   ],
+   "fgt0PY": 65.5,
+   "dF0": [
+    -12.61,
+    -12.77,
+    -12.44
+   ],
+   "bOAPy": 44.3,
+   "dBO": [
+    -14.24,
+    -14.45,
+    -14.03
+   ],
+   "infl": 23.8,
+   "cost": 10478,
+   "svInt": 17352,
+   "svIntR": 0,
+   "realT": 1,
+   "gapClosedPct": 278
+  },
+  "idx": {
+   "vs": "none",
+   "pov": 90.4,
+   "dPov": [
+    7.86,
+    7.62,
+    8.11
+   ],
+   "fgt0PY": 65.5,
+   "dF0": [
+    -12.6,
+    -12.77,
+    -12.44
+   ],
+   "bOAPy": 54.9,
+   "dBO": [
+    -5.05,
+    -5.25,
+    -4.85
+   ],
+   "infl": 23.8,
+   "cost": 10478,
+   "svInt": 0,
+   "svIntR": 0,
+   "realT": 1,
+   "gapClosedPct": 0
+  },
+  "h1": {
+   "vs": "none",
+   "pov": 72.5,
+   "dPov": [
+    -10.06,
+    -10.27,
+    -9.85
+   ],
+   "fgt0PY": 67.3,
+   "dF0": [
+    -10.83,
+    -10.99,
+    -10.68
+   ],
+   "bOAPy": 47.2,
+   "dBO": [
+    -12.72,
+    -12.93,
+    -12.52
+   ],
+   "infl": 0,
+   "cost": 8694,
+   "svInt": 0,
+   "svIntR": 0,
+   "realT": 0.686,
+   "gapClosedPct": 228
+  },
+  "h1idx": {
+   "vs": "none",
+   "pov": 67,
+   "dPov": [
+    -15.62,
+    -15.86,
+    -15.37
+   ],
+   "fgt0PY": 63.3,
+   "dF0": [
+    -14.81,
+    -14.99,
+    -14.62
+   ],
+   "bOAPy": 44,
+   "dBO": [
+    -15.92,
+    -16.15,
+    -15.7
+   ],
+   "infl": 0,
+   "cost": 11813,
+   "svInt": 0,
+   "svIntR": 0,
+   "realT": 1,
+   "gapClosedPct": 299
+  },
+  "h1sav": {
+   "vs": "sv",
+   "pov": 67.3,
+   "dPov": [
+    -11.11,
+    -11.35,
+    -10.87
+   ],
+   "fgt0PY": 67.3,
+   "dF0": [
+    -10.83,
+    -10.98,
+    -10.67
+   ],
+   "bOAPy": 45.1,
+   "dBO": [
+    -12.71,
+    -12.92,
+    -12.5
+   ],
+   "infl": 0,
+   "cost": 8692,
+   "svInt": 2570,
+   "svIntR": 851,
+   "realT": 0.686,
+   "gapClosedPct": 241
+  },
+  "h1both": {
+   "vs": "sv",
+   "pov": 62,
+   "dPov": [
+    -16.41,
+    -16.68,
+    -16.15
+   ],
+   "fgt0PY": 63.3,
+   "dF0": [
+    -14.8,
+    -14.99,
+    -14.62
+   ],
+   "bOAPy": 42.1,
+   "dBO": [
+    -15.63,
+    -15.86,
+    -15.41
+   ],
+   "infl": 0,
+   "cost": 11812,
+   "svInt": 2769,
+   "svIntR": 917,
+   "realT": 1,
+   "gapClosedPct": 309
+  }
+ }
+}

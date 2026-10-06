@@ -37,19 +37,19 @@ Welfare outcomes are measured against the **Basic Living Economic Index (BLEI)**
 
 ## How to use
 
-**No Python. No installation. Just open `index.html` in any browser.**
+**No Python. No installation. Just open `index.html` in any browser.** The earlier engine (v4.22, with its own settings, presets and charts) is on its own page, `earlier-engine.html`, linked from the front door as "Explore the earlier engine".
 
 ### Option A — Open locally
-1. Download `index.html`
+1. Download `index.html` (and `earlier-engine.html` for the earlier engine)
 2. Double-click — opens in Chrome, Firefox, Safari, or Edge
-3. Adjust controls and click **Run Simulation**
+3. Read the results, or press **Run it yourself**; the earlier engine's controls and **Run Simulation** are on `earlier-engine.html`
 
 ### Option B — Host on GitHub Pages
-1. Upload `index.html` to your repository root
+1. Upload `index.html` and `earlier-engine.html` to your repository root
 2. Go to **Settings → Pages → Source → main branch / root**
 3. Live at `https://yourusername.github.io/compassionism-simulation/`
 
-The simulation itself documents its own current controls, presets, calibration constants, and known limitations in-app — see the collapsible **Assumptions, ODD Protocol & Known Limitations** and **References & Citations** panels at the bottom of the page, which are kept in sync with the shipped code.
+The simulation itself documents its own current controls, presets, calibration constants, and known limitations in-app — see the collapsible **Assumptions, ODD Protocol & Known Limitations** and **References & Citations** panels at the bottom of the earlier engine's page (`earlier-engine.html`), which are kept in sync with the shipped code.
 
 ---
 
@@ -57,7 +57,7 @@ The simulation itself documents its own current controls, presets, calibration c
 
 This README intentionally stays stable across releases. For anything tied to a specific version:
 
-- **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/compassionism-simulation/replication.html) has the full line-by-line changelog, newest first, for every release.
+- **What changed, and when** — the [Replication Framework's Version History](https://bettertobest.github.io/compassionism-simulation/replication.html) has the full line-by-line changelog, newest first, for every release; each release's detailed notes are in [CHANGELOG.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CHANGELOG.md) (the current release's in CONTRIBUTING.md).
 - **Current output metrics and large-N study results** — the Replication Framework's Performance Comparison section, refreshed after any mechanics-changing release.
 - **Formulas as currently implemented** — the Replication Framework's Mathematical Framework section, and the simulation's own source comments.
 - **Open questions, known limitations, and how to contribute** — [CONTRIBUTING.md](https://github.com/BetterToBest/compassionism-simulation/blob/main/CONTRIBUTING.md), which tracks unresolved calibration items, model-architecture feedback, and good-first-issues.
@@ -77,7 +77,7 @@ node domtest.js          # drives index.html in a headless DOM (a few minutes)
 
 Every `harness.js` study mode also accepts `--agents=N`, the population per run (default 500). For example, `node harness.js largen 500 headline --agents=5000` reruns the headline figures at 5,000 agents per run, in about five minutes on one CPU core.
 
-The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->146<!-- /count --> tests and `domtest` <!-- count:domtest -->112<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
+The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->171<!-- /count --> tests and `domtest` <!-- count:domtest -->113<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
 
 ---
 

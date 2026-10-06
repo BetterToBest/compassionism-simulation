@@ -112,7 +112,10 @@ CH, SHOTS, ALT = TOUR['chapters'], TOUR['shots'], TOUR['alt']
 
 def rel(env, k='release'): return REL['envs'][env]['rows'][k]
 def base(env): return REL['envs'][env]['base']
-def pct(x): return '%.1f%%' % x
+def f1(x):  # one decimal, halves away from zero on the exact value, as the page's toFixed(1) does (Python's '%.1f' rounds -16.25 to -16.2)
+    from decimal import Decimal, ROUND_HALF_UP
+    return str(Decimal(x).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP))
+def pct(x): return f1(x) + '%'
 def about(x, step): return '{:,}'.format(int(round(x / float(step)) * step))
 R, A, S = rel('ref'), rel('adv'), rel('st')
 V = {
@@ -133,6 +136,18 @@ if REL40:
               'ref40_f0': pct(R4['fgt0PY']), 'base40_f0': pct(base40('ref')['fgt0PY']), 'ref40_infl': pct(R4['infl']),
               'adv40_pov': pct(rel40('adv')['pov']), 'adv40_base_pov': pct(base40('adv')['pov']),
               'st40_pov': pct(rel40('st')['pov']), 'st40_base_pov': pct(base40('st')['pov'])})
+# v5.2 round: the year-by-year path, the middle reading, savings that keep up with prices, ageing and the robustness readings (present only in a v5.2 panel)
+def money(x): return ('-' if x <= -5 else '') + '$' + about(abs(x), 10)
+V52 = 'path' in A and 'path' in base('adv') and 'mid' in REL['envs']['adv']['rows']
+if V52:
+    PA, PB = A['path'], base('adv')['path']
+    V.update({'adv_f0_end': pct(PA['f0'][-1]), 'adv_base_f0_end': pct(PB['f0'][-1]), 'adv_medw_end': money(PA['medW'][-1]), 'adv_base_medw_end': money(PB['medW'][-1]),
+              'adv_bu_end': money(PA['buR'][-1]), 'adv_wage_0': money(PA['wageR'][0]), 'adv_wage_end': money(PA['wageR'][-1]), 'adv_base_wage_end': money(PB['wageR'][-1]),
+              'adv_midlo_pov': pct(rel('adv', 'midlo')['pov']), 'adv_midhi_pov': pct(rel('adv', 'midhi')['pov']),
+              'adv_sav_pov': pct(rel('adv', 'sav')['pov']), 'adv_sav_base_pov': pct(REL['envs']['adv']['bases']['sv']['pov']),
+              'ref_dpov': f1(R['dPov'][0]), 'ref_hcap_dpov': f1(rel('ref', 'hcap')['dPov'][0])})
+    if REL40 and 'age' in REL40['envs']['ref']['rows']:
+        V.update({'ref40_age_pov': pct(rel40('ref', 'age')['pov']), 'ref40_age_base_pov': pct(REL40['envs']['ref']['bases']['ag']['pov'])})
 CHECKS = {   # the conditions each caption's wording depends on
     'reference confirmed gain': R['dBO'][0] < 0 and R['dF0'][0] < 0 and R['dPov'][0] < 0,
     'non-participants lose at reference': R['grp']['non'] < 0 < R['grp']['part'],
@@ -141,6 +156,15 @@ CHECKS = {   # the conditions each caption's wording depends on
     'adverse wealth worse': A['dBO'][0] < 0 and A['dPov'][0] > 0,
     'stress wealth worse': S['dBO'][0] < 0 and S['dPov'][0] > 0,
 }
+if V52:
+    ROB = ['hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun']
+    CHECKS.update({
+        'adverse below the cost of living every year': all(x < y for x, y in zip(PA['f0'], PB['f0'])),
+        'adverse BU keeps its value': abs(PA['buR'][-1] - PA['buR'][0]) < 1 and PA['wageR'][-1] < PA['wageR'][0],
+        'adverse middle band lowers wealth poverty': rel('adv', 'midhi')['pov'] < rel('adv', 'midlo')['pov'] < A['pov'],
+        'adverse savings protection reverses the wealth result': rel('adv', 'sav')['pov'] < REL['envs']['adv']['bases']['sv']['pov'],
+        'rent capture is the largest robustness risk': max(ROB, key=lambda k: rel('ref', k)['dPov'][0] - R['dPov'][0]) in ('hcap', 'hcaphi') and rel('ref', 'hcap')['dPov'][0] < 0,
+    })
 if REL40:
     CHECKS.update({
         '40 years: reference confirmed gain': R4['dBO'][2] < 0 and R4['dF0'][2] < 0 and R4['dPov'][2] < 0,
@@ -174,6 +198,7 @@ APPLY = """(s) => {
   const mo = document.getElementById('rel-more'); if (mo) mo.open = !!s.more;
   const old = document.getElementById('fd-old'); if (old) old.open = false;
   const live = document.getElementById('rel-live-out'); if (live && !s.run) live.innerHTML = '';
+  if (s.hide) document.querySelectorAll(s.hide).forEach(e => { e.style.display = 'none'; });   // v5.2: notes a shot's captions do not concern (the results block re-renders on each shot)
   if (s.scroll === 0 || s.scroll === undefined) window.scrollTo(0, 0);
   else { const e = document.querySelector(s.scroll); if (!e) return 'missing ' + s.scroll;
          if (e.tagName === 'DETAILS' && !s.more) e.open = false;
@@ -215,7 +240,7 @@ def capture(pw, base):
             pg.goto(url, wait_until='networkidle'); pg.wait_for_timeout(3500)
             pg.add_style_tag(content=SPOT_CSS); current = url
         pg.mouse.move(2, VH - 2)
-        state = {k: s[k] for k in ('env', 'yrs', 'more', 'run', 'scroll', 'off', 'dim') if k in s}
+        state = {k: s[k] for k in ('env', 'yrs', 'more', 'run', 'scroll', 'off', 'dim', 'hide') if k in s}
         res = pg.evaluate(APPLY, state)
         if res != 'ok':
             sys.exit('shot %r: %s' % (s['id'], res))

@@ -1,0 +1,333 @@
+{
+ "_meta": {
+  "what": "the v5.2 robustness readings (release row, Source financing unless stated)",
+  "env": "adv",
+  "seeds": 200,
+  "years": 20,
+  "manifest": {
+   "commit": "0c763e585b213f495a65633331e6b41ff2ca63d2",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "85bd57485076541b2a19e129e6c4b8d2595b634676a4ab77d7609bbcaa9c31af",
+   "engineBlockSha256": "c649d663cdd255babc3486003c3eee5da2919811c9336d3fb2f931e75ffadf0b",
+   "indexSha256": "a92fb88b96a1d6a66aa1863bf09a2145246dcdc796c3819b0c1ba0cff3876f95"
+  },
+  "command": "node dev/tools/robust_check.js adv 200 20",
+  "seconds": 243
+ },
+ "base": {
+  "pov": 82.58,
+  "fgt0PY": 78.11,
+  "bOAPy": 59.96
+ },
+ "rows": {
+  "release": {
+   "label": "RELEASE (v5.0): Compassionism with every mechanism, paid for by the Source",
+   "pov": 87.05,
+   "fgt0PY": 42.01,
+   "bOAPy": 33.1,
+   "infl": 45.52,
+   "cost": 27650,
+   "hcM": 0,
+   "rvX": 0,
+   "rvC": 0,
+   "taxAvg": 6.6,
+   "taxCover": 94.1,
+   "dPov": [
+    4.47,
+    4.22,
+    4.72
+   ],
+   "dF0": [
+    -36.1,
+    -36.31,
+    -35.89
+   ],
+   "dBO": [
+    -26.85,
+    -27.13,
+    -26.57
+   ]
+  },
+  "tax": {
+   "label": "paid for by a flat contribution on wages instead of the Source",
+   "pov": 89.45,
+   "fgt0PY": 82.96,
+   "bOAPy": 59.02,
+   "infl": 0,
+   "cost": 25569,
+   "hcM": 0,
+   "rvX": 0,
+   "rvC": 0,
+   "taxAvg": 78.3,
+   "taxCover": 76.7,
+   "dPov": [
+    6.87,
+    6.58,
+    7.16
+   ],
+   "dF0": [
+    4.85,
+    4.65,
+    5.04
+   ],
+   "dBO": [
+    -0.94,
+    -1.21,
+    -0.67
+   ]
+  },
+  "hcap": {
+   "label": "landlords raise the rent of tenants paying with BU by $0.50 per BU dollar spent on rent, outside PTH (housing-voucher evidence: Collinson and Ganong 2018)",
+   "pov": 91.07,
+   "fgt0PY": 49.19,
+   "bOAPy": 38.84,
+   "infl": 51.04,
+   "cost": 26636,
+   "hcM": 28.15,
+   "rvX": 0,
+   "rvC": 0,
+   "taxAvg": 6.6,
+   "taxCover": 94.1,
+   "dPov": [
+    8.5,
+    8.24,
+    8.76
+   ],
+   "dF0": [
+    -28.92,
+    -29.12,
+    -28.72
+   ],
+   "dBO": [
+    -21.11,
+    -21.39,
+    -20.83
+   ]
+  },
+  "hcaphi": {
+   "label": "rents outside PTH rise $1.41 per BU dollar spent on rent, for every renter outside PTH (Susin 2002: other renters paid more than the subsidy)",
+   "pov": 92.21,
+   "fgt0PY": 54.43,
+   "bOAPy": 43.44,
+   "infl": 51.35,
+   "cost": 26738,
+   "hcM": 54.14,
+   "rvX": 0,
+   "rvC": 0,
+   "taxAvg": 6.6,
+   "taxCover": 94.1,
+   "dPov": [
+    9.64,
+    9.37,
+    9.9
+   ],
+   "dF0": [
+    -23.68,
+    -23.87,
+    -23.48
+   ],
+   "dBO": [
+    -16.51,
+    -16.79,
+    -16.24
+   ]
+  },
+  "rev5": {
+   "label": "5% of high conversion rates unearned (review errors and collusion), audits catch half",
+   "pov": 87.27,
+   "fgt0PY": 42.21,
+   "bOAPy": 33.27,
+   "infl": 45.78,
+   "cost": 27535,
+   "hcM": 0,
+   "rvX": 82,
+   "rvC": 81,
+   "taxAvg": 6.6,
+   "taxCover": 94.1,
+   "dPov": [
+    4.69,
+    4.44,
+    4.94
+   ],
+   "dF0": [
+    -35.9,
+    -36.11,
+    -35.7
+   ],
+   "dBO": [
+    -26.69,
+    -26.97,
+    -26.41
+   ]
+  },
+  "rev10": {
+   "label": "10% of high conversion rates unearned, audits catch half",
+   "pov": 87.48,
+   "fgt0PY": 42.41,
+   "bOAPy": 33.43,
+   "infl": 46.04,
+   "cost": 27421,
+   "hcM": 0,
+   "rvX": 160,
+   "rvC": 163,
+   "taxAvg": 6.6,
+   "taxCover": 94.1,
+   "dPov": [
+    4.9,
+    4.65,
+    5.16
+   ],
+   "dF0": [
+    -35.7,
+    -35.91,
+    -35.5
+   ],
+   "dBO": [
+    -26.53,
+    -26.81,
+    -26.25
+   ]
+  },
+  "rev20": {
+   "label": "20% of high conversion rates unearned, audits catch half",
+   "pov": 87.87,
+   "fgt0PY": 42.79,
+   "bOAPy": 33.75,
+   "infl": 46.57,
+   "cost": 27199,
+   "hcM": 0,
+   "rvX": 318,
+   "rvC": 320,
+   "taxAvg": 6.6,
+   "taxCover": 94.1,
+   "dPov": [
+    5.29,
+    5.03,
+    5.54
+   ],
+   "dF0": [
+    -35.32,
+    -35.53,
+    -35.11
+   ],
+   "dBO": [
+    -26.21,
+    -26.49,
+    -25.93
+   ]
+  },
+  "rev20n": {
+   "label": "20% of high conversion rates unearned, no audits",
+   "pov": 87.7,
+   "fgt0PY": 42.21,
+   "bOAPy": 33.36,
+   "infl": 46.93,
+   "cost": 27474,
+   "hcM": 0,
+   "rvX": 634,
+   "rvC": 0,
+   "taxAvg": 6.6,
+   "taxCover": 94.1,
+   "dPov": [
+    5.12,
+    4.87,
+    5.37
+   ],
+   "dF0": [
+    -35.9,
+    -36.11,
+    -35.69
+   ],
+   "dBO": [
+    -26.6,
+    -26.88,
+    -26.32
+   ]
+  },
+  "giftrun": {
+   "label": "the launch gift paid for over the run (the Source spreads the new money for the gift over the run)",
+   "pov": 87.02,
+   "fgt0PY": 41.95,
+   "bOAPy": 33.03,
+   "infl": 45.33,
+   "cost": 27677,
+   "hcM": 0,
+   "rvX": 0,
+   "rvC": 0,
+   "taxAvg": 6.6,
+   "taxCover": 94.1,
+   "dPov": [
+    4.44,
+    4.19,
+    4.69
+   ],
+   "dF0": [
+    -36.16,
+    -36.37,
+    -35.95
+   ],
+   "dBO": [
+    -26.93,
+    -27.21,
+    -26.65
+   ]
+  },
+  "progtax": {
+   "label": "paid for by a progressive income tax instead of the Source (the 2025 federal brackets, scaled up; not specified by the Hub)",
+   "pov": 98.24,
+   "fgt0PY": 84.17,
+   "bOAPy": 54.69,
+   "infl": 45.44,
+   "cost": 27707,
+   "hcM": 0,
+   "rvX": 0,
+   "rvC": 0,
+   "taxAvg": 58.7,
+   "taxCover": 48.2,
+   "dPov": [
+    15.66,
+    15.4,
+    15.91
+   ],
+   "dF0": [
+    6.06,
+    5.88,
+    6.24
+   ],
+   "dBO": [
+    -5.27,
+    -5.53,
+    -5
+   ]
+  },
+  "landtax": {
+   "label": "paid for by a land-value tax instead of the Source (falling on adults in proportion to their savings; not specified by the Hub)",
+   "pov": 89.81,
+   "fgt0PY": 48.48,
+   "bOAPy": 33.46,
+   "infl": 28.67,
+   "cost": 30366,
+   "hcM": 0,
+   "rvX": 0,
+   "rvC": 0,
+   "taxAvg": 42,
+   "taxCover": 53.2,
+   "dPov": [
+    7.23,
+    6.99,
+    7.48
+   ],
+   "dF0": [
+    -29.63,
+    -29.91,
+    -29.35
+   ],
+   "dBO": [
+    -26.49,
+    -26.74,
+    -26.24
+   ]
+  }
+ }
+}
