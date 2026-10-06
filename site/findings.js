@@ -69,11 +69,15 @@
 
   /* ---- headline cards (layer 1). The same markup release_data.py writes statically for the default view. ---- */
   var CARDS = [['bO', 'Below 30 days of basic living', 'bOAPy', 'dBO'], ['f0', 'Below the cost of living', 'fgt0PY', 'dF0'], ['pov', 'Too little wealth', 'pov', 'dPov']];
-  /* the cards' plain meanings; the release file's figure catalogue carries the same words (dev/tools/release_data.py MEAS; the figure check compares them) */
+  /* the cards' plain meanings; the release file's figure catalogue carries the same words (dev/tools/release_data.py MEAS; the figure check compares them).
+   * v5.2.2: a number in a meaning is a {{path|format}} token into the release file (the wealth line comes from CFG.POVERTY_LINE through the release data, audit
+   * A3), so no amount is typed here; "Too little wealth" counts net wealth, what someone owns minus what they owe (audit A4). */
   var MEANINGS = {bO: 'In a typical year, the share of adults whose savings, pay and support would cover fewer than 30 days of basic living (the BLEI paper\u2019s measure).',
     f0: 'In a typical year, the share of adults whose income falls short of the cost of a basic living (the MIT living-wage basket for one adult).',
-    pov: 'At the end of the run, the share of adults with less than $25,000 of savings in today\u2019s money.'};
-  function meaningOf(R, id) { var f = (R.figures || []).filter(function (x) { return x.id === id; })[0]; return f ? f.meaning : (MEANINGS[id.split('.')[2]] || ''); }
+    pov: 'At the end of the run, the share of adults with less than {{inputs.wealthLine|usd}} of net wealth (what someone owns minus what they owe) in today\u2019s money.'};
+  var TOK = /\{\{([^|}]+)\|([a-z0-9]+)\}\}/g;
+  function fillPlain(R, t) { return String(t).replace(TOK, function (m, p, f) { return fmt(get(R, p), f); }); }
+  function fillHTML(R, t) { return String(t).replace(/\{\{([^|}]+)\|([a-z0-9]+)\}\}|[^{]+|\{/g, function (m, p, f) { return p ? num(R, p, f) : esc(m); }); }
   function cardsHTML(R, env, yrs, opt) {
     opt = opt || {};
     var b = 'panels.' + yrs + '.envs.' + env, out = '<div class="fx-cards">';
@@ -83,7 +87,7 @@
       out += '<div class="fx-card' + (worse ? ' fx-worse' : '') + '"><p class="fx-card-k">' + c[1] + '</p><p class="fx-card-v"' + (opt.count ? ' data-count="1"' : '') + '>' + num(R, big, 'p1') + '</p>' +
         '<p class="fx-card-vs">' + (wo ? 'with no programme, against ' + num(R, other, 'p1') + ' with Compassionism' : 'with Compassionism, against ' + num(R, other, 'p1') + ' with no programme') + '</p>' +
         '<p class="fx-card-d">' + (worse ? 'Worse:' : 'Change:') + ' ' + num(R, b + '.rows.release.' + c[3] + '.0', 's1') + ' points</p>' +
-        '<p class="fx-card-m" data-rel-text="meaning">' + esc(meaningOf(R, env + '.' + yrs + '.' + c[0] + '.with')) + '</p></div>';
+        '<p class="fx-card-m" data-rel-text="meaning">' + fillHTML(R, MEANINGS[c[0]]) + '</p></div>';
     });
     return out + '</div>';
   }
@@ -224,7 +228,7 @@
     var rows = [{label: 'Below the official poverty line', marks: [{v: us.official.workers, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US workers (2025)'}, {v: n.fpl.y0, cls: 's-without', name: 'model, first year'}]},
       {label: 'Below the line, Supplemental-style', marks: [{v: us.spm.workers, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US workers (2025)'}, {v: n.spm.y0, cls: 's-without', name: 'model, first year'}]},
       {label: 'In debt (net worth below zero)', marks: [{v: us.scf.neg, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US comparison group (SCF 2022)'}, {v: n.wealth.y0.neg, cls: 's-without', name: 'model, first year'}]},
-      {label: 'Savings under $25,000', marks: [{v: us.scf.below25k, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US comparison group (SCF 2022)'}, {v: n.wealth.y0.below25k, cls: 's-without', name: 'model, first year'}]}];
+      {label: 'Net wealth under ' + fmt(R.inputs.wealthLine, 'usd'), marks: [{v: us.scf.below25k, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US comparison group (SCF 2022)'}, {v: n.wealth.y0.below25k, cls: 's-without', name: 'model, first year'}]}];
     root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of adults', label: 'The no-programme run in its first year against US figures',
       legend: [{label: 'US figure', cls: 's-alt', shape: 'diamond', hollow: true}, {label: 'Model, no programme, first year (Reference)', cls: 's-without', shape: 'circle'}]}); });
     return true;
@@ -268,6 +272,6 @@
   function fetchJSON(url) { return fetch(url, {cache: 'no-cache'}).then(function (r) { if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); }); }
 
   root.CSF = {fmt: fmt, get: get, has: has, num: num, text: text, esc: esc, cellHTML: cellHTML, tableHTML: tableHTML, tableById: tableById, csvOf: csvOf, jsonOf: jsonOf, download: download, tableTools: tableTools,
-    cardsHTML: cardsHTML, MEANINGS: MEANINGS, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
+    cardsHTML: cardsHTML, MEANINGS: MEANINGS, fillPlain: fillPlain, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
     readingsRows: readingsRows, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, GROUPS: GROUPS};
 })(typeof window !== 'undefined' ? window : this);

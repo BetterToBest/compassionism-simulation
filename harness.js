@@ -3788,6 +3788,10 @@ function avoidWideUnitSuite(){
     return {pass:ok, detail:'checked against the cited figures'}; });
   return out;
 }
+/* v5.2.2 (audit A3): the constants the pages and the release file quote, by their CFG names (`node harness.js constants`). */
+function pageConstants(){ return {_about:'Written by node harness.js constants (v5.2.2, audit A3); read by dev/tools/release_data.py. Each value is CFG.<name> in harness.js and index.html.',
+  POVERTY_LINE:CFG.POVERTY_LINE, POVERTY_THRESHOLD_ONE:CFG.POVERTY_THRESHOLD_ONE, BLEI_PRECARIOUS_MAX:CFG.BLEI_PRECARIOUS_MAX}; }
+Object.assign(module.exports, { pageConstants });
 Object.assign(module.exports, { fedTax, progLam, avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, releaseBases, matrixUnitSuite, docCounts, v52UnitSuite, REL_V52_STUDY, setRepHook:function(f){ REP_HOOK = f; }, latentAdjust, normCdf, normInv, autoRiskCdf, autoRiskInv, scfWealthQ, TB_REP_SPELL, setLatent:function(x){ LATENT = x; }, tbRepYear, giniOfArrNeg, TB_REP_KEYS, TB_REP_SNAP });
 
 /* The eleven readings of the release panel (v5.0's main row, H1 and the nine others), as plain row options for n1Row. Top-level so the release section of `testbed` and
@@ -4285,6 +4289,15 @@ if (require.main === module) {
     });
     console.log(fails.length ? '\nVALIDATION FAILED: ' + fails.join(', ') : '\nVALIDATION PASSED: the documented regressions and all preset fixtures reproduce exactly.');
     if (fails.length) process.exitCode = 1;
+  }
+
+  if (mode === 'constants') {
+    /* v5.2.2 (audit A3, Muse F3): the constants the pages quote, written for dev/tools/release_data.py (Python cannot read CFG) to dev/runs/constants.json, or
+     * to --json=PATH. The release file's inputs and the cards' meanings are built from it, so no page types the wealth line by hand; domtest Phase 14 confirms
+     * this command, the file and the release file agree. */
+    var CJA = process.argv.filter(function(a){ return /^--json=/.test(a); })[0], CJP = CJA ? CJA.slice(7) : require('path').join(__dirname, 'dev', 'runs', 'constants.json');
+    var CJT = JSON.stringify(pageConstants(), null, 1) + '\n';
+    require('fs').writeFileSync(CJP, CJT); console.log('wrote ' + CJP + ': ' + CJT.replace(/\s+/g, ' ').trim());
   }
 
   if (mode === 'unit') {

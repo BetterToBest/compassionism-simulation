@@ -2735,7 +2735,7 @@ function relTargets(b,r,T){
   var cell=function(x,bx,d,v){return '<td>'+(+x).toFixed(d)+(d>2?'':'%')+'<span class="fd-ci">'+v+'</span><span class="fd-ci">no programme '+(+bx).toFixed(d)+(d>2?'':'%')+'</span></td>';};
   [['Below the US official poverty line (money income, as the official rate counts it)','fpl',1],['Below the poverty line on resources closer to the Census Supplemental Poverty Measure (after the contribution, with the BU and price cuts counted)','fplX',1],
    ['Below 30 days of basic living (BLEI, as the BLEI paper defines it)','bO',1],['Below 30 days of basic living, design-neutral reading (the same rules for everyone)','bN',1],['Below the cost of living (the MIT living-wage basket)','f0',1],
-   ['Too little wealth (under $25,000 in today’s money)','pov',1],['Unhoused, the model’s extreme-poverty figure','ep',2]].forEach(function(x){var k=x[1];
+   ['Too little wealth (net wealth under '+fdMoney(CFG.POVERTY_LINE)+' in today’s money)','pov',1],['Unhoused, the model’s extreme-poverty figure','ep',2]].forEach(function(x){var k=x[1];
     h+='<tr><td>'+x[0]+'</td><td>under 2%</td>'+cell(R7[k],B7[k],x[2],pv(R7[k]))+cell(RE[k],BE[k],x[2],pv(RE[k]))+'</tr>';});
   [['Gini of disposable income','giniD','0.25 to 0.30',relGiniVerdict],['Gini of income counting the value of price cuts too','giniX','0.25 to 0.30',relGiniVerdict],['Gini of wealth (debts counted as zero)','giniW','0.25 (BLEI paper)',relGiniVerdictW]].forEach(function(x){var k=x[1];
     h+='<tr><td>'+x[0]+'</td><td>'+x[2]+'</td>'+cell(R7[k],B7[k],3,x[3](R7[k]))+cell(RE[k],BE[k],3,x[3](RE[k]))+'</tr>';});

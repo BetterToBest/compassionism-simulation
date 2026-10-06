@@ -1,0 +1,6 @@
+{
+ "_about": "Written by node harness.js constants (v5.2.2, audit A3); read by dev/tools/release_data.py. Each value is CFG.<name> in harness.js and index.html.",
+ "POVERTY_LINE": 25000,
+ "POVERTY_THRESHOLD_ONE": 16749,
+ "BLEI_PRECARIOUS_MAX": 30
+}

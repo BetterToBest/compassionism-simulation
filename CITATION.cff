@@ -1,0 +1,45 @@
+# v5.2.2 (audit A9): how to cite the simulation. The version field is set by dev/tools/set_version.py and checked by dev/tools/check_versions.js.
+cff-version: 1.2.0
+message: >-
+  If you use this simulation, please cite it as below, with the version you used. The math and code of this simulation were engineered by
+  Claude, an AI model made by Anthropic, from the concepts in Duke Johnson's book Better To Best and his related vision for eradicating
+  extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent
+  economist; the full code is open for anyone to check, and expert collaborators are welcome.
+type: software
+title: Compassionism Framework Simulation
+abstract: >-
+  An open, in-browser agent-based model of the Compassionism framework (Creative Currency Octaves, Public Trust Foundations, Public Trust
+  Housing, Social Zone Harmonization and the Citizens Internet Portal): 500 simulated adults followed for 20 or 40 years, with the programme
+  and with no programme, on the same random draws, in three environments, reporting poverty, work, cost and prices. Every published
+  figure is an average over 500 paired runs; harness.js reproduces them in Node.
+authors:
+  - family-names: Johnson
+    given-names: Duke
+    affiliation: Better To Best Research Hub
+    email: BetterToBestResearch@gmail.com
+  - name: "Claude (Anthropic)"
+version: 5.2.1
+doi: 10.17605/OSF.IO/QWTE2
+url: "https://bettertobest.github.io/compassionism-simulation/"
+repository-code: "https://github.com/BetterToBest/compassionism-simulation"
+license: Apache-2.0
+keywords:
+  - agent-based model
+  - basic income
+  - poverty
+  - common random numbers
+  - Compassionism
+  - Creative Currency Octaves
+  - community land trust
+  - cooperative economics
+identifiers:
+  - type: doi
+    value: 10.17605/OSF.IO/QWTE2
+    description: The archived record on the Open Science Framework (OSF).
+references:
+  - type: generic
+    title: "Better To Best Research Hub (the framework's papers; content licensed CC BY 4.0)"
+    authors:
+      - family-names: Johnson
+        given-names: Duke
+    url: "https://bettertobest.github.io/research-hub/"

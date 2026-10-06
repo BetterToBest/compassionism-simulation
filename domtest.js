@@ -1063,7 +1063,7 @@ function phase13(done) {
    * same wrong words. It now derives the words from the percentile pair the sentence actually prints: it finds which stored percentile keys (pLevEndP<q>) the two
    * numbers in the sentence are, and expects the words for hi - lo percent of the runs (p10/p90 => "eight runs in ten", p5/p95 => "nine runs in ten"). */
   const NUMW = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'all ten'], bandWords = (lo, hi) => { const n = Math.round((hi - lo) / 10); return NUMW[n] + (n === 1 ? ' run' : ' runs') + (n === 10 ? '' : ' in ten'); };
-  const bandSeen = [], bandOK = (r, t) => { const m = /and ((?:\w+ runs? in ten)|all ten runs) fall between ([\d,.]+) and (more than 1,000|[\d,.]+)/.exec(t); if (!m) return false;
+  const bandSeen = [], bandOK = (r, t) => { const m = /and ((?:\w+ runs? in ten)|all ten runs) fall between (\d[\d,]*(?:\.\d+)?) and (more than 1,000|\d[\d,]*(?:\.\d+)?)/.exec(t); if (!m) return false;
     const qs = Object.keys(r).map(k => /^pLevEndP(\d+)$/.exec(k)).filter(Boolean).map(x => +x[1]), lo = qs.filter(q => fmtLev(r['pLevEndP' + q]) === m[2]),
       hi = qs.filter(q => m[3] === 'more than 1,000' ? r['pLevEndP' + q] > 1000 : fmtLev(r['pLevEndP' + q]) === m[3]).filter(q => !lo.length || q > lo[0]);
     if (lo.length !== 1 || hi.length !== 1) return false; bandSeen.push(lo[0] + '/' + hi[0] + ' "' + m[1] + '"'); return m[1] === bandWords(lo[0], hi[0]); };
@@ -1217,6 +1217,12 @@ function phase13(done) {
  * against the data, that no figure is typed into the new sections, that every v5.2 anchor still exists, and that the generator's output is current. */
 function phase14(done) {
   console.log('\n--- Phase 14: every figure on the pages equals the release data (v5.2.1) ---');
-  require(path.join(path.dirname(FILE), 'dev', 'tools', 'check_figures.js')).run().then(r => { r.forEach(x => check(x.name, x.pass, x.detail)); done(); })
+  require(path.join(path.dirname(FILE), 'dev', 'tools', 'check_figures.js')).run().then(r => { r.forEach(x => check(x.name, x.pass, x.detail));
+    /* v5.2.2 (audit A2, Muse F2): retired claims (dev/tools/check_stale_claims.js lists each one, the version that retired it and what is true now) must not
+     * come back to a public page: the pages' visible text and their scripts' strings, the release data, README and the walk-through script. */
+    const sc = require(path.join(path.dirname(FILE), 'dev', 'tools', 'check_stale_claims.js')).run();
+    check('v5.2.2 (audit A2): no retired claim reappears on a public page (dev/tools/check_stale_claims.js; the replication page\'s version history and the notes headed as describing the v4.22 engine are history and skipped)', sc.pass,
+      sc.pass ? sc.claims + ' retired claims, ' + sc.files + ' files' : sc.hits.slice(0, 4).join('; '));
+    done(); })
     .catch(e => { check('v5.2.1: the figure check runs', false, String(e && e.stack || e).slice(0, 300)); done(); });
 }
