@@ -198,8 +198,8 @@
     root.CSC.responsive(g2, function () { root.CSC.xy(g2, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, yFmt: function (v) { return v + '%'; }, tipFmt: function (v) { return fmt(v, 'p1') + ' a year'; }, series: inf, yMin: 0, height: 200, label: 'Programme inflation by backed share', legend: false, endLabels: false}); });
     return true;
   };
-  var GROUPS = [['The two ends and the middle backing band', ['h1', 'mid', 'midlo', 'midhi']], ['Savings and the BU', ['sav', 'sav0', 'idx', 'h1idx', 'h1both']], ['Ageing (against no programme with the same ageing)', ['age', 'agenc', 'agenone', 'agepia']],
-    ['Closer to US data (against no programme with the same reading)', ['fixw', 'fixr', 'fixs', 'fixm', 'fixall']], ['Idle workers in normal years', ['slack', 'slacku6']], ['Robustness risks', ['hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun']],
+  var GROUPS = [['The two ends and the middle backing band', ['h1', 'mid', 'midlo', 'midhi']], ['Savings and the BU', ['sav', 'sav0', 'idx', 'h1idx', 'h1both']], ['Ageing', ['age', 'agenc', 'agenone', 'agepia']],
+    ['Closer to US data', ['fixw', 'fixr', 'fixs', 'fixm', 'fixall']], ['Idle workers in normal years', ['slack', 'slacku6']], ['Robustness risks', ['hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun']],
     ['Other ways to pay (not specified by the Hub)', ['tax', 'progtax', 'landtax']], ['Other readings of the design', ['face', 'cost', 'cap5', 'all', 'free', 'standins']]];
   var SHORT = {h1: 'H1: every Source dollar backed', mid: 'Middle backing reading (Kenya-anchored)', midlo: 'Middle band, low end (US idle labour)', midhi: 'Middle band, high end (Kenya peak year)', sav: 'Savings keep up with prices (plus a real yield)', sav0: 'Savings keep only their value',
     idx: 'BU indexed every year', h1idx: 'H1 with the BU indexed every year', h1both: 'H1 with both', age: 'Adults age, retire and are replaced', agenc: 'Ageing, no conversion after retirement', agenone: 'Ageing, retirees leave the programme', agepia: 'Ageing, benefit from own wage',
