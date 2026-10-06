@@ -9,6 +9,30 @@
    "summary": "The model round: savings that keep up with prices, ageing, the no-programme run against US data, a middle backing reading and robustness readings, each beside an unchanged main result.",
    "status": "current",
    "shownIn": "5.2.1"
+  },
+  {
+   "version": "5.1",
+   "date": "2026-10-03",
+   "tag": "v5.1",
+   "file": "releases/v5.1.json",
+   "summary": "Audit fixes: the wage-bonus test reads this year's BU spending, the price level as a typical run with a range, the Hub's own targets beside the results, and the backing-share curve.",
+   "status": "earlier"
+  },
+  {
+   "version": "5.0.1",
+   "date": "2026-10-03",
+   "tag": "v5.0.1",
+   "file": "releases/v5.0.1.json",
+   "summary": "The external audit pass on v5.0: text, tests and page fixes, with the 40-year horizon added; the 20-year figures are v5.0's.",
+   "status": "earlier"
+  },
+  {
+   "version": "5.0",
+   "date": "2026-10-02",
+   "tag": "v5.0",
+   "file": "releases/v5.0.json",
+   "summary": "The first release of the release engine: Compassionism as specified on the Hub, every mechanism in, against no programme, in three environments over 20 years.",
+   "status": "earlier"
   }
  ]
 }

@@ -1,0 +1,28 @@
+v5.2.1 backfill check (Oct 6, 2026): each earlier release's 500-seed panels regenerated from its tag in a clean worktree,
+one process per environment and horizon, then compared with the panels embedded in index.html at that tag (rounded as merge_panel.py rounds).
+Commands, in a worktree of each tag (git worktree add DIR TAG):
+  node harness.js testbed 500 release ENV --json=dev/runs/release-panel-ENV.json            (ENV ref, adv, st)
+  node harness.js testbed 500 release ENV --years=40 --json=dev/runs/release-panel-40-ENV.json   (v5.0.1 and v5.1; v5.0 had no 40-year panel)
+Run times (seconds):
+  v5.0 adv 0 exit=0 secs=464
+  v5.0 ref 0 exit=0 secs=437
+  v5.0 st 0 exit=0 secs=369
+  v5.0.1 adv 0 exit=0 secs=457
+  v5.0.1 adv 40 exit=0 secs=936
+  v5.0.1 ref 0 exit=0 secs=429
+  v5.0.1 ref 40 exit=0 secs=844
+  v5.0.1 st 0 exit=0 secs=356
+  v5.0.1 st 40 exit=0 secs=721
+  v5.1 adv 0 exit=0 secs=521
+  v5.1 adv 40 exit=0 secs=1106
+  v5.1 ref 0 exit=0 secs=483
+  v5.1 ref 40 exit=0 secs=1040
+  v5.1 st 0 exit=0 secs=388
+  v5.1 st 40 exit=0 secs=910
+Result:
+  v5.1 (commit 905733d7), 20 years: ref identical, adv identical, st identical
+  v5.1 (commit 905733d7), 40 years: ref identical, adv identical, st identical
+  v5.0.1 (commit 6f43deb0), 20 years: ref identical, adv identical, st identical
+  v5.0.1 (commit 6f43deb0), 40 years: ref identical, adv identical, st identical
+  v5.0 (commit b43750bb), 20 years: ref identical, adv identical, st identical
+So v5.0, v5.0.1 and v5.1 enter data/manifest.json as earlier releases (python3 dev/tools/release_data.py --backfill TAG).

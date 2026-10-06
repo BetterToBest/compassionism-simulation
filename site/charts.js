@@ -12,6 +12,11 @@
   var NS = 'http://www.w3.org/2000/svg';
   function el(name, attrs, parent) { var e = document.createElementNS(NS, name); if (attrs) for (var k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
   function txt(parent, x, y, s, attrs) { var t = el('text', Object.assign({x: x, y: y}, attrs || {}), parent); t.textContent = s; return t; }
+  function title(parent, x, y, s, maxW) {  /* an axis title, broken onto two lines when it would not fit the chart's width (about 6 px a character) */
+    var t = el('text', {x: x, y: y, class: 'fx-axis-t', 'text-anchor': 'middle'}, parent);
+    if (s.length*6 <= maxW) { t.textContent = s; return 0; }
+    var mid = Math.floor(s.length/2), cut = s.lastIndexOf(' ', mid); if (cut < 0) cut = s.indexOf(' ', mid); if (cut < 0) { t.textContent = s; return 0; }
+    var a = el('tspan', {x: x, dy: 0}, t); a.textContent = s.slice(0, cut); var b = el('tspan', {x: x, dy: 13}, t); b.textContent = s.slice(cut + 1); return 13; }
   function nice(lo, hi, n) {  /* round tick steps: 1, 2, 2.5, 5 x 10^k */
     if (hi - lo < 1e-9) { hi = lo + 1; }
     var span = hi - lo, raw = span/(n || 5), p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw/p, step = (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10)*p;
@@ -58,13 +63,13 @@
     if (spec.zero) ys.push(0);
     var lo = spec.yMin != null ? spec.yMin : Math.min.apply(null, ys), hi = spec.yMax != null ? spec.yMax : Math.max.apply(null, ys), Y = nice(lo, hi, H < 260 ? 4 : 5);
     var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
-    var sx = function (v) { return m.l + (x1 === x0 ? 0.5 : (v - x0)/(x1 - x0))*(W - m.l - m.r); }, sy = function (v) { return m.t + (1 - (v - Y.lo)/(Y.hi - Y.lo))*(H - m.t - m.b); };
+    var sx = function (v) { return m.l + (x1 === x0 ? 0.5 : (v - x0)/(x1 - x0))*(W - m.l - m.r); }, sy = function (v) { return m.t + (1 - (v - Y.lo)/(Y.hi - Y.lo))*(H0 - m.t - m.b); }, H0 = H;
     var svg = el('svg', {class: 'fx-svg', viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': spec.label || ''}, host);
     var g = el('g', {class: 'fx-grid'}, svg);
     Y.ticks.forEach(function (t) { el('line', {x1: m.l, x2: W - m.r, y1: sy(t), y2: sy(t), class: t === 0 && spec.zero ? 'fx-zero' : ''}, g); txt(g, m.l - 8, sy(t) + 4, spec.yFmt ? spec.yFmt(t) : String(t), {class: 'fx-tick', 'text-anchor': 'end'}); });
     var xt = spec.xTicks || xs.filter(function (v, i) { var n = xs.length, k = n > 30 ? 10 : n > 12 ? 5 : n > 6 ? 2 : 1; return i === 0 || (v % k === 0) || i === n - 1; });
-    xt.forEach(function (v) { txt(g, sx(v), H - m.b + 18, spec.xLabel ? spec.xLabel(v) : String(v), {class: 'fx-tick', 'text-anchor': 'middle'}); });
-    if (spec.xTitle) txt(g, m.l + (W - m.l - m.r)/2, H - 4, spec.xTitle, {class: 'fx-axis-t', 'text-anchor': 'middle'});
+    xt.forEach(function (v) { txt(g, sx(v), H0 - m.b + 18, spec.xLabel ? spec.xLabel(v) : String(v), {class: 'fx-tick', 'text-anchor': 'middle'}); });
+    if (spec.xTitle) { var extra = title(g, m.l + (W - m.l - m.r)/2, H - 4, spec.xTitle, W - 16); if (extra) { H += extra; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('height', H); } }
     if (spec.yTitle) txt(g, m.l - 44, m.t - 2, spec.yTitle, {class: 'fx-axis-t'});
     (spec.refs || []).forEach(function (r) { el('line', {x1: m.l, x2: W - m.r, y1: sy(r.y), y2: sy(r.y), class: 'fx-ref'}, svg); if (r.label) txt(svg, W - m.r - 4, sy(r.y) - 5, r.label, {class: 'fx-tick', 'text-anchor': 'end'}); });
     var path = function (vals) { var d = '', pen = false; vals.forEach(function (v, i) { if (v == null) { pen = false; return; } d += (pen ? 'L' : 'M') + sx(xs[i]).toFixed(1) + ' ' + sy(v).toFixed(1); pen = true; }); return d; };
@@ -82,7 +87,7 @@
       ends.forEach(function (e) { if (Math.abs(e.y - e.y0) > 2) el('line', {x1: e.x + 3, y1: e.y0, x2: e.x + 9, y2: e.y - 4, class: 'fx-leader'}, svg); var t = txt(svg, e.x + 10, e.y, e.s.name, {class: 'fx-endlbl'}); t.setAttribute('dominant-baseline', 'middle'); });
     }
     /* crosshair: follows the pointer, snaps to the nearest x; arrow keys move it when the chart has focus */
-    var cross = el('line', {class: 'fx-cross', y1: m.t, y2: H - m.b, x1: m.l, x2: m.l, visibility: 'hidden'}, svg), hit = el('rect', {x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, class: 'fx-hit'}, svg), cur = -1;
+    var cross = el('line', {class: 'fx-cross', y1: m.t, y2: H0 - m.b, x1: m.l, x2: m.l, visibility: 'hidden'}, svg), hit = el('rect', {x: m.l, y: m.t, width: W - m.l - m.r, height: H0 - m.t - m.b, class: 'fx-hit'}, svg), cur = -1;
     function at(i, cx, cy) { cur = i; var x = sx(xs[i]); cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('visibility', 'visible');
       var rows = spec.series.map(function (s) { var v = s.values[i]; if (v == null) return ''; return '<div class="fx-tip-r"><i class="fx-key ' + s.cls + (s.dash ? ' fx-dash' : '') + '"></i><b>' + esc(spec.tipFmt ? spec.tipFmt(v) : v) + '</b> ' + esc(s.name) +
         (s.band ? ' <small>(' + esc(spec.tipFmt ? spec.tipFmt(s.band.lo[i]) : s.band.lo[i]) + '–' + esc(spec.tipFmt ? spec.tipFmt(s.band.hi[i]) : s.band.hi[i]) + ')</small>' : '') + (s.ci ? ' <small>(' + esc(spec.tipFmt(s.ci.lo[i])) + ' to ' + esc(spec.tipFmt(s.ci.hi[i])) + ')</small>' : '') + '</div>'; }).join('');
@@ -108,13 +113,13 @@
     (spec.refs || []).forEach(function (r) { vals.push(r.v); }); if (spec.strip) { vals.push(spec.strip.from); vals.push(spec.strip.to); }
     var X = nice(spec.xMin != null ? Math.min(spec.xMin, Math.min.apply(null, vals)) : Math.min.apply(null, vals), spec.xMax != null ? Math.max(spec.xMax, Math.max.apply(null, vals)) : Math.max.apply(null, vals), narrow ? 4 : 6);
     var groups = 0, last = null; spec.rows.forEach(function (r) { if (r.group && r.group !== last) { groups++; last = r.group; } });
-    var H = m.t + spec.rows.length*rh + groups*gh + m.b, sx = function (v) { return m.l + (v - X.lo)/(X.hi - X.lo)*(W - m.l - m.r); };
+    var H = m.t + spec.rows.length*rh + groups*gh + m.b, H0 = H, sx = function (v) { return m.l + (v - X.lo)/(X.hi - X.lo)*(W - m.l - m.r); };
     var svg = el('svg', {class: 'fx-svg', viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': spec.label || ''}, host);
     var g = el('g', {class: 'fx-grid'}, svg);
     if (spec.strip) { el('rect', {x: sx(spec.strip.from), y: m.t - 6, width: Math.max(1, sx(spec.strip.to) - sx(spec.strip.from)), height: H - m.t - m.b + 6, class: 'fx-strip'}, g); if (spec.strip.label) txt(g, sx(spec.strip.to) + 4, m.t - 10, spec.strip.label, {class: 'fx-tick'}); }
     X.ticks.forEach(function (t) { el('line', {x1: sx(t), x2: sx(t), y1: m.t - 6, y2: H - m.b, class: t === 0 ? 'fx-zero' : ''}, g); txt(g, sx(t), H - m.b + 16, spec.xFmt ? spec.xFmt(t) : String(t), {class: 'fx-tick', 'text-anchor': 'middle'}); });
-    if (spec.xTitle) txt(g, m.l + (W - m.l - m.r)/2, H - 6, spec.xTitle, {class: 'fx-axis-t', 'text-anchor': 'middle'});
-    (spec.refs || []).forEach(function (r, i) { el('line', {x1: sx(r.v), x2: sx(r.v), y1: m.t - 6, y2: H - m.b, class: 'fx-ref ' + (r.cls || '')}, svg); if (r.label) txt(svg, sx(r.v) + 4, m.t - 10 - i*12, r.label, {class: 'fx-tick'}); });
+    if (spec.xTitle) { var ex2 = title(g, W/2, H - 6, spec.xTitle, W - 16); if (ex2) { H += ex2; svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('height', H); } }
+    (spec.refs || []).forEach(function (r, i) { el('line', {x1: sx(r.v), x2: sx(r.v), y1: m.t - 6, y2: H0 - m.b, class: 'fx-ref ' + (r.cls || '')}, svg); if (r.label) txt(svg, sx(r.v) + 4, m.t - 10 - i*12, r.label, {class: 'fx-tick'}); });
     var y = m.t; last = null;
     spec.rows.forEach(function (r, ri) {
       if (r.group && r.group !== last) { last = r.group; txt(svg, 12, y + 17, r.group, {class: 'fx-group'}); y += gh; }

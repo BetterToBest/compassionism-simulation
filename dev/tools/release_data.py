@@ -37,7 +37,9 @@ BACKFILL = {  # earlier releases whose panels were regenerated from their tags a
     'v5.1': {'version': '5.1', 'date': '2026-10-03', 'tag': 'v5.1',
              'summary': 'Audit fixes: the wage-bonus test reads this year\'s BU spending, the price level as a typical run with a range, the Hub\'s own targets beside the results, and the backing-share curve.'},
     'v5.0.1': {'version': '5.0.1', 'date': '2026-10-03', 'tag': 'v5.0.1',
-               'summary': 'The first release of the release engine (v5.0, Oct 2), with wording fixes and the 40-year horizon; the 20-year figures are v5.0\'s.'}}
+               'summary': 'The external audit pass on v5.0: text, tests and page fixes, with the 40-year horizon added; the 20-year figures are v5.0\'s.'},
+    'v5.0': {'version': '5.0', 'date': '2026-10-02', 'tag': 'v5.0',
+             'summary': 'The first release of the release engine: Compassionism as specified on the Hub, every mechanism in, against no programme, in three environments over 20 years.'}}
 
 # ---------------------------------------------------------------------------------------------------------------- formats (JavaScript's toFixed digits)
 def fx(x, d=1):
@@ -326,13 +328,16 @@ def texts(R):
                                    'each sits at the share of the payout it actually backs.')
         Tx['backing.limits'] = ('It is a sweep of a design parameter, not a forecast: the Hub does not give the share, and nothing in the model fixes it. Kenya does not set the US number (the transfers were paid once, from outside the area, into villages with idle capacity), so the main row stays at a = 0. '
                                 'In the Adverse and Stress environments the right end bends: the BU is indexed to prices only in a year when they rise faster than 5% (the Hub’s rule), so with no programme inflation (a = 1) the BU loses value to the 2% outside inflation; that is a finding about the rule, not a proposal to change it.')
-    if 'sav' in R['panels']['20']['envs']['ref']['rows']:
-        Tx['readings.lead'] = ('Each reading changes one assumption beside the main row, over the same paired runs. A reading that changes something outside the design (savings that keep up with prices, ageing, the US-data readings) applies to the no-programme run too, so its change is against no programme with the same rule. '
-                               'None of them is in the main row: each new mechanism first appears as a labelled reading.')
-        Tx['readings.read'] = ('Each row is a reading; the mark is the change against no programme in the chosen measure, with its 95% interval, and the vertical line is the main row. A mark left of the main row means the reading helps; right of it, the reading hurts. '
-                               'Rows are grouped: the optimistic end and the middle backing band; savings and the BU; ageing; closer to US data; robustness risks (rent capture, review errors); and other ways to pay.')
+    v52r = 'sav' in R['panels']['20']['envs']['ref']['rows']
+    Tx['readings.lead'] = ('Each reading changes one assumption beside the main row, over the same paired runs, and none of them is in the main row.' + (
+        ' A reading that changes something outside the design (savings that keep up with prices, ageing, the US-data readings) applies to the no-programme run too, so its change is against no programme with the same rule.' if v52r else ''))
+    Tx['readings.read'] = ('Each row is a reading; the mark is the change against no programme in the chosen measure, with its 95% interval, and the vertical line is the main row. A mark left of the main row means the reading helps; right of it, the reading hurts.' +
+        (' Rows are grouped: the optimistic end and the middle backing band; savings and the BU; ageing; closer to US data; robustness risks (rent capture, review errors); and other ways to pay.' if v52r else ''))
+    if v52r:
         Tx['readings.limits'] = ('Savings that keep up with prices: the model has no bank, so who pays that interest is not modelled. Ageing: the model does not yet report results by age. Rents: the evidence measured vouchers for a minority of renters, an upper-end reading here. '
-                                 'Review errors: audits catching half is a design parameter, not in the Hub. The progressive and land taxes are modelling alternatives, not the Hub’s design; the model has no land, so the land tax falls on savings.')
+                                 'Review errors: audits catching half is a design parameter, not in the Hub. The progressive and land taxes are modelling alternatives, not the Hub\u2019s design; the model has no land, so the land tax falls on savings.')
+    else:
+        Tx['readings.limits'] = 'Each reading changes one assumption at a time; readings are not added together, and none is a forecast.'
     if R.get('us'):
         Tx['us.lead'] = ('The no-programme run is the yardstick for every result, so it is checked against published US figures: poverty (Census Bureau, Poverty in the United States: 2025), income inequality (Census Bureau, Income in the United States: 2025), '
                          'wealth (Federal Reserve, 2022 Survey of Consumer Finances: single adults aged 25–66, no children, with wages, in 2025 dollars) and how poverty spells end (Panel Study of Income Dynamics, Stevens 1994). '

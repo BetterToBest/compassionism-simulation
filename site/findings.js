@@ -68,14 +68,19 @@
 
   /* ---- headline cards (layer 1). The same markup release_data.py writes statically for the default view. ---- */
   var CARDS = [['bO', 'Below 30 days of basic living', 'bOAPy', 'dBO'], ['f0', 'Below the cost of living', 'fgt0PY', 'dF0'], ['pov', 'Too little wealth', 'pov', 'dPov']];
-  function meaningOf(R, id) { var f = (R.figures || []).filter(function (x) { return x.id === id; })[0]; return f ? f.meaning : ''; }
+  /* the cards' plain meanings; the release file's figure catalogue carries the same words (dev/tools/release_data.py MEAS; the figure check compares them) */
+  var MEANINGS = {bO: 'In a typical year, the share of adults whose savings, pay and support would cover fewer than 30 days of basic living (the BLEI paper\u2019s measure).',
+    f0: 'In a typical year, the share of adults whose income falls short of the cost of a basic living (the MIT living-wage basket for one adult).',
+    pov: 'At the end of the run, the share of adults with less than $25,000 of savings in today\u2019s money.'};
+  function meaningOf(R, id) { var f = (R.figures || []).filter(function (x) { return x.id === id; })[0]; return f ? f.meaning : (MEANINGS[id.split('.')[2]] || ''); }
   function cardsHTML(R, env, yrs, opt) {
     opt = opt || {};
     var b = 'panels.' + yrs + '.envs.' + env, out = '<div class="fx-cards">';
     CARDS.forEach(function (c) {
       var d = get(R, b + '.rows.release.' + c[3] + '.0'), worse = d > 0;
-      out += '<div class="fx-card' + (worse ? ' fx-worse' : '') + '"><p class="fx-card-k">' + c[1] + '</p><p class="fx-card-v"' + (opt.count ? ' data-count="1"' : '') + '>' + num(R, b + '.rows.release.' + c[2], 'p1') + '</p>' +
-        '<p class="fx-card-vs">with Compassionism, against ' + num(R, b + '.base.' + c[2], 'p1') + ' with no programme</p>' +
+      var wo = opt.view === 'without', big = wo ? b + '.base.' + c[2] : b + '.rows.release.' + c[2], other = wo ? b + '.rows.release.' + c[2] : b + '.base.' + c[2];
+      out += '<div class="fx-card' + (worse ? ' fx-worse' : '') + '"><p class="fx-card-k">' + c[1] + '</p><p class="fx-card-v"' + (opt.count ? ' data-count="1"' : '') + '>' + num(R, big, 'p1') + '</p>' +
+        '<p class="fx-card-vs">' + (wo ? 'with no programme, against ' + num(R, other, 'p1') + ' with Compassionism' : 'with Compassionism, against ' + num(R, other, 'p1') + ' with no programme') + '</p>' +
         '<p class="fx-card-d">' + (worse ? 'Worse:' : 'Change:') + ' ' + num(R, b + '.rows.release.' + c[3] + '.0', 's1') + ' points</p>' +
         '<p class="fx-card-m">' + esc(meaningOf(R, env + '.' + yrs + '.' + c[0] + '.with')) + '</p></div>';
     });
@@ -83,7 +88,8 @@
   }
   function underCards(R, env, yrs) {  /* decision 1 (v5.2.1): the price rise and the cost sit directly under the three cards */
     var r = 'panels.' + yrs + '.envs.' + env + '.rows.release';
-    return '<p class="fx-under">The programme raises prices by ' + num(R, r + '.infl', 'p1') + ' a year (the cautious reading); by the last year the typical run is at ' + num(R, r + '.pLevEndMed', 'lev') +
+    var lev = has(R, r + '.pLevEndMed') ? 'by the last year the typical run is at ' + num(R, r + '.pLevEndMed', 'lev') : 'by the last year prices are on average at ' + num(R, r + '.pLev20', 'lev');
+    return '<p class="fx-under">The programme raises prices by ' + num(R, r + '.infl', 'p1') + ' a year (the cautious reading); ' + lev +
       ' today’s prices. Cost: ' + num(R, r + '.cost', 'usd') + ' per adult a year. If every dollar the Source pays were backed by new output (H1), ' + num(R, 'panels.' + yrs + '.envs.' + env + '.rows.h1.pov', 'p1') + ' would end with too little wealth.</p>';
   }
   /* counters: the three card values count up once when they come into view; never under reduced motion */
@@ -149,6 +155,8 @@
       legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
     return true;
   };
+  function tgt(R) { return R.inputs ? R.inputs.hubPovertyTarget : 2; }
+  function gin(R) { return R.inputs ? R.inputs.hubGini : [0.25, 0.3]; }
   var TG = [['fpl', 'Official poverty line'], ['fplX', 'Poverty line, Supplemental-style'], ['bO', 'Below 30 days (BLEI paper)'], ['bN', 'Below 30 days (design-neutral)'], ['f0', 'Below the cost of living'], ['pov', 'Too little wealth'], ['ep', 'Unhoused']];
   CHARTS.targets = function (R, host, st) {
     var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || !E.rows.release.rep) return false;
@@ -156,7 +164,7 @@
     [['y7', 'Year 7 (the Hub’s date)'], ['end', 'Year ' + st.years + ' (last year)']].forEach(function (t) { TG.forEach(function (m) { rows.push({group: t[1], label: m[1], marks: mk(t[0], m[0])}); }); });
     var g1 = document.createElement('div'), g2 = document.createElement('div'); g1.className = g2.className = 'fx-chart'; host.innerHTML = ''; host.appendChild(g1);
     var cap = document.createElement('p'); cap.className = 'fx-note'; cap.textContent = 'The spread of income and wealth (Gini; the Hub’s target for income is 0.25 to 0.30, the BLEI paper’s for wealth 0.25):'; host.appendChild(cap); host.appendChild(g2);
-    root.CSC.responsive(g1, function () { root.CSC.rows(g1, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, strip: {from: 0, to: 2, label: 'Hub target: under 2%'}, xTitle: 'Share of adults below the line that year',
+    root.CSC.responsive(g1, function () { root.CSC.rows(g1, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, strip: {from: 0, to: tgt(R), label: 'Hub target: under ' + tgt(R) + '%'}, xTitle: 'Share of adults below the line that year',
       label: 'Poverty measures at Year 7 and the last year against the Hub target of under 2 percent, ' + envName(st.env) + ', ' + st.years + ' years', legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
     var gr = []; [['y7', 'Year 7'], ['end', 'Year ' + st.years]].forEach(function (t) { [['giniD', 'Income'], ['giniX', 'Income counting price cuts'], ['giniW', 'Wealth (debts as zero)']].forEach(function (m) { gr.push({group: t[1], label: m[1], marks: mk(t[0], m[0])}); }); });
     root.CSC.responsive(g2, function () { root.CSC.rows(g2, {rows: gr, xMin: 0, xMax: 1, xFmt: function (v) { return v.toFixed(1); }, tipFmt: function (v) { return fmt(v, 'n3'); }, strip: {from: 0.25, to: 0.30, label: '0.25–0.30'}, xTitle: 'Gini coefficient (0 = equal, 1 = one person has everything)',
@@ -184,7 +192,7 @@
     var cap = document.createElement('p'); cap.className = 'fx-note'; cap.textContent = 'The price rise the programme itself causes, at each share:'; host.appendChild(cap); host.appendChild(g2);
     root.CSC.responsive(g1, function () { root.CSC.xy(g1, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, xTitle: 'Share of the Source’s payout backed by new output (a)', yFmt: function (v) { return (v > 0 ? '+' : v < 0 ? MINUS : '') + Math.abs(v); }, tipFmt: pts,
       series: series, extra: extra, zero: true, label: 'Change in too little wealth against no programme as the backed share rises from 0 to 1, three environments',
-      legendExtra: extra.length ? [{label: 'Middle reading (8%, 12%, 16% of earned income)', cls: 's-without', shape: 'diamond', hollow: true}] : []}); });
+      legendExtra: extra.length ? [{label: 'Middle reading (the Kenya-anchored band)', cls: 's-without', shape: 'diamond', hollow: true}] : []}); });
     var inf = ENVS.map(function (e) { var rs = B.envs[e[0]].rows; return {name: e[1], cls: cls[e[0]], shape: shp[e[0]], values: K.map(function (k) { return rs[k].infl; })}; });
     root.CSC.responsive(g2, function () { root.CSC.xy(g2, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, yFmt: function (v) { return v + '%'; }, tipFmt: function (v) { return fmt(v, 'p1') + ' a year'; }, series: inf, yMin: 0, height: 200, label: 'Programme inflation by backed share', legend: false, endLabels: false}); });
     return true;
@@ -192,10 +200,10 @@
   var GROUPS = [['The two ends and the middle backing band', ['h1', 'mid', 'midlo', 'midhi']], ['Savings and the BU', ['sav', 'sav0', 'idx', 'h1idx', 'h1both']], ['Ageing (against no programme with the same ageing)', ['age', 'agenc', 'agenone', 'agepia']],
     ['Closer to US data (against no programme with the same reading)', ['fixw', 'fixr', 'fixs', 'fixm', 'fixall']], ['Idle workers in normal years', ['slack', 'slacku6']], ['Robustness risks', ['hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun']],
     ['Other ways to pay (not specified by the Hub)', ['tax', 'progtax', 'landtax']], ['Other readings of the design', ['face', 'cost', 'cap5', 'all', 'free', 'standins']]];
-  var SHORT = {h1: 'H1: every Source dollar backed', mid: 'Middle backing: 12% of earned income', midlo: 'Middle band, low end (8%)', midhi: 'Middle band, high end (16%)', sav: 'Savings keep up with prices (+0.97%)', sav0: 'Savings keep only their value',
-    idx: 'BU indexed every year', h1idx: 'H1 with the BU indexed every year', h1both: 'H1 with both', age: 'Adults age, retire and are replaced', agenc: 'Ageing, no conversion after 67', agenone: 'Ageing, retirees leave the programme', agepia: 'Ageing, benefit from own wage',
-    fixw: 'Savings from the US survey', fixr: 'Automation risk linked to wages', fixs: 'Wages spread as in the survey', fixm: 'Wages centred on the survey median', fixall: 'All four US-data readings', slack: 'Idle labour 1.1% of wages', slacku6: 'All of U-6 idle (8%)',
-    hcap: 'Rent capture, $0.50 per BU dollar', hcaphi: 'Rent capture, $1.41, all renters', rev5: '5% of high rates unearned', rev10: '10% unearned', rev20: '20% unearned', rev20n: '20% unearned, no audits', giftrun: 'Launch gift paid over the run',
+  var SHORT = {h1: 'H1: every Source dollar backed', mid: 'Middle backing reading (Kenya-anchored)', midlo: 'Middle band, low end (US idle labour)', midhi: 'Middle band, high end (Kenya peak year)', sav: 'Savings keep up with prices (plus a real yield)', sav0: 'Savings keep only their value',
+    idx: 'BU indexed every year', h1idx: 'H1 with the BU indexed every year', h1both: 'H1 with both', age: 'Adults age, retire and are replaced', agenc: 'Ageing, no conversion after retirement', agenone: 'Ageing, retirees leave the programme', agepia: 'Ageing, benefit from own wage',
+    fixw: 'Savings from the US survey', fixr: 'Automation risk linked to wages', fixs: 'Wages spread as in the survey', fixm: 'Wages centred on the survey median', fixall: 'All four US-data readings', slack: 'Idle labour in normal years', slacku6: 'All of U-6 idle (upper bound)',
+    hcap: 'Rent capture, BU tenants (voucher evidence)', hcaphi: 'Rent capture, every renter (upper end)', rev5: 'Review errors, low (audits catch half)', rev10: 'Review errors, middle', rev20: 'Review errors, high', rev20n: 'Review errors, high, no audits', giftrun: 'Launch gift paid over the run',
     tax: 'Flat contribution on wages', progtax: 'Progressive income tax', landtax: 'Land-value tax', face: 'BU essentials counted as backed', cost: 'Creative work at the cost of its hours', cap5: 'Capacity only as reinvestment pays', all: 'Taking part costs nothing', free: 'Price cuts free', standins: 'The two former stand-ins on'};
   function readingsRows(R, yrs, env, k, opts) {
     var E = R.panels[yrs] && R.panels[yrs].envs[env]; if (!E) return null; var M = MEAS[k], rows = [];
@@ -259,6 +267,6 @@
   function fetchJSON(url) { return fetch(url, {cache: 'no-cache'}).then(function (r) { if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); }); }
 
   root.CSF = {fmt: fmt, get: get, has: has, num: num, text: text, esc: esc, cellHTML: cellHTML, tableHTML: tableHTML, tableById: tableById, csvOf: csvOf, jsonOf: jsonOf, download: download, tableTools: tableTools,
-    cardsHTML: cardsHTML, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
+    cardsHTML: cardsHTML, MEANINGS: MEANINGS, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
     readingsRows: readingsRows, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, GROUPS: GROUPS};
 })(typeof window !== 'undefined' ? window : this);
