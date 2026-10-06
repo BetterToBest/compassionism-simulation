@@ -26,6 +26,16 @@ One detail decides how: `harness.js` is in strict mode, so a direct `eval` of th
 
 The harness's two behavioural differences move into the page behind their existing off-switches (`AUTOMATION_SAMPLER_LEGACY` in `drawAutomationRisk`; the UBI term in `incomeBasketMetrics`, zero unless a comparator sets `p.ubi`). With the switches off, the page computes exactly what it computes now; the page's display-only additions do nothing in Node.
 
+## A prototype, run the same day
+
+`dev/drafts/build_from_page.py` builds such a harness in a scratch copy: it takes from `index.html` the 210 chunks whose names `harness.js` also declares (235 names), in page order, then the harness's own 100 chunks and its command line, and keeps `drawAutomationRisk` and `incomeBasketMetrics` from the harness (standing in for step 1 below). Against the real `harness.js`, at the same commit:
+
+- `validate`: passes (every seed-42 fixture, and the v4.19 legacy check).
+- `unit`: 170 of 171 pass; the one failure is the manifest test that needs a git checkout, which the scratch copy is not.
+- `testbed 12 release` in Reference, Adverse and Stress (20 years) and `testbed 6 release ref --years=40`: the panels' fingerprints are identical (`dev/tools/panel_hash.py`); the printed tables differ only in one line giving the run time.
+
+So the single copy reproduces the release engine exactly; B1 proper is the clean version of the same thing.
+
 ## The plan (if Duke has nothing against it, as d166 records)
 
 1. Move the two harness-only branches into the page's copies (bit-identical: switches off).
