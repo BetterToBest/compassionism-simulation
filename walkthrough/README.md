@@ -1,10 +1,10 @@
-# Walk-through: the Compassionism Framework Simulation (v5.1)
+# Walk-through: the Compassionism Framework Simulation (v5.2)
 
 <!-- Written by walkthrough/make_walkthrough.py. Edit the captions there and rebuild; edits here are overwritten. -->
 
 [![The walk-through video](img/poster.jpg)](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)
 
-**[Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (6:16, narrated by a synthetic voice, with captions; [caption file](captions.vtt)). The same tour follows as text, one screenshot per step.
+**[Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (9:04, narrated by a synthetic voice, with captions; [caption file](captions.vtt)). The same tour follows as text, one screenshot per step.
 
 It covers what the page shows, how Compassionism works, what the model finds so far (including where the gain is not confirmed), how to run a scenario, what the model cannot tell you, how to check the work, and how to help. Every figure below is read from the page's own results data when the tour is built (`python3 walkthrough/make_walkthrough.py`; the script is `tour.json`, see [UPDATING.md](UPDATING.md)), so it matches the page it was built from. The figures are results of the model under its stated assumptions, not forecasts.
 
@@ -44,33 +44,61 @@ In the Stress Test it is the same: below 30 days of basic living falls from 60.0
 
 ![The reference results over 40 years, highlighted](img/08-forty.png)
 
-The Years switch runs the same adults for 40 years instead of 20. They do not age in the model, so this shows where the same rules lead, not a lifetime. At the reference settings the gains grow: 14.8% of adult-years fall below 30 days of basic living, against 46.6%, and too little wealth at year 40 falls from 44.2% to 15.3%. In the Adverse Environment and the Stress Test, too little wealth is still worse with the programme over 40 years: 97.9% against 94.5% in Adverse, as prices keep rising and savings earn no interest.
+The Years switch runs the same adults for 40 years instead of 20. They do not age in the model, so this shows where the same rules lead, not a lifetime. At the reference settings the gains grow: 14.8% of adult-years fall below 30 days of basic living, against 46.6%, and too little wealth at year 40 falls from 44.2% to 15.3%. In the Adverse Environment and the Stress Test, too little wealth is still worse with the programme over 40 years: 97.9% against 94.5% in Adverse, as prices keep rising and, in the main reading, savings earn no interest.
 
 ![The table of other readings of the design, open](img/09-other.png)
 
-Below the results, other readings of the design sit side by side, including full backing by output, creative work counted at cost, and the earlier engine, so you can see how much each choice matters.
+Below the results, other readings of the design sit side by side: full backing by output, creative work counted at cost, the earlier engine, and this round's new readings, so you can see how much each choice matters.
 
-## 4. Run it yourself
+## 4. Year by year
 
-![The 'Run it yourself' control and its result](img/10-run.png)
+![The three year-by-year charts, highlighted (Adverse Environment)](img/10-paths.png)
+
+Year by year, the same adults each year, with and without the programme. In the Adverse Environment fewer adults live below the cost of living with Compassionism in every year: 63.2% against 92.4% by year 20. Savings fall in both runs: median savings end at -$10 with the programme and -$6,860 without, in today's dollars. What a month buys: a month of the BU keeps its value, $1,200 in today's dollars, because the Hub's rule indexes it in any year prices rise faster than 5%. A month of the median wage falls from $3,200 to $1,570, and to $1,430 with no programme.
+
+## 5. Readings beside the main result
+
+![The middle-reading note, highlighted (Adverse Environment)](img/11-middle.png)
+
+The decisive unknown has a middle reading too, anchored by a study of cash transfers in rural Kenya, where new spending was met by more output with almost no price rise. In the Adverse Environment the middle band brings too little wealth to between 81.5% and 84.6%, against 87.1% as built and 82.6% with no programme. Kenya does not set the US number, so the headline stays at the cautious end.
+
+![The note on savings that keep up with prices, highlighted (Adverse Environment)](img/12-savings.png)
+
+If savings kept up with prices, with and without the programme, too little wealth in the Adverse Environment would be 38.2%, against 78.5% with no programme. The interest that implies is large, and the model does not say who would pay it.
+
+![The note on adults who age, highlighted (Reference, 40 years)](img/13-ageing.png)
+
+Over 40 years, if adults aged, retired at 67 on Social Security and were replaced by new 25-year-olds, too little wealth would be 35.7% with the programme, against 44.5% without.
+
+![The table of other readings, open](img/14-robust.png)
+
+The other readings also hold the tests an economist will ask about: landlords raising rents, mistakes and collusion in reviewing work, and paying with taxes instead of the Source. Rents rising where community housing does not cover demand are the largest of these risks: at the reference settings the drop in too little wealth shrinks from -16.3 to -6.1 points. Community-owned housing is the design's answer to it.
+
+## 6. Run it yourself
+
+![The 'Run it yourself' control and its result](img/15-run.png)
 
 Press Run it yourself to run one seed of 500 adults, with and without the programme, in your browser. A single run varies more than the 500-run averages. Enter a seed to repeat a run exactly: the same seed gives the same result.
 
-## 5. What it cannot tell you
+## 7. What it cannot tell you
 
-![The 'Limits, in short' box, highlighted](img/11-limits.png)
+![The 'Limits, in short' box, highlighted](img/16-limits.png)
 
 What the model cannot tell you: it has single adults only, no children or households, no places, and a simple rule for prices. It is an exploratory model, not a forecast.
 
-![The note about the earlier engine, highlighted](img/12-earlier.png)
+![The earlier engine's own page](img/17-earlier.png)
 
-The earlier engine, v4.22, stays below for exploration, with its own settings and presets. Its figures differ from the results above.
+The earlier engine, v4.22, now has a page of its own, linked from the front door as Explore the earlier engine, with its settings, presets and charts. Its figures differ from the main results.
 
-## 6. Check the work
+## 8. Check the work
 
-![The Replication framework page](img/13-replication.png)
+![The Replication framework page](img/18-replication.png)
 
 The Replication framework page holds the formulas, the calibration, the assumptions and the full version history.
+
+![The replication page's check of the no-programme run against US data](img/19-usdata.png)
+
+The replication page also checks the no-programme run against US data: poverty rates, income inequality, savings and how long poverty lasts. Where the model differs, it says why, and a reading shows what changing that choice does.
 
 ```
 git clone https://github.com/BetterToBest/compassionism-simulation
@@ -79,9 +107,9 @@ npm test                              # validate, unit and domtest
 node harness.js testbed 500 release ref,adv,st   # the page's figures
 ```
 
-The simulation is one HTML file. harness.js runs the same engine from the command line; the figures on the page come from node harness.js testbed 500 release ref,adv,st. npm test runs the three checks, validate, unit and domtest, and GitHub runs them on every push.
+The simulation's page is one HTML file, and the earlier engine has its own. harness.js runs the same engine from the command line; the figures on the page come from node harness.js testbed 500 release ref,adv,st. npm test runs the three checks, validate, unit and domtest, and GitHub runs them on every push.
 
-## 7. Help improve it
+## 9. Help improve it
 
 Ways to contribute, from [CONTRIBUTING.md](../CONTRIBUTING.md#how-to-contribute): scenario testing (the highest-value contribution), calibration with cited sources, reproducibility testing, model architecture feedback, code, and peer review.
 

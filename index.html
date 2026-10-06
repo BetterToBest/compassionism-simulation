@@ -361,10 +361,10 @@ table.fd-t.fd-pt{min-width:0}.fd-pt td,.fd-pt th{white-space:nowrap}
   <details class="fd-about" id="fd-video" style="max-width:52rem">
    <summary>▶ Watch the walk-through (narrated by a synthetic voice, with captions)</summary>
    <div style="padding:0 .85rem .85rem">
-    <video controls preload="none" poster="walkthrough/img/poster.jpg?v=5.1" style="width:100%;border-radius:6px;background:#0F1715" aria-label="Walk-through of the Compassionism Framework Simulation">
-     <source src="walkthrough/walkthrough.mp4?v=5.1" type="video/mp4">
-     <track kind="captions" src="walkthrough/captions.vtt?v=5.1" srclang="en" label="English" default>
-     Your browser cannot play the video; <a href="walkthrough/walkthrough.mp4?v=5.1">download it</a> or <a href="walkthrough/README.md">read the written tour</a>.
+    <video controls preload="none" poster="walkthrough/img/poster.jpg?v=5.2" style="width:100%;border-radius:6px;background:#0F1715" aria-label="Walk-through of the Compassionism Framework Simulation">
+     <source src="walkthrough/walkthrough.mp4?v=5.2" type="video/mp4">
+     <track kind="captions" src="walkthrough/captions.vtt?v=5.2" srclang="en" label="English" default>
+     Your browser cannot play the video; <a href="walkthrough/walkthrough.mp4?v=5.2">download it</a> or <a href="walkthrough/README.md">read the written tour</a>.
     </video>
     <p class="fd-note">The same tour as text, with a screenshot for each step, is the <a href="walkthrough/README.md" target="_blank" rel="noopener">written walk-through</a>.</p>
    </div>
@@ -2373,7 +2373,7 @@ function relPathCharts(b,r,T){if(!b||!b.path||!r||!r.path)return '';var B=b.path
   function nice(lo,hi){var span=Math.max(1e-9,hi-lo),raw=span/3,mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)),st=[1,2,2.5,5,10].map(function(m){return m*mag;}).filter(function(x){return x>=raw;})[0];return {lo:Math.floor(lo/st)*st,hi:Math.ceil(hi/st)*st,st:st};}
   function ch(id,title,unit,ser,fmt,zero){var W=340,H=190,L=48,R=98,T0=40,Bm=28,pw=W-L-R,ph=H-T0-Bm,all=[];ser.forEach(function(x){all=all.concat(x.v.slice(0,n));});
     var lo=Math.min.apply(null,all),hi=Math.max.apply(null,all);if(zero)lo=Math.min(0,lo);var k=nice(lo,hi),X=function(t){return L+t/(n-1)*pw;},Y=function(v){return T0+(k.hi-v)/(k.hi-k.lo)*ph;};
-    var o=['<svg viewBox="0 0 '+W+' '+H+'" class="fd-pc" role="img" aria-labelledby="'+id+'-t '+id+'-d"><title id="'+id+'-t">'+title+'</title><desc id="'+id+'-d">'+ser.map(function(x){return x.name+': '+fmt(x.v[0])+' in year 1, '+fmt(x.v[n-1])+' in year '+n;}).join('; ')+'</desc>'];
+    var o=['<svg viewBox="0 0 '+W+' '+H+'" class="fd-pc" role="img" aria-labelledby="'+id+'-t '+id+'-d"><title id="'+id+'-t">'+title+'</title><desc id="'+id+'-d">'+unit+'. '+ser.map(function(x){return x.name+': '+fmt(x.v[0])+' in year 1, '+fmt(x.v[n-1])+' in year '+n;}).join('; ')+'</desc>'];
     o.push('<text x="'+L+'" y="16" class="fd-pc-t">'+title+'</text><text x="'+L+'" y="30" class="fd-pc-s">'+unit+'</text>');
     for(var v=k.lo;v<=k.hi+1e-9;v+=k.st){o.push('<line x1="'+L+'" x2="'+(L+pw)+'" y1="'+Y(v).toFixed(1)+'" y2="'+Y(v).toFixed(1)+'" class="fd-pc-g"/><text x="'+(L-5)+'" y="'+(Y(v)+3.5).toFixed(1)+'" class="fd-pc-a" text-anchor="end">'+fmt(v)+'</text>');}
     [1,Math.round(n/2),n].forEach(function(t){o.push('<text x="'+X(t-1).toFixed(1)+'" y="'+(H-10)+'" class="fd-pc-a" text-anchor="middle">'+(t===1?'year 1':t)+'</text>');});
@@ -2385,13 +2385,13 @@ function relPathCharts(b,r,T){if(!b||!b.path||!r||!r.path)return '';var B=b.path
   var h='<div class="fd-paths" id="rel-paths"><p class="fd-pc-h"><strong>Year by year.</strong> The same 500 adults each year, with Compassionism and with no programme (means over the paired runs).</p><div class="fd-pc-row">'+
     ch('pc1','Below the cost of living','% of adults each year',[{name:'No programme',cls:'fd-pc-b',v:B.f0},{name:'Compassionism',cls:'fd-pc-c',v:P.f0}],pc,true)+
     ch('pc2','Savings','median, today’s dollars',[{name:'No programme',cls:'fd-pc-b',v:B.medW},{name:'Compassionism',cls:'fd-pc-c',v:P.medW}],usd,true)+
-    ch('pc3','What a month buys','today’s dollars',[{name:'Wage, none',cls:'fd-pc-b',v:B.wageR},{name:'Wage, CP',cls:'fd-pc-c',v:P.wageR},{name:'BU',cls:'fd-pc-c',v:P.buR,dash:true}],usd,true)+'</div>';
+    ch('pc3','What a month buys','median wage, and the BU (dashed); today’s dollars',[{name:'No programme',cls:'fd-pc-b',v:B.wageR},{name:'Compassionism',cls:'fd-pc-c',v:P.wageR},{name:'BU',cls:'fd-pc-c',v:P.buR,dash:true}],usd,true)+'</div>';
   var yrs=[];for(var t=1;t<=n;t+=(n>20?5:n>10?3:1))yrs.push(t);if(yrs[yrs.length-1]!==n)yrs.push(n);
   var row=function(lbl,v,f){return '<tr><td>'+lbl+'</td>'+yrs.map(function(t){return '<td>'+f(v[t-1])+'</td>';}).join('')+'</tr>';},fm=function(v){return fdMoney(v);};
   h+='<details class="fd-about"><summary>The numbers behind the charts</summary><div class="fd-tw"><table class="fd-t fd-pt"><thead><tr><th scope="col">Year</th>'+yrs.map(function(t){return '<th scope="col">'+t+'</th>';}).join('')+'</tr></thead><tbody>'+
     row('Below the cost of living, no programme',B.f0,pc)+row('Below the cost of living, Compassionism',P.f0,pc)+row('Median savings, no programme',B.medW,fm)+row('Median savings, Compassionism',P.medW,fm)+
     row('A month of the median wage buys, no programme',B.wageR,fm)+row('A month of the median wage buys, Compassionism',P.wageR,fm)+row('A month of the BU buys',P.buR,fm)+'</tbody></table></div>'+
-    '<p class="fd-note">Today’s dollars: each year’s figure divided by that year’s cost of living (the living-wage basket) relative to the start. “CP” in the third chart is Compassionism.</p></details></div>';
+    '<p class="fd-note">Today’s dollars: each year’s figure divided by that year’s cost of living (the living-wage basket) relative to the start.</p></details></div>';
   return h;}
 function relSentences(b,r,h,T,X){
   T=T||20;X=X||{};

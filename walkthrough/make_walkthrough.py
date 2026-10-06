@@ -112,7 +112,10 @@ CH, SHOTS, ALT = TOUR['chapters'], TOUR['shots'], TOUR['alt']
 
 def rel(env, k='release'): return REL['envs'][env]['rows'][k]
 def base(env): return REL['envs'][env]['base']
-def pct(x): return '%.1f%%' % x
+def f1(x):  # one decimal, halves away from zero on the exact value, as the page's toFixed(1) does (Python's '%.1f' rounds -16.25 to -16.2)
+    from decimal import Decimal, ROUND_HALF_UP
+    return str(Decimal(x).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP))
+def pct(x): return f1(x) + '%'
 def about(x, step): return '{:,}'.format(int(round(x / float(step)) * step))
 R, A, S = rel('ref'), rel('adv'), rel('st')
 V = {
@@ -142,7 +145,7 @@ if V52:
               'adv_bu_end': money(PA['buR'][-1]), 'adv_wage_0': money(PA['wageR'][0]), 'adv_wage_end': money(PA['wageR'][-1]), 'adv_base_wage_end': money(PB['wageR'][-1]),
               'adv_midlo_pov': pct(rel('adv', 'midlo')['pov']), 'adv_midhi_pov': pct(rel('adv', 'midhi')['pov']),
               'adv_sav_pov': pct(rel('adv', 'sav')['pov']), 'adv_sav_base_pov': pct(REL['envs']['adv']['bases']['sv']['pov']),
-              'ref_dpov': '%.1f' % R['dPov'][0], 'ref_hcap_dpov': '%.1f' % rel('ref', 'hcap')['dPov'][0]})
+              'ref_dpov': f1(R['dPov'][0]), 'ref_hcap_dpov': f1(rel('ref', 'hcap')['dPov'][0])})
     if REL40 and 'age' in REL40['envs']['ref']['rows']:
         V.update({'ref40_age_pov': pct(rel40('ref', 'age')['pov']), 'ref40_age_base_pov': pct(REL40['envs']['ref']['bases']['ag']['pov'])})
 CHECKS = {   # the conditions each caption's wording depends on
