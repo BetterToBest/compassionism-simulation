@@ -7,7 +7,10 @@ Session 33: the 40-year table is created after the 20-year one the first time. v
 level is the median over seeds with its 10th to 90th percentile range and the mean; the Hub-target table; the provenance line from the
 panel's manifest.
 """
-import json, os, re
+import json, os, re, sys
+if '<table class="rel-t">' not in open('replication.html').read():
+    sys.exit('release_figs.py: retired in v5.2.1. The release tables moved from the replication page to the findings explorer, which renders them from the release '
+             'data file; run python3 dev/tools/release_data.py instead (dev/ADDING-A-RELEASE.md).')
 from decimal import Decimal, ROUND_HALF_UP
 
 

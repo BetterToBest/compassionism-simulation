@@ -213,14 +213,13 @@ def build(D):
     return '<!-- backing-share:begin -->\n  ' + head + '\n  ' + fig + '\n  ' + cap + '\n  ' + table + '\n  <!-- backing-share:end -->'
 
 D = load()
-block = build(D)
+# v5.2.1: the chart and its table are drawn by the findings explorer from the release data (dev/tools/release_data.py, site/findings.js), so this
+# script now only merges the three files; it still rewrites the old block if a page carries its markers.
 P = open('replication.html').read()
 if '<!-- backing-share:begin -->' in P:
+    block = build(D)
     a = P.index('<!-- backing-share:begin -->'); b = P.index('<!-- backing-share:end -->') + len('<!-- backing-share:end -->')
-    P = P[:a] + block + P[b:]
+    open('replication.html', 'w').write(P[:a] + block + P[b:])
+    print('backing-share block written:', len(block), 'bytes')
 else:
-    anchor = '<p id="rel-provenance">' if '<p id="rel-provenance">' in P else '<p id="rel-price-note">'
-    a = P.index(anchor); b = P.index('</p>', a) + 4
-    P = P[:b] + '\n  ' + block + P[b:]
-open('replication.html', 'w').write(P)
-print('backing-share block written:', len(block), 'bytes')
+    print('merged dev/runs/backing-share.json; the chart is on the findings explorer (run python3 dev/tools/release_data.py next)')

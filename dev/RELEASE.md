@@ -1,5 +1,7 @@
 # Release checklist (plan step 13)
 
+> **v5.2.1 (Oct 6, 2026):** the data and page steps of a release are now in `dev/ADDING-A-RELEASE.md` (one data file per release, written by `dev/tools/release_data.py`; `release_figs.py` is retired). This checklist is kept as the record of the v5.0 release.
+
 Oct 2, 2026 · prepared by Claude, session 30; updated in session 31 with Duke's four added items · the release happens only when Duke says "release"
 
 ## Gate status

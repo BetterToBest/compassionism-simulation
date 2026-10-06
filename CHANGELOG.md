@@ -1,10 +1,90 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
 
 ---
+
+## v5.2 Release Notes
+
+**Released as v5.2 (Oct 2026): the model round.** One pull request into `main` (merging is the release). The plain-words report for Duke is `dev/reports/v5-9-round-v5-2.md`; every decision, with the alternatives and the reason, is in `dev/DECISIONS.md` (Session 35). Duke's answers and decisions for the round (Oct 3, 2026) are at the top of `dev/background/ledger-export.md`.
+
+**What did not change.** The main row is the v5.1 release row: nothing the Source pays out is assumed backed by new output, the BU is indexed by the Hub's 5% rule, savings earn no interest, the adults do not age, and the no-programme run is the yardstick. Every new mechanism is a switch, off in the main row, and appears as a labelled reading beside it, compared with no programme under the same switch where the switch is not design-specific. With every switch off the output is bit-identical to v5.1 (`--v51`; full-output diff of text and JSON, 12 seeds, Reference, Adverse and Stress at 20 years and Reference at 40), checked after each step. No constant was tuned to reach a target. Whether any reading should join the main row was decided at the regeneration (`dev/DECISIONS.md`, step 9): none does in this release, because the round's rule is that each new mechanism first appears as a reading beside the main row.
+
+### What changed in the model (each one a switch and a labelled reading)
+
+- **Savings that keep up with prices** (step 3; `SAVE`, row option `sv`). Savings earn the year's price rise plus 0.97% a year (the 2003-2025 mean real yield on 10-year TIPS, `sources/tips_real_rate.py`), in the programme run and the no-programme run alike. Who pays the interest is not modelled (the model has no bank), and the page says so with its size.
+- **The BU indexed every year** (step 3; row option `ci`; Duke's answer d147). The Hub's 5% rule stays the main reading.
+- **Adults who age, retire and are replaced** (step 4; `AGE`, row option `ag`; decision A). Starting ages from the Census population aged 25-66 (Vintage 2024); deaths from the 2022 US period life table (NCHS; the SSA's own table could not be downloaded from the build environment); a new 25-year-old replaces each death; retirement at 67 on the average Social Security retired-worker benefit, moved with prices. Retirees keep the BU for life, stop ESP work at 67 and can still convert through creative work (decision A); readings without conversion after 67, without any design-specific rule, and with the benefit formula on the adult's own wage. Ageing draws from its own random stream, so the eight draws per adult-year are untouched.
+- **The no-programme run against US data** (step 5; `LATENT`, row option `lt`). Four readings that change a known choice behind a gap with US data, each in both runs and with no new random draw: starting savings from the Federal Reserve's 2022 Survey of Consumer Finances linked to wages (Gaussian copula, 0.3585), automation risk linked to wages (−0.53, the normal-score correlation across Frey and Osborne's occupations; the −0.65 quoted since v4.20 is the plain correlation, `sources/fo_risk_wage.py`), wages spread as in the survey, and wages centred on the survey's median ($54,698); and all four together.
+- **A middle backing reading** (step 6; row option `aK`; decision B). New output backs the Source's net payout up to a share of the year's earned income: 12% a year (the Kenya cash-transfer study's two-year rollout, Egger et al. 2022), with a band from 8% (all of the US's underused labour, BLS U-6, 2025) to 16% (Kenya's peak year). The study's limits are named beside it; the headline stays at the cautious end.
+- **Idle workers in normal years** (step 6; row option `ml: {nt}`). The spending layer reaches idle labour outside recessions: U-6 above its lowest annual level (1.1% of wages), multiplier 0.6 (Ramey and Zubairy 2018); upper bound all of U-6 (8%).
+- **Robustness readings** (step 7; decision C). Landlords raising rents when BU pay rent (`HCAP`, row option `hc`: $0.50 per BU dollar on rent for BU tenants, Collinson and Ganong 2018; $1.41 for every renter outside PTH, Susin 2002); unearned rates in the Collectives' review (`REVIEW`, row option `rv`: 5%, 10% or 20% of conversions above 1×, audits catching half, a design parameter not specified by the Hub, or none; own random stream); the launch gift paid over the run (now read under Source financing too); and two other ways to pay, marked "not specified by the Hub": a progressive income tax (the 2025 federal schedule's shape, scaled each year to raise the cost) and a land-value tax (falling on savings, since the model has no land), each with the Source paying any shortfall and the share it covers reported.
+
+### What changed in the reporting
+
+- **The Hub's targets, more measures** (step 2). The table reads Year 7 and the last year: the share below the US official poverty line ($16,749 for one person, 2025, moved with prices; the Hub's "about 12%" start is the official rate), the same line on resources closer to the Supplemental Poverty Measure, a BLEI figure (both readings), the model's own measures, and three Ginis (income, income counting price cuts, wealth with debts as zero, each against its own Hub number), plus wealth with debts kept for the US comparison. Every Gini carries the small-sample correction n/(n − 1); a reading within 0.002 of a target line is labelled as on the line. A table with every line fixed in dollars sits on the replication page.
+- **The US-data table** (step 5): the no-programme run against Census poverty and income figures (2025), the SCF 2022 and poverty spells in the PSID (Stevens 1994), with each gap and its likely cause.
+- **Year by year** (step 8): the share below the cost of living, median savings in today's dollars and what a month of the median wage and of the BU buys, each year, for no programme, the main row, H1 and the middle reading; and what a month still buys wherever a price rise is quoted.
+- **The backing-share chart** marks the three middle readings at the share of the payout each actually backs.
+
+### What changed on the page
+
+- Three year-by-year charts on the front door (inline SVG, no new dependency; their numbers in a table beside them).
+- **Decision D:** the v4.22 engine (settings, presets, charts, the seed-42 run) moved to `earlier-engine.html`, linked from the front door as "Explore the earlier engine". Both pages are single files with the same script and styles (`dev/tools/sync_earlier.py`); the `v4.22` tag is unchanged.
+- The front door and the earlier-engine page do not scroll sideways at 390 px; the replication page's wide tables now scroll inside their own box.
+- The walk-through has two new chapters ("Year by year" and "Readings beside the main result") and new shots for the US-data table and the earlier engine's page.
+
+### What changed in the checks
+
+- `unit`: 171 tests (146 at v5.1). `v52UnitSuite` (25) covers each mechanism: switch off equals the release row on every key, the mechanism moves results the expected way, and no mechanism adds a random draw to the main stream. The feature-matrix test adds ageing, the US-data readings, housing capture and the review, and checks that only ageing rows draw from the demographic stream and only review rows from the review stream.
+- `domtest`: 113 checks (112 at v5.1). Phases 1-9 now test the earlier engine on its own page; new checks cover the Hub-target table, the "on the line" rule for every Gini, the CSV columns, decision D (the link, the back link, the shared script) and the year-by-year charts.
+- `dev/tools/check_versions.js` and `dev/tools/set_version.py` cover `earlier-engine.html`; `node dev/tools/sync_earlier.py --check` confirms the two pages share their script.
+
+### Results (500 paired seeds, main row against no programme)
+
+**The main row is unchanged from v5.1.** In all six panels every figure of the main row and of the readings v5.1 already showed is identical, except the Ginis, which now carry the small-sample correction (×500/499); the backing-share sweep is identical too. Main row against no programme (share of adult-years below the cost of living; share with too little wealth at the end; share of adult-years below 30 days of basic living, the BLEI paper's definition; the programme's inflation a year; cost per adult a year):
+
+| Environment, years | Below the cost of living | Too little wealth | Below 30 days (BLEI) | Inflation | Cost |
+|---|---|---|---|---|---|
+| Reference, 20 | 22.0% vs 55.2% | 35.7% vs 52.0% | 18.7% vs 46.7% | 34.9% | $29,618 |
+| Adverse, 20 | 42.1% vs 78.2% | 87.1% vs 82.6% | 33.1% vs 60.0% | 45.5% | $27,677 |
+| Stress Test, 20 | 65.6% vs 78.2% | 90.6% vs 82.6% | 54.9% vs 60.0% | 23.8% | $10,494 |
+| Reference, 40 | 15.3% vs 47.4% | 15.3% vs 44.2% | 14.8% vs 46.6% | 30.4% | $32,274 |
+| Adverse, 40 | 62.1% vs 86.7% | 97.9% vs 94.5% | 51.7% vs 75.1% | 65.4% | $27,013 |
+| Stress Test, 40 | 79.3% vs 86.7% | 98.8% vs 94.5% | 72.3% vs 75.1% | 36.4% | $10,685 |
+
+**Against the Hub's targets (step 2), main row against no programme.** Below the US official poverty line at Year 7: 2.8% vs 3.0% (Reference), 4.6% vs 5.9% (Adverse), 6.3% vs 5.9% (Stress Test); at year 20: 0.7% vs 1.6%, 24.1% vs 48.9%, 40.5% vs 48.9%; at year 40: 0.2% vs 0.6%, 73.3% vs 78.9%, 77.8% vs 78.9%. Only Reference reaches the Hub's "under 2%" on this measure, and the model's adults (working-age earners living alone) start far below the US's 10.2%. Below 30 days of basic living at Year 7: 21.4%, 25.8% and 46.4% (no programme 47.9%, 54.4%, 54.4%). The income Gini at Year 7 is 0.307, 0.315 and 0.299 (no programme about 0.28; the Hub's 0.25 to 0.30, from 0.48), and counting price cuts 0.256, 0.258 and 0.276; the wealth Gini at Year 7 is 0.558, 0.593 and 0.702 (no programme 0.727 to 0.763; the BLEI paper's 0.25). Two readings sit on a target line and are labelled so: the Adverse income Gini counting price cuts at year 20 (0.2500) and the Stress Test income Gini at Year 7 (0.2986).
+
+**The new readings (change in the share with too little wealth at year 20 against no programme, Reference / Adverse / Stress Test; main row −16.3 / +4.4 / +7.9 points).**
+
+- *Savings that keep up with prices* (in both runs): −32.3 / −40.3 / −14.2. The interest this implies is $46,047 / $47,993 / $19,728 per adult a year in today's dollars, of which $1,684 / $1,352 / $865 is above inflation; who would pay it is not modelled.
+- *The BU indexed every year*: no change in the main row (the programme's own inflation triggers the Hub's 5% rule every year). At H1 (everything backed): Adverse 52.5% → 31.8% with too little wealth (cost $25,607 → $37,142), Stress Test 72.6% → 67.0%.
+- *Middle backing reading, 12% of earned income (band 8% to 16%)*: −22.6 (−20.2 to −25.4) / +0.5 (+1.9 to −1.1) / +2.5 (+4.7 to −0.4); inflation 25.0% / 36.1% / 13.5% a year (main row 34.9% / 45.5% / 23.8%); 28% / 21% / 46% of the Source's payout backed. At 40 years: −33.8 / +3.1 / +4.1 (main row −28.9 / +3.4 / +4.3). H1 for comparison: −36.5 / −30.1 / −10.1.
+- *Idle workers in normal years*: $401 / $232 / $268 of wages per adult a year; −17.1 / +4.0 / +7.7. With all of U-6 idle: −22.2 / +1.4 / +6.0.
+- *Adults who age, retire and are replaced* (decision A, against no programme with the same ageing): −8.1 / +2.9 / +6.0 at 20 years; at 40 years −8.8 / +0.3 / +1.5 (main row −28.9 / +3.4 / +4.3), with 36.5% of adults retired. Without conversion after 67: −2.6 at 40 years in Reference; with retirees leaving the programme: +1.2. Below the cost of living, ageing widens the gain (Reference, 40 years: −40.8 points against −32.2), because retirees on Social Security alone fall below the living-wage basket.
+- *Closer to US data* (all four step 5 readings, in both runs): −12.6 / +3.0 / +8.2; below the cost of living −21.0 / −25.2 / −8.5 (main row −33.2 / −36.1 / −12.6). At 40 years −20.3 / +8.9 / +12.7. The gain shrinks once wages are higher and more spread out, as the 12-seed first look showed.
+- *Landlords raising rents*: −6.1 / +8.4 / +8.8 ($0.50 per BU dollar on rent; rents of BU tenants up 28%); −0.8 / +9.6 / +9.3 at $1.41 for every renter outside PTH (rents up 54%). The largest of the robustness risks.
+- *Unearned rates in the Collectives' review*: with 20% unearned and half caught, −14.8 / +5.2 / +8.0; with no audits, unearned pay of $824 / $635 per adult a year in Reference and Adverse. Nil in the Stress Test.
+- *The launch gift paid over the run*: no difference (−16.3 in Reference; inflation 34.9% → 34.7%).
+- *A progressive income tax*: covers 60% / 48% / 91% of the cost; too little wealth +31.7 / +15.5 / +13.0 and below the cost of living +20.3 / +6.0 / +13.0 (worse than no programme). *A land-value tax*: covers 97% / 53% / 85%; −30.6 / +7.1 / +8.7. Neither is the Hub's design.
+
+**The no-programme run against US data (step 5, 500 seeds, Reference).** Below the official poverty line 4.0% in the first year (US workers 4.3%), 3.0% at Year 7, 1.6% at year 20; income Gini 0.278 (US 0.448 after tax); median savings $31,500 in the first year and $15,500 at Year 7 (the survey's comparable group $74,400); in debt 46% at Year 7 (survey 12.6%), the largest gap; 62% leave poverty in a spell's first year (US 53%) and 37% are back a year later (US 27%).
+
+### Limits (on the front door in short, in full on the replication page)
+
+- **No children and no households.** Every adult lives alone and has no children, so Compassionism's child allowance and household sharing are not modelled, and comparisons with programmes for families (the Child Tax Credit) wait for them. This is the next model step.
+- **The comparison with current US policy** (a no-programme run with today's taxes and transfers, and other designs on the same simulated people) is the compare page, which follows this release.
+- **Real wages fall in the Adverse and Stress environments in both runs.** Their automation and recessions lower what a month of the median wage buys from about $3,200 to $1,600 by year 20 (with the programme; $1,400 without) and to about $500 by year 40 (about $260 without). The BU keeps its value because the Hub's rule indexes it in every year of high inflation. This is how those environments are built, not a forecast.
+- **The model's no-programme run differs from US data** where the model leaves things out: too many adults run into debt (46% at Year 7 against 12.6%), because everyone pays the full living-wage basket and people with less income do not spend less; poverty spells are too short, because nobody is out of work, disabled or in a changing household.
+- **The backing question is still open.** The middle reading carries one study's size (rural Kenya, a one-time transfer) to a payout about two to four times larger relative to income, paid every year; the headline stays at the cautious end.
+- **Readings with no source for their size** are labelled: audits catching half of unearned rates (not specified by the Hub), the land tax falling on savings (the model has no land), and who pays the interest on savings that keep up with prices (the model has no bank).
+- **Ageing changes the 40-year wealth result a lot** (Reference: −28.9 points without ageing, −8.8 with it), and the model does not yet report results by age, so how much of the difference is retirees is not yet measured. It stays a reading beside the main row in this release.
+
+### How the figures were made
+
+All from commit `42cd8b9` with a clean tree (version 5.2; `python3 dev/tools/set_version.py 5.2`), Node v22, paired seeds 1-500, four processes at a time in a clean worktree of that commit: `node harness.js testbed 500 release ENV --json=dev/runs/release-panel-ENV.json` and the same with `--years=40` (`release-panel-40-ENV.json`), for ENV `ref`, `adv` and `st`; logs `dev/runs/v52-release-500-ENV.txt` and `v52-release40-500-ENV.txt`; merged by `python3 dev/tools/merge_panel.py` (and `40`) and written to the replication page by `python3 dev/tools/release_figs.py`. The backing-share runs: `node harness.js testbed 500 backing ENV --json=dev/runs/backing-share-ENV.json`, merged by `python3 dev/tools/backing_chart.py`. The checks beside them, from the same commit: `node dev/tools/cola_check.js adv` and `st` (the BU indexed every year), `node dev/tools/us_check.js ref 500 20` and `adv` (the US-data table). The 200-seed studies behind the step decisions (`dev/runs/save-check-*`, `backing-check-*`, `robust-check-*`) are from the commits named in `dev/DECISIONS.md`. The walk-through was rebuilt with `python3 walkthrough/make_walkthrough.py`, which reads its figures from the page.
 
 ## v5.1 Release Notes
 
