@@ -2,7 +2,7 @@
 
 This document describes **only the active release model**: the main result ("the release row") and its paired no-programme run, as published on the simulation page and the findings explorer. Every switch, alternative mechanism and labelled reading is listed separately in [TESTBED_SPEC.md](TESTBED_SPEC.md). How to regenerate every published table is in [REPRODUCE.md](REPRODUCE.md); the ODD protocol is [ODD.md](ODD.md).
 
-The code is the reference: `harness.js` (Node) and the identical engine block in `index.html` (between the markers `RELEASE ENGINE` and `END RELEASE ENGINE`, copied by `dev/tools/port_engine.py`; `domtest.js` Phase 12 checks the two give the same 154 measures on 12 rows). Function names below are those in `harness.js`. The plain-words reports in `dev/reports/` give the reasoning behind each mechanism; `dev/DECISIONS.md` records each choice.
+The code is the reference: the engine in `index.html` (the block between the markers `RELEASE ENGINE` and `END RELEASE ENGINE`, and the earlier engine's core functions listed in `PAGE_CORE` at the top of `harness.js`). Since v5.3 it has one copy: `harness.js` reads it out of the page when it loads and runs it in Node with the study modes and unit suites. Function names below are those in `harness.js`. The plain-words reports in `dev/reports/` give the reasoning behind each mechanism; `dev/DECISIONS.md` records each choice.
 
 The math and code were engineered by Claude (Anthropic) from Duke Johnson's concepts (the book *Better To Best* and the Research Hub). The model has not yet been reviewed by an independent economist.
 

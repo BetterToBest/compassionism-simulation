@@ -785,23 +785,20 @@ function phase8(done) {
   check('v4.20: harness.unitSuite() passes against the page\'s own functions, none skipped (' + U.length + ' tests)',
     U.length === 15 && !uf.length && !us.length, uf.length ? 'failed: ' + uf.map(x => x.name + ' [' + x.detail + ']').join('; ') : U.find(x => /drawAutomationRisk/.test(x.name)).detail);
 
-  // 8g. source parity: every function the page and harness.js share is the same code, apart from
-  // five known, intentional differences (each covered by a behavioural check elsewhere).
-  const src = fs.readFileSync(path.join(__dirname, 'harness.js'), 'utf8');
+  // 8g. source parity: every function the page and harness.js share is the same code. v5.3 (B1, one engine copy): harness.js reads the engine out of the page, so
+  // the script it runs (H.builtSource()) is compared; the five known differences of v4.20-v5.2.2 are gone (two moved into the page behind off-switches).
+  const src = H.builtSource();
   const names = [...src.matchAll(/^function ([A-Za-z0-9_]+)\(/gm)].map(m => m[1]);
-  const hf = new Function('module', 'require', src + ';return {' + names.join(',') + '};')({exports: {}}, require);
+  const hf = new Function('module', 'require', '__dirname', '__filename', src + ';return {' + names.join(',') + '};')({exports: {}}, require, __dirname, path.join(__dirname, 'harness.js'));
   const norm = f => f.toString().replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '').replace(/\s+/g, '');
-  const KNOWN = {runYear: 'harness-only switches (BU_ALLOCATIONS_PER_YEAR, CCO_RELIEF_FLAT, PTH_APPR_CONSERVE, RELIEF_PRICE_LEGACY, PATHWAY_OFF, SURPLUS_CONSUMPTION_SHARE, and the next round\'s LEDGER, CONVERSION_MODEL, PRICE, LABOR, p.ubi, THETA_GATE, PTH_MODE, DISC_BASE, and session 6\'s testbed hooks: TB and p.tb); checked by the seed-42 page/harness runs and Phase 9',
-    drawAutomationRisk: 'harness-only AUTOMATION_SAMPLER_LEGACY switch; checked by the draw-sequence comparison below',
-    getTier: 'display fields (class, colour) in the page', agentBLEI: 'a local renamed gammaV in the harness, where it would shadow gamma(); and the harness-only THETA_GATE switch (session 5)',
-    incomeBasketMetrics: 'guard order only, and the harness-only UBI term (session 4; absent in every preset)'};
+  const KNOWN = {};  /* v5.3 (B1): none; until v5.2.2 runYear, drawAutomationRisk, getTier, agentBLEI and incomeBasketMetrics differed by known amounts */
   const shared = names.filter(n => typeof w[n] === 'function');
   const drift = shared.filter(n => !KNOWN[n] && norm(w[n]) !== norm(hf[n]));
   const seqP = [], seqH = [];
   w.RNG = w.mulberry32(77); for (let i = 0; i < 1000; i++) seqP.push(w.drawAutomationRisk());
   const HT = H.unitTargets(), savedH = HT.getRNG(); HT.setRNG(H.mulberry32(77)); for (let i = 0; i < 1000; i++) seqH.push(HT.drawAutomationRisk()); HT.setRNG(savedH);
   check('v4.20: every function shared by the page and harness.js is identical source (' + (shared.length - Object.keys(KNOWN).length) + ' functions), and drawAutomationRisk() draws identical sequences',
-    shared.length >= 40 && !drift.length && seqP.every((x, i) => x === seqH[i]), drift.length ? 'DRIFTED: ' + drift.join(', ') : shared.length + ' shared; 5 known differences: ' + Object.keys(KNOWN).join(', '));
+    shared.length >= 40 && !drift.length && seqP.every((x, i) => x === seqH[i]), drift.length ? 'DRIFTED: ' + drift.join(', ') : shared.length + ' shared, all identical (v5.3: harness.js runs the page\'s engine)');
 
   // 8h. agent construction no longer depends on the high-risk share
   const latent = share => { w.CFG.AUTO_HIGH_SHARE = share; w.RNG = w.mulberry32(42 + 700003); const L = w.makeLatentPopulation(500); return L; };
@@ -969,11 +966,11 @@ function phase12(done) {
   console.log('\n--- Phase 12: the release engine (plan step 10) ---');
   const H = require('./harness.js'), w = makeWindow(), html = fs.readFileSync(FILE, 'utf8');
   const blk = html.slice(html.indexOf('RELEASE ENGINE: ported verbatim'), html.indexOf('END RELEASE ENGINE')) + html.slice(html.indexOf('plan step 10: harness.js version'), html.indexOf('plan step 10: harness.js version') + 2000);
-  const fnames = [...blk.matchAll(/^function ([A-Za-z_$][\w$]*)/gm)].map(m => m[1]), hsrc = fs.readFileSync(path.join(path.dirname(FILE), 'harness.js'), 'utf8');
+  const fnames = [...blk.matchAll(/^function ([A-Za-z_$][\w$]*)/gm)].map(m => m[1]), hsrc = H.builtSource();  /* v5.3 (B1): the script harness.js runs, read out of the page */
   const diff = fnames.filter(n => { const re = new RegExp('^function ' + n.replace(/\$/g, '\\$') + '\\(', 'm'), a = blk.search(re), b = hsrc.search(re);
     if (a < 0 || b < 0) return true; const grab = (t, i) => { let d = 0, j = t.indexOf('{', i); for (; j < t.length; j++){ if (t[j] === '{') d++; else if (t[j] === '}' && --d === 0) break; } return t.slice(i, j + 1); };
     return grab(blk, a) !== grab(hsrc, b); });
-  check('step 10: every function in the page\'s release engine is a verbatim copy of harness.js (rerun dev/tools/port_engine.py after an engine change)',
+  check('step 10 (v5.3: one engine copy): every function in the page\'s release engine is the one harness.js runs (harness.js reads the engine out of index.html)',
     fnames.length > 40 && diff.length === 0, fnames.length + ' functions; differing: ' + (diff.length ? diff.join(', ') : 'none'));
   /* v5.1 (audit V5-04): the behavioural parity check now covers every row of the release panel (the no-programme baseline and the eleven readings, built from harness.js's
    * releaseRows so the page and the harness run the same row options, including the V5-02 gate), in all three environments, at 20 and at 40 years, on seeds 1-2. */
@@ -992,9 +989,9 @@ function phase12(done) {
    * and each must still be there (a stale allow-list entry fails). The names come from the two global scopes (the page's window, harness.js run in a vm context), so no parser is needed. */
   const vm = require('vm'), root = path.dirname(FILE), blank = new JSDOM('', {runScripts: 'outside-only'}).window, blankNames = new Set(Object.getOwnPropertyNames(blank));
   const wf = makeWindow(), pageNames = Object.getOwnPropertyNames(wf).filter(n => !blankNames.has(n)), mod = {exports: {}}, req = Object.assign(n => require(n.startsWith('.') ? path.join(root, n) : n), {main: undefined});
-  const shims = ['require', 'module', 'exports', 'process', '__dirname', '__filename', 'console', 'Buffer', 'setTimeout', 'clearTimeout'];
-  const ctx = vm.createContext({require: req, module: mod, exports: mod.exports, process, __dirname: root, __filename: path.join(root, 'harness.js'), console, Buffer, setTimeout, clearTimeout});
-  vm.runInContext(fs.readFileSync(path.join(root, 'harness.js'), 'utf8'), ctx, {filename: 'harness.js'});
+  const shims = ['require', 'module', 'exports', 'process', '__dirname', '__filename', 'console', 'Buffer', 'setTimeout', 'clearTimeout', 'builtSource', 'csEngineSource'];
+  const ctx = vm.createContext({require: req, module: mod, exports: mod.exports, process, __dirname: root, __filename: path.join(root, 'harness.js'), console, Buffer, setTimeout, clearTimeout, builtSource: H.builtSource, csEngineSource: H.csEngineSource});
+  vm.runInContext(H.builtSource(), ctx, {filename: 'harness.js (built: the page\'s engine, then harness.js\'s own code)'});  /* v5.3 (B1): the script harness.js runs */
   const builtin = new Set(Object.getOwnPropertyNames(vm.runInContext('globalThis', vm.createContext({}))).concat(shims)), harnessNames = Object.getOwnPropertyNames(ctx).filter(n => !builtin.has(n));
   const shared = pageNames.filter(n => harnessNames.includes(n)), isFn = n => typeof ctx[n] === 'function';
   function canon(v, seen) { seen = seen || new Set(); if (v === undefined) return 'undefined'; if (v === null) return 'null'; if (typeof v === 'function') return 'fn:' + v.toString();
@@ -1002,14 +999,9 @@ function phase12(done) {
     if (ArrayBuffer.isView(v)) return 'ta:' + Array.prototype.join.call(v, ','); if (Array.isArray(v)) return '[' + v.map(x => canon(x, seen)).join(',') + ']';
     return '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canon(v[k], seen)).join(',') + '}'; }
   const strip = t => t.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '').replace(/\s+/g, '');
-  const ALLOWED = {
-    CFG: {fn: false, why: 'the page adds two display-only poverty-line keys (FED_POVERTY_LINE_1P, FED_POVERTY_LINE_YEAR)',
-      shape: (pg, hs) => { const only = Object.keys(pg).filter(k => !(k in hs)).sort().join(), back = Object.keys(hs).filter(k => !(k in pg)).length, same = Object.keys(hs).every(k => canon(pg[k]) === canon(hs[k])); return only === 'FED_POVERTY_LINE_1P,FED_POVERTY_LINE_YEAR' && back === 0 && same; }},
-    TIERS: {fn: false, why: 'the page adds a CSS class and a colour to each tier (display only)',
-      shape: (pg, hs) => pg.length === hs.length && pg.every((t, i) => t.name === hs[i].name && t.num === hs[i].num && Object.keys(t).filter(k => !(k in hs[i])).sort().join() === 'cls,color')},
-    getTier: {fn: true, why: 'the page\'s copy also returns the tier\'s CSS class and colour (follows TIERS)'},
-    drawAutomationRisk: {fn: true, why: 'harness.js carries a legacy-sampler branch behind AUTOMATION_SAMPLER_LEGACY (default off, the same default path as the page)'},
-    incomeBasketMetrics: {fn: true, why: 'harness.js adds the UBI term (zero outside the UBI comparators) and orders its guard differently'}};
+  /* v5.3 (B1, one engine copy): no allowed differences. Until v5.2.2 five were listed: the page's display-only additions to CFG, TIERS and getTier, and the harness's
+   * legacy automation sampler and UBI term (both now in the page behind their off-switches). */
+  const ALLOWED = {};
   const unexpected = [], commentOnly = [], stale = [], shapeBad = [], present = [];
   shared.forEach(n => { const a = wf[n], b = ctx[n]; let same, cmt = false;
     if (isFn(n)) { const x = a.toString(), y = b.toString(); same = x === y; if (!same && strip(x) === strip(y)) { same = true; cmt = true; } } else same = canon(a) === canon(b);

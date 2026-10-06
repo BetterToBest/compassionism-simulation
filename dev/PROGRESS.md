@@ -142,3 +142,11 @@ Restart the branch from `main` once v5.2.2 has merged (`git fetch origin main &&
 2. B1: one engine copy (d166). Feasibility done (`dev/reports/v5-3-one-engine-feasibility.md`): a prototype (`dev/drafts/build_from_page.py`) that reads the engine out of index.html reproduces `validate`, `unit` (all but the git-checkout test, from a scratch copy) and the 12-seed release panels in all three environments and the 6-seed 40-year Reference panel to the fingerprint. Build it properly: move the two harness-only branches (`AUTOMATION_SAMPLER_LEGACY` in `drawAutomationRisk`, the UBI term in `incomeBasketMetrics`) into the page; harness.js becomes the loader plus its own code; retire `port_engine.py`; prove with full-output diffs and 500-seed fingerprints.
 3. B2: accounting identities as enforced unit checks (BU life cycle, conversion, Source, PTH, per-person net worth).
 4. B3-B9 as in the plan; B10: 500-seed restudy (store per-seed values for the paired-share table, from A5), predictions checked, v5.3 release.
+
+## Session 38 (Oct 6, 2026): v5.3 households and children
+
+Duke merged v5.2.2 (tag `v5.2.2`, reproduction archive attached) and said "start v5.3". Branch `claude/practical-dijkstra-uayxaa` restarted from `main` at `0701615`. US birth figures from Duke: `sources/births_us.md` (national totals; an age breakdown is still needed for births by the mother's age: the Census API now asks for a key and cdc.gov refuses connections, so use the Census Bureau's published fertility tables or a copy Duke uploads).
+
+- [x] B1. One engine copy: `harness.js` reads the engine out of `index.html` (`PAGE_CORE`, `builtSource()`); the two harness-only branches moved into the page; `port_engine.py` retired; domtest's source checks read the built script; manifests gain `engineSha256`. Proof: validate identical, unit 171, domtest 125, 12-seed panels identical in 3 environments × 20 and 40 years (before outputs from the v5.2.2 harness). DECISIONS, Session 38.
+- [ ] B2. Accounting identities as enforced checks.
+- [ ] B3-B8, B9, B10 as in the plan.

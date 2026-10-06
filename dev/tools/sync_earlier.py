@@ -1,9 +1,9 @@
 """v5.2 round, step 8 (Oct 5, 2026; decision D): keep earlier-engine.html in step with index.html.
 
 The earlier engine (v4.22, as coded) has its own page, earlier-engine.html, with its settings, presets and charts. Both pages are single files and carry the
-same inline script (the earlier engine's code, the release engine block that dev/tools/port_engine.py writes, and the front door's code; each page's set-up
+same inline script (the earlier engine's code, the release engine block (the engine's only copy since v5.3; harness.js reads it from index.html), and the front door's code; each page's set-up
 runs only where its own elements exist) and the same style sheet. This script copies index.html's <style> block and its inline script into
-earlier-engine.html, leaving that page's own markup alone. dev/tools/port_engine.py and dev/tools/set_version.py run it; domtest checks the two are equal.
+earlier-engine.html, leaving that page's own markup alone. dev/tools/set_version.py runs it (and so did dev/tools/port_engine.py until v5.3); domtest checks the two are equal.
 
 Usage: python3 dev/tools/sync_earlier.py [--check]   (--check: exit 1 if earlier-engine.html is out of step, change nothing)
 """

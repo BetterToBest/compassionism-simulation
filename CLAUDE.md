@@ -4,7 +4,7 @@ Read this file, then `dev/PROGRESS.md`, at the start of every session. Then cont
 
 ## The project in one paragraph
 
-This repo is the Compassionism Simulation: an open, in-browser agent-based model of the Compassionism framework (500 simulated adults over 20 years; poverty, work, cost and prices against no program). The live page is `index.html` on `main` (v5.0 is tagged; later fixes are tagged as they merge). `harness.js` is the Node copy of the engine used for 500-seed studies. The author, Duke Johnson, wrote the concepts (his book *Better To Best* and the Research Hub at bettertobest.github.io/research-hub/). Claude wrote the math and code. Duke is not a programmer or economist and has delegated every math and code decision to Claude until an independent expert joins.
+This repo is the Compassionism Simulation: an open, in-browser agent-based model of the Compassionism framework (500 simulated adults over 20 years; poverty, work, cost and prices against no program). The live page is `index.html` on `main` (v5.0 is tagged; later fixes are tagged as they merge). `harness.js` runs the page's engine in Node for 500-seed studies (since v5.3 it reads the engine out of `index.html`; the engine has one copy, edited in `index.html`). The author, Duke Johnson, wrote the concepts (his book *Better To Best* and the Research Hub at bettertobest.github.io/research-hub/). Claude wrote the math and code. Duke is not a programmer or economist and has delegated every math and code decision to Claude until an independent expert joins.
 
 ## Duke's role, and yours
 

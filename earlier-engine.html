@@ -3144,7 +3144,15 @@ function standardNormal(){var u=Math.max(1e-14,1-RNG()),v=RNG();return Math.sqrt
  *    0.63 moved it to 15.0% / $583,843). Two draws per call, always: the weight now reaches only
  *    the runs that read automationRisk, i.e. those with AI automation on. The switch itself moved
  *    the regression once (every later construction draw shifted). */
+/* v5.3 (B1, one engine copy): harness.js now runs this file's engine, so the legacy sampler it used to carry on its own copy lives here, off by default.
+ * AUTOMATION_SAMPLER_LEGACY = true restores the v4.3-v4.19 sampler (a mixture weight draw, then a gamma-based Beta draw); with CFG.AUTO_HIGH_SHARE set back to 0.47 it
+ * reproduces v4.19 exactly (checked by `node harness.js validate`). The page never sets it. */
+var AUTOMATION_SAMPLER_LEGACY = false;
 function drawAutomationRisk(){
+  if(AUTOMATION_SAMPLER_LEGACY){
+    if(RNG()<CFG.AUTO_HIGH_SHARE)return beta(6,1);
+    return beta(1,6);
+  }
   var c=RNG(),v=RNG();
   return c<CFG.AUTO_HIGH_SHARE?Math.pow(v,1/CFG.AUTO_HIGH_A):1-Math.pow(1-v,1/CFG.AUTO_LOW_B);
 }
@@ -3664,6 +3672,9 @@ function shockCsvRows(sr,row){
 }
 
 /* ─── runYear (v3.3: SIM_COST_SCALE, diminishing returns, beta recession) */
+/* v5.3 (Oct 2026; plan item B1, dashboard decision d166): ONE ENGINE COPY. The block below and the earlier engine's core functions in this script are the
+ * engine's only copy: harness.js reads them out of this file when it loads (PAGE_CORE at the top of harness.js lists the core functions). Edit the engine
+ * here. The marker line below keeps its v5.0 wording until the block changes, so the published panels' engine fingerprint still matches it. */
 /* ==== RELEASE ENGINE: ported verbatim from harness.js by dev/tools/port_engine.py (plan step 10). Do not edit here. ==== */
 CFG.FBS_HALF_SAT_LO = Math.log(2) / CFG.FBS_LAMBDA_HI;
 CFG.FBS_HALF_SAT_HI = Math.log(2) / CFG.FBS_LAMBDA_LO;
@@ -5455,7 +5466,7 @@ function quantileOf(arr, q){ var v = Array.prototype.slice.call(arr).sort(functi
 function medianOf(arr){var s=arr.slice().sort(function(a,b){return a-b;}),n=s.length;return n?(n%2===0?(s[n/2-1]+s[n/2])/2:s[Math.floor(n/2)]):0;}
 function incomeBasketMetrics(agents){
   if(!agents||!agents.length||agents[0].yrBasketUSD===undefined)return null;
-  var inc=agents.map(function(a){var w=+a.yrWageUSD,c=+a.yrConvUSD;return (isNaN(w)?0:w)+(isNaN(c)?0:c);});
+  var inc=agents.map(function(a){var w=+a.yrWageUSD,c=+a.yrConvUSD;return (isNaN(w)?0:w)+(isNaN(c)?0:c)+(a.yrUbiUSD||0);});  /* v5.3 (B1): + the UBI comparators' cash (harness.js's studies; 0 on the page, which never sets it) */
   var ext=agents.map(function(a,i){return inc[i]+Math.max(0,(+a.yrBasketUSD||0)-(+a.yrCostUSD||0));});
   var n=inc.length,med=medianOf(inc),medX=medianOf(ext),rel=0,relX=0,net=0,gross=0;
   agents.forEach(function(a,i){if(inc[i]<0.6*med)rel++;if(ext[i]<0.6*medX)relX++;if(inc[i]<a.yrCostUSD)net++;if(inc[i]<a.yrBasketUSD)gross++;});
