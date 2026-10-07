@@ -174,6 +174,22 @@
    },
    "equal": true,
    "seconds": 449
+  },
+  {
+   "from": "6195baa6ef71f10001366f761388686667350cbdc3f310a42692a67bd80945f0",
+   "to": "93840c788965b5e94f1a85fc6d141efeddc791666b4e3d8ea7de2363953bb4c7",
+   "date": "2026-10-07",
+   "change": "v5.4 items 1-2: risk measures (RISK) and job loss (EMPL), both off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 177
   }
  ]
 }
