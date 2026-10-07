@@ -3621,6 +3621,16 @@ function acctYearEnd(agents, yr, p){
 CFG.BASKET = {food:0.0901, housing:0.2761, medical:0.0685, transport:0.1955, civic:0.0663, internet:0.0314, other:0.0924, taxes:0.1797};
 CFG.BASKET_KEYS = ['food','housing','medical','transport','civic','internet','other','taxes'];
 CFG.ESSENTIALS = ['food','housing','medical'];
+/* v5.3 B3f (Oct 7, 2026; Duke's answer d173 on the dashboard, Oct 6: "the full list is the design; v5.3 adds it first as a labelled reading"): what BU can
+ * buy. BU_SCOPE 'core' (the default; the model since September, decision N10): food, housing (with utilities) and medical care, CFG.ESSENTIALS. 'hub': the
+ * Hub's list (glossary, "Basic Units": housing, food, healthcare, education and transportation; draft Act section 103: "Housing, Food, Transportation
+ * (non-luxury), Healthcare, Education, PTF services"), so transport too (CFG.ESSENTIALS_HUB) and, for households, childcare (PTF childcare centres;
+ * schooling has no fee in the model, so education reaches BU through childcare). Only what BU can buy changes: the price module's essentials keep their
+ * sourced responses (food, housing, medical), and transport and childcare keep the general price level, which already rises with the Source's unbacked
+ * payout (no source gives their own response to demand: a stated limit). buEss() is the list BU purchases, open enrolment and the split read. */
+var BU_SCOPE = 'core';
+CFG.ESSENTIALS_HUB = ['food','housing','medical','transport'];
+function buEss(){ return BU_SCOPE === 'hub' ? CFG.ESSENTIALS_HUB : CFG.ESSENTIALS; }
 /* PTF_MODE (decision D4): 'shipped' = PTF cuts the whole basket by 12% (+4% x SZH coherence), as index.html does;
  * 'food30' = 30% off the food component only (the NYC public-grocery pilot's PROMISED cut, not an observed one);
  * 'food62' = 62% off food only (the hub's eps_food = 2.64: 1 - 1/2.64). Food modes ignore the SZH add-on. */
@@ -4069,7 +4079,7 @@ function hhYear(agents){  /* each household's cost factor and shares at this yea
     var N = H.need, P = 0, e = 0, f, hs, t;
     function c(k){ return PRICE ? PRICE.comp[k === 'childcare' ? 'other' : k] : 1; }
     Object.keys(N).forEach(function(k){ P += N[k]*c(k); });
-    CFG.ESSENTIALS.forEach(function(k){ e += N[k]*c(k); });
+    buEss().forEach(function(k){ e += N[k]*c(k); }); if (BU_SCOPE === 'hub') e += N.childcare*c('childcare');  /* v5.3 B3f: BU scope (childcare at PTF centres under 'hub') */
     f = N.food*c('food')/P; hs = N.housing*c('housing')/P; t = DISC_BASE === 'pretax' ? N.taxes*c('taxes')/P : 0;
     H.a.forEach(function(a){ a._hhF = P/(H.a.length*CFG.LIVING_WAGE_ANNUAL*bI); a._hhE = e/P; a._hhFd = f; a._hhH = hs; a._hhT = t; a._hhBU = H.buM; }); });
 }
@@ -4496,7 +4506,7 @@ function runYear(agentSet,yr,p,recSt){
     if(yr===0||!JNS){JNS={y:[],join:0,leave:0};agentSet.forEach(function(a){a._jnY=0;});}
     var jnN=0,jnJ=0,jnL=0;
     if(yr>0){var jnIdx=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1),jnM=CFG.LIVING_WAGE_ANNUAL*jnIdx,jnE=0,jnTx=DISC_BASE==='pretax';
-      CFG.ESSENTIALS.forEach(function(k){jnE+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});if(PRICE)jnE/=PRICE.bIdx;
+      buEss().forEach(function(k){jnE+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});if(PRICE)jnE/=PRICE.bIdx;  // v5.3 B3f: what BU can buy
       var jnF=CFG.BASKET.food*(PRICE?PRICE.comp.food/PRICE.bIdx:1),jnH=CFG.BASKET.housing*(PRICE?PRICE.comp.housing/PRICE.bIdx:1),jnRs=PTH_MODE!=='basket'||DISC_BASE!=='basket';
       agentSet.forEach(function(a){var jHH=HHON&&a._hh&&!a._hh.single,ef=jHH?a._hhE:jnE,u=1,jF=jHH?a._hhFd:jnF,jH=jHH?a._hhH:jnH,jM=jHH?jnM*a._hhF:jnM,jB=jHH?buEff*a._hhBU:buEff;if(a._ret&&AGE&&AGE.ret==='none'){a.inCCO=false;return;}/* v5.2 step 4: under 'none' a retiree is outside the programme */  /* v5.3 B3: a household member's share of the household's essentials and BU */
         if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(jnRs)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*jF;}
@@ -4585,7 +4595,7 @@ function runYear(agentSet,yr,p,recSt){
     }
     if(LEDGER){ledAdd(yr,'espPoolPaid',esPool);ledAdd(yr,'espConvBU',esY.conv);ledAdd(yr,'espRetBU',esRet);}
   }
-  var eShareCur=0,fShareCur=CFG.BASKET.food;CFG.ESSENTIALS.forEach(function(k){eShareCur+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});
+  var eShareCur=0,fShareCur=CFG.BASKET.food;buEss().forEach(function(k){eShareCur+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});  // v5.3 B3f: the share of the basket BU can buy (BU_SCOPE)
   if(PRICE){eShareCur/=PRICE.bIdx;fShareCur=CFG.BASKET.food*PRICE.comp.food/PRICE.bIdx;}
   var rsAlt=PTH_MODE!=='basket'||DISC_BASE!=='basket';  // session 5 (d4/d5): harness-only
   var tShareCur=DISC_BASE==='pretax'?CFG.BASKET.taxes*(PRICE?PRICE.comp.taxes/PRICE.bIdx:1):0,hShareCur=CFG.BASKET.housing*(PRICE?PRICE.comp.housing/PRICE.bIdx:1);
@@ -5294,12 +5304,13 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var ag0 = AGE; if (c.ag) AGE = Object.assign({}, AGE_DEFAULTS, c.ag === true ? {} : c.ag);  /* v5.2 step 4: ageing, for this row only (no programme rows too) */
       var hc0 = HCAP; if (c.hc) HCAP = Object.assign({all:false}, c.hc);  /* v5.2 step 7: housing capture for this row ({c, all}) */
       var rv0 = REVIEW; if (c.rv) REVIEW = Object.assign({q:CFG.REVIEW_AUDIT}, c.rv);  /* v5.2 step 7: review errors and collusion for this row */
+      var bs0 = BU_SCOPE; if (c.bs) BU_SCOPE = c.bs;  /* v5.3 B3f: what BU can buy, for this row ('core' | 'hub') */
       var hh0 = HOUSEHOLDS; if (c.hh) HOUSEHOLDS = Object.assign({}, HH_DEFAULTS, c.hh === true ? {} : c.hh);  /* v5.3 B3: households for this row ({} = the defaults) */
       var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0, wmed:c.lt.m ? CFG.SCF_WAGE_MEDIAN : 0};  /* v5.2 step 5: {w, r, s, m} flags */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
         if (r.hhPer !== undefined) HH_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households */
-      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; } });
+      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; } });
   }
   return out;
 }
@@ -5384,6 +5395,7 @@ function n1Row(PR, cm, v){
   if (v.hc) c.hc = v.hc;  /* v5.2 step 7: housing capture ({c: dollars of higher rent per BU dollar spent on rent outside PTH, all: the rise reaches every renter outside PTH}) */
   if (v.rv) c.rv = v.rv;  /* v5.2 step 7: review errors and collusion ({u, q}) */
   if (v.hh) c.hh = v.hh;  /* v5.3 B3: households ({pool, childBU}) */
+  if (v.bs) c.bs = v.bs;  /* v5.3 B3f: what BU can buy ('hub': the Hub's list) */
   return c;
 }
 /* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is

@@ -2059,6 +2059,21 @@ function hhUnitSuite(){
         if (r.hhKid !== 0) bad.push('children with every adult alone'); });
       var h = tbStudy(rowsOf(e, ['base'], {}).cf, 1, B.S.P, B.S.o)[0]; if (!(h.hhKid > 0 && h.hhPer > 500)) bad.push(e + ' households count no children'); info.push(e + ' ' + h.hhPer + ' persons, ' + h.hhKid + ' children'); }); });
     return {pass:bad.length === 0, detail:info.join('; ') + '; differences: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  t('v5.3 B3f: what BU can buy (Duke\'s answer d173): under \'hub\' a single adult\'s BU share of the basket adds transport exactly, a household\'s adds transport and childcare, and \'core\' is today\'s list; every identity holds under \'hub\', adults alone and in households (release row and no programme, seed 1, three environments)', function(){
+    var bad = [], info = [], sb = BU_SCOPE;
+    try { HOUSEHOLDS = Object.assign({}, HH_DEFAULTS); var P = FULL_INTEGRATION; RNG = mulberry32(1 + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); }); hhInit(ag, 1);
+      var H = HHS.list.filter(function(h){ return h.a.length === 1 && h.kids.some(function(g){ return g < CFG.HH_CARE_AGE; }); })[0], N = H.need, tot = 0; Object.keys(N).forEach(function(k){ tot += N[k]; });
+      BU_SCOPE = 'core'; hhYear(ag); var eC = H.a[0]._hhE; BU_SCOPE = 'hub'; hhYear(ag); var eH = H.a[0]._hhE;
+      if (Math.abs(eC - (N.food + N.housing + N.medical)/tot) > 1e-12) bad.push('household core share');
+      if (Math.abs(eH - (N.food + N.housing + N.medical + N.transport + N.childcare)/tot) > 1e-12) bad.push('household hub share');
+      var b = CFG.BASKET; info.push('one adult: ' + ((b.food + b.housing + b.medical)*100).toFixed(1) + '% of the basket -> ' + ((b.food + b.housing + b.medical + b.transport)*100).toFixed(1) + '%; a single parent with ' + H.kids.length + ' child(ren): ' + (eC*100).toFixed(1) + '% -> ' + (eH*100).toFixed(1) + '%');
+      BU_SCOPE = 'core'; if (buEss() !== CFG.ESSENTIALS) bad.push('core is not today\'s list'); }
+    finally { BU_SCOPE = sb; HHS = null; HOUSEHOLDS = null; }
+    var n = 0;
+    [null, {}].forEach(function(hh){ ['ref', 'adv', 'st'].forEach(function(e){ var A = rowsOf(e, ['base', 'release'], hh);
+      A.cf.forEach(function(c){ c.bs = 'hub'; c.g = Object.assign({}, c.g || {}, ACCT_V53); ACCT = acctNew(); try { acctProfile(function(){ tbStudy([c], 1, A.S.P, A.S.o); }); } finally { var X = ACCT; ACCT = null; }
+        Object.keys(X.n).forEach(function(k){ n += X.n[k]; }); Object.keys(X.nFail).forEach(function(k){ bad.push((hh ? 'households ' : 'adults ') + e + ' ' + c.j + ': ' + k + ' ' + X.nFail[k]); }); }); }); });
+    return {pass:bad.length === 0, detail:info.join('; ') + '; ' + n + ' identity checks under \'hub\'; problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
   return out;
 }
 Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS });
