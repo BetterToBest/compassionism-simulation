@@ -670,10 +670,10 @@ def texts(R):
                                'Rows are grouped: v5.4’s choices; v5.3’s choices; the optimistic end and the middle backing band; savings and the BU; ageing; closer to US data; robustness risks (rent capture, review errors); and other ways to pay.')
         if R.get('attrib'):
             Tx['attrib.lead'] = ('What each part of the design does: the main row against the main row without that part, on {{attrib.ref._meta.seeds|int}} paired runs over {{attrib.ref._meta.years|int}} years. '
-                                 'These runs are v5.3’s (made before job loss, PTH’s books and PTF by sector joined the main row); they are kept because those parts change the parts’ roles little, and rerunning them is listed as follow-up work. '
+                                 'These runs are v5.3’s (made before job loss, PTH’s books and PTF by sector joined the main row); rerunning them on the v5.4 main row is listed as follow-up work. '
                                  'The top row is the whole programme against no programme. Parts work together, so the parts need not add up to the whole; the gap is the interaction, in the table.')
         if R.get('us'):
-            Tx['us.lead'] = Tx.get('us.lead', '') + ' This check is v5.3’s no-programme run (before job loss joined it); job loss lowers the no-programme run’s wealth slightly, so rerunning it is listed as follow-up work.'
+            Tx['us.lead'] = Tx.get('us.lead', '') + ' This check is v5.3’s no-programme run (before job loss joined it); job loss changes the no-programme run, so rerunning the check is listed as follow-up work.'
     return Tx
 
 STORIES = [  # the explorer's guided reads: id, title, chart kind, tables, required data
