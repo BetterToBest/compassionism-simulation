@@ -1,0 +1,59 @@
+v5.3 B2 accounting corrections, adv, seeds 1-500 (504 s) -> dev/runs/acct-check-adv.json
+
+PTH appreciation conserved and the cut sized on the marked-up rent, against v5.2 (release row)
+  below the cost of living (% of adult-years): -0.0024 [-0.0029, -0.0020]
+  too little wealth at the last year (% of adults): -0.0004 [-0.0022, 0.0014]
+  below 30 days of basic living, BLEI paper's reading (% of adult-years): -0.0011 [-0.0015, -0.0008]
+  below 30 days, design-neutral reading (% of adult-years): -0.0003 [-0.0008, 0.0001]
+  poverty severity FGT2 (x100, person-years): -0.0004 [-0.0004, -0.0004]
+  programme inflation (a year): -0.0000 [-0.0000, -0.0000]
+  cost per adult-year (year-0 $): -1.25 [-1.27, -1.24]
+  PTH appreciation paid in cash (year-0 $ per adult-year): -1.31 [-1.32, -1.29]
+  median net wealth at the last year (year-0 $): -0.0003 [-0.0003, -0.0003]
+  Gini of disposable income: -0.0000 [-0.0000, -0.0000]
+  price level at the last year: -0.0975 [-0.0990, -0.0960]
+
+the same, rent mark-up reading
+  below the cost of living (% of adult-years): 0.2417 [0.2348, 0.2486]
+  too little wealth at the last year (% of adults): 0.0004 [-0.0144, 0.0152]
+  below 30 days of basic living, BLEI paper's reading (% of adult-years): 0.1607 [0.1558, 0.1657]
+  below 30 days, design-neutral reading (% of adult-years): 0.1674 [0.1622, 0.1726]
+  poverty severity FGT2 (x100, person-years): 0.0664 [0.0652, 0.0676]
+  programme inflation (a year): -0.0022 [-0.0023, -0.0022]
+  cost per adult-year (year-0 $): -132 [-134, -130]
+  PTH appreciation paid in cash (year-0 $ per adult-year): -1.06 [-1.07, -1.05]
+  median net wealth at the last year (year-0 $): -0.0775 [-0.0792, -0.0758]
+  Gini of disposable income: 0.0012 [0.0010, 0.0014]
+  price level at the last year: -104 [-107, -101]
+
+v5.2 release row against no programme
+  below the cost of living (% of adult-years): -36.06 [-36.20, -35.92]
+  too little wealth at the last year (% of adults): 4.42 [4.27, 4.57]
+  below 30 days of basic living, BLEI paper's reading (% of adult-years): -26.97 [-27.14, -26.80]
+  below 30 days, design-neutral reading (% of adult-years): -21.59 [-21.74, -21.43]
+  poverty severity FGT2 (x100, person-years): -16.04 [-16.11, -15.97]
+  programme inflation (a year): 0.4554 [0.4542, 0.4566]
+  cost per adult-year (year-0 $): 27677 [27628, 27726]
+  PTH appreciation paid in cash (year-0 $ per adult-year): 17.97 [17.81, 18.12]
+  median net wealth at the last year (year-0 $): 6859 [6859, 6859]
+  Gini of disposable income: -0.0280 [-0.0289, -0.0272]
+  price level at the last year: 1847 [1817, 1876]
+
+release row with the corrections against no programme
+  below the cost of living (% of adult-years): -36.06 [-36.21, -35.92]
+  too little wealth at the last year (% of adults): 4.42 [4.27, 4.57]
+  below 30 days of basic living, BLEI paper's reading (% of adult-years): -26.97 [-27.14, -26.80]
+  below 30 days, design-neutral reading (% of adult-years): -21.59 [-21.74, -21.43]
+  poverty severity FGT2 (x100, person-years): -16.04 [-16.11, -15.97]
+  programme inflation (a year): 0.4554 [0.4542, 0.4566]
+  cost per adult-year (year-0 $): 27676 [27627, 27725]
+  PTH appreciation paid in cash (year-0 $ per adult-year): 16.66 [16.52, 16.80]
+  median net wealth at the last year (year-0 $): 6859 [6859, 6859]
+  Gini of disposable income: -0.0280 [-0.0289, -0.0272]
+  price level at the last year: 1846 [1817, 1876]
+
+identities, release53: money 5250000 (worst 3.9e-16), equity 1055901 (worst 2.2e-16), bu 10500 (worst 7.1e-15), premium 10500 (worst 3.1e-15), books-bu 10500 (worst 7.2e-15), books-conv 10500 (worst 9.1e-16), books-issued 10500 (worst 0.0e+0), books-prices 10500 (worst 1.5e-15), source 10500 (worst 4.9e-17); BU lapsed at death: 0.000% of BU issued
+
+identities, hcap53: money 5250000 (worst 3.9e-16), equity 1055901 (worst 2.2e-16), bu 10500 (worst 3.0e-15), premium 10500 (worst 2.9e-15), books-bu 10500 (worst 8.5e-15), books-conv 10500 (worst 8.5e-16), books-issued 10500 (worst 0.0e+0), books-prices 10500 (worst 1.6e-15), source 10500 (worst 5.2e-17); BU lapsed at death: 0.000% of BU issued
+
+identities, age53: money 5250000 (worst 3.8e-16), equity 1055331 (worst 2.2e-16), bu 10500 (worst 7.6e-15), premium 10500 (worst 2.8e-15), books-bu 10500 (worst 5.8e-15), books-conv 10500 (worst 8.5e-16), books-issued 10500 (worst 0.0e+0), books-prices 10500 (worst 1.2e-15), source 10500 (worst 4.7e-17); BU lapsed at death: 0.000% of BU issued
