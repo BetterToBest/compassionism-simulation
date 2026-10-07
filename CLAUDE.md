@@ -4,7 +4,7 @@ Read this file, then `dev/PROGRESS.md`, at the start of every session. Then cont
 
 ## The project in one paragraph
 
-This repo is the Compassionism Simulation: an open, in-browser agent-based model of the Compassionism framework (500 simulated adults over 20 years; poverty, work, cost and prices against no program). The live page is `index.html` on `main` (v5.0 is tagged; later fixes are tagged as they merge). `harness.js` is the Node copy of the engine used for 500-seed studies. The author, Duke Johnson, wrote the concepts (his book *Better To Best* and the Research Hub at bettertobest.github.io/research-hub/). Claude wrote the math and code. Duke is not a programmer or economist and has delegated every math and code decision to Claude until an independent expert joins.
+This repo is the Compassionism Simulation: an open, in-browser agent-based model of the Compassionism framework (500 simulated adults over 20 years; poverty, work, cost and prices against no program). The live page is `index.html` on `main` (v5.0 is tagged; later fixes are tagged as they merge). `harness.js` runs the page's engine in Node for 500-seed studies (since v5.3 it reads the engine out of `index.html`; the engine has one copy, edited in `index.html`). The author, Duke Johnson, wrote the concepts (his book *Better To Best* and the Research Hub at bettertobest.github.io/research-hub/). Claude wrote the math and code. Duke is not a programmer or economist and has delegated every math and code decision to Claude until an independent expert joins.
 
 ## Duke's role, and yours
 
@@ -28,7 +28,7 @@ Since v5.0 shipped, the live page is whatever is on `main`, and merging a pull r
 
 ## Standing guardrails (from earlier sessions; keep all of them)
 
-1. Every new mechanism sits behind a switch; with the switch off, output is bit-identical to before (prove it with full-output diffs).
+1. Every new mechanism sits behind a switch; with the switch off, output is bit-identical to before (prove it with full-output diffs). Between releases, record each engine change with `node dev/tools/engine_lineage.js prove "what changed"` (it reruns the 12-seed release panels and checks their fingerprints), or the page test's provenance check fails.
 2. Before/after comparisons are CRN-paired on seeds 1-500, in the Reference, Adverse and Stress environments.
 3. The three checks run on every change: `validate`, `unit`, `domtest`. Find their exact commands in `.github/workflows/checks.yml`; do not guess.
 4. Eight random draws per agent-year (the CRN guarantee) must hold.

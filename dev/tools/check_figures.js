@@ -134,8 +134,9 @@ async function run(opts) {
   /* 8. meanings. v5.2.2 (audit A3): a number in a meaning is a token into the release file, never typed; the release file's lines are the harness's constants
    * (node harness.js constants writes dev/runs/constants.json, which dev/tools/release_data.py reads), so the three cannot disagree. */
   const mm = [], HK = require(path.join(ROOT, 'harness.js')).pageConstants(), KJ = rj('dev/runs/constants.json');
-  Object.values(REL).forEach(R => ['bO', 'f0', 'pov'].forEach(k => { const f = R.figures.find(x => x.id === 'ref.20.' + k + '.with'); if (!f || f.meaning !== F.fillPlain(R, F.MEANINGS[k])) mm.push('v' + R.version + ' ' + k); }));
-  ['bO', 'f0', 'pov'].forEach(k => { if (/\$\s?\d|\d[\d,.]*\s?%/.test(F.MEANINGS[k])) mm.push(k + ' has a typed amount'); });
+  /* v5.3: a release with households and children has a fourth card (children) and reads the adult measures through the household (F.meaningOf) */
+  Object.values(REL).forEach(R => ['bO', 'f0', 'pov'].concat(F.hasKids(R) ? ['kid'] : []).forEach(k => { const f = R.figures.find(x => x.id === 'ref.20.' + k + '.with'); if (!f || f.meaning !== F.fillPlain(R, F.meaningOf(R, k))) mm.push('v' + R.version + ' ' + k); }));
+  [F.MEANINGS, F.MEANINGS53].forEach(M => Object.keys(M).forEach(k => { if (/\$\s?\d|\d[\d,.]*\s?%/.test(M[k])) mm.push(k + ' has a typed amount'); }));
   [['POVERTY_LINE', 'wealthLine'], ['POVERTY_THRESHOLD_ONE', 'povertyLine2025'], ['BLEI_PRECARIOUS_MAX', 'bleiDays']].forEach(([h, i]) => { if (HK[h] !== KJ[h] || KJ[h] !== C.inputs[i]) mm.push(h + ': harness ' + HK[h] + ', constants.json ' + KJ[h] + ', release ' + C.inputs[i]); });
   add('v5.2.1: the cards\' plain meanings in site/findings.js are the release file\'s words, for every release; v5.2.2: no amount is typed into them, and the wealth line, poverty line and BLEI days in the release file are the harness\'s CFG values (node harness.js constants)', mm.length === 0,
     mm.length ? 'differ: ' + mm.join(', ') : 'three measures in ' + Object.keys(REL).length + ' releases; wealth line ' + F.fmt(C.inputs.wealthLine, 'usd') + ' = CFG.POVERTY_LINE');

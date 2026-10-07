@@ -4,46 +4,52 @@ Every number on the simulation page (`index.html`), the findings explorer (`find
 
 ## Set-up
 
-- Node 22 (the v5.2 runs used v22.22.0; each run file records its own in `_meta.manifest.node`) and Python 3 (standard library only).
+- Node 22 (the v5.2 and v5.3 runs used v22.22.0; each run file records its own in `_meta.manifest.node`) and Python 3 (standard library only).
 - `npm ci` installs the one dev dependency (jsdom, for the page tests) at the versions in `package-lock.json`. The simulation itself needs no install: open `index.html`.
 - The three checks: `npm test` (`node harness.js validate`, `node harness.js unit`, `node domtest.js`; about 7 minutes).
-- Run each 500-seed command from a clean checkout of the release commit. One process per environment; they can run side by side (the runs are independent and seeded, so splitting changes no figure). A 20-year release panel takes about 55 minutes per environment and a 40-year one about 95 minutes on one core.
+- Run each 500-seed command from a clean checkout of the release commit. One process per environment; they can run side by side (the runs are independent and seeded, so splitting changes no figure). A v5.3 20-year release panel takes about 2 hours per environment on one core and a 40-year one about 3½ hours (v5.2's took 55 and 95 minutes: v5.3's panel has more rows, and households cost more to simulate); the backing sweep and the attribution study take about an hour each.
 
 **Fingerprints.** A run file holds its results and, under `_meta`, how and when it was made (commit, date, seconds). A rerun gives the same results but a new `_meta`, so compare `python3 dev/tools/panel_hash.py FILE` (SHA-256 of everything except `_meta`, written canonically; first 16 hex digits below). The v5.2 files were made at commit `42cd8b9` (v5.2); the engine is unchanged in v5.2.1 and v5.2.2, so the same commands at a later release commit give the same fingerprints. Checked on Oct 6, 2026: `node harness.js testbed 500 release ref` at commit `f8427e1` (the v5.2.2 work, clean tree; 53 minutes) gave `1799e859c5e90b1e`, the published Reference fingerprint, with the same engine-block hash.
 
-## The release data (v5.2 figures, shown in v5.2.2)
+## The release data (v5.3)
 
 | Published tables and figures | Command | File | Fingerprint |
 |---|---|---|---|
-| Main result, 20 years: headline cards, main table (`rel-t20`), Hub-target table, the readings table, who gains, cost and how it is paid, year-by-year charts, prices | `node harness.js testbed 500 release ref --json=dev/runs/release-panel-ref.json` (and `adv`, `st`) | `dev/runs/release-panel-ref.json` / `-adv` / `-st` | `1799e859c5e90b1e` / `4f0d4dd0aa43e125` / `90c428c2902db7e0` |
-| The same, merged | `python3 dev/tools/merge_panel.py` | `dev/runs/release-panel.json` (embedded in `index.html` as `#rel-data`) | `c6052c7e30acbba8` |
-| Main result, 40 years (`rel-t40` and every 40-year view) | `node harness.js testbed 500 release ref --years=40 --json=dev/runs/release-panel-40-ref.json` (and `adv`, `st`) | `dev/runs/release-panel-40-ref.json` / `-adv` / `-st` | `2cd3c9a960f168a1` / `3b4fce96ccebffc2` / `94ffe28bf4b8db0c` |
-| The same, merged | `python3 dev/tools/merge_panel.py 40` | `dev/runs/release-panel-40.json` (`#rel-data-40`) | `591f8b45968e3941` |
-| Backing-share chart and table (`bs`) | `node harness.js testbed 500 backing ref --json=dev/runs/backing-share-ref.json` (and `adv`, `st`), then `python3 dev/tools/backing_chart.py` | `dev/runs/backing-share-ref.json` / `-adv` / `-st`; merged `backing-share.json` | `442022b2f551d7d1` / `ce46dabd3d66b482` / `b4578322561ac8a3`; `c221fce783137801` |
-| The no-programme run against US data (`rel-us`, `rel-us2`) | `node dev/tools/us_check.js ref 500 20` and `node dev/tools/us_check.js adv 500 20` | `dev/runs/us-check-ref.json` / `-adv` | `46e53f509403e7e4` / `19fd2109a15ad1d4` |
-| The BU indexed every year, at H1 (front-door note) | `node dev/tools/cola_check.js adv` and `st` | `dev/runs/cola-check-adv.json` / `-st` | `9dd011fdd3a751fa` / `4c2566346d69e7a2` |
-| Spread across the runs, savings deciles, one run's 500 adults (the simulation page's explore sections) | `node dev/tools/explore_export.js ENV YRS 500 1` for ENV `ref`, `adv`, `st` and YRS `20`, `40` (commit `4e17968`, engine unchanged) | `dev/runs/explore-ENV-YRS.json` | ref 20 `36acfc14ba50e827`, ref 40 `201a6571519d3a5a`, adv 20 `f205a24d19d84712`, adv 40 `4ccfb653c5d2ef30`, st 20 `842d1c10461ba198`, st 40 `6752314fb72fc00a` |
-| The release file, the list of releases and the pages' static figures | `python3 dev/tools/release_data.py` (`--check` confirms they are current; domtest Phase 14 runs it) | `data/releases/v5.2.json`, `data/releases/v5.2/*`, `data/manifest.json` | — (generated; checked by `--check`) |
-| The constants the release file quotes (wealth line, poverty line, BLEI days) | `node harness.js constants` | `dev/runs/constants.json` | — (Phase 14 checks it equals the harness's CFG) |
-| Earlier releases in the version switcher (v5.0, v5.0.1, v5.1) | `python3 dev/tools/release_data.py --backfill v5.1` (and `v5.0.1`, `v5.0`), from the files committed at each tag | `data/releases/v5.1.json` etc. | Regenerated from their tags and identical to their published panels: `dev/runs/v521-backfill-check.txt` |
+| Main result, 20 years: headline cards (with children), main table (`rel-t20`), run by run (`rel-paired`), households and children (`rel-hh`), Hub-target table, the readings table (`rel-v53`), who gains, cost and how it is paid, year-by-year charts, prices | `node harness.js testbed 500 release ref --v53 --json=dev/runs/release-panel-ref.json` (and `adv`, `st`), commit `c5e96f9` | `dev/runs/release-panel-ref.json` / `-adv` / `-st` | `691b1c65af92edc9` / `83ceec24c2e1c25a` / `2d54d56182143300` |
+| The same, merged | `python3 dev/tools/merge_panel.py` | `dev/runs/release-panel.json` (embedded in `index.html` as `#rel-data`) | `ac9f9245b8b86dce` |
+| Main result, 40 years (`rel-t40` and every 40-year view) | `node harness.js testbed 500 release ref --v53 --years=40 --json=dev/runs/release-panel-40-ref.json` (and `adv`, `st`), commit `c5e96f9` | `dev/runs/release-panel-40-ref.json` / `-adv` / `-st` | `a20a6138deabd5a0` / `2268b7f481b2282b` / `a624ff71ea4f4d28` |
+| The same, merged | `python3 dev/tools/merge_panel.py 40` | `dev/runs/release-panel-40.json` (`#rel-data-40`) | `2c7678bab1ac2cbb` |
+| Backing-share chart and table (`bs`) | `node harness.js testbed 500 backing ref --v53 --json=dev/runs/backing-share-ref.json` (and `adv`, `st`), commit `289e723`, then `python3 dev/tools/backing_chart.py` | `dev/runs/backing-share-ref.json` / `-adv` / `-st`; merged `backing-share.json` | `90c459e3122289a9` / `7a9d006d788c736a` / `edbb09283f9cbbf0`; `ccf454fdfe6464b5` |
+| What each part does (`rel-attrib`, the simulation page’s "What each part does") | `node dev/tools/attrib_check.js ref 500 20` (and `adv`, `st`), commit `289e723` | `dev/runs/attrib-check-ref.json` / `-adv` / `-st` | `9fad7cb56355ed31` / `49cec38a0c08923e` / `feb0e17254048373` |
+| The no-programme run against US data (`rel-us`, `rel-us3`, `rel-us2`) | `node dev/tools/us_check.js ref 500 20 --v53` and `adv`, commit `289e723` | `dev/runs/us-check-ref.json` / `-adv` | `0e65d71aef08c477` / `ed00bc8df34285e6` |
+| Spread across the runs, savings deciles, one run’s 500 adults (the simulation page’s explore sections) | `node dev/tools/explore_export.js ENV YRS 500 1 --v53` for ENV `ref`, `adv`, `st` and YRS `20`, `40`, commit `c1f8b8e` (after the merges) | `dev/runs/explore-ENV-YRS.json` | ref 20 `ed40277e7856ad34`, ref 40 `27dbb0baea6802f5`, adv 20 `42e99ad23b106b87`, adv 40 `4cbd8d36d9ce7a6f`, st 20 `6a08204f22a025f9`, st 40 `c2734846946b78e7` |
+| The release file, the list of releases and the pages’ static figures | `python3 dev/tools/release_data.py` (`--check` confirms they are current; domtest Phase 14 runs it) | `data/releases/v5.3.json`, `data/releases/v5.3/*` (including `attrib.json`), `data/manifest.json` | — (generated; checked by `--check`) |
+| The constants the release file quotes (wealth line, poverty line, BLEI days) | `node harness.js constants` | `dev/runs/constants.json` | — (Phase 14 checks it equals the harness’s CFG) |
+| Earlier releases in the version switcher (v5.0, v5.0.1, v5.1, v5.2) | v5.2’s file is the one published with v5.2.2 (its status now “earlier”); the older ones: `python3 dev/tools/release_data.py --backfill v5.1` (and `v5.0.1`, `v5.0`), from the files committed at each tag | `data/releases/v5.2.json`, `v5.1.json` etc. | v5.2’s commands and fingerprints are in this file at tag `v5.2.2` |
 
 ### Headline values to compare (main row against no programme, 500 paired seeds)
 
-Below the cost of living (share of adult-years); too little wealth at the last year (share of adults); below 30 days of basic living (BLEI, share of adult-years); the change in too little wealth with its 95% interval (percentage points, paired by seed); programme inflation a year; cost per adult a year (year-0 dollars).
+Below the cost of living (share of adult-years); children below the cost of living (share of child-years); too little wealth at the last year (share of adults); below 30 days of basic living (BLEI, share of adult-years); the change in too little wealth with its 95% interval (percentage points, paired by seed); programme inflation a year; cost per adult a year (today’s dollars).
 
-| Environment, years | Below the cost of living | Too little wealth | Below 30 days (BLEI) | Change in too little wealth | Inflation | Cost |
-|---|---|---|---|---|---|---|
-| Reference, 20 | 22.0% vs 55.2% | 35.7% vs 52.0% | 18.7% vs 46.7% | −16.25 (−16.43 to −16.07) | 34.9% | $29,618 |
-| Adverse, 20 | 42.1% vs 78.2% | 87.1% vs 82.6% | 33.1% vs 60.0% | +4.42 (+4.27 to +4.57) | 45.5% | $27,677 |
-| Stress Test, 20 | 65.6% vs 78.2% | 90.6% vs 82.6% | 54.9% vs 60.0% | +7.94 (+7.80 to +8.09) | 23.8% | $10,494 |
-| Reference, 40 | 15.3% vs 47.4% | 15.3% vs 44.2% | 14.8% vs 46.6% | −28.90 (−29.07 to −28.72) | 30.4% | $32,274 |
-| Adverse, 40 | 62.1% vs 86.7% | 97.9% vs 94.5% | 51.7% vs 75.1% | +3.41 (+3.32 to +3.49) | 65.4% | $27,013 |
-| Stress Test, 40 | 79.3% vs 86.7% | 98.8% vs 94.5% | 72.3% vs 75.1% | +4.34 (+4.25 to +4.43) | 36.4% | $10,685 |
+| Environment, years | Below the cost of living | Children below the cost of living | Too little wealth | Below 30 days (BLEI) | Change in too little wealth | Inflation | Cost |
+|---|---|---|---|---|---|---|---|
+| Reference, 20 | 16.7% vs 45.1% | 29.4% vs 72.6% | 36.0% vs 30.5% | 10.4% vs 25.4% | +5.51 (+5.29 to +5.73) | 47.9% | $31,366 |
+| Adverse, 20 | 33.7% vs 72.1% | 51.2% vs 91.3% | 89.4% vs 48.8% | 18.6% vs 32.1% | +40.57 (+40.39 to +40.76) | 61.5% | $29,567 |
+| Stress Test, 20 | 56.6% vs 72.1% | 76.5% vs 91.3% | 86.3% vs 48.8% | 37.6% vs 32.1% | +37.50 (+37.29 to +37.71) | 28.5% | $12,177 |
+| Reference, 40 | 12.1% vs 36.5% | 22.5% vs 62.2% | 18.4% vs 27.3% | 8.8% vs 26.5% | −8.91 (−9.09 to −8.72) | 44.7% | $32,854 |
+| Adverse, 40 | 54.5% vs 83.8% | 69.5% vs 95.3% | 98.8% vs 70.2% | 30.0% vs 45.2% | +28.62 (+28.45 to +28.78) | 89.1% | $28,555 |
+| Stress Test, 40 | 73.4% vs 83.8% | 86.4% vs 95.3% | 98.5% vs 70.2% | 59.8% vs 45.2% | +28.35 (+28.19 to +28.52) | 43.0% | $12,336 |
 
 ## Diagnostics and step studies (not on the pages; behind decisions and reports)
 
 | What | Command | File |
 |---|---|---|
+| The household reading so far (v5.3, B3; `dev/reports/v5-14-households.md`) | `node dev/tools/hh_check.js ENV 500` (ENV `ref`, `adv`, `st`; commit `36ac97c`) | `dev/runs/hh-check-ENV.json` (fingerprints ref `6c7ca3cde170bcd4`, adv `eb22ae5b4e3d06f2`, st `c9342fcf563cc9ab`) |
+| What BU can buy: today's list against the Hub's (v5.3, B3f; `dev/reports/v5-15-bu-scope.md`) | `node dev/tools/scope_check.js ENV 500` (ENV `ref`, `adv`, `st`; commit `aba2841`) | `dev/runs/scope-check-ENV.json` (fingerprints ref `e6db0d498084815d`, adv `09faa9619088e66d`, st `9851d0072ec50b9e`) |
+| Children's lives and estates, households with ageing (v5.3, B4 and B5; `dev/reports/v5-16-childrens-lives.md`) | `node dev/tools/life_check.js ENV 500` (ENV `ref`, `adv`, `st`; commit `8b22392`) | `dev/runs/life-check-ENV.json` (fingerprints ref `765306ad0558317d`, adv `d5ee9834fedd29bf`, st `1c80171ca0df0f8a`) |
+| Household income shocks and the measured EDC (v5.3, B6; `dev/reports/v5-17-shocks-and-edc.md`) | `node dev/tools/shock_edc_check.js ENV 500` (ENV `ref`, `adv`, `st`; commit `8b22392`) | `dev/runs/shock-edc-check-ENV.json` (fingerprints ref `6c88d60613a76f61`, adv `36bd4ab53ae142c8`, st `3b273a0609c44ee4`) |
+| Four calibration readings, and the no-programme run against the SCF at Year 7 (v5.3, B7; `dev/reports/v5-18-calibration.md`) | `node dev/tools/calib_check.js ENV 500` (ENV `ref`, `adv`, `st`; commit `8759752`) | `dev/runs/calib-check-ENV.json` (fingerprints ref `438a096c6297101b`, adv `a08b1a15fa542817`, st `4be3ce12f4754c7d`) |
+| The accounting check and its two corrections (v5.3, B2; `dev/reports/v5-13-accounting-check.md`) | `node dev/tools/acct_check.js ENV 500` (ENV `ref`, `adv`, `st`; commit `a316514`) | `dev/runs/acct-check-ENV.json` (fingerprints ref `f26307bdcdff056d`, adv `d8978bbb2b3ad7f5`, st `ff87668797cecb99`) |
 | The Phi step (v5.2.2, A7; `dev/reports/v5-11-phi-step.md`) | `node dev/tools/phi_check.js ENV 500` (ENV `ref`, `adv`, `st`) | `dev/runs/phi-check-ENV.json` (fingerprints ref `353830f0bf6e0b50`, adv `eadebbef40935a3e`, st `0415ccac89ed1c6d`) |
 | Savings that keep up with prices (v5.2 step 3) | `node dev/tools/save_check.js ENV 200` | `dev/runs/save-check-ENV.json` |
 | The middle backing reading (v5.2 step 6) | `node dev/tools/backing_check.js ENV 200` | `dev/runs/backing-check-ENV.json` |

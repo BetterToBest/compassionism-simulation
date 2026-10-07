@@ -13,10 +13,14 @@
  * official threshold for one person, moved with prices; Supplemental-style resources against the same threshold; the Gini of disposable income; the wealth
  * distribution in today's prices; poverty spells from each adult's record (harness.js tbRepSpells). A check of the yardstick, not the release panel.
  *
- * Usage: node dev/tools/us_check.js ENV [SEEDS] [YEARS]   (ENV ref or adv; default 200 seeds, 20 years; writes dev/runs/us-check-ENV.json) */
+ * Usage: node dev/tools/us_check.js ENV [SEEDS] [YEARS] [--v53]   (ENV ref or adv; default 200 seeds, 20 years; writes dev/runs/us-check-ENV.json)
+ * v5.3 B10: --v53 checks the v5.3 no-programme run (households, their starting wealth from the SCF, income-graded spending: REL_V53) as 'none', with v5.2's
+ * population ('v52') and the readings on top of v5.3's; rows with households also record, per household and by type, the share in debt and the median net worth
+ * against the SCF's families of the same type (sources/scf_households.py), and the official poverty line for persons and children by household size. */
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
-const env = process.argv[2] || 'ref', N = +(process.argv[3] || 200), YRS = +(process.argv[4] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
+const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), V53 = process.argv.indexOf('--v53') >= 0;
+const env = ARG[0] || 'ref', N = +(ARG[1] || 200), YRS = +(ARG[2] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
 const US = {
   official: {all: 10.2, age18to64: 9.2, unrelated: 19.0, workers: 4.3, ftyr: 1.6, source: 'Census Bureau, Poverty in the United States: 2025 (P60-290), Figure 2'},
@@ -24,20 +28,28 @@ const US = {
   gini: {money: 0.490, postTax: 0.448, source: 'Census Bureau, Income in the United States: 2025 (P60-289)'},
   scf: {median: 74422, p10: -10543, p25: 10218, p75: 296564, p90: 881839, neg: 12.56, below25k: 36.35, giniKept: 0.840, giniZero: 0.812, wageSdLog: 1.049, wageGini: 0.458,
     source: 'Federal Reserve, 2022 Survey of Consumer Finances: single heads, no children, aged 25-66, with wage income (sources/scf_singles.py), 2025 dollars'},
-  psid: {exit1: 0.53, exit2: 0.36, exit5: 0.2, reentry1: 0.269, source: 'Stevens (1994), AER Papers and Proceedings 84(2): 34-37, PSID 1970-1987'}};
+  psid: {exit1: 0.53, exit2: 0.36, exit5: 0.2, reentry1: 0.269, source: 'Stevens (1994), AER Papers and Proceedings 84(2): 34-37, PSID 1970-1987'},
+  scfHH: {all: {neg: 7.71, median: 196749}, coupleKids: {neg: 4.9, median: 272609}, coupleNoKids: {neg: 4.4, median: 357505}, singleParent: {neg: 16.3, median: 49503}, single: {neg: 12.6, median: 74422},
+    source: 'Federal Reserve, 2022 Survey of Consumer Finances: families with a head aged 25-66 and wage income, by type (sources/scf_households.py), 2025 dollars'}};
 const SC = H.SPEND_SOURCED, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
-const ROWS = [['none', {}], ['ltw', {lt: {w: 1}}], ['ltr', {lt: {r: 1}}], ['lts', {lt: {s: 1}}], ['ltm', {lt: {m: 1}}], ['lta', {lt: {w: 1, r: 1, s: 1, m: 1}}], ['ag', {ag: {}}]];
+const V = V53 ? {hh: H.REL_V53.hh, sg: H.REL_V53.sg, g: H.REL_V53.g} : {}, X = x => Object.assign({}, V, x);
+const ROWS = V53 ? [['none', X({})], ['v52', {g: H.REL_V53.g}], ['ltr', X({lt: {r: 1}})], ['lts', X({lt: {s: 1}})], ['ltm', X({lt: {m: 1}})], ['lta', X({lt: {r: 1, s: 1, m: 1}})], ['ag', X({ag: {}})]]
+  : [['none', {}], ['ltw', {lt: {w: 1}}], ['ltr', {lt: {r: 1}}], ['lts', {lt: {s: 1}}], ['ltm', {lt: {m: 1}}], ['lta', {lt: {w: 1, r: 1, s: 1, m: 1}}], ['ag', {ag: {}}]];
 function q(a, p){ const v = a.slice().sort((x, y) => x - y), h = (v.length - 1)*p, lo = Math.floor(h), hi = Math.ceil(h); return v[lo] + (v[hi] - v[lo])*(h - lo); }
 function gini(a, keepNeg){ const v = a.map(x => keepNeg ? x : Math.max(0, x)).sort((x, y) => x - y), n = v.length; let t = 0, w = 0; for (let i = 0; i < n; i++){ t += v[i]; w += (i + 1)*v[i]; } return t > 0 ? (2*w/(n*t) - (n + 1)/n)*n/(n - 1) : 0; }
-const out = {_meta: {what: 'the no-programme run against US data', env, seeds: N, years: YRS, manifest: H.runManifest(), command: 'node dev/tools/us_check.js ' + env + ' ' + N + ' ' + YRS}, us: US, rows: {}};
+const out = {_meta: {what: 'the no-programme run against US data', env, seeds: N, years: YRS, manifest: H.runManifest(), command: 'node dev/tools/us_check.js ' + env + ' ' + N + ' ' + YRS + (V53 ? ' --v53' : ''), v53: V53 || undefined}, us: US, rows: {}};
 try {
   const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P);
   ROWS.forEach(function (row) {
-    const W = {0: [], 6: [], end: []};  /* per seed: the wealth and wage statistics at Year 0, Year 7 and the last year */
+    const W = {0: [], 6: [], end: []}, WH = {0: [], 6: [], end: []};  /* per seed: the wealth and wage statistics at Year 0, Year 7 and the last year (WH: per household, v5.3) */
     H.setRepHook(function (agents, yr, T, lf) { const k = yr === 0 ? 0 : yr === 6 ? 6 : yr === T - 1 ? 'end' : null; if (k === null) return;
       const w = agents.map(a => a.wealth/lf), wg = agents.filter(a => !a._ret && a.yrWageUSD > 0).map(a => a.yrWageUSD), lw = wg.map(Math.log), m = lw.reduce((s, x) => s + x, 0)/lw.length;
       W[k].push({median: q(w, 0.5), p10: q(w, 0.1), p25: q(w, 0.25), p75: q(w, 0.75), p90: q(w, 0.9), neg: w.filter(x => x < 0).length/w.length*100, below25k: w.filter(x => x < 25000).length/w.length*100,
-        giniKept: gini(w, true), giniZero: gini(w, false), wageSdLog: Math.sqrt(lw.reduce((s, x) => s + (x - m)*(x - m), 0)/lw.length), wageGini: gini(wg, false)}); });
+        giniKept: gini(w, true), giniZero: gini(w, false), wageSdLog: Math.sqrt(lw.reduce((s, x) => s + (x - m)*(x - m), 0)/lw.length), wageGini: gini(wg, false)});
+      if (agents[0]._hh){ const G = {}, all = [], seen = new Set();  /* v5.3: each household's net worth, by type */
+        agents.forEach(a => { const Hh = a._hh; if (!Hh || seen.has(Hh)) return; seen.add(Hh); const v = Hh.a.reduce((s, b) => s + b.wealth, 0)/lf;
+          const t = Hh.a.length > 1 ? (Hh.kids.length ? 'coupleKids' : 'coupleNoKids') : (Hh.kids.length ? 'singleParent' : 'single'); (G[t] = G[t] || []).push(v); all.push(v); });
+        const st = v => ({neg: v.filter(x => x < 0).length/v.length*100, median: q(v, 0.5)}), o = {all: st(all)}; Object.keys(G).forEach(t => { o[t] = st(G[t]); }); WH[k].push(o); } });
     let R; try { R = H.tbStudy([Object.assign({p: PR.baseline(), sc: SC}, row[1])], N, P, {fin: 'tax', aT: 0, a: 0, X: 0, sc: SC, rep52: true, giniNN1: true})[0]; } finally { H.setRepHook(null); }
     const avg = k => { const o = {}; Object.keys(W[k][0]).forEach(f => { o[f] = W[k].reduce((s, x) => s + x[f], 0)/W[k].length; }); return o; };
     const hz = (m, d) => R[m + 'N' + d] > 0 ? R[m + 'X' + d]/R[m + 'N' + d] : null;
@@ -47,6 +59,9 @@ try {
       spells: {fpl: {exit1: hz('sf', 1), exit2: hz('sf', 2), exit3: hz('sf', 3), exit4: hz('sf', 4), exit5: hz('sf', 5), reentry1: R.sfRN > 0 ? R.sfR/R.sfRN : null, spellsPerSeed: R.sfN1, everPoor: R.everFpl},
         col: {exit1: hz('sc', 1), exit2: hz('sc', 2), exit3: hz('sc', 3), exit4: hz('sc', 4), exit5: hz('sc', 5), reentry1: R.scRN > 0 ? R.scR/R.scRN : null, spellsPerSeed: R.scN1}},
       retired: R.agRet};
+    if (WH[6].length){ const avgH = k => { const o = {}; Object.keys(WH[k][0]).forEach(t => { const L = WH[k].filter(x => x[t]); o[t] = {neg: L.reduce((s, x) => s + x[t].neg, 0)/L.length, median: L.reduce((s, x) => s + x[t].median, 0)/L.length}; }); return o; };
+      out.rows[row[0]].hh = {wealth: {y0: avgH(0), y7: avgH(6), end: avgH('end')}, fpl: {py: R.hhFplPY, y7: R.hhFpl7, end: R.hhFplEnd}, fplKid: {py: R.hhFplKidPY, y7: R.hhFplKid7, end: R.hhFplKidEnd},
+        cost: {py: R.hhCostPY, y7: R.hhCost7, end: R.hhCostEnd}, costKid: {py: R.hhCostKidPY, y7: R.hhCostKid7, end: R.hhCostKidEnd}}; }
     console.log(env, row[0], JSON.stringify(out.rows[row[0]]));
   });
 } finally { H.resetNR6(svN); H.tbSetG(svG); }

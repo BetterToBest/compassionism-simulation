@@ -15,25 +15,27 @@
  * Self-checks (nothing is written if either fails): (1) every row's yearly means, rounded as the panel rounds them, equal the published year-by-year
  * path in dev/runs/release-panel[-40].json; (2) for the life seed, the adults' flags add up to the engine's own yearly shares for that seed.
  *
- * Usage: node dev/tools/explore_export.js ENV [YEARS] [SEEDS] [LIFESEED]   (ENV ref, adv or st; YEARS 20 or 40; default 500 seeds, life seed 1) */
+ * Usage: node dev/tools/explore_export.js ENV [YEARS] [SEEDS] [LIFESEED] [--v53]   (ENV ref, adv or st; YEARS 20 or 40; default 500 seeds, life seed 1)
+ * v5.3 B10: --v53 runs the v5.3 rows (releaseRowsV53; the no-programme run of relMainCfgs) and checks them against dev/runs/v53/release-panel[-40]-ENV.json. */
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
-const env = process.argv[2] || 'ref', YRS = +(process.argv[3] || 20), N = +(process.argv[4] || 500), LS = +(process.argv[5] || 1);
+const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), V53 = process.argv.indexOf('--v53') >= 0;
+const env = ARG[0] || 'ref', YRS = +(ARG[1] || 20), N = +(ARG[2] || 500), LS = +(ARG[3] || 1);
 const NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME || (YRS !== 20 && YRS !== 40) || !(LS >= 1 && LS <= N)) { console.error('usage: explore_export.js ref|adv|st [20|40] [SEEDS] [LIFESEED]'); process.exit(1); }
-const ROOT = path.join(__dirname, '..', '..'), PANEL = path.join(ROOT, 'dev', 'runs', 'release-panel' + (YRS === 40 ? '-40' : '') + '.json');
+const ROOT = path.join(__dirname, '..', '..'), PANEL = path.join(ROOT, 'dev', 'runs', 'release-panel' + (YRS === 40 ? '-40' : '') + '.json');  /* the merged panel (with --v53, the v5.3 panel once it is merged) */
 const C = H.CFG, SC = H.SPEND_SOURCED, M = ['f0', 'pov', 'bO', 'medW'], Q = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
 const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it */
 const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
 const ROWS = ['base', 'release', 'h1', 'mid'];
 const out = {_meta: {what: 'year-by-year spread across seeds, savings deciles and one seed\'s adults, for the pages\' explore sections (presentation only)', env, years: YRS, seeds: N, lifeSeed: LS,
-  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS,
+  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V53 ? ' --v53' : ''),
   flags: {1: 'below 30 days of basic living (BLEI paper)', 2: 'below the cost of living', 4: 'too little wealth', 8: 'taking part in the programme'}}, bands: {}, deciles: {}, lives: {}};
 let segs = [], cur = null;
 try {
-  const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P), rel = H.releaseRows(SC), byJ = {};
+  const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P), rel = V53 ? H.releaseRowsV53(SC) : H.releaseRows(SC), byJ = {};
   rel.forEach(r => { byJ[r.j] = r; });
-  const cfg = [{p: PR.baseline(), sc: SC}].concat(['release', 'h1', 'mid'].map(j => { const r = byJ[j], c = H.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return c; }));
+  const cfg = [Object.assign({p: PR.baseline(), sc: SC}, V53 ? {hh: H.REL_V53.hh, sg: H.REL_V53.sg, g: H.REL_V53.g} : {})].concat(['release', 'h1', 'mid'].map(j => { const r = byJ[j], c = H.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return c; }));
   const T = YRS, L30 = C.BLEI_PRECARIOUS_MAX;
   /* The hook sees every simulated year of every run in tbStudy's order (seed outer, row inner). tbRun may first run one year to set the contribution
    * rate; that short run is recognised (it ends after one year) and dropped. */

@@ -30,16 +30,23 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `PTF_MODE` | 'shipped' / 'food30' / 'food62' | Main result: 'shipped'. Others: sensitivity | D4 (session 2) |
 | `PATHWAY_OFF` | flags relief, conversion, octave, octaveWage, bleiWage, pthCost, pthEquity | Main result: octaveWage off (the octave wage raise is replaced by project hiring). Others: attribution and sensitivity | d19, d46 |
 | `SAVE` (savings that keep up with prices) | null / {r 0.0097, debt 'none'} | Labelled reading | v5.2 step 3 (d147) |
-| `AGE` (ageing, retirement at 67, replacement) | null / {ret 'keep' / 'noconv' / 'none', ss 'average' / 'pia'} | Labelled reading | v5.2 step 4 (decision A, d152) |
+| `AGE` (ageing, retirement at 67, replacement) | null / {ret 'keep' / 'noconv' / 'none', ss 'average' / 'pia', earn 'flat' / 'cps'} | Labelled reading; `earn 'cps'`: wages by age (v5.3 B7) | v5.2 step 4 (decision A, d152); DECISIONS Session 39 (B7) |
 | `LATENT` (US-data readings: wealth, risk, wage spread, wage median) | null / {wealth, risk, wsd, wmed} | Labelled reading | v5.2 step 5 |
 | `HCAP` (landlords capture BU spent on rent) | null / {c, all} | Labelled reading | v5.2 step 7 (decision C) |
 | `REVIEW` (unearned high rates in the Collectives' review) | null / {u, q} | Labelled reading | v5.2 step 7 (decision C) |
 | `FBS_BU_ONCE` | false / true | Sensitivity (i3-1) | session 7 |
-| `PTH_APPR_CONSERVE` (PTH appreciation that conserves wealth) | false / true | Sensitivity; a labelled row is planned for v5.4 | v4.16; Muse audit |
+| `PTH_APPR_CONSERVE` (PTH appreciation that conserves wealth: the cash part of the appreciation leaves the Acre Equity) | false / true | v5.3 correction: true in every v5.3 row (the accounting check, B2, found the cash part counted twice); false reproduces v5.2 | v4.16; Muse audit; DECISIONS Session 39 |
+| `SURP_CUT_MARKUP` (the split's price cut sized on the rent after the landlords' mark-up) | false / true | v5.3 correction: true in every v5.3 row (B2 found the cut handed out more than the pool in the rent mark-up readings); changes nothing without `HCAP`; false reproduces v5.2 | DECISIONS Session 39 |
 | `AUTOMATION_SAMPLER_LEGACY` | false / true | Retired (reproduces v4.19 in `validate`) | v4.20 |
 | `RELIEF_PRICE_LEGACY` | false / true | Retired (reproduces v4.20 in `validate`) | v4.21 |
 | `CCO_RELIEF_FLAT`, `BU_ALLOCATIONS_PER_YEAR` | false, 1 | Earlier engine only (stabiliser studies) | v4.19 |
 | `LEDGER`, `REP_HOOK` | null | Reporting only | A1; v5.2 |
+| `BU_SCOPE` (what BU can buy; row option `bs`) | 'core' (food, housing, medical) / 'hub' (+ transport; + childcare for households) | Main result from v5.3: 'hub' (`REL_V53.bs`; Duke's answer d173, the rule recorded before the restudy). Reading: 'core' (row `core`) | DECISIONS Session 39 (B3f, B10) |
+| `SPEND_GRADE` (income-graded spending; row option `sg`) | null / {eps 0.5573} (`sg: true`, or a number) | Main result from v5.3: on, in the no-programme run too (`REL_V53.sg`). Reading: off (row `nosg`) | DECISIONS Session 39 (B7, B10) |
+| `FBS50` (advancement in FBS50 units; row option `fb`) | null / {dist 'lambda' / 'fbs50', scale 1} | Reading (v5.3 B7); with lambda kept and scale 1 it only reports (`FBS_KEYS`) | DECISIONS Session 39 (B7) |
+| `EDC_MEASURE` (the measured EDC; row option `em`) | false / true | Reporting only (v5.3 B6): adds `EDC_KEYS`; changes no result | DECISIONS Session 39 (B6) |
+| `HOUSEHOLDS` (households and children; row option `hh`) | null / {pool 'household' / 'individual', childBU 0.25 (0 to 0.5), estate 'heirs' / 'leave', shock 0 / 'shore' / a correlation in [-1, 1], wealth 'model' / 'scf'} | Main result from v5.3: {pool 'household', childBU 0.25, shock 'shore', wealth 'scf'} (`REL_V53.hh`; d167, d168, d170, d172, the rule recorded before the restudy), in the no-programme run too. Readings: adults alone (rows `adults`, `v52`), 'individual' (`indiv`), childBU 0 and 0.5 (`cb0`, `cb50`), wealth 'model' (`wmodel`), shock 0.5 (`shock50`). With ageing (row option `ag`): children's lives and estates (B4, B5; d169; rows `age`, `ageleave`, ...); `estate` is read only then | DECISIONS Session 39 (B3, B4, B10) |
+| `ACCT` (the accounting check) | null / `acctNew()` | Checking only: no draw, nothing any rule reads; results are bit-identical with it on (`acctUnitSuite`). See MODEL_SPEC.md, section 11 | v5.3 B2 |
 
 ## 2. Testbed options (per study or per row)
 

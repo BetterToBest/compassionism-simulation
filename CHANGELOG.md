@@ -1,10 +1,40 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
 
 ---
+
+## v5.2.2 Release Notes
+
+**Released as v5.2.2 (Oct 2026): audit fixes, no figure changes.** One pull request into `main` (merging is the release). Three outside audits of v5.2.1 (GPT, Grok, Muse; read Oct 6, 2026) found no engine or figure error; this patch fixes the words and couplings they found and adds the documents a stranger needs to replicate the model. The engine (`harness.js`'s release engine and the page's copy) is unchanged and every 500-seed results file is byte-identical to v5.2; the release data file gains derived figures only. The plain-words report for Duke is `dev/reports/v5-12-audit-fixes-v5-2-2.md`; the round's decisions are in `dev/DECISIONS.md` (Session 37).
+
+### What changed (corrections)
+
+- **"Eight runs in ten"** (Muse F1). The 10th to 90th percentile band of the price level holds eight runs in ten; the page, the earlier-engine page, README and two internal notes said nine. The page now builds the words from the percentile pair it prints, and the page test derives the expected words from the two numbers it finds (it used to assert the wrong words).
+- **The replication page's Known Limitations** (Muse F2). Eight items still described the model before a later fix (the automation-risk sampler, uniform until v4.3; random-number coupling, fixed in v4.3; the v4.4 headline figures; the wealth update's wage units, fixed in v4.3; conversion without a treasury, settled by the release engine; the PTF cap; per-adult history, settled in v5.2; one-at-a-time sensitivity). Each now states what is true and what remains. `dev/tools/check_stale_claims.js` (domtest) fails if any of ten retired claims comes back to a public page.
+- **The wealth line comes from the code** (Muse F3). `node harness.js constants` writes `dev/runs/constants.json`; the release data, the cards' meanings, the US-data table and the page's target table read the $25,000 line from `CFG.POVERTY_LINE`; Phase 14 confirms they agree.
+- **Net wealth** (Muse note). "Too little wealth" counts net wealth, what someone owns minus what they owe; the cards and the replication page's key concepts said savings. Every release file in the version switcher carries the corrected words (their numbers are unchanged).
+- **README** points to the findings explorer for current results (it pointed to the replication page's Performance Comparison, which holds the earlier engine's figures) and to the new specifications.
+
+### What was added
+
+- **Paired effects** (GPT §21): the replication page now says that every change and its 95% interval are computed on the per-run paired difference. The panels do not store per-run values, so the share of runs in which the programme does better waits for v5.3, which stores them.
+- **What the Gini estimates** (GPT §20): stated on the replication page; the uncorrected Gini of the 500 adults themselves is in the release file as a derived figure beside each published Gini (`derived.giniFinite`; 144 catalogue entries).
+- **The Phi step** (GPT §18, diagnostic only): `dev/tools/phi_check.js` and `dev/reports/v5-11-phi-step.md`. At the 70% quality line the conversion rate jumps ×1.62 but what a participant keeps per BU only ×1.27 (Reference), and 0.6% of participant-years sit within 1% of the line (1.4% in the Stress Test). The Hub describes Phi as a tier you qualify for; the threshold stays, its place labelled a modelling assumption.
+- **A specification a stranger can replicate from** (GPT §35-36; Grok): `MODEL_SPEC.md` (the release model only), `TESTBED_SPEC.md` (every switch with its status and decision), `REPRODUCE.md` (the command, file and fingerprint behind every published table; `dev/tools/panel_hash.py`), `ODD.md` (the ODD protocol, Grimm et al. 2020, with each parameter's basis).
+- **For outside reviewers**: `CITATION.cff`; the release workflow attaches a reproduction archive (engine, data, specifications, Node version, `package-lock.json`, now committed) to each tagged release; three `good first issue` issues for open calibration items (BetterToBest/compassionism-simulation#7, #8, #9).
+- **Not in this release** (Duke's choice, ledger d171): the CoMSES submission package waits until after v5.3, so it carries households and children.
+
+### What changed in the checks
+
+- `domtest`: 125 checks (124 at v5.2.1): the stale-claims check is new; the price-range check derives its words from the percentile pair; Phase 14's meanings check also confirms no amount is typed into a card's meaning and the release file's lines equal the harness's CFG.
+- `dev/tools/set_version.py` and `dev/tools/check_versions.js` cover `CITATION.cff`.
+
+### Not changed
+
+Every figure, the engine, the main row, the readings, the walk-through video (held until the next model round, d151; since Oct 7, 2026 off the page and out of the README until the simulation is settled, at Duke's request) and the earlier-engine page's engine.
 
 ## v5.2.1 Release Notes
 

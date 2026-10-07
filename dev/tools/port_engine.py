@@ -6,7 +6,13 @@ switch in that code defaults to off, so the page's own runs are unchanged (domte
 The block sits between the markers below; rerun this script after any engine change in harness.js to keep the copies equal.
 
 Usage: python3 dev/tools/port_engine.py   (rewrites index.html in place)
+
+Retired in v5.3 (Oct 2026; plan item B1, dashboard decision d166): the engine has one copy, in index.html, and harness.js reads it from there when it
+loads (see the top of harness.js). Edit the engine in index.html; there is nothing to port. The code below is kept for the record and does not run.
 """
+import sys
+sys.exit('port_engine.py: retired in v5.3. The engine lives in index.html and harness.js reads it from there; edit index.html (see the top of harness.js).')
+
 import re, sys
 H = open('harness.js').read()
 P = open('index.html').read()

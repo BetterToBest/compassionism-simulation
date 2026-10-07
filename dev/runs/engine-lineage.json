@@ -1,0 +1,179 @@
+{
+ "_about": "The engine's lineage between releases (dev/tools/engine_lineage.js; DECISIONS Session 39). Each link records an engine change that left every result unchanged: the six 12-seed release panels made by the new engine have the base's fingerprints. domtest accepts a published run file whose engine differs from the page's only through such a chain. The round's release remakes the panels and starts a new base.",
+ "proof": "node harness.js testbed 12 release ENV --json=DIR/r20-ENV.json and the same with --years=40 (DIR/r40-ENV.json), ENV ref, adv, st; fingerprints by dev/tools/panel_hash.py (every result, not the run's own record)",
+ "base": {
+  "engineBlockSha256": "2932191258bf53f1b57b4643bc3b472dce53325691516da7c0a473453303558a",
+  "what": "the engine of the published v5.2 panels (commit 42cd8b9; unchanged in v5.2.1 and v5.2.2)",
+  "fingerprints": {
+   "r20-ref": "dba1bbc6c4a77d9a",
+   "r20-adv": "fe07f39b4c354aa0",
+   "r20-st": "241c6a01ee95b0f3",
+   "r40-ref": "a57c1f757d57e192",
+   "r40-adv": "ec91d48ccb240e66",
+   "r40-st": "1462d0e50fc64d40"
+  },
+  "madeBy": "the v5.2.2 harness at commit 0701615 (v5.3 B1's before-runs, Oct 6, 2026; DECISIONS Session 38)"
+ },
+ "links": [
+  {
+   "from": "2932191258bf53f1b57b4643bc3b472dce53325691516da7c0a473453303558a",
+   "to": "6ef547078f9b48bcb8d41a153f9b4258b8debdca1df62230597e65b4ff10f789",
+   "date": "2026-10-06",
+   "change": "v5.3 B2: the accounting check (ACCT, off by default) and the correction switch SURP_CUT_MARKUP (off by default)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 236
+  },
+  {
+   "from": "6ef547078f9b48bcb8d41a153f9b4258b8debdca1df62230597e65b4ff10f789",
+   "to": "a4ed4d1829148c885dba848b8e2f148a342506a7c822fc181276f4d95cbbf742",
+   "date": "2026-10-07",
+   "change": "v5.3 B3: households (HOUSEHOLDS, off by default): composition on its own stream, household budgets with childcare, child allowance, pooling, household decisions and BLEI cost",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 186
+  },
+  {
+   "from": "a4ed4d1829148c885dba848b8e2f148a342506a7c822fc181276f4d95cbbf742",
+   "to": "da708cf807216190df8ea92e02b9c0b0e2f995285934ca899aee458558420bf3",
+   "date": "2026-10-07",
+   "change": "v5.3 B3d: the household reading's measures (reporting only; HOUSEHOLDS off by default)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 168
+  },
+  {
+   "from": "da708cf807216190df8ea92e02b9c0b0e2f995285934ca899aee458558420bf3",
+   "to": "ed436ef2c28b7f8598099354364abae697043621e587ede5d3ddc68a0f7bf4f8",
+   "date": "2026-10-07",
+   "change": "v5.3 B3f: what BU can buy (BU_SCOPE, 'core' by default; 'hub' adds transport and, for households, childcare)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 194
+  },
+  {
+   "from": "ed436ef2c28b7f8598099354364abae697043621e587ede5d3ddc68a0f7bf4f8",
+   "to": "d23b822b7f69b76ee2f3ce1a7bcae17f97d4b5d4af1b22def354e997b55d9e96",
+   "date": "2026-10-07",
+   "change": "v5.3 B4, B5: children's lives and estates with households and ageing (HOUSEHOLDS with AGE; off unless both are on)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 227
+  },
+  {
+   "from": "d23b822b7f69b76ee2f3ce1a7bcae17f97d4b5d4af1b22def354e997b55d9e96",
+   "to": "5776173074d3bba98fb3fd63227496a86d4ac5d9c8b5c52d6cc7b5864a925688",
+   "date": "2026-10-07",
+   "change": "v5.3 B6: the household part of income shocks (HOUSEHOLDS.shock, 0 by default) and the measured EDC (EDC_MEASURE, reporting only, off by default)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 406
+  },
+  {
+   "from": "5776173074d3bba98fb3fd63227496a86d4ac5d9c8b5c52d6cc7b5864a925688",
+   "to": "0b5f4974268a1392d9b7ee945d85403e322fb0c487dab7054e7d9b89f64bdf97",
+   "date": "2026-10-07",
+   "change": "v5.3 B6: the household pooling check's scale includes the wealth pooled (reporting only; no result changes)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 219
+  },
+  {
+   "from": "0b5f4974268a1392d9b7ee945d85403e322fb0c487dab7054e7d9b89f64bdf97",
+   "to": "5e141960d25247d4e60a53d00e963200d0ac12c79b156f544e34943dfdc2f297",
+   "date": "2026-10-07",
+   "change": "v5.3 B7: four calibration readings (household wealth from the SCF, income-graded spending, earnings by age, FBS50), each off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 435
+  },
+  {
+   "from": "5e141960d25247d4e60a53d00e963200d0ac12c79b156f544e34943dfdc2f297",
+   "to": "72580feed849707ae2dc4e5c1d07b2ad6365e78e0b75bcf743511871bd9aee7f",
+   "date": "2026-10-07",
+   "change": "v5.3 B8: household measures by age group and spells by household type (reporting only, household rows)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 430
+  },
+  {
+   "from": "72580feed849707ae2dc4e5c1d07b2ad6365e78e0b75bcf743511871bd9aee7f",
+   "to": "6195baa6ef71f10001366f761388686667350cbdc3f310a42692a67bd80945f0",
+   "date": "2026-10-07",
+   "change": "v5.3 B10: REL_V53 and relMainCfgs (the v5.3 main row's parts), and n1Row's new row options (sg, em, fb, g, drop, pset, pwOff); no existing row changes",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 449
+  }
+ ]
+}

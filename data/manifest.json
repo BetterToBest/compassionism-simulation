@@ -2,12 +2,21 @@
  "about": "The releases of the Compassionism Simulation’s findings, newest first. Written by dev/tools/release_data.py; see dev/ADDING-A-RELEASE.md.",
  "releases": [
   {
+   "version": "5.3",
+   "date": "2026-10-07",
+   "tag": "v5.3",
+   "file": "releases/v5.3.json",
+   "summary": "Households and children: adults live in households as US adults do, children bring a quarter of the adult allowance, households pool their money, start with the wealth the Federal Reserve’s survey shows and spend less when income is short; and what each part of the design does is measured.",
+   "status": "current",
+   "shownIn": null
+  },
+  {
    "version": "5.2",
    "date": "2026-10-06",
    "tag": "v5.2",
    "file": "releases/v5.2.json",
    "summary": "The model round: savings that keep up with prices, ageing, the no-programme run against US data, a middle backing reading and robustness readings, each beside an unchanged main result.",
-   "status": "current",
+   "status": "earlier",
    "shownIn": "5.2.2"
   },
   {

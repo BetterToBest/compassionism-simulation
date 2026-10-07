@@ -24,6 +24,7 @@
     var K = window.CFG || {}; R.inputs = {wealthLine: K.POVERTY_LINE, povertyLine2025: K.POVERTY_THRESHOLD_ONE, bleiDays: K.BLEI_PRECARIOUS_MAX}; }
   function manifest() { if (MAN) return Promise.resolve(MAN); return F.fetchJSON('data/manifest.json').then(function (m) { MAN = m; VER = (m.releases.filter(function (r) { return r.status === 'current'; })[0] || m.releases[0]).version; return m; }); }
   function bands(y) { if (R.x.bands[y]) return Promise.resolve(R.x.bands[y]); return manifest().then(function () { return F.fetchJSON('data/releases/v' + VER + '/bands-' + y + '.json'); }).then(function (d) { R.x.bands[y] = d; return d; }); }
+  function attrib() { if (R.attrib) return Promise.resolve(R.attrib); return manifest().then(function () { return F.fetchJSON('data/releases/v' + VER + '/attrib.json'); }).then(function (d) { R.attrib = d.attrib || null; return R.attrib; }); }  /* v5.3 (B9): what each part adds (data/releases/v<version>/attrib.json, the release file's own numbers) */
   function lives(e, y) { var k = e + '-' + y; if (R.x.lives[k]) return Promise.resolve(R.x.lives[k]); return manifest().then(function () { return F.fetchJSON('data/releases/v' + VER + '/lives-' + k + '.json'); }).then(function (d) { R.x.lives[k] = d; return d; }); }
   function whenVisible(el, fn) { if (!window.IntersectionObserver) { fn(); return; } var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) { io.disconnect(); fn(); } }, {rootMargin: '600px 0px'}); io.observe(el); }
   function failNote(e) { return '<p class="fx-note">This part loads its data from the site (data/releases/); it could not be loaded here (' + F.esc(e && e.message || 'offline') + '). Open the page on the live site to see it. Every other figure on this page still shows.</p>'; }
@@ -144,36 +145,59 @@
     var losers = G.filter(function (q) { return g[q[0]] < 0; });
     $('fx-who-txt').innerHTML = 'Real resources a year against no programme: ' + G.map(function (q) { return q[1].toLowerCase() + ' ' + num(gp + q[0], 'usd'); }).join('; ') + '. ' +
       (losers.length ? 'Worse off than with no programme in real resources: ' + losers.map(function (q) { return q[1].toLowerCase(); }).join(' and ') + '.' : 'No group has fewer real resources than with no programme.') +
-      ' Median savings at the last year with Compassionism: ' + num(base() + '.rows.release.medWealth', 'usd') + '. Results by age group are a later step; the model does not report them yet.';
+      ' Median savings at the last year with Compassionism: ' + num(base() + '.rows.release.medWealth', 'usd') + '.' + (F.hasKids(R) ? ' Results for children and by household type are in \u201cFamilies and children\u201d below.' : ' Results by age group are a later step; the model does not report them yet.');
+  }
+
+  /* ---- 4b. families and children (v5.3, plan item B8) ---- */
+  function renderFamilies() {
+    var host = $('fx-hh-chart'); if (!host) return; var sec = $('families');
+    if (!F.charts.hh(R, host, {env: REL.env, years: yrs()})) { if (sec) sec.hidden = true; return; } if (sec) sec.hidden = false;
+    var P = E(), rows = F.HHM.filter(function (m) { return P.rows.release[m[2]] !== undefined && P.base[m[2]] !== undefined; });
+    $('fx-hh-table').innerHTML = '<div class="fx-tw" tabindex="0" role="region" aria-label="Households and children"><table class="fx-table"><caption>Households and children, ' + F.esc(F.envName(REL.env)) + ', ' + yrs() + ' years: no programme against Compassionism</caption><thead><tr><th scope="col">Who</th><th scope="col">Measure</th><th scope="col">No programme</th><th scope="col">Compassionism</th><th scope="col">Change, points (95% interval)</th></tr></thead><tbody>' +
+      rows.map(function (m) { var d = P.rows.release.d53 && P.rows.release.d53[m[2]], dp = base() + '.rows.release.d53.' + m[2];
+        return '<tr><td>' + F.esc(m[0]) + '</td><td>' + F.esc(m[1]) + '</td><td>' + num(base() + '.base.' + m[2], 'p1') + '</td><td>' + num(base() + '.rows.release.' + m[2], 'p1') + '</td><td>' + (d ? num(dp + '.0', 's1') + ' (' + num(dp + '.1', 's1') + ' to ' + num(dp + '.2', 's1') + ')' : '–') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    var r = base() + '.rows.release.', b = base() + '.base.';
+    $('fx-hh-txt').innerHTML = 'Children spend ' + num(r + 'hhCostKidPY', 'p1') + ' of their years below their family\u2019s cost of living with Compassionism, against ' + num(b + 'hhCostKidPY', 'p1') + ' with no programme; ' + num(r + 'hhWlthKidEnd', 'p1') + ' of children end in a household with too little wealth, against ' + num(b + 'hhWlthKidEnd', 'p1') + '. ' +
+      'In the main reading children stay children and couples neither form nor part; the ageing reading in \u201cHow sure are we?\u201d lets children grow up, be born and leave home.';
   }
 
   /* ---- 5. what each part does ---- */
   var PARTS = [
-    {h: 'Basic Units (CCO)', mech: 'Every adult who takes part receives a monthly allowance of Basic Units (BU): a currency that buys only essentials (food, housing, utilities, health care) and expires if it is not spent.',
+    {h: 'Basic Units (CCO)', mech: 'Every adult who takes part receives a monthly allowance of Basic Units (BU): a currency that buys only essentials (food, housing, utilities, health care, transport and childcare) and expires if it is not spent. Each child brings a quarter of the adult allowance to the household.', at: ['xRelief'],
       ev: 'How much people work when they receive money they did not work for: the rate measured in the largest US study of unconditional cash.', lim: 'The BU keeps its value only through the Hub’s rule of indexing it only in a year of high inflation (its Inflation Surge Protocol); savings have no such protection in the main reading.', rd: ['idx', 'all'], hrs: true},
     {h: 'Creative Collectives and conversion', mech: 'Expired BU can be converted to dollars at higher rates, for work the community values, through creative projects organised by the Creative Collectives. A person’s octave sets how much they can convert; it rises with their financial stability.',
-      ev: 'Claude’s reading of the design: what the projects deliver counts as new output at market value; the cautious reading counts only the cost of their hours.', lim: 'How much new output conversion calls forth is the decisive unknown; review errors and collusion are tested as readings.', rd: ['cost', 'rev20']},
+      ev: 'Claude’s reading of the design: what the projects deliver counts as new output at market value; the cautious reading counts only the cost of their hours.', lim: 'How much new output conversion calls forth is the decisive unknown; review errors and collusion are tested as readings.', rd: ['cost', 'rev20', 'rev20n'], at: ['xConv', 'xProj', 'xOct']},
     {h: 'Essential-service providers (PTF and private)', mech: 'Grocers, utilities and clinics accept BU and convert them to dollars. Community-owned ones (Public Trust Foundations) split what they earn between lower prices, new capacity and their workers; private ones pass what conversion adds to their BU customers as lower prices.',
-      ev: 'Running costs from sourced figures; community capacity grows within a year when demand outgrows it, paying for the capital it borrows.', lim: 'No places: community businesses are national averages, and the design’s local charters cannot be represented.', rd: ['free', 'cap5', 'face']},
+      ev: 'Running costs from sourced figures; community capacity grows within a year when demand outgrows it, paying for the capital it borrows.', lim: 'No places: community businesses are national averages, and the design’s local charters cannot be represented.', rd: ['free', 'cap5', 'face'], at: ['xPtf', 'xEsp', 'xSplit']},
     {h: 'Community housing (PTH)', mech: 'Public Trust Housing lowers housing costs and builds residents’ equity (Acre Equity) instead of paying market rent.',
-      ev: 'Where landlords outside community housing raise rents when BU pay the rent: housing-voucher evidence (Collinson and Ganong 2018; Susin 2002), tested as readings.', lim: 'Single adults only, with no households; rent capture is the largest robustness risk the readings found.', rd: ['hcap', 'hcaphi']},
+      ev: 'Where landlords outside community housing raise rents when BU pay the rent: housing-voucher evidence (Collinson and Ganong 2018; Susin 2002), tested as readings.', lim: 'Rent capture is the largest robustness risk the readings found.', rd: ['hcap', 'hcaphi'], at: ['xPth']},
     {h: 'Zones and the civic portal (SZH, CIP)', mech: 'Zone coordination (Social Zone Harmonization) and a civic internet portal (Citizens Internet Portal) complete the design, organising where the community businesses and housing go and how members decide.',
-      ev: 'Claude’s reading of the design: the model represents them only through the other parts, as national averages.', lim: 'The model has no places, so zone coordination cannot be shown on its own.', rd: []},
+      ev: 'Claude’s reading of the design: the model represents them only through the other parts, as national averages.', lim: 'The model has no places, so zone coordination cannot be shown on its own.', rd: [], at: ['xZone']},
     {h: 'Joining and leaving', mech: 'Any adult can join or leave each year, weighing what taking part costs them against what it brings.',
-      ev: 'Participation comes out of the model rather than being set; the reading in which taking part costs nothing has every adult join.', lim: 'Nothing in the model collapses if participation falls below the Hub’s participation threshold.', rd: ['all']},
+      ev: 'Participation comes out of the model rather than being set; the reading in which taking part costs nothing has every adult join.', lim: 'Nothing in the model collapses if participation falls below the Hub’s participation threshold.', rd: ['all'], at: ['xJoin']},
     {h: 'Spending creates jobs', mech: 'In recessions, the programme’s spending fills the idle capacity a recession leaves, at a multiplier from published estimates.',
-      ev: 'Normal-times multiplier from Ramey and Zubairy (2018); idle labour from the BLS U-6 measure, tested as readings in years without a recession.', lim: 'In the main reading spending creates jobs only in recessions.', rd: ['slack', 'slacku6']},
+      ev: 'Normal-times multiplier from Ramey and Zubairy (2018); idle labour from the BLS U-6 measure, tested as readings in years without a recession.', lim: 'In the main reading spending creates jobs only in recessions.', rd: ['slack', 'slacku6'], at: ['xMult']},
     {h: 'The Source (how it is paid for)', mech: 'A Source (the Treasury) issues the BU and pays for every conversion, keeping the conversion tax.',
-      ev: 'Claude’s reading of the design: the Hub names no tax that pays the Source, so the model treats what it pays out as new money, except what new output backs; the Kenya cash-transfer study (Egger et al., 2022) anchors a middle reading.', lim: 'With unbacked new money prices rise and erode savings; the optimistic end (every dollar backed) and other ways to pay are readings.', rd: ['h1', 'mid', 'tax']}];
+      ev: 'Claude’s reading of the design: the Hub names no tax that pays the Source, so the model treats what it pays out as new money, except what new output backs; the Kenya cash-transfer study (Egger et al., 2022) anchors a middle reading.', lim: 'With unbacked new money prices rise and erode savings; the optimistic end (every dollar backed) and other ways to pay are readings.', rd: ['h1', 'mid', 'tax'], at: ['xProd']}];
+  function attrLine(j) {  /* what one part adds on the chosen measure (the main row minus the main row without it), from dev/tools/attrib_check.js via the release file */
+    var A = R.attrib && R.attrib[REL.env], k = F.AT[ST.sure]; if (!A || !A.parts[j] || !A.parts[j][k]) return ''; var p = 'attrib.' + REL.env + '.parts.' + j + '.' + k;
+    return '<li>' + F.esc(A.parts[j].label.replace(/^without /, '')) + ': ' + num(p + '.0', 's1') + ' points (' + num(p + '.1', 's1') + ' to ' + num(p + '.2', 's1') + ')</li>'; }
   function readingLine(j) {
     var r = E().rows[j]; if (!r) return ''; var M = F.MEAS[ST.sure], p = base() + '.rows.' + j + '.' + M[2];
     return '<li>' + F.esc(F.SHORT[j] || r.label) + ': ' + num(p + '.0', 's1') + ' points</li>';
   }
+  var attr = {asked: false};
   function renderParts() {
     var host = $('fx-parts'); if (!host) return; var M = F.MEAS[ST.sure];
-    host.innerHTML = PARTS.map(function (P) { var rl = P.rd.map(readingLine).join('');
-      return '<div class="fx-part"><h3>' + F.esc(P.h) + '</h3><dl><dt>What it does</dt><dd>' + F.esc(P.mech) + '</dd><dt>Evidence</dt><dd>' + F.esc(P.ev) + (P.hrs ? ' Hours worked change by ' + num(base() + '.rows.release.hrs', 's1') + '%.' : '') + '</dd><dt>Limit</dt><dd>' + F.esc(P.lim) + '</dd>' +
+    var A = R.attrib && R.attrib[REL.env];
+    host.innerHTML = PARTS.map(function (P) { var rl = P.rd.map(readingLine).join(''), al = (P.at || []).map(attrLine).join('');
+      return '<div class="fx-part"><h3>' + F.esc(P.h) + '</h3><dl><dt>What it does</dt><dd>' + F.esc(P.mech) + '</dd>' +
+        (al ? '<dt>What it adds (' + F.esc(M[0].toLowerCase()) + ', change in points over ' + A._meta.years + ' years; 95% interval)</dt><dd><ul style="margin:2px 0 0 1.1em;padding:0">' + al + '</ul></dd>' : '') + '<dt>Evidence</dt><dd>' + F.esc(P.ev) + (P.hrs ? ' Hours worked change by ' + num(base() + '.rows.release.hrs', 's1') + '%.' : '') + '</dd><dt>Limit</dt><dd>' + F.esc(P.lim) + '</dd>' +
         (rl ? '<dt>Read differently (' + F.esc(M[0].toLowerCase()) + ', change against no programme; main row ' + num(base() + '.rows.release.' + M[2] + '.0', 's1') + ')</dt><dd><ul style="margin:2px 0 0 1.1em;padding:0">' + rl + '</ul></dd>' : '') + '</dl></div>'; }).join('');
+    var ah = $('fx-attr-chart'), at = $('fx-attr-txt');
+    if (ah) { if (A) { F.charts.attrib(R, ah, {env: REL.env, measure: ST.sure});
+        at.innerHTML = 'Each part is removed alone from the main result, on the same ' + num('attrib.' + REL.env + '._meta.seeds', 'int') + ' paired runs over ' + num('attrib.' + REL.env + '._meta.years', 'int') + ' years (' + F.esc(F.envName(REL.env)) + '); left of zero means the part lowers the share below the line. Parts work together, so they need not add up to the whole: the gap, the interaction, is ' + num('attrib.' + REL.env + '.interaction.' + F.AT[ST.sure], 's1') + ' points.'; }
+      else if (!attr.asked) { attr.asked = true; whenVisible(ah, function () { attrib().then(function (d) { if (d) renderParts(); else at.textContent = 'This release has no run with each part removed in turn.'; }).catch(function (er) { at.innerHTML = /404/.test(er && er.message) ? 'This release has no run with each part removed in turn.' : failNote(er); }); }); } }
     var X = F.readingsRows(R, yrs(), REL.env, ST.sure, {only: ['face', 'cost', 'cap5', 'free', 'all', 'standins', 'tax']}), ch = $('fx-parts-chart');
     if (X && X.rows.length) C.responsive(ch, function () { C.rows(ch, {rows: X.rows, tipFmt: function (v) { return F.fmt(v, 's1') + ' points'; }, xFmt: function (v) { return (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v); }, refs: [{v: X.main, label: 'main row ' + F.fmt(X.main, 's1')}, {v: 0, label: 'no programme'}],
       xTitle: M[0] + ': change against no programme, points (left is better)', label: 'How the result moves when one part of the design is read differently', legend: [{label: 'Reading (95% interval)', cls: 's-alt', shape: 'circle'}]}); });
@@ -186,21 +210,21 @@
     host.innerHTML = '<div class="fx-kv">' + tile(num(p + 'cost', 'usd'), 'cost per adult a year, today’s dollars (every programme dollar at face value)') + tile(num(p + 'srcPay', 'usd'), 'what the Source pays at conversion, per adult a year') +
       tile(num(p + 'srcTax', 'usd'), 'conversion tax the Source keeps') + tile(num(p + 'srcM', 'usd'), 'of what it pays, backed by new output (capacity built and project work)') + tile(num(p + 'tau', 'p1'), 'of wages: a flat contribution that pays for the community price cuts') + '</div>';
     var pay = ['tax', 'progtax', 'landtax'].filter(function (j) { return E().rows[j]; }), M = F.MEAS[ST.sure], ch = $('fx-pay-chart');
-    if (ch) C.responsive(ch, function () { C.rows(ch, {rows: [{label: 'The Source (the main reading)', marks: [{v: r[M[2]][0], lo: r[M[2]][1], hi: r[M[2]][2], cls: 's-with', name: 'change against no programme'}]}].concat(pay.map(function (j) { var x = E().rows[j];
-        return {label: F.SHORT[j], marks: [{v: x[M[2]][0], lo: x[M[2]][1], hi: x[M[2]][2], cls: 's-alt', name: 'change against no programme'}], note: x.label + (x.taxCover != null ? '; the tax pays ' + F.fmt(x.taxCover, 'p1') + ' of the cost' : '')}; })),
+    if (ch) C.responsive(ch, function () { C.rows(ch, {rows: [{label: 'The Source (the main reading)', marks: [{v: F.get(r, M[2])[0], lo: F.get(r, M[2])[1], hi: F.get(r, M[2])[2], cls: 's-with', name: 'change against no programme'}]}].concat(pay.filter(function (j) { return F.get(E().rows[j], M[2]); }).map(function (j) { var x = E().rows[j], d = F.get(x, M[2]);
+        return {label: F.SHORT[j], marks: [{v: d[0], lo: d[1], hi: d[2], cls: 's-alt', name: 'change against no programme'}], note: x.label + (x.taxCover != null ? '; the tax pays ' + F.fmt(x.taxCover, 'p1') + ' of the cost' : '')}; })),
       refs: [{v: 0, label: 'no programme'}], tipFmt: function (v) { return F.fmt(v, 's1') + ' points'; }, xFmt: function (v) { return (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v); }, xTitle: M[0] + ': change against no programme, points (left is better)', label: 'Ways of paying for it compared', legend: [{label: 'Main reading', cls: 's-with', shape: 'circle'}, {label: 'Another way to pay (not specified by the Hub)', cls: 's-alt', shape: 'circle'}]}); });
     $('fx-pay-txt').innerHTML = pay.map(function (j) { var x = E().rows[j]; return F.esc(F.SHORT[j]) + (x.taxCover != null ? ': the tax takes ' + num(base() + '.rows.' + j + '.taxAvg', 'p1') + ' of wages and pays ' + num(base() + '.rows.' + j + '.taxCover', 'p1') + ' of the cost' + (x.taxCover < 99.5 ? ' (the Source pays the rest as new money)' : '') : ''); }).join('; ') + '.';
     var small = (r.avoidHi + r.avoidW) < 0.1*r.cost;
     $('fx-avoid').innerHTML = '<div class="fx-kv">' + tile(num(p + 'unhousedAvoided', 'n1'), 'fewer unhoused person-years per 1,000 adults a year') + tile(num(p + 'avoidLo', 'usd') + ' to ' + num(p + 'avoidHi', 'usd'), 'saved in shelter, health care and justice costs of homelessness, per adult a year') +
       tile(num(p + 'avoidJail', 'usd'), 'saved from fewer people in prison, per adult a year') + tile(num(p + 'avoidHealth', 'usd'), 'saved from fewer hospital and psychiatric stays, per adult a year') + tile(num(p + 'avoidWHi', 'usd'), 'prisons and health care if the largest published prison effect applied to everyone') + '</div>' +
-      '<p class="fx-note">Each from a published causal estimate; child welfare is not counted (the model has no children).' + (small ? ' Together these are a small share of the programme’s cost.' : '') + '</p>';
+      '<p class="fx-note">Each from a published causal estimate; ' + (F.hasKids(R) ? 'savings in child welfare services are not counted.' : 'child welfare is not counted (the model has no children).') + (small ? ' Together these are a small share of the programme’s cost.' : '') + '</p>';
   }
 
   /* ---- 7. how sure are we ---- */
   function renderSure() { var host = $('fx-sure-chart'); if (!host) return; if (!F.charts.readings(R, host, {env: REL.env, years: yrs(), measure: ST.sure})) host.innerHTML = '<p class="fx-note">No readings for this view.</p>'; }
 
   /* ---- the control strip and the change hook ---- */
-  function renderAll() { if (!R.panels[yrs()]) return; renderAnswer(); renderPeople(); renderTime(); renderWho(); renderParts(); renderCost(); renderSure(); }
+  function renderAll() { if (!R.panels[yrs()]) return; renderAnswer(); renderPeople(); renderTime(); renderWho(); renderFamilies(); renderParts(); renderCost(); renderSure(); }
   function viewSeg() {
     var w = $('fx-view'); if (!w) return;
     w.innerHTML = '<span>Show</span><span class="fd-seg" role="group" aria-label="With or without Compassionism"><button type="button" data-v="with">With Compassionism</button><button type="button" data-v="without">No programme</button></span>';
@@ -214,7 +238,8 @@
     var q = F.readState({}); if (q.view) ST.view = q.view; if (q.measure) ST.sure = q.measure;
     viewSeg();
     measureSeg('fx-time-measure', 'measure', [['f0', 'Cost of living'], ['pov', 'Too little wealth'], ['bO', '30 days (BLEI)'], ['medW', 'Median savings']], renderTime);
-    measureSeg('fx-sure-measure', 'sure', [['pov', 'Too little wealth'], ['f0', 'Cost of living'], ['bO', '30 days (BLEI)']], function () { renderSure(); renderParts(); renderCost(); });
+    if (ST.sure === 'kid' && !F.hasKids(R)) ST.sure = 'pov';
+    measureSeg('fx-sure-measure', 'sure', [['pov', 'Too little wealth'], ['f0', 'Cost of living'], ['bO', '30 days (BLEI)']].concat(F.hasKids(R) ? [['kid', 'Children']] : []), function () { renderSure(); renderParts(); renderCost(); });
     var ex = $('fx-time-extra'); if (ex) ex.onchange = function () { ST.extra = ex.checked; renderTime(); };
     var orig = window.relRender; window.relRender = function () { var r = orig.apply(this, arguments); try { renderAll(); } catch (e) { if (window.console) console.error(e); } return r; };
     renderAll();
