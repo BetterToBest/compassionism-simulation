@@ -23,7 +23,7 @@ const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), V53 = process.arg
 const env = ARG[0] || 'ref', YRS = +(ARG[1] || 20), N = +(ARG[2] || 500), LS = +(ARG[3] || 1);
 const NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME || (YRS !== 20 && YRS !== 40) || !(LS >= 1 && LS <= N)) { console.error('usage: explore_export.js ref|adv|st [20|40] [SEEDS] [LIFESEED]'); process.exit(1); }
-const ROOT = path.join(__dirname, '..', '..'), PANEL = V53 ? path.join(ROOT, 'dev', 'runs', 'v53', 'release-panel' + (YRS === 40 ? '-40' : '') + '-' + env + '.json') : path.join(ROOT, 'dev', 'runs', 'release-panel' + (YRS === 40 ? '-40' : '') + '.json');
+const ROOT = path.join(__dirname, '..', '..'), PANEL = path.join(ROOT, 'dev', 'runs', 'release-panel' + (YRS === 40 ? '-40' : '') + '.json');  /* the merged panel (with --v53, the v5.3 panel once it is merged) */
 const C = H.CFG, SC = H.SPEND_SOURCED, M = ['f0', 'pov', 'bO', 'medW'], Q = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
 const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it */
 const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);

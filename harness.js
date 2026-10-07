@@ -4494,7 +4494,7 @@ if (require.main === module) {
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
         function av(r){ return ((r._Bk || r._B).epPY - r.epPY)/100; }  /* v5.2: against the row's own no-programme pair where it has one */
         function aw(r){ var b = r._Bk || r._B; return avoidWide((b.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (b.fgt0PY - r.fgt0PY)/100); }
-        var rows = V53 ? releaseRowsV53(SC) : releaseRows(SC, !V52), bases = V53 ? releaseBasesV53(SC) : V52 ? releaseBases(SC) : [], nRel = rows.length;
+        var rows = V53 ? releaseRowsV53(SC).filter(function(r){ return r.k !== 'a'; }) : releaseRows(SC, !V52),  /* v5.3: the parts-removed rows run in dev/tools/attrib_check.js (paired against the main row), not in the panel */ bases = V53 ? releaseBasesV53(SC) : V52 ? releaseBases(SC) : [], nRel = rows.length;
         rows = rows.concat(bases.map(function(b){ return {l:b.l, v:b.v, base:true, k:'b' + b.j, j:b.j}; }));  /* v5.2: the no-programme rows that some readings are paired with (printed last) */
         var R = stepSection('release (plan step 11)', e, rows,
           [['Unhoused person-years avoided per 1,000 adults a year', function(r){ return f2(av(r)*1000); }],
