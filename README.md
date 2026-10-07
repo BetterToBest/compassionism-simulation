@@ -80,7 +80,7 @@ node domtest.js          # drives index.html in a headless DOM (a few minutes)
 
 Every `harness.js` study mode also accepts `--agents=N`, the population per run (default 500). For example, `node harness.js largen 500 headline --agents=5000` reruns the headline figures at 5,000 agents per run, in about five minutes on one CPU core.
 
-The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->206<!-- /count --> tests and `domtest` <!-- count:domtest -->125<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
+The same three run automatically on every push (`.github/workflows/checks.yml`). CONTRIBUTING.md explains what each covers and what none of them can see. Today `unit` runs <!-- count:unit -->207<!-- /count --> tests and `domtest` <!-- count:domtest -->125<!-- /count --> checks; each run fails if these numbers are stale, and `--write-counts` (for either) refreshes them.
 
 ---
 

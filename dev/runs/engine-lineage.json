@@ -206,6 +206,22 @@
    },
    "equal": true,
    "seconds": 182
+  },
+  {
+   "from": "25e215dab7fed95148c44751a3de2e7f1939c1115539691dd1b26ba4c41f7be5",
+   "to": "777438fe0c4351fe157115e73ec02b49c9eed32a9f9f80facd47109a33f200cb",
+   "date": "2026-10-07",
+   "change": "v5.4 item 5: the disaster shock (DIS), off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 327
   }
  ]
 }
