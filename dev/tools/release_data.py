@@ -790,7 +790,12 @@ def plan(backfill=None):
         if R.get('attrib'):  # v5.3: the attribution alone, for the simulation page's "What each part does" (the same numbers, at the same paths, as in the release file)
             files['data/releases/v%s/attrib.json' % R['version']] = dumps({'version': R['version'], 'attrib': R['attrib']})
         for r in manifest['releases']:
-            if r['version'] != R['version']: r['status'] = 'earlier'
+            if r['version'] != R['version']:
+                r['status'] = 'earlier'
+                fp = os.path.join(ROOT, 'data', r['file'])  # v5.3: the release that was current says so in its own file too (check_figures compares them)
+                if os.path.exists(fp):
+                    old = json.load(open(fp, encoding='utf-8'))
+                    if old.get('status') != 'earlier': old['status'] = 'earlier'; files['data/' + r['file']] = dumps(old)
         ent = {'version': R['version'], 'date': R['date'], 'tag': R['tag'], 'file': 'releases/v%s.json' % R['version'], 'summary': R['summary'], 'status': 'current', 'shownIn': R.get('shownIn')}
         manifest['releases'] = [r for r in manifest['releases'] if r['version'] != R['version']] + [ent]
         for page, blocks in (('index.html', [('headline', headline_html(R))]), ('findings.html', [('headline', headline_html(R))]), ('replication.html', [('summary', summary_html(R)), ('concepts', concepts_html(R))])):
