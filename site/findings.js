@@ -225,7 +225,7 @@
     v52: 'v5.2\u2019s main row (adults alone, v5.2\u2019s choices)', adults: 'Adults living alone (no households)', core: 'BU buy only food, housing and medical care', indiv: 'Each adult keeps their own money (no pooling)',
     cb0: 'No child allowance', cb50: 'A child allowance of half the adult BU', wmodel: 'Starting savings from the model\u2019s own draw', nosg: 'Everyone pays their full cost (no graded spending)',
     shock50: 'Partners\u2019 income swings strongly linked', fbs50: 'FBS50 spread evenly over its range', ageleave: 'Ageing, every estate leaves the model', agecps: 'Ageing, wages follow US earnings by age'};
-  var SHORT53 = {age: 'Ageing: children grow up and are born; estates pass on', agenone: 'Ageing, retirees leave the programme', agepia: 'Ageing, benefit from own wage'};  /* v5.3: the ageing row is the households' (children's lives) */
+  var SHORT53 = {age: 'Ageing: children grow up and are born; estates pass on', agenone: 'Ageing, retirees leave the programme', agepia: 'Ageing, benefit from own wage', fixall: 'All three wage and risk readings'};  /* v5.3: the ageing row is the households' (children's lives) */
   function readingsRows(R, yrs, env, k, opts) {
     var E = R.panels[yrs] && R.panels[yrs].envs[env]; if (!E) return null; var M = MEAS[k], rows = [], mm = M && get(E.rows.release, M[2]); if (!mm) return null;
     var v53 = E.rows.release.hhCostKidPY !== undefined;
