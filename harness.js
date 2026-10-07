@@ -2373,6 +2373,50 @@ function hhUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; }, EDC_KEYS, setEdcMeasure:function(x){ EDC_MEASURE = !!x; }, FBS_KEYS });
+/* v5.4 (Oct 7, 2026; dev/reports/v5-21-v54-design.md): the round's unit tests. Harness-only. */
+function v54UnitSuite(){
+  var out = [];
+  function t(name, fn){ try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } }
+  function near(x, y){ return Math.abs(x - y) < 1e-9; }
+  t('risk: drawdown is the largest fall from an earlier peak', function(){ var a = rkDraw([1, 3, 2, 5, 1, 4]), b = rkDraw([1, 2, 3]), c = rkDraw([-5, -9, 0, -2]);
+    return {pass:a === 4 && b === 0 && c === 4, detail:a + ' ' + b + ' ' + c}; });
+  t('risk: re-entry within k years counts each exit once, over exits with k years observed', function(){
+    var H = [{c:[1, 0, 1, 0, 0, 0, 0]}, {c:[1, 0, 0, 0, 1, 0, 0]}, {c:[0, 0, 0, 0, 0, 0, 0]}], r = rkReentry(H, 'c', [1, 3]);
+    /* exits: person 1 at years 1 and 3, person 2 at years 1 and 5. k=1: exits with e+1<7: all four; re-entered next year: person 1's first. k=3: exits with e+3<7: 1, 3 (p1), 1 (p2); re-entered: p1 year 1 (by 2), p2 year 1 (by 4) */
+    return {pass:near(r[0], 25) && near(r[1], 200/3), detail:r.join(', ')}; });
+  t('risk: income shocks and recovery', function(){ var o = {}, w = [0, 0, 0, 0, 0, 0];
+    tbRiskRes([{w:w, b:[60, 20, 30, 60, 60, 60], y:[100, 70, 90, 100, 100, 100], c:[0, 0, 0, 0, 0, 0], f:[0, 0, 0, 0, 0, 0]}], o);
+    /* one shock at year 1 (70 < 80), income back at year 3 (2 years), BLEI back at year 3 */
+    return {pass:near(o.rkEv, 100/6) && o.rkRec1 === 0 && o.rkRec3 === 100 && o.rkRec5 === 0 && o.rkRecM === 2 && o.rkRecB3 === 100 && near(o.rkDdB, 40), detail:JSON.stringify(o)}; });
+  t('risk: reporting only (the switch changes no result of the run)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G);
+    try { var M = relMainCfgs(PR), C = [M[0], M[1], Object.assign({}, M[0], {v54:{rk:true}}), Object.assign({}, M[1], {v54:{rk:true}})].map(function(c, i){ return i % 2 ? c : Object.assign(c, {sc:SPEND_SOURCED}); });
+      var R = tbStudy(C, 2, P, Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY)), bad = [];
+      TB_KEYS.forEach(function(k){ if (R[0][k] !== R[2][k] && !(isNaN(R[0][k]) && isNaN(R[2][k]))) bad.push('base ' + k); if (R[1][k] !== R[3][k] && !(isNaN(R[1][k]) && isNaN(R[3][k]))) bad.push('prog ' + k); });
+      return {pass:bad.length === 0 && R[3].rkEv !== undefined && R[1].rkEv === undefined && RISK_MEASURE === false, detail:bad.slice(0, 5).join(', ')}; }
+    finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; } });
+  function v54Study(env, rows, seeds, nA){  /* the v5.3 main row and its no-programme run per v54 option set, as dev/tools/v54_check.js runs them */
+    var P = Object.assign({}, {ref:FULL_INTEGRATION, adv:ADVERSE_REFERENCE, st:STRESS_TEST}[env], nA ? {nAgents:nA} : {}), PR = tbPresets(P), cfg = [];
+    rows.forEach(function(o){ var M = relMainCfgs(PR); cfg.push(Object.assign(M[0], {sc:SPEND_SOURCED}, o ? {v54:o} : {}), Object.assign(M[1], o ? {v54:o} : {})); });
+    return acctProfile(function(){ return tbStudy(cfg, seeds, P, Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY)); }); }
+  function same(A, B){ var bad = []; TB_KEYS.forEach(function(k){ if (A[k] !== B[k] && !(isNaN(A[k]) && isNaN(B[k]))) bad.push(k); }); return bad; }
+  t('job loss: the spell-length draw inverts the CPS survival curve (2.5 weeks at least; 9.5 and 20.5 weeks at their measured shares; longer as the draw falls)', function(){
+    var s = CFG.EMPL_S.n, a = emplWeeks(1, false), b = emplWeeks(s[0], false), c = emplWeeks(s[1], false), d = emplWeeks(s[1]*Math.exp(-1), false), e = emplWeeks(0.3, true) > emplWeeks(0.3, false);
+    return {pass:near(a, 2.5) && near(b, 9.5) && near(c, 20.5) && near(d, 20.5 + s[2]) && e, detail:[a, b, c, d].map(function(x){ return x.toFixed(3); }).join(', ')}; });
+  t('job loss: with no chance of losing a job, no pay cut and no insurance, every result is the run without the switch (Reference: no recessions, no automation)', function(){
+    var p0 = CFG.EMPL_P, p1 = CFG.EMPL_P_REC; CFG.EMPL_P = 0; CFG.EMPL_P_REC = 0;
+    try { var R = v54Study('ref', [null, {empl:{cut:0, ui:false, auto:'pay'}}], 2, 80), b = same(R[0], R[2]).concat(same(R[1], R[3]));
+      return {pass:b.length === 0 && R[3].emUrate === 0 && EMPL === null, detail:b.slice(0, 5).join(', ')}; }
+    finally { CFG.EMPL_P = p0; CFG.EMPL_P_REC = p1; } });
+  t('job loss: the measured rates come through (Adverse: spells, weeks, insurance as a share of pay lost, the pay cut), the same in both runs, and the books balance', function(){
+    var A0 = ACCT; ACCT = acctNew();
+    try { var R = v54Study('adv', [{empl:{}}], 3, 120), B = R[0], M = R[1], nF = Object.keys(ACCT.nFail).reduce(function(s, k){ return s + ACCT.nFail[k]; }, 0), nN = Object.keys(ACCT.n).reduce(function(s, k){ return s + ACCT.n[k]; }, 0);
+      var ok = B.emSpells > 6 && B.emSpells < 16 && B.emWeeks > 8 && B.emWeeks < 20 && B.emUI > 3 && B.emUI < 12 && B.emCut > 6 && B.emCut < 14 && B.emAuto > 0 && B.emSpells === M.emSpells && nF === 0 && nN > 0;
+      return {pass:ok, detail:'spells ' + B.emSpells.toFixed(2) + ' / 100 adult-years, weeks ' + B.emWeeks.toFixed(1) + ', UI ' + B.emUI.toFixed(1) + '% of pay lost, cut ' + B.emCut.toFixed(1) + '%, automation ' + B.emAuto.toFixed(2) + '; identity checks ' + nN + ', failures ' + nF + (nF ? ' ' + JSON.stringify(ACCT.nFail) : '')}; }
+    finally { ACCT = A0; } });
+  return out;
+}
+Object.assign(module.exports, { EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
@@ -2763,7 +2807,11 @@ if (require.main === module) {
     console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
     GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf) process.exitCode = 1;
+    var V54U = v54UnitSuite(), v54f = 0;
+    console.log('\n=== v54UnitSuite(): the v5.4 round (harness-only) ===');
+    V54U.forEach(function(x){ if (!x.pass) v54f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + V54U.length + ' run, ' + v54f + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
