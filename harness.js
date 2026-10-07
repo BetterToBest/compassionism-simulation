@@ -2235,6 +2235,18 @@ function hhUnitSuite(){
       try { acctProfile(function(){ tbStudy(cf, 1, S.P, S.o); }); } finally { mulberry32 = om; } });
     if (cnt[0] !== cnt[1]) bad.push('main-stream draws ' + cnt[0] + ' vs ' + cnt[1]);
     return {pass:bad.length === 0, detail:k + ' values compared; ' + info.join('; ') + '; problems: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
+  t('v5.3 B8: spells by household type and adults by age group: with every adult living alone the household spells equal the adult spells exactly (spells counted and first-year exits, release row and no programme, seeds 1-2, three environments); with ageing the age groups cover every adult-year and give 0 without it', function(){
+    var bad = [], info = [];
+    acctProfile(function(){ ['ref', 'adv', 'st'].forEach(function(e){ var B = rowsOf(e, ['base', 'release'], {}); CFG.HH_COMP = {coupleKids:0, coupleNoKids:0, singleParent:0, single:1};
+      var b; try { b = tbStudy(B.cf, 2, B.S.P, B.S.o); } finally { CFG.HH_COMP = sv0; }
+      b.forEach(function(r, i){ for (var q = 0; q < 2; q++){ var n = r._s.scN1[q], x = r._s.scX1[q];
+        if (r._s.hhSpN[q] !== n || Math.abs(r._s.hhSpEx1[q] - (n ? x/n : 0)) > 1e-12 || r._s.hhSpN_sg[q] !== n) bad.push(e + ' row ' + i + ' seed ' + (q + 1) + ': ' + r._s.hhSpN[q] + ' vs ' + n);
+        if (r._s.hhCostA25[q] !== 0 || r._s.hhCostA67[q] !== 0) bad.push(e + ' age groups without ageing'); } });
+      if (e === 'ref') info.push('Reference, no programme: ' + b[0].hhSpN.toFixed(0) + ' spells a run, ' + (b[0].hhSpEx1*100).toFixed(0) + '% end after one year'); });
+      var A = rowsOf('ref', ['base', 'release'], {}); A.cf.forEach(function(c){ c.ag = true; }); var a = tbStudy(A.cf, 2, A.S.P, A.S.o);
+      a.forEach(function(r){ if (!(r.hhCostA25 > 0 && r.hhCostA35 > 0 && r.hhCostA50 > 0)) bad.push('age groups with ageing ' + [r.hhCostA25, r.hhCostA35, r.hhCostA50, r.hhCostA67].join(' ')); });
+      info.push('with ageing, no programme, below the cost of living: 25-34 ' + a[0].hhCostA25.toFixed(1) + '%, 35-49 ' + a[0].hhCostA35.toFixed(1) + '%, 50-66 ' + a[0].hhCostA50.toFixed(1) + '%, 67+ ' + a[0].hhCostA67.toFixed(1) + '%'); });
+    return {pass:bad.length === 0, detail:info.join('; ') + '; problems: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
   return out;
 }
 Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; }, EDC_KEYS, setEdcMeasure:function(x){ EDC_MEASURE = !!x; }, FBS_KEYS });

@@ -142,6 +142,22 @@
    },
    "equal": true,
    "seconds": 435
+  },
+  {
+   "from": "5e141960d25247d4e60a53d00e963200d0ac12c79b156f544e34943dfdc2f297",
+   "to": "72580feed849707ae2dc4e5c1d07b2ad6365e78e0b75bcf743511871bd9aee7f",
+   "date": "2026-10-07",
+   "change": "v5.3 B8: household measures by age group and spells by household type (reporting only, household rows)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 430
   }
  ]
 }

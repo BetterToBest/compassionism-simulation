@@ -2406,7 +2406,7 @@ function relPathCharts(b,r,T){if(!b||!b.path||!r||!r.path)return '';var B=b.path
 function relSentences(b,r,h,T,X){
   T=T||20;X=X||{};
   var s=[],better=function(d){return d&&(d.length>2?d[2]<0:d[0]<0);},worse=function(d){return d&&(d.length>2?d[1]>0:d[0]>0);};
-  s.push('<p><strong>Basic living covered.</strong> With Compassionism, '+relPct(r.bOAPy)+' of adult-years fall below 30 days of basic living, against '+relPct(b.bOAPy)+' with no programme'+relCi(r.dBO)+'. On the design-neutral reading (the same rules for everyone), '+relPct(r.bNAPy)+' against '+relPct(b.bNAPy)+relCi(r.dBN)+'. The typical adult’s resources cover '+Math.round(r.bOAMd)+' days at year '+T+', against '+Math.round(b.bOAMd)+'.</p>');
+  s.push('<p><strong>Basic living covered.</strong> With Compassionism, '+relPct(r.bOAPy)+' of adult-years fall below 30 days of basic living, against '+relPct(b.bOAPy)+' with no programme'+relCi(r.dBO)+'. On the design-neutral reading (the same rules for everyone), '+relPct(r.bNAPy)+' against '+relPct(b.bNAPy)+relCi(r.dBN)+'. The difference between the two readings with Compassionism, '+(r.bNAPy-r.bOAPy).toFixed(1)+' points, is the benefit from lower prices and in-kind support. The typical adult’s resources cover '+Math.round(r.bOAMd)+' days at year '+T+', against '+Math.round(b.bOAMd)+'.</p>');
   s.push('<p><strong>Living below the cost of living.</strong> '+relPct(r.fgt0PY)+' of adult-years, against '+relPct(b.fgt0PY)+relCi(r.dF0)+'; how far below people fall (poverty severity) changes by '+fdSg(r.dFgt2[0])+(r.dFgt2.length>2?' <span class="fd-ci">(95% interval '+fdSg(r.dFgt2[1])+' to '+fdSg(r.dFgt2[2])+')</span>':'')+'.</p>');
   s.push('<p><strong>Savings.</strong> '+relPct(r.pov)+' of adults end with too little wealth at year '+T+', against '+relPct(b.pov)+relCi(r.dPov)+'.</p>');
   /* v5.2 step 3: savings that keep up with prices, a reading in both runs (X.sav against its own no-programme row X.savB) */
@@ -4285,7 +4285,7 @@ var HH_KEYS = ['hhPer', 'hhKid', 'hhCostPY', 'hhCostKidPY', 'hhFplPY', 'hhFplKid
   'hhGiniEq', 'hhMedEq'].concat(HH_TYPES.map(function(t){ return 'hhCost_' + t; }), HH_TYPES.map(function(t){ return 'hhWlth_' + t; }), HH_TYPES.map(function(t){ return 'hhShare_' + t; }));
 function hhTypeOf(H){ return H.a.length === 1 ? (H.kids.length ? 'sp' : 'sg') : (H.kids.length ? 'ck' : 'cn'); }
 function hhRepAcc(){ var R = {py:0, kpy:0, c:{}, y7:null, end:null, per:0, kid:0}; ['cost', 'fpl', 'wlth', 'blei'].forEach(function(k){ R.c[k] = 0; R.c[k + 'K'] = 0; });
-  HH_TYPES.forEach(function(t){ R['t_' + t] = {py:0, cost:0, wlth:0}; }); return R; }
+  HH_TYPES.forEach(function(t){ R['t_' + t] = {py:0, cost:0, wlth:0}; }); R.ab = {a25:{py:0, c:0}, a35:{py:0, c:0}, a50:{py:0, c:0}, a67:{py:0, c:0}}; R.sp = []; return R; }  /* ab, sp: v5.3 B8 */
 function hhRepYear(R, agents, p, o, yr, T){
   var lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1), s = {per:0, kid:0, cost:0, costK:0, fpl:0, fplK:0, wlth:0, wlthK:0, blei:0, bleiK:0}, eq = [];
   HHS.list.forEach(function(H){ var nA = H.a.length, nK = H.kids.length, n = nA + nK, inc = 0, cost = 0, need = 0, money = 0, disp = 0, w = 0, b = 0;
@@ -4293,6 +4293,8 @@ function hhRepYear(R, agents, p, o, yr, T){
     var fC = inc < cost, fF = money < CFG.HH_FPL[nA + 'a' + Math.min(4, nK) + 'k']*lf, fW = w < need*CFG.HH_WEALTH_MONTHS/12, fB = b/nA < CFG.BLEI_PRECARIOUS_MAX, t = R['t_' + hhTypeOf(H)];
     s.per += n; s.kid += nK; if (fC){ s.cost += n; s.costK += nK; } if (fF){ s.fpl += n; s.fplK += nK; } if (fW){ s.wlth += n; s.wlthK += nK; } if (fB){ s.blei += n; s.bleiK += nK; }
     t.py += n; if (fC) t.cost += n; if (yr === T - 1){ t.n = (t.n || 0) + n; if (fW) t.w = (t.w || 0) + n; }
+    if (!H._sp){ H._sp = {c:[], t:hhTypeOf(H)}; R.sp.push(H._sp); } H._sp.c.push(fC);  /* v5.3 B8: each household's years below the cost of living, for spells by its type at the start */
+    H.a.forEach(function(a){ if (typeof a.age !== 'number') return; var q = R.ab[a.age >= 67 ? 'a67' : a.age >= 50 ? 'a50' : a.age >= 35 ? 'a35' : 'a25']; q.py++; if (fC) q.c++; });  /* v5.3 B8: adults by age group (with ageing) */
     if (yr === T - 1){ var e = disp/Math.sqrt(n)/lf; for (var i = 0; i < n; i++) eq.push(e); } });
   R.py += s.per; R.kpy += s.kid; R.per = s.per; R.kid = s.kid;
   ['cost', 'fpl', 'wlth', 'blei'].forEach(function(k){ R.c[k] += s[k]; R.c[k + 'K'] += s[k + 'K']; });
@@ -4311,7 +4313,18 @@ function hhRepRes(R, out){
   HH_TYPES.forEach(function(t){ var q = R['t_' + t]; out['hhCost_' + t] = q.py ? q.cost/q.py*100 : 0; out['hhWlth_' + t] = q.n ? (q.w || 0)/q.n*100 : 0; out['hhShare_' + t] = R.py ? q.py/R.py*100 : 0; });
   return out;
 }
-function hhRes(R, out){ return R ? hhLifeRes(hhRepRes(R, out)) : out; }  /* v5.3 B4: + children's lives, with ageing */
+/* v5.3 B8 (Oct 7, 2026; plan item B8; dev/DECISIONS.md Session 39, "B8"): more of the household reading's measures (reporting only). Adult-years below the
+ * cost of living by age group (25-34, 35-49, 50-66, 67 and over; with ageing, else 0; children are hhCostKidPY), and poverty spells by household type:
+ * each household's run of years below the cost of living (its status, as for every person in it), counted with tbRepSpells (Bane-Ellwood/Stevens, the
+ * method of the US-data check), by the household's type at the start: the share of spells that end after their first year, and spells per run. */
+var HH_REP_KEYS = ['hhCostA25', 'hhCostA35', 'hhCostA50', 'hhCostA67', 'hhSpEx1', 'hhSpN'].concat(HH_TYPES.map(function(t){ return 'hhSpEx1_' + t; }), HH_TYPES.map(function(t){ return 'hhSpN_' + t; }));
+function hhRepRes2(R, out){
+  ['a25', 'a35', 'a50', 'a67'].forEach(function(k){ var q = R.ab[k]; out['hhCostA' + k.slice(1)] = q.py ? q.c/q.py*100 : 0; });
+  function sp(L){ var o = {}; tbRepSpells(L, 'c', o, 'q'); return {ex:o.qN1 ? o.qX1/o.qN1 : 0, n:o.qN1}; }
+  var a = sp(R.sp); out.hhSpEx1 = a.ex; out.hhSpN = a.n;
+  HH_TYPES.forEach(function(t){ var q = sp(R.sp.filter(function(x){ return x.t === t; })); out['hhSpEx1_' + t] = q.ex; out['hhSpN_' + t] = q.n; });
+  return out; }
+function hhRes(R, out){ return R ? hhLifeRes(hhRepRes2(R, hhRepRes(R, out))) : out; }  /* v5.3 B4: + children's lives, with ageing */
 function spNewAcc(){ return {pool:0, own:0, ptf:0, rest:0, pricePool:0, cut:0, cutN:0, cutP:0, freed:0, cash:0, carry:0, profit:0, profitN:0, reinv:0, wkY:0, wkY1:0,
   d1:0, n1:0, d2:0, n2:0, non:0, yrs:0}; }
 /* PRICE (A2 issuance and price module): null = off (index.html). When an object, runYear() reprices the basket by
@@ -5492,7 +5505,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
         if (r.edcM !== undefined) EDC_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B6 */
-        if (r.hhPer !== undefined) HH_KEYS.concat(r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
+        if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
       finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; FBS50 = fb0; FBSS = null; } });
   }
   return out;
