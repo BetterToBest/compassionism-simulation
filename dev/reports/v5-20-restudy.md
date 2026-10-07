@@ -93,7 +93,21 @@ Change against no programme with the same population, in points: adults with too
 
 ## The 40-year horizon
 
-*(To follow: the 40-year panels were restarted after a container restart and are still running.)*
+No programme → Compassionism over 40 years, the change in points with its 95% interval (the same households followed twice as long; in the main reading nobody ages).
+
+| Measure | Reference | Adverse | Stress Test |
+|---|---|---|---|
+| Adult-years below the cost of living | 36.5% → 12.1%, −24.4 | 83.8% → 54.5%, −29.3 | 83.8% → 73.4%, −10.3 |
+| Child-years below the cost of living | 62.2% → 22.5%, −39.8 | 95.3% → 69.5%, −25.8 | 95.3% → 86.4%, −8.9 |
+| Adult-years below 30 days of basic living (BLEI) | 26.5% → 8.8%, −17.7 | 45.2% → 30.0%, −15.3 | 45.2% → 59.8%, +14.6 |
+| Adults with too little wealth at the end | 27.3% → 18.4%, −8.9 | 70.2% → 98.8%, +28.6 | 70.2% → 98.5%, +28.4 |
+| Children in a household with too little wealth at the end | 49.0% → 35.4%, −13.6 | 83.4% → 99.7%, +16.2 | 83.4% → 99.1%, +15.7 |
+| Programme inflation a year | 44.7% | 89.1% | 43.0% |
+| Cost per adult a year | $32,854 | $28,555 | $12,336 |
+| Hours worked | −6.0% | −20.7% | −12.2% |
+
+- **In Reference the wealth result turns in the programme's favour by year 40** (−8.9 points, better than no programme in every one of the 500 runs), as v5.2's main row also does at 40 years (−28.9). Children's poverty stays 40 points lower.
+- **In Adverse and Stress the price rule runs away** (89% and 43% a year; the typical Adverse run ends above a hundred billion times today's prices): a limit of the model, which has no central bank and no interest on savings in the main reading, not a forecast. Nearly everyone ends with too little wealth with the programme; income poverty is still lower than with no programme.
 
 ## Which of the design note's predictions held
 
@@ -110,10 +124,10 @@ The design note (`dev/reports/v5-3-design.md`, section 3) made eleven prediction
 | 7 | BLEI lower for couples, higher for single parents | Not measured by household type; overall, households' BLEI is lower (29.3% of person-years with no programme against 35.7% for adults alone) | Partly checked |
 | 8 | Hours fall slightly more | −6.3% against −6.2% | Yes |
 | 9 | Equivalized income Gini higher with no programme (closer to the US), cut more by the programme | Lower (0.267 against 0.287), and the programme raises it (to 0.286), as it does for adults alone | No |
-| 10 | At 40 years with estates, less wealth poverty than ageing without heirs, and a higher wealth Gini | *(to follow with the 40-year panels)* | |
+| 10 | At 40 years with estates, less wealth poverty than ageing without heirs, and a higher wealth Gini | With estates passing to heirs: 28.0% with too little wealth against 29.5% without heirs (no programme), 55.9% against 56.5% (with it); the wealth Gini is slightly lower (0.603 against 0.607), not higher | Partly (less wealth poverty, by a little; not a higher Gini) |
 | 11 | Poverty spells longer, closer to the PSID | First-year exit 0.64 against 0.62 for v5.2's population (PSID 0.53): slightly shorter, not longer; re-entry 0.35 against 0.37 (PSID 0.27): a little closer | No |
 
-Six held, two held in direction but not size, three did not, and one waits for the 40-year panels. Prediction 9 is the one to watch: in the model the programme widens the spread of income, for households and for adults alone; the next model round should trace which part does it.
+Four held in full; two held in direction but not in size; two held in part (one could not be measured by household type; estates lower wealth poverty a little but do not raise the wealth Gini); three did not. Prediction 9 is the one to watch: in the model the programme widens the spread of income, for households and for adults alone; the next model round should trace which part does it.
 
 ## Claude's reading of the design (please check)
 

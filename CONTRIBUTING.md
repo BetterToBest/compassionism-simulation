@@ -81,6 +81,8 @@ The notes for the current release stay here (the release workflow reads them fro
 
 The programme lowers income poverty in every run, most of all for children; with the Hub's full BU list few BU expire into project work, so less new output backs the Source's payout, prices rise faster and more adults end with too little wealth than with no programme, in all three environments. With BU buying only food, housing and medical care (a reading), Reference would be 14 points better than no programme on wealth.
 
+**At 40 years** the Reference wealth result turns in the programme's favour (27.3% → 18.4% of adults with too little wealth; children below the cost of living 62.2% → 22.5%); in Adverse and Stress the model's price rule runs away (89% and 43% a year) and nearly everyone ends with too little wealth with the programme, while income poverty stays lower than with no programme. The full panels, every reading and the attribution are in `data/releases/v5.3.json` and on the findings explorer.
+
 ---
 
 ## How to Contribute
@@ -485,7 +487,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.2.2*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.3*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
