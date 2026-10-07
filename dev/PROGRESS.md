@@ -185,11 +185,11 @@ Duke merged v5.2.2 (tag `v5.2.2`, reproduction archive attached) and said "start
 Branch `claude/awesome-sagan-75dsu9`, restarted from `main` at d25e6dd (v5.3.1 merged). Plan: `dev/plans/v5.3-plan-prompt.md` section 4; design note `dev/reports/v5-21-v54-design.md` (build order in its section 5).
 
 - [x] 0. Design note (Hub readings, predictions, sources, three questions for Duke on the dashboard as d174-d176). DECISIONS, Session 40.
-- [ ] 1. Risk measures (`RISK`, reporting only).
-- [ ] 2. Job loss and occupations (`EMPL`).
-- [ ] 3. PTH balance sheet (`PTHB`).
-- [ ] 4. PTF sectors and leaving (`PTFS`).
-- [ ] 5. Disaster shock (`DIS`).
-- [ ] 6. The 55% floor test.
-- [ ] 7. Sensitivity study (Morris, then Sobol).
-- [ ] 8. 500-seed restudy, report, version 5.4, pull request ready.
+- [x] 1. Risk measures (`RISK`, reporting only): drawdown, income shocks and recovery, re-entry into poverty (RISK_KEYS). Engine lineage proved (switch off: six 12-seed panels identical).
+- [x] 2. Job loss and occupations (`EMPL`): CPS flows and spell lengths (`sources/unemp_flows.py`), UI in both runs (DOL), pay cut on return (design 0.10), automation through job loss, 700 occupations (`sources/fo_occupations.py`). Lineage proved.
+- [x] 3. PTH balance sheet (`PTHB`): trust books per home with an enforced identity (ACCT 'pth-books'), cap at price rise + 2%, exits 6.2% with 40% cash (`sources/pth_balance.py`). Lineage proved.
+- [x] 4. PTF by sector and leaving (`PTFS`): food and utilities at the Hub's epsilons, others 0 (swept), leaving 3.2% (CPS ASEC). Lineage proved.
+- [x] 5. Disaster (`DIS`, `sources/fema_ihp.py`): commit aacaf24; its lineage proof and checks were running at 19:20 UTC.
+- [x] 6. The 55% floor test tool: `dev/tools/floor_test.js ENV SEEDS`. Finding at 2 seeds: results move smoothly with membership; the floor hardly matters. Note: the release gates theta on PTF member density (NR6 THETA_GATE 'density'), not on Social Zone cohesion as the design note says; membership is capped at 18% in Reference, so theta is zero in every release run.
+- [x] 7. Sensitivity tool: `dev/tools/gsa.js morris|sobol|noise ENV ...` (17 inputs). Sobol on the Morris leaders still to run.
+- [ ] 8. The 500-seed batch (started 19:16 UTC from a clean worktree of aacaf24, `run54.sh` in the session scratchpad; status in that worktree's `dev/runs/v54/status.txt`): for ENV ref, adv, st `node dev/tools/v54_check.js ENV 500 --rows=v53,empl,emplPay,emplCut0,emplCut20,emplNoUI,pthb,pthbOld,pthbFull,pthbNone,pthbOwn,ptfs,ptfs12,ptfs25,ptfsStay,dis,disSmall,disBig,all,allDis --out=r500`; `node dev/tools/gsa.js morris ref 10 10`; `gsa.js noise ENV 100` (ref, adv, st); `node dev/tools/floor_test.js ENV 20` (ref, st). If the session ends first, rerun the same commands from a clean worktree of aacaf24. Then: Sobol on the Morris leaders, the v5.4 report (`dev/reports/v5-22-v54-report.md`) with the predictions checked, then the release integration (v5.4 rows in the release panel and the pages, version 5.4).
