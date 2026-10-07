@@ -1839,7 +1839,7 @@ function releaseRowsV53(SC){
     {l:'  without conversion (BU never become dollars)', v:W({pwOff:{conversion:true}}), k:'a', vs:'main', j:'xConv'},
     {l:'  without project hiring (expired BU fund projects by the earlier allocation rule instead)', v:W({drop:['pj']}), k:'a', vs:'main', j:'xProj'},
     {l:'  without the essential businesses\' payroll (ESP)', v:W({esp:false}), k:'a', vs:'main', j:'xEsp'},
-    {l:'  without the premium split (businesses keep the premium)', v:W({drop:['sp']}), k:'a', vs:'main', j:'xSplit'},
+    {l:'  without the premium split (the premium is paid to every adult in proportion to wages, the earlier rule)', v:W({drop:['sp']}), k:'a', vs:'main', j:'xSplit'},
     {l:'  without community businesses (PTF)', v:W({pset:{ptf:false}}), k:'a', vs:'main', j:'xPtf'},
     {l:'  without community housing (PTH)', v:W({pset:{pth:false}}), k:'a', vs:'main', j:'xPth'},
     {l:'  without zone coordination and the civic portal (SZH, CIP)', v:W({pset:{szh:false, cip:false}}), k:'a', vs:'main', j:'xZone'},

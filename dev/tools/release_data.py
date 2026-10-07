@@ -306,7 +306,8 @@ def hh_table(R):
             'columns': ['Years', 'Environment', 'Who', 'Measure', 'Compassionism vs no programme', 'Change, points (95% interval)'], 'rows': rows}
 
 ATTRIB_LABELS = {'xRelief': 'without the BU allowance (no BU are issued, so none buy essentials, expire or convert)',
-                 'xProj': 'without project hiring (expired BU fund projects by the earlier allocation rule instead)'}
+                 'xProj': 'without project hiring (expired BU fund projects by the earlier allocation rule instead)',
+                 'xSplit': 'without the premium split (the premium is paid to every adult in proportion to wages, the earlier rule)'}
 
 AT_K = [('fgt0PY', 'Below the cost of living (adult-years)'), ('pov', 'Too little wealth at the last year (adults)'), ('bOAPy', 'Below 30 days of basic living (adult-years)'), ('hhCostKidPY', 'Children below the cost of living'),
         ('endoAnn', 'Programme inflation a year'), ('cost', 'Cost per adult a year')]
