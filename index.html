@@ -3903,7 +3903,12 @@ var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}, g
  * allowance at a quarter, partners' income swings at Shore's correlations, starting wealth from the SCF), the Hub's list of what BU can buy, income-graded
  * spending, and the two accounting corrections. relMainCfgs(PR) gives the no-programme and main rows the page's live run and the panel share. */
 var REL_V53 = {hh:{pool:'household', childBU:0.25, shock:'shore', wealth:'scf'}, bs:'hub', sg:true, g:{PTH_APPR_CONSERVE:true, SURP_CUT_MARKUP:true}};
-function relMainCfgs(PR){ return [{p:PR.baseline(), hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g}, n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5, REL_V53))]; }
+/* v5.4 step 9 (Oct 7, 2026; dev/DECISIONS.md Session 41; dev/reports/v5-22-v54-report.md): what v5.4's main result adds to v5.3's, recorded before the 500-run
+ * restudy (no modelling error found, so every part joins): the risk measures (reporting only), job loss and re-employment with unemployment insurance (in both
+ * runs), PTH's books, PTF by sector with members who leave. The disaster is a scenario, shown as a reading. relMainCfgs(PR) carries them in both rows (the page's
+ * live run and the panel); relMainCfgs(PR, true) gives v5.3's main row and its no-programme run exactly. */
+var REL_V54 = {v54:{rk:true, empl:{}, pthb:{}, ptfs:{}}};
+function relMainCfgs(PR, v53){ var X = v53 ? {} : REL_V54; return [Object.assign({p:PR.baseline(), hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g}, X), n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5, REL_V53, X))]; }
 /* Plan step 9 (Oct 1, 2026; dev/reports/09-avoided-costs.md): PUBLIC COSTS OF POVERTY AVOIDED, reported beside the programme's cost (no feedback
  * into the model). Homelessness (with the health care and justice costs that come with it): the model's extreme-poverty overlay (v4.18: HUD
  * 2025 AHAR point-in-time rate, scaled by housing distress against year 0) gives unhoused person-years; each is costed at two sourced ends:
@@ -5849,6 +5854,7 @@ function n1Row(PR, cm, v){
   if (v.drop) v.drop.forEach(function(k){ delete c[k]; });  /* v5.3 B9: a part of the design removed (a module's row option: pj, es, sp, pd, jn, ml, cs) */
   if (v.pset) Object.assign(c.p, v.pset);  /* v5.3 B9: a part of the preset switched off (ptf, pth, szh, cip) */
   if (v.pwOff) c.pw = Object.assign({}, c.pw || {}, v.pwOff);  /* v5.3 B9: a pathway closed (relief, conversion, octave) */
+  if (v.v54) c.v54 = v.v54;  /* v5.4 step 9: the round's switches (REL_V54) */
   return c;
 }
 /* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is

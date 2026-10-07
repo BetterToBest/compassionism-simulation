@@ -222,6 +222,22 @@
    },
    "equal": true,
    "seconds": 327
+  },
+  {
+   "from": "777438fe0c4351fe157115e73ec02b49c9eed32a9f9f80facd47109a33f200cb",
+   "to": "99fb4b577ef1bb095cf24287abdddd2c8f60379e339e3cd1ad90ca16a485dc0b",
+   "date": "2026-10-07",
+   "change": "v5.4 step 9: REL_V54, relMainCfgs carrying it (and relMainCfgs(PR, true) for v5.3's rows), n1Row passing the v54 row option",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 209
   }
  ]
 }
