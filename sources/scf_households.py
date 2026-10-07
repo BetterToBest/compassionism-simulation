@@ -6,7 +6,7 @@ Families whose head is aged 25 to 66 with wage income (WAGEINC > 0), in the mode
 or 2 (neither), KIDS > 0 or KIDS = 0. Dollars are taken from 2022 to 2025 with CPI-U annual averages 292.655 and 321.943 (BLS). The single adults without
 children are exactly the group of sources/scf_singles.py, so their 100 quantiles equal CFG.SCF_NETWORTH_PCTL.
 
-Prints, for each type: the share of families, net worth percentiles, the share in debt, the normal-score (Gaussian-copula) correlation of the family's
+Prints, for each type and for all four together: the share of families, net worth percentiles, the share in debt, the normal-score (Gaussian-copula) correlation of the family's
 wage income with its net worth, and the 100 net-worth quantiles at 0.5%, 1.5%, ..., 99.5% in 2025 dollars that index.html holds as CFG.HH_SCF_PCTL.
 
 Usage: python3 sources/scf_households.py [rscfp2022.dta]   (without a path it downloads the extract, about 3 MB; needs pandas and numpy)
@@ -26,6 +26,7 @@ else:
 base = df[(df.age >= 25) & (df.age <= 66) & (df.wageinc > 0)]
 TYPES = [('coupleKids', (base.married == 1) & (base.kids > 0)), ('coupleNoKids', (base.married == 1) & (base.kids == 0)),
          ('singleParent', (base.married == 2) & (base.kids > 0)), ('single', (base.married == 2) & (base.kids == 0))]
+TYPES = TYPES + [('all', base.married > 0)]  # every family of the four types together (the yardstick's all-household line)
 for name, sel in TYPES:
     g = base[sel]; w = g.wgt.values.astype(float); nw = g.networth.values*CPI25/CPI22; wi = g.wageinc.values*CPI25/CPI22
     def wq(x, q):
