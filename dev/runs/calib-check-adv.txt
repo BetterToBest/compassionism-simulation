@@ -1,0 +1,201 @@
+v5.3 B7 calibration readings, adv, seeds 1-500 (2626 s) -> dev/runs/calib-check-adv.json
+
+rel:
+  fgt0PY              78.17 ->      42.11   change -36.06 [-36.21, -35.92]
+  pov                 82.65 ->      87.06   change 4.42 [4.27, 4.57]
+  bOAPy               60.05 ->      33.08   change -26.97 [-27.14, -26.80]
+  bNAPy               60.05 ->      38.46   change -21.59 [-21.74, -21.43]
+  fgt2PY              20.63 ->       4.59   change -16.04 [-16.11, -15.97]
+  endoAnn            0.0000 ->     0.4554   change 0.4554 [0.4542, 0.4566]
+  cost               0.0000 ->      27676   change 27676 [27627, 27725]
+  medWealthReal       -6864 ->      -5.59   change 6859 [6859, 6859]
+  giniD              0.3788 ->     0.3508   change -0.0280 [-0.0289, -0.0272]
+  fplPY               17.46 ->       9.74   change -7.72 [-7.80, -7.64]
+  y7Pov               59.64 ->      51.94   change -7.70 [-7.91, -7.50]
+  ePov                82.65 ->      87.06   change 4.42 [4.27, 4.57]
+
+relSg:
+  fgt0PY              78.12 ->      42.79   change -35.33 [-35.47, -35.19]
+  pov                 73.59 ->      82.29   change 8.70 [8.48, 8.92]
+  bOAPy               47.84 ->      26.67   change -21.17 [-21.34, -21.01]
+  bNAPy               47.84 ->      31.27   change -16.58 [-16.73, -16.42]
+  fgt2PY              20.22 ->       4.65   change -15.57 [-15.64, -15.50]
+  endoAnn            0.0000 ->     0.4646   change 0.4646 [0.4633, 0.4659]
+  cost               0.0000 ->      27500   change 27500 [27453, 27548]
+  medWealthReal       -6864 ->       2581   change 9445 [9323, 9567]
+  giniD              0.3749 ->     0.3499   change -0.0249 [-0.0258, -0.0241]
+  fplPY               16.82 ->      10.01   change -6.82 [-6.89, -6.74]
+  y7Pov               49.98 ->      52.51   change 2.54 [2.32, 2.75]
+  ePov                73.59 ->      82.29   change 8.70 [8.48, 8.92]
+
+hh:
+  fgt0PY              72.00 ->      26.93   change -45.06 [-45.26, -44.86]
+  pov                 76.52 ->      73.81   change -2.70 [-2.96, -2.45]
+  bOAPy               50.88 ->      17.08   change -33.80 [-34.01, -33.60]
+  bNAPy               50.88 ->      22.10   change -28.78 [-28.98, -28.58]
+  fgt2PY              17.32 ->       2.54   change -14.78 [-14.85, -14.71]
+  endoAnn            0.0000 ->     0.4109   change 0.4109 [0.4100, 0.4118]
+  cost               0.0000 ->      33837   change 33837 [33766, 33907]
+  medWealthReal       -6864 ->       8550   change 15415 [15228, 15602]
+  giniD              0.3178 ->     0.2768   change -0.0410 [-0.0420, -0.0401]
+  fplPY               16.78 ->       5.19   change -11.59 [-11.68, -11.50]
+  y7Pov               50.64 ->      35.94   change -14.70 [-14.96, -14.43]
+  ePov                76.52 ->      73.81   change -2.70 [-2.96, -2.45]
+  hhCostPY            77.28 ->      31.46   change -45.83 [-46.04, -45.61]
+  hhCostKidPY         91.29 ->      43.42   change -47.87 [-48.21, -47.53]
+  hhWlthPY            62.95 ->      51.09   change -11.86 [-12.03, -11.69]
+  hhWlthEnd           80.96 ->      74.73   change -6.23 [-6.46, -6.00]
+  hhWlthKidEnd        94.68 ->      89.08   change -5.60 [-5.85, -5.35]
+  hhBleiPY            57.89 ->      17.24   change -40.64 [-40.87, -40.41]
+  hhBleiKidPY         76.42 ->      18.57   change -57.86 [-58.23, -57.49]
+  hhFplPY             12.74 ->       3.97   change -8.76 [-8.86, -8.66]
+  hhMedEq             19790 ->      34197   change 14408 [14251, 14565]
+
+hhScf:
+  fgt0PY              72.07 ->      27.12   change -44.95 [-45.15, -44.75]
+  pov                 60.85 ->      73.30   change 12.46 [12.20, 12.72]
+  bOAPy               41.43 ->      16.63   change -24.81 [-24.96, -24.65]
+  bNAPy               41.43 ->      22.05   change -19.38 [-19.54, -19.23]
+  fgt2PY              17.12 ->       2.56   change -14.56 [-14.63, -14.49]
+  endoAnn            0.0000 ->     0.4140   change 0.4140 [0.4131, 0.4149]
+  cost               0.0000 ->      33767   change 33767 [33697, 33837]
+  medWealthReal       -6864 ->       8826   change 15690 [15501, 15879]
+  giniD              0.3164 ->     0.2769   change -0.0395 [-0.0405, -0.0386]
+  fplPY               16.54 ->       5.28   change -11.26 [-11.35, -11.17]
+  y7Pov               39.48 ->      30.28   change -9.20 [-9.40, -9.01]
+  ePov                60.85 ->      73.30   change 12.46 [12.20, 12.72]
+  hhCostPY            77.33 ->      31.66   change -45.68 [-45.89, -45.46]
+  hhCostKidPY         91.27 ->      43.65   change -47.61 [-47.96, -47.27]
+  hhWlthPY            49.37 ->      46.95   change -2.42 [-2.55, -2.28]
+  hhWlthEnd           65.71 ->      74.30   change 8.59 [8.35, 8.83]
+  hhWlthKidEnd        79.57 ->      88.70   change 9.13 [8.80, 9.45]
+  hhBleiPY            46.54 ->      16.73   change -29.81 [-29.99, -29.63]
+  hhBleiKidPY         60.06 ->      17.87   change -42.20 [-42.51, -41.88]
+  hhFplPY             12.48 ->       4.04   change -8.44 [-8.54, -8.35]
+  hhMedEq             20209 ->      34202   change 13993 [13834, 14152]
+
+hhSg:
+  fgt0PY              71.97 ->      27.31   change -44.66 [-44.86, -44.46]
+  pov                 66.60 ->      59.53   change -7.08 [-7.41, -6.74]
+  bOAPy               39.00 ->      12.42   change -26.58 [-26.77, -26.39]
+  bNAPy               39.00 ->      12.96   change -26.05 [-26.23, -25.86]
+  fgt2PY              16.94 ->       2.57   change -14.37 [-14.44, -14.29]
+  endoAnn            0.0000 ->     0.4189   change 0.4189 [0.4179, 0.4199]
+  cost               0.0000 ->      33657   change 33657 [33587, 33726]
+  medWealthReal       -6864 ->      20323   change 27187 [27030, 27344]
+  giniD              0.3137 ->     0.2766   change -0.0371 [-0.0380, -0.0361]
+  fplPY               16.21 ->       5.34   change -10.88 [-10.97, -10.79]
+  y7Pov               41.58 ->      32.90   change -8.67 [-8.92, -8.42]
+  ePov                66.60 ->      59.53   change -7.08 [-7.41, -6.74]
+  hhCostPY            77.26 ->      31.89   change -45.38 [-45.59, -45.16]
+  hhCostKidPY         91.28 ->      43.99   change -47.29 [-47.63, -46.94]
+  hhWlthPY            54.06 ->      44.24   change -9.82 [-10.03, -9.61]
+  hhWlthEnd           72.06 ->      59.21   change -12.85 [-13.19, -12.51]
+  hhWlthKidEnd        89.62 ->      70.02   change -19.60 [-20.10, -19.10]
+  hhBleiPY            45.56 ->      12.19   change -33.38 [-33.60, -33.16]
+  hhBleiKidPY         62.92 ->      11.69   change -51.24 [-51.61, -50.86]
+  hhFplPY             12.22 ->       4.09   change -8.13 [-8.23, -8.04]
+  hhMedEq             20248 ->      34236   change 13988 [13829, 14148]
+
+hhScfSg:
+  fgt0PY              72.06 ->      27.64   change -44.42 [-44.62, -44.22]
+  pov                 48.85 ->      59.69   change 10.83 [10.51, 11.16]
+  bOAPy               32.08 ->      12.28   change -19.80 [-19.94, -19.66]
+  bNAPy               32.08 ->      13.41   change -18.67 [-18.81, -18.52]
+  fgt2PY              16.87 ->       2.61   change -14.25 [-14.33, -14.18]
+  endoAnn            0.0000 ->     0.4247   change 0.4247 [0.4236, 0.4257]
+  cost               0.0000 ->      33530   change 33530 [33462, 33599]
+  medWealthReal       31987 ->      20265   change -11722 [-12707, -10737]
+  giniD              0.3130 ->     0.2767   change -0.0363 [-0.0372, -0.0353]
+  fplPY               16.15 ->       5.52   change -10.63 [-10.72, -10.54]
+  y7Pov               32.30 ->      27.19   change -5.12 [-5.31, -4.92]
+  ePov                48.85 ->      59.69   change 10.83 [10.51, 11.16]
+  hhCostPY            77.32 ->      32.24   change -45.08 [-45.29, -44.86]
+  hhCostKidPY         91.27 ->      44.42   change -46.85 [-47.19, -46.51]
+  hhWlthPY            40.39 ->      40.66   change 0.2788 [0.0937, 0.4640]
+  hhWlthEnd           53.35 ->      59.38   change 6.04 [5.69, 6.38]
+  hhWlthKidEnd        66.66 ->      70.17   change 3.52 [2.99, 4.05]
+  hhBleiPY            35.97 ->      12.01   change -23.95 [-24.11, -23.79]
+  hhBleiKidPY         46.27 ->      11.44   change -34.82 [-35.12, -34.52]
+  hhFplPY             12.05 ->       4.22   change -7.83 [-7.92, -7.73]
+  hhMedEq             20589 ->      34239   change 13650 [13490, 13810]
+
+ag:
+  fgt0PY              81.21 ->      41.35   change -39.85 [-39.99, -39.71]
+  pov                 85.84 ->      88.76   change 2.92 [2.78, 3.06]
+  bOAPy               62.89 ->      32.51   change -30.38 [-30.55, -30.21]
+  bNAPy               62.89 ->      38.93   change -23.96 [-24.11, -23.82]
+  fgt2PY              20.67 ->       4.57   change -16.10 [-16.16, -16.04]
+  endoAnn            0.0000 ->     0.4670   change 0.4670 [0.4658, 0.4682]
+  cost               0.0000 ->      27469   change 27469 [27423, 27516]
+  medWealthReal       -6864 ->        351   change 7215 [7170, 7261]
+  giniD              0.2892 ->     0.3088   change 0.0196 [0.0186, 0.0206]
+  fplPY               12.92 ->       7.52   change -5.40 [-5.47, -5.33]
+  y7Pov               62.32 ->      55.41   change -6.91 [-7.11, -6.71]
+  ePov                85.84 ->      88.76   change 2.92 [2.78, 3.06]
+
+agCps:
+  fgt0PY              79.82 ->      39.77   change -40.05 [-40.19, -39.91]
+  pov                 84.88 ->      87.80   change 2.92 [2.77, 3.06]
+  bOAPy               62.04 ->      31.34   change -30.70 [-30.87, -30.52]
+  bNAPy               62.04 ->      37.49   change -24.54 [-24.69, -24.40]
+  fgt2PY              19.95 ->       4.40   change -15.54 [-15.60, -15.48]
+  endoAnn            0.0000 ->     0.4558   change 0.4558 [0.4547, 0.4570]
+  cost               0.0000 ->      27614   change 27614 [27567, 27662]
+  medWealthReal       -6864 ->        720   change 7585 [7522, 7647]
+  giniD              0.2938 ->     0.3127   change 0.0189 [0.0179, 0.0198]
+  fplPY               12.10 ->       7.15   change -4.95 [-5.02, -4.89]
+  y7Pov               61.36 ->      53.85   change -7.51 [-7.71, -7.32]
+  ePov                84.88 ->      87.80   change 2.92 [2.77, 3.06]
+
+fbF:
+  fgt0PY              78.17 ->      42.42   change -35.76 [-35.90, -35.61]
+  pov                 82.65 ->      87.05   change 4.40 [4.25, 4.55]
+  bOAPy               60.05 ->      33.29   change -26.76 [-26.93, -26.59]
+  bNAPy               60.05 ->      38.72   change -21.33 [-21.48, -21.18]
+  fgt2PY              20.63 ->       4.62   change -16.00 [-16.08, -15.93]
+  endoAnn            0.0000 ->     0.4550   change 0.4550 [0.4538, 0.4562]
+  cost               0.0000 ->      27602   change 27602 [27553, 27651]
+  medWealthReal       -6864 ->      -5.62   change 6859 [6859, 6859]
+  giniD              0.3788 ->     0.3513   change -0.0275 [-0.0284, -0.0267]
+  fplPY               17.46 ->       9.97   change -7.50 [-7.58, -7.42]
+  y7Pov               59.64 ->      52.45   change -7.19 [-7.40, -6.98]
+  ePov                82.65 ->      87.05   change 4.40 [4.25, 4.55]
+  fbsAbove           0.0000 ->      78.19   change 78.19 [78.03, 78.35]
+  fbsAboveKids       0.0000 ->     0.0000   change 0.0000 [0.0000, 0.0000]
+  fbs50Med           0.0000 ->       2084   change 2084 [2076, 2091]
+
+fbL:
+  fgt0PY              78.17 ->      42.11   change -36.06 [-36.21, -35.92]
+  pov                 82.65 ->      87.06   change 4.42 [4.27, 4.57]
+  bOAPy               60.05 ->      33.08   change -26.97 [-27.14, -26.80]
+  bNAPy               60.05 ->      38.46   change -21.59 [-21.74, -21.43]
+  fgt2PY              20.63 ->       4.59   change -16.04 [-16.11, -15.97]
+  endoAnn            0.0000 ->     0.4554   change 0.4554 [0.4542, 0.4566]
+  cost               0.0000 ->      27676   change 27676 [27627, 27725]
+  medWealthReal       -6864 ->      -5.59   change 6859 [6859, 6859]
+  giniD              0.3788 ->     0.3508   change -0.0280 [-0.0289, -0.0272]
+  fplPY               17.46 ->       9.74   change -7.72 [-7.80, -7.64]
+  y7Pov               59.64 ->      51.94   change -7.70 [-7.91, -7.50]
+  ePov                82.65 ->      87.06   change 4.42 [4.27, 4.57]
+  fbsAbove           0.0000 ->      88.24   change 88.24 [88.07, 88.40]
+  fbsAboveKids       0.0000 ->     0.0000   change 0.0000 [0.0000, 0.0000]
+  fbs50Med           0.0000 ->        828   change 828 [825, 831]
+
+no programme at Year 7 against the SCF (in debt %, median net worth):
+  rel      per adult: 52.2%, $-4486
+  relSg    per adult: 36.1%, $25131
+  hh       per household: 46.8%, $16167; coupleKids 59.3%, $-14785; single 52.1%, $-1774; coupleNoKids 11.3%, $148778; singleParent 90.8%, $-8880
+  hhScf    per household: 38.4%, $87879; coupleKids 42.4%, $97349; single 43.4%, $33722; coupleNoKids 12.4%, $365743; singleParent 80.0%, $-8880
+  hhSg     per household: 32.0%, $48537; coupleKids 38.4%, $37335; single 36.1%, $25192; coupleNoKids 4.2%, $153648; singleParent 78.5%, $-8880
+  hhScfSg  per household: 28.6%, $127909; coupleKids 27.9%, $189219; single 33.8%, $61935; coupleNoKids 9.2%, $372465; singleParent 63.0%, $-8477
+identities, rel: money 15500000, equity 1055901, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, relSg: money 15500000, equity 1055901, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, hh: money 15500000, household 4991000, equity 1051680, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, hhScf: money 15500000, household 4991000, equity 1051680, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, hhSg: money 15500000, household 4991000, equity 1051680, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, hhScfSg: money 15500000, household 4991000, equity 1051680, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, ag: money 10500000, equity 1055331, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, agCps: money 10500000, equity 1055331, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, fbF: money 10500000, equity 1055901, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
+identities, fbL: money 10500000, equity 1055901, bu 10500, premium 10500, books-bu 10500, books-conv 10500, books-issued 10500, books-prices 10500, source 10500; all hold
