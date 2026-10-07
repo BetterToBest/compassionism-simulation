@@ -193,7 +193,9 @@ def paired_table(R):
     for Y in ('20', '40'):
         if Y not in R['panels']: continue
         for e, en in ENVS:
-            r = 'panels.%s.envs.%s.rows.release' % (Y, e); Pr = get(R, r + '.paired')
+            r = 'panels.%s.envs.%s.rows.release' % (Y, e)
+            if not has(R, r + '.paired'): continue
+            Pr = get(R, r + '.paired')
             for k, dk, lbl in PAIRED:
                 if k not in Pr or not has(R, r + '.' + dk): continue
                 q = r + '.paired.' + k
