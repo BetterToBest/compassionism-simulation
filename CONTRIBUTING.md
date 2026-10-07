@@ -68,7 +68,7 @@ The notes for the current release stay here (the release workflow reads them fro
 
 ### Not changed
 
-Every figure, the engine, the main row, the readings, the walk-through video (held until the next model round, d151) and the earlier-engine page's engine.
+Every figure, the engine, the main row, the readings, the walk-through video (held until the next model round, d151; since Oct 7, 2026 off the page and out of the README until the simulation is settled, at Duke's request) and the earlier-engine page's engine.
 
 ---
 

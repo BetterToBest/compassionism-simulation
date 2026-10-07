@@ -12,7 +12,7 @@ Since v5.2.1 the results are guided sections under one control strip (environmen
 
 **[▶ Open the simulation](https://bettertobest.github.io/compassionism-simulation/)** · **[The findings, chart by chart](https://bettertobest.github.io/compassionism-simulation/findings.html)** · DOI: [10.17605/OSF.IO/QWTE2](https://doi.org/10.17605/OSF.IO/QWTE2)
 
-**[▶ Watch the walk-through](https://bettertobest.github.io/compassionism-simulation/walkthrough/walkthrough.mp4)** (narrated by a synthetic voice, with captions) · [the same tour as text](walkthrough/README.md)
+The narrated walk-through is off the page while the model is still changing (it showed an earlier version); it comes back, re-recorded, once the simulation is settled.
 
 
 [![checks](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml/badge.svg)](https://github.com/BetterToBest/compassionism-simulation/actions/workflows/checks.yml)

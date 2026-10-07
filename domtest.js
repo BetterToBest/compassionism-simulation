@@ -939,9 +939,12 @@ function phase11(done) {
     liveOK && w.SURPLUS_CONSUMPTION_SHARE === 0 && w.CONVERSION_MODEL === 'engine', live ? 'BLEI poverty page ' + live.x.r.bOAPy.toFixed(2) + ' / harness ' + hR[1].bOAPy.toFixed(2) + '; spending share after ' + w.SURPLUS_CONSUMPTION_SHARE : 'no run');
   const vis = fdEl.textContent + ' ' + fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8');
   const lim = [...d.querySelectorAll('#uncertainty-notice li')].length, draft = fs.existsSync(path.join(path.dirname(FILE), 'dev', 'drafts', 'compare-designs.html'));
-  check('step 12: the comparison has left the page (no table, no "other designs", saved unlinked in dev/drafts/), the walk-through (v5.0, s65) is linked from the README and plays from the top of the page, and a short list of limits remains',
-    !d.getElementById('fd-table') && !d.getElementById('fd-data') && !/other designs/i.test(vis) && /walkthrough\/walkthrough\.mp4/.test(fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8')) && !!d.querySelector('#fd-video video source[src^="walkthrough/walkthrough.mp4"]') && draft && lim >= 5 && lim <= 8,
-    'limits ' + lim + '; draft ' + (draft ? 'saved' : 'MISSING'));
+  /* Oct 7, 2026 (Duke): the walk-through (v5.0, s65) is off the page and out of the README until the model settles (it showed an earlier version); its files stay
+   * in walkthrough/ for the one re-recording when the simulation is settled. */
+  const wtDir = path.join(path.dirname(FILE), 'walkthrough'), wtKept = ['walkthrough.mp4', 'tour.json', 'README.md'].every(f => fs.existsSync(path.join(wtDir, f)));
+  check('step 12: the comparison has left the page (no table, no "other designs", saved unlinked in dev/drafts/), the out-of-date walk-through is neither on the page nor linked from the README (its files kept for the re-recording), and a short list of limits remains',
+    !d.getElementById('fd-table') && !d.getElementById('fd-data') && !/other designs/i.test(vis) && !/walkthrough\/walkthrough\.mp4/.test(fs.readFileSync(path.join(path.dirname(FILE), 'README.md'), 'utf8')) && !d.querySelector('video, #fd-video *') && ![...d.querySelectorAll('[href], [src]')].some(e => /walkthrough\//.test(e.getAttribute('href') || e.getAttribute('src'))) && wtKept && draft && lim >= 5 && lim <= 8,
+    'limits ' + lim + '; draft ' + (draft ? 'saved' : 'MISSING') + '; walk-through files ' + (wtKept ? 'kept' : 'MISSING'));
   /* v5.2 step 8 (decision D): the earlier engine moved to its own page, linked from the front door; that page links back, carries the same script as this one
    * (dev/tools/sync_earlier.py), keeps every preset, and a pick loads that preset and runs it. This page no longer carries the earlier engine's controls. */
   const we = makeWindow('', {page: 'early'}), de = we.document, ln = d.getElementById('fd-old-link'), back = de.querySelector('#ee-head a[href="index.html"]');
