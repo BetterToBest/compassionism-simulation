@@ -1776,6 +1776,15 @@ function rel53Keys(r, b){
   K.forEach(function(k){ if (typeof r[k] === 'number') o[k] = +r[k].toFixed(k === 'hhGiniEq' ? 4 : k === 'hhMedEq' ? 0 : 2); });
   if (b) { o.d53 = {}; D.forEach(function(k){ if (r._s && r._s[k] && b._s && b._s[k]){ var x = tbDiff(r, b, k); o.d53[k] = [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; } }); }
   return o; }
+/* v5.3 B10 (plan item A5, deferred from v5.2.2): the paired effect run by run. For the main row and each headline measure (lower is better for all), the
+ * per-seed difference D = programme - no programme on the same seed: the share of runs in which the programme does better (D < 0) and worse (D > 0), and the
+ * 10th, 50th and 90th percentiles of D. The mean of D and its 95% interval are the panel's d-keys (tbDiff, computed on the same paired differences). */
+var PAIRED_KEYS = ['bOAPy', 'bNAPy', 'fgt0PY', 'pov', 'hhCostKidPY', 'hhWlthKidEnd'];
+function pairedShares(r, b){
+  var o = {}; PAIRED_KEYS.forEach(function(k){ if (!(r._s && r._s[k] && b._s && b._s[k])) return; var D = r._s[k].map(function(x, i){ return x - b._s[k][i]; }), n = D.length, eps = 1e-9;
+    o[k] = {n:n, better:+(D.filter(function(d){ return d < -eps; }).length/n*100).toFixed(1), worse:+(D.filter(function(d){ return d > eps; }).length/n*100).toFixed(1),
+      p10:+quantileOf(D, 0.1).toFixed(2), p50:+quantileOf(D, 0.5).toFixed(2), p90:+quantileOf(D, 0.9).toFixed(2)}; });
+  return o; }
 function releaseRowsV53(SC){
   var ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5, REL_V53, {em:true, fb:true}), W = function(x){ return Object.assign({}, ALL, x); }, H = function(x){ return Object.assign({}, HH_V53, x); };
   return [
@@ -2357,6 +2366,10 @@ function hhUnitSuite(){
     var A = R.filter(function(r){ return r.k === 'a'; }); A.forEach(function(r){ var dk = Object.keys(r.v).filter(function(k){ return JSON.stringify(r.v[k]) !== JSON.stringify(main.v[k]); }).concat(Object.keys(main.v).filter(function(k){ return !(k in r.v); }));
       if (dk.length !== 1) bad.push(r.j + ' differs in ' + dk.join(',')); });
     return {pass:bad.length === 0 && A.length >= 10, detail:R.length + ' rows (' + A.length + ' attribution rows), ' + B.length + ' no-programme pairs; problems: ' + (bad.length ? bad.join('; ') : 'none')}; });
+  t('v5.3 B10 (plan A5): the paired effect run by run: pairedShares counts the runs where the programme does better (D < 0) and worse (D > 0) on the same seed, and the percentiles of D; a measure missing from either run is left out', function(){
+    var r = {_s:{pov:[1, 2, 3, 4, 5], fgt0PY:[1, 1, 1, 1, 1]}}, b = {_s:{pov:[2, 2, 1, 5, 6], fgt0PY:[1, 1, 1, 1, 1]}}, o = pairedShares(r, b), q = o.pov;  /* D = -1, 0, 2, -1, -1 */
+    var ok = q.n === 5 && q.better === 60 && q.worse === 20 && q.p50 === -1 && q.p10 === -1 && Math.abs(q.p90 - 1.2) < 1e-9 && o.fgt0PY.better === 0 && o.fgt0PY.worse === 0 && !('bOAPy' in o);
+    return {pass:ok, detail:'better ' + q.better + '%, worse ' + q.worse + '%, D percentiles ' + [q.p10, q.p50, q.p90].join(' / ')}; });
   return out;
 }
 Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; }, EDC_KEYS, setEdcMeasure:function(x){ EDC_MEASURE = !!x; }, FBS_KEYS });
@@ -4514,7 +4527,7 @@ if (require.main === module) {
           dFgt2:d3(r, 'fgt2PY'), dF0:d3(r, 'fgt0PY'), dPov:d3(r, 'pov'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'),
           grp:{part:Math.round(r.gPartRes - (r._Bk || B).gPartRes), non:Math.round(r.gNonRes - (r._Bk || B).gNonRes), low:Math.round(r.gLowRes - (r._Bk || B).gLowRes), top:Math.round(r.gTopRes - (r._Bk || B).gTopRes)}, worse:grpCell(r, r._Bk || B).split(' | ')[1],
           unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)};
-          if (V53) Object.assign(out.rows[rw.j], rel53Keys(r, r._Bk || B), {kind:rw.k});
+          if (V53) Object.assign(out.rows[rw.j], rel53Keys(r, r._Bk || B), {kind:rw.k}, rw.j === 'release' ? {paired:pairedShares(r, B)} : {});
           if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
         if (V53){ Object.assign(out.base, rel53Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel53Keys(BX[b.j], null)); }); }
         RJ.envs[e] = out; });

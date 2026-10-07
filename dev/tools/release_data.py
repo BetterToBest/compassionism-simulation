@@ -182,6 +182,25 @@ def rel_table(R, Y):
                         'Price level at the last year (times today’s)' + (': median over the runs, with the 10th to 90th percentile and the mean' if new else ': mean over the runs'),
                         'Too little wealth if every Source dollar were backed (H1)', 'Cost per adult a year'] + (['Children below the cost of living, and the change (95% interval)'] if kids(R) else []), 'rows': rows}
 
+PAIRED = [('bOAPy', 'dBO', 'Below 30 days of basic living (BLEI)'), ('bNAPy', 'dBN', 'Below 30 days, design-neutral'), ('fgt0PY', 'dF0', 'Below the cost of living'), ('pov', 'dPov', 'Too little wealth at the last year'),
+          ('hhCostKidPY', 'd53.hhCostKidPY', 'Children below the cost of living'), ('hhWlthKidEnd', 'd53.hhWlthKidEnd', 'Children in a household with too little wealth, last year')]
+
+def paired_table(R):
+    """v5.3 (plan item A5): the paired effect run by run, for the main row: the mean of the per-run differences with its 95% interval, the share of runs in which the
+    programme does better and worse, and the spread of the differences (10th, 50th, 90th percentile)"""
+    if not has(R, 'panels.20.envs.ref.rows.release.paired'): return None
+    rows = []
+    for Y in ('20', '40'):
+        if Y not in R['panels']: continue
+        for e, en in ENVS:
+            r = 'panels.%s.envs.%s.rows.release' % (Y, e); Pr = get(R, r + '.paired')
+            for k, dk, lbl in PAIRED:
+                if k not in Pr or not has(R, r + '.' + dk): continue
+                q = r + '.paired.' + k
+                rows.append([C(Y), C(en), C(lbl), C(*ci(r + '.' + dk)), C(N(q + '.better', 'p1')), C(N(q + '.worse', 'p1')), C(N(q + '.p10', 's1'), ' / ', N(q + '.p50', 's1'), ' / ', N(q + '.p90', 's1'))])
+    return {'id': 'rel-paired', 'title': 'Run by run: how often the programme does better than no programme on the same draws', 'filter': {'years': 0, 'env': 1},
+            'columns': ['Years', 'Environment', 'Measure (lower is better)', 'Mean change, points (95% interval)', 'Runs in which the programme does better', 'Runs in which it does worse', 'Change in the 10th / middle / 90th run, points'], 'rows': rows}
+
 TG_MEASURES = [('fpl', 'Below the US official poverty line (money income)', 'under 2% (from about 12%)', 'p1', 'pov'), ('fplX', 'Below the poverty line, Supplemental-style resources', 'under 2%', 'p1', 'pov'),
                ('bO', 'Below 30 days of basic living (BLEI, BLEI paper)', 'under 2%', 'p1', 'pov'), ('bN', 'Below 30 days of basic living (design-neutral)', 'under 2%', 'p1', 'pov'),
                ('f0', 'Below the cost of living', 'under 2%', 'p1', 'pov'), ('pov', 'Too little wealth', 'under 2%', 'p1', 'pov'), ('ep', 'Unhoused (extreme poverty)', 'under 2%', 'p2', 'pov'),
@@ -468,12 +487,19 @@ def texts(R):
                           'A mark further left means fewer people below the line. All three measures are shares of adults: of adult-years for the first two (averaged over the run), of adults at the last year for the third.')
     Tx['results.limits'] = ('It does not show a forecast: it shows what the model’s rules imply. The cautious main reading treats the Source’s payout as new money; the optimistic end (H1, every dollar backed by new output) is in the table. '
                             'The adults are single and working-age, with no children or households, in one country’s prices and wages (US). In the Adverse and Stress environments more adults end with too little wealth than with no programme, because prices rise and savings in the model earn nothing.')
-    if K53:
+    if K53:  # plan item B10: so readers do not compare across the break
+        Tx['release.changed'] = ('What changed for the figures in v5.3: the adults now live in households with their children, as US adults do; each household starts with the wealth the Federal Reserve\u2019s survey shows for its kind of household; '
+                                 'people spend less in a year their income is short; and BU buy the Hub\u2019s full list (transport and childcare included). These change the no-programme run as well as the programme, so v5.3\u2019s figures are not comparable with earlier releases\u2019: compare within a release. '
+                                 'v5.2\u2019s main row, run on the v5.3 engine, is shown beside the main result as the reading \u201cv5.2\u2019s main row\u201d.')
         E20 = R['panels']['20']['envs']; w = [en for e, en in ENVS if E20[e]['rows']['release']['pov'] > E20[e]['base']['pov']]
         Tx['results.limits'] = ('It does not show a forecast: it shows what the model’s rules imply. The cautious main reading treats the Source’s payout as new money; the optimistic end (H1, every dollar backed by new output) is in the table. '
                                 'The adults live in households as US adults do (single adults, single parents, couples with and without children), in one country’s prices and wages (US). In the main reading nobody ages: children stay children, and couples neither form nor part (the ageing reading lets children grow up, be born and leave home). '
                                 + ('More adults end with too little wealth than with no programme in ' + ' and '.join(w) + ' over 20 years, because prices rise with the programme’s new money and savings in the model earn nothing.' if w else
                                    'In every environment fewer adults end with too little wealth than with no programme over 20 years.'))
+    if has(R, 'panels.20.envs.ref.rows.release.paired'):
+        Tx['results.read'] += (' The table \u201cRun by run\u201d takes each of the {{meta.seeds|int}} runs on its own: the change on the same draws, how often the programme does better or worse than no programme, '
+                               'and the change in the 10th, middle and 90th run. In Reference, 20 years, the programme does better on the cost of living in {{panels.20.envs.ref.rows.release.paired.fgt0PY.better|p1}} of the runs '
+                               'and on too little wealth in {{panels.20.envs.ref.rows.release.paired.pov.better|p1}}.')
     if 'pLevEndMed' in R['panels']['20']['envs']['ref']['rows']['release']:
         Tx['results.prices'] = ('The price-level column gives the typical run first: the median over the {{meta.seeds|int}} runs, then the 10th to 90th percentile and the mean. The price level compounds, so the mean runs above the typical run, and the gap grows with the horizon. '
                                 'Above 1,000 times today’s prices the figure shows the model’s price rule running away (it has no central bank, no interest rate and no protection for savings): a limit of the model, not a forecast.')
@@ -565,7 +591,7 @@ def texts(R):
     return Tx
 
 STORIES = [  # the explorer's guided reads: id, title, chart kind, tables, required data
-    ('results', 'Results by environment and horizon', 'dumbbell', ['rel-t20', 'rel-t40']),
+    ('results', 'Results by environment and horizon', 'dumbbell', ['rel-t20', 'rel-t40', 'rel-paired']),
     ('hh', 'Households and children', 'hh', ['rel-hh']),
     ('targets', 'Against the Hub’s own targets', 'targets', ['rel-tg']),
     ('fixed', 'Poverty lines fixed in dollars', 'fixed', ['rel-fx']),
@@ -629,7 +655,7 @@ def build(info, src=None):
         R['attrib'] = at
     R['derived'] = derived(R)
     R['figures'] = catalogue(R, '20') + (catalogue(R, '40') if p40 else []) + gini_figures(R, '20') + (gini_figures(R, '40') if p40 else [])
-    tables = [rel_table(R, '20')] + ([rel_table(R, '40')] if p40 else []) + [t for t in [targets_table(R) if p40 else None, fixed_table(R) if p40 else None, hh_table(R), readings_table(R), attrib_table(R), backing_table(R)] if t] + us_tables(R)
+    tables = [rel_table(R, '20')] + ([rel_table(R, '40')] if p40 else []) + [t for t in [paired_table(R)] if t] + [t for t in [targets_table(R) if p40 else None, fixed_table(R) if p40 else None, hh_table(R), readings_table(R), attrib_table(R), backing_table(R)] if t] + us_tables(R)
     R['tables'] = tables
     R['text'] = texts(R)
     have = {t['id'] for t in tables}
@@ -712,7 +738,8 @@ def concepts_html(R):
          + ('<li><strong>{{meta.agents|int}} simulated adults</strong> of working age, living in households as US adults do (single adults, single parents, couples with and without children; Census Bureau figures), with their children, followed for' if kids(R) else
             '<li><strong>{{meta.agents|int}} simulated adults</strong>, single and of working age, followed for') + ' {{panels.20._meta.years|int}}' + y40 + ' years, once with Compassionism and once with no programme, on the same random draws (common random numbers), so a difference comes from the programme and not from luck.</li>'
          '<li><strong>{{meta.seeds|int}} paired runs</strong> (seeds 1 to {{meta.seeds|int}}); every figure is their average, with a 95% interval for each change. '
-         'Each change is the mean of the per-run differences (Compassionism minus no programme on the same draws), and its 95% interval is computed on those paired differences, not from two separate averages.</li>'
+         'Each change is the mean of the per-run differences (Compassionism minus no programme on the same draws), and its 95% interval is computed on those paired differences, not from two separate averages.'
+         + (' The findings explorer also counts, for each headline measure, the runs in which the programme does better (\u201cRun by run\u201d).' if has(R, 'panels.20.envs.ref.rows.release.paired') else '') + '</li>'
          '<li><strong>Three environments:</strong> Reference (' + ENV_DESC['ref'] + '); Adverse (' + ENV_DESC['adv'] + '); Stress Test (' + ENV_DESC['st'] + ').</li>'
          '<li><strong>The main reading</strong> is Compassionism as specified on the Research Hub, every mechanism in, paid for by a Source that issues the BU; cautiously, what the Source pays out is new money except what new output backs. Every other assumption is a labelled reading beside it.</li></ul></div>'
          '<div class="kc"><h3>The measures</h3><ul>'

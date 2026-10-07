@@ -68,6 +68,7 @@ footer p{margin:0 0 6px}
   <p class="lede" id="lede">Three plain results first, then a guided read of each with a chart, then every table behind them with downloads. Pick a release, an environment and 20 or 40 years; the address carries your choice, so any view can be shared.</p>
   <div class="fx-version" id="version-box"><label for="version" class="fx-ctl">Release</label> <select id="version" class="fx-select" aria-describedby="version-sum"><option>loading&hellip;</option></select> <span id="version-badge" class="fx-badge">current</span></div>
   <p class="fx-note" id="version-sum"></p>
+  <p class="fx-note" id="version-changed" data-rel-text="1" hidden></p>
 </div></div>
 
 <nav class="fx-nav" aria-label="Sections and view"><div class="wrap">
@@ -131,6 +132,7 @@ footer p{margin:0 0 6px}
     $('version-sum').textContent = 'v' + ent.version + ' (' + ent.date + (ent.shownIn ? '; shown here as released in v' + ent.shownIn + ', figures unchanged' : '') + '): ' + ent.summary;
     $('release-file').href = 'data/' + ent.file; $('release-file').textContent = 'data/' + ent.file;
     return F.fetchJSON('data/' + ent.file).then(function (d) { R = d; st.v = d.version; F.writeState(st, ['v']); controls(); render();
+      $('version-changed').innerHTML = d.text && d.text['release.changed'] ? F.text(d, 'release.changed') : ''; $('version-changed').hidden = !(d.text && d.text['release.changed']);
       if (location.hash && document.getElementById(location.hash.slice(1))) document.getElementById(location.hash.slice(1)).scrollIntoView(); });
   }
   F.fetchJSON('data/manifest.json').then(function (m) {
