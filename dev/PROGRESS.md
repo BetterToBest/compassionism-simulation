@@ -145,7 +145,7 @@ Restart the branch from `main` once v5.2.2 has merged (`git fetch origin main &&
 
 ## Session 38 (Oct 6, 2026): v5.3 households and children
 
-**Status (Oct 7, 18:00 UTC): v5.3 is complete and the pull request (BetterToBest/compassionism-simulation#11) is ready. Duke's next step: read `dev/reports/v5-20-restudy.md` and `dev/reports/v5-19-attribution.md`, say if anything misrepresents the design, and merge when they read right (merging releases v5.3; the release workflow tags it). Next round: v5.4 labor and markets (`dev/plans/v5.3-plan-prompt.md`, section 4).**
+**Status (Oct 7, 18:30 UTC): Duke merged v5.3 (BetterToBest/compassionism-simulation#11, 18:09). The release workflow tagged `v5.3` at an intermediate commit (3649a37, before the release data was built); v5.3.1 re-releases the same figures at the complete commit and fixes the workflow to tag the merge commit (DECISIONS, Session 39, v5.3.1). Earlier status: v5.3 is complete and the pull request (BetterToBest/compassionism-simulation#11) is ready. Duke's next step: read `dev/reports/v5-20-restudy.md` and `dev/reports/v5-19-attribution.md`, say if anything misrepresents the design, and merge when they read right (merging releases v5.3; the release workflow tags it). Next round: v5.4 labor and markets (`dev/plans/v5.3-plan-prompt.md`, section 4).**
 
 Duke merged v5.2.2 (tag `v5.2.2`, reproduction archive attached) and said "start v5.3". Branch `claude/practical-dijkstra-uayxaa` restarted from `main` at `0701615`. US birth figures from Duke: `sources/births_us.md` (national totals; an age breakdown is still needed for births by the mother's age: the Census API now asks for a key and cdc.gov refuses connections, so use the Census Bureau's published fertility tables or a copy Duke uploads).
 
