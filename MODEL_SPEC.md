@@ -155,6 +155,7 @@ The Source issues the BU, pays conversions and keeps the conversion tax (`fin 's
 | Testbed groups | `s + 900001` | 1 per adult | targeting groups (reporting) |
 | Ageing (reading) | `s + 600011` | per adult and per adult-year | only rows with ageing |
 | Review errors (reading) | `s + 800023` | 1 per adult-year | only rows with review errors |
+| Households (reading, v5.3) | `s + 500009` | at the start: an order of the adults, then per household with children 1 + 2 per child | only rows with households (`HOUSEHOLDS`) |
 
 A new random process gets its own stream; nothing may add a draw to the main stream. Rows of one study share every stream, so differences between rows come from the rows' rules, not from luck.
 

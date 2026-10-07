@@ -22,6 +22,10 @@ Standard library only; every input number is transcribed below with its table, a
    Childcare by care type, from MIT's own assignment (first child toddler care, second preschool care, third before/after-school and summer care): the
    first child's childcare, the second's increment and the third's increment.
 
+5. The official poverty line by household. U.S. Census Bureau, "Poverty Thresholds for 2025 by Size of Family and Number of Related Children Under 18 Years"
+   (www2.census.gov/programs-surveys/cps/tables/time-series/historical-poverty-thresholds/thresh25.xlsx, read Oct 7, 2026; the one-person figure, $16,749,
+   is the model's CFG.POVERTY_THRESHOLD_ONE since v5.2): the thresholds for the model's household types, householder under 65 (THRESH_2025).
+
 Usage: python3 sources/households.py   (prints the derived inputs that index.html holds as CFG.HH_*)
 """
 import json, os
@@ -62,6 +66,10 @@ def kid_ages():
     def d(t): s = sum(t); return [x/s for x in t]
     return {'couple': d(C2_BOTH), 'single': d(C2_ONE)}
 
+# --- 5. Census poverty thresholds 2025 (dollars), by adults and related children under 18, householder under 65 -----------------------------------------
+THRESH_2025 = {(1, 0): 16749, (1, 1): 22190, (1, 2): 25938, (1, 3): 32762, (1, 4): 37833,   # one adult: 1 person; 2 people, one child; 3, two; 4, three; 5, four
+               (2, 0): 21558, (2, 1): 25913, (2, 2): 32649, (2, 3): 38421, (2, 4): 43018}  # two adults: 2 people, none; 3, one; 4, two; 5, three; 6, four
+
 # --- 4. MIT baskets by family type at the model's scale -----------------------------------------------------------------------------------------------
 X = 49369.82
 KEYS = ['Food', 'Child Care', 'Medical', 'Housing', 'Transportation', 'Civic', 'Internet & Mobile', 'Other', 'Annual taxes']
@@ -95,3 +103,4 @@ if __name__ == '__main__':
     for t, v in b.items():
         print('  %-7s total %8.0f (x%.4f)  ' % (t, v['total'], v['total']/X) + ' '.join('%s %.0f' % (k, x) for k, x in v['comp'].items()))
     print('Childcare by care type (first child, toddler care; second, preschool; third, school-age): ' + ', '.join('%.0f' % x for x in cc))
+    print('Official poverty thresholds 2025 (adults, children): ' + ', '.join('%d+%d $%s' % (k[0], k[1], format(v, ',')) for k, v in THRESH_2025.items()))

@@ -30,6 +30,22 @@
    },
    "equal": true,
    "seconds": 236
+  },
+  {
+   "from": "6ef547078f9b48bcb8d41a153f9b4258b8debdca1df62230597e65b4ff10f789",
+   "to": "a4ed4d1829148c885dba848b8e2f148a342506a7c822fc181276f4d95cbbf742",
+   "date": "2026-10-07",
+   "change": "v5.3 B3: households (HOUSEHOLDS, off by default): composition on its own stream, household budgets with childcare, child allowance, pooling, household decisions and BLEI cost",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 186
   }
  ]
 }

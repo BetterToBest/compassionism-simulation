@@ -1988,6 +1988,72 @@ function acctUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { acctRelCfgs, acctStudy, acctProfile, ACCT_V53, acctUnitSuite, acctNew, setAcct:function(x){ ACCT = x; }, getAcct:function(){ return ACCT; } });
+/* v5.3 B3 (Oct 7, 2026): households (HOUSEHOLDS in index.html; DECISIONS Session 39, "B3, households"). */
+function hhUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = {hh:HOUSEHOLDS, comp:CFG.HH_COMP}; try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } finally { HOUSEHOLDS = sv.hh; CFG.HH_COMP = sv.comp; HHS = null; ACCT = null; } }
+  function rowsOf(e, js, hh){ var S = acctRelCfgs(e); return {S:S, cf:js.map(function(j){ var c = Object.assign({}, S.cfg.filter(function(x){ return x.j === j; })[0]); if (hh) c.hh = hh; return c; })}; }
+  var sv0 = CFG.HH_COMP;
+  function same(a, b, n){ var d = []; a.forEach(function(r, i){ TB_KEYS.forEach(function(k){ for (var q = 0; q < n; q++) if (!Object.is(r._s[k][q], b[i]._s[k][q])) d.push(i + ' ' + k); }); }); return d; }
+  t('v5.3 B3: households of one adult reproduce the adult-only model exactly (every adult single: every result of the release row and its no-programme pair, seeds 1-2, three environments)', function(){
+    var bad = [], k = 0;
+    acctProfile(function(){ ['ref', 'adv', 'st'].forEach(function(e){ var A = rowsOf(e, ['base', 'release']), B = rowsOf(e, ['base', 'release'], {});
+      var a = tbStudy(A.cf, 2, A.S.P, A.S.o); CFG.HH_COMP = {coupleKids:0, coupleNoKids:0, singleParent:0, single:1}; var b = tbStudy(B.cf, 2, B.S.P, B.S.o); CFG.HH_COMP = sv0;
+      k += 2*TB_KEYS.length*2; bad = bad.concat(same(a, b, 2).map(function(x){ return e + ' ' + x; })); }); });
+    return {pass:bad.length === 0, detail:k + ' values compared; differing: ' + (bad.length ? bad.slice(0, 6).join(', ') : 'none')}; });
+  t('v5.3 B3: the households drawn: fixed counts from the CPS shares (couples with and without children, single parents, singles), every adult in exactly one household, partners sharing participation, PTF and PTH, 1-4 children aged 0-17, the same households in every row of a seed, and the adults\' own traits untouched', function(){
+    var bad = [], info = '';
+    HOUSEHOLDS = Object.assign({}, HH_DEFAULTS); var P = FULL_INTEGRATION, n = P.nAgents;
+    [1, 2, 3].forEach(function(sd){
+      RNG = mulberry32(sd + 700003); var L = makeLatentPopulation(n), ag = L.map(function(l){ return instantiateAgent(l, P); }), keep = ag.map(function(a){ return [a.wage, a.wealth, a.automationRisk, a.lambda].join(','); });
+      hhInit(ag, sd); var Hs = HHS.list, seen = {}, c = {ck:0, cn:0, sp:0, s:0}, kids = 0;
+      Hs.forEach(function(H){ H.a.forEach(function(a){ seen[ag.indexOf(a)] = (seen[ag.indexOf(a)] || 0) + 1; if (a._hh !== H) bad.push('back-link'); });
+        if (H.a.length === 2){ if (H.kids.length) c.ck += 2; else c.cn += 2; var x = H.a[0], y = H.a[1]; if (x.inCCO !== y.inCCO || x.inPTF !== y.inPTF || x.inPTH !== y.inPTH) bad.push('partners differ'); }
+        else if (H.kids.length) c.sp++; else c.s++;
+        if (H.kids.length > 4) bad.push('more than 4 children'); H.kids.forEach(function(g){ kids++; if (!(g >= 0 && g <= 17 && g === Math.floor(g))) bad.push('child age ' + g); }); });
+      if (Object.keys(seen).length !== n || Object.keys(seen).some(function(i){ return seen[i] !== 1; })) bad.push('seed ' + sd + ': an adult in no household or in two');
+      var C = CFG.HH_COMP, nC = Math.round(n*(C.coupleKids + C.coupleNoKids)/2), nCK = Math.round(nC*C.coupleKids/(C.coupleKids + C.coupleNoKids));
+      if (c.ck !== 2*nCK || c.cn !== 2*(nC - nCK) || c.sp !== Math.round(n*C.singleParent) || c.s !== n - 2*nC - c.sp) bad.push('seed ' + sd + ' counts ' + JSON.stringify(c));
+      RNG = mulberry32(sd + 700003); var ag2 = makeLatentPopulation(n).map(function(l){ return instantiateAgent(l, P); }); hhInit(ag2, sd);
+      if (JSON.stringify(HHS.list.map(function(H){ return [H.a.map(function(a){ return ag2.indexOf(a); }), H.kids]; })) !== JSON.stringify(Hs.map(function(H){ return [H.a.map(function(a){ return ag.indexOf(a); }), H.kids]; }))) bad.push('seed ' + sd + ' not reproducible');
+      var keep2 = ag.map(function(a){ return [a.wage, a.wealth, a.automationRisk, a.lambda].join(','); }); if (keep2.join('|') !== keep.join('|')) bad.push('seed ' + sd + ' changed an adult\'s own traits');
+      if (sd === 1) info = 'seed 1: ' + (c.ck/2) + ' couples with children, ' + (c.cn/2) + ' without, ' + c.sp + ' single parents, ' + c.s + ' single adults; ' + kids + ' children (' + (kids/n).toFixed(3) + ' per adult)'; });
+    return {pass:bad.length === 0, detail:info + '; problems: ' + (bad.length ? bad.slice(0, 5).join('; ') : 'none')}; });
+  t('v5.3 B3: what a household needs: a single adult\'s is the one-adult basket exactly; a single parent of one child under 13 needs MIT\'s one-adult-one-child budget (childcare $12,914 included); the child allowance raises an adult\'s BU by a quarter per child per adult', function(){
+    HOUSEHOLDS = Object.assign({}, HH_DEFAULTS); var bad = [], LW = CFG.LIVING_WAGE_ANNUAL;
+    var S1 = {a:[{}], kids:[]}; hhNeed(S1); if (!S1.single || Math.abs(S1.need0 - LW) > 1e-6*LW) bad.push('single ' + S1.need0);
+    var SP = {a:[{}], kids:[4]}; hhNeed(SP); var mit1 = 87603.07; if (Math.abs(SP.need0 - mit1)/mit1 > 0.001) bad.push('1 adult 1 child ' + SP.need0.toFixed(0) + ' vs MIT ' + mit1);
+    var SPt = {a:[{}], kids:[14]}; hhNeed(SPt); if (Math.abs(SP.need0 - SPt.need0 - CFG.HH_CHILDCARE[0]) > 1e-6) bad.push('a 14-year-old needs no childcare');
+    var CK = {a:[{}, {}], kids:[2, 7]}; hhNeed(CK); if (Math.abs(CK.buM - 1.25) > 1e-12) bad.push('BU multiplier ' + CK.buM);
+    var mit22 = 121894; if (Math.abs(CK.need0 - mit22)/mit22 > 0.001) bad.push('2 adults 2 children ' + CK.need0.toFixed(0) + ' vs MIT ' + mit22);
+    return {pass:bad.length === 0, detail:'single $' + S1.need0.toFixed(0) + '; single parent with a child of 4 $' + SP.need0.toFixed(0) + ' (14: $' + SPt.need0.toFixed(0) + '); couple with children of 2 and 7 $' + CK.need0.toFixed(0) + ', BU x' + CK.buM + '; problems: ' + (bad.length ? bad.join('; ') : 'none')}; });
+  t('v5.3 B3: with households on, no draw is added to the main stream (the count of main-stream draws is the same as without households, release row and no programme, seed 1, three environments)', function(){
+    var bad = [], info = [], orig = mulberry32;
+    try { ['ref', 'adv', 'st'].forEach(function(e){ var n = [0, 0];
+      [null, {}].forEach(function(hh, q){ var A = rowsOf(e, ['base', 'release'], hh);
+        mulberry32 = function(sd){ var g = orig(sd); if (sd === 1) return function(){ n[q]++; return g(); }; return g; };
+        try { acctProfile(function(){ tbStudy(A.cf, 1, A.S.P, A.S.o); }); } finally { mulberry32 = orig; } });
+      if (n[0] !== n[1]) bad.push(e + ' ' + n[0] + ' vs ' + n[1]); info.push(e + ' ' + n[0]); }); }
+    finally { mulberry32 = orig; }
+    return {pass:bad.length === 0, detail:'main-stream draws (both rows, with and without households): ' + info.join(', ') + (bad.length ? '; DIFFER: ' + bad.join('; ') : '')}; });
+  t('v5.3 B3: every accounting identity holds with households (pooled and not; child allowance none, a quarter, half), including the new one: a couple\'s pooling transfers sum to zero (release row and no programme, seed 1, three environments)', function(){
+    var bad = [], n = {};
+    [{pool:'household', childBU:0.25}, {pool:'individual', childBU:0.25}, {pool:'household', childBU:0}, {pool:'household', childBU:0.5}].forEach(function(hh){
+      ['ref', 'adv', 'st'].forEach(function(e){ var A = rowsOf(e, ['base', 'release'], hh);
+        A.cf.forEach(function(c){ c.g = Object.assign({}, c.g || {}, ACCT_V53); ACCT = acctNew(); try { acctProfile(function(){ tbStudy([c], 1, A.S.P, A.S.o); }); } finally { var X = ACCT; ACCT = null; }
+          Object.keys(X.n).forEach(function(k){ n[k] = (n[k] || 0) + X.n[k]; }); Object.keys(X.nFail).forEach(function(k){ bad.push(hh.pool + ' ' + hh.childBU + ' ' + e + ' ' + c.j + ': ' + k + ' ' + X.nFail[k]); }); }); }); });
+    return {pass:bad.length === 0 && n.household > 0 && n.money > 0, detail:'checks: ' + Object.keys(n).map(function(k){ return k + ' ' + n[k]; }).join(', ') + '; failures: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  t('v5.3 B3: pooling: partners end every year with equal wealth and the same poverty status under \'household\', and keep their own under \'individual\' (release row, seed 1, Reference)', function(){
+    var res = {};
+    ['household', 'individual'].forEach(function(pool){ var A = rowsOf('ref', ['release'], {pool:pool}), eq = 0, ne = 0, gs = 0, gd = 0;
+      REP_HOOK = function(agents){ HHS.list.forEach(function(H){ if (H.a.length < 2) return; if (H.a[0].wealth === H.a[1].wealth) eq++; else ne++; if (H.a[0]._tbGap === H.a[1]._tbGap) gs++; else gd++; }); };
+      try { acctProfile(function(){ tbStudy(A.cf, 1, A.S.P, A.S.o); }); } finally { REP_HOOK = null; }
+      res[pool] = {eq:eq, ne:ne, gs:gs, gd:gd}; });
+    var H = res.household, I = res.individual;
+    return {pass:H.ne === 0 && H.gd === 0 && H.eq > 0 && I.ne > 0, detail:'household: equal wealth ' + H.eq + ', unequal ' + H.ne + '; same status ' + H.gs + ', different ' + H.gd + ' | individual: equal wealth ' + I.eq + ', unequal ' + I.ne}; });
+  return out;
+}
+Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS });
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
@@ -2366,6 +2432,10 @@ if (require.main === module) {
     console.log('\n=== v52UnitSuite(): the v5.2 round (harness-only) ===');
     V52U.forEach(function(x){ if (!x.pass) v52f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + V52U.length + ' run, ' + v52f + ' failed');
+    var HHU = hhUnitSuite(), hhf = 0;
+    console.log('\n=== hhUnitSuite(): v5.3 B3, households (harness-only) ===');
+    HHU.forEach(function(x){ if (!x.pass) hhf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + HHU.length + ' run, ' + hhf + ' failed');
     var ACU = acctUnitSuite(), acf = 0;
     console.log('\n=== acctUnitSuite(): v5.3 B2, the accounting identities over the release rows (harness-only) ===');
     ACU.forEach(function(x){ if (!x.pass) acf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
@@ -2374,7 +2444,7 @@ if (require.main === module) {
     console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
     GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));

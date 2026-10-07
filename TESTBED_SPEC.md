@@ -41,6 +41,7 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `RELIEF_PRICE_LEGACY` | false / true | Retired (reproduces v4.20 in `validate`) | v4.21 |
 | `CCO_RELIEF_FLAT`, `BU_ALLOCATIONS_PER_YEAR` | false, 1 | Earlier engine only (stabiliser studies) | v4.19 |
 | `LEDGER`, `REP_HOOK` | null | Reporting only | A1; v5.2 |
+| `HOUSEHOLDS` (households and children; row option `hh`) | null / {pool 'household' / 'individual', childBU 0.25 (0 to 0.5)} | Labelled reading being built (v5.3 B3; d168, d170); framework model and no programme | DECISIONS Session 39 (B3) |
 | `ACCT` (the accounting check) | null / `acctNew()` | Checking only: no draw, nothing any rule reads; results are bit-identical with it on (`acctUnitSuite`). See MODEL_SPEC.md, section 11 | v5.3 B2 |
 
 ## 2. Testbed options (per study or per row)
