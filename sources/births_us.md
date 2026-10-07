@@ -23,3 +23,12 @@ Source: Osterman, Hamilton, Martin, Driscoll and Valenzuela, *Births: Final Data
 | Births per 1,000 women | 0.2 | 12.6 | 55.8 | 89.5 | 93.7 | 54.3 | 12.7 | 1.1 |
 
 The total fertility rate, 1,599.5 per 1,000 women (the sum of the rates × 5), is in the same row. The 45-49 rate includes births to women 50 and over (the report's note 1).
+
+## Leaving home (for B4: when a child forms their own household)
+
+Source: U.S. Census Bureau, Current Population Survey, Annual Social and Economic Supplement 2025, Table AD-1, "Young Adults, 18-34 Years Old, Living At Home: 1960 to Present" (www2.census.gov/programs-surveys/demo/tables/families/time-series/adults/ad1.xls, released December 2025, read Oct 7, 2026). "Living at home" = child of the householder; unmarried college students in dormitories count as living at home.
+
+| Age | Men at home | Women at home | Both (weighted) |
+|---|---|---|---|
+| 18-24 | 9,108 of 15,496 (58.8%) | 8,563 of 15,171 (56.4%) | 57.6% |
+| 25-34 | 4,421 of 22,972 (19.2%) | 3,108 of 22,798 (13.6%) | 16.4% |
