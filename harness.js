@@ -4525,11 +4525,12 @@ if (require.main === module) {
      * so the two end points are the panel's own release and H1 rows (the writer checks that they equal them to the last digit when a panel file is given with --check=FILE), and
      * --json=FILE writes the points with 95% intervals against no programme. One process per environment (node harness.js testbed 500 backing ref --json=...), merged by dev/tools/backing_chart.py. */
     if (secT === 'backing'){ var BJ = {_meta:{engine:'release engine (harness.js testbed, section backing)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, shares:[0, 0.25, 0.5, 0.75, 1],
-        command:'node harness.js testbed ' + nT + ' backing ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/backing-share-ENV.json'}, envs:{}},
+        command:'node harness.js testbed ' + nT + ' backing ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + (process.argv.indexOf('--v53') >= 0 ? ' --v53' : '') + ' --json=dev/runs/backing-share-ENV.json'}, envs:{}},
       BPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
-      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5), W = function(x){ return Object.assign({}, ALL, x); };
+      var B53 = process.argv.indexOf('--v53') >= 0;  /* v5.3 B10: the sweep on the v5.3 main row and its no-programme run */
+      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5, B53 ? REL_V53 : {}), W = function(x){ return Object.assign({}, ALL, x); };
         var rows = BJ._meta.shares.map(function(a, i){ return {l:'a = ' + a + (a === 0 ? ' (the release row: nothing the Source pays is backed by new output)' : a === 1 ? ' (H1: every Source dollar backed by new output)' : ''), v:W({a:a}), k:i === 0 ? 'today' : 's', vs:'today', j:'a' + Math.round(a*100)}; });  /* the release row (a = 0) is the comparison row every other point is read against */
-        var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], {sc:SC});
+        var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], Object.assign({sc:SC}, B53 ? {hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g} : {}));
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, epPY:B.epPY}, rows:{}};
         function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
         function d3p(r, k){ var x = tbDiff(r, B, k); return [+(x.m*100).toFixed(2), +(x.lo*100).toFixed(2), +(x.hi*100).toFixed(2)]; }  /* a rate as percentage points a year */
