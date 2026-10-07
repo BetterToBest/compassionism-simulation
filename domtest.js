@@ -911,7 +911,7 @@ function phase11(done) {
     at.replace(/\s+/g, ' ').trim() === ATTR && d.getElementById('fd-q').nextElementSibling === d.getElementById('fd-attr') && rd.replace(/\s+/g, ' ').indexOf(ATTR) >= 0 && rp.indexOf(ATTR) >= 0,
     'page ' + (at.replace(/\s+/g, ' ').trim() === ATTR ? 'ok' : 'DIFFERS') + '; README ' + (rd.replace(/\s+/g, ' ').indexOf(ATTR) >= 0 ? 'ok' : 'missing') + '; replication ' + (rp.indexOf(ATTR) >= 0 ? 'ok' : 'missing'));
   let D = null; try { D = JSON.parse(d.getElementById('rel-data').textContent); } catch (e) {}
-  const envs = D && D.envs ? Object.keys(D.envs) : [], NEEDR = ['release', 'h1', 'face', 'cost', 'cap5', 'tax', 'all', 'free', 'standins', 's30', 'v422'];  /* plan step 18: the v5.0 readings */
+  const envs = D && D.envs ? Object.keys(D.envs) : [], NEEDR = ['release', 'h1', 'face', 'cost', 'cap5', 'tax', 'all', 'free', 'standins', 's30', 'v422'].filter(k => k !== 's30' || !(D && D._meta && D._meta.v53));  /* plan step 18: the v5.0 readings (v5.3 drops session 30's build, a historical row) */
   check('step 12: the 500-seed panel parses, covers all three environments with every reading, and names its command',
     envs.join() === 'ref,adv,st' && envs.every(e => NEEDR.every(k => D.envs[e].rows[k] && D.envs[e].rows[k].dBO.length === 3)) && D._meta && D._meta.seeds === 500 && /node harness\.js testbed 500 release/.test(D._meta.command || ''),
     'environments: ' + envs.join(', ') + '; seeds ' + (D && D._meta ? D._meta.seeds : '?'));
@@ -1048,7 +1048,7 @@ function phase13(done) {
    * panel's own numbers and the right verdicts, and on the replication page for all six combinations. (c) no Gini verdict depends on the small-sample bias of the Gini formula.
    * (d) the manifest. */
   const root = path.dirname(FILE), HB = require('./harness.js'), P20 = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'release-panel.json'), 'utf8')), P40 = JSON.parse(fs.readFileSync(path.join(root, 'dev', 'runs', 'release-panel-40.json'), 'utf8'));
-  const wr = makeWindow(); wr.relInit(); const dr = wr.document, ENVN = ['ref', 'adv', 'st'], ROWS = ['release', 'h1', 'face', 'cost', 'cap5', 'tax', 'all', 'free', 'standins', 's30', 'v422'];
+  const wr = makeWindow(); wr.relInit(); const dr = wr.document, ENVN = ['ref', 'adv', 'st'], ROWS = ['release', 'h1', 'face', 'cost', 'cap5', 'tax', 'all', 'free', 'standins', 's30', 'v422'].filter(k => k !== 's30' || !P20._meta.v53);  /* v5.3 drops session 30's build */
   const emb20 = JSON.parse(dr.getElementById('rel-data').textContent), emb40 = JSON.parse(dr.getElementById('rel-data-40').textContent);
   const fmtLev = x => x >= 10 ? Math.round(x).toLocaleString('en-US') : x.toFixed(2);
   const keysOK = [P20, P40].every(Pn => ENVN.every(e => ROWS.every(k => { const r = Pn.envs[e].rows[k]; return r && ['pLevEnd', 'pLevEndMed', 'pLevEndP10', 'pLevEndP90', 'giniD', 'giniX', 'epPY'].every(q => typeof r[q] === 'number' && isFinite(r[q])) && !('pLev20' in r) &&
