@@ -46,6 +46,22 @@
    },
    "equal": true,
    "seconds": 186
+  },
+  {
+   "from": "a4ed4d1829148c885dba848b8e2f148a342506a7c822fc181276f4d95cbbf742",
+   "to": "da708cf807216190df8ea92e02b9c0b0e2f995285934ca899aee458558420bf3",
+   "date": "2026-10-07",
+   "change": "v5.3 B3d: the household reading's measures (reporting only; HOUSEHOLDS off by default)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 168
   }
  ]
 }

@@ -166,7 +166,7 @@ All are means over the 500 seeds; a change is the mean of the 500 per-seed diffe
 | Measure (key) | Definition |
 |---|---|
 | Below the cost of living (`fgt0PY`) | Share of adult-years in which cash income (earnings + conversion + payouts + cash transfers − contribution) is below the adult's own cost of living (the basket after in-kind price cuts and BU purchases). Averaged over all years of the run. |
-| Too little wealth (`pov`) | Share of adults whose net wealth at the last year is below $25,000 × the price level (`CFG.POVERTY_LINE`; a design threshold whose provenance is open, settled in v5.3). |
+| Too little wealth (`pov`) | Share of adults whose net wealth at the last year is below $25,000 × the price level (`CFG.POVERTY_LINE`; a design threshold: its origin is undocumented, and the model reads it as about six months of one adult's MIT cost of living, $24,685). |
 | Below 30 days of basic living (`bOAPy`) | Share of adult-years with BLEI (the BLEI paper's definition, 6.2) below 30 days, in year-0 prices. Design-neutral version: `bNAPy`. |
 | Poverty severity (`fgt2PY`) | Mean over adult-years of the squared shortfall of cash income below own cost, as a share of the basket (FGT2 × 100). |
 | Below the US official poverty line (`rep.y7.fpl`, `rep.end.fpl`) | Share of adults whose money income (earnings, conversion, cash transfers; not BU) is below $16,749 (2025, one person under 65) × the price level, at Year 7 and the last year. `fplX`: the same line on Supplemental-style resources. |

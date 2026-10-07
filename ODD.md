@@ -63,7 +63,7 @@ Basis: **sourced** (a cited primary source), **derived** (computed from sourced 
 | Wage scale (`WAGE_TO_USD`) | $100.52 per SIU-month | Derived: CPS ASEC 2023 median personal income $42,220 / (35 × 12) |
 | Wage distribution | lognormal(3.5, 0.5): median $39,945 | Assumed (framework spec); below the US spread; readings in v5.2 |
 | Starting wealth | lognormal(10.5, 1.2): median $36,316 | Assumed; cited as SCF 2022 but below it (open; SCF reading in v5.2; v5.3 calibration) |
-| Wealth line (`POVERTY_LINE`) | $25,000 (moved with prices) | Design threshold, provenance open (v5.3 settles it) |
+| Wealth line (`POVERTY_LINE`) | $25,000 (moved with prices) | Design threshold: origin undocumented; read as about six months of one adult's MIT cost of living ($24,685); households: six months of their own costs (v5.3) |
 | Official poverty threshold | $16,749 (2025, one person under 65) | Sourced: Census, via CRS IN12737 |
 | BLEI lines | 30 days (precarious), 7 (crisis) | Design: BLEI paper |
 | BLEI daily cost | $68.33; $31.67 for participants in PTH | Sourced (BLS CES 2023); design (BLEI paper §3.2) |

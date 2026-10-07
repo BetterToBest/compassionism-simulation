@@ -2051,9 +2051,17 @@ function hhUnitSuite(){
       res[pool] = {eq:eq, ne:ne, gs:gs, gd:gd}; });
     var H = res.household, I = res.individual;
     return {pass:H.ne === 0 && H.gd === 0 && H.eq > 0 && I.ne > 0, detail:'household: equal wealth ' + H.eq + ', unequal ' + H.ne + '; same status ' + H.gs + ', different ' + H.gd + ' | individual: equal wealth ' + I.eq + ', unequal ' + I.ne}; });
+  t('v5.3 B3: the household measures, with every adult living alone, equal the adult measures exactly (below the cost of living, below the official line, below 30 days of basic living; release row and no programme, seeds 1-2, three environments); and with households they count children', function(){
+    var bad = [], info = [];
+    acctProfile(function(){ ['ref', 'adv', 'st'].forEach(function(e){ var B = rowsOf(e, ['base', 'release'], {});
+      CFG.HH_COMP = {coupleKids:0, coupleNoKids:0, singleParent:0, single:1}; var b = tbStudy(B.cf, 2, B.S.P, B.S.o); CFG.HH_COMP = sv0;
+      b.forEach(function(r, i){ [['hhCostPY', 'fgt0PY'], ['hhFplPY', 'fplPY'], ['hhBleiPY', 'bOAPy']].forEach(function(q){ for (var k = 0; k < 2; k++){ var x = r._s[q[0]][k], y = r._s[q[1]][k]; if (Math.abs(x - y) > 1e-9) bad.push(e + ' ' + B.cf[i].j + ' ' + q[0] + ' ' + x + ' vs ' + y); } });
+        if (r.hhKid !== 0) bad.push('children with every adult alone'); });
+      var h = tbStudy(rowsOf(e, ['base'], {}).cf, 1, B.S.P, B.S.o)[0]; if (!(h.hhKid > 0 && h.hhPer > 500)) bad.push(e + ' households count no children'); info.push(e + ' ' + h.hhPer + ' persons, ' + h.hhKid + ' children'); }); });
+    return {pass:bad.length === 0, detail:info.join('; ') + '; differences: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
   return out;
 }
-Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS });
+Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS });
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};

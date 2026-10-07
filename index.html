@@ -2079,7 +2079,12 @@ var CFG = {
    * dynamics — which is why the v4.10 Threshold Sensitivity charts can sweep across it
    * freely, and why an uncited value here is a reporting-clarity problem rather than a
    * mechanics one. For reference, the 2026 HHS one-person federal guideline is $15,960
-   * (FED_POVERTY_LINE_1P, below); $25,000 is noticeably higher and its basis is unknown. */
+   * (FED_POVERTY_LINE_1P, below); $25,000 is noticeably higher and its basis is unknown.
+   * v5.3 (B3, Oct 7, 2026; DECISIONS Session 39): settled as a design threshold with a stated reading. Where $25,000 came from is still
+   * undocumented, but it is within 1.3% of six months of one adult's cost of living (half of LIVING_WAGE_ANNUAL, $24,685), which is how the
+   * model reads it from v5.3: the household reading uses six months of each household's own costs (CFG.HH_WEALTH_MONTHS). Stricter than the
+   * asset-poverty literature's line (net worth below three months of the poverty line: Haveman and Wolff 2004). Kept at $25,000 here so the
+   * adult-only figures stay comparable across releases. */
   POVERTY_LINE:25000, BLEI_CRISIS_MAX:7, BLEI_PRECARIOUS_MAX:30,
   BLEI_THRESHOLD_MAX:120, BLEI_STABLE_MAX:365, BLEI_SECURE_MAX:730,
   BASE_DAILY_COST:68.33, CCO_PTH_DAILY_COST:31.67,
@@ -4088,6 +4093,49 @@ function hhPool(yr, tbOn){  /* pool 'household': the end-of-year step for couple
     if (ACCT){ var tg = 0, ts = 0; H.a.forEach(function(a){ acctAgent(a, yr); tg += a._acHt; ts += Math.abs(a._acHt); }); acctChk('household', yr, tg, ts, H.id); }
   });
 }
+/* v5.3 B3 (Oct 7, 2026): the household reading's measures (reporting only: no draw, nothing any rule reads). Every person counts, children included, with the
+ * status of their household (its resources against its needs, under either pooling rule; the adult measures above keep each adult's own status under
+ * 'individual'). Per year: below the cost of living (household cash income after the contribution against the household's cost after price cuts and BU), below
+ * the official poverty line for the household's size and children (Census 2025 thresholds, CFG.HH_FPL, moved with prices; money income before tax: wage,
+ * conversion, cash transfers, Social Security), too little wealth (household net wealth below six months of the household's own cost of living, CFG.HH_WEALTH_MONTHS:
+ * the reading of the $25,000 line for one adult, $24,685), and below 30 days of basic living (the household's BLEI: the mean of its adults'). Shares of persons
+ * and of children, as person-years over the run and at Year 7 and the last year; the same by household type; and the Gini and median of disposable income per
+ * equivalent adult (household income over the square root of its size, the OECD's square-root scale), across persons, at the last year. Keys HH_KEYS. */
+CFG.HH_FPL = {'1a0k':16749, '1a1k':22190, '1a2k':25938, '1a3k':32762, '1a4k':37833, '2a0k':21558, '2a1k':25913, '2a2k':32649, '2a3k':38421, '2a4k':43018};  /* Census, Poverty Thresholds for 2025 by Size of Family and Number of Related Children (householder under 65) */
+CFG.HH_WEALTH_MONTHS = 6;  /* too little wealth for a household: net wealth below six months of its own cost of living (one adult: $24,685, the $25,000 line's reading) */
+var HH_TYPES = ['sg', 'sp', 'cn', 'ck'];  /* single adult, single parent, couple without children, couple with children */
+var HH_KEYS = ['hhPer', 'hhKid', 'hhCostPY', 'hhCostKidPY', 'hhFplPY', 'hhFplKidPY', 'hhWlthPY', 'hhWlthKidPY', 'hhBleiPY', 'hhBleiKidPY',
+  'hhFpl7', 'hhFplKid7', 'hhCost7', 'hhCostKid7', 'hhFplEnd', 'hhFplKidEnd', 'hhCostEnd', 'hhCostKidEnd', 'hhWlthEnd', 'hhWlthKidEnd', 'hhBleiEnd', 'hhBleiKidEnd',
+  'hhGiniEq', 'hhMedEq'].concat(HH_TYPES.map(function(t){ return 'hhCost_' + t; }), HH_TYPES.map(function(t){ return 'hhWlth_' + t; }), HH_TYPES.map(function(t){ return 'hhShare_' + t; }));
+function hhTypeOf(H){ return H.a.length === 1 ? (H.kids.length ? 'sp' : 'sg') : (H.kids.length ? 'ck' : 'cn'); }
+function hhRepAcc(){ var R = {py:0, kpy:0, c:{}, y7:null, end:null, per:0, kid:0}; ['cost', 'fpl', 'wlth', 'blei'].forEach(function(k){ R.c[k] = 0; R.c[k + 'K'] = 0; });
+  HH_TYPES.forEach(function(t){ R['t_' + t] = {py:0, cost:0, wlth:0}; }); return R; }
+function hhRepYear(R, agents, p, o, yr, T){
+  var lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1), s = {per:0, kid:0, cost:0, costK:0, fpl:0, fplK:0, wlth:0, wlthK:0, blei:0, bleiK:0}, eq = [];
+  HHS.list.forEach(function(H){ var nA = H.a.length, nK = H.kids.length, n = nA + nK, inc = 0, cost = 0, need = 0, money = 0, disp = 0, w = 0, b = 0;
+    H.a.forEach(function(a){ inc += a._hhInc; cost += a._hhCost; need += a._hhMlc; disp += a._hhDisp; money += tbCashIncome(a); w += a.wealth; b += agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf)/lf; });
+    var fC = inc < cost, fF = money < CFG.HH_FPL[nA + 'a' + Math.min(4, nK) + 'k']*lf, fW = w < need*CFG.HH_WEALTH_MONTHS/12, fB = b/nA < CFG.BLEI_PRECARIOUS_MAX, t = R['t_' + hhTypeOf(H)];
+    s.per += n; s.kid += nK; if (fC){ s.cost += n; s.costK += nK; } if (fF){ s.fpl += n; s.fplK += nK; } if (fW){ s.wlth += n; s.wlthK += nK; } if (fB){ s.blei += n; s.bleiK += nK; }
+    t.py += n; if (fC) t.cost += n; if (yr === T - 1){ t.n = (t.n || 0) + n; if (fW) t.w = (t.w || 0) + n; }
+    if (yr === T - 1){ var e = disp/Math.sqrt(n)/lf; for (var i = 0; i < n; i++) eq.push(e); } });
+  R.py += s.per; R.kpy += s.kid; R.per = s.per; R.kid = s.kid;
+  ['cost', 'fpl', 'wlth', 'blei'].forEach(function(k){ R.c[k] += s[k]; R.c[k + 'K'] += s[k + 'K']; });
+  function snap(){ return {cost:s.cost/s.per*100, costK:s.kid ? s.costK/s.kid*100 : 0, fpl:s.fpl/s.per*100, fplK:s.kid ? s.fplK/s.kid*100 : 0, wlth:s.wlth/s.per*100, wlthK:s.kid ? s.wlthK/s.kid*100 : 0, blei:s.blei/s.per*100, bleiK:s.kid ? s.bleiK/s.kid*100 : 0}; }
+  if (yr === 6) R.y7 = snap();
+  if (yr === T - 1){ R.end = snap(); R.gini = giniOfArr(eq); R.med = quantileOf(eq, 0.5); }
+}
+function hhRepRes(R, out){
+  function pc(k, kid){ var d = kid ? R.kpy : R.py; return d ? R.c[k]/d*100 : 0; }
+  out.hhPer = R.per; out.hhKid = R.kid;
+  out.hhCostPY = pc('cost'); out.hhCostKidPY = pc('costK', 1); out.hhFplPY = pc('fpl'); out.hhFplKidPY = pc('fplK', 1); out.hhWlthPY = pc('wlth'); out.hhWlthKidPY = pc('wlthK', 1); out.hhBleiPY = pc('blei'); out.hhBleiKidPY = pc('bleiK', 1);
+  var y7 = R.y7 || {}, e = R.end || {};
+  out.hhFpl7 = y7.fpl || 0; out.hhFplKid7 = y7.fplK || 0; out.hhCost7 = y7.cost || 0; out.hhCostKid7 = y7.costK || 0;
+  out.hhFplEnd = e.fpl || 0; out.hhFplKidEnd = e.fplK || 0; out.hhCostEnd = e.cost || 0; out.hhCostKidEnd = e.costK || 0; out.hhWlthEnd = e.wlth || 0; out.hhWlthKidEnd = e.wlthK || 0; out.hhBleiEnd = e.blei || 0; out.hhBleiKidEnd = e.bleiK || 0;
+  out.hhGiniEq = R.gini || 0; out.hhMedEq = R.med || 0;
+  HH_TYPES.forEach(function(t){ var q = R['t_' + t]; out['hhCost_' + t] = q.py ? q.cost/q.py*100 : 0; out['hhWlth_' + t] = q.n ? (q.w || 0)/q.n*100 : 0; out['hhShare_' + t] = R.py ? q.py/R.py*100 : 0; });
+  return out;
+}
+function hhRes(R, out){ return R ? hhRepRes(R, out) : out; }
 function spNewAcc(){ return {pool:0, own:0, ptf:0, rest:0, pricePool:0, cut:0, cutN:0, cutP:0, freed:0, cash:0, carry:0, profit:0, profitN:0, reinv:0, wkY:0, wkY1:0,
   d1:0, n1:0, d2:0, n2:0, non:0, yrs:0}; }
 /* PRICE (A2 issuance and price module): null = off (index.html). When an object, runYear() reprices the basket by
@@ -4329,7 +4377,8 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
    * Disposable income, OECD definition (the Hub's C30): wage earnings + conversion proceeds + cash transfers - the contribution;
    * no in-kind benefits, no capital transfer (the endowment), no capital gains (PTH appreciation). Extended income adds the in-kind
    * cuts to the agent's basket (BU relief and PTF, PTH and grocery price cuts). */
-  if (a._hhPool){ a._hhInc = inc; a._hhDisp = disp; a._hhMlc = mlc; a._hhCost = costUSD; a._hhIdx = idx; } else tbPov(a, C, idx, inc, mlc, costUSD, disp);  /* v5.3 B3: a pooled couple's status is set at the end of the year (hhPool) */
+  if (a._hh){ a._hhInc = inc; a._hhDisp = disp; a._hhMlc = mlc; a._hhCost = costUSD; a._hhIdx = idx; }  /* v5.3 B3: kept for the household's measures (hhRepYear) and a pooled couple's status */
+  if (!a._hhPool) tbPov(a, C, idx, inc, mlc, costUSD, disp);  /* v5.3 B3: a pooled couple's status is set at the end of the year (hhPool) */
   C.emp += E > 0 ? 1 : 0; C.hrs += a._lbE0 > 0 ? (a._pjHW ? E + a._pjHW : E)/a._lbE0 : 1;  /* N1 (session 15): + project hours at the worker's own wage */
   C.bR += a._bleiR || 0; C.bP += a._bleiP || 0;  /* session 9 (i3-2): BLEI raises, and those the program's support carried over the gate */
   /* Session 19 (s38): the framework model's business premium as received, the ESP's own payout and ESP payroll, by group, over the years it
@@ -5063,6 +5112,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var wq = latent.map(function(l){ return l.wage; }).sort(function(x, y){ return x - y; }), w1 = wq[Math.floor(wq.length/3)], w2 = wq[Math.floor(2*wq.length/3)];
   agents.forEach(function(a, i){ var l = latent[i]; a._tbU = gR(); a._tbEl = !!(spec.endow && l.wealth < spec.endow.thresh); a._tbPart = l.uCCO < grp.part; a._tbPTH = l.uPTH < grp.pth; a._tbLow = l.wage < w1; a._tbTop = l.wage >= w2; });
   if (HOUSEHOLDS) hhInit(agents, seed); else HHS = null;  /* v5.3 B3: households drawn once, on their own stream (no draw on the main or construction streams) */
+  var RHH = HOUSEHOLDS && HHS ? hhRepAcc() : null;  /* v5.3 B3: the household reading's measures (reporting only) */
   if (AGE) ageInit(agents, seed, function(b, l, r){ b._tbU = r(); b._tbEl = false; b._tbPart = l.uCCO < grp.part; b._tbPTH = l.uPTH < grp.pth; b._tbLow = l.wage < w1; b._tbTop = l.wage >= w2; });  /* v5.2 step 4: ages; a new adult gets the same group tests from its own draws */
   else AGS = null;
   REVS = REVIEW ? {rng:mulberry32(seed + 800023), x:0, c:0} : null; HCS = null;  /* v5.2 step 7: the review stream and the rent state, per run */
@@ -5085,6 +5135,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       tbBleiYear(BG, agents, p, o, yr === T - 1);
       if (!o.noEP){ var epY = extremePovertyOf(housingDistressOf(agents), epD0, p); epSum += epY ? epY.total/100 : 0; }  /* plan step 9 */  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
       if (R52) tbRepYear(R52, agents, p, o, yr, T, (!o.noEP && epY) ? epY.total : 0);  /* v5.2 step 2 */
+      if (RHH) hhRepYear(RHH, agents, p, o, yr, T);  /* v5.3 B3 */
       var A = PRICE.acc, C = TB.cur || tbNewAcc(), d = A.n ? A.essD/A.n : 1, tauUsed = TB.tau;
       var wbInc = A.wageBonusNS - wbPrev; wbPrev = A.wageBonusNS;
       var extra = (o.floorUnmatched ? A.unmet : 0) + (1 - o.aw)*(o.awLevel ? A.wageBonus : wbInc);
@@ -5158,7 +5209,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var bI = path[T-1].bIdx, mx = 0, tauS = 0;
   for (var t = 1; t < T; t++) mx = Math.max(mx, path[t].bIdx/path[t-1].bIdx - 1);
   path.forEach(function(q){ tauS += q.tau; });
-  return {path:path, res:tbRepRes(R52, tbBleiRes(BG, {
+  return {path:path, res:hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
     endoAnn:Math.pow(bI, 1/(T - 1)) - 1, endoMax:mx, pov:pov/n*100, bleiPov:bpov/n*100, nbleiPov:nbpov/n*100, tgt:L.pd > 0 ? L.tgt/L.pd : 0, medWealthReal:medianOf(agents.map(function(a){ return a.wealth; }))/full,
     fgt0:g0/n*100, fgt1:g1/n*100, fgt2:g2/n*100, fgt0PY:L.f0/L.n*100, fgt1PY:L.f1/L.n*100, fgt2PY:L.f2/L.n*100,
     cost:L.cost/NY, cCash:L.cash/NY, cEndow:L.endow/NY, cBU:L.bu/NY, cConv:L.conv/NY, cCut:(L.cutPT + L.cutG)/NY, cCap:L.cap/NY, cPth:L.pth/NY,
@@ -5200,7 +5251,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     agDeaths:AGE && AGS ? AGS.deaths/NY*1000 : 0, agBorn:AGE && AGS ? AGS.born/n*100 : 0, svInt:SAVE && SVS ? SVS.intR/NY : 0, svIntR:SAVE && SVS ? SVS.realR/NY : 0,
     bkA:L.bkP > 0 ? (1 - L.bkU/L.bkP)*100 : 0, bkPY:L.bkY > 0 ? L.bkP/L.bkY*100 : 0, mlNT:L.ntR/NY,
     hcM:HCAP && HCS ? HCS.mSum/T*100 : 0, rvX:REVS ? REVS.x/NY : 0, rvC:REVS ? REVS.c/NY : 0, taxAvg:L.Er > 0 ? L.tax/L.Er*100 : 0,  /* v5.2 step 7: mean rent mark-up outside PTH (%), unearned pay not caught and pay clawed back by audits (year-0 $ per adult-year), the contribution as a share of wages (%) */  /* v5.2 step 6: the share of the Source's net payout backed by output (%), that payout as a share of earned income (%), and wages added by filling normal-times slack (year-0 $ per adult-year) */
-    octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)}))};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
+    octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)})))};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
@@ -5246,7 +5297,8 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var hh0 = HOUSEHOLDS; if (c.hh) HOUSEHOLDS = Object.assign({}, HH_DEFAULTS, c.hh === true ? {} : c.hh);  /* v5.3 B3: households for this row ({} = the defaults) */
       var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0, wmed:c.lt.m ? CFG.SCF_WAGE_MEDIAN : 0};  /* v5.2 step 5: {w, r, s, m} flags */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households */
-        TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }
+        TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
+        if (r.hhPer !== undefined) HH_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households */
       finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; } });
   }
   return out;
