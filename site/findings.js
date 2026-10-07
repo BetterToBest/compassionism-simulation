@@ -222,8 +222,8 @@
     fixw: 'Savings from the US survey', fixr: 'Automation risk linked to wages', fixs: 'Wages spread as in the survey', fixm: 'Wages centred on the survey median', fixall: 'All four US-data readings', slack: 'Idle labour in normal years', slacku6: 'All of U-6 idle (upper bound)',
     hcap: 'Rent capture, BU tenants (voucher evidence)', hcaphi: 'Rent capture, every renter (upper end)', rev5: 'Review errors, low (audits catch half)', rev10: 'Review errors, middle', rev20: 'Review errors, high', rev20n: 'Review errors, high, no audits', giftrun: 'Launch gift paid over the run',
     tax: 'Flat contribution on wages', progtax: 'Progressive income tax', landtax: 'Land-value tax', face: 'BU essentials counted as backed', cost: 'Creative work at the cost of its hours', cap5: 'Capacity only as reinvestment pays', all: 'Taking part costs nothing', free: 'Price cuts free', standins: 'The two former stand-ins on',
-    v53: 'v5.3\u2019s main row (no job loss; PTH and PTF as in v5.3)', cut0: 'No pay cut on return to work', cut20: 'A 20% pay cut on return to work', autopay: 'Automation as a lasting pay drag (the earlier rule)',
-    pthbold: 'Acre Equity by the earlier 3\u20135% rule', ptfs25: 'PTF cuts 25% in transport, health care and childcare', dis: 'A disaster in Year 7 (a scenario)',
+    v53: 'v5.3\u2019s main row (no job loss; PTH and PTF as in v5.3)', cut0: 'No pay cut on return to work', cut20: 'A pay cut of a fifth on return to work', autopay: 'Automation as a lasting pay drag (the earlier rule)',
+    pthbold: 'Acre Equity by the earlier rule (three to five per cent a year)', ptfs25: 'PTF cuts a quarter off transport, health care and childcare', dis: 'A disaster in Year 7 (a scenario)',
     v52: 'v5.2\u2019s main row (adults alone, v5.2\u2019s choices)', adults: 'Adults living alone (no households)', core: 'BU buy only food, housing and medical care', indiv: 'Each adult keeps their own money (no pooling)',
     cb0: 'No child allowance', cb50: 'A child allowance of half the adult BU', wmodel: 'Starting savings from the model\u2019s own draw', nosg: 'Everyone pays their full cost (no graded spending)',
     shock50: 'Partners\u2019 income swings strongly linked', fbs50: 'FBS50 spread evenly over its range', ageleave: 'Ageing, every estate leaves the model', agecps: 'Ageing, wages follow US earnings by age'};
@@ -268,9 +268,12 @@
     return true;
   };
   /* v5.4: jobs and risk, with Compassionism against no programme (the measures both runs have; PTH's books and PTF's cut are in the table) */
-  var WKM = [['Work', 'Out of work (share of working-age adult-years)', 'emUrate'], ['Work', 'Spells out of work longer than 26 weeks', 'emLong'],
-    ['Risk', 'Savings fell by more than six months of basic living', 'rkDdW6'], ['Risk', 'Days of basic living fell by more than 30', 'rkDdB30'],
-    ['Risk', 'Income back within three years of a shock', 'rkRec3'], ['Risk', 'Back below the cost of living within five years', 'rkReC5']];
+  var WKM = [['Work', 'Out of work (adult-years)', 'emUrate'], ['Work', 'Spells longer than 26 weeks', 'emLong'],
+    ['Risk', 'Savings fell 6+ months of costs', 'rkDdW6'], ['Risk', 'Basic-living days fell 30+', 'rkDdB30'],
+    ['Risk', 'Income back within 3 years', 'rkRec3'], ['Risk', 'Back below cost of living (5 yrs)', 'rkReC5']];
+  /* the rows in words: out of work as a share of working-age adult-years; spells out of work longer than 26 weeks; adults whose savings fell by more than six months
+   * of basic living from an earlier peak; adults whose days of basic living (BLEI) fell by more than 30 from a peak; income shocks after which income is back within
+   * three years; exits from below the cost of living followed by a return below it within five years (release_data.py WORK_ROWS words them in full) */
   CHARTS.work = function (R, host, st) {
     var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || E.rows.release.emUrate === undefined) return false;
     var rows = WKM.filter(function (m) { return E.rows.release[m[2]] !== undefined && E.base[m[2]] !== undefined; }).map(function (m) {
