@@ -42,7 +42,7 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `CCO_RELIEF_FLAT`, `BU_ALLOCATIONS_PER_YEAR` | false, 1 | Earlier engine only (stabiliser studies) | v4.19 |
 | `LEDGER`, `REP_HOOK` | null | Reporting only | A1; v5.2 |
 | `BU_SCOPE` (what BU can buy; row option `bs`) | 'core' (food, housing, medical) / 'hub' (+ transport; + childcare for households) | Labelled reading (v5.3; Duke's answer d173: the Hub's list is the design, the restudy decides whether it joins the main result) | DECISIONS Session 39 (B3f) |
-| `HOUSEHOLDS` (households and children; row option `hh`) | null / {pool 'household' / 'individual', childBU 0.25 (0 to 0.5)} | Labelled reading being built (v5.3 B3; d168, d170); framework model and no programme | DECISIONS Session 39 (B3) |
+| `HOUSEHOLDS` (households and children; row option `hh`) | null / {pool 'household' / 'individual', childBU 0.25 (0 to 0.5), estate 'heirs' / 'leave'} | Labelled reading being built (v5.3 B3; d168, d170); framework model and no programme. With ageing (row option `ag`): children's lives and estates (B4, B5; d169); `estate` is read only then | DECISIONS Session 39 (B3, B4) |
 | `ACCT` (the accounting check) | null / `acctNew()` | Checking only: no draw, nothing any rule reads; results are bit-identical with it on (`acctUnitSuite`). See MODEL_SPEC.md, section 11 | v5.3 B2 |
 
 ## 2. Testbed options (per study or per row)

@@ -78,6 +78,22 @@
    },
    "equal": true,
    "seconds": 194
+  },
+  {
+   "from": "ed436ef2c28b7f8598099354364abae697043621e587ede5d3ddc68a0f7bf4f8",
+   "to": "d23b822b7f69b76ee2f3ce1a7bcae17f97d4b5d4af1b22def354e997b55d9e96",
+   "date": "2026-10-07",
+   "change": "v5.3 B4, B5: children's lives and estates with households and ageing (HOUSEHOLDS with AGE; off unless both are on)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 227
   }
  ]
 }

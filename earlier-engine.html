@@ -4284,14 +4284,16 @@ function ageInit(agents, seed, onNew){
   AGS = {rng:r, onNew:onNew || null, next:agents.length, w0:w0/Math.max(1, agents.length), deaths:0, born:0, retired:0, ageSum0:agents.reduce(function(m, a){ return m + a.age; }, 0)};
 }
 function ageYear(agents, yr, p){
-  var S = AGS, r = S.rng, wS = 0, wN = 0;
+  var S = AGS, r = S.rng, wS = 0, wN = 0, HL = !!(HOUSEHOLDS && HHS && HHS.rng);  /* v5.3 B4: households with ageing (children's lives) */
+  if (HL) hhGrow();
   agents.forEach(function(a){ if (!a._ret){ wS += a.wage; wN++; } });
   var wIdx = wN > 0 && S.w0 > 0 ? wS/wN/S.w0 : 1, pLev = Math.pow(1 + (p.inflRate || 0), yr)*(PRICE ? PRICE.bIdx : 1);  /* a new adult's savings start at the year-0 distribution in today's prices (outside inflation undamped: the release rows switch the damping off) */
   for (var i = 0; i < agents.length; i++){ var a = agents[i], q = CFG.DEATH_Q[Math.max(0, Math.min(CFG.DEATH_Q.length - 1, a.age - CFG.ENTRY_AGE))];
     if (r() < q){ var sv = RNG, l; RNG = r; try { l = makeLatentAgent(); } finally { RNG = sv; } if (LATENT) latentAdjust(l);  /* v5.2 step 5 */
       var b = instantiateAgent(l, p); b.wage *= wIdx; b.initialWage = b.wage; b.wealth *= pLev; b.age = CFG.ENTRY_AGE; b._ret = false; b._id = S.next++; b._born = yr;
-      if (S.onNew) S.onNew(b, l, r); agents[i] = b; S.deaths++; S.born++; }
+      if (S.onNew) S.onNew(b, l, r); if (HL) hhDeath(a, b, yr, pLev); agents[i] = b; S.deaths++; S.born++; }
     else { a.age++; if (!a._ret && a.age >= CFG.RETIRE_AGE){ a._ret = true; S.retired++; a._ssB0 = AGE.ss === 'pia' ? 12*ssPIA(a.wage*CFG.WAGE_TO_USD/pLev) : CFG.SS_RETIRE_ANNUAL; if (AGE.ret === 'none') a.inCCO = false; } } }  /* retirement at 67, at the start of the year (before project hiring is allocated) */
+  if (HL) hhKids();
 }
 /* ─── v5.3 B3 (Oct 7, 2026; plan item B3; dev/DECISIONS.md Session 39, "B3, households"): HOUSEHOLDS. null (the default, and the page's) leaves every run
  * bit-identical. When an object (HH_DEFAULTS), and in the framework (Hub-spec) conversion model, the adults are grouped into households once at the start, on
@@ -4309,9 +4311,9 @@ function ageYear(agents, yr, p){
  *    joins (open enrolment, PTF adoption).
  *  - BLEI: the daily cost of basic living (rent, food, utilities, transport: the BLEI paper's definition) is the household's, from MIT's (housing + food +
  *    transport) for its type, and each adult's BLEI uses their own resources against an equal share of it (a._hhD multiplies agentBLEI's daily cost).
- * Ageing with households arrives with children's lives (plan item B4); until then the two cannot be combined. Single adults (one adult, no children) take
- * the adult-only path everywhere. */
-var HOUSEHOLDS = null, HH_DEFAULTS = {pool:'household', childBU:0.25}, HHS = null;
+ * With ageing on (AGE), households live through the run: see CHILDREN'S LIVES below (v5.3 B4, B5). Single adults (one adult, no children) take the
+ * adult-only path everywhere. */
+var HOUSEHOLDS = null, HH_DEFAULTS = {pool:'household', childBU:0.25, estate:'heirs'}, HHS = null;
 CFG.HH_COMP = {coupleKids:0.3163, coupleNoKids:0.3291, singleParent:0.0495, single:0.3050};  /* adults 25-64 by household type (CPS ASEC 2023, tables A1, A3, UC3) */
 CFG.HH_KIDS = {couple:[0.4063, 0.3838, 0.1462, 0.0637], single:[0.5651, 0.2785, 0.1101, 0.0463]};  /* 1, 2, 3, 4 or more own children under 18, per parent (table A3) */
 CFG.HH_KID_AGES = {couple:[0.3278, 0.3308, 0.3414], single:[0.2649, 0.3433, 0.3918]};  /* children aged 0-5, 6-11, 12-17, with two parents or one (table C2) */
@@ -4335,7 +4337,6 @@ function hhNeed(H){  /* the household's needs at year-0 prices (static until chi
   H.single = nA === 1 && nK === 0; H.need = need; H.need0 = tot; H.buM = 1 + (HOUSEHOLDS.childBU || 0)*nK/nA; H.dM = bl/bl1/nA;
 }
 function hhInit(agents, seed){
-  if (AGE) throw new Error('HOUSEHOLDS with ageing arrives with children\'s lives (v5.3 plan item B4)');
   var r = mulberry32(seed + 500009), n = agents.length, C = CFG.HH_COMP, ord = [], i, list = [], q = 0;
   for (i = 0; i < n; i++) ord.push(i);
   for (i = n - 1; i > 0; i--){ var j = Math.floor(r()*(i + 1)), t = ord[i]; ord[i] = ord[j]; ord[j] = t; }  /* the adults in a random order: consecutive adults pair up */
@@ -4347,10 +4348,10 @@ function hhInit(agents, seed){
   for (i = 0; i < nC; i++){ var a1 = agents[ord[q++]], a2 = agents[ord[q++]]; list.push({a:[a1, a2], kids:i < nCK ? kids('couple') : []}); }
   for (i = 0; i < nSP && q < n; i++) list.push({a:[agents[ord[q++]]], kids:kids('single')});
   while (q < n) list.push({a:[agents[ord[q++]]], kids:[]});
-  list.forEach(function(H, h){ H.id = h; var hd = H.a[0]; hhNeed(H);
+  list.forEach(function(H, h){ H.id = h; H.grown = []; var hd = H.a[0]; hhNeed(H);
     H.a.forEach(function(a, j){ a._hh = H; a._hhHead = j === 0; if (!H.single) a._hhD = H.dM;
       if (j > 0){ a.inCCO = hd.inCCO; a.inPTF = hd.inPTF; a.inPTH = hd.inPTH; a.uCCO = hd.uCCO; } }); });  /* decisions are the household's */
-  HHS = {list:list};
+  HHS = {list:list, grown:[], elig:[], nextId:list.length, rng:null, st:null};  /* grown, elig, rng, st: children's lives (B4; read only with ageing) */
 }
 function hhYear(agents){  /* each household's cost factor and shares at this year's prices (no draw) */
   var bI = PRICE ? PRICE.bIdx : 1;
@@ -4382,6 +4383,98 @@ function hhPool(yr, tbOn){  /* pool 'household': the end-of-year step for couple
     if (ACCT){ var tg = 0, ts = 0; H.a.forEach(function(a){ acctAgent(a, yr); tg += a._acHt; ts += Math.abs(a._acHt); }); acctChk('household', yr, tg, ts, H.id); }
   });
 }
+/* ─── v5.3 B4 and B5 (Oct 7, 2026; plan items B4, B5; dev/DECISIONS.md Session 39, "B4"): CHILDREN'S LIVES. Read only when ageing (AGE) and households
+ * are both on; either off leaves every run as before. Sources and derivations: sources/households.py, section 6; sources/births_us.md.
+ *  - Ages at the start (hhAges, own stream seed + 500021, after ageInit): a mother's age given her children's ages is drawn in proportion to the population
+ *    at each age (CFG.AGE_WEIGHTS) times the 2024 birth rate at the age she had each child (CFG.HH_ASFR, NCHS); a partner's age adds the spouses' age gap
+ *    (CFG.HH_GAP, Census CPS 2023 Table FG3, with or without children; redrawn while outside 25-66); a childless couple's woman follows FG3's wives without
+ *    children (CFG.HH_AGE_WIFE_NOKIDS); single adults follow the CPS singles by age (CFG.HH_AGE_SINGLE). Couples are a woman and a man (FG3 covers opposite-sex
+ *    married couples; cohabiting couples are assumed alike); a single parent is a mother with C2's share (CFG.HH_FEMALE.singleParent), a single adult a woman
+ *    with the share left by the population (CFG.HH_FEMALE.single), a new 25-year-old a woman with the 2024 population's share at 25.
+ *  - Each year, at the start (ageYear; own stream seed + 500029 for every draw below): deaths as before; the place of an adult who dies goes to a grown child
+ *    of a household turning 25 that year if one is waiting (drawn at random among them), otherwise to an unrelated 25-year-old, as before; the newcomer
+ *    forms a household of one, drawn like every new adult (no inheritance of earnings: a stated limit). A partner who survives keeps the household and its
+ *    children; when the last adult of a household dies, its children under 18 leave the model (to relatives outside it; counted). Children age a year;
+ *    at 18 a child stops being a dependant and leaves the household (outside the model from 18 to 24, as people that age always have been; at 25 they can
+ *    take a place, and those who find none leave the model: the population stays at its size). Then each woman aged up to 49 gives birth with the 2024
+ *    rate at her age times CFG.HH_FERT_K (partner present or not; chosen so that women as a whole give birth at the national rates and 22% of births are to
+ *    women without a partner, C2's share of children under 6 living with one parent, which also stands in for young families that split: the model has no
+ *    separations or new partnerships, a stated limit). A household's needs, childcare and child allowance follow its children every year.
+ *  - Estates (B5, Duke's decision d169; estate 'heirs', the default): an adult's estate (positive wealth and Acre Equity; debts are not inherited and BU
+ *    held for later conversion lapse, as before) passes to the surviving partner, else to the children in equal shares (children under 18, whose shares
+ *    leave the model with them, and grown children, whose shares reach them if they are adults in the model), else it leaves the model. Acre Equity stays
+ *    Acre Equity for an heir in community housing, otherwise it is paid out at the deceased's liquid share and the rest stays with the trust (Claude's
+ *    reading of the Hub's "Inheritance Rights", dev/reports/v5-3-design.md 1.5). estate 'leave': every estate leaves the model, as in the adult-only model.
+ *    Estates pass at the start of the year, before the year's accounts open, so the yearly identities are unchanged. No inheritance tax (none on the Hub). */
+CFG.HH_ASFR = [12.6, 55.8, 89.5, 93.7, 54.3, 12.7, 1.1];  /* births per 1,000 women a year at ages 15-19, 20-24, ..., 45-49 (NCHS, Births: Final Data for 2024, Table 2) */
+CFG.HH_FERT_K = {couple:1.2376, single:0.5975};  /* the rate's multiple for a woman with a partner present and without (sources/households.py, section 6) */
+CFG.HH_FEMALE = {single:0.4461, singleParent:0.8317, entrant:0.4910};  /* shares of women: single adults, single parents (C2), new 25-year-olds (Census 2024) */
+CFG.HH_GAP = [[20,24,357,209],[15,19,516,319],[10,14,1911,1016],[6,9,4420,2718],[4,5,4834,2960],[2,3,7810,4979],[-1,1,13892,8748],[-3,-2,2760,1717],[-5,-4,1447,689],[-9,-6,1139,437],[-14,-10,453,150],[-19,-15,170,41],[-24,-20,122,58]];  /* husband's age minus wife's: lowest, highest, couples (thousands) without and with own children under 18 (FG3; "20+" taken as 20-24) */
+CFG.HH_AGE_SINGLE = [1800.7,1797.5,1800.7,1812.4,1842.6,1878.5,1905.9,1945.4,1970.4,1972.0,1099.1,1077.8,1063.9,1063.7,1060.4,1036.6,1049.1,1044.7,1027.8,1021.3,1018.1,993.8,979.8,945.1,953.6,933.8,944.4,987.8,1044.4,1026.3,1382.9,1351.2,1353.2,1369.4,1418.7,1449.4,1446.4,1447.4,1440.3,1410.3,1379.2,1363.0];  /* single adults at ages 25..66 (CPS 2023 tables A1, UC3, A3 by ten-year band, spread by the 2024 population) */
+CFG.HH_AGE_WIFE_NOKIDS = [285.9,286.0,287.5,289.3,294.3,319.1,323.8,331.2,336.2,336.7,265.4,260.3,256.4,256.1,255.8,291.0,294.8,293.9,289.4,287.9,527.0,515.0,509.3,491.3,496.3,854.4,865.4,903.5,953.5,938.2,1139.8,1116.0,1122.6,1138.7,1185.7,1212.8,1214.5,1217.8,1215.0,1192.3,1106.9,1096.9];  /* wives in couples without children under 18 at ages 25..66 (FG3, spread by the 2024 female population) */
+CFG.HH_ADULT_AGE = 18;  /* a child stops being a dependant (the Census counts children under 18; the draft Act gives BU from 18) */
+function hhAsfr(x){ return x >= 15 && x <= 49 ? CFG.HH_ASFR[Math.floor((x - 15)/5)]/1000 : 0; }
+function hhPickW(w, r){ var t = 0, i; for (i = 0; i < w.length; i++) t += w[i]; var u = r()*t; for (i = 0; i < w.length - 1; i++){ u -= w[i]; if (u < 0) return i; } return w.length - 1; }
+function hhGap(kids, r){ var G = CFG.HH_GAP, g = G[hhPickW(G.map(function(x){ return kids ? x[3] : x[2]; }), r)]; return g[0] + Math.floor(r()*(g[1] - g[0] + 1)); }
+function hhMomAge(K, r){ var w = [], a0 = CFG.ENTRY_AGE; for (var i = 0; i < CFG.AGE_WEIGHTS.length; i++){ var x = CFG.AGE_WEIGHTS[i]; K.forEach(function(k){ x *= hhAsfr(a0 + i - k); }); w.push(x); } return a0 + hhPickW(w, r); }
+function hhPartner(w, kids, r){ var a0 = CFG.ENTRY_AGE, a1 = a0 + CFG.AGE_WEIGHTS.length - 1; for (var t = 0; t < 20; t++){ var m = w + hhGap(kids, r); if (m >= a0 && m <= a1) return m; } return w; }
+function hhSet(H){ hhNeed(H);  /* after the household changes: its needs, and each adult's link and shares (a household of one takes the adult-only path) */
+  H.a.forEach(function(a, j){ a._hh = H; a._hhHead = j === 0; if (H.single){ delete a._hhD; delete a._hhF; } else a._hhD = H.dM; }); }
+function hhNewSt(){ return {births:0, birthsSg:0, wy:0, grown:0, entK:0, entU:0, grOut:0, orph:0, estN:0, estV:0, estP:0, estK:0, estO:0, kid0:0, mom:0, momN:0, gap:0, gapN:0}; }  /* the run's tallies (reporting only) */
+function hhAges(agents, seed){
+  var r = mulberry32(seed + 500021), F = CFG.HH_FEMALE, st = hhNewSt();
+  HHS.list.forEach(function(H){ var A = H.a, K = H.kids, k = K.length > 0, w;
+    if (A.length === 2){ var iw = r() < 0.5 ? 0 : 1, wf = A[iw], mn = A[1 - iw];
+      w = k ? hhMomAge(K, r) : CFG.ENTRY_AGE + hhPickW(CFG.HH_AGE_WIFE_NOKIDS, r);
+      wf.age = w; wf._fem = true; mn.age = hhPartner(w, k, r); mn._fem = false; st.gap += mn.age - w; st.gapN++; if (k){ st.mom += w; st.momN++; } }
+    else if (k){ var a = A[0], f = r() < F.singleParent; w = hhMomAge(K, r); a._fem = f; a.age = f ? w : hhPartner(w, true, r); if (f){ st.mom += w; st.momN++; } }
+    else { A[0]._fem = r() < F.single; A[0].age = CFG.ENTRY_AGE + hhPickW(CFG.HH_AGE_SINGLE, r); }
+    st.kid0 += K.length; });
+  AGS.ageSum0 = agents.reduce(function(m, a){ return m + a.age; }, 0);
+  HHS.rng = mulberry32(seed + 500029); HHS.st = st;
+}
+function hhGrow(){ var S = HHS; S.elig = []; S.grown = S.grown.filter(function(g){ g.age++; if (g.age >= CFG.ENTRY_AGE){ S.elig.push(g); return false; } return true; }); }  /* grown children turning 25 can take a place this year */
+function hhEstate(a, H, pLev){
+  var st = HHS.st, w = Math.max(0, a.wealth), e = Math.max(0, +a.acreEquity || 0), lq = pthLiquidShare(a.pthTenure || 0);
+  if (w + e <= 0) return;
+  st.estN++; st.estV += (w + e)/pLev;
+  if (HOUSEHOLDS.estate === 'leave'){ st.estO += (w + e)/pLev; return; }
+  function give(h, sw, se){ var got = sw + (h.inPTH ? se : se*lq); h.wealth += sw; if (h.inPTH) h.acreEquity = (+h.acreEquity || 0) + se; else h.wealth += se*lq; return got; }
+  if (H.a.length){ var got = give(H.a[0], w, e); st.estP += got/pLev; st.estO += (w + e - got)/pLev; return; }  /* the surviving partner */
+  var n = H.kids.length + H.grown.length; if (!n){ st.estO += (w + e)/pLev; return; }
+  var sw = w/n, se = e/n;
+  H.grown.forEach(function(g){ var got = g.agent ? give(g.agent, sw, se) : 0; st.estK += got/pLev; st.estO += (sw + se - got)/pLev; });
+  st.estO += H.kids.length*(sw + se)/pLev;  /* children under 18 leave the model with their shares */
+}
+function hhDeath(a, b, yr, pLev){
+  var S = HHS, st = S.st, r = S.rng, H = a._hh;
+  if (a._kin) a._kin.agent = null;  /* a grown child who dies is no longer an heir in the model */
+  if (H){ H.a.splice(H.a.indexOf(a), 1); hhEstate(a, H, pLev);
+    if (!H.a.length){ st.orph += H.kids.length; H.kids = []; H.gone = true; } else hhSet(H); }
+  var E = S.elig;
+  if (E.length){ var g = E.splice(E.length > 1 ? Math.floor(r()*E.length) : 0, 1)[0]; g.agent = b; b._kin = g; st.entK++; } else st.entU++;
+  b._fem = r() < CFG.HH_FEMALE.entrant;
+  var N = {a:[b], kids:[], grown:[], id:S.nextId++}; hhSet(N); S.list.push(N);
+}
+var HH_TRACE = null;  /* diagnostics: an array to receive each year's [women up to 49 with a partner, without, births, births to women without a partner, children] (no effect) */
+function hhKids(){  /* after deaths and a year's ageing: grown children who found no place leave; children age, leave home at 18, are born */
+  var S = HHS, st = S.st, r = S.rng, tw = [0, 0, st.births, st.birthsSg, 0];
+  st.grOut += S.elig.length; S.elig = [];
+  S.list = S.list.filter(function(H){ return !H.gone; });
+  S.list.forEach(function(H){ var K = [], ch = H.kids.length > 0;
+    H.kids.forEach(function(k){ if (k + 1 >= CFG.HH_ADULT_AGE){ var g = {age:k + 1, agent:null}; H.grown.push(g); S.grown.push(g); st.grown++; } else K.push(k + 1); });
+    H.kids = K;
+    H.a.forEach(function(a){ var f = a._fem && !a._ret ? hhAsfr(a.age) : 0; if (!f) return;
+      st.wy++; tw[H.a.length > 1 ? 0 : 1]++; if (r() < f*(H.a.length > 1 ? CFG.HH_FERT_K.couple : CFG.HH_FERT_K.single)){ H.kids.push(0); st.births++; if (H.a.length === 1) st.birthsSg++; ch = true; } });
+    if (ch) hhSet(H); tw[4] += H.kids.length; });
+  if (HH_TRACE){ tw[2] = st.births - tw[2]; tw[3] = st.birthsSg - tw[3]; HH_TRACE.push(tw); }
+}
+var HH_LIFE_KEYS = ['hhBirthR', 'hhBirthSg', 'hhKid0', 'hhEntK', 'hhGrOut', 'hhOrph', 'hhEstN', 'hhEstP', 'hhEstK', 'hhEstO', 'hhMom0', 'hhGap0'];  /* v5.3 B4, B5: children's lives (households with ageing) */
+function hhLifeRes(out){ var t = HHS && HHS.st; if (!t) return out;
+  out.hhBirthR = t.wy ? t.births/t.wy*1000 : 0; out.hhBirthSg = t.births ? t.birthsSg/t.births*100 : 0; out.hhKid0 = t.kid0;
+  out.hhEntK = t.entK + t.entU ? t.entK/(t.entK + t.entU)*100 : 0; out.hhGrOut = t.grOut; out.hhOrph = t.orph; out.hhEstN = t.estN;
+  out.hhEstP = t.estV ? t.estP/t.estV*100 : 0; out.hhEstK = t.estV ? t.estK/t.estV*100 : 0; out.hhEstO = t.estV ? t.estO/t.estV*100 : 0;
+  out.hhMom0 = t.momN ? t.mom/t.momN : 0; out.hhGap0 = t.gapN ? t.gap/t.gapN : 0; return out; }
 /* v5.3 B3 (Oct 7, 2026): the household reading's measures (reporting only: no draw, nothing any rule reads). Every person counts, children included, with the
  * status of their household (its resources against its needs, under either pooling rule; the adult measures above keep each adult's own status under
  * 'individual'). Per year: below the cost of living (household cash income after the contribution against the household's cost after price cuts and BU), below
@@ -4424,7 +4517,7 @@ function hhRepRes(R, out){
   HH_TYPES.forEach(function(t){ var q = R['t_' + t]; out['hhCost_' + t] = q.py ? q.cost/q.py*100 : 0; out['hhWlth_' + t] = q.n ? (q.w || 0)/q.n*100 : 0; out['hhShare_' + t] = R.py ? q.py/R.py*100 : 0; });
   return out;
 }
-function hhRes(R, out){ return R ? hhRepRes(R, out) : out; }
+function hhRes(R, out){ return R ? hhLifeRes(hhRepRes(R, out)) : out; }  /* v5.3 B4: + children's lives, with ageing */
 function spNewAcc(){ return {pool:0, own:0, ptf:0, rest:0, pricePool:0, cut:0, cutN:0, cutP:0, freed:0, cash:0, carry:0, profit:0, profitN:0, reinv:0, wkY:0, wkY1:0,
   d1:0, n1:0, d2:0, n2:0, non:0, yrs:0}; }
 /* PRICE (A2 issuance and price module): null = off (index.html). When an object, runYear() reprices the basket by
@@ -5404,6 +5497,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var RHH = HOUSEHOLDS && HHS ? hhRepAcc() : null;  /* v5.3 B3: the household reading's measures (reporting only) */
   if (AGE) ageInit(agents, seed, function(b, l, r){ b._tbU = r(); b._tbEl = false; b._tbPart = l.uCCO < grp.part; b._tbPTH = l.uPTH < grp.pth; b._tbLow = l.wage < w1; b._tbTop = l.wage >= w2; });  /* v5.2 step 4: ages; a new adult gets the same group tests from its own draws */
   else AGS = null;
+  if (AGE && HHS) hhAges(agents, seed);  /* v5.3 B4: ages, sexes and the family stream for households with ageing */
   REVS = REVIEW ? {rng:mulberry32(seed + 800023), x:0, c:0} : null; HCS = null;  /* v5.2 step 7: the review stream and the rent state, per run */
   RNG = mulberry32(seed);
   var comp = {}; CFG.BASKET_KEYS.forEach(function(k){ comp[k] = 1; });
@@ -5588,7 +5682,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0, wmed:c.lt.m ? CFG.SCF_WAGE_MEDIAN : 0};  /* v5.2 step 5: {w, r, s, m} flags */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
-        if (r.hhPer !== undefined) HH_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households */
+        if (r.hhPer !== undefined) HH_KEYS.concat(r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
       finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; } });
   }
   return out;

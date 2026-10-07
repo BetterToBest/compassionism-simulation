@@ -2074,9 +2074,79 @@ function hhUnitSuite(){
       A.cf.forEach(function(c){ c.bs = 'hub'; c.g = Object.assign({}, c.g || {}, ACCT_V53); ACCT = acctNew(); try { acctProfile(function(){ tbStudy([c], 1, A.S.P, A.S.o); }); } finally { var X = ACCT; ACCT = null; }
         Object.keys(X.n).forEach(function(k){ n += X.n[k]; }); Object.keys(X.nFail).forEach(function(k){ bad.push((hh ? 'households ' : 'adults ') + e + ' ' + c.j + ': ' + k + ' ' + X.nFail[k]); }); }); }); });
     return {pass:bad.length === 0, detail:info.join('; ') + '; ' + n + ' identity checks under \'hub\'; problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  t('v5.3 B4: households with ageing: the ages drawn at the start (every adult 25-66; a couple is a woman and a man; a mother was 15-49 at each child\'s birth; the spouses\' mean age gap is FG3\'s within 0.8 year; seeds 1-3)', function(){
+    var bad = [], g = 0, gN = 0, P = FULL_INTEGRATION, n = P.nAgents, fg = 0, fw = 0;
+    CFG.HH_GAP.forEach(function(x){ fg += (x[0] + x[1])/2*(x[2] + x[3]); fw += x[2] + x[3]; }); fg /= fw;
+    var ag0 = AGE; AGE = Object.assign({}, AGE_DEFAULTS); HOUSEHOLDS = Object.assign({}, HH_DEFAULTS);
+    try { [1, 2, 3].forEach(function(sd){ RNG = mulberry32(sd + 700003); var A = makeLatentPopulation(n).map(function(l){ return instantiateAgent(l, P); });
+      hhInit(A, sd); ageInit(A, sd); hhAges(A, sd);
+      A.forEach(function(a){ if (!(a.age >= 25 && a.age <= 66) || typeof a._fem !== 'boolean') bad.push('seed ' + sd + ' age ' + a.age); });
+      HHS.list.forEach(function(H){ var w = H.a.filter(function(a){ return a._fem; });
+        if (H.a.length === 2){ if (w.length !== 1) bad.push('couple with ' + w.length + ' women'); else { g += H.a[0].age + H.a[1].age - 2*w[0].age; gN++; } }
+        if (w.length && H.kids.length) H.kids.forEach(function(k){ var b = w[0].age - k; if (b < 15 || b > 49) bad.push('mother ' + w[0].age + ', child ' + k); }); }); }); }
+    finally { AGE = ag0; AGS = null; }
+    g /= Math.max(1, gN);
+    return {pass:bad.length === 0 && Math.abs(g - fg) < 0.8, detail:'husband minus wife: ' + g.toFixed(2) + ' years (FG3 ' + fg.toFixed(2) + ', ' + gN + ' couples); problems: ' + (bad.length ? bad.slice(0, 4).join('; ') : 'none')}; });
+  t('v5.3 B4: growing up, entry and births, step by step: a child leaves home at 18, can take a place at 25 (else counted as leaving), childcare stops at 13; a woman gives birth exactly at her age\'s 2024 rate times the partnership multiple, and never after 49', function(){
+    var bad = [], P = FULL_INTEGRATION; HOUSEHOLDS = Object.assign({}, HH_DEFAULTS);
+    function mk(i){ RNG = mulberry32(i + 700003); var a = instantiateAgent(makeLatentPopulation(1)[0], P); a._ret = false; return a; }
+    var w = mk(1), m = mk(2), x = mk(3), u = 0.99;
+    w._fem = true; w.age = 30; m._fem = false; m.age = 32; x._fem = false; x.age = 60;
+    var H = {a:[w, m], kids:[12, 17], grown:[], id:0}, X = {a:[x], kids:[], grown:[], id:1};
+    HHS = {list:[H, X], grown:[], elig:[], nextId:2, rng:function(){ return u; }, st:hhNewSt()}; hhSet(H); hhSet(X);
+    if (!(H.need.childcare > 0)) bad.push('childcare at 12');
+    hhKids();
+    if (H.kids.length !== 1 || H.kids[0] !== 13 || H.grown.length !== 1 || HHS.grown.length !== 1 || HHS.grown[0].age !== 18) bad.push('leaving at 18: ' + JSON.stringify(H.kids));
+    if (H.need.childcare !== 0) bad.push('childcare at 13: ' + H.need.childcare);
+    for (var y = 0; y < 7; y++) hhGrow();
+    if (HHS.elig.length !== 1 || HHS.grown.length !== 0) bad.push('not eligible at 25');
+    var b = mk(4); hhDeath(x, b, 1, 1);
+    if (b._kin !== H.grown[0] || H.grown[0].agent !== b || HHS.st.entK !== 1 || !b._hh || b._hh.a[0] !== b || !X.gone) bad.push('entry at 25');
+    var b2 = mk(5); hhDeath(b, b2, 2, 1); if (HHS.st.entU !== 1 || H.grown[0].agent !== null) bad.push('unrelated entrant, or a dead heir still linked');
+    var q = hhAsfr(30)*CFG.HH_FERT_K.couple, k0;
+    if (Math.abs(hhAsfr(30) - 0.0937) > 1e-12 || hhAsfr(50) !== 0 || Math.abs(hhAsfr(24) - 0.0558) > 1e-12) bad.push('rates');
+    k0 = H.kids.length; u = q*(1 + 1e-9); hhKids(); if (H.kids.length !== k0) bad.push('a birth above the rate');
+    w.age = 30; k0 = H.kids.length; u = q*(1 - 1e-9); hhKids(); if (H.kids.length !== k0 + 1 || H.kids[H.kids.length - 1] !== 0) bad.push('no birth below the rate');
+    w.age = 50; u = 0; k0 = H.kids.length; hhKids(); if (H.kids.length !== k0) bad.push('a birth at 50');
+    var S1 = {a:[w], kids:[], grown:[], id:5}; w.age = 30; HHS.list = [S1]; hhSet(S1); u = hhAsfr(30)*CFG.HH_FERT_K.single*(1 - 1e-9); hhKids(); if (S1.kids.length !== 1 || HHS.st.birthsSg !== 1 || S1.single) bad.push('single woman\'s birth');
+    return {pass:bad.length === 0, detail:'problems: ' + (bad.length ? bad.join('; ') : 'none')}; });
+  t('v5.3 B5: estates (Duke\'s d169): to the surviving partner (Acre Equity kept for a member of community housing, else paid at the liquid share), else to the children in equal shares (minors\' and absent grown children\'s shares leave the model), debts not inherited, \'leave\' passes nothing; what passes plus what leaves equals the estate', function(){
+    var bad = [], P = FULL_INTEGRATION; HOUSEHOLDS = Object.assign({}, HH_DEFAULTS);
+    function mk(i){ RNG = mulberry32(i + 700003); var a = instantiateAgent(makeLatentPopulation(1)[0], P); a._ret = false; a.age = 50; return a; }
+    function fresh(){ HHS = {list:[], grown:[], elig:[], nextId:10, rng:mulberry32(9), st:hhNewSt()}; }
+    function conserved(tag){ var t = HHS.st; if (Math.abs(t.estP + t.estK + t.estO - t.estV) > 1e-6*Math.max(1, t.estV)) bad.push(tag + ': passed + left != estate'); }
+    var lq = pthLiquidShare(3);
+    [true, false].forEach(function(pth){ fresh(); var a = mk(1), p = mk(2); a.wealth = 10000; a.acreEquity = 5000; a.pthTenure = 3; p.wealth = 2000; p.inPTH = pth; p.acreEquity = pth ? 1000 : 0;
+      var H = {a:[a, p], kids:[4], grown:[], id:0}; HHS.list = [H]; hhSet(H); hhDeath(a, mk(3), 1, 1);
+      var ew = pth ? 12000 : 12000 + 5000*lq, ee = pth ? 6000 : 0;
+      if (Math.abs(p.wealth - ew) > 1e-9 || Math.abs(p.acreEquity - ee) > 1e-9 || H.a.length !== 1 || H.single) bad.push('partner, PTH ' + pth + ': ' + p.wealth + ' ' + p.acreEquity);
+      conserved('partner ' + pth); });
+    fresh(); var a = mk(1), p = mk(2); a.wealth = -3000; a.acreEquity = 0; p.wealth = 2000; var H = {a:[a, p], kids:[], grown:[], id:0}; HHS.list = [H]; hhSet(H); hhDeath(a, mk(3), 1, 1);
+    if (p.wealth !== 2000 || HHS.st.estN !== 0) bad.push('a debt was inherited');
+    fresh(); var s = mk(1), g1 = mk(4); s.wealth = 8000; s.acreEquity = 0; g1.wealth = 100; g1.inPTH = false;
+    var G = [{age:30, agent:g1}, {age:20, agent:null}], S = {a:[s], kids:[3, 10], grown:G, id:0}; HHS.list = [S]; hhSet(S); hhDeath(s, mk(3), 1, 1);
+    if (Math.abs(g1.wealth - 2100) > 1e-9 || HHS.st.orph !== 2 || !S.gone || Math.abs(HHS.st.estK - 2000) > 1e-9 || Math.abs(HHS.st.estO - 6000) > 1e-9) bad.push('children: ' + g1.wealth + ' ' + JSON.stringify(HHS.st));
+    conserved('children');
+    HOUSEHOLDS = Object.assign({}, HH_DEFAULTS, {estate:'leave'}); fresh(); a = mk(1); p = mk(2); a.wealth = 10000; p.wealth = 2000; H = {a:[a, p], kids:[], grown:[], id:0}; HHS.list = [H]; hhSet(H); hhDeath(a, mk(3), 1, 1);
+    if (p.wealth !== 2000 || HHS.st.estO !== 10000 + Math.max(0, +a.acreEquity || 0)) bad.push('leave: ' + p.wealth);
+    conserved('leave');
+    return {pass:bad.length === 0, detail:'problems: ' + (bad.length ? bad.join('; ') : 'none')}; });
+  t('v5.3 B4, B5: households with ageing in full runs: every identity holds (estates to heirs and leaving); families live the same lives in every design (deaths, entries, births, children: release row against no programme); no draw added to the main stream (seed 1, three environments)', function(){
+    var bad = [], n = {}, info = [], orig = mulberry32, CK = ['hhPer', 'hhKid', 'hhKid0', 'hhBirthR', 'hhBirthSg', 'hhEntK', 'hhGrOut', 'hhOrph', 'hhMom0', 'hhGap0', 'agDeaths', 'agBorn', 'agRet', 'hhShare_sp', 'hhShare_ck'];
+    ['ref', 'adv', 'st'].forEach(function(e){
+      [{}, {estate:'leave'}].forEach(function(hh){ var A = rowsOf(e, ['base', 'release'], hh); A.cf.forEach(function(c){ c.ag = true; c.g = Object.assign({}, c.g || {}, ACCT_V53); });
+        ACCT = acctNew(); var R; try { acctProfile(function(){ R = tbStudy(A.cf, 1, A.S.P, A.S.o); }); } finally { var X = ACCT; ACCT = null; }
+        Object.keys(X.n).forEach(function(k){ n[k] = (n[k] || 0) + X.n[k]; }); Object.keys(X.nFail).forEach(function(k){ bad.push(e + ' ' + (hh.estate || 'heirs') + ': ' + k + ' ' + X.nFail[k]); });
+        CK.forEach(function(k){ if (!Object.is(R[0][k], R[1][k])) bad.push(e + ' ' + k + ' ' + R[0][k] + ' vs ' + R[1][k]); }); });
+      var cnt = [0, 0];
+      [null, {}].forEach(function(hh, q){ var A = rowsOf(e, ['base', 'release'], hh); A.cf.forEach(function(c){ c.ag = true; });
+        mulberry32 = function(sd){ var g = orig(sd); if (sd === 1) return function(){ cnt[q]++; return g(); }; return g; };
+        try { acctProfile(function(){ tbStudy(A.cf, 1, A.S.P, A.S.o); }); } finally { mulberry32 = orig; } });
+      if (cnt[0] !== cnt[1]) bad.push(e + ' main-stream draws ' + cnt[0] + ' vs ' + cnt[1]); info.push(e + ' ' + cnt[0]); });
+    return {pass:bad.length === 0 && n.money > 0 && n.household > 0, detail:'checks: ' + Object.keys(n).map(function(k){ return k + ' ' + n[k]; }).join(', ') + '; main-stream draws ' + info.join(', ') + '; problems: ' + (bad.length ? bad.slice(0, 5).join('; ') : 'none')}; });
   return out;
 }
-Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS });
+Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; } });
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
