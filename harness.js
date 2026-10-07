@@ -2144,9 +2144,34 @@ function hhUnitSuite(){
         try { acctProfile(function(){ tbStudy(A.cf, 1, A.S.P, A.S.o); }); } finally { mulberry32 = orig; } });
       if (cnt[0] !== cnt[1]) bad.push(e + ' main-stream draws ' + cnt[0] + ' vs ' + cnt[1]); info.push(e + ' ' + cnt[0]); });
     return {pass:bad.length === 0 && n.money > 0 && n.household > 0, detail:'checks: ' + Object.keys(n).map(function(k){ return k + ' ' + n[k]; }).join(', ') + '; main-stream draws ' + info.join(', ') + '; problems: ' + (bad.length ? bad.slice(0, 5).join('; ') : 'none')}; });
+  t('v5.3 B6: the household part of income shocks: partners\' yearly swings correlate as set (0.5 and -0.5) while each keeps its spread; \'shore\' gives about +0.10 in good years and -0.10 in recession years (Shore 2010); no draw is added to the main stream; every identity holds (release row and no programme, Adverse, seeds 1-3)', function(){
+    var bad = [], orig = hhSync, info = [], S = acctRelCfgs('adv');
+    function corr(P){ var n = P.length, mx = 0, my = 0, sxy = 0, sxx = 0, syy = 0; P.forEach(function(q){ mx += q[0]/n; my += q[1]/n; }); P.forEach(function(q){ sxy += (q[0] - mx)*(q[1] - my); sxx += (q[0] - mx)*(q[0] - mx); syy += (q[1] - my)*(q[1] - my); }); return {r:sxy/Math.sqrt(sxx*syy), v:sxx/(n - 1), n:n}; }
+    function run(shock, seeds, chk){ var P = {c:[], r:[]}; hhSync = function(w){ if (w === 'ptf' && HHS) HHS.list.forEach(function(H){ if (H.a.length === 2 && typeof H.a[0]._shkV === 'number') P[H.a[0]._shkR ? 'r' : 'c'].push([H.a[0]._shkV, H.a[1]._shkV]); }); return orig(w); };
+      var cf = ['base', 'release'].map(function(j){ return Object.assign({}, S.cfg.filter(function(x){ return x.j === j; })[0], {hh:{shock:shock}, g:Object.assign({}, S.cfg.filter(function(x){ return x.j === j; })[0].g || {}, ACCT_V53)}); });
+      if (chk) ACCT = acctNew(); try { acctProfile(function(){ tbStudy(cf, seeds, S.P, S.o); }); } finally { hhSync = orig; if (chk){ var X = ACCT; ACCT = null; Object.keys(X.nFail).forEach(function(k){ bad.push(shock + ': ' + k + ' failed ' + X.nFail[k]); }); } }
+      return P; }
+    [0.5, -0.5].forEach(function(rho){ var P = run(rho, 2, false), c = corr(P.c.concat(P.r)); info.push(rho + ': ' + c.r.toFixed(3) + ' over ' + c.n + ' couple-years, spread ' + Math.sqrt(c.v).toFixed(4));
+      if (Math.abs(c.r - rho) > 0.08 || Math.abs(Math.sqrt(c.v) - 0.2/Math.sqrt(12)) > 0.006) bad.push('rho ' + rho + ': ' + c.r.toFixed(3) + ', sd ' + Math.sqrt(c.v).toFixed(4)); });
+    var Q = run('shore', 3, true), cc = corr(Q.c), cr = corr(Q.r); info.push('shore: good years ' + cc.r.toFixed(3) + ' (' + cc.n + '), recession years ' + cr.r.toFixed(3) + ' (' + cr.n + ')');
+    if (Math.abs(cc.r - 0.10) > 0.06 || Math.abs(cr.r + 0.10) > 0.12 || !(cr.n > 500)) bad.push('shore');
+    var cnt = [0, 0], om = mulberry32;
+    [0, 'shore'].forEach(function(sh, q){ var cf = ['base', 'release'].map(function(j){ return Object.assign({}, S.cfg.filter(function(x){ return x.j === j; })[0], {hh:{shock:sh}}); });
+      mulberry32 = function(sd){ var g = om(sd); if (sd === 1) return function(){ cnt[q]++; return g(); }; return g; };
+      try { acctProfile(function(){ tbStudy(cf, 1, S.P, S.o); }); } finally { mulberry32 = om; } });
+    if (cnt[0] !== cnt[1]) bad.push('main-stream draws ' + cnt[0] + ' vs ' + cnt[1]);
+    return {pass:bad.length === 0, detail:info.join('; ') + '; main-stream draws ' + cnt[0] + '; problems: ' + (bad.length ? bad.join('; ') : 'none')}; });
+  t('v5.3 B6: the measured EDC is reporting only (switching it on changes no result: every key of the release row and no programme, adults alone and in households, seeds 1-2, three environments); it is 0 for PTH members (no debt interest in these rows), between 0 and 100, and the design target proxy is reported beside it', function(){
+    var bad = [], k = 0, info = [];
+    ['ref', 'adv', 'st'].forEach(function(e){ [null, {}].forEach(function(hh){ var A = rowsOf(e, ['base', 'release'], hh), B = rowsOf(e, ['base', 'release'], hh); B.cf.forEach(function(c){ c.em = true; });
+      var a, b; acctProfile(function(){ a = tbStudy(A.cf, 2, A.S.P, A.S.o); b = tbStudy(B.cf, 2, B.S.P, B.S.o); });
+      k += 2*TB_KEYS.length*2; bad = bad.concat(same(a, b, 2).map(function(x){ return e + ' ' + x; }));
+      b.forEach(function(r, i){ if (r.edcMPth !== 0 || !(r.edcM >= 0 && r.edcM <= 100) || !(r.edcMagg >= 0 && r.edcMagg <= 100) || !(r.edcProxy > 0)) bad.push(e + ' row ' + i + ' ' + JSON.stringify([r.edcM, r.edcMagg, r.edcMPth, r.edcProxy])); });
+      if (e === 'ref') info.push((hh ? 'households' : 'adults') + ': measured ' + b[0].edcM.toFixed(1) + '% -> ' + b[1].edcM.toFixed(1) + '%, proxy ' + b[0].edcProxy.toFixed(1) + '% -> ' + b[1].edcProxy.toFixed(1) + '%'); }); });
+    return {pass:bad.length === 0, detail:k + ' values compared; Reference ' + info.join('; ') + '; problems: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
   return out;
 }
-Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; } });
+Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; }, EDC_KEYS, setEdcMeasure:function(x){ EDC_MEASURE = !!x; } });
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};

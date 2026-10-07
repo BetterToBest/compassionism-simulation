@@ -145,6 +145,8 @@ The Source issues the BU, pays conversions and keeps the conversion tax (`fin 's
 
 With ageing on (`AGE`), households live through the run (v5.3 B4, B5; `dev/reports/v5-16-childrens-lives.md`): ages at the start are drawn within households (a mother's age from the population at each age times the 2024 birth rate at the age she had each child; the partner's from the Census FG3 spouses' age gap; childless couples and singles from FG3 and the CPS by age); each year children age, leave home at 18 and, from 25, can take the place of an adult who dies (otherwise an unrelated 25-year-old does, as before, and grown children with no place leave the model); women up to 49 give birth at the NCHS 2024 rate for their age times a sourced multiple for having a partner present or not; when the last adult of a household dies its children under 18 leave the model. Estates (d169, `estate 'heirs'`) pass to the surviving partner, else to the children in equal shares (only grown children who are adults in the model receive theirs), else leave the model; Acre Equity stays Acre Equity for an heir in community housing, otherwise it is paid at the liquid share. Partnerships stay as first drawn: no new couples and no separations (a stated limit; it makes the families drift over 20 years, reported in the B4 note).
 
+Income shocks with households (v5.3 B6, `HOUSEHOLDS.shock`, 0 by default): each adult's yearly swing (uniform 0.90-1.10) shares a household part with their partner's, so the two correlate as set while each keeps its spread; `'shore'` uses Shore (2010): +0.10 in good years, -0.10 in recession years. The macro multiplier (the recession path) stays common to everyone.
+
 ## 7. Endogenous and exogenous variables
 
 **Endogenous**: wages, wealth, participation, PTF membership, octaves, quality (CIP step), conversion income, the business premium and its split, PTF capacity, the price level (general and essentials), the BU's indexed level, the contribution rate where used, poverty, Gini.
@@ -162,6 +164,7 @@ With ageing on (`AGE`), households live through the run (v5.3 B4, B5; `dev/repor
 | Review errors (reading) | `s + 800023` | 1 per adult-year | only rows with review errors |
 | Households (reading, v5.3) | `s + 500009` | at the start: an order of the adults, then per household with children 1 + 2 per child | only rows with households (`HOUSEHOLDS`) |
 | Household ages (reading, v5.3) | `s + 500021` | at the start, per household: who is the woman, ages, age gaps (variable count: a gap is redrawn while the partner would be outside 25-66) | only rows with households and ageing |
+| Household income shocks (reading, v5.3) | `s + 500041` | per couple-year: 1 (the couple's shared part of the income swing) | only rows with a household shock (`HOUSEHOLDS.shock`) |
 | Family events (reading, v5.3) | `s + 500029` | per year: 1 per woman up to 49 (birth), 1 per new adult (sex), 1 per death with more than one grown child waiting (who takes the place) | only rows with households and ageing |
 
 A new random process gets its own stream; nothing may add a draw to the main stream. Rows of one study share every stream, so differences between rows come from the rows' rules, not from luck.
@@ -184,6 +187,7 @@ All are means over the 500 seeds; a change is the mean of the 500 per-seed diffe
 | Hours (`hrs`) | Change in earnings at a fixed wage from the labour response, % (hours). |
 | Median savings (`medWealth`) | Median net wealth at the last year in year-0 dollars. |
 | Unhoused (`epPY`) | Share of person-years unhoused, from the extreme-poverty overlay (HUD AHAR 2025 rate scaled by housing distress against year 0). |
+| EDC (measured) (`edcM`, `edcMagg`; v5.3, row option `em`, reporting only) | Rent paid to a landlord (MIT housing with utilities; a PTH payment counts 0, as the glossary defines EDC) plus interest paid on debt, over gross income (wages, conversion, Social Security, cash transfers before the contribution, the BU allowance at face): the mean over person-years of the household's ratio (capped at 1) and the ratio of the totals. Beside it, `edcProxy`, the design target proxy (the formula `agentEDC`, set to the BLEI paper's target bands, which the earlier engine shows). |
 
 ## 10. The two runs that make the main result
 

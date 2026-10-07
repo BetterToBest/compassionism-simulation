@@ -94,6 +94,38 @@
    },
    "equal": true,
    "seconds": 227
+  },
+  {
+   "from": "d23b822b7f69b76ee2f3ce1a7bcae17f97d4b5d4af1b22def354e997b55d9e96",
+   "to": "5776173074d3bba98fb3fd63227496a86d4ac5d9c8b5c52d6cc7b5864a925688",
+   "date": "2026-10-07",
+   "change": "v5.3 B6: the household part of income shocks (HOUSEHOLDS.shock, 0 by default) and the measured EDC (EDC_MEASURE, reporting only, off by default)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 406
+  },
+  {
+   "from": "5776173074d3bba98fb3fd63227496a86d4ac5d9c8b5c52d6cc7b5864a925688",
+   "to": "0b5f4974268a1392d9b7ee945d85403e322fb0c487dab7054e7d9b89f64bdf97",
+   "date": "2026-10-07",
+   "change": "v5.3 B6: the household pooling check's scale includes the wealth pooled (reporting only; no result changes)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 219
   }
  ]
 }

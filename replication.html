@@ -1220,7 +1220,9 @@ formula this section described through v4.2, see the note below for what changed
 <div class="formula">P(advance)(i)  =  1  −  exp( −λ(i) · FBS(i) )
 
 FBS(i)  =  max( 0,  Y + BU_monthly − C_basic_cash_monthly − EDC_residual · Y )
-EDC_residual = consumer debt interest only (NOT housing — already in C_basic)
+EDC_residual = consumer debt interest only (NOT housing — already in C_basic): 0.12, or 0.025 for a member
+  of both the CCO and PTH (the BLEI paper's Table 1b worked values); results that use 0.025 are
+  conditional on PTH reaching that target
 BU_monthly = $1,200 face value (cash-equivalent food expenditure reduction)
 λ(i) ~ Uniform(0.0001654, 0.0013233)  [v4.4; was Uniform(0.001, 0.008) through v4.3 —
   see the note below for why this changed and what its status is]</div>
