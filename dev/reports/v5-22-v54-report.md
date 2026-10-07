@@ -72,7 +72,7 @@ The released model measures the floor by the share of adults who are PTF members
 
 **Three kinds of uncertainty.**
 - **Run to run** (same settings, different random draws): one run's programme effect varies by about 2 points (standard deviation; 100 runs per environment); over 500 runs the average is known to about ±0.1 points.
-- **Parameters** (Morris screening of 17 inputs over their ranges, Reference, 10 trajectories of 10 paired runs; table below). Sobol indices for the six leading inputs are in section 6b.
+- **Parameters** (Morris screening of 17 inputs over their ranges, Reference, 10 trajectories of 10 paired runs; table below). Sobol total indices for the six leading inputs (section 6b) confirm it: participation and the BU amount explain most of the spread in poverty, BLEI, cost and inflation; the spending share and the income effect most of the spread in wealth.
 - **Structure** (different models, not different numbers): the readings above. For too little wealth in Reference, the programme's effect runs from +5.2 (PTH leavers keep all their equity) to +16.5 (job loss with a 20% pay cut), a far wider spread than run-to-run noise.
 
 **Morris screening, Reference: the inputs that move the programme's effect most** (mean absolute effect of moving the input across its range).
@@ -89,7 +89,17 @@ PTF and PTH inputs (membership ceiling, uptake, leaving rate, sector cuts), Soci
 
 ### 6b. Sobol indices
 
-SOBOL_PLACEHOLDER
+Total-effect indices (the share of the spread in the programme's effect that each input causes, alone or with others), for the six inputs Morris ranked highest, each over its range with the others at their main values (64 base points, 512 settings of 10 paired runs each, per environment):
+
+| Measure | Reference | Adverse |
+|---|---|---|
+| Below the cost of living | participation 0.67, BU amount 0.20, BLEI wage gain 0.07, income effect 0.06 | participation 0.59, BU 0.26, income effect 0.09 |
+| Too little wealth | share of extra cash spent 0.51, income effect 0.15, BU 0.10, participation 0.08, pay cut 0.07 | spending share 0.38, income effect 0.20, pay cut 0.11, participation 0.10 |
+| Below 30 days of basic living | participation 0.89, BU 0.13 | participation 0.82, BU 0.17 |
+| Cost per adult | participation 0.61, BU 0.35 | the same |
+| Programme inflation | participation 0.80, BU 0.16 | participation 0.79, BU 0.16 |
+
+With 64 base points the first-order indices are rough (some come out slightly negative, which is sampling error), so the total indices are the ones to read; they agree with the Morris ranking. Totals above the first-order index (participation, the spending share) mean those inputs work mostly through interactions with the others.
 
 ## 7. Risk measures (`RISK`)
 
