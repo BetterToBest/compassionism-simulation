@@ -65,6 +65,8 @@ Every item goes behind its own switch. With every switch off, every figure is bi
 - **The Hub's words.** *BLEI paper*, section 7 and Table 8: "below 55% participation density, cooperative synergies do not activate"; the synergy coefficient θ "scales to 0.25 at 90%".
 - **What the model will do.** The model gates θ on Social Zone Harmonization cohesion (0.72 in Reference), with the PTF-density gate as a harness reading. The test runs participation from 35% to 75% under both gates and the floor at 40%, 55% and 70%, and reports whether results jump at the floor (a cliff) or change smoothly, and what the floor means for the Stress Test's 40% participation. No result is tuned; the floor stays at 55% unless Duke changes the design.
 
+  *Correction (Oct 7, 2026): this sentence is wrong. The released model gates θ on PTF member density (`NR6.rs.THETA_GATE = 'density'`), not on Social Zone cohesion; the cohesion gate is the harness reading. Membership is capped at 18% in Reference, so θ is zero in every release run. The v5.4 report (`dev/reports/v5-22-v54-report.md`) already says so.*
+
 ### 1.8 What joins the main result
 
 The rule, recorded before any run (as in v5.3): each new part joins the main result unless the restudy finds a modelling error in it; each is also shown as a labelled reading beside it, and the old behaviour (automation as a pay cut, the flat 12% PTF cut, PTH without a balance sheet) stays available as a labelled row. The sensitivity study and the 55% test are reports, not parts of the model.
