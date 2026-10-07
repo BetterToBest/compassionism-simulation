@@ -31,15 +31,17 @@ ENV_DESC = {'ref': 'the model\u2019s main settings, with no recessions and no ou
             'adv': 'recessions, 2% outside inflation and an automation wave',
             'st': 'the Adverse environment with weaker settings (40% take part, a smaller allowance)'}
 # The figures each release's current (presentation) version describes. v5.2.1 changed only how the v5.2 figures are shown; v5.2.2 corrected words and added derived figures.
+CURRENT54 = {'version': '5.4', 'date': '2026-10-08', 'tag': 'v5.4',
+             'summary': 'Labour and markets: people lose jobs and find new ones (with unemployment insurance, and lower pay after a permanent loss), community housing keeps its own books, community businesses cut prices sector by sector and members can leave, and new measures of risk: how far savings fall, how fast income recovers, how often people fall back into poverty.'}
 CURRENT53 = {'version': '5.3', 'date': '2026-10-07', 'tag': 'v5.3', 'shownIn': '5.3.1',  # v5.3.1 re-releases the same figures at the complete commit (the v5.3 tag marks an intermediate one)
            'summary': 'Households and children: adults live in households as US adults do, children bring a quarter of the adult allowance, households pool their money, start with the wealth the Federal Reserve\u2019s survey shows and spend less when income is short; and what each part of the design does is measured.'}
 CURRENT52 = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '5.2.2',
              'summary': 'The model round: savings that keep up with prices, ageing, the no-programme run against US data, a middle backing reading and robustness readings, each beside an unchanged main result.'}
 
 def current():
-    """the release the figures in dev/runs/ are: v5.3's once its panels (households and children, harness.js --v53) are there, else v5.2's"""
+    """the release the figures in dev/runs/ are: v5.4's once its panels (labour and markets, harness.js --v54) are there, v5.3's for the v5.3 panels (households and children, --v53), else v5.2's"""
     p = load_json(None, 'dev/runs/release-panel.json')
-    return CURRENT53 if p and p['_meta'].get('v53') else CURRENT52
+    return CURRENT54 if p and p['_meta'].get('v54') else CURRENT53 if p and p['_meta'].get('v53') else CURRENT52
 
 BACKFILL = {  # earlier releases whose panels were regenerated from their tags and matched exactly (dev/ADDING-A-RELEASE.md); filled in by --backfill
     'v5.2': {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '5.2.2',
@@ -82,6 +84,9 @@ def has(obj, path):
 
 def kids(R):  # v5.3: a release whose main row has households and children
     return has(R, 'panels.20.envs.ref.rows.release.d53.hhCostKidPY')
+
+def v54(R):  # v5.4: a release whose main row has job loss, PTH's books and PTF by sector
+    return has(R, 'panels.20.envs.ref.rows.release.emUrate')
 
 def N(path, f): return {'src': path, 'f': f}
 def T(path, f): return '{{%s|%s}}' % (path, f)
@@ -247,7 +252,9 @@ READINGS = ['release', 'h1', 'face', 'tax', 'cost', 'cap5', 'all', 'free', 'stan
 OLD_READINGS = ['release', 'h1', 'face', 'tax', 'cost', 'cap5', 's30', 'all', 'free', 'standins', 'v422']
 READINGS53 = ['release', 'v52', 'adults', 'core', 'indiv', 'cb0', 'cb50', 'wmodel', 'nosg', 'shock50', 'fbs50', 'h1', 'face', 'cost', 'cap5', 'tax', 'all', 'free', 'standins', 'v422', 'sav', 'sav0', 'idx', 'h1idx',
               'age', 'agenone', 'agepia', 'ageleave', 'agecps', 'fixr', 'fixs', 'fixm', 'fixall', 'mid', 'midlo', 'midhi', 'slack', 'hcap', 'hcaphi', 'rev10', 'rev20n', 'giftrun', 'progtax', 'landtax']  # the page's order (index.html ORDER)
-BASE_WORD = {'ag': 'ageing rule', 'lt': 'US-data reading', 'sv': 'savings rule', 'b52': 'population as in v5.2', 'badults': 'adults living alone', 'bindiv': 'money kept by each adult',
+READINGS54 = ['release', 'v53', 'cut0', 'cut20', 'autopay', 'pthbold', 'ptfs25', 'dis'] + READINGS53[1:]  # v5.4: the round's readings first (index.html ORDER)
+BASE_WORD = {'b53': 'rules as in v5.3 (no job loss)', 'bcut0': 'pay rule on return to work', 'bcut20': 'pay rule on return to work', 'bautopay': 'automation rule', 'bdis': 'disaster',
+             'ag': 'ageing rule', 'lt': 'US-data reading', 'sv': 'savings rule', 'b52': 'population as in v5.2', 'badults': 'adults living alone', 'bindiv': 'money kept by each adult',
              'bwmodel': 'starting savings', 'bnosg': 'full-cost spending', 'bshock50': 'linked income swings'}  # index.html relBaseWord
 
 def base_word(k):
@@ -264,9 +271,17 @@ def note_cell(r, p):
     if r.get('bkPY') is not None: return C(N(p + '.bkA', 'p1'), ' of the Source’s payout backed by new output; the payout is ', N(p + '.bkPY', 'p1'), ' of earned income')
     return C('')
 
+def note54(k, r, p):  # v5.4: the round's readings say what their switch did
+    if k in ('release', 'cut0', 'cut20', 'autopay') and r.get('emUrate') is not None:
+        return C('out of work ', N(p + '.emUrate', 'p1'), ' of working-age adult-years; pay on return after a permanent loss ', N(p + '.emCut', 'p1'), ' lower on average')
+    if k == 'pthbold' and r.get('pbME') is not None: return C('Acre Equity per PTH home at the last year ', N(p + '.pbME', 'usd'), ' (today’s dollars); the community’s equity ', N(p + '.pbCE', 'usd'))
+    if k == 'ptfs25' and r.get('pfCut') is not None: return C('PTF cuts a member’s cost of living by ', N(p + '.pfCut', 'p1'), ' (main row: food and utilities only)')
+    if k == 'dis' and r.get('dsHit') is not None: return C(N(p + '.dsHit', 'p1'), ' of adults hit in Year 7')
+    return note_cell(r, p)
+
 def readings_table(R):
-    rows = []; v52 = 'sav' in R['panels']['20']['envs']['ref']['rows']; k53 = kids(R)
-    keys = READINGS53 if k53 else READINGS if v52 else OLD_READINGS
+    rows = []; v52 = 'sav' in R['panels']['20']['envs']['ref']['rows']; k53 = kids(R); k54 = v54(R)
+    keys = READINGS54 if k54 else READINGS53 if k53 else READINGS if v52 else OLD_READINGS
     for Y in ('20', '40'):
         if Y not in R['panels']: continue
         for e, en in ENVS:
@@ -279,8 +294,8 @@ def readings_table(R):
                 vs = ['against no programme with the same ' + base_word(r['vsBase'])] if r.get('vsBase') else None
                 kc = ([C(*ci(p + '.d53.hhCostKidPY')) if has(r, 'd53.hhCostKidPY') else C('–')] if k53 else [])
                 rows.append([C(Y), C(en), C(r['label'], s=vs), C(N(p + '.pov', 'p1'), ' vs ', N(bp + '.pov', 'p1'), s=ci(p + '.dPov')), C(*ci(p + '.dF0')), C(*ci(p + '.dBO'))] + kc +
-                            [C(N(p + '.infl', 'p1')), C(N(p + '.cost', 'usd')), note_cell(r, p)])
-    return {'id': 'rel-v53' if k53 else 'rel-v52' if v52 else 'rel-readings', 'title': 'The main row and every reading beside it', 'filter': {'years': 0, 'env': 1},
+                            [C(N(p + '.infl', 'p1')), C(N(p + '.cost', 'usd')), note54(k, r, p) if k54 else note_cell(r, p)])
+    return {'id': 'rel-v54' if k54 else 'rel-v53' if k53 else 'rel-v52' if v52 else 'rel-readings', 'title': 'The main row and every reading beside it', 'filter': {'years': 0, 'env': 1},
             'columns': ['Years', 'Environment', 'Reading', 'Too little wealth at the last year, and the change (95% interval)', 'Below the cost of living, change', 'Below 30 days of basic living (BLEI), change'] +
                        (['Children below the cost of living, change'] if k53 else []) + ['Programme inflation a year', 'Cost per adult a year', 'Note'], 'rows': rows}
 
@@ -304,6 +319,39 @@ def hh_table(R):
                 rows.append([C(Y), C(en), C(g), C(lbl), C(N(r + '.' + k, 'p1'), ' vs ', N(b + '.base.' + k, 'p1')) if k in E['base'] else C(N(r + '.' + k, 'p1')), d])
     return {'id': 'rel-hh', 'title': 'Households and children: Compassionism against no programme', 'filter': {'years': 0, 'env': 1},
             'columns': ['Years', 'Environment', 'Who', 'Measure', 'Compassionism vs no programme', 'Change, points (95% interval)'], 'rows': rows}
+
+WORK_ROWS = [  # v5.4: the jobs, homes, shops and risk table (site/findings.js WKM): group, label, panel key, format, in both runs (else the programme's only)
+    ('Work (both runs)', 'Out of work, share of working-age adult-years', 'emUrate', 'p1', True),
+    ('Work (both runs)', 'Spells out of work longer than 26 weeks', 'emLong', 'p1', True),
+    ('Work (both runs)', 'Pay lost to unemployment that insurance replaces', 'emUI', 'p1', True),
+    ('Work (both runs)', 'Pay on return after a permanent job loss, lower by (average)', 'emCut', 'p1', True),
+    ('Risk', 'Adults whose savings fell by more than six months of basic living from an earlier peak', 'rkDdW6', 'p1', True),
+    ('Risk', 'Adults whose days of basic living (BLEI) fell by more than 30 from an earlier peak', 'rkDdB30', 'p1', True),
+    ('Risk', 'Income shocks (real cash income below 80% of the year before), per 100 adult-years', 'rkEv', 'n2', True),
+    ('Risk', 'Income back to its earlier level within three years of a shock', 'rkRec3', 'p1', True),
+    ('Risk', 'Back below the cost of living within five years of climbing above it', 'rkReC5', 'p1', True),
+    ('Community housing (PTH): the trust\u2019s books per home, last year, today\u2019s dollars', 'Value of the home', 'pbV', 'usd', False),
+    ('Community housing (PTH): the trust\u2019s books per home, last year, today\u2019s dollars', 'The trust\u2019s debt', 'pbD', 'usd', False),
+    ('Community housing (PTH): the trust\u2019s books per home, last year, today\u2019s dollars', 'The member\u2019s Acre Equity', 'pbME', 'usd', False),
+    ('Community housing (PTH): the trust\u2019s books per home, last year, today\u2019s dollars', 'The community\u2019s equity', 'pbCE', 'usd', False),
+    ('Community housing (PTH): the trust\u2019s books per home, last year, today\u2019s dollars', 'Home-years whose rent and contributions cover the trust\u2019s costs', 'pbCover', 'p1', False),
+    ('Community housing (PTH): the trust\u2019s books per home, last year, today\u2019s dollars', 'Members leaving the network a year', 'pbExit', 'p1', False),
+    ('Community businesses (PTF)', 'Cut in a member\u2019s cost of living (food and utilities)', 'pfCut', 'p1', False),
+    ('Community businesses (PTF)', 'Adults who are members (average over the run)', 'pfMem', 'p1', False)]
+
+def work_table(R):
+    if not v54(R): return None
+    rows = []
+    for Y in ('20', '40'):
+        if Y not in R['panels']: continue
+        for e, en in ENVS:
+            E = R['panels'][Y]['envs'][e]; b = 'panels.%s.envs.%s' % (Y, e); r = b + '.rows.release'
+            for g, lbl, k, f, both in WORK_ROWS:
+                if k not in E['rows']['release']: continue
+                d = C(*ci(r + '.d54.' + k)) if has(E['rows']['release'], 'd54.' + k) else C('–')
+                rows.append([C(Y), C(en), C(g), C(lbl), C(N(b + '.base.' + k, f)) if both and k in E['base'] else C('–'), C(N(r + '.' + k, f)), d])
+    return {'id': 'rel-work', 'title': 'Jobs, homes, shops and risk: no programme against Compassionism', 'filter': {'years': 0, 'env': 1},
+            'columns': ['Years', 'Environment', 'Group', 'Measure', 'No programme', 'Compassionism', 'Change, points (95% interval)'], 'rows': rows}
 
 ATTRIB_LABELS = {'xRelief': 'without the BU allowance (no BU are issued, so none buy essentials, expire or convert)',
                  'xProj': 'without project hiring (expired BU fund projects by the earlier allocation rule instead)',
@@ -594,15 +642,48 @@ def texts(R):
                              'A part that pays out more (the BU buying essentials, conversion) can lower poverty and raise prices at once; the table gives each part’s effect on inflation and cost beside its effect on poverty.')
         Tx['attrib.limits'] = ('Removing a part is a reading of what the design would be without it, not a proposal. Each part is removed alone, so a part whose work another part can take over shows a small effect. '
                                'The intervals cover the luck of the draws, not the model’s assumptions, which the readings test.')
+    if v54(R):  # v5.4 step 9: so readers do not compare across the break, and the round's own section
+        r20 = 'panels.20.envs.ref.rows.'
+        Tx['release.changed'] = ('What changed for the figures in v5.4: people can now lose their job and find another, as US workers do (Current Population Survey flows and spell lengths), with unemployment insurance in both runs; '
+                                 'after a permanent job loss pay on return is lower (10% on average: a design parameter, because no single source fixes it for every permanent loss); in Adverse and Stress the automation wave works through job loss in high-risk occupations instead of slower pay for everyone. '
+                                 'Community housing (PTH) keeps the trust’s books for every home, and Acre Equity grows at most at the price rise plus 2% (Duke’s cap, d175); members who move away take 40% of their Acre Equity in cash (d174). '
+                                 'Community businesses (PTF) cut prices sector by sector (food and utilities, at the BLEI paper’s figures; no cut where the Hub gives none) instead of a flat 12%, and members who move away leave. '
+                                 'Job loss changes the no-programme run as well as the programme, so v5.4’s figures are not comparable with earlier releases’: compare within a release. '
+                                 'v5.3’s main row, run on the v5.4 engine with its own no-programme run, is shown beside the main result as the reading “v5.3’s main row”: too little wealth in Reference, 20 years, changes by '
+                                 '{{' + r20 + 'v53.dPov.0|s1}} points against no programme there, and by {{' + r20 + 'release.dPov.0|s1}} in the main result.')
+        Tx['work.lead'] = ('What v5.4 adds, for the environment and horizon chosen. <strong>Work:</strong> each year an adult at work can lose or leave their job (8.5% a year in normal years, 14.2% in recessions; BLS Current Population Survey flows), is out of work for a spell of the measured length, '
+                           'and comes back; after a permanent loss (41% of spells) pay is lower, by 10% on average (a design parameter: the readings show no cut and a 20% cut). Unemployment insurance is paid as in the US, in both runs. '
+                           '<strong>Community housing:</strong> each PTH home has the trust’s books (value, debt, upkeep, tax, the member’s Acre Equity and the community’s equity), and “homes minus debt equals members’ equity plus community equity” is checked for every home every year. '
+                           '<strong>Community businesses:</strong> a member’s cut is built from sectors: food at the BLEI paper’s figure (62% off, less while under 40% of adults are members), utilities (44% off), and no cut in transport, health care and childcare, where the Hub gives no figure. '
+                           '<strong>Risk:</strong> how far savings and days of basic living fall from their peak, how fast income recovers after a shock, and how often people fall back below the cost of living.')
+        Tx['work.read'] = ('Each row is a share of adults (or of adult-years) in the chosen environment and horizon. The hollow mark is no programme, the filled mark is Compassionism; the community-housing and community-business rows exist only with the programme and are in the table. '
+                           'With the programme, savings sit closer to the wealth line in real terms because prices rise with its new money, so a pay cut after job loss pushes more people under the line; this is why the programme’s wealth result is worse in Reference than in v5.3 (the reading “v5.3’s main row”). '
+                           'The largest fall in days of basic living is larger with the programme because people hold far more days: the measure reads the size of a swing, not its harm.')
+        Tx['work.limits'] = ('The pay cut after a permanent job loss is a design parameter, and it drives the largest new result (see the readings with no cut and a 20% cut). The model has no one entering the labour force from outside it, so its unemployment '
+                             '({{' + r20 + 'release.emUrate|p1}} of working-age adult-years in Reference) is below the official 4.2%. PTF’s sectors share one capacity rule, and the Hub gives no figures for transport, health care or childcare. '
+                             'The Hub’s 55% participation floor never comes into play: the released model reads it on the share of adults who are PTF members, which is capped well below it, and a test that raised the cap from 20% to 90% under floors of 40%, 55% and 70% found results moving smoothly and slightly, with no step at 55% (Claude’s reading of the design; dev/reports/v5-22-v54-report.md, section 5). '
+                             'Insurance for PTH homes and taxes on unemployment benefits are not modelled.')
+        Tx['readings.lead'] = ('Each reading changes one assumption beside the main row, over the same paired runs, and none of them is in the main row. The first group is v5.4’s: v5.3’s main row (no job loss, PTH and PTF as before), no pay cut on return to work, a 20% cut, automation as a lasting pay drag, '
+                               'the earlier Acre Equity rule (3–5% a year), PTF cutting 25% in the sectors the Hub gives no figure for, and a disaster in Year 7 (a scenario, not a part of the model). The second group undoes, one at a time, each choice v5.3 added (households, pooling, the child allowance, the wider list of what BU buy, starting wealth from the survey, spending that follows income). '
+                               'A reading that changes the population or something outside the design (job loss and its pay rule, the disaster, households, savings, ageing, the US-data readings) applies to the no-programme run too, so its change is against no programme under the same rule.')
+        Tx['readings.read'] = ('Each row is a reading; the mark is the change against no programme in the chosen measure, with its 95% interval, and the vertical line is the main row. A mark left of the main row means the reading does better than the main row. '
+                               'Rows are grouped: v5.4’s choices; v5.3’s choices; the optimistic end and the middle backing band; savings and the BU; ageing; closer to US data; robustness risks (rent capture, review errors); and other ways to pay.')
+        if R.get('attrib'):
+            Tx['attrib.lead'] = ('What each part of the design does: the main row against the main row without that part, on {{attrib.ref._meta.seeds|int}} paired runs over {{attrib.ref._meta.years|int}} years. '
+                                 'These runs are v5.3’s (made before job loss, PTH’s books and PTF by sector joined the main row); they are kept because those parts change the parts’ roles little, and rerunning them is listed as follow-up work. '
+                                 'The top row is the whole programme against no programme. Parts work together, so the parts need not add up to the whole; the gap is the interaction, in the table.')
+        if R.get('us'):
+            Tx['us.lead'] = Tx.get('us.lead', '') + ' This check is v5.3’s no-programme run (before job loss joined it); job loss lowers the no-programme run’s wealth slightly, so rerunning it is listed as follow-up work.'
     return Tx
 
 STORIES = [  # the explorer's guided reads: id, title, chart kind, tables, required data
     ('results', 'Results by environment and horizon', 'dumbbell', ['rel-t20', 'rel-t40', 'rel-paired']),
     ('hh', 'Households and children', 'hh', ['rel-hh']),
+    ('work', 'Jobs, homes and shops, and how risky life is', 'work', ['rel-work']),
     ('targets', 'Against the Hub’s own targets', 'targets', ['rel-tg']),
     ('fixed', 'Poverty lines fixed in dollars', 'fixed', ['rel-fx']),
     ('backing', 'The decisive unknown: how much of the payout new output backs', 'backing', ['bs']),
-    ('readings', 'How far the answer moves: the readings beside the main row', 'readings', ['rel-v53', 'rel-v52', 'rel-readings']),
+    ('readings', 'How far the answer moves: the readings beside the main row', 'readings', ['rel-v54', 'rel-v53', 'rel-v52', 'rel-readings']),
     ('attrib', 'What each part of the design does', 'attrib', ['rel-attrib']),
     ('us', 'The no-programme run against US data', 'us', ['rel-us', 'rel-us3', 'rel-us2'])]
 
@@ -664,7 +745,7 @@ def build(info, src=None):
         R['attrib'] = at
     R['derived'] = derived(R)
     R['figures'] = catalogue(R, '20') + (catalogue(R, '40') if p40 else []) + gini_figures(R, '20') + (gini_figures(R, '40') if p40 else [])
-    tables = [rel_table(R, '20')] + ([rel_table(R, '40')] if p40 else []) + [t for t in [paired_table(R)] if t] + [t for t in [targets_table(R) if p40 else None, fixed_table(R) if p40 else None, hh_table(R), readings_table(R), attrib_table(R), backing_table(R)] if t] + us_tables(R)
+    tables = [rel_table(R, '20')] + ([rel_table(R, '40')] if p40 else []) + [t for t in [paired_table(R)] if t] + [t for t in [targets_table(R) if p40 else None, fixed_table(R) if p40 else None, hh_table(R), work_table(R), readings_table(R), attrib_table(R), backing_table(R)] if t] + us_tables(R)
     R['tables'] = tables
     R['text'] = texts(R)
     have = {t['id'] for t in tables}
