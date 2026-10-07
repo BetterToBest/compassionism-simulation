@@ -48,6 +48,8 @@ This note comes first so that the design is fixed, and the expected results writ
 
 ## 2. The question for Duke
 
+*Answered Oct 6, 2026 (dashboard d172, d173): children get a quarter of the adult BU and the Act's text should be updated to include it (the model shows "no child allowance" beside it); the glossary's full list of what BU can buy is the design, added first as a labelled reading, with the restudy deciding whether it joins the main result.*
+
 The dashboard's one open question (the child allowance) was answered on Oct 6 (d167: a quarter, flat by age). Two new design questions came up while reading the Hub, both about what the framework is meant to do:
 
 1. **Children and the Act's text** (section 1.1): the draft Act gives BU to adults 18 and older; your Oct 6 answer gives children a quarter. Which is the design? (Until you say: your Oct 6 answer, with "none" beside it.)
