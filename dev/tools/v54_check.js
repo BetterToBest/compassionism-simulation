@@ -11,11 +11,11 @@ const pos = process.argv.slice(2).filter(x => !x.startsWith('--'));
 const env = pos[0] || 'ref', N = +(pos[1] || 12), YRS = +(pos[2] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME || !(N >= 2) || (YRS !== 20 && YRS !== 40)) { console.error('usage: v54_check.js ref|adv|st [SEEDS >= 2] [20|40] [--rows=v53,...]'); process.exit(1); }
 /* The variants: the v54 row option each one sets (rk, the risk measures, is on in all). */
-const VAR = {v53: {}, empl: {empl: {}}, emplPay: {empl: {auto: 'pay'}}, emplCut0: {empl: {cut: 0}}, emplCut20: {empl: {cut: 0.20}}, emplNoUI: {empl: {ui: false}}, emplAdd: {empl: {rec: 'add'}}};
+const VAR = {v53: {}, empl: {empl: {}}, emplPay: {empl: {auto: 'pay'}}, emplCut0: {empl: {cut: 0}}, emplCut20: {empl: {cut: 0.20}}, emplNoUI: {empl: {ui: false}}, emplAdd: {empl: {rec: 'add'}}, emplNoOcc: {empl: {occ: false}}, pthb: {pthb: {}}, pthbOld: {pthb: {cap: 'old'}}, pthbFull: {pthb: {x: 1}}, pthbNone: {pthb: {x: 0}}, pthbOwn: {pthb: {exit: 'owners'}}, pthbStay: {pthb: {exit: 0}}, ptfs: {ptfs: {}}, ptfs12: {ptfs: {other: 0.12}}, ptfs25: {ptfs: {other: 0.25}}, ptfsStay: {ptfs: {leave: 0}}, all: {empl: {}, pthb: {}, ptfs: {}}};
 const rows = (arg('rows') || 'v53').split(',');
 rows.forEach(v => { if (!VAR[v]) { console.error('unknown variant ' + v + ' (known: ' + Object.keys(VAR).join(', ') + ')'); process.exit(1); } });
 const ROOT = path.join(__dirname, '..', '..'), t0 = Date.now(), SC = H.SPEND_SOURCED, C = H.CFG;
-const K = ['fgt0PY', 'pov', 'bOAPy', 'fgt2PY', 'endoAnn', 'cost', 'giniD', 'medWealthReal', 'hrs'].concat(H.RISK_KEYS, H.EMPL_KEYS);
+const K = ['fgt0PY', 'pov', 'bOAPy', 'fgt2PY', 'endoAnn', 'cost', 'giniD', 'medWealthReal', 'hrs'].concat(H.RISK_KEYS, H.EMPL_KEYS, H.PTHB_KEYS, H.PTFS_KEYS);
 const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it */
 const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
 const cmd = 'node dev/tools/v54_check.js ' + env + ' ' + N + ' ' + YRS + ' --rows=' + rows.join(',') + (arg('out') ? ' --out=' + arg('out') : '');

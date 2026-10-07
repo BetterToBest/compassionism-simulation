@@ -2414,9 +2414,19 @@ function v54UnitSuite(){
       var ok = B.emSpells > 6 && B.emSpells < 16 && B.emWeeks > 8 && B.emWeeks < 20 && B.emUI > 3 && B.emUI < 12 && B.emCut > 6 && B.emCut < 14 && B.emAuto > 0 && B.emSpells === M.emSpells && nF === 0 && nN > 0;
       return {pass:ok, detail:'spells ' + B.emSpells.toFixed(2) + ' / 100 adult-years, weeks ' + B.emWeeks.toFixed(1) + ', UI ' + B.emUI.toFixed(1) + '% of pay lost, cut ' + B.emCut.toFixed(1) + '%, automation ' + B.emAuto.toFixed(2) + '; identity checks ' + nN + ', failures ' + nF + (nF ? ' ' + JSON.stringify(ACCT.nFail) : '')}; }
     finally { ACCT = A0; } });
+  t('PTH balance sheet: homes - debt = members\' equity + community equity for every home every year, leavers are replaced, and the no-programme run is untouched (Reference)', function(){
+    var A0 = ACCT; ACCT = acctNew();
+    try { var R = v54Study('ref', [null, {pthb:{}}], 3, 150), b = same(R[0], R[2]), nF = Object.keys(ACCT.nFail).reduce(function(s, k){ return s + ACCT.nFail[k]; }, 0), nB = ACCT.n['pth-books'] || 0, M = R[3];
+      return {pass:b.length === 0 && nF === 0 && nB > 0 && M.pbExit > 3 && M.pbExit < 9 && M.pbFill === 100 && Math.abs(M.pbV - M.pbD - M.pbME - M.pbCE) < 1e-6*M.pbV,
+        detail:'base keys differing: ' + (b.slice(0, 3).join(', ') || 'none') + '; home checks ' + nB + ', identity failures ' + nF + '; exits ' + M.pbExit.toFixed(2) + ' per 100 member-years; end value / debt / members / community $' + [M.pbV, M.pbD, M.pbME, M.pbCE].map(Math.round).join(' / ')}; }
+    finally { ACCT = A0; } });
+  t('PTF by sector: the cut is food and utilities at the Hub\'s epsilons with the other sectors at zero (about 6-8% of the basket), larger when the other sectors are cut, members leave at the moving rate, and the no-programme run is untouched (Reference)', function(){
+    var R = v54Study('ref', [null, {ptfs:{}}, {ptfs:{other:0.25}}, {ptfs:{leave:0}}], 2, 150), b = same(R[0], R[2]).concat(same(R[0], R[4]));
+    return {pass:b.length === 0 && R[3].pfCut > 5 && R[3].pfCut < 9 && R[5].pfCut > R[3].pfCut + 5 && R[7].pfLeave === 0 && R[3].pfLeave > 0,
+      detail:'cut ' + R[3].pfCut.toFixed(2) + '% / ' + R[5].pfCut.toFixed(2) + '% (other sectors 25%); leavers a year ' + R[3].pfLeave.toFixed(2) + ' / ' + R[7].pfLeave + '; base keys differing: ' + (b.slice(0, 3).join(', ') || 'none')}; });
   return out;
 }
-Object.assign(module.exports, { EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
+Object.assign(module.exports, { PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
