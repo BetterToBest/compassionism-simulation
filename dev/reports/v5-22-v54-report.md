@@ -39,7 +39,7 @@ Every interval is within ±0.3 points of the figure shown.
 
 ## 2. PTH as a housing balance sheet (`PTHB`)
 
-**What changed.** Each PTH home now has the trust's books: its value (18.2 years of its market housing cost; Federal Reserve and BEA), land (38%), upkeep (2.3% of the building a year), property tax (0.65%), debt (at 1.8% above the price rise), the member's Acre Equity and the community's equity. The identity "homes − debt = members' equity + community equity" is checked for every home every year and holds. Acre Equity grows with the home but at most at the price rise + 2% (your cap; question d175). Members leave the network at renters' rate of moving to another county (6.2% a year) and take 40% of their equity in cash (your Real Estate paper's figures; question d174); the next household waiting moves in.
+**What changed.** Each PTH home now has the trust's books: its value (18.2 years of its market housing cost; Federal Reserve and BEA), land (38%), upkeep (2.3% of the building a year), property tax (0.65%), debt (at 1.8% above the price rise), the member's Acre Equity and the community's equity. The identity "homes − debt = members' equity + community equity" is checked for every home every year and holds. Acre Equity grows with the home but at most at the price rise + 2% (your cap; you confirmed it, d175). Members leave the network at renters' rate of moving to another county (6.2% a year) and take 40% of their equity in cash (your Real Estate paper's figures; you confirmed it, d174); the next household waiting moves in.
 
 **Results (Reference, end of year 20, year-0 dollars per home).**
 
@@ -141,7 +141,7 @@ Reference, v5.3 main result, no programme → Compassionism:
 
 ## 10. What happens next
 
-By the rule recorded before any run, each part joins the main result unless the restudy found a modelling error in it; none was found. Joining means remaking the release panels and the pages with the v5.4 parts as the main result (and the v5.3 result beside it), then version 5.4. That is the next step. Your three questions (d174-d176) stand: the figures above use the defaults.
+By the rule recorded before any run, each part joins the main result unless the restudy found a modelling error in it; none was found. Joining means remaking the release panels and the pages with the v5.4 parts as the main result (and the v5.3 result beside it), then version 5.4. That is the next step. Your answers to the three design questions (d174-d176, Oct 7) confirmed the defaults the figures above use: 40% of Acre Equity in cash on leaving, growth capped at the price rise + 2%, and automation as an outside condition.
 
 ## How these were made
 
