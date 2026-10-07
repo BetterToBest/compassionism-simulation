@@ -305,6 +305,9 @@ def hh_table(R):
     return {'id': 'rel-hh', 'title': 'Households and children: Compassionism against no programme', 'filter': {'years': 0, 'env': 1},
             'columns': ['Years', 'Environment', 'Who', 'Measure', 'Compassionism vs no programme', 'Change, points (95% interval)'], 'rows': rows}
 
+ATTRIB_LABELS = {'xRelief': 'without the BU allowance (no BU are issued, so none buy essentials, expire or convert)',
+                 'xProj': 'without project hiring (expired BU fund projects by the earlier allocation rule instead)'}
+
 AT_K = [('fgt0PY', 'Below the cost of living (adult-years)'), ('pov', 'Too little wealth at the last year (adults)'), ('bOAPy', 'Below 30 days of basic living (adult-years)'), ('hhCostKidPY', 'Children below the cost of living'),
         ('endoAnn', 'Programme inflation a year'), ('cost', 'Cost per adult a year')]
 
@@ -654,6 +657,9 @@ def build(info, src=None):
     if all(at.values()):
         if len({json.dumps(a['_meta']['manifest'], sort_keys=True) for a in at.values()}) != 1 or any(a['_meta']['seeds'] != p20['_meta']['seeds'] for a in at.values()):
             sys.exit('release_data: the attribution runs are not from one build on the panel\'s seeds')
+        for a in at.values():  # the parts' labels as harness.js now words them (two were corrected after the 500-seed runs; the configurations are unchanged: DECISIONS Session 39, B9)
+            for j, o in a['parts'].items():
+                if j in ATTRIB_LABELS: o['label'] = ATTRIB_LABELS[j]
         R['attrib'] = at
     R['derived'] = derived(R)
     R['figures'] = catalogue(R, '20') + (catalogue(R, '40') if p40 else []) + gini_figures(R, '20') + (gini_figures(R, '40') if p40 else [])

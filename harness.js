@@ -1835,9 +1835,9 @@ function releaseRowsV53(SC){
     {l:'  partners\' income swings moving together strongly (0.5)', v:W({hh:H({shock:0.5})}), k:'s', vs:'main', j:'shock50', bk:'bshock50'},
     {l:'  FBS50 spread evenly over its range (more adults need a larger surplus to advance)', v:W({fb:{dist:'fbs50'}}), k:'s', vs:'main', j:'fbs50'},
     /* plan item B9: each part of the design removed in turn */
-    {l:'  without BU buying essentials (BU only expire and are converted)', v:W({pwOff:{relief:true}}), k:'a', vs:'main', j:'xRelief'},
+    {l:'  without the BU allowance (no BU are issued, so none buy essentials, expire or convert)', v:W({pwOff:{relief:true}}), k:'a', vs:'main', j:'xRelief'},
     {l:'  without conversion (BU never become dollars)', v:W({pwOff:{conversion:true}}), k:'a', vs:'main', j:'xConv'},
-    {l:'  without project hiring (expired BU are destroyed, not directed to creative work)', v:W({drop:['pj']}), k:'a', vs:'main', j:'xProj'},
+    {l:'  without project hiring (expired BU fund projects by the earlier allocation rule instead)', v:W({drop:['pj']}), k:'a', vs:'main', j:'xProj'},
     {l:'  without the essential businesses\' payroll (ESP)', v:W({esp:false}), k:'a', vs:'main', j:'xEsp'},
     {l:'  without the premium split (businesses keep the premium)', v:W({drop:['sp']}), k:'a', vs:'main', j:'xSplit'},
     {l:'  without community businesses (PTF)', v:W({pset:{ptf:false}}), k:'a', vs:'main', j:'xPtf'},
