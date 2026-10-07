@@ -158,6 +158,22 @@
    },
    "equal": true,
    "seconds": 430
+  },
+  {
+   "from": "72580feed849707ae2dc4e5c1d07b2ad6365e78e0b75bcf743511871bd9aee7f",
+   "to": "6195baa6ef71f10001366f761388686667350cbdc3f310a42692a67bd80945f0",
+   "date": "2026-10-07",
+   "change": "v5.3 B10: REL_V53 and relMainCfgs (the v5.3 main row's parts), and n1Row's new row options (sg, em, fb, g, drop, pset, pwOff); no existing row changes",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 449
   }
  ]
 }

@@ -1674,7 +1674,7 @@ function avoidWideUnitSuite(){
 function pageConstants(){ return {_about:'Written by node harness.js constants (v5.2.2, audit A3); read by dev/tools/release_data.py. Each value is CFG.<name> in harness.js and index.html.',
   POVERTY_LINE:CFG.POVERTY_LINE, POVERTY_THRESHOLD_ONE:CFG.POVERTY_THRESHOLD_ONE, BLEI_PRECARIOUS_MAX:CFG.BLEI_PRECARIOUS_MAX}; }
 Object.assign(module.exports, { pageConstants });
-Object.assign(module.exports, { fedTax, progLam, avoidWideUnitSuite, REL_V5, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, releaseBases, matrixUnitSuite, docCounts, v52UnitSuite, REL_V52_STUDY, setRepHook:function(f){ REP_HOOK = f; }, latentAdjust, normCdf, normInv, autoRiskCdf, autoRiskInv, scfWealthQ, TB_REP_SPELL, setLatent:function(x){ LATENT = x; }, tbRepYear, giniOfArrNeg, TB_REP_KEYS, TB_REP_SNAP });
+Object.assign(module.exports, { fedTax, progLam, avoidWideUnitSuite, REL_V5, REL_V53, relMainCfgs, releaseRowsV53, releaseBasesV53, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, releaseBases, matrixUnitSuite, docCounts, v52UnitSuite, REL_V52_STUDY, setRepHook:function(f){ REP_HOOK = f; }, latentAdjust, normCdf, normInv, autoRiskCdf, autoRiskInv, scfWealthQ, TB_REP_SPELL, setLatent:function(x){ LATENT = x; }, tbRepYear, giniOfArrNeg, TB_REP_KEYS, TB_REP_SNAP });
 
 /* The eleven readings of the release panel (v5.0's main row, H1 and the nine others), as plain row options for n1Row. Top-level so the release section of `testbed` and
  * domtest's page-versus-harness parity check build the same rows (v5.1, audit V5-04). SC is the spending share (SPEND_SOURCED). Pure data: no engine state is read. */
@@ -1739,6 +1739,105 @@ function releaseRows(SC, only51){
     {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main', j:'all'},
     {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
     {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'}].concat(V52);
+}
+/* v5.3 B10 (Oct 7, 2026; dev/DECISIONS.md Session 39, "B10"): the v5.3 release panel. The main row and its no-programme run are made of the parts recorded before
+ * the restudy: the two accounting corrections (ACCT_V53), households (pooled, the child allowance at a quarter, partners' income swings at Shore's correlations,
+ * household wealth from the SCF), the Hub's list of what BU can buy, and income-graded spending; the measured EDC and FBS50 are reported (they change no
+ * result). The readings are the v5.2 panel's (applied on top of the new main row) and v5.3's, each with its own no-programme pair where it changes the
+ * population; the attribution rows (k 'a', plan item B9) remove one part of the design at a time. `node harness.js testbed 500 release ENV --v53 --json=...` */
+var HH_V53 = REL_V53.hh;  /* the engine's v5.3 main-row households (index.html, REL_V53) */
+function releaseBasesV53(SC){
+  var B = function(x){ return Object.assign({sc:SC, hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true}, x); };
+  return [
+    {l:'[reference] no programme, savings that keep up with prices', v:B({sv:{}}), j:'sv'},
+    {l:'[reference] no programme, savings that keep only their value', v:B({sv:{r:0}}), j:'sv0'},
+    {l:'[reference] no programme, households with ageing (children\'s lives; estates to heirs)', v:B({ag:{}}), j:'ag'},
+    {l:'[reference] no programme, households with ageing, a benefit linked to the adult\'s own wage', v:B({ag:{ss:'pia'}}), j:'agpia'},
+    {l:'[reference] no programme, households with ageing, every estate leaving the model', v:B({ag:{}, hh:Object.assign({}, HH_V53, {estate:'leave'})}), j:'agleave'},
+    {l:'[reference] no programme, households with ageing and earnings by age', v:B({ag:{earn:'cps'}}), j:'agcps'},
+    {l:'[reference] no programme, automation risk linked to wages', v:B({lt:{r:1}}), j:'ltr'},
+    {l:'[reference] no programme, the SCF\'s wider spread of wages', v:B({lt:{s:1}}), j:'lts'},
+    {l:'[reference] no programme, wages centred on the US survey\'s median', v:B({lt:{m:1}}), j:'ltm'},
+    {l:'[reference] no programme, the three wage and risk readings', v:B({lt:{r:1, s:1, m:1}}), j:'lta'},
+    {l:'[reference] no programme, v5.2\'s population: adults living alone, their own starting savings, everyone paying the full basket', v:{sc:SC, g:ACCT_V53, em:true, fb:true}, j:'b52'},
+    {l:'[reference] no programme, adults living alone (with income-graded spending)', v:B({hh:null}), j:'badults'},
+    {l:'[reference] no programme, each adult keeping their own money', v:B({hh:Object.assign({}, HH_V53, {pool:'individual'})}), j:'bindiv'},
+    {l:'[reference] no programme, households\' starting savings from the model\'s own draw', v:B({hh:Object.assign({}, HH_V53, {wealth:'model'})}), j:'bwmodel'},
+    {l:'[reference] no programme, everyone paying their full cost', v:B({sg:null}), j:'bnosg'},
+    {l:'[reference] no programme, partners\' income swings moving together strongly (0.5)', v:B({hh:Object.assign({}, HH_V53, {shock:0.5})}), j:'bshock50'}];
+}
+/* The v5.3 panel's extra figures for one row (or a no-programme row, b null): the household reading's measures (every person with their household's status;
+ * children alone; by type), the measured EDC and its proxy, FBS50, and, against the row's pair, the paired change with a 95% interval for the measures
+ * the page shows. Absent keys (a row without households) are left out. */
+function rel53Keys(r, b){
+  var o = {}, K = ['hhCostPY', 'hhCostKidPY', 'hhFplPY', 'hhFplKidPY', 'hhWlthPY', 'hhWlthKidPY', 'hhBleiPY', 'hhBleiKidPY', 'hhCost7', 'hhCostKid7', 'hhCostEnd', 'hhCostKidEnd', 'hhWlthEnd', 'hhWlthKidEnd', 'hhGiniEq', 'hhMedEq', 'hhPer', 'hhKid',
+    'hhCost_sg', 'hhCost_sp', 'hhCost_cn', 'hhCost_ck', 'hhWlth_sg', 'hhWlth_sp', 'hhWlth_cn', 'hhWlth_ck', 'hhShare_sg', 'hhShare_sp', 'hhShare_cn', 'hhShare_ck', 'hhCostA25', 'hhCostA35', 'hhCostA50', 'hhCostA67', 'hhSpEx1', 'hhSpN',
+    'edcM', 'edcMagg', 'edcProxy', 'fbsAbove', 'fbsAboveKids', 'hhBirthR', 'hhKid0', 'hhEntK', 'hhEstP', 'hhEstO'], D = ['hhCostPY', 'hhCostKidPY', 'hhWlthEnd', 'hhWlthKidEnd', 'hhBleiPY', 'hhBleiKidPY', 'hhFplKidPY', 'hhCostKid7', 'edcM'];
+  K.forEach(function(k){ if (typeof r[k] === 'number') o[k] = +r[k].toFixed(k === 'hhGiniEq' ? 4 : k === 'hhMedEq' ? 0 : 2); });
+  if (b) { o.d53 = {}; D.forEach(function(k){ if (r._s && r._s[k] && b._s && b._s[k]){ var x = tbDiff(r, b, k); o.d53[k] = [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; } }); }
+  return o; }
+function releaseRowsV53(SC){
+  var ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5, REL_V53, {em:true, fb:true}), W = function(x){ return Object.assign({}, ALL, x); }, H = function(x){ return Object.assign({}, HH_V53, x); };
+  return [
+    {l:'TODAY (v4.22, Hub spec): the s34 main row (wage contribution)', v:{sc:SC, gc:true, hh:HH_V53, sg:true, g:ACCT_V53}, k:'today', j:'v422'},
+    {l:'RELEASE (v5.3): Compassionism with every mechanism, paid for by the Source; households and children', v:ALL, k:'main', vs:'today', j:'release'},
+    /* the v5.0-v5.2 readings, on the v5.3 main row */
+    {l:'  H1: every dollar the Source pays backed by new output', v:W({a:1}), k:'s', vs:'main', j:'h1'},
+    {l:'  essentials bought with BU counted as backed by output', v:W({o:{faceM:true}}), k:'s', vs:'main', j:'face'},
+    {l:'  paid for by a flat contribution on wages instead of the Source', v:W({fin:'tax'}), k:'s', vs:'main', j:'tax'},
+    {l:'  creative projects counted at the cost of their hours, not at market value (the cautious reading)', v:W({pd:{match:'face', speed:'oneyear'}}), k:'s', vs:'main', j:'cost'},
+    {l:'  community-business capacity growing only as reinvestment pays for it (the 5-year rule)', v:W({pd:{match:'market', speed:'reinvest'}}), k:'s', vs:'main', j:'cap5'},
+    {l:'  taking part costs nothing (every adult joins)', v:W({jn:{cost:'none'}}), k:'s', vs:'main', j:'all'},
+    {l:'  price cuts free (PTF and PTH cuts counted as capacity, not a transfer)', v:W({o:{eP:1}}), k:'s', vs:'main', j:'free'},
+    {l:'  the two former stand-ins on (octave wage raise and inflation damping; theoretical, off by default)', v:W({raise:true, damp:true}), k:'s', vs:'main', j:'standins'},
+    {l:'  savings that keep up with prices (interest = inflation + 0.97% a year, in both runs)', v:W({sv:{}}), k:'s', vs:'main', j:'sav', bk:'sv'},
+    {l:'  savings that only keep their value (interest = inflation, in both runs)', v:W({sv:{r:0}}), k:'s', vs:'main', j:'sav0', bk:'sv0'},
+    {l:'  the BU indexed to prices every year (the Hub indexes it only in a year prices rise faster than 5%)', v:W({ci:true}), k:'s', vs:'main', j:'idx'},
+    {l:'  H1 with the BU indexed every year', v:W({a:1, ci:true}), k:'s', vs:'main', j:'h1idx'},
+    {l:'  middle backing reading: new output backs the Source\'s payout up to 12% of earned income a year (the Kenya study\'s two-year rollout)', v:W({aK:CFG.KENYA_ABSORB_ROLLOUT}), k:'s', vs:'main', j:'mid'},
+    {l:'  middle band, low end: up to 8% a year (all of the US\'s underused labour, BLS U-6, 2025)', v:W({aK:CFG.US_UNDERUSE}), k:'s', vs:'main', j:'midlo'},
+    {l:'  middle band, high end: up to 16% a year (the Kenya study\'s peak year)', v:W({aK:CFG.KENYA_ABSORB_PEAK}), k:'s', vs:'main', j:'midhi'},
+    {l:'  the spending layer in normal years too: idle labour (U-6 above its lowest level, 1.1% of wages) filled at the normal-times multiplier 0.6', v:W({ml:{nt:{m:CFG.MULT_NORMAL, s:CFG.US_UNDERUSE - CFG.US_UNDERUSE_LOW}}}), k:'s', vs:'main', j:'slack'},
+    {l:'  landlords raise the rent of tenants paying with BU by $0.50 per BU dollar spent on rent, outside PTH (housing-voucher evidence: Collinson and Ganong 2018)', v:W({hc:{c:CFG.HOUSING_CAPTURE}}), k:'s', vs:'main', j:'hcap'},
+    {l:'  rents outside PTH rise $1.41 per BU dollar spent on rent, for every renter outside PTH (Susin 2002: other renters paid more than the subsidy)', v:W({hc:{c:CFG.HOUSING_CAPTURE_HIGH, all:true}}), k:'s', vs:'main', j:'hcaphi'},
+    {l:'  10% of high conversion rates unearned, audits catch half', v:W({rv:{u:0.10}}), k:'s', vs:'main', j:'rev10'},
+    {l:'  20% of high conversion rates unearned, no audits', v:W({rv:{u:0.20, q:0}}), k:'s', vs:'main', j:'rev20n'},
+    {l:'  the launch gift paid for over the run (the Source spreads the new money for the gift over the run)', v:W({gift:'run'}), k:'s', vs:'main', j:'giftrun'},
+    {l:'  paid for by a progressive income tax instead of the Source (the 2025 federal brackets, scaled up; not specified by the Hub)', v:W({fin:'tax', o:{taxBase:'prog'}}), k:'s', vs:'main', j:'progtax'},
+    {l:'  paid for by a land-value tax instead of the Source (falling on adults in proportion to their savings; not specified by the Hub)', v:W({fin:'tax', o:{taxBase:'land'}}), k:'s', vs:'main', j:'landtax'},
+    {l:'  households with ageing: children grow up, are born and leave home; estates pass to partners and children (a population that drifts: couples are fixed)', v:W({ag:{}}), k:'s', vs:'main', j:'age', bk:'ag'},
+    {l:'  ageing, retirees leave the programme and live on Social Security alone', v:W({ag:{ret:'none'}}), k:'s', vs:'main', j:'agenone', bk:'ag'},
+    {l:'  ageing, with a Social Security benefit linked to the adult\'s own wage', v:W({ag:{ss:'pia'}}), k:'s', vs:'main', j:'agepia', bk:'agpia'},
+    {l:'  ageing, every estate leaving the model (no heirs)', v:W({ag:{}, hh:H({estate:'leave'})}), k:'s', vs:'main', j:'ageleave', bk:'agleave'},
+    {l:'  ageing, with wages following US earnings by age (BLS CPS)', v:W({ag:{earn:'cps'}}), k:'s', vs:'main', j:'agecps', bk:'agcps'},
+    {l:'  automation risk linked to wages (lower-paid jobs at higher risk, as in the occupation data)', v:W({lt:{r:1}}), k:'s', vs:'main', j:'fixr', bk:'ltr'},
+    {l:'  wages spread as widely as in the US wealth survey', v:W({lt:{s:1}}), k:'s', vs:'main', j:'fixs', bk:'lts'},
+    {l:'  wages centred on the US survey\'s median ($54,698 instead of $39,945)', v:W({lt:{m:1}}), k:'s', vs:'main', j:'fixm', bk:'ltm'},
+    {l:'  the three wage and risk readings together', v:W({lt:{r:1, s:1, m:1}}), k:'s', vs:'main', j:'fixall', bk:'lta'},
+    /* v5.3's own readings */
+    {l:'  v5.2\'s main row: adults living alone, BU buying food, housing and medical care, their own starting savings, everyone paying the full basket', v:Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5, {g:ACCT_V53, em:true, fb:true}), k:'s', vs:'main', j:'v52', bk:'b52'},
+    {l:'  adults living alone (no households), otherwise the main row', v:W({hh:null}), k:'s', vs:'main', j:'adults', bk:'badults'},
+    {l:'  BU buying only food, housing and medical care (v5.2\'s list)', v:W({bs:'core'}), k:'s', vs:'main', j:'core'},
+    {l:'  each adult keeping their own money (no pooling)', v:W({hh:H({pool:'individual'})}), k:'s', vs:'main', j:'indiv', bk:'bindiv'},
+    {l:'  no child allowance', v:W({hh:H({childBU:0})}), k:'s', vs:'main', j:'cb0'},
+    {l:'  a child allowance of half the adult BU', v:W({hh:H({childBU:0.5})}), k:'s', vs:'main', j:'cb50'},
+    {l:'  households\' starting savings from the model\'s own draw (not the SCF)', v:W({hh:H({wealth:'model'})}), k:'s', vs:'main', j:'wmodel', bk:'bwmodel'},
+    {l:'  everyone paying their full cost each year whatever their income (no income-graded spending)', v:W({sg:null}), k:'s', vs:'main', j:'nosg', bk:'bnosg'},
+    {l:'  partners\' income swings moving together strongly (0.5)', v:W({hh:H({shock:0.5})}), k:'s', vs:'main', j:'shock50', bk:'bshock50'},
+    {l:'  FBS50 spread evenly over its range (more adults need a larger surplus to advance)', v:W({fb:{dist:'fbs50'}}), k:'s', vs:'main', j:'fbs50'},
+    /* plan item B9: each part of the design removed in turn */
+    {l:'  without BU buying essentials (BU only expire and are converted)', v:W({pwOff:{relief:true}}), k:'a', vs:'main', j:'xRelief'},
+    {l:'  without conversion (BU never become dollars)', v:W({pwOff:{conversion:true}}), k:'a', vs:'main', j:'xConv'},
+    {l:'  without project hiring (expired BU are destroyed, not directed to creative work)', v:W({drop:['pj']}), k:'a', vs:'main', j:'xProj'},
+    {l:'  without the essential businesses\' payroll (ESP)', v:W({esp:false}), k:'a', vs:'main', j:'xEsp'},
+    {l:'  without the premium split (businesses keep the premium)', v:W({drop:['sp']}), k:'a', vs:'main', j:'xSplit'},
+    {l:'  without community businesses (PTF)', v:W({pset:{ptf:false}}), k:'a', vs:'main', j:'xPtf'},
+    {l:'  without community housing (PTH)', v:W({pset:{pth:false}}), k:'a', vs:'main', j:'xPth'},
+    {l:'  without zone coordination and the civic portal (SZH, CIP)', v:W({pset:{szh:false, cip:false}}), k:'a', vs:'main', j:'xZone'},
+    {l:'  without joining and leaving (participation fixed as drawn)', v:W({jn:null}), k:'a', vs:'main', j:'xJoin'},
+    {l:'  without the spending layer (no jobs from programme spending in recessions)', v:W({ml:null}), k:'a', vs:'main', j:'xMult'},
+    {l:'  without the production side (no new capacity or creative output counted as backing)', v:W({pd:null}), k:'a', vs:'main', j:'xProd'},
+    {l:'  without octave advancement', v:W({pwOff:{octave:true}}), k:'a', vs:'main', j:'xOct'}];
 }
 /* Audit E6 (v5.1): the test counts quoted in README.md and CONTRIBUTING.md are written between <!-- count:KIND -->...<!-- /count --> markers (KIND = unit or domtest) and checked by the tests
  * themselves, so they cannot drift: docCounts(kind, n) lists the quoted numbers and which are stale; with write = true it rewrites them. `node harness.js unit --write-counts` and
@@ -2247,6 +2346,17 @@ function hhUnitSuite(){
       a.forEach(function(r){ if (!(r.hhCostA25 > 0 && r.hhCostA35 > 0 && r.hhCostA50 > 0)) bad.push('age groups with ageing ' + [r.hhCostA25, r.hhCostA35, r.hhCostA50, r.hhCostA67].join(' ')); });
       info.push('with ageing, no programme, below the cost of living: 25-34 ' + a[0].hhCostA25.toFixed(1) + '%, 35-49 ' + a[0].hhCostA35.toFixed(1) + '%, 50-66 ' + a[0].hhCostA50.toFixed(1) + '%, 67+ ' + a[0].hhCostA67.toFixed(1) + '%'); });
     return {pass:bad.length === 0, detail:info.join('; ') + '; problems: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
+  t('v5.3 B10: the v5.3 panel is well formed: REL_V53 carries the accounting corrections (ACCT_V53) and the recorded parts; the page\'s live run and the panel share relMainCfgs; every reading paired with its own no-programme run names one that exists; row names are unique; each attribution row differs from the main row in one part only', function(){
+    var bad = [], R = releaseRowsV53(SPEND_SOURCED), B = releaseBasesV53(SPEND_SOURCED), bj = {}, seen = {}, main = R.filter(function(r){ return r.j === 'release'; })[0];
+    if (JSON.stringify(REL_V53.g) !== JSON.stringify(ACCT_V53)) bad.push('corrections');
+    if (REL_V53.bs !== 'hub' || !REL_V53.sg || REL_V53.hh.wealth !== 'scf' || REL_V53.hh.shock !== 'shore' || REL_V53.hh.childBU !== 0.25 || REL_V53.hh.pool !== 'household') bad.push('main-row parts');
+    var C = relMainCfgs(tbPresets(FULL_INTEGRATION)); if (!C[0].hh || !C[0].sg || C[1].bs !== 'hub' || !C[1].hh || !C[1].sg || !C[1].g) bad.push('relMainCfgs');
+    B.forEach(function(b){ bj[b.j] = 1; });
+    R.concat(B).forEach(function(r){ if (seen[r.j]) bad.push('duplicate ' + r.j); seen[r.j] = 1; });
+    R.forEach(function(r){ if (r.bk && !bj[r.bk]) bad.push(r.j + ' pairs with missing ' + r.bk); });
+    var A = R.filter(function(r){ return r.k === 'a'; }); A.forEach(function(r){ var dk = Object.keys(r.v).filter(function(k){ return JSON.stringify(r.v[k]) !== JSON.stringify(main.v[k]); }).concat(Object.keys(main.v).filter(function(k){ return !(k in r.v); }));
+      if (dk.length !== 1) bad.push(r.j + ' differs in ' + dk.join(',')); });
+    return {pass:bad.length === 0 && A.length >= 10, detail:R.length + ' rows (' + A.length + ' attribution rows), ' + B.length + ' no-programme pairs; problems: ' + (bad.length ? bad.join('; ') : 'none')}; });
   return out;
 }
 Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; }, EDC_KEYS, setEdcMeasure:function(x){ EDC_MEASURE = !!x; }, FBS_KEYS });
@@ -4376,14 +4486,15 @@ if (require.main === module) {
      * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
     if (secT === 'release'){ var RJ = {_meta:{engine:'release engine (harness.js testbed, section release)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
-      var V52 = process.argv.indexOf('--v51') < 0, SO52 = V52 ? REL_V52_STUDY : {};  /* v5.2: the round's reporting is on unless --v51 asks for the v5.1 panel exactly (the bit-identity check) */
+      var V52 = process.argv.indexOf('--v51') < 0, SO52 = V52 ? REL_V52_STUDY : {}, V53 = process.argv.indexOf('--v53') >= 0;  /* v5.3 B10: --v53 builds the v5.3 panel (releaseRowsV53) */  /* v5.2: the round's reporting is on unless --v51 asks for the v5.1 panel exactly (the bit-identity check) */
       if (V52) RJ._meta.v52 = {report:Object.assign({}, SO52), thresholdOne2025:CFG.POVERTY_THRESHOLD_ONE};
+      if (V53){ RJ._meta.v53 = {households:HH_V53, buScope:'hub', spendGrade:CFG.CE_SPEND_ELAST, corrections:ACCT_V53}; RJ._meta.command += ' --v53'; }
       envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
         function av(r){ return ((r._Bk || r._B).epPY - r.epPY)/100; }  /* v5.2: against the row's own no-programme pair where it has one */
         function aw(r){ var b = r._Bk || r._B; return avoidWide((b.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (b.fgt0PY - r.fgt0PY)/100); }
-        var rows = releaseRows(SC, !V52), bases = V52 ? releaseBases(SC) : [], nRel = rows.length;
+        var rows = V53 ? releaseRowsV53(SC) : releaseRows(SC, !V52), bases = V53 ? releaseBasesV53(SC) : V52 ? releaseBases(SC) : [], nRel = rows.length;
         rows = rows.concat(bases.map(function(b){ return {l:b.l, v:b.v, base:true, k:'b' + b.j, j:b.j}; }));  /* v5.2: the no-programme rows that some readings are paired with (printed last) */
         var R = stepSection('release (plan step 11)', e, rows,
           [['Unhoused person-years avoided per 1,000 adults a year', function(r){ return f2(av(r)*1000); }],
@@ -4391,7 +4502,7 @@ if (require.main === module) {
            ['Prisons, hospitals and psychiatric care avoided per adult-year: main (prisons + health) / high', function(r){ var w = aw(r); return $(w.main) + ' (' + $(w.jail) + ' + ' + $(w.health) + ') / ' + $(w.high); }],
            ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
-           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], {sc:SC, so:SO52});
+           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}));
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
         if (V52){ rep52Print(R, ['No programme'].concat(rows.map(function(rw){ return rw.l.trim(); })), E[0], YRS > 0 ? YRS : 20); out.base.rep = rep52Keys(B, null); out.base.path = path52(B, YRS > 0 ? YRS : 20); }
         var BX = {}; rows.forEach(function(rw, i){ if (rw.base) BX[rw.j] = R[i + 1]; });  /* v5.2: the paired no-programme rows */
@@ -4403,7 +4514,9 @@ if (require.main === module) {
           dFgt2:d3(r, 'fgt2PY'), dF0:d3(r, 'fgt0PY'), dPov:d3(r, 'pov'), dBO:d3(r, 'bOAPy'), dBN:d3(r, 'bNAPy'),
           grp:{part:Math.round(r.gPartRes - (r._Bk || B).gPartRes), non:Math.round(r.gNonRes - (r._Bk || B).gNonRes), low:Math.round(r.gLowRes - (r._Bk || B).gLowRes), top:Math.round(r.gTopRes - (r._Bk || B).gTopRes)}, worse:grpCell(r, r._Bk || B).split(' | ')[1],
           unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)};
+          if (V53) Object.assign(out.rows[rw.j], rel53Keys(r, r._Bk || B), {kind:rw.k});
           if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
+        if (V53){ Object.assign(out.base, rel53Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel53Keys(BX[b.j], null)); }); }
         RJ.envs[e] = out; });
       if (RPATH){ require('fs').writeFileSync(RPATH, JSON.stringify(RJ, null, 1)); console.log('\nwrote ' + RPATH); }
     }

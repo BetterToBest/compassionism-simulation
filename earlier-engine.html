@@ -2790,8 +2790,8 @@ function relRender(){
 /* The live run: the page's release engine, one seed, no programme against the release row (and H1 for the optimistic end). */
 function relLiveRows(env,seed){
   var P=Object.assign({},{ref:FULL_INTEGRATION,adv:ADVERSE_REFERENCE,st:STRESS_TEST}[env],REL.yrs===40?{years:40}:{}),svN=applyNR6(),svG=tbSetG(TB_PROFILE_G);
-  try{var PR=tbPresets(P),ALL=Object.assign({fin:'source',a:0,jn:{},cs:{}},REL_V5);  /* plan step 18: the v5.0 release row */
-    var R=tbStudy([{p:PR.baseline()},n1Row(PR,'framework',ALL)],seed,P,{fin:'tax',aT:0,a:0,X:0,sc:SPEND_SOURCED},seed);
+  try{var PR=tbPresets(P);  /* v5.3 B10: the v5.3 main row and its no-programme run (relMainCfgs) */
+    var R=tbStudy(relMainCfgs(PR),seed,P,{fin:'tax',aT:0,a:0,X:0,sc:SPEND_SOURCED},seed);
     var b=R[0],r=R[1],d=function(k){return [r[k]-b[k]];},av=(b.epPY-r.epPY)/100;
     return {b:{bOAPy:b.bOAPy,bNAPy:b.bNAPy,bOAMd:b.bOAMd,fgt0PY:b.fgt0PY,pov:b.pov},r:{bOAPy:r.bOAPy,bNAPy:r.bNAPy,bOAMd:r.bOAMd,fgt0PY:r.fgt0PY,pov:r.pov,dBO:d('bOAPy'),dBN:d('bNAPy'),dF0:d('fgt0PY'),dPov:d('pov'),dFgt2:d('fgt2PY'),
       grp:{part:r.gPartRes-b.gPartRes,non:r.gNonRes-b.gNonRes,low:r.gLowRes-b.gLowRes,top:r.gTopRes-b.gTopRes},worse:'none',live:true,hrs:r.hrs*100,infl:r.endoAnn*100,pLevEnd:r.pLev20,cost:r.cost,srcPay:r.srcPay,srcTax:r.srcTax,srcM:r.srcM,tau:r.tauMean*100,
@@ -4176,6 +4176,11 @@ var SPEND_SOURCED = 0.593, SPEND_2024 = 0.554;
 /* Plan step 18 (Oct 2, 2026): the v5.0 release row's switches beyond session 30's: private ESPs pass their premium to BU customers (step 14),
  * creative output at market value and capacity within a year (step 15), the spending layer (step 16). Read by the testbed's release section and the page. */
 var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}, gc:true};  /* v5.1 (audit V5-02): gc:true = the framework BLEI gate reads this year's BU; every release-panel row carries it */
+/* v5.3 B10 (Oct 7, 2026; dev/DECISIONS.md Session 39, "B10"): what v5.3's main result adds to REL_V5, recorded before the restudy: households (pooled, the child
+ * allowance at a quarter, partners' income swings at Shore's correlations, starting wealth from the SCF), the Hub's list of what BU can buy, income-graded
+ * spending, and the two accounting corrections. relMainCfgs(PR) gives the no-programme and main rows the page's live run and the panel share. */
+var REL_V53 = {hh:{pool:'household', childBU:0.25, shock:'shore', wealth:'scf'}, bs:'hub', sg:true, g:{PTH_APPR_CONSERVE:true, SURP_CUT_MARKUP:true}};
+function relMainCfgs(PR){ return [{p:PR.baseline(), hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g}, n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5, REL_V53))]; }
 /* Plan step 9 (Oct 1, 2026; dev/reports/09-avoided-costs.md): PUBLIC COSTS OF POVERTY AVOIDED, reported beside the programme's cost (no feedback
  * into the model). Homelessness (with the health care and justice costs that come with it): the model's extreme-poverty overlay (v4.18: HUD
  * 2025 AHAR point-in-time rate, scaled by housing distress against year 0) gives unhoused person-years; each is costed at two sourced ends:
@@ -5878,6 +5883,13 @@ function n1Row(PR, cm, v){
   if (v.rv) c.rv = v.rv;  /* v5.2 step 7: review errors and collusion ({u, q}) */
   if (v.hh) c.hh = v.hh;  /* v5.3 B3: households ({pool, childBU}) */
   if (v.bs) c.bs = v.bs;  /* v5.3 B3f: what BU can buy ('hub': the Hub's list) */
+  if (v.sg) c.sg = v.sg;  /* v5.3 B7: income-graded spending */
+  if (v.em) c.em = v.em;  /* v5.3 B6: the measured EDC (reporting only) */
+  if (v.fb) c.fb = v.fb;  /* v5.3 B7: FBS50 */
+  if (v.g) c.g = Object.assign({}, c.g || {}, v.g);  /* v5.3 B2: engine-question switches for the row (the accounting corrections) */
+  if (v.drop) v.drop.forEach(function(k){ delete c[k]; });  /* v5.3 B9: a part of the design removed (a module's row option: pj, es, sp, pd, jn, ml, cs) */
+  if (v.pset) Object.assign(c.p, v.pset);  /* v5.3 B9: a part of the preset switched off (ptf, pth, szh, cip) */
+  if (v.pwOff) c.pw = Object.assign({}, c.pw || {}, v.pwOff);  /* v5.3 B9: a pathway closed (relief, conversion, octave) */
   return c;
 }
 /* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is

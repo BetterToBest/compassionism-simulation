@@ -933,7 +933,7 @@ function phase11(done) {
     D40 ? '40-year panel: ' + Object.keys(D40.envs).join(', ') + '; text ' + (/at year 40/.test(t40) ? 'year 40' : 'MISSING') : 'no #rel-data-40');
   w.relSet('adv'); const si = d.getElementById('rel-seed'); si.value = '3'; const st0 = w.setTimeout; w.setTimeout = function (f) { f(); }; w.relRun(); w.setTimeout = st0;
   const live = w.REL.last, hR = (function(){ const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G); try { const P = Object.assign({}, H.ADVERSE_REFERENCE), PR = H.tbPresets(P);
-    return H.tbStudy([{p:PR.baseline()}, H.n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, H.REL_V5))], 3, P, {fin:'tax', aT:0, a:0, X:0, sc:H.SPEND_SOURCED}, 3); } finally { H.resetNR6(svN); H.tbSetG(svG); } })();
+    return H.tbStudy(H.relMainCfgs(PR), 3, P, {fin:'tax', aT:0, a:0, X:0, sc:H.SPEND_SOURCED}, 3);  /* v5.3 B10: the v5.3 main row (relMainCfgs) */ } finally { H.resetNR6(svN); H.tbSetG(svG); } })();
   const liveOK = !!live && live.seed === 3 && live.x.r.bOAPy === hR[1].bOAPy && live.x.b.pov === hR[0].pov && live.x.r.cost === hR[1].cost && /Basic living covered/.test((d.getElementById('rel-live-out') || {}).textContent || '');
   check('step 12: "Run it yourself" runs the page\'s release engine and matches harness.js on the same seed (Adverse, seed 3), and the earlier settings stay restored after it',
     liveOK && w.SURPLUS_CONSUMPTION_SHARE === 0 && w.CONVERSION_MODEL === 'engine', live ? 'BLEI poverty page ' + live.x.r.bOAPy.toFixed(2) + ' / harness ' + hR[1].bOAPy.toFixed(2) + '; spending share after ' + w.SURPLUS_CONSUMPTION_SHARE : 'no run');
