@@ -2,17 +2,17 @@
  "_meta": {
   "what": "v5.4 item 7: global sensitivity of the paired programme effect",
   "mode": "noise",
-  "env": "ref",
+  "env": "adv",
   "manifest": {
    "commit": "aacaf24340d2c6ef1be369023f2220ffb352faec",
-   "dirty": false,
+   "dirty": true,
    "node": "v22.22.0",
    "harnessSha256": "a52da2f1383c3f69d1210ef4e1c94027ada011189f4aba5df59362ccaa22b6f7",
    "engineBlockSha256": "777438fe0c4351fe157115e73ec02b49c9eed32a9f9f80facd47109a33f200cb",
    "indexSha256": "46274aaa5b50c4eee91e5babda792e1f690ea8c397f7e21219320e75033741a7",
    "engineSha256": "269fd36497526cd00831e4dc257074fa5edc8b91816e5cd4f2ecf111b53fce2f"
   },
-  "command": "node dev/tools/gsa.js noise ref 100",
+  "command": "node dev/tools/gsa.js noise adv 100",
   "inputs": [
    {
     "name": "bu",
@@ -146,30 +146,30 @@
    "pthb": {},
    "ptfs": {}
   },
-  "seconds": 57
+  "seconds": 58
  },
  "result": {
   "seeds": 100,
   "mean": {
-   "fgt0PY": -29.674900000000008,
-   "pov": 10.968000000000002,
-   "bOAPy": -14.854400000000004,
-   "cost": 29871.191148954877,
-   "endoAnn": 50.06022430159826
+   "fgt0PY": -34.84930000000001,
+   "pov": 35.367999999999995,
+   "bOAPy": -14.123699999999994,
+   "cost": 28507.838894176748,
+   "endoAnn": 59.54161223301976
   },
   "sd": {
-   "fgt0PY": 1.9692245794841277,
-   "pov": 2.5399785253208167,
-   "bOAPy": 1.5365554551224847,
-   "cost": 637.2878628055469,
-   "endoAnn": 1.4786796542231175
+   "fgt0PY": 2.307468880909043,
+   "pov": 2.230861590135845,
+   "bOAPy": 1.5442357169470433,
+   "cost": 607.4865444084661,
+   "endoAnn": 1.906213405691528
   },
   "sd500": {
-   "fgt0PY": 0.08806640045379895,
-   "pov": 0.11359129288014033,
-   "bOAPy": 0.06871684897704006,
-   "cost": 28.50037964937525,
-   "endoAnn": 0.06612856447577549
+   "fgt0PY": 0.10319314547355973,
+   "pov": 0.09976716327874047,
+   "bOAPy": 0.06906032072753425,
+   "cost": 27.1676241742755,
+   "endoAnn": 0.08524845509495282
   }
  }
 }

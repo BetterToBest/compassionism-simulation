@@ -2,17 +2,17 @@
  "_meta": {
   "what": "v5.4 item 7: global sensitivity of the paired programme effect",
   "mode": "noise",
-  "env": "ref",
+  "env": "st",
   "manifest": {
    "commit": "aacaf24340d2c6ef1be369023f2220ffb352faec",
-   "dirty": false,
+   "dirty": true,
    "node": "v22.22.0",
    "harnessSha256": "a52da2f1383c3f69d1210ef4e1c94027ada011189f4aba5df59362ccaa22b6f7",
    "engineBlockSha256": "777438fe0c4351fe157115e73ec02b49c9eed32a9f9f80facd47109a33f200cb",
    "indexSha256": "46274aaa5b50c4eee91e5babda792e1f690ea8c397f7e21219320e75033741a7",
    "engineSha256": "269fd36497526cd00831e4dc257074fa5edc8b91816e5cd4f2ecf111b53fce2f"
   },
-  "command": "node dev/tools/gsa.js noise ref 100",
+  "command": "node dev/tools/gsa.js noise st 100",
   "inputs": [
    {
     "name": "bu",
@@ -33,28 +33,28 @@
     "lo": 0.4,
     "hi": 0.9,
     "what": "participation (design)",
-    "main": 0.78
+    "main": 0.4
    },
    {
     "name": "ptfShare",
     "lo": 0.08,
     "hi": 0.3,
     "what": "PTF membership ceiling (design)",
-    "main": 0.18
+    "main": 0.08
    },
    {
     "name": "pthUptake",
     "lo": 0.1,
     "hi": 0.3,
     "what": "PTH uptake (design)",
-    "main": 0.2
+    "main": 0.1
    },
    {
     "name": "szhCoh",
     "lo": 0.35,
     "hi": 0.9,
     "what": "Social Zone cohesion (design)",
-    "main": 0.72
+    "main": 0.35
    },
    {
     "name": "maxOct",
@@ -146,30 +146,30 @@
    "pthb": {},
    "ptfs": {}
   },
-  "seconds": 57
+  "seconds": 51
  },
  "result": {
   "seeds": 100,
   "mean": {
-   "fgt0PY": -29.674900000000008,
-   "pov": 10.968000000000002,
-   "bOAPy": -14.854400000000004,
-   "cost": 29871.191148954877,
-   "endoAnn": 50.06022430159826
+   "fgt0PY": -18.866500000000006,
+   "pov": 29.928,
+   "bOAPy": 1.4350000000000003,
+   "cost": 16516.644268423504,
+   "endoAnn": 34.232495483346064
   },
   "sd": {
-   "fgt0PY": 1.9692245794841277,
-   "pov": 2.5399785253208167,
-   "bOAPy": 1.5365554551224847,
-   "cost": 637.2878628055469,
-   "endoAnn": 1.4786796542231175
+   "fgt0PY": 2.1229345874581855,
+   "pov": 2.3042376420654014,
+   "bOAPy": 1.4989723752685316,
+   "cost": 972.2972374691868,
+   "endoAnn": 2.4240047488749643
   },
   "sd500": {
-   "fgt0PY": 0.08806640045379895,
-   "pov": 0.11359129288014033,
-   "bOAPy": 0.06871684897704006,
-   "cost": 28.50037964937525,
-   "endoAnn": 0.06612856447577549
+   "fgt0PY": 0.0949405209868395,
+   "pov": 0.10304864007944133,
+   "bOAPy": 0.06703608254989522,
+   "cost": 43.482454346327145,
+   "endoAnn": 0.10840478792533453
   }
  }
 }
