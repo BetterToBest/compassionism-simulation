@@ -30,7 +30,7 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `PTF_MODE` | 'shipped' / 'food30' / 'food62' | Main result: 'shipped'. Others: sensitivity | D4 (session 2) |
 | `PATHWAY_OFF` | flags relief, conversion, octave, octaveWage, bleiWage, pthCost, pthEquity | Main result: octaveWage off (the octave wage raise is replaced by project hiring). Others: attribution and sensitivity | d19, d46 |
 | `SAVE` (savings that keep up with prices) | null / {r 0.0097, debt 'none'} | Labelled reading | v5.2 step 3 (d147) |
-| `AGE` (ageing, retirement at 67, replacement) | null / {ret 'keep' / 'noconv' / 'none', ss 'average' / 'pia'} | Labelled reading | v5.2 step 4 (decision A, d152) |
+| `AGE` (ageing, retirement at 67, replacement) | null / {ret 'keep' / 'noconv' / 'none', ss 'average' / 'pia', earn 'flat' / 'cps'} | Labelled reading; `earn 'cps'`: wages by age (v5.3 B7) | v5.2 step 4 (decision A, d152); DECISIONS Session 39 (B7) |
 | `LATENT` (US-data readings: wealth, risk, wage spread, wage median) | null / {wealth, risk, wsd, wmed} | Labelled reading | v5.2 step 5 |
 | `HCAP` (landlords capture BU spent on rent) | null / {c, all} | Labelled reading | v5.2 step 7 (decision C) |
 | `REVIEW` (unearned high rates in the Collectives' review) | null / {u, q} | Labelled reading | v5.2 step 7 (decision C) |
@@ -42,8 +42,10 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `CCO_RELIEF_FLAT`, `BU_ALLOCATIONS_PER_YEAR` | false, 1 | Earlier engine only (stabiliser studies) | v4.19 |
 | `LEDGER`, `REP_HOOK` | null | Reporting only | A1; v5.2 |
 | `BU_SCOPE` (what BU can buy; row option `bs`) | 'core' (food, housing, medical) / 'hub' (+ transport; + childcare for households) | Labelled reading (v5.3; Duke's answer d173: the Hub's list is the design, the restudy decides whether it joins the main result) | DECISIONS Session 39 (B3f) |
+| `SPEND_GRADE` (income-graded spending; row option `sg`) | null / {eps 0.5573} (`sg: true`, or a number) | Calibration reading (v5.3 B7); no programme rows too | DECISIONS Session 39 (B7) |
+| `FBS50` (advancement in FBS50 units; row option `fb`) | null / {dist 'lambda' / 'fbs50', scale 1} | Reading (v5.3 B7); with lambda kept and scale 1 it only reports (`FBS_KEYS`) | DECISIONS Session 39 (B7) |
 | `EDC_MEASURE` (the measured EDC; row option `em`) | false / true | Reporting only (v5.3 B6): adds `EDC_KEYS`; changes no result | DECISIONS Session 39 (B6) |
-| `HOUSEHOLDS` (households and children; row option `hh`) | null / {pool 'household' / 'individual', childBU 0.25 (0 to 0.5), estate 'heirs' / 'leave', shock 0 / 'shore' / a correlation in [-1, 1]} | Labelled reading being built (v5.3 B3; d168, d170); framework model and no programme. With ageing (row option `ag`): children's lives and estates (B4, B5; d169); `estate` is read only then | DECISIONS Session 39 (B3, B4) |
+| `HOUSEHOLDS` (households and children; row option `hh`) | null / {pool 'household' / 'individual', childBU 0.25 (0 to 0.5), estate 'heirs' / 'leave', shock 0 / 'shore' / a correlation in [-1, 1], wealth 'model' / 'scf'} | Labelled reading being built (v5.3 B3; d168, d170); framework model and no programme. With ageing (row option `ag`): children's lives and estates (B4, B5; d169); `estate` is read only then | DECISIONS Session 39 (B3, B4) |
 | `ACCT` (the accounting check) | null / `acctNew()` | Checking only: no draw, nothing any rule reads; results are bit-identical with it on (`acctUnitSuite`). See MODEL_SPEC.md, section 11 | v5.3 B2 |
 
 ## 2. Testbed options (per study or per row)

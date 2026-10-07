@@ -2169,9 +2169,75 @@ function hhUnitSuite(){
       b.forEach(function(r, i){ if (r.edcMPth !== 0 || !(r.edcM >= 0 && r.edcM <= 100) || !(r.edcMagg >= 0 && r.edcMagg <= 100) || !(r.edcProxy > 0)) bad.push(e + ' row ' + i + ' ' + JSON.stringify([r.edcM, r.edcMagg, r.edcMPth, r.edcProxy])); });
       if (e === 'ref') info.push((hh ? 'households' : 'adults') + ': measured ' + b[0].edcM.toFixed(1) + '% -> ' + b[1].edcM.toFixed(1) + '%, proxy ' + b[0].edcProxy.toFixed(1) + '% -> ' + b[1].edcProxy.toFixed(1) + '%'); }); });
     return {pass:bad.length === 0, detail:k + ' values compared; Reference ' + info.join('; ') + '; problems: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
+  t('v5.3 B7: household wealth from the SCF (\'scf\'): by household type, the starting median matches the survey\'s within 10% and the normal-score correlation with household wages matches its correlation within 0.1 (seeds 1-20); no draw is added; it refuses to run with the singles reading LATENT.wealth', function(){
+    var bad = [], P = FULL_INTEGRATION, n = P.nAgents, T = {coupleKids:[], coupleNoKids:[], singleParent:[], single:[]}, info = [];
+    var MED = {coupleKids:272609, coupleNoKids:357505, singleParent:49503, single:74422};
+    HOUSEHOLDS = Object.assign({}, HH_DEFAULTS, {wealth:'scf'});
+    for (var sd = 1; sd <= 20; sd++){ RNG = mulberry32(sd + 700003); var A = makeLatentPopulation(n).map(function(l){ return instantiateAgent(l, P); }), d0 = RNG(); hhInit(A, sd);
+      RNG = mulberry32(sd + 700003); makeLatentPopulation(n); if (RNG() !== d0) bad.push('a construction draw moved');
+      HHS.list.forEach(function(H){ var t = H.a.length > 1 ? (H.kids.length ? 'coupleKids' : 'coupleNoKids') : (H.kids.length ? 'singleParent' : 'single'), w = 0, y = 0;
+        H.a.forEach(function(a){ w += a.wealth; y += a.wage; }); if (H.a.length > 1 && H.a[0].wealth !== H.a[1].wealth) bad.push('unequal shares'); T[t].push([y, w]); }); }
+    function ns(v){ var o = v.map(function(x, i){ return [x, i]; }).sort(function(a, b){ return a[0] - b[0]; }), z = []; o.forEach(function(q, r){ z[q[1]] = normInv((r + 0.5)/v.length); }); return z; }
+    Object.keys(T).forEach(function(t){ var L = T[t], ws = L.map(function(q){ return q[1]; }).slice().sort(function(a, b){ return a - b; }), med = ws[Math.floor(ws.length/2)];
+      var zy = ns(L.map(function(q){ return q[0]; })), zw = ns(L.map(function(q){ return q[1]; })), c = 0; zy.forEach(function(z, i){ c += z*zw[i]; }); c /= zy.reduce(function(m, z){ return m + z*z; }, 0);
+      info.push(t + ' median $' + Math.round(med) + ' (SCF $' + MED[t] + '), correlation ' + c.toFixed(2) + ' (' + CFG.HH_SCF_RHO[t] + ', ' + L.length + ' households)');
+      if (Math.abs(med/MED[t] - 1) > 0.10 || Math.abs(c - CFG.HH_SCF_RHO[t]) > 0.1) bad.push(t); });
+    var lt0 = LATENT; LATENT = {wealth:0.3}; var threw = false; try { RNG = mulberry32(700004); hhInit(makeLatentPopulation(n).map(function(l){ return instantiateAgent(l, P); }), 1); } catch (e){ threw = true; } finally { LATENT = lt0; }
+    if (!threw) bad.push('ran with LATENT.wealth');
+    return {pass:bad.length === 0, detail:info.join('; ') + '; problems: ' + (bad.length ? bad.join(', ') : 'none')}; });
+  t('v5.3 B7: wages by age (AGE.earn \'cps\'): the curve averages exactly 1 over the population aged 25-66; at the start a wage is its draw times the curve at its age; a birthday moves it by the curve\'s ratio; a new 25-year-old starts at the curve\'s value at 25; \'flat\' changes nothing; no draw is added to the main stream (release row and no programme, seed 1, three environments)', function(){
+    var bad = [], ag0 = AGE, P = FULL_INTEGRATION, n = P.nAgents, m = 0, t = 0;
+    try { AGE = Object.assign({}, AGE_DEFAULTS, {earn:'cps'});
+      CFG.AGE_WEIGHTS.forEach(function(w, i){ m += w*earnF(CFG.ENTRY_AGE + i); t += w; }); if (Math.abs(m/t - 1) > 1e-12) bad.push('mean ' + m/t);
+      RNG = mulberry32(700004); var A = makeLatentPopulation(n).map(function(l){ return instantiateAgent(l, P); }), w0 = A.map(function(a){ return a.wage; });
+      ageInit(A, 1); ageEarn0(A); A.forEach(function(a, i){ if (Math.abs(a.wage - w0[i]*earnAt(a.age)/earnMean()) > 1e-9*a.wage || a.initialWage !== a.wage) bad.push('start ' + i); });
+      var w1 = A.map(function(a){ return a.wage; }), id1 = A.map(function(a){ return a._id; }), g1 = A.map(function(a){ return a.age; });
+      RNG = mulberry32(5); ageYear(A, 1, P);
+      A.forEach(function(a, i){ if (a._id === id1[i] && !a._ret){ if (Math.abs(a.wage - w1[i]*earnF(g1[i] + 1)/earnF(g1[i])) > 1e-9*a.wage) bad.push('birthday ' + i); }
+        else if (a._born === 1 && !(a.wage > 0)) bad.push('newcomer'); });
+      AGE = Object.assign({}, AGE_DEFAULTS); if (earnF(30) !== 1 || earnF(60) !== 1) bad.push('flat'); }
+    finally { AGE = ag0; AGS = null; }
+    var cnt = {}, om = mulberry32;
+    ['ref', 'adv', 'st'].forEach(function(e){ [true, {earn:'cps'}].forEach(function(ag, q){ var A = rowsOf(e, ['base', 'release']); A.cf.forEach(function(c){ c.ag = ag; c.g = Object.assign({}, c.g || {}, ACCT_V53); }); var k = e + q; cnt[k] = 0;
+      mulberry32 = function(sd){ var g = om(sd); if (sd === 1) return function(){ cnt[k]++; return g(); }; return g; };
+      ACCT = acctNew(); try { acctProfile(function(){ tbStudy(A.cf, 1, A.S.P, A.S.o); }); } finally { mulberry32 = om; var X = ACCT; ACCT = null; Object.keys(X.nFail).forEach(function(f){ bad.push(e + ' ' + f + ' failed'); }); } });
+      if (cnt[e + 0] !== cnt[e + 1]) bad.push(e + ' main-stream draws ' + cnt[e + 0] + ' vs ' + cnt[e + 1]); });
+    return {pass:bad.length === 0, detail:'curve at 25 ' + (earnAt(25)/earnMean()).toFixed(3) + ', 45 ' + (earnAt(45)/earnMean()).toFixed(3) + ', 65 ' + (earnAt(65)/earnMean()).toFixed(3) + '; main-stream draws ' + cnt.ref0 + '; problems: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
+  t('v5.3 B7: income-graded spending (row option sg): every adult-year whose income is below its cash cost spends cost x (income / cost)^0.5573 and keeps the rest; none above it; a couple pooled is graded on its totals; every identity holds; no draw is added to the main stream (release row and no programme, adults alone and in households, seed 1, three environments)', function(){
+    var bad = [], oa = acctAgent, n = {g:0, u:0}, eps = CFG.CE_SPEND_ELAST, cnt = {}, om = mulberry32;
+    acctAgent = function(a, yr){ var c = +a.yrCostUSD || 0, inc = (+a.yrWageUSD || 0) + (+a.yrSSUSD || 0) + (+a.yrUbiUSD || 0), cut = a._grCut || 0;
+      if (!SPEND_GRADE){ if (a._grCut) bad.push('a cut with the reading off'); }
+      else if (!a._hhPool){ var exp = c > 0 && inc < c ? c - c*Math.pow(Math.max(0, inc)/c, eps) : 0; if (Math.abs(cut - exp) > 1e-9*Math.max(1, c)) bad.push('yr ' + yr + ' cut ' + cut + ' vs ' + exp); if (cut > 0) n.g++; else n.u++; }
+      return oa(a, yr); };
+    try { ['ref', 'adv', 'st'].forEach(function(e){ [null, {}].forEach(function(hh){ [false, true].forEach(function(sg){ var A = rowsOf(e, ['base', 'release'], hh), k = e + (hh ? 'h' : 'a') + (sg ? 1 : 0); cnt[k] = 0;
+      A.cf.forEach(function(c){ if (sg) c.sg = true; c.g = Object.assign({}, c.g || {}, ACCT_V53); });
+      acctProfile(function(){ tbStudy(A.cf, 1, A.S.P, A.S.o); });  /* warm the reference-path cache first: only the runs' own draws are counted */
+      mulberry32 = function(sd){ var g = om(sd); if (sd === 1) return function(){ cnt[k]++; return g(); }; return g; };
+      ACCT = acctNew(); try { acctProfile(function(){ tbStudy(A.cf, 1, A.S.P, A.S.o); }); } finally { mulberry32 = om; var X = ACCT; ACCT = null; Object.keys(X.nFail).forEach(function(f){ bad.push(k + ' ' + f + ' failed ' + X.nFail[f]); }); } }); }); });
+      Object.keys(cnt).forEach(function(k){ if (k.slice(-1) === '1' && cnt[k] !== cnt[k.slice(0, -1) + '0']) bad.push(k + ' main-stream draws differ'); }); }
+    finally { acctAgent = oa; mulberry32 = om; }
+    return {pass:bad.length === 0 && n.g > 0, detail:'adult-years graded ' + n.g + ', not graded ' + n.u + '; main-stream draws ' + cnt.refa0 + '; problems: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
+  t('v5.3 B7: FBS50 (row option fb): with each adult\'s lambda kept (dist \'lambda\', scale 1) every result is identical to the rule without it (it only reports); \'fbs50\' maps the lowest, middle and highest lambda draw to $524, $2,357 and $4,191 a month; scale multiplies FBS50; no draw is added (release row and no programme, seeds 1-2, three environments)', function(){
+    var bad = [], k = 0, fb0 = FBS50, info = [];
+    try { FBS50 = {dist:'fbs50', scale:1}; var lo = fbs50Of(CFG.FBS_LAMBDA_LO), hi = fbs50Of(CFG.FBS_LAMBDA_HI), mid = fbs50Of((CFG.FBS_LAMBDA_LO + CFG.FBS_LAMBDA_HI)/2);
+      if (Math.abs(lo - CFG.FBS_HALF_SAT_LO) > 1e-9 || Math.abs(hi - CFG.FBS_HALF_SAT_HI) > 1e-9 || Math.abs(mid - (CFG.FBS_HALF_SAT_LO + CFG.FBS_HALF_SAT_HI)/2) > 1e-9) bad.push('fbs50 map ' + [lo, mid, hi].join(' '));
+      FBS50 = {dist:'lambda', scale:2}; if (Math.abs(fbs50Of(0.001) - 2*Math.LN2/0.001) > 1e-9) bad.push('scale');
+      info.push('fbs50 map $' + Math.round(hi) + ', $' + Math.round(mid) + ', $' + Math.round(lo)); }
+    finally { FBS50 = fb0; }
+    ['ref', 'adv', 'st'].forEach(function(e){ var A = rowsOf(e, ['base', 'release']), B = rowsOf(e, ['base', 'release']); B.cf.forEach(function(c){ c.fb = true; });
+      var a, b; acctProfile(function(){ a = tbStudy(A.cf, 2, A.S.P, A.S.o); b = tbStudy(B.cf, 2, B.S.P, B.S.o); });
+      k += 2*TB_KEYS.length*2; bad = bad.concat(same(a, b, 2).map(function(x){ return e + ' ' + x; }));
+      if (!(b[1].fbsAbove > 0 && b[1].fbsAbove <= 100)) bad.push(e + ' fbsAbove ' + b[1].fbsAbove); if (e === 'ref') info.push('Reference: ' + b[1].fbsAbove.toFixed(1) + '% of participant-years at or above their FBS50'); });
+    var cnt = [0, 0], om = mulberry32, S = acctRelCfgs('ref');
+    [null, {dist:'fbs50'}].forEach(function(fb, q){ var cf = ['base', 'release'].map(function(j){ var c = Object.assign({}, S.cfg.filter(function(x){ return x.j === j; })[0]); if (fb) c.fb = fb; return c; });
+      acctProfile(function(){ tbStudy(cf, 1, S.P, S.o); });
+      mulberry32 = function(sd){ var g = om(sd); if (sd === 1) return function(){ cnt[q]++; return g(); }; return g; };
+      try { acctProfile(function(){ tbStudy(cf, 1, S.P, S.o); }); } finally { mulberry32 = om; } });
+    if (cnt[0] !== cnt[1]) bad.push('main-stream draws ' + cnt[0] + ' vs ' + cnt[1]);
+    return {pass:bad.length === 0, detail:k + ' values compared; ' + info.join('; ') + '; problems: ' + (bad.length ? bad.slice(0, 5).join(', ') : 'none')}; });
   return out;
 }
-Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; }, EDC_KEYS, setEdcMeasure:function(x){ EDC_MEASURE = !!x; } });
+Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; }, EDC_KEYS, setEdcMeasure:function(x){ EDC_MEASURE = !!x; }, FBS_KEYS });
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
