@@ -190,6 +190,22 @@
    },
    "equal": true,
    "seconds": 177
+  },
+  {
+   "from": "93840c788965b5e94f1a85fc6d141efeddc791666b4e3d8ea7de2363953bb4c7",
+   "to": "25e215dab7fed95148c44751a3de2e7f1939c1115539691dd1b26ba4c41f7be5",
+   "date": "2026-10-07",
+   "change": "v5.4 items 2-4: occupations, PTH balance sheet (PTHB), PTF by sector (PTFS), all off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 182
   }
  ]
 }

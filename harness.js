@@ -2424,9 +2424,15 @@ function v54UnitSuite(){
     var R = v54Study('ref', [null, {ptfs:{}}, {ptfs:{other:0.25}}, {ptfs:{leave:0}}], 2, 150), b = same(R[0], R[2]).concat(same(R[0], R[4]));
     return {pass:b.length === 0 && R[3].pfCut > 5 && R[3].pfCut < 9 && R[5].pfCut > R[3].pfCut + 5 && R[7].pfLeave === 0 && R[3].pfLeave > 0,
       detail:'cut ' + R[3].pfCut.toFixed(2) + '% / ' + R[5].pfCut.toFixed(2) + '% (other sectors 25%); leavers a year ' + R[3].pfLeave.toFixed(2) + ' / ' + R[7].pfLeave + '; base keys differing: ' + (b.slice(0, 3).join(', ') || 'none')}; });
+  t('disaster: the same households are hit in both runs, the books balance, and with no one hit every result is the run without the switch (Adverse)', function(){
+    var A0 = ACCT; ACCT = acctNew();
+    try { var R = v54Study('adv', [null, {dis:{share:0}}, {dis:{}}], 2, 120), b = same(R[0], R[2]).concat(same(R[1], R[3])), nF = Object.keys(ACCT.nFail).reduce(function(s, k){ return s + ACCT.nFail[k]; }, 0);
+      return {pass:b.length === 0 && nF === 0 && R[4].dsHit > 15 && R[4].dsHit < 35 && R[4].dsHit === R[5].dsHit && R[4].fgt0PY !== R[0].fgt0PY,
+        detail:'keys differing with no one hit: ' + (b.slice(0, 3).join(', ') || 'none') + '; hit ' + R[4].dsHit.toFixed(1) + '% / ' + R[5].dsHit.toFixed(1) + '%; identity failures ' + nF}; }
+    finally { ACCT = A0; } });
   return out;
 }
-Object.assign(module.exports, { PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
+Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
