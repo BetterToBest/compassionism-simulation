@@ -179,3 +179,17 @@ Duke merged v5.2.2 (tag `v5.2.2`, reproduction archive attached) and said "start
   - [x] 20-year panels done (12:51-13:15 UTC, from c5e96f9; `dev/runs/v53/release-panel-ENV.json`); the restudy report `dev/reports/v5-20-restudy.md` (40-year section pending), the release notes (CONTRIBUTING.md; v5.2.2's moved to CHANGELOG.md), the replication timeline entry, DECISIONS (the restudy outcome), the ledger (v314).
   - [x] The 40-year panels (done 16:57-17:33 UTC): the first run was killed by a container restart at 13:43 UTC in its fifth hour; relaunched at 13:44 from the same worktree of c5e96f9 (`run_p40.sh` in the session scratchpad: `node harness.js testbed 500 release ENV --v53 --years=40 --json=dev/runs/v53/release-panel-40-ENV.json`, ENV ref, adv, st), about 4.5 hours. If a session ends before they finish, rerun them from a clean worktree of c5e96f9 (the page check requires the 20- and 40-year panels from one commit).
   - [x] Then: copy the results to `dev/runs/` (standard names), `python3 dev/tools/merge_panel.py`, `merge_panel.py 40`, `backing_chart.py`, `explore_export.js ENV 20|40 500 1 --v53` from a clean commit, `release_data.py`, the version (5.3), the restudy and attribution reports with the B0 predictions checked, README/CONTRIBUTING/CHANGELOG, the three checks, the pull request ready.
+
+## Session 40 (Oct 7, 2026): v5.4 labour and markets
+
+Branch `claude/awesome-sagan-75dsu9`, restarted from `main` at d25e6dd (v5.3.1 merged). Plan: `dev/plans/v5.3-plan-prompt.md` section 4; design note `dev/reports/v5-21-v54-design.md` (build order in its section 5).
+
+- [x] 0. Design note (Hub readings, predictions, sources, three questions for Duke on the dashboard as d174-d176). DECISIONS, Session 40.
+- [ ] 1. Risk measures (`RISK`, reporting only).
+- [ ] 2. Job loss and occupations (`EMPL`).
+- [ ] 3. PTH balance sheet (`PTHB`).
+- [ ] 4. PTF sectors and leaving (`PTFS`).
+- [ ] 5. Disaster shock (`DIS`).
+- [ ] 6. The 55% floor test.
+- [ ] 7. Sensitivity study (Morris, then Sobol).
+- [ ] 8. 500-seed restudy, report, version 5.4, pull request ready.
