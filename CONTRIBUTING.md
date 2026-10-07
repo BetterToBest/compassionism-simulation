@@ -40,48 +40,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.3 Release Notes
+## v5.3.1 Release Notes
 
-**Released as v5.3 (Oct 2026): households and children.** One pull request into `main` (merging is the release). The plain-words reports for Duke are `dev/reports/v5-20-restudy.md` (the restudy) and `dev/reports/v5-19-attribution.md` (what each part does), with one report per step (`v5-13` to `v5-18`); every decision is in `dev/DECISIONS.md` (Sessions 38-39); Duke's answers are d165-d173 on the project dashboard.
+**Released as v5.3.1 (Oct 2026): v5.3's figures, re-released at the complete commit.** No figure, page or engine change from v5.3. The release workflow tagged v5.3 at the first commit inside the pull request that set the version, which came before the v5.3 release data was built, so the `v5.3` tag and its reproduction archive hold an intermediate tree (v5.3's 500-seed panels with v5.2's release file; `REPRODUCE.md` without the explore fingerprints). The live page was never affected: `main` carries the complete release. Tags are never moved, so this version re-releases the same figures, and its tag and archive hold the complete tree.
 
-**What changed for the figures.** The adults now live in households with their children, each household starts with the wealth the Federal Reserve's survey shows for its kind of household, people spend less in a year their income is short, and BU buy the Hub's full list. These change the no-programme run as well as the programme, so v5.3's figures are not comparable with earlier releases': compare within a release (the findings explorer keeps each release apart). v5.2's main row, run on the v5.3 engine, is shown beside the main result as a reading and reproduces v5.2's published figures.
+- **The release workflow** now tags the commit on `main`'s own line that first sets a version (`git log --first-parent`): for a release merged from a pull request, the merge commit, whose tree is the release as published.
+- **The release data** says the figures are v5.3's, shown in v5.3.1 (`shownIn`), as v5.2's were shown in v5.2.2.
+- v5.3's notes, with its results, are in CHANGELOG.md.
 
-### What changed in the model
-
-- **One engine copy** (B1, d166): `harness.js` reads the engine out of `index.html`; `port_engine.py` is retired.
-- **Accounting identities as enforced checks** (B2, `ACCT`): money, Acre Equity, BU, the Source's books and the households' pooling are checked every year of every run; two mistakes found and corrected (`PTH_APPR_CONSERVE`, `SURP_CUT_MARKUP`, on in every v5.3 row).
-- **Households and children** (B3, `HOUSEHOLDS`; d167, d168, d170, d172): Census CPS 2023 composition, MIT family budgets with childcare, a child allowance of a quarter of the adult BU, pooling, decisions taken together, child poverty and household measures.
-- **What BU can buy** (B3f, `BU_SCOPE 'hub'`, d173): the Hub's full list (transport, and childcare for families).
-- **Children's lives and estates** (B4, B5; with ageing, a reading): births by the mother's age, children growing up and leaving home, grown children taking places at 25, estates to the partner, else the children (d169).
-- **Household income shocks** (B6, Shore 2010) and **the extractive drain measured from payments** (EDC; the earlier engine's figure is now labelled a design-target proxy).
-- **Four calibrations** (B7): starting wealth from the 2022 SCF by household type, income-graded spending (BLS CE 2024), earnings by age (BLS CPS, a reading with ageing), the advancement rule read as FBS50.
-- **The main result** (decided by a rule recorded before any restudy run): households and children, pooling, the child allowance at a quarter, the Hub's BU list, survey wealth, graded spending, Shore's shocks and the two corrections. Each choice is undone in turn as a reading.
-
-### What changed in the reporting and on the pages
-
-- A fourth headline card: children below the cost of living; a "Families and children" section; "What each part does" now shows what each part adds (the attribution study, B9); a "Run by run" table (how often the programme does better on the same draws, plan item A5); the households' US-data check; the v5.3 readings grouped on the findings explorer; a note that v5.3's figures are not comparable with earlier releases.
-- The walk-through video is off the page and out of the README until the simulation is settled (Duke, Oct 7).
-
-### What changed in the checks
-
-- `unit`: <!-- count:unit -->197<!-- /count --> tests (171 at v5.2.2): the accounting suite, the household suites (composition, budgets, pooling, children's lives, estates, shocks, calibrations, reporting) and the v5.3 panel's shape.
-- `domtest`: the panel checks accept v5.3's rows; the backing check allows the essentials-demand inflation left at a = 1; the figure check covers the fourth card and each release's own words.
-- `dev/runs/engine-lineage.json` records, for each engine change, the proof that the published panels keep their fingerprints.
-
-### Results (500 paired seeds, 20 years, main row against no programme)
-
-| | Reference | Adverse | Stress Test |
-|---|---|---|---|
-| Adult-years below the cost of living | 45.1% → 16.7% | 72.1% → 33.7% | 72.1% → 56.6% |
-| Child-years below the cost of living | 72.6% → 29.4% | 91.3% → 51.2% | 91.3% → 76.5% |
-| Adult-years below 30 days of basic living (BLEI) | 25.4% → 10.4% | 32.1% → 18.6% | 32.1% → 37.6% |
-| Adults with too little wealth at the end | 30.5% → 36.0% | 48.8% → 89.4% | 48.8% → 86.3% |
-| Programme inflation a year | 47.9% | 61.5% | 28.5% |
-| Cost per adult a year | $31,366 | $29,567 | $12,177 |
-
-The programme lowers income poverty in every run, most of all for children; with the Hub's full BU list few BU expire into project work, so less new output backs the Source's payout, prices rise faster and more adults end with too little wealth than with no programme, in all three environments. With BU buying only food, housing and medical care (a reading), Reference would be 14 points better than no programme on wealth.
-
-**At 40 years** the Reference wealth result turns in the programme's favour (27.3% → 18.4% of adults with too little wealth; children below the cost of living 62.2% → 22.5%); in Adverse and Stress the model's price rule runs away (89% and 43% a year) and nearly everyone ends with too little wealth with the programme, while income poverty stays lower than with no programme. The full panels, every reading and the attribution are in `data/releases/v5.3.json` and on the findings explorer.
 
 ---
 
@@ -487,7 +453,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.3*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.3.1*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
