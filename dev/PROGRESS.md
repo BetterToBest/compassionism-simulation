@@ -180,6 +180,15 @@ Duke merged v5.2.2 (tag `v5.2.2`, reproduction archive attached) and said "start
   - [x] The 40-year panels (done 16:57-17:33 UTC): the first run was killed by a container restart at 13:43 UTC in its fifth hour; relaunched at 13:44 from the same worktree of c5e96f9 (`run_p40.sh` in the session scratchpad: `node harness.js testbed 500 release ENV --v53 --years=40 --json=dev/runs/v53/release-panel-40-ENV.json`, ENV ref, adv, st), about 4.5 hours. If a session ends before they finish, rerun them from a clean worktree of c5e96f9 (the page check requires the 20- and 40-year panels from one commit).
   - [x] Then: copy the results to `dev/runs/` (standard names), `python3 dev/tools/merge_panel.py`, `merge_panel.py 40`, `backing_chart.py`, `explore_export.js ENV 20|40 500 1 --v53` from a clean commit, `release_data.py`, the version (5.3), the restudy and attribution reports with the B0 predictions checked, README/CONTRIBUTING/CHANGELOG, the three checks, the pull request ready.
 
+## Next session: start here (Oct 8, 01:45 UTC; Duke's weekly usage ran out mid-batch)
+
+Everything for v5.4 except the figures is built, tested and pushed on `claude/awesome-sagan-75dsu9` (PR BetterToBest/compassionism-simulation#13, still a draft). The only missing input is the 500-seed batch, which dies whenever the container is reclaimed (idle session). To finish:
+1. From a clean worktree of this branch's head (the engine is unchanged since 83cf5b9): run `jobs.sh` (its text is in the 9.3 entry below: for ENV ref, adv, st, `node harness.js testbed 500 release ENV --v54 --years=40 --part=I/6` for I = 0..5, `node harness.js testbed 500 release ENV --v54 --part=I/4` for I = 0..3, `node harness.js testbed 500 backing ENV --v54`), four processes at a time, skipping finished pieces. Keep the session active (foreground waits) or it will be killed; about 7-8 hours on four cores.
+2. `python3 dev/tools/merge_parts.py OUT ENV 40 6 dev/runs/release-panel-40-ENV.json` and `... ENV 20 4 dev/runs/release-panel-ENV.json`; copy `backing-share-ENV.json` to `dev/runs/`.
+3. `python3 dev/tools/merge_panel.py`, `merge_panel.py 40`, `backing_chart.py`; commit; then from a clean worktree of that commit `node dev/tools/explore_export.js ENV 20|40 500 1 --v54` (six runs) and copy `dev/runs/explore-*.json` back.
+4. `python3 dev/tools/set_version.py 5.4`, `node dev/tools/check_versions.js`, `python3 dev/tools/release_data.py` (it builds v5.4 from the panels' `_meta.v54`; date in CURRENT54).
+5. Release notes in CONTRIBUTING.md (v5.3.1's move to CHANGELOG.md), the replication page's timeline entry, a short report for Duke (`dev/reports/v5-23-v54-release.md`: the main result against v5.3's row, read from the panels), the three checks, the dashboard, the PR description; mark the PR ready.
+
 ## Session 40 (Oct 7, 2026): v5.4 labour and markets
 
 Branch `claude/awesome-sagan-75dsu9`, restarted from `main` at d25e6dd (v5.3.1 merged). Plan: `dev/plans/v5.3-plan-prompt.md` section 4; design note `dev/reports/v5-21-v54-design.md` (build order in its section 5).
