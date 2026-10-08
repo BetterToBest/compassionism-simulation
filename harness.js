@@ -4619,6 +4619,10 @@ if (require.main === module) {
      * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
     if (secT === 'release'){ var RJ = {_meta:{engine:'release engine (harness.js testbed, section release)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
+      /* v5.4 step 9 (DECISIONS Session 41): --part=I/K runs only the readings whose place in the panel's order is I modulo K (with the main and today rows, and the
+       * no-programme pairs they need), so a long panel can run as pieces that survive a restart; dev/tools/merge_parts.py joins them into the whole panel, which
+       * equals the panel run in one piece (every row is its own run on the same seeds; checked on 2 seeds, Adverse, 3 pieces: identical but for the command line). */
+      var PART = (process.argv.filter(function(a){ return /^--part=\d+\/\d+$/.test(a); })[0] || '').replace('--part=', '').split('/').filter(Boolean).map(Number); PART = PART.length === 2 && PART[0] < PART[1] ? PART : null;
       var V52 = process.argv.indexOf('--v51') < 0, SO52 = V52 ? REL_V52_STUDY : {}, V54 = process.argv.indexOf('--v54') >= 0, V53 = V54 || process.argv.indexOf('--v53') >= 0;  /* v5.4 step 9: --v54 builds the v5.4 panel (releaseRowsV54: v5.3's, with the round's parts) */  /* v5.3 B10: --v53 builds the v5.3 panel (releaseRowsV53) */  /* v5.2: the round's reporting is on unless --v51 asks for the v5.1 panel exactly (the bit-identity check) */
       if (V52) RJ._meta.v52 = {report:Object.assign({}, SO52), thresholdOne2025:CFG.POVERTY_THRESHOLD_ONE};
       if (V53){ RJ._meta.v53 = {households:HH_V53, buScope:'hub', spendGrade:CFG.CE_SPEND_ELAST, corrections:ACCT_V53}; RJ._meta.command += V54 ? ' --v54' : ' --v53'; }
@@ -4629,6 +4633,9 @@ if (require.main === module) {
         function av(r){ return ((r._Bk || r._B).epPY - r.epPY)/100; }  /* v5.2: against the row's own no-programme pair where it has one */
         function aw(r){ var b = r._Bk || r._B; return avoidWide((b.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (b.fgt0PY - r.fgt0PY)/100); }
         var rows = V54 ? releaseRowsV54(SC).filter(function(r){ return r.k !== 'a'; }) : V53 ? releaseRowsV53(SC).filter(function(r){ return r.k !== 'a'; }) : releaseRows(SC, !V52),  /* v5.3: the parts-removed rows run in dev/tools/attrib_check.js (paired against the main row), not in the panel */ bases = V54 ? releaseBasesV54(SC) : V53 ? releaseBasesV53(SC) : V52 ? releaseBases(SC) : [], nRel = rows.length;
+        if (PART){ RJ._meta.part = {i:PART[0], k:PART[1], rows:rows.map(function(r){ return r.j; }), bases:bases.map(function(b){ return b.j; })};  /* v5.4 step 9: a resumable part of the panel */
+          rows = rows.filter(function(r, i){ return r.k === 'today' || r.k === 'main' || i % PART[1] === PART[0]; });
+          var need = {}; rows.forEach(function(r){ if (r.bk) need[r.bk] = 1; }); bases = bases.filter(function(b){ return need[b.j]; }); }
         rows = rows.concat(bases.map(function(b){ return {l:b.l, v:b.v, base:true, k:'b' + b.j, j:b.j}; }));  /* v5.2: the no-programme rows that some readings are paired with (printed last) */
         var R = stepSection('release (plan step 11)', e, rows,
           [['Unhoused person-years avoided per 1,000 adults a year', function(r){ return f2(av(r)*1000); }],
