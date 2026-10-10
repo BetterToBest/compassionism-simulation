@@ -2778,7 +2778,7 @@ function relWorse(w){if(!w||w==='none')return ' No group is worse off than with 
   return ' Worse off than with no programme: '+parts.join('; ')+'.';}
 function relYears(y){REL.yrs=y===40?40:20;[20,40].forEach(function(k){var b=document.getElementById('rel-yrs-'+k);if(b)b.setAttribute('aria-pressed',k===REL.yrs?'true':'false');});relRender();relSyncUrl();}
 function relSet(e){REL.env=e;['ref','adv','st'].forEach(function(k){var b=document.getElementById('rel-env-'+k);if(b)b.setAttribute('aria-pressed',k===e?'true':'false');});relRender();relSyncUrl();}
-function relBaseWord(k){return /^ag/.test(k)?'ageing rule':/^lt/.test(k)?'US-data reading':/^sv/.test(k)?'savings rule':({b52:'population as in v5.2',badults:'adults living alone',bindiv:'rule for sharing money',bwmodel:'starting savings',bnosg:'spending rule',bshock50:'income swings'})[k]||'rule';}  /* v5.3: what a reading's own no-programme run shares with it */
+function relBaseWord(k){return /^ag/.test(k)?'ageing rule':/^lt/.test(k)?'US-data reading':/^sv/.test(k)?'savings rule':({b53:'rules as in v5.3 (no job loss)',bcut0:'pay rule on return to work',bcut20:'pay rule on return to work',bautopay:'automation rule',bdis:'disaster',b52:'population as in v5.2',badults:'adults living alone',bindiv:'rule for sharing money',bwmodel:'starting savings',bnosg:'spending rule',bshock50:'income swings'})[k]||'rule';}  /* v5.3: what a reading's own no-programme run shares with it */
 function relRender(){
   var out=document.getElementById('rel-out');if(!out)return;var D=REL.data,n=document.getElementById('rel-env-note'),lk=document.getElementById('rel-link');if(lk)try{lk.setAttribute('href',relViewSearch()+'#front-door');}catch(x){}if(n)n.textContent=REL_ENV_NOTE[REL.env]||'';
   if(REL.yrs===40)D=REL.data40;var th=document.getElementById('rel-th-pov');if(th)th.textContent='Too little wealth, year '+REL.yrs;
@@ -2786,7 +2786,7 @@ function relRender(){
   var E=D.envs[REL.env],R=E.rows;out.innerHTML=(REL.yrs===40?'<p class="fd-note">Over 40 years: the same '+(R.release&&R.release.hhCostKidPY!==undefined?'households':'adults')+' followed for twice as long. In the main reading no one ages, so this shows where the same rules lead, not a life course'+(R.age?'; the reading in which people age, retire and are replaced is below':'')+'.</p>':'')+relSentences(E.base,R.release,R.h1,REL.yrs,{sav:R.sav,savB:E.bases&&E.bases.sv,h1idx:R.h1idx,age:R.age,ageB:E.bases&&E.bases.ag,mid:R.mid,midlo:R.midlo,midhi:R.midhi,slack:R.slack});
   var pgo=document.getElementById('rel-path-out');if(pgo)pgo.innerHTML=relPathCharts(E.base,R.release,REL.yrs);  /* v5.2 step 8 */
   var tgo=document.getElementById('rel-tg-out');if(tgo)tgo.innerHTML=relTargets(E.base,R.release,REL.yrs);  /* v5.1 (audit E1): its own block under the sentences, so the walk-through's spotlight on the sentences keeps its height */
-  var tb=document.getElementById('rel-rows'),h='',ORDER=['release','v52','adults','core','indiv','cb0','cb50','wmodel','nosg','shock50','fbs50','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia','ageleave','agecps','fixw','fixr','fixs','fixm','fixall','mid','midlo','midhi','slack','slacku6','hcap','hcaphi','rev5','rev10','rev20','rev20n','giftrun','progtax','landtax'];  /* v5.3: + v5.3's readings (rows absent from a panel are skipped) */  /* v5.2 step 3: + the savings and indexing readings (a row with vsBase is read against no programme with the same savings rule) */
+  var tb=document.getElementById('rel-rows'),h='',ORDER=['release','v53','cut0','cut20','autopay','pthbold','ptfs25','dis','v52','adults','core','indiv','cb0','cb50','wmodel','nosg','shock50','fbs50','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia','ageleave','agecps','fixw','fixr','fixs','fixm','fixall','mid','midlo','midhi','slack','slacku6','hcap','hcaphi','rev5','rev10','rev20','rev20n','giftrun','progtax','landtax'];  /* v5.3: + v5.3's readings (rows absent from a panel are skipped) */  /* v5.2 step 3: + the savings and indexing readings (a row with vsBase is read against no programme with the same savings rule) */
   ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+(r.vsBase?'<span class="fd-ci">against no programme with the same '+relBaseWord(r.vsBase)+'</span>':'')+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
   if(tb)tb.innerHTML=h;
   var src=document.getElementById('rel-src'),M=D._meta||{};if(src)src.innerHTML='Figures: '+(M.seeds||500)+' paired runs of '+(M.agents||500)+' simulated adults per environment, written '+(M.written||'')+'. Reproduce: <code>'+(M.command||'node harness.js testbed 500 release ref,adv,st')+'</code>.';
@@ -2816,7 +2816,7 @@ function relSyncUrl(){try{var a=document.getElementById('rel-link'),q=relViewSea
 /* v5.1 (audit E3): the figures on view, as a file. JSON: the panel's rows for this environment and horizon, with a _meta block (simulation, version, view, seeds, agents, the command that
  * reproduces them and the build manifest). CSV: the same, one row per reading, the _meta as # comment lines on top. No date is written, so the same view gives the same file. */
 function relCsvCell(x){var t=(x===undefined||x===null)?'':String(x);return /[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;}
-var REL_CSV_ORDER=['release','v52','adults','core','indiv','cb0','cb50','wmodel','nosg','shock50','fbs50','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia','ageleave','agecps','fixw','fixr','fixs','fixm','fixall','mid','midlo','midhi','slack','slacku6','hcap','hcaphi','rev5','rev10','rev20','rev20n','giftrun','progtax','landtax'];
+var REL_CSV_ORDER=['release','v53','cut0','cut20','autopay','pthbold','ptfs25','dis','v52','adults','core','indiv','cb0','cb50','wmodel','nosg','shock50','fbs50','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia','ageleave','agecps','fixw','fixr','fixs','fixm','fixall','mid','midlo','midhi','slack','slacku6','hcap','hcaphi','rev5','rev10','rev20','rev20n','giftrun','progtax','landtax'];
 function relExport(fmt){
   var D=REL.yrs===40?REL.data40:REL.data,E=D&&D.envs&&D.envs[REL.env];if(!E)return null;var M=D._meta||{},stem='compassionism-v'+META.VERSION+'-'+REL.env+'-'+REL.yrs+'y';
   var meta={simulation:'Compassionism Framework Simulation',version:META.VERSION,environment:E.name,environmentKey:REL.env,years:REL.yrs,seeds:M.seeds,agents:M.agents,written:M.written,command:M.command,manifest:M.manifest||null,
@@ -4188,7 +4188,12 @@ var REL_V5 = {sp:{priv:'prices'}, pd:{match:'market', speed:'oneyear'}, ml:{}, g
  * allowance at a quarter, partners' income swings at Shore's correlations, starting wealth from the SCF), the Hub's list of what BU can buy, income-graded
  * spending, and the two accounting corrections. relMainCfgs(PR) gives the no-programme and main rows the page's live run and the panel share. */
 var REL_V53 = {hh:{pool:'household', childBU:0.25, shock:'shore', wealth:'scf'}, bs:'hub', sg:true, g:{PTH_APPR_CONSERVE:true, SURP_CUT_MARKUP:true}};
-function relMainCfgs(PR){ return [{p:PR.baseline(), hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g}, n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5, REL_V53))]; }
+/* v5.4 step 9 (Oct 7, 2026; dev/DECISIONS.md Session 41; dev/reports/v5-22-v54-report.md): what v5.4's main result adds to v5.3's, recorded before the 500-run
+ * restudy (no modelling error found, so every part joins): the risk measures (reporting only), job loss and re-employment with unemployment insurance (in both
+ * runs), PTH's books, PTF by sector with members who leave. The disaster is a scenario, shown as a reading. relMainCfgs(PR) carries them in both rows (the page's
+ * live run and the panel); relMainCfgs(PR, true) gives v5.3's main row and its no-programme run exactly. */
+var REL_V54 = {v54:{rk:true, empl:{}, pthb:{}, ptfs:{}}};
+function relMainCfgs(PR, v53){ var X = v53 ? {} : REL_V54; return [Object.assign({p:PR.baseline(), hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g}, X), n1Row(PR, 'framework', Object.assign({fin:'source', a:0, jn:{}, cs:{}}, REL_V5, REL_V53, X))]; }
 /* Plan step 9 (Oct 1, 2026; dev/reports/09-avoided-costs.md): PUBLIC COSTS OF POVERTY AVOIDED, reported beside the programme's cost (no feedback
  * into the model). Homelessness (with the health care and justice costs that come with it): the model's extreme-poverty overlay (v4.18: HUD
  * 2025 AHAR point-in-time rate, scaled by housing distress against year 0) gives unhoused person-years; each is costed at two sourced ends:
@@ -4432,7 +4437,8 @@ function hhYear(agents){  /* each household's cost factor and shares at this yea
     Object.keys(N).forEach(function(k){ P += N[k]*c(k); });
     buEss().forEach(function(k){ e += N[k]*c(k); }); if (BU_SCOPE === 'hub') e += N.childcare*c('childcare');  /* v5.3 B3f: BU scope (childcare at PTF centres under 'hub') */
     f = N.food*c('food')/P; hs = N.housing*c('housing')/P; t = DISC_BASE === 'pretax' ? N.taxes*c('taxes')/P : 0;
-    H.a.forEach(function(a){ a._hhF = P/(H.a.length*CFG.LIVING_WAGE_ANNUAL*bI); a._hhE = e/P; a._hhFd = f; a._hhH = hs; a._hhT = t; a._hhBU = H.buM; }); });
+    var pS = PTFS ? {f:f, h:hs, t:N.transport*c('transport')/P, m:N.medical*c('medical')/P, k:(N.childcare || 0)*c('childcare')/P} : null;  /* v5.4 item 4: the household's sector shares */
+    H.a.forEach(function(a){ a._hhF = P/(H.a.length*CFG.LIVING_WAGE_ANNUAL*bI); a._hhE = e/P; a._hhFd = f; a._hhH = hs; a._hhT = t; a._hhBU = H.buM; if (pS) a._hhS = pS; }); });
 }
 function hhSync(what){  /* partners follow the first adult's decision */
   HHS.list.forEach(function(H){ if (H.a.length < 2) return; var hd = H.a[0];
@@ -4813,6 +4819,7 @@ function tbRepYear(R, agents, p, o, yr, T, ep){
   for (var i = 0; i < n; i++){ var a = agents[i], c = tbCashIncome(a), bo = agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf), bn = agentBLEI(a, 0, false, false, false, 0, false) + (a._tbM || 0)/CFG.BASE_DAILY_COST;
     var th = a.age >= 65 ? CFG.POVERTY_THRESHOLD_SENIOR : thr, pf = c < th*lf, h = a._h52;  /* v5.2 step 5: the official threshold for 65 and over where adults age (a.age is undefined otherwise) */
     if (!h){ h = a._h52 = {f:[], c:[]}; R.hist.push(h); } h.f.push(pf ? 1 : 0); h.c.push((a._tbGap || 0) > 0 ? 1 : 0);  /* each adult's year-by-year record (a new adult starts its own) */
+    if (RISK_MEASURE){ if (!h.w){ h.w = []; h.b = []; h.y = []; } h.w.push(a.wealth/lf); h.b.push(bo/lf); h.y.push(c/lf); }  /* v5.4 item 1 (reporting only) */
     if (pf) s.fpl++; if (c < th) s.fplNom++; if ((a._tbExt || 0) < th*lf) s.fplX++; if ((a._tbGap || 0) > 0) s.f0++;
     if (bo/lf < L30) s.bO++; if (bn/lf < L30) s.bN++; if (bo < L30) s.bONom++; if (bn < L30) s.bNNom++;
     if (a.wealth < CFG.POVERTY_LINE*lf) s.pov++; if (a.wealth < CFG.POVERTY_LINE) s.povNom++; }
@@ -4834,11 +4841,212 @@ function tbRepSpells(hist, m, out, key){  /* spell counts on one measure (m: 'f'
       if (t > 0) for (var d = 1; d <= len; d++){ if (t + d >= L) break; var k = Math.min(d, 5); N[k]++; if (d === len) X[k]++; }  /* observed at duration d when year t + d is in the record */
       if (e < L && e + 1 < L){ RN++; if (x[e + 1]) RR++; } t = e; } });
   for (var d = 1; d <= 5; d++){ out[key + 'N' + d] = N[d]; out[key + 'X' + d] = X[d]; } out[key + 'RN'] = RN; out[key + 'R'] = RR; }
+/* v5.4 item 1 (Oct 7, 2026; dev/reports/v5-21-v54-design.md, 1.5; dev/DECISIONS.md Session 40): RISK MEASURES beside the stability score. Reporting only:
+ * false (the default) records and reports nothing new. When true (v54 row option rk), each adult's year-by-year record (tbRepYear) also keeps real wealth,
+ * real BLEI days and real cash income, and the run reports (RISK_KEYS):
+ *  rkDdW, rkDdW6   drawdown of wealth: the largest fall from an earlier peak, in months of the basic-living cost (CFG.LIVING_WAGE_ANNUAL/12, year-0 $);
+ *                  the median over adults, and the % of adults whose fall exceeds 6 months
+ *  rkDdB, rkDdB30  the same for BLEI days: median largest fall in days, % of adults whose fall exceeds 30 days
+ *  rkEv            income shocks per 100 adult-years: a year whose real cash income is below 80% of the year before's (any cause)
+ *  rkRec1/3/5      % of income shocks after which income is back to the year-before level within 1, 3, 5 years (each over shocks with that many years observed)
+ *  rkRecM          mean years to recover, over shocks that recover
+ *  rkRecB3         % of the same shocks after which BLEI days are back to the year-before level within 3 years
+ *  rkReC1/3/5      re-entry: of exits from below the cost of living, % below it again within 1, 3, 5 years (Stevens 1999 reads about half within 4-5
+ *                  years in the PSID, official line); rkReF5 the same at 5 years on the official line
+ * Reads only what the run already computed; no draw is added and no adult's path changes. */
+var RISK_MEASURE = false, RISK_KEYS = ['rkDdW', 'rkDdW6', 'rkDdB', 'rkDdB30', 'rkEv', 'rkRec1', 'rkRec3', 'rkRec5', 'rkRecM', 'rkRecB3', 'rkReC1', 'rkReC3', 'rkReC5', 'rkReF5'];
+function rkDraw(x){ var pk = x[0], d = 0; for (var t = 1; t < x.length; t++){ if (x[t] > pk) pk = x[t]; else if (pk - x[t] > d) d = pk - x[t]; } return d; }
+function rkReentry(hist, m, K){  /* exits: a year not below the line after one below it; re-entry within k years: below it in any of the next k years */
+  var N = K.map(function(){ return 0; }), X = K.map(function(){ return 0; });
+  hist.forEach(function(h){ var x = h[m], L = x.length; for (var e = 1; e < L; e++){ if (x[e] || !x[e - 1]) continue;
+    K.forEach(function(k, i){ if (e + k >= L) return; N[i]++; for (var j = 1; j <= k; j++) if (x[e + j]){ X[i]++; break; } }); } });
+  return K.map(function(k, i){ return N[i] ? X[i]/N[i]*100 : 0; }); }
+function tbRiskRes(hist, out){
+  var mo = CFG.LIVING_WAGE_ANNUAL/12, dW = [], dB = [], ev = 0, ay = 0, R = [[0, 0], [0, 0], [0, 0]], B3 = [0, 0], rs = 0, rn = 0;
+  hist.forEach(function(h){ if (!h.w || !h.w.length) return; var y = h.y, b = h.b, L = y.length; ay += L;
+    dW.push(rkDraw(h.w)/mo); dB.push(rkDraw(b));
+    for (var t = 1; t < L; t++){ if (!(y[t - 1] > 0) || y[t] >= 0.8*y[t - 1]) continue; ev++;
+      var u = t + 1; while (u < L && y[u] < y[t - 1]) u++; var got = u < L ? u - t : Infinity; if (got < Infinity){ rs += got; rn++; }
+      [1, 3, 5].forEach(function(k, i){ if (t + k < L){ R[i][0]++; if (got <= k) R[i][1]++; } });
+      if (t + 3 < L){ B3[0]++; for (var v = t + 1; v <= t + 3; v++) if (b[v] >= b[t - 1]){ B3[1]++; break; } } } });
+  function pc(x){ return x[0] ? x[1]/x[0]*100 : 0; }
+  var rc = rkReentry(hist, 'c', [1, 3, 5]), rf = rkReentry(hist, 'f', [5]);
+  out.rkDdW = dW.length ? medianOf(dW) : 0; out.rkDdW6 = dW.length ? dW.filter(function(v){ return v > 6; }).length/dW.length*100 : 0;
+  out.rkDdB = dB.length ? medianOf(dB) : 0; out.rkDdB30 = dB.length ? dB.filter(function(v){ return v > 30; }).length/dB.length*100 : 0;
+  out.rkEv = ay ? ev/ay*100 : 0; out.rkRec1 = pc(R[0]); out.rkRec3 = pc(R[1]); out.rkRec5 = pc(R[2]); out.rkRecM = rn ? rs/rn : 0; out.rkRecB3 = pc(B3);
+  out.rkReC1 = rc[0]; out.rkReC3 = rc[1]; out.rkReC5 = rc[2]; out.rkReF5 = rf[0]; return out; }
+/* v5.4 item 2 (Oct 7, 2026; dev/reports/v5-21-v54-design.md, 1.1; dev/DECISIONS.md Session 40): LOSING A JOB AND FINDING ANOTHER. null = off (every
+ * earlier run). When an object (v54 row option empl), every working-age adult (not retired) is employed, out of work, or back at work, year by year:
+ *  - Entering unemployment: each year an adult at work can lose or leave their job into unemployment with chance CFG.EMPL_P (normal years; recession years
+ *    CFG.EMPL_P_REC), from the CPS (sources/unemp_flows.py: job losers and leavers, 2015-2025 without 2020-21; 2009-10). During an automation wave
+ *    (auto 'jobs', the default) the wave's existing yearly rate (popAIDisp, the same schedule as before) times the adult's automation risk is an extra chance
+ *    of losing the job, and replaces the slower pay growth the wave used to cause; auto 'pay' keeps the old pay drag instead (a labelled reading).
+ *  - How long: the spell's length in weeks is drawn from the share of spells lasting at least d weeks, S(d), read from the CPS's unemployed-by-duration
+ *    counts (log-linear between 2.5, 9.5 and 20.5 weeks, then a constant ending rate; normal or recession figures by the year the spell starts). It starts at
+ *    a point of the year drawn evenly; weeks beyond the year carry into the next (no new spell begins while one runs). Pay that year falls by the share of the
+ *    year out of work (before the labour-supply response, which then applies as before).
+ *  - Unemployment insurance (both runs, as in the US): with chance CFG.EMPL_UI_RECIP (CPS continued claims / unemployed) the spell is insured; it pays
+ *    CFG.EMPL_UI_REPL (DOL: average weekly benefit / average weekly covered wage) of the adult's weekly pay for up to 26 weeks of the spell. It is cash income
+ *    like the UBI comparator's (yrUbiUSD carries both), with no effect on hours (it is paid only while out of work).
+ *  - Coming back at lower pay: a permanent job loss (chance CFG.EMPL_PERM of a spell, CPS permanent job losers / losers and leavers; every automation loss)
+ *    cuts pay on return by a share drawn evenly from 0 to 2 x cut (cut 0.10: a design parameter, swept 0 and 0.20; the displaced-worker literature's
+ *    long-run losses for long-tenured workers in mass layoffs run 10-25%: Jacobson, LaLonde and Sullivan 1993; von Wachter, Song and Manchester 2009). The
+ *    cut also applies to the no-programme-raise wages (_lwNB, _wNB): job loss is not the programme's. After an automation loss the adult's automation risk
+ *    becomes the low-risk group's mean (they move to other work).
+ *  - The labour-supply response (LABOR) scales with the share of the year at work: hours already at zero while out of work cannot fall further.
+ *  - Recessions (rec 'replace', the default): the recession's income cut for everyone is reduced by the extra share of the year that recession job loss takes
+ *    on average ((EMPL_P_REC x EMPL_W_REC - EMPL_P x EMPL_W)/52, about 4.2 points), so the recession's loss is not counted twice; rec 'add' keeps both.
+ * Six draws per adult-year from the switch's own stream (mulberry32(seed + 600031)), taken whatever the adult's state, so the two runs stay paired; the main
+ * stream's eight draws per adult-year are untouched. No effect of BU on search length beyond the existing income effect (standing rule 7). */
+var EMPL = null, EMPL_DEFAULTS = {auto:'jobs', cut:0.10, rec:'replace', ui:true, occ:true}, EMS = null;
+CFG.EMPL_P = 0.0851; CFG.EMPL_P_REC = 0.1423; CFG.EMPL_PERM = 0.413; CFG.EMPL_PERM_REC = 0.621; CFG.EMPL_UI_RECIP = 0.273; CFG.EMPL_UI_RECIP_REC = 0.356;
+CFG.EMPL_UI_REPL = 0.322; CFG.EMPL_UI_WEEKS = 26; CFG.EMPL_W = 15.2; CFG.EMPL_W_REC = 24.5;
+CFG.EMPL_S = {n:[0.4434, 0.1871, 24.18], r:[0.5978, 0.3618, 30.90]};  /* S(9.5), S(20.5), weeks of the constant-rate tail */
+/* Occupations (EMPL.occ, on by default with EMPL): the common cause of pay and automation risk. Each adult holds one of 700 occupations (Frey and Osborne's
+ * probabilities with May 2016 BLS employment and median pay; sources/fo_occupations.py), drawn at the start on the switch's own stream (mulberry32(seed +
+ * 600041), one draw per adult): the occupations are ranked by median pay, and an adult's place in that ranking follows their own pay rank with correlation
+ * rho = sqrt(between-occupation variance of log pay (vb, the data) / the variance of log pay across the run's adults), so occupation explains the measured
+ * share of the spread of pay and no more. Their automation risk is their occupation's probability (replacing the separate draw). Hours are not tied to
+ * occupation: the model's hours enter only as each adult's change from their own starting hours, so occupation's usual hours would change nothing (a
+ * stated limit). Adults who arrive later (with ageing) keep their own draw. */
+CFG.EMPL_OCC = {"vb":0.2651,"cum":[0.00073,0.02701,0.02713,0.03107,0.03197,0.03581,0.03891,0.05859,0.06079,0.08796,0.09121,0.09232,0.09621,0.10084,0.1052,0.10721,0.10756,0.11409,0.11568,0.11582,0.11694,0.12404,0.12407,0.12548,0.13693,0.13837,0.14028,0.14032,0.14573,0.14643,0.1491,0.14945,0.15029,0.15059,0.15322,0.15947,0.15955,0.1943,0.19757,0.19864,0.19882,0.21429,0.21443,0.21701,0.21707,0.22641,0.243,0.2457,0.24715,0.24881,0.24887,0.25002,0.25007,0.25014,0.25329,0.25356,0.25686,0.25716,0.258,0.25938,0.26014,0.26042,0.26103,0.27073,0.27419,0.27503,0.2757,0.27584,0.27622,0.27635,0.28481,0.28515,0.30501,0.30515,0.30529,0.30541,0.30543,0.31239,0.31264,0.31284,0.31346,0.31434,0.3149,0.31542,0.31542,0.31548,0.31548,0.31548,0.3193,0.31938,0.31946,0.31963,0.31986,0.32077,0.32088,0.32098,0.32105,0.32116,0.3223,0.32996,0.33464,0.33533,0.3359,0.33607,0.33903,0.33909,0.33937,0.33976,0.34043,0.34102,0.34115,0.34131,0.34151,0.34344,0.3464,0.34697,0.34725,0.34731,0.34773,0.34873,0.34943,0.3495,0.34974,0.35029,0.3522,0.35223,0.35325,0.35337,0.36191,0.36341,0.36736,0.3677,0.36814,0.36926,0.36939,0.36958,0.37616,0.39884,0.39915,0.39937,0.39951,0.40257,0.40304,0.40312,0.40831,0.40859,0.41026,0.41049,0.41071,0.41111,0.41288,0.41985,0.42464,0.42741,0.42741,0.42743,0.42886,0.42895,0.42908,0.44985,0.45133,0.4555,0.45626,0.45681,0.45689,0.45876,0.45942,0.45989,0.46047,0.46118,0.46174,0.46199,0.46274,0.463,0.46317,0.46352,0.46487,0.47187,0.47191,0.47228,0.4723,0.47657,0.47682,0.47702,0.47704,0.47759,0.4777,0.47773,0.4781,0.47825,0.47839,0.47929,0.47952,0.47993,0.48003,0.48082,0.48094,0.48104,0.49865,0.49897,0.49903,0.49934,0.49935,0.50047,0.50135,0.50365,0.50422,0.50553,0.50576,0.50599,0.50617,0.50717,0.50718,0.5076,0.50768,0.50782,0.50793,0.50808,0.50814,0.51186,0.51193,0.51194,0.51266,0.51271,0.51281,0.51291,0.51311,0.51364,0.51418,0.51425,0.51524,0.5167,0.51671,0.52069,0.52073,0.521,0.52115,0.52143,0.52395,0.53417,0.53426,0.53462,0.53533,0.5354,0.53541,0.53543,0.53621,0.53637,0.53813,0.53852,0.53856,0.53876,0.53897,0.53913,0.53938,0.54105,0.54133,0.54193,0.54282,0.54313,0.5434,0.54348,0.5446,0.54612,0.54619,0.54772,0.54882,0.5508,0.55203,0.55224,0.55243,0.5528,0.56482,0.56512,0.56723,0.5722,0.57332,0.57358,0.57373,0.57396,0.57412,0.57584,0.57636,0.57651,0.57725,0.57742,0.57768,0.57794,0.57917,0.57956,0.58062,0.58978,0.59112,0.59405,0.59409,0.59419,0.5955,0.59563,0.59637,0.59645,0.59648,0.5965,0.59665,0.59693,0.59727,0.59749,0.5975,0.59753,0.5979,0.59803,0.59806,0.59876,0.5997,0.5998,0.60051,0.60081,0.61389,0.61444,0.61554,0.61567,0.61585,0.61885,0.61921,0.61989,0.62014,0.62056,0.6211,0.62145,0.62268,0.62269,0.62311,0.6232,0.62377,0.6238,0.62393,0.62481,0.62492,0.62823,0.62931,0.63033,0.63057,0.63286,0.6339,0.6391,0.64449,0.64565,0.64712,0.64737,0.6474,0.64792,0.64806,0.64832,0.64901,0.64932,0.64936,0.65018,0.65213,0.65214,0.65229,0.6525,0.65268,0.65284,0.65322,0.65401,0.6549,0.65528,0.65569,0.65576,0.65627,0.659,0.65905,0.66132,0.66184,0.66224,0.66224,0.66238,0.66239,0.66486,0.66494,0.66597,0.66738,0.66812,0.66818,0.66833,0.66995,0.67002,0.67059,0.67067,0.67309,0.67343,0.67352,0.67373,0.67377,0.67464,0.67469,0.67502,0.6753,0.67542,0.67549,0.67563,0.67566,0.67569,0.67597,0.6761,0.67656,0.67705,0.678,0.67806,0.68019,0.68028,0.68028,0.68037,0.68077,0.68133,0.68429,0.68685,0.68718,0.68737,0.68752,0.68819,0.68927,0.6893,0.68935,0.68952,0.68971,0.69016,0.69025,0.6918,0.69189,0.69244,0.69258,0.69574,0.69648,0.69653,0.69664,0.69717,0.69744,0.69753,0.698,0.69805,0.69849,0.70457,0.70462,0.70496,0.70527,0.70537,0.70614,0.7073,0.71196,0.7124,0.71289,0.71373,0.71381,0.71383,0.71559,0.7157,0.71693,0.71703,0.72811,0.72824,0.72833,0.72868,0.72917,0.72952,0.73152,0.73161,0.73178,0.73181,0.73198,0.732,0.73241,0.73252,0.7432,0.74805,0.7489,0.74942,0.74943,0.74955,0.7497,0.75035,0.75039,0.7552,0.75531,0.75534,0.75597,0.75629,0.75767,0.76844,0.76919,0.77074,0.77136,0.77169,0.77179,0.77209,0.77308,0.77777,0.77951,0.78721,0.78973,0.78974,0.78983,0.78992,0.79065,0.79134,0.79232,0.79238,0.79285,0.79314,0.79521,0.79532,0.79565,0.79591,0.80096,0.80198,0.80202,0.80228,0.80248,0.80347,0.80349,0.80352,0.80366,0.80399,0.80412,0.80415,0.80543,0.80577,0.80742,0.80757,0.8077,0.80781,0.80841,0.80945,0.80956,0.81017,0.81074,0.81187,0.81616,0.81761,0.8177,0.81793,0.81798,0.81813,0.81824,0.82172,0.82407,0.82617,0.82628,0.82725,0.82734,0.82749,0.82772,0.82779,0.82785,0.82788,0.83962,0.84172,0.84176,0.84193,0.84464,0.84496,0.84521,0.84535,0.84605,0.84629,0.8472,0.84729,0.85685,0.85713,0.85777,0.86513,0.86516,0.86611,0.86661,0.867,0.86756,0.86782,0.8679,0.86797,0.86801,0.8686,0.86948,0.86959,0.8698,0.87009,0.87166,0.8736,0.87443,0.87444,0.87511,0.87553,0.87665,0.87666,0.87681,0.87709,0.87753,0.87857,0.87884,0.87911,0.87928,0.87938,0.88015,0.88042,0.88072,0.88153,0.8817,0.88422,0.88427,0.88511,0.88549,0.88838,0.8884,0.89049,0.89062,0.89067,0.89092,0.89176,0.89665,0.89881,0.8989,0.89981,0.90003,0.90004,0.90225,0.90444,0.90641,0.90718,0.90758,0.90845,0.91012,0.91027,0.91228,0.91247,0.91684,0.91736,0.91823,0.92014,0.92038,0.92065,0.9227,0.92425,0.92531,0.92536,0.92548,0.92555,0.92741,0.92762,0.92768,0.92774,0.92915,0.92925,0.92939,0.93194,0.93323,0.93418,0.93443,0.93544,0.95224,0.9523,0.95287,0.95896,0.95911,0.95933,0.95948,0.96028,0.96042,0.96043,0.96353,0.96355,0.9638,0.96408,0.96722,0.96822,0.96871,0.96924,0.96979,0.96999,0.97004,0.9706,0.97073,0.97085,0.97365,0.9784,0.97882,0.98299,0.98533,0.98551,0.98559,0.98566,0.98587,0.98588,0.9865,0.98676,0.98834,0.9897,0.99241,0.99322,0.99493,0.99992,0.99996,1.0],"p":[0.96,0.92,0.79,0.81,0.96,0.96,0.97,0.94,0.72,0.97,0.91,0.67,0.77,0.77,0.084,0.86,0.81,0.87,0.71,0.43,0.87,0.69,0.98,0.94,0.74,0.82,0.94,0.97,0.38,0.95,0.37,0.83,0.83,0.41,0.87,0.39,0.91,0.92,0.98,0.89,0.83,0.64,0.25,0.006,0.52,0.96,0.66,0.11,0.89,0.99,0.94,0.94,0.99,0.13,0.83,0.37,0.66,0.91,0.7,0.89,0.95,0.72,0.86,0.56,0.97,0.064,0.51,0.98,0.61,0.8,0.84,0.047,0.85,0.39,0.75,0.95,0.97,0.95,0.13,0.99,0.6,0.48,0.49,0.47,0.96,0.87,0.77,0.83,0.98,0.97,0.94,0.73,0.96,0.79,0.64,0.94,0.72,0.1,0.7,0.96,0.01,0.96,0.94,0.84,0.98,0.27,0.61,0.86,0.93,0.97,0.81,0.91,0.97,0.92,0.007,0.95,0.92,0.72,0.57,0.97,0.94,0.93,0.21,0.74,0.98,0.18,0.93,0.92,0.97,0.99,0.89,0.29,0.92,0.95,0.87,0.83,0.69,0.96,0.9,0.97,0.93,0.92,0.043,0.98,0.98,0.92,0.95,0.1,0.93,0.95,0.013,0.63,0.3,0.13,0.3,0.057,0.94,0.61,0.95,0.55,0.78,0.93,0.029,0.93,0.95,0.049,0.91,0.86,0.95,0.99,0.66,0.39,0.92,0.94,0.92,0.97,0.98,0.88,0.035,0.37,0.83,0.81,0.93,0.97,0.87,0.91,0.73,0.96,0.021,0.88,0.55,0.91,0.97,0.78,0.21,0.009,0.79,0.67,0.96,0.99,0.91,0.77,0.97,0.61,0.93,0.95,0.71,0.83,0.42,0.83,0.88,0.83,0.95,0.89,0.72,0.37,0.45,0.37,0.54,0.96,0.87,0.048,0.63,0.86,0.94,0.59,0.83,0.099,0.99,0.88,0.46,0.076,0.99,0.98,0.87,0.71,0.93,0.97,0.51,0.64,0.84,0.61,0.67,0.97,0.98,0.97,0.74,0.91,0.13,0.68,0.76,0.65,0.79,0.97,0.72,0.75,0.97,0.41,0.9,0.11,0.75,0.79,0.86,0.96,0.84,0.91,0.87,0.085,0.94,0.95,0.87,0.88,0.98,0.62,0.98,0.59,0.5,0.84,0.91,0.74,0.025,0.92,0.81,0.66,0.49,0.84,0.97,0.85,0.47,0.83,0.9,0.28,0.94,0.94,0.005,0.89,0.67,0.98,0.54,0.59,0.54,0.62,0.77,0.75,0.53,0.83,0.96,0.88,0.94,0.88,0.97,0.033,0.4,0.16,0.79,0.82,0.79,0.98,0.91,0.76,0.94,0.65,0.73,0.99,0.83,0.69,0.55,0.78,0.97,0.92,0.96,0.9,0.3,0.65,0.36,0.003,0.94,0.6,0.005,0.1,0.65,0.028,0.7,0.72,0.058,0.86,0.98,0.77,0.9,0.82,0.85,0.04,0.86,0.074,0.9,0.34,0.73,0.82,0.57,0.64,0.007,0.89,0.008,0.57,0.61,0.015,0.99,0.84,0.57,0.95,0.61,0.65,0.61,0.38,0.98,0.003,0.91,0.88,0.66,0.82,0.42,0.037,0.066,0.9,0.082,0.28,0.76,0.39,0.17,0.27,0.8,0.31,0.004,0.35,0.93,0.93,0.055,0.25,0.71,0.62,0.18,0.97,0.014,0.25,0.98,0.82,0.4,0.008,0.94,0.84,0.99,0.1,0.022,0.75,0.92,0.67,0.79,0.2,0.015,0.25,0.54,0.91,0.76,0.28,0.36,0.19,0.042,0.083,0.006,0.84,0.5,0.35,0.52,0.08,0.41,0.83,0.004,0.54,0.9,0.59,0.93,0.65,0.48,0.9,0.59,0.93,0.49,0.15,0.15,0.045,0.03,0.29,0.007,0.5,0.36,0.13,0.004,0.89,0.014,0.53,0.23,0.38,0.68,0.63,0.008,0.86,0.88,0.82,0.6,0.44,0.23,0.81,0.004,0.86,0.79,0.41,0.37,0.91,0.83,0.018,0.067,0.17,0.01,0.49,0.95,0.97,0.81,0.85,0.055,0.029,0.009,0.83,0.26,0.96,0.65,0.016,0.18,0.008,0.68,0.93,0.87,0.48,0.63,0.016,0.066,0.008,0.004,0.028,0.014,0.91,0.38,0.89,0.098,0.008,0.06,0.85,0.81,0.71,0.061,0.91,0.3,0.025,0.7,0.01,0.9,0.038,0.57,0.016,0.68,0.24,0.47,0.84,0.021,0.31,0.24,0.004,0.61,0.21,0.88,0.31,0.008,0.045,0.98,0.003,0.98,0.98,0.077,0.007,0.86,0.021,0.015,0.9,0.004,0.047,0.032,0.08,0.57,0.012,0.016,0.71,0.027,0.78,0.99,0.037,0.097,0.48,0.94,0.23,0.033,0.23,0.091,0.33,0.35,0.89,0.98,0.13,0.003,0.041,0.2,0.17,0.022,0.75,0.9,0.27,0.68,0.075,0.005,0.49,0.1,0.94,0.012,0.25,0.13,0.02,0.004,0.006,0.85,0.015,0.38,0.003,0.018,0.04,0.55,0.34,0.39,0.25,0.85,0.035,0.17,0.03,0.059,0.48,0.34,0.014,0.22,0.004,0.13,0.23,0.64,0.004,0.027,0.012,0.019,0.011,0.029,0.004,0.018,0.03,0.021,0.037,0.22,0.028,0.006,0.038,0.59,0.071,0.63,0.023,0.73,0.58,0.01,0.95,0.64,0.67,0.005,0.021,0.01,0.14,0.1,0.004,0.43,0.007,0.03,0.014,0.017,0.025,0.16,0.021,0.004,0.042,0.21,0.039,0.43,0.14,0.07,0.041,0.25,0.047,0.006,0.14,0.13,0.006,0.015,0.017,0.03,0.015,0.039,0.22,0.1,0.96,0.013,0.035,0.018,0.069,0.012,0.11,0.005,0.009,0.4,0.055,0.18,0.16,0.014,0.017,0.035,0.004,0.015,0.004,0.023,0.004]};
+function emplOcc(agents, seed){ var O = CFG.EMPL_OCC, r = mulberry32(seed + 600041), n = agents.length; if (!n) return 0;
+  var lw = agents.map(function(a){ return Math.log(Math.max(1e-9, a.wage)); }), m = lw.reduce(function(s, x){ return s + x; }, 0)/n,
+    v = lw.reduce(function(s, x){ return s + (x - m)*(x - m); }, 0)/n, rho = v > 0 ? Math.sqrt(Math.min(1, O.vb/v)) : 0;
+  var ord = agents.map(function(a, i){ return i; }).sort(function(i, j){ return agents[i].wage - agents[j].wage || i - j; }), rk = new Array(n);
+  ord.forEach(function(i, k){ rk[i] = k; });
+  agents.forEach(function(a, i){ var e = normInv(Math.min(1 - 1e-12, Math.max(1e-12, r()))), z = rho*normInv((rk[i] + 0.5)/n) + Math.sqrt(1 - rho*rho)*e, q = normCdf(z), lo = 0, hi = O.cum.length - 1;
+    while (lo < hi){ var mid = (lo + hi) >> 1; if (O.cum[mid] >= q) hi = mid; else lo = mid + 1; }
+    a._emOcc = lo; a.automationRisk = O.p[lo]; });
+  return rho; }
+var EMPL_KEYS = ['emUrate', 'emSpells', 'emWeeks', 'emAuto', 'emUI', 'emCut', 'emLong', 'emRho'];  /* % of adult-years out of work (weeks/52); spells per 100 adult-years; weeks out per adult-year with any; automation losses per 100 adult-years; UI as % of pay lost; mean pay cut on return (%); % of spells over 26 weeks */
+function emplWeeks(u, rec){ var s = CFG.EMPL_S[rec ? 'r' : 'n'], S1 = s[0], S2 = s[1];  /* the spell length d with S(d) = u */
+  if (u >= 1) return 2.5; if (u >= S1) return 2.5 + 7*Math.log(u)/Math.log(S1); if (u >= S2) return 9.5 + 11*(Math.log(u) - Math.log(S1))/(Math.log(S2) - Math.log(S1));
+  return 20.5 + s[2]*Math.log(S2/u); }
+function emplInit(agents, seed){ EMS = {r:mulberry32(seed + 600031), n:0, out:0, spells:0, weeks:0, auto:0, ui:0, lost:0, cut:0, cutN:0, long:0, rho:EMPL.occ ? emplOcc(agents, seed) : 0}; }
+function emplYear(a, rec, aiH, u, wkPay){  /* u: six draws. Returns {out: share of the year out of work, ui: dollars}. */
+  var A = EMS, w = 0, ui = 0, carry = Math.min(52, a._emW || 0); a._emW = (a._emW || 0) - carry; w = carry;
+  if (carry > 0 && a._emUi){ var uw = Math.min(carry, Math.max(0, CFG.EMPL_UI_WEEKS - a._emUiW)); a._emUiW += uw; ui += uw*CFG.EMPL_UI_REPL*wkPay; }
+  if (carry === 0){ var hA = EMPL.auto === 'jobs' ? Math.max(0, aiH*a.automationRisk) : 0, h = rec ? CFG.EMPL_P_REC : CFG.EMPL_P, pE = 1 - (1 - h)*(1 - hA);
+    if (u[0] < pE){ var auto = u[0] < hA, D = emplWeeks(u[2], rec), st = u[3]*52, now = Math.min(D, 52 - st); A.spells++; if (auto) A.auto++; if (D > 26) A.long++;
+      w = now; a._emW = D - now; a._emUi = EMPL.ui && u[4] < (rec ? CFG.EMPL_UI_RECIP_REC : CFG.EMPL_UI_RECIP); a._emUiW = 0;
+      if (a._emUi){ var uw2 = Math.min(now, CFG.EMPL_UI_WEEKS); a._emUiW = uw2; ui += uw2*CFG.EMPL_UI_REPL*wkPay; }
+      a._emCut = (auto || u[1] < (rec ? CFG.EMPL_PERM_REC : CFG.EMPL_PERM)) ? 2*EMPL.cut*u[5] : 0; a._emAuto = auto; } }
+  if (a._emW <= 0 && (a._emCut || a._emAuto)){ var f = 1 - (a._emCut || 0); a.wage *= f; if (a._lwNB !== undefined) a._lwNB *= f; if (a._wNB !== undefined) a._wNB *= f;  /* back at work: the lower pay */
+    A.cut += a._emCut || 0; A.cutN++; if (a._emAuto) a.automationRisk = 1/(1 + CFG.AUTO_LOW_B); a._emCut = 0; a._emAuto = false; }
+  A.n++; A.weeks += w; A.ui += ui; A.lost += w*wkPay; if (w > 0) A.out++; return {out:Math.min(1, w/52), ui:ui}; }
+function emplRes(out){ var A = EMS; out.emUrate = A && A.n ? A.weeks/52/A.n*100 : 0; out.emSpells = A && A.n ? A.spells/A.n*100 : 0; out.emWeeks = A && A.out ? A.weeks/A.out : 0;
+  out.emAuto = A && A.n ? A.auto/A.n*100 : 0; out.emUI = A && A.lost > 0 ? A.ui/A.lost*100 : 0; out.emCut = A && A.cutN ? A.cut/A.cutN*100 : 0; out.emLong = A && A.spells ? A.long/A.spells*100 : 0; out.emRho = A ? A.rho : 0; return out; }
+/* v5.4 item 3 (Oct 7, 2026; dev/reports/v5-21-v54-design.md, 1.2; dev/DECISIONS.md Session 40): PTH AS A HOUSING BALANCE SHEET. null = off (every earlier
+ * run). When an object (v54 row option pthb), every PTH home has the trust's books beside its member's Acre Equity:
+ *  - The home: bought when its first member's books open, at CFG.PTHB_PR years of the member's market housing cost (hSA x dcA: the housing share of their
+ *    basket, at market prices), financed by the trust's debt less the member's starting Acre Equity, so the community's equity starts at zero. Its value moves
+ *    each year with the model's price level and CFG.PTHB_G real growth (FHFA over CPI-U, 1991-2025); CFG.PTHB_LAND of it is land.
+ *  - The trust's cash each year: in, the market housing cost (the member's fee plus the programme's payment for the cut, which the programme's cost already
+ *    carries) and the member's equity contribution; out, interest (a real rate CFG.PTHB_RREAL on top of the year's price rise, so inflation does not shrink the
+ *    debt for free), upkeep (CFG.PTHB_UPK of the structure's value: BEA's yearly wear of owner-occupied homes), property tax (CFG.PTHB_TAX of value) and the
+ *    appreciation paid to the member in cash. What is left pays down the debt; a shortfall adds to it.
+ *  - Acre Equity grows with the home's value but at most at the year's price rise + 2% (cap 'hub': the Democratic Governance paper's cap, Duke's question
+ *    d175's default); cap 'old' keeps the 3-5% rule (plus the Social Zone bonus) as before. What the home gains beyond the credit is the community's.
+ *  - Leaving: each year a member leaves the network with chance exit (0.062: renters' moves to another county, CPS ASEC 2023; 'owners' reading 0.019; one
+ *    draw per adult a year on the switch's own stream mulberry32(seed + 600043); in a household the head's draw decides for its PTH members). A leaver takes
+ *    cash share x of their Acre Equity (0.40: the Real Estate paper's cash value on exit; Duke's question d174) and the rest becomes the community's; the
+ *    trust borrows the cash. The home passes to the next adult waiting (non-members in the order of their PTH uptake draw, fixed at the start), who starts
+ *    with no Acre Equity. Moves within the county stay in the network with their equity (not modelled as moves).
+ *  - Cash from appreciation (the existing liquid share, 15% rising to 85% with tenure) is paid only on the gain above the year's price rise; the part that
+ *    keeps up with prices stays as Acre Equity (otherwise inflation would turn members' equity into spending).
+ *  - pbCover: the share of home-years whose market rent and equity contribution cover the real cost of the debt (interest less the price rise's erosion of
+ *    it), upkeep, tax and cash paid out. pbAprP is the year's nominal gain from the price rise, pbAprR the real gain, pbAprC what the community keeps beyond the
+ *    members' credit (all in year-0 dollars per home-year).
+ *  - The identity homes - debt = members' equity + community equity is checked for every home every year (ACCT 'pth-books'): it ties the engine's Acre Equity
+ *    to the trust's flows. Insurance is not modelled (no separate source; BEA folds it into intermediate costs).
+ * Only the programme run has PTH; the no-programme run is untouched. No draw on the main stream. */
+var PTHB = null, PTHB_DEFAULTS = {cap:'hub', x:0.40, exit:0.062}, PBS = null;
+CFG.PTHB_PR = 18.23; CFG.PTHB_LAND = 0.377; CFG.PTHB_UPK = 0.0231; CFG.PTHB_TAX = 0.0065; CFG.PTHB_G = 0.0172; CFG.PTHB_RREAL = 0.0180; CFG.PTHB_EXIT_OWN = 0.019;
+var PTHB_KEYS = ['pbV', 'pbD', 'pbME', 'pbCE', 'pbCover', 'pbExit', 'pbCash', 'pbAprP', 'pbAprR', 'pbAprC', 'pbFill'];
+function pthbInit(agents, latent, seed){ PBS = {r:mulberry32(seed + 600043), q:[], P:1, pi:0, n:0, exits:0, cash:0, cover:0, aP:0, aR:0, aC:0, fill:0, slots:[]};
+  agents.forEach(function(a, i){ a._pbU = latent[i] ? latent[i].uPTH : 1; if (a.inPTH){ a._pbS = {V:0, D:0, CE:0}; PBS.slots.push(a._pbS); } else PBS.q.push(a); });
+  PBS.q.sort(function(x, y){ return x._pbU - y._pbU; }); }
+function pthbYear(agentSet, yr, P){  /* before the year's adults: this year's price rise, then leavers and their homes' new members */
+  PBS.pi = yr > 0 && PBS.P > 0 ? P/PBS.P - 1 : 0; PBS.P = P; if (yr === 0) return;
+  var x = PTHB.x, rate = PTHB.exit === 'owners' ? CFG.PTHB_EXIT_OWN : PTHB.exit, u = agentSet.map(function(){ return PBS.r(); }), go = [];
+  agentSet.forEach(function(a, i){ if (!a.inPTH || !a._pbS) return; var h = a._hh && !a._hh.single && a._hh.a ? a._hh.a[0] : a, j = agentSet.indexOf(h);
+    if ((j >= 0 ? u[j] : u[i]) < rate) go.push(a); });
+  go.forEach(function(a){ var S = a._pbS, E = Math.max(0, +a.acreEquity || 0), c = x*E; a.wealth += c; S.D += c; S.CE += E - c; a.acreEquity = 0; a.inPTH = false; a.pthTenure = 0; a._pbS = null; if (ACCT){ a._acW0 += c; a._acE0 = 0; }  /* the exit is booked at the year's opening (the trust's side: D and CE above) */
+    PBS.exits++; PBS.cash += c/P; if (LEDGER) ledAdd(yr, 'pthExitCash', c);
+    while (PBS.q.length && (PBS.q[0].inPTH || agentSet.indexOf(PBS.q[0]) < 0)) PBS.q.shift();
+    if (PBS.q.length){ var b = PBS.q.shift(); b.inPTH = true; b.acreEquity = 0; b.pthTenure = 0; b._pbS = S; if (ACCT) b._acE0 = 0; PBS.fill++; } }); }
+function pthbRes(out){ var A = PBS, n = A && A.slots.length ? A.slots.length : 0, P = A ? A.P : 1; function sum(k){ return A ? A.slots.reduce(function(s, S){ return s + S[k]; }, 0) : 0; }
+  out.pbV = n ? sum('V')/n/P : 0; out.pbD = n ? sum('D')/n/P : 0; out.pbCE = n ? sum('CE')/n/P : 0; out.pbME = n ? out.pbV - out.pbD - out.pbCE : 0;
+  out.pbCover = A && A.n ? A.cover/A.n*100 : 0; out.pbExit = A && A.n ? A.exits/A.n*100 : 0; out.pbCash = A && A.exits ? A.cash/A.exits : 0;
+  out.pbAprP = A && A.n ? A.aP/A.n : 0; out.pbAprR = A && A.n ? A.aR/A.n : 0; out.pbAprC = A && A.n ? A.aC/A.n : 0; out.pbFill = A && A.exits ? A.fill/A.exits*100 : 0; return out; }
+/* v5.4 item 4 (Oct 7, 2026; dev/reports/v5-21-v54-design.md, 1.3; dev/DECISIONS.md Session 40): PTF BY SECTOR, AND MEMBERS WHO LEAVE. null = off (every
+ * earlier run: 12% off the whole cost of living, more with Social Zone Harmonization, and members never leave). When an object (v54 row option ptfs):
+ *  - A member's cut is the sum over five sectors of the sector's share of their household's basket times the sector's PTF price cut:
+ *      food        1 - 1/2.64 (the BLEI paper's food epsilon; 1 - 1/1.65 while fewer than 40% of adults are members: the paper's "below approximately 40%
+ *                  PTF merchant participation ... epsilon falls toward 1.5-1.8x", its midpoint)
+ *      utilities   1 - 1/1.80 (the paper's utility epsilon) on CFG.PTFS_UTIL of the housing share (BEA 2025: electricity, gas, water and sanitation over
+ *                  housing plus those, 487.7 / 3,814.0)
+ *      transport, health care, childcare: other (0: the Hub gives no figure, so the cautious main value is no cut; swept 0.12 and 0.25)
+ *    With Social Zone Harmonization the cut is raised in the same proportion as before ((0.12 + 0.04 x cohesion)/0.12).
+ *  - Leaving: each year a member household leaves with chance leave (0.032: moves to another county, CPS ASEC 2023 Table 1; one draw per adult a year on
+ *    the switch's own stream mulberry32(seed + 600047), the head's draw deciding for the household). Leavers can join again through the adoption curve.
+ *    No leaving for lack of value: membership has no fee in the model, so nothing weighs against the cut (a stated limit).
+ *  - Capacity: the membership gate the model already has (the production side's capacity, PROD) limits how many adults can be members; the sectors share
+ *    it (no sector has its own capacity data: a stated limit). */
+var PTFS = null, PTFS_DEFAULTS = {other:0, leave:0.032}, PFS = null;
+CFG.PTFS_EPS_FOOD = 2.64; CFG.PTFS_EPS_FOOD_LOW = 1.65; CFG.PTFS_EPS_UTIL = 1.80; CFG.PTFS_LOW_DENS = 0.40; CFG.PTFS_UTIL = 487.685/(3326.284 + 487.685);
+var PTFS_KEYS = ['pfCut', 'pfLeave', 'pfMem'];
+function ptfsShares(a, HHA){  /* the member's basket shares: food, housing, transport, medical, childcare */
+  if (HHA && a._hhS) return a._hhS; var c = function(k){ return PRICE ? PRICE.comp[k]/PRICE.bIdx : 1; };
+  return {f:CFG.BASKET.food*c('food'), h:CFG.BASKET.housing*c('housing'), t:CFG.BASKET.transport*c('transport'), m:CFG.BASKET.medical*c('medical'), k:0}; }
+function ptfsCut(a, HHA, p, quiet){ var s = ptfsShares(a, HHA), eF = PFS && PFS.dens < CFG.PTFS_LOW_DENS ? CFG.PTFS_EPS_FOOD_LOW : CFG.PTFS_EPS_FOOD, o = PTFS.other;
+  var c = s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/CFG.PTFS_EPS_UTIL) + (s.t + s.m + s.k)*o; if (p.szh) c *= (0.12 + p.szhCoh*0.04)/0.12;
+  if (PFS && !quiet){ PFS.cut += c; PFS.cn++; } return Math.min(0.95, c); }
+function ptfsYear(agentSet, yr){  /* before the year's adults: leavers, then the share of adults who are members (the food epsilon's density test) */
+  var u = agentSet.map(function(){ return PFS.r(); }), m = 0;
+  if (yr > 0) agentSet.forEach(function(a, i){ if (!a.inPTF || (a._hh && !a._hh.single && a._hh.a && a._hh.a[0] !== a)) return; if (u[i] < PTFS.leave){ a.inPTF = false; PFS.leave++;
+    if (a._hh && a._hh.a) a._hh.a.forEach(function(b){ b.inPTF = false; }); } });
+  agentSet.forEach(function(a){ if (a.inPTF) m++; }); PFS.dens = m/Math.max(1, agentSet.length); PFS.mem += PFS.dens; PFS.yrs++; }
+function ptfsRes(out){ var A = PFS; out.pfCut = A && A.cn ? A.cut/A.cn*100 : 0; out.pfLeave = A && A.yrs ? A.leave/A.yrs : 0; out.pfMem = A && A.yrs ? A.mem/A.yrs*100 : 0; return out; }
+/* v5.4 item 5 (Oct 7, 2026; dev/reports/v5-21-v54-design.md, 1.6; dev/DECISIONS.md Session 40): A DISASTER. null = off (every earlier run). When an object
+ * (v54 row option dis), in year yr (default 6, the model's Year 7) a share of households (share 0.25: design, swept 0.10 and 0.50) is hit, the same
+ * households in both runs (one draw per adult on the switch's own stream mulberry32(seed + 600053), the head's draw deciding for the household; a second
+ * draw for federal aid). A hit household:
+ *  - loses loss dollars of wealth (10,000 in year-0 dollars, moved with the price level: design, swept 5,000 and 25,000; the uninsured part of the damage) and
+ *    weeks of pay (4: design, swept 0 and 12; work stops while the area recovers), shared equally among its adults;
+ *  - receives the federal Individuals and Households Program's mean award, CFG.DIS_AID ($3,092), with chance CFG.DIS_APPR (50.6%; OpenFEMA, disasters
+ *    4400 and later, sources/fema_ihp.py), in both runs;
+ *  - with the programme, if taking part: an emergency distribution of emerg (0.20) times the year's BU (the Roadmap's Natural Disaster Response "preload
+ *    emergency units" gives no amount; the Recession Protocol's 20% is used, a modelling assumption). Suspended expiry has no effect in the release model,
+ *    where BU are allocated and used within the year; Reconstruction Collectives and "enhanced PTF support" have no size in the Hub and are not modelled.
+ * Reported (DIS_KEYS): the share of adults hit, and of them the share whose real wealth is back to its level before the disaster within 3 years and by the
+ * end, and the mean years it takes those who recover; the same two shares for adults not hit (dsCtl3, dsCtlEnd: real wealth back to its level at the
+ * start of the disaster year), so the disaster's own effect is the difference (prices rise much faster with the programme, which slows every adult's return). */
+var DIS = null, DIS_DEFAULTS = {yr:6, share:0.25, loss:10000, weeks:4, emerg:0.20}, DSS = null;
+CFG.DIS_AID = 3092; CFG.DIS_APPR = 0.506;
+var DIS_KEYS = ['dsHit', 'dsRec3', 'dsRecEnd', 'dsRecYrs', 'dsCtl3', 'dsCtlEnd'];
+function disYear(agentSet, yr, P){ var u = agentSet.map(function(){ return DSS.r(); }), v = agentSet.map(function(){ return DSS.r(); });
+  if (yr === DIS.yr) agentSet.forEach(function(a, i){ var h = a._hh && !a._hh.single && a._hh.a ? a._hh.a[0] : a, j = agentSet.indexOf(h); if (j < 0) j = i;
+    a._disHit = u[j] < DIS.share; a._disAid = v[j] < CFG.DIS_APPR; a._disN = a._hh && !a._hh.single && a._hh.a ? a._hh.a.length : 1;
+    a._disW0 = a.wealth/P; a._disRecY = -1; if (a._disHit){ DSS.hit++; DSS.list.push(a); } else DSS.ctl.push(a); });
+  else if (yr > DIS.yr) DSS.list.concat(DSS.ctl).forEach(function(a){ if (a._disRecY < 0 && a.wealth/P >= a._disW0) a._disRecY = yr - DIS.yr; });
+  DSS.n = agentSet.length; }
+function disRec(L, k){ return L.length ? L.filter(function(a){ return a._disRecY > 0 && a._disRecY <= k; }).length/L.length*100 : 0; }
+function disRes(out){ var A = DSS, L = A ? A.list : [], Q = A ? A.ctl : [], rec = L.filter(function(a){ return a._disRecY > 0; });
+  out.dsHit = A && A.n ? A.hit/A.n*100 : 0; out.dsRec3 = disRec(L, 3); out.dsRecEnd = disRec(L, 1e9);
+  out.dsRecYrs = rec.length ? rec.reduce(function(s, a){ return s + a._disRecY; }, 0)/rec.length : 0; out.dsCtl3 = disRec(Q, 3); out.dsCtlEnd = disRec(Q, 1e9); return out; }
+/* v5.4: one entry point for the round's switches, per row (tbStudy's row option v54, an object; absent = every switch as it is). Returns the old values. */
+function tbSetV54(o){ var old = {rk:RISK_MEASURE, em:EMPL, pb:PTHB, pf:PTFS, ds:DIS}; if (o){ if (o.rk !== undefined) RISK_MEASURE = !!o.rk; if (o.empl) EMPL = Object.assign({}, EMPL_DEFAULTS, o.empl === true ? {} : o.empl);
+  if (o.pthb) PTHB = Object.assign({}, PTHB_DEFAULTS, o.pthb === true ? {} : o.pthb); if (o.ptfs) PTFS = Object.assign({}, PTFS_DEFAULTS, o.ptfs === true ? {} : o.ptfs);
+  if (o.dis) DIS = Object.assign({}, DIS_DEFAULTS, o.dis === true ? {} : o.dis); } return old; }
+function tbResetV54(old){ RISK_MEASURE = old.rk; EMPL = old.em; EMS = null; PTHB = old.pb; PBS = null; PTFS = old.pf; PFS = null; DIS = old.ds; DSS = null; }
 function tbRepRes(R, out){
   function pc(k){ return R && R.n ? R[k]/R.n*100 : 0; }
   out.fplPY = pc('fpl'); out.fplXPY = pc('fplX'); out.fplNomPY = pc('fplNom'); out.bOAPyNom = pc('bONom'); out.bNAPyNom = pc('bNNom');
   TB_REP_SNAP.forEach(function(k){ var K = k.charAt(0).toUpperCase() + k.slice(1); out['y7' + K] = R && R.y7 ? R.y7[k] : 0; out['e' + K] = R && R.end ? R.end[k] : 0; out['y0' + K] = R && R.y0 ? R.y0[k] : 0; });
   TB_PATH_M.forEach(function(m){ for (var t = 0; t < TB_PATH_N; t++){ var v = R && R.path[m][t]; out['p' + m + '_' + t] = typeof v === 'number' ? v : 0; } });  /* v5.2 step 8 */
+  if (R && RISK_MEASURE) tbRiskRes(R.hist, out);  /* v5.4 item 1 */
   if (R){ tbRepSpells(R.hist, 'f', out, 'sf'); tbRepSpells(R.hist, 'c', out, 'sc'); out.everFpl = R.hist.length ? R.hist.filter(function(h){ return h.f.some(function(v){ return v; }); }).length/R.hist.length*100 : 0; }
   else { TB_REP_SPELL.forEach(function(k){ out[k] = 0; }); out.everFpl = 0; }
   return out;
@@ -4905,6 +5113,7 @@ function runYear(agentSet,yr,p,recSt){
    * regression (inflRate=0 there, so the guard never fires); see CONTRIBUTING.md's v4.14
    * Release Notes for the full trail and measured effect size on configs it does touch. */
   var ptfAdoptFrac=0;
+  if(PTFS&&PFS&&p.ptf)ptfsYear(agentSet,yr);  // v5.4 item 4: PTF leavers and this year's member share
   if(p.ptf&&p.ptfShare>0){var ptfCount0=0;agentSet.forEach(function(a){if(a.inPTF)ptfCount0++;});ptfAdoptFrac=ptfCount0/Math.max(1,agentSet.length);}
   /* v4.15 parity fix — ported from index.html: PTH's inflation damping used to be the flat,
    * toggle-triggered `inflRate*=0.90` below — the same defect class the v4.14 PTF fix closed
@@ -4925,6 +5134,7 @@ function runYear(agentSet,yr,p,recSt){
   var dollarCost=CFG.BASE_DAILY_COST*365*Math.pow(1+inflRate,yr);
   if(PRICE)dollarCost*=PRICE.bIdx;  // session 2: endogenous basket index (price module only)
   var popShock=recSt.active?recSt.incomeMultiplier:1.0;
+  if(EMPL&&EMPL.rec==='replace'&&recSt.active)popShock=1-Math.max(0,(1-popShock)-(CFG.EMPL_P_REC*CFG.EMPL_W_REC-CFG.EMPL_P*CFG.EMPL_W)/52);  // v5.4 item 2: the recession's job loss is not counted twice
   var mlNT=0;  // v5.2 step 6: the share added to every worker's wage by spending that fills idle labour in a year without a recession
   var hcM=0;if(HCAP){if(yr===0||!HCS)HCS={m:0,hb:0,h:0,mSum:0};else{HCS.m=HCS.h>0?HCAP.c*HCS.hb/HCS.h:0;HCS.hb=0;HCS.h=0;}hcM=HCS.m;HCS.mSum+=hcM;}  // v5.2 step 7: this year's rent mark-up outside PTH, from last year's flows
   if(MULT&&TB&&p.tb){if(yr===0||!MLS)MLS={push:0,y:[]};var mlFill=0,mlLoss=0,mlRest=0;  // plan step 16: the spending layer (testbed only; no RNG)
@@ -4981,6 +5191,8 @@ function runYear(agentSet,yr,p,recSt){
   var agP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);  // v5.2 step 4: the price level the benefit moves with (read only when AGE is on)
   var svF=0;if(SAVE){var svP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);if(yr===0||!SVS)SVS={prevP:svP,intR:0,realR:0};else svF=(svP/SVS.prevP)*(1+SAVE.r)-1;var svPp=SVS.prevP;SVS.prevP=svP;}  // v5.2 step 3: savings that keep up with prices (no RNG)
   var tbY=(TB&&p.tb)?tbYear(p,colaF):null;  // session 6 (A4 testbed): null unless TB and p.tb are both set (harness-only; no RNG)
+  if(DIS&&DSS)disYear(agentSet,yr,agP);  // v5.4 item 5: who the disaster hits (and, later, who has recovered)
+  if(PTHB&&PBS&&p.pth)pthbYear(agentSet,yr,agP);  // v5.4 item 3: the year's price rise, PTH leavers and their homes' new members
   if(JOIN&&CONVERSION_MODEL==='framework'&&p.ccoOn){  /* plan step 4: open enrolment (no RNG) */
     if(yr===0||!JNS){JNS={y:[],join:0,leave:0};agentSet.forEach(function(a){a._jnY=0;});}
     var jnN=0,jnJ=0,jnL=0;
@@ -4988,7 +5200,7 @@ function runYear(agentSet,yr,p,recSt){
       buEss().forEach(function(k){jnE+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});if(PRICE)jnE/=PRICE.bIdx;  // v5.3 B3f: what BU can buy
       var jnF=CFG.BASKET.food*(PRICE?PRICE.comp.food/PRICE.bIdx:1),jnH=CFG.BASKET.housing*(PRICE?PRICE.comp.housing/PRICE.bIdx:1),jnRs=PTH_MODE!=='basket'||DISC_BASE!=='basket';
       agentSet.forEach(function(a){var jHH=HHON&&a._hh&&!a._hh.single,ef=jHH?a._hhE:jnE,u=1,jF=jHH?a._hhFd:jnF,jH=jHH?a._hhH:jnH,jM=jHH?jnM*a._hhF:jnM,jB=jHH?buEff*a._hhBU:buEff;if(a._ret&&AGE&&AGE.ret==='none'){a.inCCO=false;return;}/* v5.2 step 4: under 'none' a retiree is outside the programme */  /* v5.3 B3: a household member's share of the household's essentials and BU */
-        if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(jnRs)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*jF;}
+        if(p.ptf&&a.inPTF){if(PTFS){var jnC=1-ptfsCut(a,jHH,p,true);ef=ef*jnC;if(jnRs)u=jnC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(jnRs)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*jF;}
         if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*jH*u;else ef*=0.65;}
         var use=Math.min(12*jB,jM*ef),cost=JOIN.cost==='none'?0:12*p.bu*(typeof a.uCCO==='number'?a.uCCO:1)/Math.max(1e-9,p.partRate)*(JOIN.cost==='nominal'?1:jnIdx),want=p.bu>0&&use>=cost;
         if(a.inCCO&&!want&&yr-a._jnY>=JOIN.stay){a.inCCO=false;a._jnY=yr;jnL++;}
@@ -5101,7 +5313,7 @@ function runYear(agentSet,yr,p,recSt){
       var bp=p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief,isC=spCust==='all'||(spCust==='pp'&&((p.ccoOn&&a.inCCO)||(p.ptf&&a.inPTF)))||(spCust==='ptf'&&p.ptf&&a.inPTF)||(spCust==='part'&&p.ccoOn&&a.inCCO),e=0;
       var sHH=HHON&&a._hh&&!a._hh.single,sE=sHH?a._hhE:eShareCur,sF=sHH?a._hhFd:fShareCur,sH=sHH?a._hhH:hShareCur,sM=sHH?spMlc*a._hhF:spMlc;  // v5.3 B3: a household member's share of the household's essentials
       if(isC){var ef=sE,u=1;
-        if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(rsAlt)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*sF;}
+        if(p.ptf&&a.inPTF){if(PTFS){var spC=1-ptfsCut(a,sHH,p,true);ef=ef*spC;if(rsAlt)u=spC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(rsAlt)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*sF;}
         if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*sH*u;else ef*=0.65;}
         if(SURP_CUT_MARKUP&&bp&&HCAP&&HCS&&hcM>0&&!(p.pth&&a.inPTH))ef+=hcM*sH;  // v5.3 B2: the bill the cut is applied to (the agent loop adds hcX to a BU customer's essentials)
         e=sM*ef;if(SURP.bu==='cash'&&bp)e=Math.max(0,e-Math.min(12*(sHH?buEff*a._hhBU:buEff),e));}
@@ -5125,6 +5337,7 @@ function runYear(agentSet,yr,p,recSt){
   agentSet.forEach(function(a){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
     var HHA=HHON&&a._hh&&!a._hh.single,eSA=HHA?a._hhE:eShareCur,fSA=HHA?a._hhFd:fShareCur,hSA=HHA?a._hhH:hShareCur,buA=HHA?buEff*a._hhBU:buEff,dcA=HHA?dollarCost*a._hhD:dollarCost,HHP=HHPOOL&&HHA&&a._hh.a.length>1;tShA=HHA?a._hhT:tShareCur;if(HHON)a._hhPool=HHP;  // v5.3 B3: a household member's shares, BU and BLEI cost; HHP: a pooled couple (finished in hhPool)
+    var dsOn=!!(DIS&&DSS&&yr===DIS.yr&&a._disHit);if(dsOn&&p.ccoOn&&a.inCCO&&p.bu>0)buA*=1+DIS.emerg;  // v5.4 item 5: the emergency distribution
     if(svF!==0&&(a.wealth>0||(a.wealth<0&&SAVE.debt==='same'))){var svI=a.wealth*svF;a.wealth+=svI;if(ACCT)a._acI=svI;if(EDCS&&svI<0)a._edcIntP=-svI;SVS.intR+=svI/svP;SVS.realR+=a.wealth/(1+svF)*SAVE.r/svPp;if(LEDGER)ledAdd(yr,'saveInterest',svI);}  // v5.2 step 3
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
     var agentVar=0.90+RNG()*0.20,incomeShock=popShock*agentVar;
@@ -5140,8 +5353,8 @@ function runYear(agentSet,yr,p,recSt){
     if(AGE&&AGS&&a._ret){a._ssY=a._ssB0*agP;a.wage=a._ssY/12/CFG.WAGE_TO_USD;if(AGE.ret==='none')a.inCCO=false;}  // v5.2 step 4: a retiree's benefit, moved with prices; BLEI and the stability score read it as the monthly income
     if(GATE_CURRENT&&FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // audit V5-02: the framework BLEI gate reads THIS year's BU spend, not last year's (same expression as fwB0 below)
       var gEss=eSA;
-      if(p.ptf&&a.inPTF)gEss=PTF_MODE==='shipped'?gEss*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):gEss-PTF_FOOD_CUT[PTF_MODE]*fSA;
-      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')gEss-=PTH_HOUSING_CUT*hSA*(rsAlt&&p.ptf&&a.inPTF&&PTF_MODE==='shipped'?1-(p.szh?0.12+p.szhCoh*0.04:0.12):1);else gEss*=0.65;}
+      if(p.ptf&&a.inPTF)gEss=PTFS?gEss*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?gEss*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):gEss-PTF_FOOD_CUT[PTF_MODE]*fSA;
+      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')gEss-=PTH_HOUSING_CUT*hSA*(rsAlt&&p.ptf&&a.inPTF&&(PTFS||PTF_MODE==='shipped')?(PTFS?1-ptfsCut(a,HHA,p,true):1-(p.szh?0.12+p.szhCoh*0.04:0.12)):1);else gEss*=0.65;}
       var gCost=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);if(PRICE)gCost*=PRICE.bIdx;if(HHA)gCost*=a._hhF;
       a._fwBUm=Math.min(12*buA,gCost*gEss)/12;
     }
@@ -5157,7 +5370,7 @@ function runYear(agentSet,yr,p,recSt){
     if(p.cip)wg+=p.cipDemo*0.005;
     if(LABOR&&a._lwNB===undefined)a._lwNB=a.wage;  // session 4 (A3): the wage without program-induced raises
     if(PRICE){if(a._wNB===undefined)a._wNB=a.wage;if(PRICE.wIdx)wg+=PRICE.wIdx*PRICE.piG;}  // session 2: wage indexation to P_G (price module; 0 = nominal drift)
-    wg-=popAIDisp*((typeof a.automationRisk==='number'&&!isNaN(a.automationRisk))?a.automationRisk:0.5);  /* v4.17 parity: `||0.5` read a draw of exactly 0 as 0.5 */
+    if(!(EMPL&&EMPL.auto==='jobs'))wg-=popAIDisp*((typeof a.automationRisk==='number'&&!isNaN(a.automationRisk))?a.automationRisk:0.5);  /* v4.17 parity: `||0.5` read a draw of exactly 0 as 0.5 */
     a.wage=Math.max(a.wage*0.80,a.wage*(1+wg));
     if(isNaN(a.wage))a.wage=1;
     if(a._ret)a.wage=a._ssY/12/CFG.WAGE_TO_USD;  // v5.2 step 4: a retiree's income is the benefit (no wage growth)
@@ -5166,14 +5379,14 @@ function runYear(agentSet,yr,p,recSt){
     if(PRICE){var pmProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0)+bleiProg;a._wNB=Math.max(a._wNB*0.80,a._wNB*(1+wg-pmProg));}  // N7: the wage without program-induced raises
     var cf=1.0,rsPtfU=1,rsRel=1;
     if(!rsAlt){
-    if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped')cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));else cf*=(1-PTF_FOOD_CUT[PTF_MODE]*fSA);}  // session 2: PTF_MODE (D4); 'shipped' is index.html
+    if(p.ptf&&a.inPTF){if(PTFS)cf*=1-ptfsCut(a,HHA,p);else if(PTF_MODE==='shipped')cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));else cf*=(1-PTF_FOOD_CUT[PTF_MODE]*fSA);}  // session 2: PTF_MODE (D4); 'shipped' is index.html
     var cfPTF=cf;  // A1 ledger (reporting only)
     if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost)cf*=0.65;  // v4.21: harness-only pathway switch
     var cfPreCCO=cf;  // A1 ledger (reporting only)
     if(p.ccoOn&&a.inCCO&&p.bu>0){if(!PATHWAY_OFF.relief&&!FWON)cf*=ccoReliefF;}  // v4.19: was a flat 0.80 (see ccoReliefF). v4.21: pathway switch
     else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf*=ccoReliefF;emergN++;}  // v4.19: emergency enrollment
     } else {  // session 5 (d4/d5): the same chain with PTH_MODE and DISC_BASE (harness-only)
-    if(p.ptf&&a.inPTF){if(PTF_MODE==='shipped'){rsPtfU=1-(p.szh?0.12+p.szhCoh*0.04:0.12);cf=discMul(cf,rsPtfU);}else cf-=PTF_FOOD_CUT[PTF_MODE]*fSA;}
+    if(p.ptf&&a.inPTF){if(PTFS){rsPtfU=1-ptfsCut(a,HHA,p);cf=discMul(cf,rsPtfU);}else if(PTF_MODE==='shipped'){rsPtfU=1-(p.szh?0.12+p.szhCoh*0.04:0.12);cf=discMul(cf,rsPtfU);}else cf-=PTF_FOOD_CUT[PTF_MODE]*fSA;}
     var cfPTF=cf;
     if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')cf-=PTH_HOUSING_CUT*hSA*rsPtfU;else cf=discMul(cf,0.65);}
     var cfPreCCO=cf;
@@ -5188,7 +5401,7 @@ function runYear(agentSet,yr,p,recSt){
     if(EDCS){a._edcR=(p.pth&&a.inPTH)?0:mainLoopCostUSD*(hSA+hcX);a._edcInt=a._edcIntP||0;a._edcIntP=0;}  // v5.3 B6: rent to a landlord (housing with utilities, MIT; PTH payments are not extractive: the glossary's EDC = 0) and interest on debt
     if(FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // session 2, N3/N4: BU buy essentials at the agent's own prices, up to 12 x BU a year
       var essF=eSA;
-      if(p.ptf&&a.inPTF)essF=PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fSA;
+      if(p.ptf&&a.inPTF)essF=PTFS?essF*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fSA;
       if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')essF-=PTH_HOUSING_CUT*hSA*rsPtfU;else essF*=0.65;}  // session 5 (d4)
       if(hcX>0)essF+=hcX;  // v5.2 step 7: BU pay the marked-up rent
       var fwBudget=12*buA,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),spC=0,fwB0=fwB;if(tbY)TB.cur.buIss+=fwBudget;if(EDCS)a._edcBU=fwBudget;  // plan step 3: BU the Source issues (reporting)
@@ -5208,7 +5421,10 @@ function runYear(agentSet,yr,p,recSt){
       if(ACCT){a._acBi=fwBudget;a._acBs=fwB;a._acBk+=PJON?fwLeft*(1-PROJ.share):fwLeft*(1-FW.directedShare);}  // v5.3 B2: issued, spent, and the expired BU not directed (destroyed)
     } else if(SPON&&a._spE>0&&spDelta>0){var spC2=spDelta*a._spE;cf-=spC2/mainLoopCostUSD;a._spCutY=spC2;SPS.y[yr].cut+=spC2;SPS.acc.cut+=spC2/spIdx;SPS.acc.cash+=spC2/spIdx;if(!a.inCCO)SPS.acc.cutN+=spC2/spIdx;else SPS.acc.cutP+=spC2/spIdx;}  // plan step 1: a customer without BU saves the cut in cash
     if(hcX>0&&!hcDone)cf+=hcX;  // v5.2 step 7: without BU the higher rent is paid in cash
-    var annualWageUSD=a._ret?0:a.wage*12*CFG.WAGE_TO_USD*incomeShock*(1+mlNT);  // v5.2 step 4: a retiree earns no wage  // v5.2 step 6: mlNT = 0 unless the spending layer fills normal-times slack
+    var emQ=null;if(EMPL&&EMS){var emU=[EMS.r(),EMS.r(),EMS.r(),EMS.r(),EMS.r(),EMS.r()];if(!a._ret)emQ=emplYear(a,recSt.active,popAIDisp,emU,a.wage*12*CFG.WAGE_TO_USD*incomeShock/52);}  // v5.4 item 2: job loss (own stream, six draws whatever the state)
+    var annualWageUSD=a._ret?0:a.wage*12*CFG.WAGE_TO_USD*incomeShock*(1+mlNT);
+    if(emQ)annualWageUSD*=1-emQ.out;
+    if(dsOn)annualWageUSD*=1-Math.min(52,DIS.weeks)/52;  // v5.4 item 5: weeks of work lost to the disaster  // v5.2 step 4: a retiree earns no wage  // v5.2 step 6: mlNT = 0 unless the spending layer fills normal-times slack
     var tbG=0,tbPT=0;if(tbY&&COST&&p.ptf&&a.inPTF){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
     if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fSA+(p.tb.groc.housing?hSA:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
     if(LABOR){  // session 4 (A3): the labor-supply response replaces this year's wage earnings (no RNG)
@@ -5221,6 +5437,7 @@ function runYear(agentSet,yr,p,recSt){
       var tbQ=tbY?tbLab(a,tbY,lbE0,tbPT+tbG+(SPON?a._spCutY:0)):null;if(tbQ)lbRaise*=tbQ.F;  // session 6: phase-out and contribution rates (one elasticity), extra unconditional dollars (one income effect)
       var lbInc=LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC+(tbQ?LABOR.rho*tbQ.V:0),lbDisp=LABOR.delta*lbC+(tbQ?tbQ.D:0);
       if(SPON&&a._spOwn>0){lbInc+=LABOR.rho*a._spOwn;if(LABOR.acc)LABOR.acc.cash+=LABOR.rho*a._spOwn;}  // plan step 1: owners' dollars are unconditional (one income effect)
+      if(emQ){lbInc*=1-emQ.out;lbDisp*=1-emQ.out;}  // v5.4 item 2: the hours response applies to the part of the year at work
       annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=lbE0;  // session 8 (A5): earnings with no response, for the hours measure
       if(tbQ&&LABOR.acc)LABOR.acc.cash+=LABOR.rho*tbQ.V;
       if(LABOR.acc){var LA=LABOR.acc;LA.n++;if(a.inCCO)LA.nP++;LA.E0+=lbE0;LA.E+=annualWageUSD;LA.raise+=lbE0*(lbRaise-1);LA.cash+=LABOR.rho*lbU;LA.bu+=LABOR.rhoBU*lbBU;LA.buR+=LABOR.rhoR*lbR;
@@ -5232,13 +5449,16 @@ function runYear(agentSet,yr,p,recSt){
     if(tbG)cf-=tbG/mainLoopCostUSD;  // session 6: public grocery (applied after the labor block reads the CCO relief)
     var costUSD=mainLoopCostUSD*cf;
     a.wealth+=annualWageUSD-costUSD;
-    if(SPEND_GRADE){var grA=annualWageUSD+(a._ret?a._ssY:0)+(p.ubi>0?p.ubi:0);a._grCut=0;if(HHP){a._grA=grA;a._grC=costUSD;}else if(costUSD>0&&grA<costUSD){a._grCut=costUSD-costUSD*Math.pow(Math.max(0,grA)/costUSD,SPEND_GRADE.eps);a.wealth+=a._grCut;if(ACCT)a._acGr=a._grCut;}}  // v5.3 B7: less income, less spending (off by default)
+    if(SPEND_GRADE){var grA=annualWageUSD+(a._ret?a._ssY:0)+(p.ubi>0?p.ubi:0)+(emQ?emQ.ui:0);a._grCut=0;if(HHP){a._grA=grA;a._grC=costUSD;}else if(costUSD>0&&grA<costUSD){a._grCut=costUSD-costUSD*Math.pow(Math.max(0,grA)/costUSD,SPEND_GRADE.eps);a.wealth+=a._grCut;if(ACCT)a._acGr=a._grCut;}}  // v5.3 B7: less income, less spending (off by default)
     a.yrSSUSD=a._ret?a._ssY:0;if(a._ret){a.wealth+=a._ssY;if(LEDGER)ledAdd(yr,'ssBenefit',a._ssY);}  // v5.2 step 4: the Social Security benefit (money income)
     if(SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='wage'&&!HHP)a.wealth-=SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD);  // v4.21: harness-only (saving mode)
     if(ACCT&&SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='wage'&&!HHP)a._acSc+=SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD);  // v5.3 B2
     if(HHP)a._hhWS=annualWageUSD-costUSD;  // v5.3 B3: a pooled couple's spending rule is applied to the couple (hhPool)
-    if(p.ubi>0){a.wealth+=p.ubi;a.yrUbiUSD=p.ubi;if(ACCT)a._acU=p.ubi;}  // session 4: UBI comparator (harness-only; unset in every preset)
-    var yrCashSurplus=annualWageUSD-costUSD+(p.ubi>0?p.ubi:0)+(a._ret?a._ssY:0);  // v5.2 step 4: + the benefit  // session 1: for SURPLUS_CONSUMPTION_BASE 'cash' (harness-only; no RNG)
+    if(p.ubi>0){a.wealth+=p.ubi;a.yrUbiUSD=p.ubi;if(ACCT)a._acU=p.ubi;}
+    if(EMPL){var emUI=emQ?emQ.ui:0;a.yrUbiUSD=(p.ubi>0?p.ubi:0)+emUI;if(emUI>0){a.wealth+=emUI;if(ACCT)a._acU=(p.ubi>0?p.ubi:0)+emUI;}}  // v5.4 item 2: unemployment insurance (cash, like the UBI comparator's)
+    if(dsOn){var dsP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1),dsD=((a._disAid?CFG.DIS_AID:0)-DIS.loss)*dsP/a._disN;a.wealth+=dsD;if(ACCT)a._acU=(a._acU||0)+dsD;}  // v5.4 item 5: the damage and federal aid (both runs)  // session 4: UBI comparator (harness-only; unset in every preset)
+    var yrCashSurplus=annualWageUSD-costUSD+(p.ubi>0?p.ubi:0)+(a._ret?a._ssY:0);
+    if(emQ&&emQ.ui>0)yrCashSurplus+=emQ.ui;  // v5.4 item 2  // v5.2 step 4: + the benefit  // session 1: for SURPLUS_CONSUMPTION_BASE 'cash' (harness-only; no RNG)
     if(tbY){var tbK=tbCashFlow(a,tbY,annualWageUSD,yr);a.wealth+=tbK.net+tbK.endow;yrCashSurplus+=tbK.net;if(ACCT)a._acT=tbK.net+tbK.endow;}  // session 6: cash transfers less the contribution; an endowment is wealth, not consumable surplus
     if(LEDGER){  // A1 ledger (reporting only): no RNG, no state read by any dynamic
       ledAdd(yr,'agentYears',1);if(a.inCCO)ledAdd(yr,'partYears',1);
@@ -5361,10 +5581,17 @@ function runYear(agentSet,yr,p,recSt){
       if(rsAlt)pthSaving=Math.max(0,dcA*(cfPTF-cfPreCCO)*rsRel);  // session 5 (d4/d5): PTH's own cut on the post-relief basket
       var equityContrib=pthSaving*CFG.PTH_EQUITY_CONTRIB_SHARE;
       a.acreEquity+=equityContrib;a.wealth-=equityContrib;yrCashSurplus-=equityContrib;  // session 1: equity routing is not discretionary cash
-      var ar=0.030+uPthAppr*0.020+pthApprBonus;var appr=a.acreEquity*ar,lqs=pthLiquidShare(a.pthTenure);a.acreEquity+=PTH_APPR_CONSERVE?appr*(1-lqs):appr;a.wealth+=appr*lqs;yrCashSurplus+=appr*lqs;  /* v4.16: PTH_APPR_CONSERVE=false is bit-identical to index.html */
+      var ar=0.030+uPthAppr*0.020+pthApprBonus;var pbS=PTHB&&PBS?a._pbS:null,pbV0=0,pbVn=0;if(pbS){if(!pbS.V){pbS.V=CFG.PTHB_PR*hSA*dcA;pbS.D=pbS.V-(a.acreEquity-equityContrib);}pbV0=pbS.V;pbVn=pbV0*(1+PBS.pi)*(1+CFG.PTHB_G);if(PTHB.cap==='hub')ar=Math.min(pbVn/pbV0-1,PBS.pi+0.02);}  // v5.4 item 3: Acre Equity grows with the home, at most at the price rise + 2%
+      var appr=a.acreEquity*ar,lqs=pthLiquidShare(a.pthTenure);
+      if(pbS)lqs*=appr>0?Math.max(0,appr-PBS.pi*a.acreEquity)/appr:0;  // v5.4 item 3: only the gain above the price rise is paid out in cash; what keeps up with prices stays as equity
+      a.acreEquity+=PTH_APPR_CONSERVE?appr*(1-lqs):appr;a.wealth+=appr*lqs;yrCashSurplus+=appr*lqs;  /* v4.16: PTH_APPR_CONSERVE=false is bit-identical to index.html */
       if(tbY)a._tbPthNow=appr*lqs;  // session 6
       if(LEDGER){ledAdd(yr,'pthEquityContrib',equityContrib);ledAdd(yr,'pthAppr',appr);ledAdd(yr,'pthApprLiquid',appr*lqs);}  // A1 ledger
       if(ACCT){a._acPc=equityContrib;a._acPa=appr;a._acPl=appr*lqs;}  // v5.3 B2
+      if(pbS){var pbR=hSA*dcA,pbI=((1+CFG.PTHB_RREAL)*(1+PBS.pi)-1)*pbS.D,pbU=CFG.PTHB_UPK*(1-CFG.PTHB_LAND)*pbV0,pbT=CFG.PTHB_TAX*pbV0,pbL=appr*lqs;  // v5.4 item 3: the trust's books for this home
+        pbS.D-=pbR+equityContrib-pbI-pbU-pbT-pbL;pbS.CE+=(pbVn-pbV0)+pbR-pbI-pbU-pbT-appr;pbS.V=pbVn;
+        PBS.n++;if(pbR+equityContrib>=pbI-PBS.pi*(pbS.D+pbR+equityContrib-pbI-pbU-pbT-pbL)+pbU+pbT+pbL)PBS.cover++;PBS.aP+=pbV0*PBS.pi/PBS.P;PBS.aR+=pbV0*(1+PBS.pi)*CFG.PTHB_G/PBS.P;PBS.aC+=(pbVn-pbV0-appr)/PBS.P;
+        if(ACCT)acctChk('pth-books',yr,(pbS.V-pbS.D)-a.acreEquity-pbS.CE,pbS.V,a._id!==undefined?a._id:null);}
       if(PRICE)PRICE.acc.pthLiq+=appr*lqs;  // session 2: price module
     } else if(a.pthTenure){
       a.pthTenure=0;
@@ -5605,6 +5832,10 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var spec = p.tb || {}, gR = mulberry32(seed + 900001), grp = o.grp || {part:0, pth:0};
   var wq = latent.map(function(l){ return l.wage; }).sort(function(x, y){ return x - y; }), w1 = wq[Math.floor(wq.length/3)], w2 = wq[Math.floor(2*wq.length/3)];
   agents.forEach(function(a, i){ var l = latent[i]; a._tbU = gR(); a._tbEl = !!(spec.endow && l.wealth < spec.endow.thresh); a._tbPart = l.uCCO < grp.part; a._tbPTH = l.uPTH < grp.pth; a._tbLow = l.wage < w1; a._tbTop = l.wage >= w2; });
+  if (EMPL) emplInit(agents, seed); else EMS = null;
+  if (PTHB && p.pth) pthbInit(agents, latent, seed); else PBS = null;
+  if (DIS) DSS = {r:mulberry32(seed + 600053), hit:0, n:0, list:[], ctl:[]}; else DSS = null;  /* v5.4 item 5 */
+  if (PTFS && p.ptf) PFS = {r:mulberry32(seed + 600047), cut:0, cn:0, leave:0, mem:0, yrs:0, dens:1}; else PFS = null;  /* v5.4 item 4 */  /* v5.4 item 3: the PTH trust's books */  /* v5.4 item 2: job loss, on its own stream */
   if (HOUSEHOLDS) hhInit(agents, seed); else HHS = null;  /* v5.3 B3: households drawn once, on their own stream (no draw on the main or construction streams) */
   if (HOUSEHOLDS && HOUSEHOLDS.wealth === 'scf' && spec.endow) agents.forEach(function(a){ a._tbEl = a.wealth < spec.endow.thresh; });  /* v5.3 B7: an endowment's test reads the household's starting wealth */
   var RHH = HOUSEHOLDS && HHS ? hhRepAcc() : null;  /* v5.3 B3: the household reading's measures (reporting only) */
@@ -5709,7 +5940,11 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var bI = path[T-1].bIdx, mx = 0, tauS = 0;
   for (var t = 1; t < T; t++) mx = Math.max(mx, path[t].bIdx/path[t-1].bIdx - 1);
   path.forEach(function(q){ tauS += q.tau; });
-  return {path:path, res:fbsRes(FBSS, edcRes(EDCS, hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
+  var emR = EMPL && EMS ? emplRes({}) : null;  /* v5.4 item 2 */
+  if (PTHB) emR = pthbRes(emR || {});
+  if (PTFS) emR = ptfsRes(emR || {});  /* v5.4 item 4 */
+  if (DIS) emR = disRes(emR || {});  /* v5.4 item 5 */  /* v5.4 item 3 (zeros in the no-programme run) */
+  return {path:path, res:Object.assign(fbsRes(FBSS, edcRes(EDCS, hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
     endoAnn:Math.pow(bI, 1/(T - 1)) - 1, endoMax:mx, pov:pov/n*100, bleiPov:bpov/n*100, nbleiPov:nbpov/n*100, tgt:L.pd > 0 ? L.tgt/L.pd : 0, medWealthReal:medianOf(agents.map(function(a){ return a.wealth; }))/full,
     fgt0:g0/n*100, fgt1:g1/n*100, fgt2:g2/n*100, fgt0PY:L.f0/L.n*100, fgt1PY:L.f1/L.n*100, fgt2PY:L.f2/L.n*100,
     cost:L.cost/NY, cCash:L.cash/NY, cEndow:L.endow/NY, cBU:L.bu/NY, cConv:L.conv/NY, cCut:(L.cutPT + L.cutG)/NY, cCap:L.cap/NY, cPth:L.pth/NY,
@@ -5751,7 +5986,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     agDeaths:AGE && AGS ? AGS.deaths/NY*1000 : 0, agBorn:AGE && AGS ? AGS.born/n*100 : 0, svInt:SAVE && SVS ? SVS.intR/NY : 0, svIntR:SAVE && SVS ? SVS.realR/NY : 0,
     bkA:L.bkP > 0 ? (1 - L.bkU/L.bkP)*100 : 0, bkPY:L.bkY > 0 ? L.bkP/L.bkY*100 : 0, mlNT:L.ntR/NY,
     hcM:HCAP && HCS ? HCS.mSum/T*100 : 0, rvX:REVS ? REVS.x/NY : 0, rvC:REVS ? REVS.c/NY : 0, taxAvg:L.Er > 0 ? L.tax/L.Er*100 : 0,  /* v5.2 step 7: mean rent mark-up outside PTH (%), unearned pay not caught and pay clawed back by audits (year-0 $ per adult-year), the contribution as a share of wages (%) */  /* v5.2 step 6: the share of the Source's net payout backed by output (%), that payout as a share of earned income (%), and wages added by filling normal-times slack (year-0 $ per adult-year) */
-    octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)})))))};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
+    octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)}))))), emR || {})};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
 }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
@@ -5799,13 +6034,19 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var sg0 = SPEND_GRADE; if (c.sg) SPEND_GRADE = {eps:typeof c.sg === 'number' ? c.sg : CFG.CE_SPEND_ELAST};  /* v5.3 B7: income-graded spending for this row (no programme rows too) */
       var fb0 = FBS50; if (c.fb) FBS50 = Object.assign({dist:'lambda', scale:1}, c.fb === true ? {} : c.fb);  /* v5.3 B7: FBS50 for this row */
       var hh0 = HOUSEHOLDS; if (c.hh) HOUSEHOLDS = Object.assign({}, HH_DEFAULTS, c.hh === true ? {} : c.hh);  /* v5.3 B3: households for this row ({} = the defaults) */
+      var v540 = tbSetV54(c.v54);  /* v5.4: the round's switches for this row */
       var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0, wmed:c.lt.m ? CFG.SCF_WAGE_MEDIAN : 0};  /* v5.2 step 5: {w, r, s, m} flags */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS || SPEND_GRADE ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
+        if (r.dsHit !== undefined) DIS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 5 */
+        if (r.pfCut !== undefined) PTFS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 4 */
+        if (r.pbV !== undefined) PTHB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 3 */
+        if (r.emUrate !== undefined) EMPL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 2 */
+        if (r.rkEv !== undefined) RISK_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 1 */
         if (r.edcM !== undefined) EDC_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B6 */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; FBS50 = fb0; FBSS = null; } });
+      finally { tbResetV54(v540); CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; FBS50 = fb0; FBSS = null; } });
   }
   return out;
 }
@@ -5898,6 +6139,7 @@ function n1Row(PR, cm, v){
   if (v.drop) v.drop.forEach(function(k){ delete c[k]; });  /* v5.3 B9: a part of the design removed (a module's row option: pj, es, sp, pd, jn, ml, cs) */
   if (v.pset) Object.assign(c.p, v.pset);  /* v5.3 B9: a part of the preset switched off (ptf, pth, szh, cip) */
   if (v.pwOff) c.pw = Object.assign({}, c.pw || {}, v.pwOff);  /* v5.3 B9: a pathway closed (relief, conversion, octave) */
+  if (v.v54) c.v54 = v.v54;  /* v5.4 step 9: the round's switches (REL_V54) */
   return c;
 }
 /* Audit F3 (v5.1): the q-quantile (0 <= q <= 1) of an array of numbers by linear interpolation between order statistics (the default of numpy.percentile). The input is

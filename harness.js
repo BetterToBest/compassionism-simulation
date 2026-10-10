@@ -1674,7 +1674,7 @@ function avoidWideUnitSuite(){
 function pageConstants(){ return {_about:'Written by node harness.js constants (v5.2.2, audit A3); read by dev/tools/release_data.py. Each value is CFG.<name> in harness.js and index.html.',
   POVERTY_LINE:CFG.POVERTY_LINE, POVERTY_THRESHOLD_ONE:CFG.POVERTY_THRESHOLD_ONE, BLEI_PRECARIOUS_MAX:CFG.BLEI_PRECARIOUS_MAX}; }
 Object.assign(module.exports, { pageConstants });
-Object.assign(module.exports, { fedTax, progLam, avoidWideUnitSuite, REL_V5, REL_V53, relMainCfgs, releaseRowsV53, releaseBasesV53, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, releaseBases, matrixUnitSuite, docCounts, v52UnitSuite, REL_V52_STUDY, setRepHook:function(f){ REP_HOOK = f; }, latentAdjust, normCdf, normInv, autoRiskCdf, autoRiskInv, scfWealthQ, TB_REP_SPELL, setLatent:function(x){ LATENT = x; }, tbRepYear, giniOfArrNeg, TB_REP_KEYS, TB_REP_SNAP });
+Object.assign(module.exports, { fedTax, progLam, avoidWideUnitSuite, REL_V5, REL_V53, REL_V54, relMainCfgs, releaseRowsV53, releaseBasesV53, releaseRowsV54, releaseBasesV54, rel54Keys, avoidWide, AVOID_WIDE, MULT_DEFAULTS, gateUnitSuite, quantileOf, reportUnitSuite, runManifest, pageEngineBlock, sha256Of, releaseRows, releaseBases, matrixUnitSuite, docCounts, v52UnitSuite, REL_V52_STUDY, setRepHook:function(f){ REP_HOOK = f; }, latentAdjust, normCdf, normInv, autoRiskCdf, autoRiskInv, scfWealthQ, TB_REP_SPELL, setLatent:function(x){ LATENT = x; }, tbRepYear, giniOfArrNeg, TB_REP_KEYS, TB_REP_SNAP });
 
 /* The eleven readings of the release panel (v5.0's main row, H1 and the nine others), as plain row options for n1Row. Top-level so the release section of `testbed` and
  * domtest's page-versus-harness parity check build the same rows (v5.1, audit V5-04). SC is the spending share (SPEND_SOURCED). Pure data: no engine state is read. */
@@ -1848,6 +1848,45 @@ function releaseRowsV53(SC){
     {l:'  without the production side (no new capacity or creative output counted as backing)', v:W({pd:null}), k:'a', vs:'main', j:'xProd'},
     {l:'  without octave advancement', v:W({pwOff:{octave:true}}), k:'a', vs:'main', j:'xOct'}];
 }
+/* v5.4 step 9 (Oct 7, 2026; dev/DECISIONS.md Session 41): the v5.4 release panel. The main row and its no-programme run are v5.3's with the round's parts
+ * (REL_V54: risk measures, job loss and re-employment with UI in both runs, PTH's books, PTF by sector with leaving), as recorded before the 500-run restudy
+ * (dev/reports/v5-22-v54-report.md). Every v5.3 reading (and every no-programme pair) carries them too; beside them, v5.3's main row exactly (paired with v5.3's
+ * own no-programme run) and the round's main alternatives: no pay cut on return, a 20% cut, automation as a pay drag, the earlier Acre Equity rule, PTF's other
+ * sectors at 25%, and the disaster (each with its own no-programme run where it changes that run: job loss and the disaster do, PTH and PTF do not).
+ * `node harness.js testbed 500 release ENV --v54 --json=...` */
+var V54_MAIN = REL_V54.v54;
+function v54With(x){ return {rk:true, empl:Object.assign({}, x.empl || {}), pthb:Object.assign({}, x.pthb || {}), ptfs:Object.assign({}, x.ptfs || {}), dis:x.dis}; }
+function releaseBasesV54(SC){
+  var B = function(x){ return Object.assign({sc:SC, hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true, v54:V54_MAIN}, x); };
+  return releaseBasesV53(SC).map(function(b){ return {l:b.l, v:Object.assign({}, b.v, {v54:V54_MAIN}), j:b.j}; }).concat([
+    {l:'[reference] no programme, v5.3\'s: no job loss and re-employment (the risk measures still reported)', v:B({v54:{rk:true}}), j:'b53'},
+    {l:'[reference] no programme, no pay cut on return to work', v:B({v54:v54With({empl:{cut:0}})}), j:'bcut0'},
+    {l:'[reference] no programme, a 20% pay cut on return to work', v:B({v54:v54With({empl:{cut:0.20}})}), j:'bcut20'},
+    {l:'[reference] no programme, automation as a lasting pay drag instead of job loss', v:B({v54:v54With({empl:{auto:'pay'}})}), j:'bautopay'},
+    {l:'[reference] no programme, a disaster in Year 7', v:B({v54:v54With({dis:{}})}), j:'bdis'}]);
+}
+function releaseRowsV54(SC){
+  var R = releaseRowsV53(SC).map(function(r){ var o = Object.assign({}, r, {v:Object.assign({}, r.v, {v54:V54_MAIN})}); if (r.j === 'release') o.l = 'RELEASE (v5.4): Compassionism with every mechanism, paid for by the Source; households and children; job loss and re-employment, PTH\'s books, PTF by sector'; return o; }),
+    main = R.filter(function(r){ return r.j === 'release'; })[0].v, W = function(x){ return Object.assign({}, main, x); }, at = 0;
+  R.forEach(function(r, i){ if (r.j === 'release') at = i + 1; });
+  return R.slice(0, at).concat([
+    /* v5.4's own readings (first after the main row) */
+    {l:'  v5.3\'s main row: no job loss and re-employment, PTH and PTF as in v5.3 (the risk measures still reported)', v:W({v54:{rk:true}}), k:'s', vs:'main', j:'v53', bk:'b53'},
+    {l:'  no pay cut on return to work (people find work at their old pay)', v:W({v54:v54With({empl:{cut:0}})}), k:'s', vs:'main', j:'cut0', bk:'bcut0'},
+    {l:'  a 20% pay cut on return to work (the design value is 10%)', v:W({v54:v54With({empl:{cut:0.20}})}), k:'s', vs:'main', j:'cut20', bk:'bcut20'},
+    {l:'  automation as a lasting pay drag instead of job loss (the earlier rule)', v:W({v54:v54With({empl:{auto:'pay'}})}), k:'s', vs:'main', j:'autopay', bk:'bautopay'},
+    {l:'  Acre Equity growing by the earlier 3-5% rule instead of the price rise + 2%', v:W({v54:v54With({pthb:{cap:'old'}})}), k:'s', vs:'main', j:'pthbold'},
+    {l:'  PTF cutting prices 25% in transport, health care and childcare (no Hub figure; the main row assumes no cut there)', v:W({v54:v54With({ptfs:{other:0.25}})}), k:'s', vs:'main', j:'ptfs25'},
+    {l:'  a disaster in Year 7: a quarter of households lose $10,000 of property and four weeks of work (FEMA data; a scenario, not a model part)', v:W({v54:v54With({dis:{}})}), k:'s', vs:'main', j:'dis', bk:'bdis'}], R.slice(at));
+}
+/* The v5.4 panel's extra figures for one row (or a no-programme row, b null): the risk measures, job loss (with and without the programme: UI in both),
+ * PTH's books and PTF's cut (programme rows), the disaster's recovery; and, against the row's pair, the paired change with a 95% interval for the risk
+ * measures the page shows. Absent keys are left out. */
+function rel54Keys(r, b){
+  var o = {}, K = RISK_KEYS.concat(EMPL_KEYS, PTHB_KEYS, PTFS_KEYS, DIS_KEYS), D = ['rkDdW', 'rkDdW6', 'rkDdB30', 'rkEv', 'rkRec3', 'rkRecB3', 'rkReC5', 'emUrate'];
+  K.forEach(function(k){ if (typeof r[k] === 'number' && isFinite(r[k])) o[k] = +r[k].toFixed(3); });
+  if (b) { o.d54 = {}; D.forEach(function(k){ if (r._s && r._s[k] && b._s && b._s[k]){ var x = tbDiff(r, b, k); if (isFinite(x.m)) o.d54[k] = [+x.m.toFixed(3), +x.lo.toFixed(3), +x.hi.toFixed(3)]; } }); }
+  return o; }
 /* Audit E6 (v5.1): the test counts quoted in README.md and CONTRIBUTING.md are written between <!-- count:KIND -->...<!-- /count --> markers (KIND = unit or domtest) and checked by the tests
  * themselves, so they cannot drift: docCounts(kind, n) lists the quoted numbers and which are stale; with write = true it rewrites them. `node harness.js unit --write-counts` and
  * `node domtest.js --write-counts` refresh them. Reporting only: nothing in the engine calls it. */
@@ -2373,6 +2412,83 @@ function hhUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { hhUnitSuite, hhInit, hhNeed, setHouseholds:function(x){ HOUSEHOLDS = x; }, HH_DEFAULTS, HH_KEYS, HH_LIFE_KEYS, setHHTrace:function(x){ HH_TRACE = x; }, EDC_KEYS, setEdcMeasure:function(x){ EDC_MEASURE = !!x; }, FBS_KEYS });
+/* v5.4 (Oct 7, 2026; dev/reports/v5-21-v54-design.md): the round's unit tests. Harness-only. */
+function v54UnitSuite(){
+  var out = [];
+  function t(name, fn){ try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } }
+  function near(x, y){ return Math.abs(x - y) < 1e-9; }
+  t('risk: drawdown is the largest fall from an earlier peak', function(){ var a = rkDraw([1, 3, 2, 5, 1, 4]), b = rkDraw([1, 2, 3]), c = rkDraw([-5, -9, 0, -2]);
+    return {pass:a === 4 && b === 0 && c === 4, detail:a + ' ' + b + ' ' + c}; });
+  t('risk: re-entry within k years counts each exit once, over exits with k years observed', function(){
+    var H = [{c:[1, 0, 1, 0, 0, 0, 0]}, {c:[1, 0, 0, 0, 1, 0, 0]}, {c:[0, 0, 0, 0, 0, 0, 0]}], r = rkReentry(H, 'c', [1, 3]);
+    /* exits: person 1 at years 1 and 3, person 2 at years 1 and 5. k=1: exits with e+1<7: all four; re-entered next year: person 1's first. k=3: exits with e+3<7: 1, 3 (p1), 1 (p2); re-entered: p1 year 1 (by 2), p2 year 1 (by 4) */
+    return {pass:near(r[0], 25) && near(r[1], 200/3), detail:r.join(', ')}; });
+  t('risk: income shocks and recovery', function(){ var o = {}, w = [0, 0, 0, 0, 0, 0];
+    tbRiskRes([{w:w, b:[60, 20, 30, 60, 60, 60], y:[100, 70, 90, 100, 100, 100], c:[0, 0, 0, 0, 0, 0], f:[0, 0, 0, 0, 0, 0]}], o);
+    /* one shock at year 1 (70 < 80), income back at year 3 (2 years), BLEI back at year 3 */
+    return {pass:near(o.rkEv, 100/6) && o.rkRec1 === 0 && o.rkRec3 === 100 && o.rkRec5 === 0 && o.rkRecM === 2 && o.rkRecB3 === 100 && near(o.rkDdB, 40), detail:JSON.stringify(o)}; });
+  t('risk: reporting only (the switch changes no result of the run)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G);
+    try { var M = relMainCfgs(PR, true), C = [M[0], M[1], Object.assign({}, M[0], {v54:{rk:true}}), Object.assign({}, M[1], {v54:{rk:true}})].map(function(c, i){ return i % 2 ? c : Object.assign(c, {sc:SPEND_SOURCED}); });
+      var R = tbStudy(C, 2, P, Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY)), bad = [];
+      TB_KEYS.forEach(function(k){ if (R[0][k] !== R[2][k] && !(isNaN(R[0][k]) && isNaN(R[2][k]))) bad.push('base ' + k); if (R[1][k] !== R[3][k] && !(isNaN(R[1][k]) && isNaN(R[3][k]))) bad.push('prog ' + k); });
+      return {pass:bad.length === 0 && R[3].rkEv !== undefined && R[1].rkEv === undefined && RISK_MEASURE === false, detail:bad.slice(0, 5).join(', ')}; }
+    finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; } });
+  function v54Study(env, rows, seeds, nA){  /* the v5.3 main row and its no-programme run per v54 option set, as dev/tools/v54_check.js runs them */
+    var P = Object.assign({}, {ref:FULL_INTEGRATION, adv:ADVERSE_REFERENCE, st:STRESS_TEST}[env], nA ? {nAgents:nA} : {}), PR = tbPresets(P), cfg = [];
+    rows.forEach(function(o){ var M = relMainCfgs(PR, true); cfg.push(Object.assign(M[0], {sc:SPEND_SOURCED}, o ? {v54:o} : {}), Object.assign(M[1], o ? {v54:o} : {})); });
+    return acctProfile(function(){ return tbStudy(cfg, seeds, P, Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY)); }); }
+  function same(A, B){ var bad = []; TB_KEYS.forEach(function(k){ if (A[k] !== B[k] && !(isNaN(A[k]) && isNaN(B[k]))) bad.push(k); }); return bad; }
+  t('job loss: the spell-length draw inverts the CPS survival curve (2.5 weeks at least; 9.5 and 20.5 weeks at their measured shares; longer as the draw falls)', function(){
+    var s = CFG.EMPL_S.n, a = emplWeeks(1, false), b = emplWeeks(s[0], false), c = emplWeeks(s[1], false), d = emplWeeks(s[1]*Math.exp(-1), false), e = emplWeeks(0.3, true) > emplWeeks(0.3, false);
+    return {pass:near(a, 2.5) && near(b, 9.5) && near(c, 20.5) && near(d, 20.5 + s[2]) && e, detail:[a, b, c, d].map(function(x){ return x.toFixed(3); }).join(', ')}; });
+  t('job loss: with no chance of losing a job, no pay cut and no insurance, every result is the run without the switch (Reference: no recessions, no automation)', function(){
+    var p0 = CFG.EMPL_P, p1 = CFG.EMPL_P_REC; CFG.EMPL_P = 0; CFG.EMPL_P_REC = 0;
+    try { var R = v54Study('ref', [null, {empl:{cut:0, ui:false, auto:'pay'}}], 2, 80), b = same(R[0], R[2]).concat(same(R[1], R[3]));
+      return {pass:b.length === 0 && R[3].emUrate === 0 && EMPL === null, detail:b.slice(0, 5).join(', ')}; }
+    finally { CFG.EMPL_P = p0; CFG.EMPL_P_REC = p1; } });
+  t('job loss: the measured rates come through (Adverse: spells, weeks, insurance as a share of pay lost, the pay cut), the same in both runs, and the books balance', function(){
+    var A0 = ACCT; ACCT = acctNew();
+    try { var R = v54Study('adv', [{empl:{}}], 3, 120), B = R[0], M = R[1], nF = Object.keys(ACCT.nFail).reduce(function(s, k){ return s + ACCT.nFail[k]; }, 0), nN = Object.keys(ACCT.n).reduce(function(s, k){ return s + ACCT.n[k]; }, 0);
+      var ok = B.emSpells > 6 && B.emSpells < 16 && B.emWeeks > 8 && B.emWeeks < 20 && B.emUI > 3 && B.emUI < 12 && B.emCut > 6 && B.emCut < 14 && B.emAuto > 0 && B.emSpells === M.emSpells && nF === 0 && nN > 0;
+      return {pass:ok, detail:'spells ' + B.emSpells.toFixed(2) + ' / 100 adult-years, weeks ' + B.emWeeks.toFixed(1) + ', UI ' + B.emUI.toFixed(1) + '% of pay lost, cut ' + B.emCut.toFixed(1) + '%, automation ' + B.emAuto.toFixed(2) + '; identity checks ' + nN + ', failures ' + nF + (nF ? ' ' + JSON.stringify(ACCT.nFail) : '')}; }
+    finally { ACCT = A0; } });
+  t('PTH balance sheet: homes - debt = members\' equity + community equity for every home every year, leavers are replaced, and the no-programme run is untouched (Reference)', function(){
+    var A0 = ACCT; ACCT = acctNew();
+    try { var R = v54Study('ref', [null, {pthb:{}}], 3, 150), b = same(R[0], R[2]), nF = Object.keys(ACCT.nFail).reduce(function(s, k){ return s + ACCT.nFail[k]; }, 0), nB = ACCT.n['pth-books'] || 0, M = R[3];
+      return {pass:b.length === 0 && nF === 0 && nB > 0 && M.pbExit > 3 && M.pbExit < 9 && M.pbFill === 100 && Math.abs(M.pbV - M.pbD - M.pbME - M.pbCE) < 1e-6*M.pbV,
+        detail:'base keys differing: ' + (b.slice(0, 3).join(', ') || 'none') + '; home checks ' + nB + ', identity failures ' + nF + '; exits ' + M.pbExit.toFixed(2) + ' per 100 member-years; end value / debt / members / community $' + [M.pbV, M.pbD, M.pbME, M.pbCE].map(Math.round).join(' / ')}; }
+    finally { ACCT = A0; } });
+  t('PTF by sector: the cut is food and utilities at the Hub\'s epsilons with the other sectors at zero (about 6-8% of the basket), larger when the other sectors are cut, members leave at the moving rate, and the no-programme run is untouched (Reference)', function(){
+    var R = v54Study('ref', [null, {ptfs:{}}, {ptfs:{other:0.25}}, {ptfs:{leave:0}}], 2, 150), b = same(R[0], R[2]).concat(same(R[0], R[4]));
+    return {pass:b.length === 0 && R[3].pfCut > 5 && R[3].pfCut < 9 && R[5].pfCut > R[3].pfCut + 5 && R[7].pfLeave === 0 && R[3].pfLeave > 0,
+      detail:'cut ' + R[3].pfCut.toFixed(2) + '% / ' + R[5].pfCut.toFixed(2) + '% (other sectors 25%); leavers a year ' + R[3].pfLeave.toFixed(2) + ' / ' + R[7].pfLeave + '; base keys differing: ' + (b.slice(0, 3).join(', ') || 'none')}; });
+  t('disaster: the same households are hit in both runs, the books balance, and with no one hit every result is the run without the switch (Adverse)', function(){
+    var A0 = ACCT; ACCT = acctNew();
+    try { var R = v54Study('adv', [null, {dis:{share:0}}, {dis:{}}], 2, 120), b = same(R[0], R[2]).concat(same(R[1], R[3])), nF = Object.keys(ACCT.nFail).reduce(function(s, k){ return s + ACCT.nFail[k]; }, 0);
+      return {pass:b.length === 0 && nF === 0 && R[4].dsHit > 15 && R[4].dsHit < 35 && R[4].dsHit === R[5].dsHit && R[4].fgt0PY !== R[0].fgt0PY,
+        detail:'keys differing with no one hit: ' + (b.slice(0, 3).join(', ') || 'none') + '; hit ' + R[4].dsHit.toFixed(1) + '% / ' + R[5].dsHit.toFixed(1) + '%; identity failures ' + nF}; }
+    finally { ACCT = A0; } });
+  t('v5.4 step 9: the v5.4 panel is well formed: REL_V54 carries the recorded parts (not the disaster); relMainCfgs carries them in both runs (relMainCfgs(PR, true) is v5.3\'s); every row and no-programme pair carries them; the round\'s readings differ from the main row in the v54 switches only; pairs exist; names are unique; the page\'s live run equals the panel\'s main row (Reference, 2 seeds, 60 adults)', function(){
+    var bad = [], V = REL_V54.v54, R = releaseRowsV54(SPEND_SOURCED), B = releaseBasesV54(SPEND_SOURCED), bj = {}, seen = {}, main = R.filter(function(r){ return r.j === 'release'; })[0], PR = tbPresets(FULL_INTEGRATION);
+    if (!V.rk || !V.empl || !V.pthb || !V.ptfs || V.dis) bad.push('REL_V54 parts');
+    var C = relMainCfgs(PR), C3 = relMainCfgs(PR, true); if (C[0].v54 !== V || C[1].v54 !== V || C3[0].v54 || C3[1].v54 || n1Row(PR, 'framework', main.v).v54 !== V) bad.push('relMainCfgs / n1Row');
+    B.forEach(function(b){ bj[b.j] = 1; if (!b.v.v54 || !b.v.v54.rk) bad.push('base ' + b.j + ' without v54'); });
+    R.concat(B).forEach(function(r){ if (seen[r.j]) bad.push('duplicate ' + r.j); seen[r.j] = 1; if (!r.v.v54) bad.push(r.j + ' without v54'); });
+    R.forEach(function(r){ if (r.bk && !bj[r.bk]) bad.push(r.j + ' pairs with missing ' + r.bk); });
+    ['v53', 'cut0', 'cut20', 'autopay', 'pthbold', 'ptfs25', 'dis'].forEach(function(j){ var r = R.filter(function(x){ return x.j === j; })[0]; if (!r){ bad.push('missing ' + j); return; }
+      var dk = Object.keys(r.v).filter(function(k){ return JSON.stringify(r.v[k]) !== JSON.stringify(main.v[k]); }); if (dk.join() !== 'v54') bad.push(j + ' differs in ' + dk.join(',')); });
+    if (JSON.stringify(R.filter(function(x){ return x.j === 'v53'; })[0].v.v54) !== '{"rk":true}') bad.push('v53 row');
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60}), PS = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), d = [];
+    try { var M = relMainCfgs(PS), so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY);
+      var X = tbStudy([Object.assign(M[0], {sc:SPEND_SOURCED}), M[1]], 2, P, so), Y = tbStudy([Object.assign({p:PS.baseline()}, {sc:SPEND_SOURCED, hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true, v54:V}), n1Row(PS, 'framework', main.v)], 2, P, so);
+      TB_KEYS.concat(RISK_KEYS, EMPL_KEYS).forEach(function(k){ [0, 1].forEach(function(i){ if (X[i][k] !== Y[i][k] && !(isNaN(X[i][k]) && isNaN(Y[i][k]))) d.push(i + ':' + k); }); });
+      if (!(X[1].emUrate > 0) || !(X[1].pbV > 0) || !(X[1].pfCut > 0)) d.push('parts not on'); }
+    finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:bad.length === 0 && d.length === 0, detail:R.length + ' rows, ' + B.length + ' no-programme pairs; problems: ' + (bad.concat(d).slice(0, 8).join('; ') || 'none')}; });
+  return out;
+}
+Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
@@ -2763,7 +2879,11 @@ if (require.main === module) {
     console.log('\n=== gateUnitSuite(): audit V5-02, the BLEI gate reads this year\'s BU (harness-only) ===');
     GCU.forEach(function(x){ if (!x.pass) gcf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + GCU.length + ' run, ' + gcf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf) process.exitCode = 1;
+    var V54U = v54UnitSuite(), v54f = 0;
+    console.log('\n=== v54UnitSuite(): the v5.4 round (harness-only) ===');
+    V54U.forEach(function(x){ if (!x.pass) v54f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + V54U.length + ' run, ' + v54f + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
@@ -4499,15 +4619,23 @@ if (require.main === module) {
      * panel (design default 7): per environment, per row, the measures with 95% intervals against no programme, and the command. */
     if (secT === 'release'){ var RJ = {_meta:{engine:'release engine (harness.js testbed, section release)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, command:'node harness.js testbed ' + nT + ' release ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + ' --json=dev/runs/release-panel' + (YRS > 0 ? '-' + YRS : '') + '.json'}, envs:{}},
       RPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
-      var V52 = process.argv.indexOf('--v51') < 0, SO52 = V52 ? REL_V52_STUDY : {}, V53 = process.argv.indexOf('--v53') >= 0;  /* v5.3 B10: --v53 builds the v5.3 panel (releaseRowsV53) */  /* v5.2: the round's reporting is on unless --v51 asks for the v5.1 panel exactly (the bit-identity check) */
+      /* v5.4 step 9 (DECISIONS Session 41): --part=I/K runs only the readings whose place in the panel's order is I modulo K (with the main and today rows, and the
+       * no-programme pairs they need), so a long panel can run as pieces that survive a restart; dev/tools/merge_parts.py joins them into the whole panel, which
+       * equals the panel run in one piece (every row is its own run on the same seeds; checked on 2 seeds, Adverse, 3 pieces: identical but for the command line). */
+      var PART = (process.argv.filter(function(a){ return /^--part=\d+\/\d+$/.test(a); })[0] || '').replace('--part=', '').split('/').filter(Boolean).map(Number); PART = PART.length === 2 && PART[0] < PART[1] ? PART : null;
+      var V52 = process.argv.indexOf('--v51') < 0, SO52 = V52 ? REL_V52_STUDY : {}, V54 = process.argv.indexOf('--v54') >= 0, V53 = V54 || process.argv.indexOf('--v53') >= 0;  /* v5.4 step 9: --v54 builds the v5.4 panel (releaseRowsV54: v5.3's, with the round's parts) */  /* v5.3 B10: --v53 builds the v5.3 panel (releaseRowsV53) */  /* v5.2: the round's reporting is on unless --v51 asks for the v5.1 panel exactly (the bit-identity check) */
       if (V52) RJ._meta.v52 = {report:Object.assign({}, SO52), thresholdOne2025:CFG.POVERTY_THRESHOLD_ONE};
-      if (V53){ RJ._meta.v53 = {households:HH_V53, buScope:'hub', spendGrade:CFG.CE_SPEND_ELAST, corrections:ACCT_V53}; RJ._meta.command += ' --v53'; }
+      if (V53){ RJ._meta.v53 = {households:HH_V53, buScope:'hub', spendGrade:CFG.CE_SPEND_ELAST, corrections:ACCT_V53}; RJ._meta.command += V54 ? ' --v54' : ' --v53'; }
+      if (V54) RJ._meta.v54 = {parts:V54_MAIN, empl:EMPL_DEFAULTS, pthb:PTHB_DEFAULTS, ptfs:PTFS_DEFAULTS, dis:DIS_DEFAULTS};
       envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
         function av(r){ return ((r._Bk || r._B).epPY - r.epPY)/100; }  /* v5.2: against the row's own no-programme pair where it has one */
         function aw(r){ var b = r._Bk || r._B; return avoidWide((b.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (b.fgt0PY - r.fgt0PY)/100); }
-        var rows = V53 ? releaseRowsV53(SC).filter(function(r){ return r.k !== 'a'; }) : releaseRows(SC, !V52),  /* v5.3: the parts-removed rows run in dev/tools/attrib_check.js (paired against the main row), not in the panel */ bases = V53 ? releaseBasesV53(SC) : V52 ? releaseBases(SC) : [], nRel = rows.length;
+        var rows = V54 ? releaseRowsV54(SC).filter(function(r){ return r.k !== 'a'; }) : V53 ? releaseRowsV53(SC).filter(function(r){ return r.k !== 'a'; }) : releaseRows(SC, !V52),  /* v5.3: the parts-removed rows run in dev/tools/attrib_check.js (paired against the main row), not in the panel */ bases = V54 ? releaseBasesV54(SC) : V53 ? releaseBasesV53(SC) : V52 ? releaseBases(SC) : [], nRel = rows.length;
+        if (PART){ RJ._meta.part = {i:PART[0], k:PART[1], rows:rows.map(function(r){ return r.j; }), bases:bases.map(function(b){ return b.j; })};  /* v5.4 step 9: a resumable part of the panel */
+          rows = rows.filter(function(r, i){ return r.k === 'today' || r.k === 'main' || i % PART[1] === PART[0]; });
+          var need = {}; rows.forEach(function(r){ if (r.bk) need[r.bk] = 1; }); bases = bases.filter(function(b){ return need[b.j]; }); }
         rows = rows.concat(bases.map(function(b){ return {l:b.l, v:b.v, base:true, k:'b' + b.j, j:b.j}; }));  /* v5.2: the no-programme rows that some readings are paired with (printed last) */
         var R = stepSection('release (plan step 11)', e, rows,
           [['Unhoused person-years avoided per 1,000 adults a year', function(r){ return f2(av(r)*1000); }],
@@ -4515,7 +4643,7 @@ if (require.main === module) {
            ['Prisons, hospitals and psychiatric care avoided per adult-year: main (prisons + health) / high', function(r){ var w = aw(r); return $(w.main) + ' (' + $(w.jail) + ' + ' + $(w.health) + ') / ' + $(w.high); }],
            ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
-           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}));
+           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}, V54 ? {v54:V54_MAIN} : {}));
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
         if (V52){ rep52Print(R, ['No programme'].concat(rows.map(function(rw){ return rw.l.trim(); })), E[0], YRS > 0 ? YRS : 20); out.base.rep = rep52Keys(B, null); out.base.path = path52(B, YRS > 0 ? YRS : 20); }
         var BX = {}; rows.forEach(function(rw, i){ if (rw.base) BX[rw.j] = R[i + 1]; });  /* v5.2: the paired no-programme rows */
@@ -4528,8 +4656,10 @@ if (require.main === module) {
           grp:{part:Math.round(r.gPartRes - (r._Bk || B).gPartRes), non:Math.round(r.gNonRes - (r._Bk || B).gNonRes), low:Math.round(r.gLowRes - (r._Bk || B).gLowRes), top:Math.round(r.gTopRes - (r._Bk || B).gTopRes)}, worse:grpCell(r, r._Bk || B).split(' | ')[1],
           unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)};
           if (V53) Object.assign(out.rows[rw.j], rel53Keys(r, r._Bk || B), {kind:rw.k}, rw.j === 'release' ? {paired:pairedShares(r, B)} : {});
+          if (V54) Object.assign(out.rows[rw.j], rel54Keys(r, r._Bk || B));
           if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
         if (V53){ Object.assign(out.base, rel53Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel53Keys(BX[b.j], null)); }); }
+        if (V54){ Object.assign(out.base, rel54Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel54Keys(BX[b.j], null)); }); }
         RJ.envs[e] = out; });
       if (RPATH){ require('fs').writeFileSync(RPATH, JSON.stringify(RJ, null, 1)); console.log('\nwrote ' + RPATH); }
     }
@@ -4538,12 +4668,12 @@ if (require.main === module) {
      * so the two end points are the panel's own release and H1 rows (the writer checks that they equal them to the last digit when a panel file is given with --check=FILE), and
      * --json=FILE writes the points with 95% intervals against no programme. One process per environment (node harness.js testbed 500 backing ref --json=...), merged by dev/tools/backing_chart.py. */
     if (secT === 'backing'){ var BJ = {_meta:{engine:'release engine (harness.js testbed, section backing)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, shares:[0, 0.25, 0.5, 0.75, 1],
-        command:'node harness.js testbed ' + nT + ' backing ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + (process.argv.indexOf('--v53') >= 0 ? ' --v53' : '') + ' --json=dev/runs/backing-share-ENV.json'}, envs:{}},
+        command:'node harness.js testbed ' + nT + ' backing ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + (process.argv.indexOf('--v54') >= 0 ? ' --v54' : process.argv.indexOf('--v53') >= 0 ? ' --v53' : '') + ' --json=dev/runs/backing-share-ENV.json'}, envs:{}},
       BPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
-      var B53 = process.argv.indexOf('--v53') >= 0;  /* v5.3 B10: the sweep on the v5.3 main row and its no-programme run */
-      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5, B53 ? REL_V53 : {}), W = function(x){ return Object.assign({}, ALL, x); };
+      var B54 = process.argv.indexOf('--v54') >= 0, B53 = B54 || process.argv.indexOf('--v53') >= 0;  /* v5.3 B10: the sweep on the v5.3 main row and its no-programme run; v5.4 step 9: --v54 on v5.4's */
+      envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5, B53 ? REL_V53 : {}, B54 ? REL_V54 : {}), W = function(x){ return Object.assign({}, ALL, x); };
         var rows = BJ._meta.shares.map(function(a, i){ return {l:'a = ' + a + (a === 0 ? ' (the release row: nothing the Source pays is backed by new output)' : a === 1 ? ' (H1: every Source dollar backed by new output)' : ''), v:W({a:a}), k:i === 0 ? 'today' : 's', vs:'today', j:'a' + Math.round(a*100)}; });  /* the release row (a = 0) is the comparison row every other point is read against */
-        var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], Object.assign({sc:SC}, B53 ? {hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g} : {}));
+        var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], Object.assign({sc:SC}, B53 ? {hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g} : {}, B54 ? REL_V54 : {}));
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, epPY:B.epPY}, rows:{}};
         function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
         function d3p(r, k){ var x = tbDiff(r, B, k); return [+(x.m*100).toFixed(2), +(x.lo*100).toFixed(2), +(x.hi*100).toFixed(2)]; }  /* a rate as percentage points a year */

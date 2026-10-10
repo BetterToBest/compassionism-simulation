@@ -1,0 +1,175 @@
+{
+ "_meta": {
+  "what": "v5.4 item 7: global sensitivity of the paired programme effect",
+  "mode": "noise",
+  "env": "st",
+  "manifest": {
+   "commit": "aacaf24340d2c6ef1be369023f2220ffb352faec",
+   "dirty": true,
+   "node": "v22.22.0",
+   "harnessSha256": "a52da2f1383c3f69d1210ef4e1c94027ada011189f4aba5df59362ccaa22b6f7",
+   "engineBlockSha256": "777438fe0c4351fe157115e73ec02b49c9eed32a9f9f80facd47109a33f200cb",
+   "indexSha256": "46274aaa5b50c4eee91e5babda792e1f690ea8c397f7e21219320e75033741a7",
+   "engineSha256": "269fd36497526cd00831e4dc257074fa5edc8b91816e5cd4f2ecf111b53fce2f"
+  },
+  "command": "node dev/tools/gsa.js noise st 100",
+  "inputs": [
+   {
+    "name": "bu",
+    "lo": 900,
+    "hi": 1500,
+    "what": "BU a month (design)",
+    "main": 1200
+   },
+   {
+    "name": "tax",
+    "lo": 0.08,
+    "hi": 0.18,
+    "what": "conversion tax (design)",
+    "main": 0.12
+   },
+   {
+    "name": "part",
+    "lo": 0.4,
+    "hi": 0.9,
+    "what": "participation (design)",
+    "main": 0.4
+   },
+   {
+    "name": "ptfShare",
+    "lo": 0.08,
+    "hi": 0.3,
+    "what": "PTF membership ceiling (design)",
+    "main": 0.08
+   },
+   {
+    "name": "pthUptake",
+    "lo": 0.1,
+    "hi": 0.3,
+    "what": "PTH uptake (design)",
+    "main": 0.1
+   },
+   {
+    "name": "szhCoh",
+    "lo": 0.35,
+    "hi": 0.9,
+    "what": "Social Zone cohesion (design)",
+    "main": 0.35
+   },
+   {
+    "name": "maxOct",
+    "lo": 4,
+    "hi": 6,
+    "what": "octaves (design, integer)",
+    "main": 6
+   },
+   {
+    "name": "maxMult",
+    "lo": 6,
+    "hi": 12,
+    "what": "top conversion rate (design, integer)",
+    "main": 9
+   },
+   {
+    "name": "spend",
+    "lo": 0.45,
+    "hi": 0.75,
+    "what": "share of extra cash spent (BEA saving rate; range of recent years)",
+    "main": 0.593
+   },
+   {
+    "name": "rho",
+    "lo": 0.05,
+    "hi": 0.3,
+    "what": "income effect on earnings per unconditional dollar",
+    "main": 0.16
+   },
+   {
+    "name": "eps",
+    "lo": 0.1,
+    "hi": 0.5,
+    "what": "wage elasticity of hours",
+    "main": 0.33
+   },
+   {
+    "name": "bleiBonus",
+    "lo": 0,
+    "hi": 0.016,
+    "what": "yearly wage gain with BLEI above 30 days (design)",
+    "main": 0.008
+   },
+   {
+    "name": "thetaH",
+    "lo": 0.3,
+    "hi": 0.9,
+    "what": "housing supply response to demand",
+    "main": 0.6
+   },
+   {
+    "name": "jobLoss",
+    "lo": 0.06,
+    "hi": 0.14,
+    "what": "yearly chance of job loss (CPS: 0.085 normal, 0.142 recession)",
+    "main": 0.0851
+   },
+   {
+    "name": "payCut",
+    "lo": 0,
+    "hi": 0.2,
+    "what": "mean pay cut after a permanent job loss (design)",
+    "main": 0.1
+   },
+   {
+    "name": "ptfOther",
+    "lo": 0,
+    "hi": 0.25,
+    "what": "PTF cut in transport, health care, childcare (design)",
+    "main": 0
+   },
+   {
+    "name": "pthExit",
+    "lo": 0,
+    "hi": 0.12,
+    "what": "yearly chance a PTH member leaves (CPS: renters 0.062)",
+    "main": 0.062
+   }
+  ],
+  "measures": [
+   "fgt0PY",
+   "pov",
+   "bOAPy",
+   "cost",
+   "endoAnn"
+  ],
+  "v54": {
+   "empl": {},
+   "pthb": {},
+   "ptfs": {}
+  },
+  "seconds": 51
+ },
+ "result": {
+  "seeds": 100,
+  "mean": {
+   "fgt0PY": -18.866500000000006,
+   "pov": 29.928,
+   "bOAPy": 1.4350000000000003,
+   "cost": 16516.644268423504,
+   "endoAnn": 34.232495483346064
+  },
+  "sd": {
+   "fgt0PY": 2.1229345874581855,
+   "pov": 2.3042376420654014,
+   "bOAPy": 1.4989723752685316,
+   "cost": 972.2972374691868,
+   "endoAnn": 2.4240047488749643
+  },
+  "sd500": {
+   "fgt0PY": 0.0949405209868395,
+   "pov": 0.10304864007944133,
+   "bOAPy": 0.06703608254989522,
+   "cost": 43.482454346327145,
+   "endoAnn": 0.10840478792533453
+  }
+ }
+}
