@@ -1,31 +1,30 @@
-# Handoff (Oct 12, 2026, 19:00 UTC; end of session 1 of the last Pro week)
+# Handoff (Oct 12, 2026; session 1b)
 
 ## What shipped
-- Token kit: `CLAUDE.md` (sessions start here), `/handoff` (`.claude/commands/handoff.md`), a startup hook that installs jsdom (`.claude/settings.json`).
-- Runpod batch: `dev/tools/v54_jobs.sh` (one piece per core, `--max-hours`, `ON_DONE` hook, still resumes) and `dev/batch/runpod.sh` (pinned engine, pushes each piece, writes DONE, terminates the pod).
-- Smoke test passed: the push was accepted (`smoke-20261012T184609Z.txt`), the pod terminated itself and billing showed $0.00.
-- Timing (20 seeds on one core): 48 s per seed at 40 years, 25 s at 20 years, 2 s for backing, so the batch is 31.4 core-hours.
+- The 33 pieces from BetterToBest/compassionism-sim-results (`v54-fe88599/`) merged into the six release panels with `merge_parts.py`; panels, backing chart and six explore exports (500 seeds; self-checks pass) built.
+- Version 5.4, release data (`data/releases/v5.4.json`, date 2026-10-12), release notes in CONTRIBUTING.md (v5.3.1's moved to CHANGELOG.md), replication timeline entry, Duke's report `dev/reports/v5-23-v54-release.md`.
+- Checks: validate passed, unit 208 run and 0 failed, domtest 125 passed.
 
 ## Branch and pull request state
-- Session branch `claude/loving-brahmagupta-ygq40l` (on top of #13's head fe88599). Draft PR https://github.com/BetterToBest/compassionism-simulation/pull/14 goes into #13's branch.
-- Draft PR https://github.com/BetterToBest/compassionism-simulation/pull/13 (`claude/awesome-sagan-75dsu9`, head fe88599): v5.4, waiting for the figures.
+- Session branch `claude/loving-brahmagupta-ygq40l`, head 152ab4c (all of the above), merged into #13's branch as pull request #14 (merge commit 10c8474).
+- [Pull request #13](https://github.com/BetterToBest/compassionism-simulation/pull/13) (`claude/awesome-sagan-75dsu9`): marked ready. Waiting for Duke to read the report and merge; the merge is the release. CI on #13 not yet checked by me.
+- This HANDOFF.md is on the session branch only, after #14 merged; #13's copy is the older one.
 
-## Job A (the v5.4 500-run batch): done
-- Finished 21:21 UTC on Oct 12 (2 h 24 min on pod `3kk175fnxz7qvs`, cpu3c 16 vCPU). Billed $0.98. The pod terminated itself and the pod list is empty.
-- BetterToBest/compassionism-sim-results, main, commit 3743b57, folder `v54-fe88599/`: `DONE`, all 33 pieces (every exit 0), `status.txt`, `run.txt`, logs.
-- Every piece's manifest: engine `fe88599f9d2f4d26651f6e01370454206257beab`, clean, Node v22.22.0. Runner commit `097d138`.
-- Its per-piece push step had a bug (fixed in fa1765a for later jobs). The final step pushed everything at once, so nothing was lost.
+## Long jobs in flight
+None. Job A is finished (pod gone, $0.98).
 
-## Next 3 actions (session 1b)
-1. `git clone https://github.com/BetterToBest/compassionism-sim-results` (public; DONE, the 33 pieces and the pod's end were all checked on Oct 12).
-2. Copy the pieces to an output folder. Run `python3 dev/tools/merge_parts.py OUT ENV 40 6 dev/runs/release-panel-40-ENV.json` and `... ENV 20 4 dev/runs/release-panel-ENV.json` for ref, adv and st. Copy `backing-share-ENV.json` to `dev/runs/`.
-3. Do the rest of `dev/PROGRESS.md`, "Next session: start here", steps 3-5: merge_panel, explore_export, set_version 5.4, release_data, notes, report, the three checks. Then merge #14 into #13 and mark #13 ready.
+## Next 3 actions
+1. Check CI on #13's head; fix anything red (checks are in `.github/workflows/checks.yml`).
+2. Find why Reference's 20-year too-little-wealth gap grew (+11.0 vs v5.3's +5.5): compare the `pthbold`, `ptfs25`, `cut0`, `cut20` rows in `dev/runs/release-panel.json`, then add a sentence to the report and notes.
+3. After Duke merges #13: confirm the release workflow tagged v5.4; then start Job B (below).
 
 ## Files to touch
-- `dev/PROGRESS.md` lines 183-191 (the steps), `dev/tools/merge_parts.py`, `dev/tools/merge_panel.py`, `dev/tools/explore_export.js`, `CONTRIBUTING.md`, `CHANGELOG.md`, `dev/reports/v5-23-v54-release.md` (new).
+`dev/runs/release-panel.json` (rows by key), `dev/reports/v5-23-v54-release.md` (the wealth bullet), `CONTRIBUTING.md` (v5.4 notes).
 
 ## Pitfalls
-- **The GitHub token expires 2026-10-17 04:16 UTC.** Session 3's Runpod job (Job B) needs a renewed token if it runs later. Update the Runpod secret `github_results_token` with the new value.
-- Merge on #13's branch with a clean worktree. The engine must stay fe88599's, or the manifests read dirty.
-- The `runpodctl` on `runpod/base` uses `remove pod`; `pod delete` is unknown there (runpod.sh tries both).
-- This session cannot read the results repository through the GitHub tools. Clone it (it is public).
+- GitHub token for the results repository expires 2026-10-17 04:16 UTC; renew the Runpod secret `github_results_token` before Job B.
+- Re-running `release_data.py` rewrites `replication.html`; my timeline entry there was added by hand and may need re-adding.
+- The ledger (artifact KMdxWQ5KAefQVFxQA236pV) read was denied by the permission classifier this session.
+
+## Ledger updates for Duke
+Mark done: v5.4 500-seed batch (Job A), panel merge, explore exports, version 5.4, release data, notes, report, checks. Set `next`: check CI on #13, then Duke merges. Log: "2026-10-12: v5.4 figures merged and released-ready in #13 (checks pass); #14 merged into #13."
