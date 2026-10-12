@@ -31,7 +31,7 @@ ENV_DESC = {'ref': 'the model\u2019s main settings, with no recessions and no ou
             'adv': 'recessions, 2% outside inflation and an automation wave',
             'st': 'the Adverse environment with weaker settings (40% take part, a smaller allowance)'}
 # The figures each release's current (presentation) version describes. v5.2.1 changed only how the v5.2 figures are shown; v5.2.2 corrected words and added derived figures.
-CURRENT54 = {'version': '5.4', 'date': '2026-10-08', 'tag': 'v5.4',
+CURRENT54 = {'version': '5.4', 'date': '2026-10-12', 'tag': 'v5.4',
              'summary': 'Labour and markets: people lose jobs and find new ones (with unemployment insurance, and lower pay after a permanent loss), community housing keeps its own books, community businesses cut prices sector by sector and members can leave, and new measures of risk: how far savings fall, how fast income recovers, how often people fall back into poverty.'}
 CURRENT53 = {'version': '5.3', 'date': '2026-10-07', 'tag': 'v5.3', 'shownIn': '5.3.1',  # v5.3.1 re-releases the same figures at the complete commit (the v5.3 tag marks an intermediate one)
            'summary': 'Households and children: adults live in households as US adults do, children bring a quarter of the adult allowance, households pool their money, start with the wealth the Federal Reserve\u2019s survey shows and spend less when income is short; and what each part of the design does is measured.'}
