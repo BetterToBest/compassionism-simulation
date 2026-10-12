@@ -15,7 +15,7 @@
 - Pinned engine commit `fe88599f9d2f4d26651f6e01370454206257beab`, runner commit `097d13879e5fa79857bdd7d2c0b8b9ae5b1532c6`.
 - Results: BetterToBest/compassionism-sim-results, branch main, folder `v54-fe88599/` (33 pieces, `status.txt`, `run.txt`, logs).
 - **It is done when `v54-fe88599/DONE` exists.** If the last commit there says `stopped before the end` and there is no DONE, relaunch the same pod command: finished pieces are skipped.
-- At launch no piece had arrived yet. The first was due about 20:05 UTC, so check that the folder exists.
+- 20:13 UTC check: three pieces had finished on the pod (20:01, 20:10, 20:11) but none was pushed. A bug in the push step of runner 097d138 (it added the word "push" instead of the piece; fixed on the branch for later jobs). The batch's final step adds every file by name, so all pieces and DONE arrive in one push at the end (expected about 21:30 UTC). Do not restart the pod: a restart wipes its disk.
 
 ## Next 3 actions (session 1b)
 1. `git clone https://github.com/BetterToBest/compassionism-sim-results`. Confirm `v54-fe88599/DONE` and that `run.txt` names engine fe88599. Confirm the Runpod pod list no longer has `3kk175fnxz7qvs`.

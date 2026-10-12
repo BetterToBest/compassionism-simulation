@@ -14,9 +14,9 @@ git config --global credential.helper '!f() { echo username=x-access-token; echo
 git config --global user.name "compassionism batch pod"; git config --global user.email "noreply@users.noreply.github.com"
 
 if [ "${1:-}" = push ]; then   # ON_DONE hook from v54_jobs.sh: push one finished piece (and the logs) to the results repository
-  ( flock 9; cd $W/res || exit 1; git add "$1" $D/status.txt $D/run.txt $D/*.log; git commit -qm "v5.4 batch: $(basename "$1")"
+  ( flock 9; cd $W/res || exit 1; git add "$2" $D/status.txt $D/run.txt $D/*.log || exit 1; git commit -qm "v5.4 batch: $(basename "$2")" || exit 1
     for t in 1 2 3 4 5; do git push -q origin HEAD:main && exit 0; sleep $((t * 10)); git pull -q --rebase origin main; done; exit 1
-  ) 9> $W/push.lock || log "push of $1 failed (it stays on the pod; the next push retries it)"
+  ) 9> $W/push.lock || log "push of $2 failed (it stays on the pod; the next push retries it)"
   exit 0
 fi
 
