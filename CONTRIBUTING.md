@@ -40,17 +40,13 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.4 Release Notes
+## v5.4.1 Release Notes
 
-**Released as v5.4 (Oct 2026): labour and markets.** One pull request into `main` (merging is the release). Plain-words report for Duke: `dev/reports/v5-23-v54-release.md`; the design note is `dev/reports/v5-21-v54-design.md`.
+**Released as v5.4.1 (Oct 2026): how to read the wealth result.** Words only. No figure, row or engine line changes from v5.4, and the panels and release data are v5.4's. Plain-words report for Duke: `dev/reports/v5-24-wealth-measure-reading.md`; decision: `dev/DECISIONS.md`, session 1c.
 
-- **Job loss and re-employment** (`EMPL`): Current Population Survey flows and spell lengths, unemployment insurance in both runs, a 10% pay cut on return, automation through job loss, 700 occupations.
-- **PTH's balance sheet** (`PTHB`): homes, mortgage debt, members' and community equity, with an enforced yearly identity; equity growth capped at inflation + 2%; members leave at 6.2% a year.
-- **PTF by sector** (`PTFS`): food and utilities at the Hub's epsilons, other sectors no cut (swept); members leave at 3.2% a year.
-- **Risk measures** (`RISK`, reporting only): drawdown, recovery time, re-entry into poverty.
-- **Figures** (Reference, 20 years): adult-years below the cost of living 49.2% → 19.6% (−29.6; v5.3: −28.3); too little wealth +11.0 points (v5.3: +5.5), +0.8 at 40 years. Job loss changes the no-programme run too, so compare within a release. The cause of the larger 20-year wealth gap in Reference is not yet isolated.
-- **Provenance:** 500 seeds, engine fe88599 clean, run in 33 pieces (`dev/tools/v54_jobs.sh`, merged with `dev/tools/merge_parts.py`; pieces in BetterToBest/compassionism-sim-results, `v54-fe88599/`).
-- v5.3.1's notes are in CHANGELOG.md.
+- **Why the 20-year wealth gap grew in Reference** (+11.0 points against v5.3's +5.5). The v5.4 report and notes now name the cause: mostly the 10% lower pay on return to work. Without that cut the gap is +6.6, with a 20% cut +15.7, and the new PTH and PTF rules move it by less than 0.3 (readings `cut0`, `cut20`, `pthbold`, `ptfs25` in `dev/runs/release-panel.json`).
+- **"How to read this measure"** (release page, under the Savings result, id `rel-wealth-frame`). The note gives Duke Johnson's framing: with the basics guaranteed and work more optional, people need a savings reserve less, and the gain shows in how people live more than in dollars. It cites outside evidence that a guaranteed minimum lowers emergency saving (Hubbard, Skinner and Zeldes, 1995). It states that the model does not include this: the spending share is the same in both runs, no well-being is measured, and the gap comes from prices against unprotected savings and from lower pay after job loss. The verdict line is unchanged.
+- v5.4's notes are in CHANGELOG.md.
 
 ---
 
@@ -456,7 +452,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.4*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.4.1*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
