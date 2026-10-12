@@ -23,9 +23,9 @@ At 40 years (Reference): below the cost of living 42.1% → 16.2% (−25.9); too
 
 - **The hardship result holds.** In Reference the programme still cuts adult-years below the cost of living by about 30 points, and every one of the 500 runs is better off on that measure. Poverty severity falls slightly more than in v5.3 (−6.0 against −5.1).
 - **Job loss changes the no-programme run too**, so the starting points moved (49.2% below the cost of living with no programme, against 45.1% in v5.3). v5.4's figures should be compared within v5.4, not with earlier releases.
-- **The wealth result got worse in Reference at 20 years** (+11.0 points of adults with too little wealth, against +5.5), and better in Adverse and Stress Test. In Reference it nearly closes by Year 40 (+0.8). The reported reason is the capped Acre Equity growth and the price cuts being smaller than the old flat 12% PTF cut, so members build less; I have not run a separate test that isolates which of the two matters more, and the "each part undone" readings on the findings page show them side by side.
+- **The wealth result got worse in Reference at 20 years** (+11.0 points of adults with too little wealth, against +5.5), and better in Adverse and Stress Test. In Reference it nearly closes by Year 40 (+0.8). I have not yet isolated why; the "each part undone" readings on the findings page are the place to look, and I will say so in the notes rather than guess.
 - **Stress Test is still the hardest case**: below 30 days of basic living gets worse than no programme (+3.4), as in v5.3 (+5.5), though by less.
-- **New measures (Reference):** average unemployment 2.4% of adult-years, unemployment insurance reaches the share the Department of Labor reports, the typical largest fall in a person's savings is 24%, PTH members leave at 5.8% a year, PTF members at 2.3% a year.
+- **New measures (Reference):** average unemployment 2.4% of adult-years, unemployment insurance replaces about 6.6% of lost pay across adult-years on average (`emUI`), the typical largest fall in a person's savings is 24%, PTH members leave at 5.8% a year, PTF members at 2.3% a year.
 
 ## Claude's reading of the design (please check)
 

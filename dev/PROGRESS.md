@@ -180,6 +180,10 @@ Duke merged v5.2.2 (tag `v5.2.2`, reproduction archive attached) and said "start
   - [x] The 40-year panels (done 16:57-17:33 UTC): the first run was killed by a container restart at 13:43 UTC in its fifth hour; relaunched at 13:44 from the same worktree of c5e96f9 (`run_p40.sh` in the session scratchpad: `node harness.js testbed 500 release ENV --v53 --years=40 --json=dev/runs/v53/release-panel-40-ENV.json`, ENV ref, adv, st), about 4.5 hours. If a session ends before they finish, rerun them from a clean worktree of c5e96f9 (the page check requires the 20- and 40-year panels from one commit).
   - [x] Then: copy the results to `dev/runs/` (standard names), `python3 dev/tools/merge_panel.py`, `merge_panel.py 40`, `backing_chart.py`, `explore_export.js ENV 20|40 500 1 --v53` from a clean commit, `release_data.py`, the version (5.3), the restudy and attribution reports with the B0 predictions checked, README/CONTRIBUTING/CHANGELOG, the three checks, the pull request ready.
 
+## v5.4 finished (Oct 12, 2026)
+
+All five steps below are done on `claude/loving-brahmagupta-ygq40l`: pieces merged (engine fe88599), panels, backing chart, six explore exports (self-checks pass), version 5.4, release data (date 2026-10-12), notes (CONTRIBUTING; v5.3.1's in CHANGELOG), replication timeline entry, report `dev/reports/v5-23-v54-release.md`. Checks: validate passed, unit 208 (0 failed), domtest 125 passed. Open: why the Reference 20-year wealth gap grew (+11.0 vs +5.5) is not isolated. Next: Duke reads the report and merges #13.
+
 ## Next session: start here (Oct 8, 01:45 UTC; Duke's weekly usage ran out mid-batch)
 
 Everything for v5.4 except the figures is built, tested and pushed on `claude/awesome-sagan-75dsu9` (PR BetterToBest/compassionism-simulation#13, still a draft). The only missing input is the 500-seed batch, which dies whenever the container is reclaimed (idle session). To finish:
