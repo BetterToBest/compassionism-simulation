@@ -48,7 +48,7 @@ The notes for the current release stay here (the release workflow reads them fro
 - **PTH's balance sheet** (`PTHB`): homes, mortgage debt, members' and community equity, with an enforced yearly identity; equity growth capped at inflation + 2%; members leave at 6.2% a year.
 - **PTF by sector** (`PTFS`): food and utilities at the Hub's epsilons, other sectors no cut (swept); members leave at 3.2% a year.
 - **Risk measures** (`RISK`, reporting only): drawdown, recovery time, re-entry into poverty.
-- **Figures** (Reference, 20 years): adult-years below the cost of living 49.2% → 19.6% (−29.6; v5.3: −28.3); too little wealth +11.0 points (v5.3: +5.5), +0.8 at 40 years. Job loss changes the no-programme run too, so compare within a release. The cause of the larger 20-year wealth gap in Reference is not yet isolated.
+- **Figures** (Reference, 20 years): adult-years below the cost of living 49.2% → 19.6% (−29.6; v5.3: −28.3); too little wealth +11.0 points (v5.3: +5.5), +0.8 at 40 years. Job loss changes the no-programme run too, so compare within a release. The larger 20-year wealth gap in Reference comes mostly from the 10% lower pay on return to work: without that cut the gap is +6.6 points, with a 20% cut +15.7, and the new PTH and PTF rules move it by less than 0.3 points.
 - **Provenance:** 500 seeds, engine fe88599 clean, run in 33 pieces (`dev/tools/v54_jobs.sh`, merged with `dev/tools/merge_parts.py`; pieces in BetterToBest/compassionism-sim-results, `v54-fe88599/`).
 - v5.3.1's notes are in CHANGELOG.md.
 
