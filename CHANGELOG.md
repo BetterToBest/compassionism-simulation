@@ -1,8 +1,18 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
+
+---
+
+## v5.3.1 Release Notes
+
+**Released as v5.3.1 (Oct 2026): v5.3's figures, re-released at the complete commit.** No figure, page or engine change from v5.3. The release workflow tagged v5.3 at the first commit inside the pull request that set the version, which came before the v5.3 release data was built, so the `v5.3` tag and its reproduction archive hold an intermediate tree (v5.3's 500-seed panels with v5.2's release file; `REPRODUCE.md` without the explore fingerprints). The live page was never affected: `main` carries the complete release. Tags are never moved, so this version re-releases the same figures, and its tag and archive hold the complete tree.
+
+- **The release workflow** now tags the commit on `main`'s own line that first sets a version (`git log --first-parent`): for a release merged from a pull request, the merge commit, whose tree is the release as published.
+- **The release data** says the figures are v5.3's, shown in v5.3.1 (`shownIn`), as v5.2's were shown in v5.2.2.
+- v5.3's notes, with its results, are in CHANGELOG.md.
 
 ---
 
