@@ -10,15 +10,14 @@
 - Session branch `claude/loving-brahmagupta-ygq40l` (on top of #13's head fe88599). Draft PR https://github.com/BetterToBest/compassionism-simulation/pull/14 goes into #13's branch.
 - Draft PR https://github.com/BetterToBest/compassionism-simulation/pull/13 (`claude/awesome-sagan-75dsu9`, head fe88599): v5.4, waiting for the figures.
 
-## Long job in flight: Job A (the v5.4 500-run batch)
-- Pod `3kk175fnxz7qvs`: cpu3c, 16 vCPU, $0.48/h, EU-SE-1. Started 18:57 UTC on Oct 12, hard stop after 7 h. Expected about 2.3 h and $1.22.
-- Pinned engine commit `fe88599f9d2f4d26651f6e01370454206257beab`, runner commit `097d13879e5fa79857bdd7d2c0b8b9ae5b1532c6`.
-- Results: BetterToBest/compassionism-sim-results, branch main, folder `v54-fe88599/` (33 pieces, `status.txt`, `run.txt`, logs).
-- **It is done when `v54-fe88599/DONE` exists.** If the last commit there says `stopped before the end` and there is no DONE, relaunch the same pod command: finished pieces are skipped.
-- 20:13 UTC check: three pieces had finished on the pod (20:01, 20:10, 20:11) but none was pushed. A bug in the push step of runner 097d138 (it added the word "push" instead of the piece; fixed on the branch for later jobs). The batch's final step adds every file by name, so all pieces and DONE arrive in one push at the end (expected about 21:30 UTC). Do not restart the pod: a restart wipes its disk.
+## Job A (the v5.4 500-run batch): done
+- Finished 21:21 UTC on Oct 12 (2 h 24 min on pod `3kk175fnxz7qvs`, cpu3c 16 vCPU). Billed $0.98. The pod terminated itself and the pod list is empty.
+- BetterToBest/compassionism-sim-results, main, commit 3743b57, folder `v54-fe88599/`: `DONE`, all 33 pieces (every exit 0), `status.txt`, `run.txt`, logs.
+- Every piece's manifest: engine `fe88599f9d2f4d26651f6e01370454206257beab`, clean, Node v22.22.0. Runner commit `097d138`.
+- Its per-piece push step had a bug (fixed in fa1765a for later jobs). The final step pushed everything at once, so nothing was lost.
 
 ## Next 3 actions (session 1b)
-1. `git clone https://github.com/BetterToBest/compassionism-sim-results`. Confirm `v54-fe88599/DONE` and that `run.txt` names engine fe88599. Confirm the Runpod pod list no longer has `3kk175fnxz7qvs`.
+1. `git clone https://github.com/BetterToBest/compassionism-sim-results` (public; DONE, the 33 pieces and the pod's end were all checked on Oct 12).
 2. Copy the pieces to an output folder. Run `python3 dev/tools/merge_parts.py OUT ENV 40 6 dev/runs/release-panel-40-ENV.json` and `... ENV 20 4 dev/runs/release-panel-ENV.json` for ref, adv and st. Copy `backing-share-ENV.json` to `dev/runs/`.
 3. Do the rest of `dev/PROGRESS.md`, "Next session: start here", steps 3-5: merge_panel, explore_export, set_version 5.4, release_data, notes, report, the three checks. Then merge #14 into #13 and mark #13 ready.
 
