@@ -1,0 +1,16 @@
+trajectory 1 of 10 (135 s)
+trajectory 2 of 10 (273 s)
+trajectory 3 of 10 (470 s)
+trajectory 4 of 10 (586 s)
+trajectory 5 of 10 (687 s)
+trajectory 6 of 10 (804 s)
+trajectory 7 of 10 (897 s)
+trajectory 8 of 10 (987 s)
+trajectory 9 of 10 (1072 s)
+trajectory 10 of 10 (1164 s)
+gsa morris ref (1164 s) -> dev/runs/v54/gsa-morris-ref.json
+fgt0PY: part 17.79, bu 9.65, bleiBonus 6.05, rho 5.85, jobLoss 1.15, payCut 1.13
+pov: spend 21.17, rho 9.41, part 8.06, payCut 7.87, bu 5.78, jobLoss 4.92
+bOAPy: part 16.08, bu 5.48, rho 1.79, payCut 0.97, bleiBonus 0.88, pthUptake 0.80
+cost: part 15265.24, bu 10502.92, tax 1640.43, maxMult 1321.77, ptfOther 963.12, pthUptake 905.00
+endoAnn: part 29.75, bu 12.07, rho 4.18, payCut 2.20, jobLoss 2.12, eps 1.92

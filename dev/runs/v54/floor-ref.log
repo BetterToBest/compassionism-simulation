@@ -1,0 +1,49 @@
+floor 0.4 cap 0.2 members 23.27%
+floor 0.4 cap 0.3 members 32%
+floor 0.4 cap 0.4 members 39.85%
+floor 0.4 cap 0.5 members 48.84%
+floor 0.4 cap 0.6 members 56.71%
+floor 0.4 cap 0.7 members 64.23%
+floor 0.4 cap 0.8 members 71.52%
+floor 0.4 cap 0.9 members 77.68%
+floor 0.55 cap 0.2 members 23.27%
+floor 0.55 cap 0.3 members 32%
+floor 0.55 cap 0.4 members 39.73%
+floor 0.55 cap 0.5 members 47.75%
+floor 0.55 cap 0.6 members 55.03%
+floor 0.55 cap 0.7 members 63.19%
+floor 0.55 cap 0.8 members 71.09%
+floor 0.55 cap 0.9 members 77.46%
+floor 0.7 cap 0.2 members 23.27%
+floor 0.7 cap 0.3 members 32%
+floor 0.7 cap 0.4 members 39.73%
+floor 0.7 cap 0.5 members 47.75%
+floor 0.7 cap 0.6 members 54.61%
+floor 0.7 cap 0.7 members 61.52%
+floor 0.7 cap 0.8 members 69.37%
+floor 0.7 cap 0.9 members 76.67%
+floor test ref (255 s) -> dev/runs/v54/floor-ref.json
+floor 0.4 cap 0.2 members 23.27%: fgt0PY -30.15, pov 11.5, bOAPy -14.752, cost 29896.494
+floor 0.4 cap 0.3 members 32%: fgt0PY -30.101, pov 11.86, bOAPy -14.74, cost 30091.389
+floor 0.4 cap 0.4 members 39.85%: fgt0PY -30.108, pov 12.01, bOAPy -14.696, cost 30535.181
+floor 0.4 cap 0.5 members 48.84%: fgt0PY -30.282, pov 12.25, bOAPy -14.71, cost 31130.48
+floor 0.4 cap 0.6 members 56.71%: fgt0PY -30.477, pov 12.51, bOAPy -14.828, cost 31492.28
+floor 0.4 cap 0.7 members 64.23%: fgt0PY -30.724, pov 12.76, bOAPy -14.978, cost 31835.535
+floor 0.4 cap 0.8 members 71.52%: fgt0PY -30.963, pov 13.03, bOAPy -15.097, cost 32174.297
+floor 0.4 cap 0.9 members 77.68%: fgt0PY -31.149, pov 13.11, bOAPy -15.217, cost 32456.649
+floor 0.55 cap 0.2 members 23.27%: fgt0PY -30.15, pov 11.5, bOAPy -14.752, cost 29896.494
+floor 0.55 cap 0.3 members 32%: fgt0PY -30.101, pov 11.86, bOAPy -14.74, cost 30091.38
+floor 0.55 cap 0.4 members 39.73%: fgt0PY -30.104, pov 12.02, bOAPy -14.685, cost 30514.056
+floor 0.55 cap 0.5 members 47.75%: fgt0PY -30.215, pov 12.25, bOAPy -14.66, cost 31020.023
+floor 0.55 cap 0.6 members 55.03%: fgt0PY -30.393, pov 12.59, bOAPy -14.729, cost 31319.331
+floor 0.55 cap 0.7 members 63.19%: fgt0PY -30.677, pov 12.83, bOAPy -14.871, cost 31706.948
+floor 0.55 cap 0.8 members 71.09%: fgt0PY -30.93, pov 13.13, bOAPy -15.029, cost 32101.306
+floor 0.55 cap 0.9 members 77.46%: fgt0PY -31.119, pov 13.16, bOAPy -15.178, cost 32417.932
+floor 0.7 cap 0.2 members 23.27%: fgt0PY -30.15, pov 11.5, bOAPy -14.752, cost 29896.494
+floor 0.7 cap 0.3 members 32%: fgt0PY -30.101, pov 11.86, bOAPy -14.74, cost 30091.38
+floor 0.7 cap 0.4 members 39.73%: fgt0PY -30.104, pov 12.02, bOAPy -14.685, cost 30514.056
+floor 0.7 cap 0.5 members 47.75%: fgt0PY -30.215, pov 12.25, bOAPy -14.66, cost 31019.867
+floor 0.7 cap 0.6 members 54.61%: fgt0PY -30.369, pov 12.59, bOAPy -14.713, cost 31271.057
+floor 0.7 cap 0.7 members 61.52%: fgt0PY -30.589, pov 12.86, bOAPy -14.778, cost 31517.097
+floor 0.7 cap 0.8 members 69.37%: fgt0PY -30.852, pov 13.34, bOAPy -14.879, cost 31890.023
+floor 0.7 cap 0.9 members 76.67%: fgt0PY -31.092, pov 13.38, bOAPy -15.054, cost 32301.89

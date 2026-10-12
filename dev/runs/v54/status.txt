@@ -1,0 +1,11 @@
+start 19:16 commit aacaf24
+gsa morris ref 10 10 exit 0 19:36
+gsa noise ref 100 exit 0 19:37
+gsa noise adv 100 exit 0 19:38
+gsa noise st 100 exit 0 19:39
+floor ref exit 0 19:43
+floor st exit 0 19:47
+r500 st exit 0 20:18
+r500 ref exit 0 20:25
+r500 adv exit 0 20:27
+all done 20:27

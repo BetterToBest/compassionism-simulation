@@ -213,7 +213,7 @@
     root.CSC.responsive(g2, function () { root.CSC.xy(g2, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, yFmt: function (v) { return v + '%'; }, tipFmt: function (v) { return fmt(v, 'p1') + ' a year'; }, series: inf, yMin: 0, height: 200, label: 'Programme inflation by backed share', legend: false, endLabels: false}); });
     return true;
   };
-  var GROUPS = [['v5.3\u2019s new choices, each undone in turn', ['v52', 'adults', 'core', 'indiv', 'cb0', 'cb50', 'wmodel', 'nosg', 'shock50', 'fbs50']],
+  var GROUPS = [['v5.4\u2019s choices, and a disaster', ['v53', 'cut0', 'cut20', 'autopay', 'pthbold', 'ptfs25', 'dis']], ['v5.3\u2019s new choices, each undone in turn', ['v52', 'adults', 'core', 'indiv', 'cb0', 'cb50', 'wmodel', 'nosg', 'shock50', 'fbs50']],
     ['The two ends and the middle backing band', ['h1', 'mid', 'midlo', 'midhi']], ['Savings and the BU', ['sav', 'sav0', 'idx', 'h1idx', 'h1both']], ['Ageing', ['age', 'agenc', 'agenone', 'agepia', 'ageleave', 'agecps']],
     ['Closer to US data', ['fixw', 'fixr', 'fixs', 'fixm', 'fixall']], ['Idle workers in normal years', ['slack', 'slacku6']], ['Robustness risks', ['hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun']],
     ['Other ways to pay (not specified by the Hub)', ['tax', 'progtax', 'landtax']], ['Other readings of the design', ['face', 'cost', 'cap5', 'all', 'free', 'standins']]];
@@ -222,6 +222,8 @@
     fixw: 'Savings from the US survey', fixr: 'Automation risk linked to wages', fixs: 'Wages spread as in the survey', fixm: 'Wages centred on the survey median', fixall: 'All four US-data readings', slack: 'Idle labour in normal years', slacku6: 'All of U-6 idle (upper bound)',
     hcap: 'Rent capture, BU tenants (voucher evidence)', hcaphi: 'Rent capture, every renter (upper end)', rev5: 'Review errors, low (audits catch half)', rev10: 'Review errors, middle', rev20: 'Review errors, high', rev20n: 'Review errors, high, no audits', giftrun: 'Launch gift paid over the run',
     tax: 'Flat contribution on wages', progtax: 'Progressive income tax', landtax: 'Land-value tax', face: 'BU essentials counted as backed', cost: 'Creative work at the cost of its hours', cap5: 'Capacity only as reinvestment pays', all: 'Taking part costs nothing', free: 'Price cuts free', standins: 'The two former stand-ins on',
+    v53: 'v5.3\u2019s main row (no job loss; PTH and PTF as in v5.3)', cut0: 'No pay cut on return to work', cut20: 'A pay cut of a fifth on return to work', autopay: 'Automation as a lasting pay drag (the earlier rule)',
+    pthbold: 'Acre Equity by the earlier rule (three to five per cent a year)', ptfs25: 'PTF cuts a quarter off transport, health care and childcare', dis: 'A disaster in Year 7 (a scenario)',
     v52: 'v5.2\u2019s main row (adults alone, v5.2\u2019s choices)', adults: 'Adults living alone (no households)', core: 'BU buy only food, housing and medical care', indiv: 'Each adult keeps their own money (no pooling)',
     cb0: 'No child allowance', cb50: 'A child allowance of half the adult BU', wmodel: 'Starting savings from the model\u2019s own draw', nosg: 'Everyone pays their full cost (no graded spending)',
     shock50: 'Partners\u2019 income swings strongly linked', fbs50: 'FBS50 spread evenly over its range', ageleave: 'Ageing, every estate leaves the model', agecps: 'Ageing, wages follow US earnings by age'};
@@ -265,6 +267,22 @@
       legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
     return true;
   };
+  /* v5.4: jobs and risk, with Compassionism against no programme (the measures both runs have; PTH's books and PTF's cut are in the table) */
+  var WKM = [['Work', 'Out of work (adult-years)', 'emUrate'], ['Work', 'Spells longer than 26 weeks', 'emLong'],
+    ['Risk', 'Savings fell 6+ months of costs', 'rkDdW6'], ['Risk', 'Basic-living days fell 30+', 'rkDdB30'],
+    ['Risk', 'Income back within 3 years', 'rkRec3'], ['Risk', 'Back below cost of living (5 yrs)', 'rkReC5']];
+  /* the rows in words: out of work as a share of working-age adult-years; spells out of work longer than 26 weeks; adults whose savings fell by more than six months
+   * of basic living from an earlier peak; adults whose days of basic living (BLEI) fell by more than 30 from a peak; income shocks after which income is back within
+   * three years; exits from below the cost of living followed by a return below it within five years (release_data.py WORK_ROWS words them in full) */
+  CHARTS.work = function (R, host, st) {
+    var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || E.rows.release.emUrate === undefined) return false;
+    var rows = WKM.filter(function (m) { return E.rows.release[m[2]] !== undefined && E.base[m[2]] !== undefined; }).map(function (m) {
+      return {group: m[0], label: m[1], marks: [{v: E.base[m[2]], cls: 's-without', hollow: true, name: 'no programme'}, {v: E.rows.release[m[2]], cls: 's-with', name: 'Compassionism'}]}; });
+    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xMax: 100, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of adults, of adult-years or of spells (' + st.years + ' years)',
+      label: 'Jobs and risk: Compassionism against no programme, ' + envName(st.env) + ', ' + st.years + ' years',
+      legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+    return true;
+  };
   CHARTS.us = function (R, host) {
     var U = R.us; if (!U) return false; var n = U.ref.rows.none, us = U.ref.us;
     if (hasKids(R) && n.hh && us.scfHH) {  /* v5.3: the households' yardstick (us_check.js --v53): debt by household type at Year 7 against the SCF, and everyone's official poverty rate */
@@ -289,7 +307,7 @@
   function storyEl(R, s, st, opts) {
     opts = opts || {};
     var sec = document.createElement('section'); sec.className = 'fx-sec'; sec.id = s.id; sec.setAttribute('aria-labelledby', s.id + '-h');
-    var needsEnv = /^(targets|fixed|readings|attrib|hh)$/.test(s.chart), needsYears = /^(dumbbell|targets|fixed|readings|hh)$/.test(s.chart), measured = /^(readings|attrib)$/.test(s.chart);
+    var needsEnv = /^(targets|fixed|readings|attrib|hh|work)$/.test(s.chart), needsYears = /^(dumbbell|targets|fixed|readings|hh|work)$/.test(s.chart), measured = /^(readings|attrib)$/.test(s.chart);
     var scope = (needsEnv ? envName(st.env) + ', ' : '') + (needsYears ? st.years + ' years' : (s.chart === 'backing' && R.backing ? (R.backing._meta.years + ' years') : s.chart === 'attrib' && R.attrib ? R.attrib.ref._meta.years + ' years' : ''));
     if (st.measure === 'kid' && !hasKids(R)) st.measure = 'pov';
     sec.innerHTML = '<p class="fx-kicker">' + esc(opts.kicker || 'Guided read') + '</p><h2 class="fx-h2" id="' + s.id + '-h">' + esc(s.title) + ' <a class="fx-anchor" href="#' + s.id + '" aria-label="Link to this section">#</a></h2>' +
@@ -326,5 +344,5 @@
 
   root.CSF = {fmt: fmt, get: get, has: has, num: num, text: text, esc: esc, cellHTML: cellHTML, tableHTML: tableHTML, tableById: tableById, csvOf: csvOf, jsonOf: jsonOf, download: download, tableTools: tableTools,
     cardsHTML: cardsHTML, MEANINGS: MEANINGS, MEANINGS53: MEANINGS53, meaningOf: meaningOf, fillPlain: fillPlain, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
-    readingsRows: readingsRows, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, SHORT53: SHORT53, GROUPS: GROUPS, hasKids: hasKids, HHM: HHM, AT: AT};
+    readingsRows: readingsRows, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, SHORT53: SHORT53, GROUPS: GROUPS, hasKids: hasKids, HHM: HHM, WKM: WKM, AT: AT};
 })(typeof window !== 'undefined' ? window : this);

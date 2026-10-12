@@ -40,14 +40,17 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.3.1 Release Notes
+## v5.4 Release Notes
 
-**Released as v5.3.1 (Oct 2026): v5.3's figures, re-released at the complete commit.** No figure, page or engine change from v5.3. The release workflow tagged v5.3 at the first commit inside the pull request that set the version, which came before the v5.3 release data was built, so the `v5.3` tag and its reproduction archive hold an intermediate tree (v5.3's 500-seed panels with v5.2's release file; `REPRODUCE.md` without the explore fingerprints). The live page was never affected: `main` carries the complete release. Tags are never moved, so this version re-releases the same figures, and its tag and archive hold the complete tree.
+**Released as v5.4 (Oct 2026): labour and markets.** One pull request into `main` (merging is the release). Plain-words report for Duke: `dev/reports/v5-23-v54-release.md`; the design note is `dev/reports/v5-21-v54-design.md`.
 
-- **The release workflow** now tags the commit on `main`'s own line that first sets a version (`git log --first-parent`): for a release merged from a pull request, the merge commit, whose tree is the release as published.
-- **The release data** says the figures are v5.3's, shown in v5.3.1 (`shownIn`), as v5.2's were shown in v5.2.2.
-- v5.3's notes, with its results, are in CHANGELOG.md.
-
+- **Job loss and re-employment** (`EMPL`): Current Population Survey flows and spell lengths, unemployment insurance in both runs, a 10% pay cut on return, automation through job loss, 700 occupations.
+- **PTH's balance sheet** (`PTHB`): homes, mortgage debt, members' and community equity, with an enforced yearly identity; equity growth capped at inflation + 2%; members leave at 6.2% a year.
+- **PTF by sector** (`PTFS`): food and utilities at the Hub's epsilons, other sectors no cut (swept); members leave at 3.2% a year.
+- **Risk measures** (`RISK`, reporting only): drawdown, recovery time, re-entry into poverty.
+- **Figures** (Reference, 20 years): adult-years below the cost of living 49.2% → 19.6% (−29.6; v5.3: −28.3); too little wealth +11.0 points (v5.3: +5.5), +0.8 at 40 years. Job loss changes the no-programme run too, so compare within a release. The cause of the larger 20-year wealth gap in Reference is not yet isolated.
+- **Provenance:** 500 seeds, engine fe88599 clean, run in 33 pieces (`dev/tools/v54_jobs.sh`, merged with `dev/tools/merge_parts.py`; pieces in BetterToBest/compassionism-sim-results, `v54-fe88599/`).
+- v5.3.1's notes are in CHANGELOG.md.
 
 ---
 
@@ -359,7 +362,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. *(v5.3: the engine has one copy. `harness.js` reads it out of `index.html` when it loads, so an engine change is made once, in `index.html`; `dev/tools/port_engine.py` and the five listed differences between the two files are retired. `domtest.js` still compares the page with the script `harness.js` runs.)* If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->125<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->197<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->125<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->208<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -453,7 +456,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.3.1*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.4*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
