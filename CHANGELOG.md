@@ -1,8 +1,22 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
+
+---
+
+## v5.4 Release Notes
+
+**Released as v5.4 (Oct 2026): labour and markets.** One pull request into `main` (merging is the release). Plain-words report for Duke: `dev/reports/v5-23-v54-release.md`; the design note is `dev/reports/v5-21-v54-design.md`.
+
+- **Job loss and re-employment** (`EMPL`): Current Population Survey flows and spell lengths, unemployment insurance in both runs, a 10% pay cut on return, automation through job loss, 700 occupations.
+- **PTH's balance sheet** (`PTHB`): homes, mortgage debt, members' and community equity, with an enforced yearly identity; equity growth capped at inflation + 2%; members leave at 6.2% a year.
+- **PTF by sector** (`PTFS`): food and utilities at the Hub's epsilons, other sectors no cut (swept); members leave at 3.2% a year.
+- **Risk measures** (`RISK`, reporting only): drawdown, recovery time, re-entry into poverty.
+- **Figures** (Reference, 20 years): adult-years below the cost of living 49.2% → 19.6% (−29.6; v5.3: −28.3); too little wealth +11.0 points (v5.3: +5.5), +0.8 at 40 years. Job loss changes the no-programme run too, so compare within a release. The larger 20-year wealth gap in Reference comes mostly from the 10% lower pay on return to work: without that cut the gap is +6.6 points, with a 20% cut +15.7, and the new PTH and PTF rules move it by less than 0.3 points.
+- **Provenance:** 500 seeds, engine fe88599 clean, run in 33 pieces (`dev/tools/v54_jobs.sh`, merged with `dev/tools/merge_parts.py`; pieces in BetterToBest/compassionism-sim-results, `v54-fe88599/`).
+- v5.3.1's notes are below.
 
 ---
 
