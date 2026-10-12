@@ -1,31 +1,28 @@
-# Handoff (Oct 12, 2026, 19:00 UTC; end of session 1 of the last Pro week)
+# Handoff (Oct 12, 2026; session 1c)
 
 ## What shipped
-- Token kit: `CLAUDE.md` (sessions start here), `/handoff` (`.claude/commands/handoff.md`), a startup hook that installs jsdom (`.claude/settings.json`).
-- Runpod batch: `dev/tools/v54_jobs.sh` (one piece per core, `--max-hours`, `ON_DONE` hook, still resumes) and `dev/batch/runpod.sh` (pinned engine, pushes each piece, writes DONE, terminates the pod).
-- Smoke test passed: the push was accepted (`smoke-20261012T184609Z.txt`), the pod terminated itself and billing showed $0.00.
-- Timing (20 seeds on one core): 48 s per seed at 40 years, 25 s at 20 years, 2 s for backing, so the batch is 31.4 core-hours.
+- CI checked: pull request #13 (v5.4) merged into main as 270348b. Checks, release and pages workflows are all green, and the v5.4 tag exists.
+- Found why Reference's 20-year too-little-wealth gap grew from +5.5 to +11.0 points (`dev/runs/release-panel-ref.json`, rows `cut0`, `cut20`, `pthbold`, `ptfs25`, `v53`). Most of it is the 10% lower pay on return to work: with no cut the gap is +6.6, with 10% +11.0, with 20% +15.7. For each 10% of pay, the programme run rises about 6 points and the no-programme run 1.4. The PTH and PTF rules move it less than 0.3.
+- One sentence each added to `dev/reports/v5-23-v54-release.md` (the wealth bullet) and `CONTRIBUTING.md` (v5.4 Figures line). Commit 5b08a47. Validate passed, unit 208 run 0 failed, domtest 125 passed, versions match.
 
 ## Branch and pull request state
-- Session branch `claude/loving-brahmagupta-ygq40l` (on top of #13's head fe88599). Draft PR https://github.com/BetterToBest/compassionism-simulation/pull/14 goes into #13's branch.
-- Draft PR https://github.com/BetterToBest/compassionism-simulation/pull/13 (`claude/awesome-sagan-75dsu9`, head fe88599): v5.4, waiting for the figures.
+- Session branch `claude/beautiful-wozniak-lqpv4t` started from main (270348b). Head 5b08a47, plus this handoff.
+- Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/15 into main. It is text only, with no version change. Its CI had not reported when this was written. The session is subscribed to its events.
 
-## Job A (the v5.4 500-run batch): done
-- Finished 21:21 UTC on Oct 12 (2 h 24 min on pod `3kk175fnxz7qvs`, cpu3c 16 vCPU). Billed $0.98. The pod terminated itself and the pod list is empty.
-- BetterToBest/compassionism-sim-results, main, commit 3743b57, folder `v54-fe88599/`: `DONE`, all 33 pieces (every exit 0), `status.txt`, `run.txt`, logs.
-- Every piece's manifest: engine `fe88599f9d2f4d26651f6e01370454206257beab`, clean, Node v22.22.0. Runner commit `097d138`.
-- Its per-piece push step had a bug (fixed in fa1765a for later jobs). The final step pushed everything at once, so nothing was lost.
+## Long jobs in flight
+None. Job A (v5.4) is finished, and its pod is gone.
 
-## Next 3 actions (session 1b)
-1. `git clone https://github.com/BetterToBest/compassionism-sim-results` (public; DONE, the 33 pieces and the pod's end were all checked on Oct 12).
-2. Copy the pieces to an output folder. Run `python3 dev/tools/merge_parts.py OUT ENV 40 6 dev/runs/release-panel-40-ENV.json` and `... ENV 20 4 dev/runs/release-panel-ENV.json` for ref, adv and st. Copy `backing-share-ENV.json` to `dev/runs/`.
-3. Do the rest of `dev/PROGRESS.md`, "Next session: start here", steps 3-5: merge_panel, explore_export, set_version 5.4, release_data, notes, report, the three checks. Then merge #14 into #13 and mark #13 ready.
+## Next 3 actions
+1. Check CI on #15 and fix anything red. When it is green, mark it ready so Duke can merge. A merge needs no tag because the version is unchanged.
+2. Session 2a (ledger step "Session 2a: guard test, today's-safety-net row, and single payer"), engine work only, in this order. (a) Build a guard test: rerun 20 fixed seeds on the v5.4 engine (main, 270348b) and fail if any figure changes. Make its reference before editing the engine. (b) Add the stylised current-US-policy row (SNAP, EITC, Child Tax Credit, with children modelled) to the comparison engine. (c) Add health setting B: single payer, public plan only, behind a switch, with central, cautious and costs-run-higher cases. (d) Test with 20 runs per setting, commit, then hand off. No long runs.
+3. Optional, if time is left: find why the programme run reacts about four times as strongly to the pay cut. Compare `medWealth`, `pov`, `srcPay`, `tau` and `infl` on rows `cut0`, `release` and `cut20` (`dev/runs/release-panel-ref.json`), and read the re-employment code (`index.html`, grep `_emCut`). Then refine the report sentence.
 
 ## Files to touch
-- `dev/PROGRESS.md` lines 183-191 (the steps), `dev/tools/merge_parts.py`, `dev/tools/merge_panel.py`, `dev/tools/explore_export.js`, `CONTRIBUTING.md`, `CHANGELOG.md`, `dev/reports/v5-23-v54-release.md` (new).
+`harness.js` and `index.html` (grep `REL_V54`, `relMainCfgs`, `_emCut`; never read whole) · `dev/DECISIONS.md` (append; never read whole) · `dev/PROGRESS.md` (grep `^- \[ \]`) · `dev/tools/engine_lineage.js` (`prove`) · `dev/reports/v5-23-v54-release.md` line 26 and `CONTRIBUTING.md` line 51 (action 3 only).
 
 ## Pitfalls
-- **The GitHub token expires 2026-10-17 04:16 UTC.** Session 3's Runpod job (Job B) needs a renewed token if it runs later. Update the Runpod secret `github_results_token` with the new value.
-- Merge on #13's branch with a clean worktree. The engine must stay fe88599's, or the manifests read dirty.
-- The `runpodctl` on `runpod/base` uses `remove pod`; `pod delete` is unknown there (runpod.sh tries both).
-- This session cannot read the results repository through the GitHub tools. Clone it (it is public).
+- The GitHub token for the results repository expires 2026-10-17 04:16 UTC. Renew the Runpod secret `github_results_token` before any new Runpod job.
+- The three checks together take more than 10 minutes. Run them in the background.
+- Re-running `release_data.py` rewrites `replication.html`, and its v5.4 timeline entry was added by hand.
+- Ledger artifact KMdxWQ5KAefQVFxQA236pV, document `projects/sim` (about 280 KB): read it to a file with `out_dir` and query it with Python. That worked this session.
+- Session 2a's health setting may use a country comparison that Duke attaches (ledger step "Optional, saves tokens"). Spot-check five of its figures against their sources before using any of them.
