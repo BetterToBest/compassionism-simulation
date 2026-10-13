@@ -232,3 +232,8 @@ Branch `claude/pensive-davinci-kll0u4`, from main 97d0389 (pull request #18 merg
 - [x] Reports v5-27 and v5-28 corrected (cost-of-living line derived; setting C's arithmetic; safety-net financing; SNAP's work rule; 2025 dollars).
 - [x] Study tools: `health_check.js` (`--lo`, `--dump`, `--merge`, audit rows, `--thetaX`), `gsa.js` (`--lo`, `--out`, `morrisjoin`), `dev/tools/s137_jobs.sh`, `runpod.sh` (`STUDY=s137`). Merge tested identical; job script dry-run at tiny size passed. Checks: validate; unit 221; domtest 125.
 - [ ] s137 on Runpod: pod 2m5v523fcahyj3 (cpu3c, 16 vCPU, $0.48/h, EU-RO-1, image runpod/base:1.0.2-ubuntu2204) created 06:13:57 UTC; its container never started (RUNNING, runtime null, no logs, no results after 36 minutes); terminated 06:51 UTC. To relaunch next session.
+
+## Session 2e (Oct 13, 2026; ledger step s137): the s137 study relaunched
+
+- [x] Relaunched on pod e61osh5oyurspn (cpu3c, 16 vCPU, $0.48/h, EUR-IS-1, image node:22.22.0-bookworm; runner 3000ae6, engine a3582e2, MAX_HOURS=5) at 10:30 UTC. Container log showed the script's first line at 10:30:46 (results repository HTTP 200); CPU 1533%.
+- [ ] Read the results when `s137-a3582e2/DONE` is in the results repository; write report v5-30.
