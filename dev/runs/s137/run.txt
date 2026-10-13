@@ -1,0 +1,1 @@
+study s137; engine a3582e2ad2489619151b295d037cf99cb272fdd8; runner 3000ae637e880aa62886697a398a8e49b85f0df6; node v22.22.0; 16 vCPU; pod e61osh5oyurspn; start 2026-10-13T10:30:47Z; command: ON_DONE=... dev/tools/s137_jobs.sh /w/engine /w/res/s137-a3582e2 --max-hours=5

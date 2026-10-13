@@ -1,0 +1,26 @@
+trajectory 1 of 20 (115 s)
+trajectory 2 of 20 (213 s)
+trajectory 3 of 20 (318 s)
+trajectory 4 of 20 (419 s)
+trajectory 5 of 20 (525 s)
+trajectory 6 of 20 (629 s)
+trajectory 7 of 20 (729 s)
+trajectory 8 of 20 (843 s)
+trajectory 9 of 20 (947 s)
+trajectory 10 of 20 (1063 s)
+trajectory 11 of 20 (1178 s)
+trajectory 12 of 20 (1274 s)
+trajectory 13 of 20 (1377 s)
+trajectory 14 of 20 (1482 s)
+trajectory 15 of 20 (1586 s)
+trajectory 16 of 20 (1700 s)
+trajectory 17 of 20 (1799 s)
+trajectory 18 of 20 (1909 s)
+trajectory 19 of 20 (2011 s)
+trajectory 20 of 20 (2121 s)
+gsa morris adv (2121 s) -> dev/runs/v54/s137-morris-adv-lo1.json
+fgt0PY: part 19.77, bu 13.55, rho 9.58, bleiBonus 5.48, tax 1.57, eps 1.37
+pov: spend 15.32, rho 6.60, payCut 6.38, part 5.57, bu 5.51, bleiBonus 2.60
+bOAPy: part 19.16, bu 8.98, rho 2.42, payCut 1.95, pthUptake 1.64, bleiBonus 1.07
+cost: part 13647.38, bu 10416.22, tax 1584.41, maxMult 1216.90, ptfOther 982.74, pthUptake 840.10
+endoAnn: part 33.12, bu 15.06, rho 7.96, payCut 4.86, eps 2.65, bleiBonus 2.22

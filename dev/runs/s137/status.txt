@@ -1,0 +1,93 @@
+start 2026-10-13T10:30:47Z at a3582e2, 16 at a time, max 5 h, 91 pieces
+hc thx ref 376 125 done 2026-10-13T10:40:06Z exit 0
+hc flat ref 126 125 done 2026-10-13T10:41:00Z exit 0
+hc flat ref 376 125 done 2026-10-13T10:41:01Z exit 0
+hc flat ref 1 125 done 2026-10-13T10:41:03Z exit 0
+hc flat ref 251 125 done 2026-10-13T10:41:05Z exit 0
+hc thx ref 1 125 done 2026-10-13T10:41:07Z exit 0
+hc flat adv 1 125 done 2026-10-13T10:41:08Z exit 0
+hc thx ref 126 125 done 2026-10-13T10:41:11Z exit 0
+hc thx ref 251 125 done 2026-10-13T10:41:14Z exit 0
+hc flat st 1 125 done 2026-10-13T10:50:24Z exit 0
+hc thx st 1 125 done 2026-10-13T10:50:24Z exit 0
+hc thx adv 1 125 done 2026-10-13T10:50:57Z exit 0
+hc thx adv 251 125 done 2026-10-13T10:51:47Z exit 0
+hc flat adv 251 125 done 2026-10-13T10:51:52Z exit 0
+hc thx adv 126 125 done 2026-10-13T10:51:53Z exit 0
+hc thx adv 376 125 done 2026-10-13T10:51:54Z exit 0
+hc flat adv 126 125 done 2026-10-13T10:51:55Z exit 0
+hc flat adv 376 125 done 2026-10-13T10:52:02Z exit 0
+hc thx st 126 125 done 2026-10-13T10:59:28Z exit 0
+hc flat st 126 125 done 2026-10-13T10:59:29Z exit 0
+hc flat st 251 125 done 2026-10-13T10:59:46Z exit 0
+hc thx st 251 125 done 2026-10-13T11:00:39Z exit 0
+hc table ref 1 25 done 2026-10-13T11:00:44Z exit 0
+hc table ref 26 25 done 2026-10-13T11:00:45Z exit 0
+hc flat st 376 125 done 2026-10-13T11:00:47Z exit 0
+hc thx st 376 125 done 2026-10-13T11:00:54Z exit 0
+hc table ref 51 25 done 2026-10-13T11:00:54Z exit 0
+morris ref 1 done 2026-10-13T11:05:22Z exit 0
+morris ref 11 done 2026-10-13T11:05:53Z exit 0
+morris adv 1 done 2026-10-13T11:06:08Z exit 0
+morris adv 11 done 2026-10-13T11:06:34Z exit 0
+morris st 11 done 2026-10-13T11:06:45Z exit 0
+morris st 1 done 2026-10-13T11:06:48Z exit 0
+hc table ref 101 25 done 2026-10-13T11:08:15Z exit 0
+hc table ref 76 25 done 2026-10-13T11:08:21Z exit 0
+hc table ref 126 25 done 2026-10-13T11:08:34Z exit 0
+hc table ref 276 25 done 2026-10-13T11:08:50Z exit 0
+hc table ref 151 25 done 2026-10-13T11:09:27Z exit 0
+hc table ref 251 25 done 2026-10-13T11:09:37Z exit 0
+hc table ref 226 25 done 2026-10-13T11:09:42Z exit 0
+hc table ref 176 25 done 2026-10-13T11:09:42Z exit 0
+hc table ref 201 25 done 2026-10-13T11:09:52Z exit 0
+hc table ref 301 25 done 2026-10-13T11:13:55Z exit 0
+hc table ref 326 25 done 2026-10-13T11:14:26Z exit 0
+hc table ref 351 25 done 2026-10-13T11:14:35Z exit 0
+hc table ref 376 25 done 2026-10-13T11:14:49Z exit 0
+hc table ref 401 25 done 2026-10-13T11:15:08Z exit 0
+hc table ref 426 25 done 2026-10-13T11:15:10Z exit 0
+hc table adv 1 25 done 2026-10-13T11:15:53Z exit 0
+hc table ref 451 25 done 2026-10-13T11:16:24Z exit 0
+sobol st done 2026-10-13T11:16:29Z exit 0
+hc table ref 476 25 done 2026-10-13T11:16:39Z exit 0
+hc table adv 151 25 done 2026-10-13T11:17:03Z exit 0
+hc table adv 26 25 done 2026-10-13T11:17:10Z exit 0
+hc table adv 51 25 done 2026-10-13T11:17:38Z exit 0
+hc table adv 76 25 done 2026-10-13T11:17:42Z exit 0
+hc table adv 101 25 done 2026-10-13T11:17:54Z exit 0
+hc table adv 126 25 done 2026-10-13T11:17:59Z exit 0
+hc table adv 176 25 done 2026-10-13T11:23:24Z exit 0
+hc table adv 251 25 done 2026-10-13T11:23:28Z exit 0
+hc table adv 276 25 done 2026-10-13T11:23:38Z exit 0
+hc table adv 201 25 done 2026-10-13T11:24:06Z exit 0
+hc table adv 226 25 done 2026-10-13T11:24:12Z exit 0
+hc table adv 301 25 done 2026-10-13T11:25:10Z exit 0
+hc table adv 401 25 done 2026-10-13T11:25:35Z exit 0
+hc table adv 326 25 done 2026-10-13T11:25:56Z exit 0
+hc table adv 351 25 done 2026-10-13T11:26:32Z exit 0
+hc table st 1 25 done 2026-10-13T11:26:37Z exit 0
+hc table adv 376 25 done 2026-10-13T11:26:37Z exit 0
+hc table adv 476 25 done 2026-10-13T11:26:47Z exit 0
+hc table st 26 25 done 2026-10-13T11:26:55Z exit 0
+hc table st 51 25 done 2026-10-13T11:27:04Z exit 0
+hc table adv 451 25 done 2026-10-13T11:27:18Z exit 0
+hc table adv 426 25 done 2026-10-13T11:27:20Z exit 0
+hc table st 76 25 done 2026-10-13T11:30:38Z exit 0
+hc table st 151 25 done 2026-10-13T11:31:24Z exit 0
+hc table st 101 25 done 2026-10-13T11:31:41Z exit 0
+hc table st 126 25 done 2026-10-13T11:32:00Z exit 0
+hc table st 176 25 done 2026-10-13T11:32:25Z exit 0
+hc table st 201 25 done 2026-10-13T11:33:06Z exit 0
+hc table st 226 25 done 2026-10-13T11:33:23Z exit 0
+hc table st 251 25 done 2026-10-13T11:33:31Z exit 0
+hc table st 326 25 done 2026-10-13T11:33:56Z exit 0
+hc table st 276 25 done 2026-10-13T11:33:56Z exit 0
+hc table st 301 25 done 2026-10-13T11:33:58Z exit 0
+hc table st 351 25 done 2026-10-13T11:34:05Z exit 0
+hc table st 376 25 done 2026-10-13T11:34:11Z exit 0
+hc table st 401 25 done 2026-10-13T11:34:11Z exit 0
+hc table st 426 25 done 2026-10-13T11:34:16Z exit 0
+hc table st 451 25 done 2026-10-13T11:34:21Z exit 0
+hc table st 476 25 done 2026-10-13T11:35:57Z exit 0
+all done 2026-10-13T11:36:06Z
