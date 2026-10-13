@@ -237,3 +237,11 @@ Branch `claude/pensive-davinci-kll0u4`, from main 97d0389 (pull request #18 merg
 
 - [x] Relaunched on pod e61osh5oyurspn (cpu3c, 16 vCPU, $0.48/h, EUR-IS-1, image node:22.22.0-bookworm; runner 3000ae6, engine a3582e2, MAX_HOURS=5) at 10:30 UTC. Container log showed the script's first line at 10:30:46 (results repository HTTP 200); CPU 1533%.
 - [ ] Read the results when `s137-a3582e2/DONE` is in the results repository; write report v5-30.
+
+## Session 2f (Oct 13, 2026; ledger step s137): the s137 results in; the follow-up Sobol launched
+
+- [x] The s137 study finished at 11:36 UTC (`DONE`); the pod terminated itself (pod list empty). All 187 hashes match. Merged outputs copied to `dev/runs/s137/` (pieces stay in the results repository).
+- [x] Morris noise check: leaders the same in both seed blocks for every Stress outcome; but Stress's per-outcome leaders include inputs the first Sobol left out (tax, eps, pthUptake, maxMult, ptfOther), so the follow-up Sobol rule applies (`dev/DECISIONS.md`, Session 2f).
+- [x] `gsa.js sobjoin` (Sobol on seed blocks, joined, with bootstrap intervals) and `dev/tools/s137b_jobs.sh`; Runpod `STUDY=s137b`.
+- [ ] Follow-up Sobol on pod lf78qp1tncv9hb (cpu3c, 16 vCPU, $0.48/h, EU-CZ-1, image node:22.22.0-bookworm; runner b0a36f8, engine 41f2361, MAX_HOURS=3), created 18:14 UTC; script's first line logged 18:14:42 (results repository HTTP 200).
+- [ ] Report v5-30 once `s137b-41f2361/DONE` is in.

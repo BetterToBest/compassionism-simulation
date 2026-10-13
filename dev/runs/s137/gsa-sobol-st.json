@@ -1,0 +1,305 @@
+{
+ "_meta": {
+  "what": "v5.4 item 7: global sensitivity of the paired programme effect",
+  "mode": "sobol",
+  "env": "st",
+  "manifest": {
+   "commit": "a3582e2ad2489619151b295d037cf99cb272fdd8",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "2d39f3b2077376d9b926c8cb00150555735a61a2947b5dd978bb667fa382f3a9",
+   "engineBlockSha256": "57e00367e58fe1f6da05f2b098286584fd573a81fd23e16ae3f682381531b70f",
+   "indexSha256": "e6d3d4cbcf904b7ce9484e95df664766d97a328cf4212133d59b037a082166d1",
+   "engineSha256": "08214b4d23b5d06f077438254c8a59cf1d9b16a5a51542c19d127dbc0f3c0c05"
+  },
+  "command": "node dev/tools/gsa.js sobol st 64 10 --params=part,bu,rho,spend,payCut,bleiBonus --out=s137-sobol-st",
+  "inputs": [
+   {
+    "name": "bu",
+    "lo": 900,
+    "hi": 1500,
+    "what": "BU a month (design)",
+    "main": 1200
+   },
+   {
+    "name": "tax",
+    "lo": 0.08,
+    "hi": 0.18,
+    "what": "conversion tax (design)",
+    "main": 0.12
+   },
+   {
+    "name": "part",
+    "lo": 0.4,
+    "hi": 0.9,
+    "what": "participation (design)",
+    "main": 0.4
+   },
+   {
+    "name": "ptfShare",
+    "lo": 0.08,
+    "hi": 0.3,
+    "what": "PTF membership ceiling (design)",
+    "main": 0.08
+   },
+   {
+    "name": "pthUptake",
+    "lo": 0.1,
+    "hi": 0.3,
+    "what": "PTH uptake (design)",
+    "main": 0.1
+   },
+   {
+    "name": "szhCoh",
+    "lo": 0.35,
+    "hi": 0.9,
+    "what": "Social Zone cohesion (design)",
+    "main": 0.35
+   },
+   {
+    "name": "maxOct",
+    "lo": 4,
+    "hi": 6,
+    "what": "octaves (design, integer)",
+    "main": 6
+   },
+   {
+    "name": "maxMult",
+    "lo": 6,
+    "hi": 12,
+    "what": "top conversion rate (design, integer)",
+    "main": 9
+   },
+   {
+    "name": "spend",
+    "lo": 0.45,
+    "hi": 0.75,
+    "what": "share of extra cash spent (BEA saving rate; range of recent years)",
+    "main": 0.593
+   },
+   {
+    "name": "rho",
+    "lo": 0.05,
+    "hi": 0.3,
+    "what": "income effect on earnings per unconditional dollar",
+    "main": 0.16
+   },
+   {
+    "name": "eps",
+    "lo": 0.1,
+    "hi": 0.5,
+    "what": "wage elasticity of hours",
+    "main": 0.33
+   },
+   {
+    "name": "bleiBonus",
+    "lo": 0,
+    "hi": 0.016,
+    "what": "yearly wage gain with BLEI above 30 days (design)",
+    "main": 0.008
+   },
+   {
+    "name": "thetaH",
+    "lo": 0.3,
+    "hi": 0.9,
+    "what": "housing supply response to demand",
+    "main": 0.6
+   },
+   {
+    "name": "jobLoss",
+    "lo": 0.06,
+    "hi": 0.14,
+    "what": "yearly chance of job loss (CPS: 0.085 normal, 0.142 recession)",
+    "main": 0.0851
+   },
+   {
+    "name": "payCut",
+    "lo": 0,
+    "hi": 0.2,
+    "what": "mean pay cut after a permanent job loss (design)",
+    "main": 0.1
+   },
+   {
+    "name": "ptfOther",
+    "lo": 0,
+    "hi": 0.25,
+    "what": "PTF cut in transport, health care, childcare (design)",
+    "main": 0
+   },
+   {
+    "name": "pthExit",
+    "lo": 0,
+    "hi": 0.12,
+    "what": "yearly chance a PTH member leaves (CPS: renters 0.062)",
+    "main": 0.062
+   }
+  ],
+  "measures": [
+   "fgt0PY",
+   "pov",
+   "bOAPy",
+   "cost",
+   "endoAnn"
+  ],
+  "v54": {
+   "empl": {},
+   "pthb": {},
+   "ptfs": {}
+  },
+  "seconds": 2742
+ },
+ "result": {
+  "N": 64,
+  "seeds": 10,
+  "params": [
+   "part",
+   "bu",
+   "rho",
+   "spend",
+   "payCut",
+   "bleiBonus"
+  ],
+  "indices": {
+   "fgt0PY": {
+    "variance": 60.38762509491881,
+    "mean": -28.63758593750001,
+    "part": {
+     "S": 0.23106734269756968,
+     "ST": 0.5822628434485925
+    },
+    "bu": {
+     "S": 0.41705424033133726,
+     "ST": 0.26805962375662407
+    },
+    "rho": {
+     "S": 0.13200686818027768,
+     "ST": 0.08107950602137493
+    },
+    "spend": {
+     "S": -0.0018567486376352333,
+     "ST": 0.000005716842845820567
+    },
+    "payCut": {
+     "S": 0.0068843383573460384,
+     "ST": 0.0009121081809132812
+    },
+    "bleiBonus": {
+     "S": 0.12418081137423236,
+     "ST": 0.051794554783926715
+    }
+   },
+   "pov": {
+    "variance": 41.89550196850389,
+    "mean": 34.525625,
+    "part": {
+     "S": 0.21005491846394175,
+     "ST": 0.11334987711974631
+    },
+    "bu": {
+     "S": 0.1171970980009078,
+     "ST": 0.06399575727760982
+    },
+    "rho": {
+     "S": 0.10549446939011858,
+     "ST": 0.19209162372729507
+    },
+    "spend": {
+     "S": -0.5765311636117528,
+     "ST": 0.3762748059887474
+    },
+    "payCut": {
+     "S": 0.3433700952148694,
+     "ST": 0.10179441526219517
+    },
+    "bleiBonus": {
+     "S": -0.048732110944389465,
+     "ST": 0.01338009090859966
+    }
+   },
+   "bOAPy": {
+    "variance": 40.630381428887794,
+    "mean": -5.931140625000001,
+    "part": {
+     "S": 0.5515811581285337,
+     "ST": 0.7360193821147104
+    },
+    "bu": {
+     "S": 0.31040013639973413,
+     "ST": 0.24988390004767239
+    },
+    "rho": {
+     "S": 0.02707471236887942,
+     "ST": 0.01328703895833147
+    },
+    "spend": {
+     "S": 0.004433320812906044,
+     "ST": 0.0005387438270992172
+    },
+    "payCut": {
+     "S": -0.005794599336018183,
+     "ST": 0.008944038488748382
+    },
+    "bleiBonus": {
+     "S": 0.009091426849425752,
+     "ST": 0.0022125276846671365
+    }
+   },
+   "cost": {
+    "variance": 28798277.51472567,
+    "mean": 23486.102561721425,
+    "part": {
+     "S": 0.21454006747050128,
+     "ST": 0.5994306235255611
+    },
+    "bu": {
+     "S": 0.531552505082809,
+     "ST": 0.35826891111657766
+    },
+    "rho": {
+     "S": 0.00656859992685564,
+     "ST": 0.0016334141643815202
+    },
+    "spend": {
+     "S": -0.0001637477950842813,
+     "ST": 9.977168411076905e-8
+    },
+    "payCut": {
+     "S": -0.02250994021104812,
+     "ST": 0.0004401311703362019
+    },
+    "bleiBonus": {
+     "S": -0.004625980765751165,
+     "ST": 0.00011661543958333808
+    }
+   },
+   "endoAnn": {
+    "variance": 119.08570513279405,
+    "mean": 50.92693110443355,
+    "part": {
+     "S": 0.3552313605469224,
+     "ST": 0.792806366339033
+    },
+    "bu": {
+     "S": 0.28814547351151815,
+     "ST": 0.1508362472651349
+    },
+    "rho": {
+     "S": -0.004220459524331913,
+     "ST": 0.03004115248602309
+    },
+    "spend": {
+     "S": 0.0008554137062130528,
+     "ST": 0.0000016209892952672555
+    },
+    "payCut": {
+     "S": 0.13778776515364488,
+     "ST": 0.01220148881790191
+    },
+    "bleiBonus": {
+     "S": 0.03056416148425557,
+     "ST": 0.0027916066647140636
+    }
+   }
+  }
+ }
+}

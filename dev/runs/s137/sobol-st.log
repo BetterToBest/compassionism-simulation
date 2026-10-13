@@ -1,0 +1,6 @@
+gsa sobol st (2742 s) -> dev/runs/v54/s137-sobol-st.json
+fgt0PY: part S 0.23 ST 0.58; bu S 0.42 ST 0.27; rho S 0.13 ST 0.08; spend S -0.00 ST 0.00; payCut S 0.01 ST 0.00; bleiBonus S 0.12 ST 0.05
+pov: part S 0.21 ST 0.11; bu S 0.12 ST 0.06; rho S 0.11 ST 0.19; spend S -0.58 ST 0.38; payCut S 0.34 ST 0.10; bleiBonus S -0.05 ST 0.01
+bOAPy: part S 0.55 ST 0.74; bu S 0.31 ST 0.25; rho S 0.03 ST 0.01; spend S 0.00 ST 0.00; payCut S -0.01 ST 0.01; bleiBonus S 0.01 ST 0.00
+cost: part S 0.21 ST 0.60; bu S 0.53 ST 0.36; rho S 0.01 ST 0.00; spend S -0.00 ST 0.00; payCut S -0.02 ST 0.00; bleiBonus S -0.00 ST 0.00
+endoAnn: part S 0.36 ST 0.79; bu S 0.29 ST 0.15; rho S -0.00 ST 0.03; spend S 0.00 ST 0.00; payCut S 0.14 ST 0.01; bleiBonus S 0.03 ST 0.00

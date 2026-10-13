@@ -1,0 +1,6 @@
+gsa morrisjoin ref (0 s) -> dev/runs/v54/s137-morris-ref.json
+fgt0PY: leaders part, bu, rho, bleiBonus, payCut, jobLoss (same in every block); inputs not measured: pthExit
+pov: leaders spend, rho, payCut, part, bu, jobLoss (same in every block); inputs not measured: szhCoh, ptfOther
+bOAPy: leaders part, bu, rho, pthUptake, payCut, bleiBonus (same in every block); inputs not measured: jobLoss, pthExit
+cost: leaders part, bu, tax, maxMult, ptfOther, pthUptake (blocks differ: bu/maxMult/part/ptfOther/pthUptake/tax | bu/maxMult/part/ptfOther/ptfShare/tax); inputs not measured: pthExit
+endoAnn: leaders part, bu, rho, payCut, jobLoss, eps (same in every block); inputs not measured: none
