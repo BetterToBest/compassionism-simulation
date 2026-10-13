@@ -5,13 +5,15 @@
 # Pod start command (RUNNER = the commit of this repository that holds this file; the image needs bash, git, curl):
 #   bash -c 'git clone -q https://github.com/BetterToBest/compassionism-simulation /w/sim && cd /w/sim && git checkout -q RUNNER && bash dev/batch/runpod.sh'
 # Pod env: GH_TOKEN = {{ RUNPOD_SECRET_github_results_token }}; MAX_HOURS (default 10); MODE=smoke for the smoke test
-# (token expiry, one small file pushed, then terminate); STUDY=s137 for ledger step s137 (dev/tools/s137_jobs.sh; default v54, the v5.4 batch).
+# (token expiry, one small file pushed, then terminate); STUDY=s137 for ledger step s137 (dev/tools/s137_jobs.sh), s137b for its follow-up Sobol
+# (dev/tools/s137b_jobs.sh); default v54, the v5.4 batch.
 # The token is never printed or written to disk. The engine commit is pinned below; the batch refuses to start if its worktree is not clean,
 # and run.txt records the engine, runner, Node version and command; SHA256SUMS (s137) records every output's hash.
 STUDY=${STUDY:-v54}
 case $STUDY in
   v54)  ENGINE=fe88599f9d2f4d26651f6e01370454206257beab; JOBSH=dev/tools/v54_jobs.sh;;   # head of pull request #13's branch: the v5.4 engine, pinned
   s137) ENGINE=a3582e2ad2489619151b295d037cf99cb272fdd8; JOBSH=dev/tools/s137_jobs.sh;;                     # the outside-audit fixes' commit (engine unchanged since 57e00367e58f)
+  s137b) ENGINE=41f236124d27ac282e4241acc0b916c24d036c49; JOBSH=dev/tools/s137b_jobs.sh;;                  # s137's follow-up Sobol (gsa.js sobjoin; engine unchanged since 57e00367e58f)
   *) echo "unknown STUDY $STUDY"; exit 1;;
 esac
 NODEV=22.22.0                                      # the Node version of the earlier local runs
