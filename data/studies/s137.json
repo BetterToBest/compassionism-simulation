@@ -7032,6 +7032,46 @@
    "st": 0.356
   }
  },
+ "unsourced": {
+  "ccoRelief": 20.0,
+  "ccoCap": 50.0,
+  "ptfDamp": 0.5,
+  "pthDamp": 0.1
+ },
+ "chart": {
+  "inputs": [
+   "part",
+   "bu",
+   "rho",
+   "spend",
+   "payCut",
+   "bleiBonus",
+   "tax"
+  ],
+  "inputNames": {
+   "part": "Participation",
+   "bu": "BU amount",
+   "rho": "Income effect on earnings",
+   "spend": "Share of extra cash spent",
+   "payCut": "Pay cut after job loss",
+   "bleiBonus": "BLEI wage bonus",
+   "tax": "Conversion tax"
+  },
+  "outcomes": [
+   "fgt0PY",
+   "pov",
+   "bOAPy",
+   "cost",
+   "endoAnn"
+  ],
+  "outcomeNames": {
+   "fgt0PY": "Basket poverty",
+   "pov": "Too little wealth",
+   "bOAPy": "BLEI poverty",
+   "cost": "Programme cost",
+   "endoAnn": "Programme inflation"
+  }
+ },
  "tables": [
   {
    "id": "basket-poverty",
@@ -10245,6 +10285,299 @@
      }
     ]
    ]
+  },
+  {
+   "id": "wwtbt",
+   "title": "What would have to be true for each headline result",
+   "columns": [
+    "The result",
+    "What would have to be true",
+    "What the study found when it varied the inputs (Stress)"
+   ],
+   "rows": [
+    [
+     {
+      "p": [
+       "Basket poverty falls with Compassionism, in every economy."
+      ]
+     },
+     {
+      "p": [
+       "Enough adults take part, and the BU amount is as designed: both are choices about the programme's size, and they move the answer most. The income effect on earnings (how far people cut paid work when given money) is inside its sourced range and no larger."
+      ]
+     },
+     {
+      "p": [
+       "Over its range, participation moves it ",
+       {
+        "src": "morris.fgt0PY.top.0.muStar",
+        "f": "n1"
+       },
+       " points, the BU amount ",
+       {
+        "src": "morris.fgt0PY.top.1.muStar",
+        "f": "n1"
+       },
+       " and the income effect on earnings ",
+       {
+        "src": "morris.fgt0PY.top.2.muStar",
+        "f": "n1"
+       },
+       ". Share of the spread explained: participation ",
+       {
+        "src": "sobol.fgt0PY.part.ST",
+        "f": "n2"
+       },
+       ", BU amount ",
+       {
+        "src": "sobol.fgt0PY.bu.ST",
+        "f": "n2"
+       },
+       ", income effect ",
+       {
+        "src": "sobol.fgt0PY.rho.ST",
+        "f": "n2"
+       },
+       "."
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "\"Too little wealth\" rises with Compassionism."
+      ]
+     },
+     {
+      "p": [
+       "Programme spending raises prices the way the model's price rule says, and people spend about the share of extra cash the model assumes. If prices did not respond, the result would reverse."
+      ]
+     },
+     {
+      "p": [
+       "With no price response it falls instead (",
+       {
+        "src": "drv.flatPovFall.ref",
+        "f": "n1"
+       },
+       " points lower in Reference). The share of extra cash spent explains ",
+       {
+        "src": "sobol.pov.spend.ST",
+        "f": "n2"
+       },
+       " of the spread, the income effect ",
+       {
+        "src": "sobol.pov.rho.ST",
+        "f": "n2"
+       },
+       ", participation ",
+       {
+        "src": "sobol.pov.part.ST",
+        "f": "n2"
+       },
+       ", the pay cut after job loss ",
+       {
+        "src": "sobol.pov.payCut.ST",
+        "f": "n2"
+       },
+       "."
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "BLEI poverty (the 30-days-of-basic-living measure) falls."
+      ]
+     },
+     {
+      "p": [
+       "Take-up is high enough: almost all of the spread in this result is how many adults take part."
+      ]
+     },
+     {
+      "p": [
+       "Share of the spread explained: participation ",
+       {
+        "src": "sobol.bOAPy.part.ST",
+        "f": "n2"
+       },
+       ", BU amount ",
+       {
+        "src": "sobol.bOAPy.bu.ST",
+        "f": "n2"
+       },
+       ". Over its range participation moves it ",
+       {
+        "src": "morris.bOAPy.top.0.muStar",
+        "f": "n1"
+       },
+       " points."
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "The programme costs what the study reports."
+      ]
+     },
+     {
+      "p": [
+       "Take-up and the BU amount stay in the ranges swept. Cost is mostly their product; the conversion tax and the top conversion rate matter much less."
+      ]
+     },
+     {
+      "p": [
+       "Over its range participation moves yearly cost by ",
+       {
+        "src": "morris.cost.top.0.muStar",
+        "f": "usd"
+       },
+       " and the BU amount by ",
+       {
+        "src": "morris.cost.top.1.muStar",
+        "f": "usd"
+       },
+       ". Share of the spread explained: participation ",
+       {
+        "src": "sobol.cost.part.ST",
+        "f": "n2"
+       },
+       ", BU amount ",
+       {
+        "src": "sobol.cost.bu.ST",
+        "f": "n2"
+       },
+       "."
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "Programme inflation is as reported."
+      ]
+     },
+     {
+      "p": [
+       "The model's price rule, which links the programme's spending to the price level, is right in kind. It is not calibrated to outside evidence on benefit-funded demand."
+      ]
+     },
+     {
+      "p": [
+       "Participation moves it ",
+       {
+        "src": "morris.endoAnn.top.0.muStar",
+        "f": "n1"
+       },
+       " points a year over its range and explains ",
+       {
+        "src": "sobol.endoAnn.part.ST",
+        "f": "n2"
+       },
+       " of the spread; the BU amount explains ",
+       {
+        "src": "sobol.endoAnn.bu.ST",
+        "f": "n2"
+       },
+       "."
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "Single payer lowers poverty."
+      ]
+     },
+     {
+      "p": [
+       "The Yale preprint's savings (not peer reviewed) are roughly right, or the financing rule alone does the work."
+      ]
+     },
+     {
+      "p": [
+       "The study ran the preprint's central case, a cautious case and a high-cost case with no savings; see the single-payer table above. Poverty still falls in the cautious case; in the high-cost case any gain comes from the financing rule."
+      ]
+     }
+    ]
+   ]
+  },
+  {
+   "id": "unsourced",
+   "title": "Two constants with no source",
+   "columns": [
+    "Constant",
+    "Value",
+    "Source",
+    "Do the released figures use it?"
+   ],
+   "rows": [
+    [
+     {
+      "p": [
+       "CCO cost relief: how far CCO members' cost of living is cut at the reference BU, and the ceiling on that cut"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "unsourced.ccoRelief",
+        "f": "p0"
+       },
+       " of the basket (ceiling ",
+       {
+        "src": "unsourced.ccoCap",
+        "f": "p0"
+       },
+       ")"
+      ]
+     },
+     {
+      "p": [
+       "None found. The decision log records the search; the value is a placeholder."
+      ]
+     },
+     {
+      "p": [
+       "No. Raising it left every released row unchanged when tested. It belongs to the earlier engine."
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "PTF and PTH inflation damping: how much of outside inflation the food and the health programmes absorb"
+      ]
+     },
+     {
+      "p": [
+       "PTF ",
+       {
+        "src": "unsourced.ptfDamp",
+        "f": "n1"
+       },
+       ", PTH ",
+       {
+        "src": "unsourced.pthDamp",
+        "f": "n1"
+       },
+       " (times the share of people who joined)"
+      ]
+     },
+     {
+      "p": [
+       "None found. The decision log records the search; no source gives its size."
+      ]
+     },
+     {
+      "p": [
+       "Only in one optional row, off by default and labelled \"the two former stand-ins on\"; no main row. Raising both changed that row and no other."
+      ]
+     }
+    ]
+   ]
   }
  ],
  "text": {
@@ -10260,6 +10593,9 @@
   "sens": "Two methods ask which inputs the answer depends on. Screening (Morris 1991) ranks how far each input moves an outcome over its range, on {{meta.morrisPaths|int}} random paths of {{meta.morrisSeeds|int}} paired seeds each. The follow-up Sobol run (Saltelli et al. 2010) splits the spread of each outcome among the inputs, with {{meta.sobolBase|int}} base points and {{meta.sobolSeeds|int}} paired seeds per point, in Stress. Participation and the BU amount explain most of the spread in poverty, BLEI poverty, cost and inflation. These are design choices about the programme's size, not uncertain facts about the world. For basket poverty, the income effect on earnings is the one uncertain behavioural constant that matters. \"Too little wealth\" depends most on the share of extra cash people spend.",
   "cap.morris": "A noise check was set before the run: an input's effect counts as measured only if the two seed blocks agree to within a quarter of it. The leaders hardly differ between environments (Reference and Adverse are in the data files).",
   "cap.sobol": "The total index counts an input alone and together with others; the first-order index counts it alone. Where the totals add to more than the first-order indices the inputs act together. The first Sobol run was too noisy for its first-order figures (several fell outside their range), so only this follow-up's are shown. Inputs with a total index of 0.01 or less on every outcome are left out: wage elasticity, PTH uptake, top conversion rate and the PTF cut outside food and housing.",
+  "chart": "Each bar is the share of the spread in one outcome that an input explains, alone and together with the others (the Sobol total index, Stress). A longer bar means the answer depends more on that input. The line on each bar is its 95% interval. Pick an outcome to redraw the chart; every number is in the table below it.",
+  "true": "A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. It does not say they are true. It says where an economist should look first. Two constants have no source at all; they are named after the table.",
+  "cap.true": "The two constants with no source do not enter the released figures: the study could not vary them, because they are not in the model that produced those figures. They are listed so a reviewer can check the claim, and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt.",
   "limits": "All single-payer results rest on the Yale preprint's savings. The model does not reconcile tax revenue with today's safety-net outlays or with government's share of the plan. The price response drives the \"too little wealth\" result and is not calibrated to outside evidence. The cost-of-living line is the unweighted state average. SNAP's work rules and a separate Child Tax Credit take-up are not modelled. PTF's health-sector cut under single payer is an upper reading. The model has not yet been reviewed by an independent economist.",
   "asof": "Study run on a rented server on {{meta.seeds|int}} paired seeds; the follow-up Sobol ran in Stress only."
  },
@@ -10313,11 +10649,22 @@
    "id": "depends",
    "title": "What the results depend on",
    "lead": "sens",
+   "chart": "chart",
    "tables": [
     "morris",
     "sobol"
    ],
    "note": "cap.sobol"
+  },
+  {
+   "id": "true",
+   "title": "What would have to be true",
+   "lead": "true",
+   "tables": [
+    "wwtbt",
+    "unsourced"
+   ],
+   "note": "cap.true"
   },
   {
    "id": "limits",

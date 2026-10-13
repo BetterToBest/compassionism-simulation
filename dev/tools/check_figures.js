@@ -161,11 +161,17 @@ async function run(opts) {
     await settle(w); await settle(w);
     const r = spanProbs(w.document, S, 'study'); sp2.push(...r.bad);
     if (w.document.querySelectorAll('.st-sec').length !== S.sections.length || w.document.querySelectorAll('.st-sec table').length !== S.tables.length) sp2.push('a section or table did not render');
-    add('v5.5: on the study page every number (the texts and all tables) equals the study file\'s data', sp2.length === 0 && r.n > 300, sp2.length ? sp2.slice(0, 4).join('; ') : r.n + ' numbers checked');
+    const bars = w.document.querySelectorAll('.st-sens .st-btn'), barRows = w.document.querySelectorAll('.st-sens .fx-bar'), uns = w.document.querySelectorAll('#true .num[data-src^="unsourced."]');
+    if (bars.length !== 5 || barRows.length < 3) sp2.push('the sensitivity chart did not draw (' + bars.length + ' buttons, ' + barRows.length + ' bars)');
+    if (uns.length !== 4) sp2.push('the two constants with no source should show four numbers, not ' + uns.length);
+    if (w.document.querySelectorAll('#true table').length !== 2) sp2.push('"What would have to be true" needs its two tables');
+    add('v5.5: on the study page every number (the texts and all tables) equals the study file\'s data, the sensitivity chart draws, and the two constants with no source are named', sp2.length === 0 && r.n > 300, sp2.length ? sp2.slice(0, 4).join('; ') : r.n + ' numbers checked');
     const un = unmarked(w.document.getElementById('content'), 'study');
     add('v5.5: no percentage, dollar figure or price level is typed into the study page', un.length === 0, un.length ? un.slice(0, 5).join('; ') : 'the whole study page');
     let g2 = { status: 1, stdout: '' }; try { g2 = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'study_data.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g2 = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }
-    add('v5.5: python3 dev/tools/study_data.py --check: the study file is what the generator writes from dev/runs/s137 and dev/runs/s137b', g2.status === 0, g2.stdout.trim().split('\n').pop()); }
+    add('v5.5: python3 dev/tools/study_data.py --check: the study file is what the generator writes from dev/runs/s137 and dev/runs/s137b', g2.status === 0, g2.stdout.trim().split('\n').pop());
+    let g3 = { status: 1, stdout: '' }; try { g3 = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'review_rows.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g3 = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }
+    add('v5.5: python3 dev/tools/review_rows.py --check: the economist review checklist and the GitHub issue template are written from the same rows', g3.status === 0, g3.stdout.trim().split('\n').pop()); }
   return out;
 }
 

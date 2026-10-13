@@ -7,7 +7,7 @@ The page (study.html) holds no figure. Every number it shows is a path into the 
 dev/tools/check_figures.js compares each one with the data. The figures are the study's own (dev/reports/v5-30-s137-results.md), copied, not recomputed;
 the only arithmetic here is a sign change (a fall shown as a positive number of points), recorded under "drv".
 """
-import json, os, sys
+import json, os, re, sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 OUT = os.path.join(ROOT, 'data', 'studies', 's137.json')
@@ -29,6 +29,14 @@ SOB_NAME = {'part': 'Participation', 'bu': 'BU amount', 'rho': 'Income effect on
 IN_NAME = dict(SOB_NAME, eps='Wage elasticity', pthUptake='PTH uptake', maxMult='Top conversion rate', ptfOther='PTF cut outside food and housing',
                ptfShare='PTF membership', pthExit='Chance a PTH member leaves')
 OUT_NAME = {'fgt0PY': 'Basket poverty', 'pov': 'Too little wealth', 'bOAPy': 'BLEI poverty', 'cost': 'Programme cost', 'endoAnn': 'Programme inflation'}
+
+
+def engine_constants():
+    """the two inputs with no source, read from the engine in index.html (never typed): CCO cost relief at the reference BU and its cap; PTF and PTH inflation damping"""
+    h = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
+    g = lambda pat: float(re.search(pat, h).group(1))
+    return {'ccoRelief': round(100*g(r'CCO_RELIEF_AT_REF:([0-9.]+)'), 6), 'ccoCap': round(100*g(r'CCO_RELIEF_CAP:([0-9.]+)'), 6),  # percent, as the p0 format reads them
+            'ptfDamp': g(r'inflRate\*=\(1-ptfAdoptFrac\*([0-9.]+)\)'), 'pthDamp': g(r'inflRate\*=\(1-pthMemberFrac\*([0-9.]+)\)')}
 
 
 def pick(row):
@@ -66,7 +74,8 @@ def build():
          'meta': {'seeds': 500, 'agents': 500, 'years': 20, 'envs': {e: ENVN[e] for e in ENVS}, 'prov': prov,
                   'sobolSeeds': so['seeds'], 'sobolBase': so['N'], 'morrisPaths': mo['R'], 'morrisSeeds': mo['seeds'],
                   'report': 'dev/reports/v5-30-s137-results.md', 'runs': 'dev/runs/s137/ and dev/runs/s137b/'},
-         'v': V, 'flat': FL, 'thx': TX, 'sobol': sobol, 'morris': morris, 'drv': drv}
+         'v': V, 'flat': FL, 'thx': TX, 'sobol': sobol, 'morris': morris, 'drv': drv, 'unsourced': engine_constants(),
+         'chart': {'inputs': SOB_IN, 'inputNames': SOB_NAME, 'outcomes': SOB_OUT, 'outcomeNames': OUT_NAME}}
     R.update(content(R))
     return R
 
@@ -191,6 +200,49 @@ def content(R):
         rows.append(row)
     tables.append({'id': 'sobol', 'title': 'Follow-up Sobol, Stress: share of the spread each input explains (total index; centred first-order index beneath)',
                    'columns': ['Input'] + [OUT_NAME[o] for o in SOB_OUT], 'rows': rows})
+
+    # Table 8. what would have to be true
+    def mo(o, name):
+        for i, t in enumerate(R['morris'][o]['top']):
+            if t['name'] == name:
+                return N('morris.%s.top.%d.muStar' % (o, i), 'usd' if o == 'cost' else 'n1')
+        raise KeyError((o, name))
+    st = lambda o, i: N('sobol.%s.%s.ST' % (o, i), 'n2')
+    wt = [
+        [txt('Basket poverty falls with Compassionism, in every economy.'),
+         txt('Enough adults take part, and the BU amount is as designed: both are choices about the programme\'s size, and they move the answer most. The income effect on earnings (how far people cut paid work when given money) is inside its sourced range and no larger.'),
+         {'p': ['Over its range, participation moves it ', mo('fgt0PY', 'Participation'), ' points, the BU amount ', mo('fgt0PY', 'BU amount'), ' and the income effect on earnings ', mo('fgt0PY', 'Income effect on earnings'),
+                '. Share of the spread explained: participation ', st('fgt0PY', 'part'), ', BU amount ', st('fgt0PY', 'bu'), ', income effect ', st('fgt0PY', 'rho'), '.']}],
+        [txt('"Too little wealth" rises with Compassionism.'),
+         txt('Programme spending raises prices the way the model\'s price rule says, and people spend about the share of extra cash the model assumes. If prices did not respond, the result would reverse.'),
+         {'p': ['With no price response it falls instead (', N('drv.flatPovFall.ref', 'n1'), ' points lower in Reference). The share of extra cash spent explains ', st('pov', 'spend'), ' of the spread, the income effect ', st('pov', 'rho'),
+                ', participation ', st('pov', 'part'), ', the pay cut after job loss ', st('pov', 'payCut'), '.']}],
+        [txt('BLEI poverty (the 30-days-of-basic-living measure) falls.'),
+         txt('Take-up is high enough: almost all of the spread in this result is how many adults take part.'),
+         {'p': ['Share of the spread explained: participation ', st('bOAPy', 'part'), ', BU amount ', st('bOAPy', 'bu'), '. Over its range participation moves it ', mo('bOAPy', 'Participation'), ' points.']}],
+        [txt('The programme costs what the study reports.'),
+         txt('Take-up and the BU amount stay in the ranges swept. Cost is mostly their product; the conversion tax and the top conversion rate matter much less.'),
+         {'p': ['Over its range participation moves yearly cost by ', mo('cost', 'Participation'), ' and the BU amount by ', mo('cost', 'BU amount'), '. Share of the spread explained: participation ', st('cost', 'part'), ', BU amount ', st('cost', 'bu'), '.']}],
+        [txt('Programme inflation is as reported.'),
+         txt('The model\'s price rule, which links the programme\'s spending to the price level, is right in kind. It is not calibrated to outside evidence on benefit-funded demand.'),
+         {'p': ['Participation moves it ', mo('endoAnn', 'Participation'), ' points a year over its range and explains ', st('endoAnn', 'part'), ' of the spread; the BU amount explains ', st('endoAnn', 'bu'), '.']}],
+        [txt('Single payer lowers poverty.'),
+         txt('The Yale preprint\'s savings (not peer reviewed) are roughly right, or the financing rule alone does the work.'),
+         txt('The study ran the preprint\'s central case, a cautious case and a high-cost case with no savings; see the single-payer table above. Poverty still falls in the cautious case; in the high-cost case any gain comes from the financing rule.')],
+    ]
+    tables.append({'id': 'wwtbt', 'title': 'What would have to be true for each headline result', 'columns': ['The result', 'What would have to be true', 'What the study found when it varied the inputs (Stress)'], 'rows': wt})
+
+    # Table 9. the two constants with no source
+    tables.append({'id': 'unsourced', 'title': 'Two constants with no source',
+                   'columns': ['Constant', 'Value', 'Source', 'Do the released figures use it?'],
+                   'rows': [[txt('CCO cost relief: how far CCO members\' cost of living is cut at the reference BU, and the ceiling on that cut'),
+                             {'p': [N('unsourced.ccoRelief', 'p0'), ' of the basket (ceiling ', N('unsourced.ccoCap', 'p0'), ')']},
+                             txt('None found. The decision log records the search; the value is a placeholder.'),
+                             txt('No. Raising it left every released row unchanged when tested. It belongs to the earlier engine.')],
+                            [txt('PTF and PTH inflation damping: how much of outside inflation the food and the health programmes absorb'),
+                             {'p': ['PTF ', N('unsourced.ptfDamp', 'n1'), ', PTH ', N('unsourced.pthDamp', 'n1'), ' (times the share of people who joined)']},
+                             txt('None found. The decision log records the search; no source gives its size.'),
+                             txt('Only in one optional row, off by default and labelled "the two former stand-ins on"; no main row. Raising both changed that row and no other.')]]})
     T['tables'] = tables
 
     X = {}
@@ -225,6 +277,12 @@ def content(R):
     X['cap.sobol'] = ('The total index counts an input alone and together with others; the first-order index counts it alone. Where the totals add to more than the first-order indices the inputs act together. '
                       'The first Sobol run was too noisy for its first-order figures (several fell outside their range), so only this follow-up\'s are shown. Inputs with a total index of 0.01 or less on every outcome are left out: '
                       'wage elasticity, PTH uptake, top conversion rate and the PTF cut outside food and housing.')
+    X['chart'] = ('Each bar is the share of the spread in one outcome that an input explains, alone and together with the others (the Sobol total index, Stress). A longer bar means the answer depends more on that input. '
+                   'The line on each bar is its 95% interval. Pick an outcome to redraw the chart; every number is in the table below it.')
+    X['true'] = ('A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. '
+                 'It does not say they are true. It says where an economist should look first. Two constants have no source at all; they are named after the table.')
+    X['cap.true'] = ('The two constants with no source do not enter the released figures: the study could not vary them, because they are not in the model that produced those figures. They are listed so a reviewer can check the claim, '
+                     'and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt.')
     X['limits'] = ('All single-payer results rest on the Yale preprint\'s savings. The model does not reconcile tax revenue with today\'s safety-net outlays or with government\'s share of the plan. '
                    'The price response drives the "too little wealth" result and is not calibrated to outside evidence. The cost-of-living line is the unweighted state average. '
                    'SNAP\'s work rules and a separate Child Tax Credit take-up are not modelled. PTF\'s health-sector cut under single payer is an upper reading. '
@@ -237,7 +295,8 @@ def content(R):
         {'id': 'costs', 'title': 'Government\'s costs, in a separate table', 'lead': None, 'tables': ['costs'], 'note': 'cap.costs'},
         {'id': 'single', 'title': 'Single payer depends on the Yale preprint', 'lead': 'single', 'tables': ['single-payer-range'], 'note': 'cap.single'},
         {'id': 'prices', 'title': 'The price channel', 'lead': 'price', 'tables': ['price-channel'], 'note': 'cap.price'},
-        {'id': 'depends', 'title': 'What the results depend on', 'lead': 'sens', 'tables': ['morris', 'sobol'], 'note': 'cap.sobol'},
+        {'id': 'depends', 'title': 'What the results depend on', 'lead': 'sens', 'chart': 'chart', 'tables': ['morris', 'sobol'], 'note': 'cap.sobol'},
+        {'id': 'true', 'title': 'What would have to be true', 'lead': 'true', 'tables': ['wwtbt', 'unsourced'], 'note': 'cap.true'},
         {'id': 'limits', 'title': 'Limits and what is still open', 'lead': 'limits', 'tables': [], 'note': None},
     ]
     return T
