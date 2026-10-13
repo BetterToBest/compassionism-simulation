@@ -1,0 +1,443 @@
+{
+ "_meta": {
+  "what": "health settings: the v5.4 release row and its no-programme run under each variant, paired by seed; vsRef: the change in the programme's paired effect against the reference setting (A against off, B against A)",
+  "env": "ref",
+  "seeds": 20,
+  "manifest": {
+   "commit": "ae64431d2b31ba8210b4405a2c35c231bb5826c0",
+   "dirty": true,
+   "node": "v22.22.0",
+   "harnessSha256": "a917232a3968bd73ba02429e9562111dcf4d69dd046fd541eb5e3a433b25aaa8",
+   "engineBlockSha256": "fe44cd47875948b097f4c93aada1058e8809bfb39b96ba8067e487b71013c9b0",
+   "indexSha256": "ce5ce9d701a0bad39f981099a55838e5aaa18bb11a46a606fdec7d7424f9b45c",
+   "engineSha256": "d637d8db48f59b7cbdf1a547d753d864b01646c779402927c01db5478b7cf4fd"
+  },
+  "command": "node dev/tools/health_check.js ref 20 --rows=off,A --out=theta0 --theta=0",
+  "health": {
+   "set": "A",
+   "exp": true,
+   "skip": 0.5,
+   "persist": 0.9,
+   "countBU": false,
+   "cs": "central",
+   "start": 1,
+   "adm": 0.011,
+   "cap": 0.5,
+   "induce": 0.25
+  },
+  "seconds": 28
+ },
+ "rows": {
+  "off": {
+   "hl": null,
+   "ref": null,
+   "base": {
+    "fgt0PY": 50.223,
+    "fgt2PY": 7.765,
+    "pov": 32.97,
+    "bOAPy": 26.645,
+    "cost": 0,
+    "medWealthReal": 165025.788,
+    "pLev20": 0.995,
+    "giniD": 0.246,
+    "hrs": 0
+   },
+   "prog": {
+    "fgt0PY": 19.713,
+    "fgt2PY": 1.559,
+    "pov": 43.79,
+    "bOAPy": 11.747,
+    "cost": 29905.028,
+    "medWealthReal": 29638.825,
+    "pLev20": 2304.706,
+    "giniD": 0.269,
+    "hrs": -0.057
+   },
+   "d": {
+    "fgt0PY": [
+     -30.51,
+     -31.726,
+     -29.294
+    ],
+    "fgt2PY": [
+     -6.206,
+     -6.45,
+     -5.962
+    ],
+    "pov": [
+     10.82,
+     9.614,
+     12.026
+    ],
+    "bOAPy": [
+     -14.897,
+     -15.556,
+     -14.239
+    ],
+    "cost": [
+     29905.028,
+     29655.168,
+     30154.887
+    ],
+    "medWealthReal": [
+     -135386.963,
+     -142264.091,
+     -128509.835
+    ],
+    "pLev20": [
+     2303.711,
+     2058.239,
+     2549.183
+    ],
+    "giniD": [
+     0.024,
+     0.021,
+     0.026
+    ],
+    "hrs": [
+     -0.057,
+     -0.059,
+     -0.054
+    ]
+   },
+   "vsRef": {}
+  },
+  "A": {
+   "hl": {},
+   "ref": "off",
+   "base": {
+    "fgt0PY": 50.567,
+    "fgt2PY": 7.835,
+    "pov": 33.22,
+    "bOAPy": 26.595,
+    "cost": 0,
+    "medWealthReal": 164029.119,
+    "pLev20": 0.996,
+    "giniD": 0.246,
+    "hrs": 0,
+    "hlEsi": 63.75,
+    "hlMkt": 18.664,
+    "hlMcaid": 4.814,
+    "hlMcare": 0,
+    "hlUnins": 12.771,
+    "hlUnder": 30.134,
+    "hlSkip": 12.329,
+    "hlSkipD": 1216.246,
+    "hlNeed": 9651.203,
+    "hlOop": 3612.124,
+    "hlPrem": 2688.01,
+    "hlEmp": 6199.092,
+    "hlGov": 1932.085,
+    "hlIns": 7036.361,
+    "hlPaid": 4365.111,
+    "hlLine": 4435.522,
+    "hlDev": 2176.072,
+    "hlDebt": 20.554,
+    "hlDebtM": 1750.783,
+    "hlKap": 0.69,
+    "hlKidMcaid": 45.645,
+    "hlKidUnins": 3.29,
+    "hlMcaidLost": 0.949,
+    "hlTax": 0,
+    "hlRate": 0,
+    "hlWait": 0,
+    "hlSA": 0,
+    "hlSB": 0,
+    "hlAdded": 0,
+    "hlAdm": 0,
+    "hlBack": 0
+   },
+   "prog": {
+    "fgt0PY": 19.032,
+    "fgt2PY": 1.669,
+    "pov": 44.53,
+    "bOAPy": 11.449,
+    "cost": 29902.283,
+    "medWealthReal": 29240.526,
+    "pLev20": 2312.663,
+    "giniD": 0.269,
+    "hrs": -0.057,
+    "hlEsi": 63.435,
+    "hlMkt": 18.135,
+    "hlMcaid": 5.975,
+    "hlMcare": 0,
+    "hlUnins": 12.454,
+    "hlUnder": 29.686,
+    "hlSkip": 12.446,
+    "hlSkipD": 1216.589,
+    "hlNeed": 9651.203,
+    "hlOop": 3575.476,
+    "hlPrem": 2677.665,
+    "hlEmp": 6173.998,
+    "hlGov": 2004.163,
+    "hlIns": 6974.984,
+    "hlPaid": 4342.797,
+    "hlLine": 4435.522,
+    "hlDev": 2222.183,
+    "hlDebt": 2.994,
+    "hlDebtM": 45.444,
+    "hlKap": 0.69,
+    "hlKidMcaid": 44.705,
+    "hlKidUnins": 3.52,
+    "hlMcaidLost": 1.086,
+    "hlTax": 0,
+    "hlRate": 0,
+    "hlWait": 0,
+    "hlSA": 0,
+    "hlSB": 0,
+    "hlAdded": 0,
+    "hlAdm": 0,
+    "hlBack": 0
+   },
+   "d": {
+    "fgt0PY": [
+     -31.535,
+     -32.76,
+     -30.31
+    ],
+    "fgt2PY": [
+     -6.166,
+     -6.407,
+     -5.926
+    ],
+    "pov": [
+     11.31,
+     10.16,
+     12.46
+    ],
+    "bOAPy": [
+     -15.146,
+     -15.772,
+     -14.519
+    ],
+    "cost": [
+     29902.283,
+     29652.566,
+     30152
+    ],
+    "medWealthReal": [
+     -134788.593,
+     -141437.335,
+     -128139.85
+    ],
+    "pLev20": [
+     2311.667,
+     2065.437,
+     2557.898
+    ],
+    "giniD": [
+     0.024,
+     0.021,
+     0.026
+    ],
+    "hrs": [
+     -0.057,
+     -0.059,
+     -0.055
+    ],
+    "hlEsi": [
+     -0.315,
+     -0.46,
+     -0.17
+    ],
+    "hlMkt": [
+     -0.529,
+     -0.782,
+     -0.277
+    ],
+    "hlMcaid": [
+     1.161,
+     0.955,
+     1.366
+    ],
+    "hlMcare": [
+     0,
+     0,
+     0
+    ],
+    "hlUnins": [
+     -0.316,
+     -0.472,
+     -0.16
+    ],
+    "hlUnder": [
+     -0.448,
+     -0.921,
+     0.025
+    ],
+    "hlSkip": [
+     0.116,
+     -0.116,
+     0.348
+    ],
+    "hlSkipD": [
+     0.344,
+     -20.94,
+     21.627
+    ],
+    "hlNeed": [
+     0,
+     0,
+     0
+    ],
+    "hlOop": [
+     -36.648,
+     -57.617,
+     -15.679
+    ],
+    "hlPrem": [
+     -10.345,
+     -21.121,
+     0.431
+    ],
+    "hlEmp": [
+     -25.094,
+     -42.396,
+     -7.791
+    ],
+    "hlGov": [
+     72.078,
+     17.394,
+     126.762
+    ],
+    "hlIns": [
+     -61.377,
+     -111.252,
+     -11.501
+    ],
+    "hlPaid": [
+     -22.314,
+     -54.161,
+     9.534
+    ],
+    "hlLine": [
+     0,
+     0,
+     0
+    ],
+    "hlDev": [
+     46.111,
+     20.945,
+     71.276
+    ],
+    "hlDebt": [
+     -17.56,
+     -18.032,
+     -17.089
+    ],
+    "hlDebtM": [
+     -1705.339,
+     -1746.735,
+     -1663.943
+    ],
+    "hlKap": [
+     0,
+     0,
+     0
+    ],
+    "hlKidMcaid": [
+     -0.941,
+     -2.41,
+     0.529
+    ],
+    "hlKidUnins": [
+     0.231,
+     0.015,
+     0.446
+    ],
+    "hlMcaidLost": [
+     0.136,
+     0.056,
+     0.217
+    ],
+    "hlTax": [
+     0,
+     0,
+     0
+    ],
+    "hlRate": [
+     0,
+     0,
+     0
+    ],
+    "hlWait": [
+     0,
+     0,
+     0
+    ],
+    "hlSA": [
+     0,
+     0,
+     0
+    ],
+    "hlSB": [
+     0,
+     0,
+     0
+    ],
+    "hlAdded": [
+     0,
+     0,
+     0
+    ],
+    "hlAdm": [
+     0,
+     0,
+     0
+    ],
+    "hlBack": [
+     0,
+     0,
+     0
+    ]
+   },
+   "vsRef": {
+    "fgt0PY": [
+     -1.025,
+     -1.176,
+     -0.874
+    ],
+    "fgt2PY": [
+     0.04,
+     -0.026,
+     0.106
+    ],
+    "pov": [
+     0.49,
+     0.117,
+     0.863
+    ],
+    "bOAPy": [
+     -0.248,
+     -0.346,
+     -0.15
+    ],
+    "cost": [
+     -2.744,
+     -3.114,
+     -2.375
+    ],
+    "medWealthReal": [
+     598.371,
+     -1312.946,
+     2509.687
+    ],
+    "pLev20": [
+     7.956,
+     6.574,
+     9.339
+    ],
+    "giniD": [
+     0,
+     0,
+     0
+    ],
+    "hrs": [
+     0,
+     0,
+     0
+    ]
+   }
+  }
+ }
+}

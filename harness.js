@@ -2488,7 +2488,58 @@ function v54UnitSuite(){
     return {pass:bad.length === 0 && d.length === 0, detail:R.length + ' rows, ' + B.length + ' no-programme pairs; problems: ' + (bad.concat(d).slice(0, 8).join('; ') || 'none')}; });
   return out;
 }
+/* Session 2a (Oct 13, 2026; dev/reports/v5-25-health-today.md): the health setting's tests. */
+function healthUnitSuite(){
+  var out = [];
+  function t(name, fn){ try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); } catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); } }
+  function near(x, y, e){ return Math.abs(x - y) < (e || 1e-9); }
+  t('health: the shared income test and the Medicaid limits (HHS 2025 guideline; expansion 138%, non-expansion parents 40.5%, adults without children 0, children 255%)', function(){
+    var a = incomeTest(1, 0, 15650), b = incomeTest(2, 1, 15650 + 2*5500), c = incomeTest(0, 0, 0);
+    var m = [medicaidEligible(1.38, false, false, true), !medicaidEligible(1.39, false, false, true), medicaidEligible(0.405, false, true, false), !medicaidEligible(0.41, false, true, false), !medicaidEligible(0.01, false, false, false), medicaidEligible(2.55, true, true, false), !medicaidEligible(2.56, true, true, true)];
+    return {pass:near(a.ratio, 1) && b.n === 3 && near(b.ratio, 1) && c.n === 1 && m.every(Boolean), detail:a.ratio + ' ' + b.ratio + ' ' + JSON.stringify(m)}; });
+  t('health: out-of-pocket rules (deductible, 20% coinsurance, limits, cost-sharing reductions; Medicaid none; uninsured the whole bill)', function(){
+    var v = [hlOop('esi', 1000, 3), hlOop('esi', 11886, 3), hlOop('esi', 1e6, 3), hlOop('mkt', 1e6, 1.5), hlOop('mkt', 1e6, 2.5), hlOop('mkt', 1e6, 0.5), hlOop('mcaid', 5e4, 0.5), hlOop('unins', 5e4, 0.5), hlOop('mcare', 1e6, 1)];
+    var w = [1000, 3886, 9200, 3050, 9200, 9200, 0, 5e4, 9350];
+    return {pass:v.every(function(x, i){ return near(x, w[i]); }) && near(hlPct(1.2), 0.021) && near(hlPct(3.5), 0.0996) && near(hlPct(1.75), (0.0419 + 0.0660)/2), detail:v.join(', ')}; });
+  t('health: the need multipliers average 1 over adults and keep MEPS\'s ratio (57% of spending for 25.9% of adults); the age figures', function(){
+    var k = hlK(), r = (0.57/0.259)/(0.43/0.741);
+    return {pass:near(0.259*k.c + 0.741*k.n, 1) && near(k.c/k.n, r) && near(hlMu(30), 6669*15474/12530) && near(hlMu(10), 4217*15474/12530) && near(hlMu(undefined), 9154*15474/12530) && near(hlMu(90), 35995*15474/12530), detail:k.n.toFixed(4) + ' ' + k.c.toFixed(4)}; });
+  t('health: no draw on the main stream (8 per adult-year), needs the same in the programme and no-programme runs, off leaves the run unchanged', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60, years:6}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), mb0 = mulberry32, cnt = [0, 0], which = 0, d = [];
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), M = relMainCfgs(PR), M2 = relMainCfgs(PR);
+      var Z = tbStudy([Object.assign(relMainCfgs(PR)[0], {sc:SPEND_SOURCED}), relMainCfgs(PR)[1]], 3, P, so, 3);  /* uncounted first: it also builds the cached supply path */
+      mulberry32 = function(sd){ var g = mb0(sd); return sd === 3 ? function(){ cnt[which]++; return g(); } : g; };
+      var X = tbStudy([Object.assign(M[0], {sc:SPEND_SOURCED}), M[1]], 3, P, so, 3); which = 1;
+      var Y = tbStudy([Object.assign(M2[0], {sc:SPEND_SOURCED, hl:{}}), Object.assign(M2[1], {hl:{}})], 3, P, so, 3);
+      mulberry32 = mb0;
+      TB_KEYS.forEach(function(k){ [0, 1].forEach(function(i){ if (X[i][k] !== Z[i][k] && !(isNaN(X[i][k]) && isNaN(Z[i][k]))) d.push(i + ':' + k); }); });
+      if (!(Y[0].hlNeed > 0) || Y[0].hlNeed !== Y[1].hlNeed) d.push('needs differ: ' + Y[0].hlNeed + ' / ' + Y[1].hlNeed);
+      if (Y[1].hlEsi === undefined || X[1].hlEsi !== undefined) d.push('health keys');
+      if (!(Math.abs(Y[0].hlKap - Y[1].hlKap) < 1e-12)) d.push('calibration differs between the runs'); }
+    finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    /* two rows, each a one-year run for the tax rate and the six-year run: 8 x 60 x (1 + 6) x 2 */
+    return {pass:cnt[0] === 2*8*60*7 && cnt[1] === cnt[0] && d.length === 0, detail:'main-stream draws ' + cnt.join(' / ') + ' (off / on; expected ' + 2*8*60*7 + '); problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
+  t('health: the calibration puts the expected bill on the basket line in year 0 (by household type)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:200, years:1}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), r;
+    try { var M = relMainCfgs(PR); r = tbStudy([Object.assign(M[0], {sc:SPEND_SOURCED, hl:{}})], 1, P, Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY))[0]; }
+    finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    /* one year's realised bills scatter around the line; their mean over 200 adults lands within 15% of it, and the factor is positive and finite */
+    return {pass:r.hlKap > 0 && isFinite(r.hlKap) && Math.abs(r.hlPaid/r.hlLine - 1) < 0.15, detail:'factor ' + r.hlKap.toFixed(3) + '; bill / line ' + (r.hlPaid/r.hlLine).toFixed(3)}; });
+  t('health B: single payer before its start year is today\'s system; under it, the three cases order as the preprint does (central < cautious < today < costs run higher), the tax is positive, waits are a share, and the main stream keeps 8 draws per adult-year', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:80, years:4}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), mb0 = mulberry32, cnt = 0, d = [], R, R1;
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), b = function(hl){ return Object.assign(relMainCfgs(PR)[0], {sc:SPEND_SOURCED, hl:hl}); };
+      R1 = tbStudy([b({}), b({set:'B', start:9})], 2, P, so);  /* B never starts within the run: identical to A */
+      TB_KEYS.concat(HL_KEYS).forEach(function(k){ if (R1[0][k] !== R1[1][k] && !(isNaN(R1[0][k]) && isNaN(R1[1][k]))) d.push('before start: ' + k); });
+      mulberry32 = function(sd){ var g = mb0(sd); return sd === 2 ? function(){ cnt++; return g(); } : g; };
+      R = tbStudy([b({set:'B'}), b({set:'B', cs:'cautious'}), b({set:'B', cs:'high'})], 2, P, so, 2); mulberry32 = mb0;
+      if (!(R[0].hlSB < R[1].hlSB && R[1].hlSB < R[0].hlSA && R[0].hlSA < R[2].hlSB)) d.push('case order ' + [R[0].hlSB, R[1].hlSB, R[0].hlSA, R[2].hlSB].map(Math.round).join(' '));
+      R.forEach(function(r, i){ if (!(r.hlRate > 0) || !(r.hlWait >= 0 && r.hlWait < 100) || !(r.hlTax > 0) || !(r.hlBack > 0)) d.push('case ' + i + ': rate ' + r.hlRate + ', wait ' + r.hlWait); }); }
+    finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:d.length === 0 && cnt === 3*8*80*(1 + 4), detail:'main-stream draws ' + cnt + ' (expected ' + 3*8*80*5 + '); public plan per person-year ' + (R ? R.map(function(r){ return Math.round(r.hlSB); }).join(' / ') + ' against today\'s ' + Math.round(R[0].hlSA) : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
+  return out;
+}
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
+Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
@@ -2883,7 +2934,11 @@ if (require.main === module) {
     console.log('\n=== v54UnitSuite(): the v5.4 round (harness-only) ===');
     V54U.forEach(function(x){ if (!x.pass) v54f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + V54U.length + ' run, ' + v54f + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f) process.exitCode = 1;
+    var HLU = healthUnitSuite(), hlf = 0;
+    console.log('\n=== healthUnitSuite(): health coverage, setting A (harness-only) ===');
+    HLU.forEach(function(x){ if (!x.pass) hlf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + HLU.length + ' run, ' + hlf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
