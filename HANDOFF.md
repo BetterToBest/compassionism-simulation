@@ -23,7 +23,7 @@
 
 ## Pitfalls
 - The results token expires **2026-10-17 04:16 UTC**; renew it and update the Runpod secret `github_results_token` before any later run.
-- The comparison restudy named for s137 is defined nowhere in the repository; it is not in this job. Define it before running it.
+- The comparison restudy named for s137 is the compare page's 500-run restudy (ledger step s95, with a current-US-policy row); its rows are not defined in the repository, so it is not in this job.
 - No model names in commit messages (CLAUDE.md); a trailer slipped in once this session and was rewritten before use.
 - Pieces of one seed fail (`--lo` needs two or more seeds per piece).
 - Pro ends after Oct 18: sessions are scarce.
