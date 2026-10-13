@@ -14,14 +14,14 @@ body:
   - type: textarea
     id: unsourced_cco
     attributes:
-      label: "1. CCO cost relief has no source (20% of the basket at the reference BU, ceiling 50%)"
+      label: "1. CCO (Creative Currency Octaves) cost relief has no source (20% of the basket at the reference BU, ceiling 50%)"
       description: "Where: index.html: CCO_RELIEF_AT_REF, CCO_RELIEF_CAP; dev/runs/unsourced-constants-check.txt. Today: Earlier engine only. Raising it left every released row unchanged. Is that right, and is there a source or a range worth sweeping? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
   - type: textarea
     id: unsourced_damping
     attributes:
-      label: "2. PTF and PTH inflation damping has no source (0.5 and 0.1 times the share who joined)"
+      label: "2. PTF (community businesses) and PTH (community housing) inflation damping has no source (0.5 and 0.1 times the share who joined)"
       description: "Where: index.html: grep \"inflRate*=(1-\"; dev/runs/unsourced-constants-check.txt. Today: Off in every main row; on only in one optional row. Is a source known for its size? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
@@ -49,7 +49,7 @@ body:
   - type: textarea
     id: participation
     attributes:
-      label: "6. Participation and the BU amount are design choices, not facts about the world"
+      label: "6. Participation and the amount of BU (Basic Units) paid are design choices, not facts about the world"
       description: "Where: study.html, \"What the results depend on\". Today: They explain most of the spread in poverty, cost and inflation. What take-up should be assumed, and on what evidence? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
@@ -77,7 +77,7 @@ body:
   - type: textarea
     id: both_measures
     attributes:
-      label: "10. Every gain is confirmed on basket poverty and on wealth poverty, not on one measure"
+      label: "10. Every gain is confirmed on basket poverty (below the cost of living) and on wealth poverty (too little wealth), not on one measure"
       description: "Where: study.html; findings.html. Today: Compassionism lowers basket poverty and raises \"too little wealth\". Is the way both are reported fair? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
