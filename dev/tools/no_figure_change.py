@@ -8,6 +8,7 @@ A wording pass may change words but no number. The snapshot holds:
   engine   SHA-256 of harness.js and of every <script> block in index.html (the engine is read out of index.html)
   numeric  for each data/*.json file, SHA-256 of every numeric value with its path (not the words)
   tokens   for each page, report, data file and site script, how many times each number appears in the words
+           (a file that exists on only one side is listed, not compared: a new report has no 'before')
 A comparison fails if the engine hashes or numeric hashes differ. A changed token count is listed; it fails too unless
 the line is named in dev/tools/no_figure_change_allow.txt (one 'file<TAB>token<TAB>delta' per line, each with a reason in
 the report), so every number that moves in the words is looked at by a person.
@@ -78,6 +79,9 @@ def compare(a, b):
         allow = {l.rstrip('\n') for l in open(ap) if l.strip() and not l.startswith('#')}
     moved = []
     for k in sorted(set(a['tokens']) | set(b['tokens'])):
+        if k not in a['tokens'] or k not in b['tokens']:
+            print('%s  %s (not compared: no counterpart)' % ('new file' if k in b['tokens'] else 'removed ', k))
+            continue
         ca, cb = Counter(a['tokens'].get(k, {})), Counter(b['tokens'].get(k, {}))
         for t in sorted(set(ca) | set(cb)):
             if ca[t] != cb[t]:
