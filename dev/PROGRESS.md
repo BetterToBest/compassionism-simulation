@@ -245,3 +245,13 @@ Branch `claude/pensive-davinci-kll0u4`, from main 97d0389 (pull request #18 merg
 - [x] `gsa.js sobjoin` (Sobol on seed blocks, joined, with bootstrap intervals) and `dev/tools/s137b_jobs.sh`; Runpod `STUDY=s137b`.
 - [ ] Follow-up Sobol on pod lf78qp1tncv9hb (cpu3c, 16 vCPU, $0.48/h, EU-CZ-1, image node:22.22.0-bookworm; runner b0a36f8, engine 41f2361, MAX_HOURS=3), created 18:14 UTC; script's first line logged 18:14:42 (results repository HTTP 200).
 - [ ] Report v5-30 once `s137b-41f2361/DONE` is in.
+
+## Session 4 (Oct 13, 2026; ledger step s133): the study on the pages, v5.5.0
+
+Branch `claude/sleepy-darwin-7num3o`, from main 1775417 (pull request #22 merged). Decisions: `dev/DECISIONS.md`, Session 4.
+
+- [x] `dev/tools/study_data.py` writes `data/studies/s137.json` (7 tables, texts, sections) from the finished study; `--check` compares.
+- [x] `study.html`: basket poverty, other measures, government's costs, single payer's range, the price channel, what the results depend on, limits; tables download as CSV or JSON.
+- [x] `check_figures.js` block 10 (study file pointers, every number on the page, no typed amounts, generator check); `set_version.py` and `check_versions.js` cover `study.html`.
+- [x] Version 5.5.0; release notes in CONTRIBUTING.md (v5.4.1's moved to CHANGELOG.md); replication timeline panel; links from the simulation, findings and replication pages.
+- [ ] The compare page (undefined; see Decisions), the safety-net take-up and setting C rows on the page, the comparison restudy (ledger step s95).

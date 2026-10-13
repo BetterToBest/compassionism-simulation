@@ -40,13 +40,17 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.4.1 Release Notes
+## v5.5.0 Release Notes
 
-**Released as v5.4.1 (Oct 2026): how to read the wealth result.** Words only. No figure, row or engine line changes from v5.4, and the panels and release data are v5.4's. Plain-words report for Duke: `dev/reports/v5-24-wealth-measure-reading.md`; decision: `dev/DECISIONS.md`, session 1c.
+**Released as v5.5.0 (Oct 2026): the 500-seed health and sensitivity study on its own page.** A new page, `study.html`, shows the results of the paid 500-seed study (three health systems, three economies, with and without Compassionism) and its sensitivity analysis. No engine line changes and no figure of the v5.4 release changes; the simulation page and findings explorer show the same figures. Plain-words report for Duke: `dev/reports/v5-30-s137-results.md`.
 
-- **Why the 20-year wealth gap grew in Reference** (+11.0 points against v5.3's +5.5). The v5.4 report and notes now name the cause: mostly the 10% lower pay on return to work. Without that cut the gap is +6.6, with a 20% cut +15.7, and the new PTH and PTF rules move it by less than 0.3 (readings `cut0`, `cut20`, `pthbold`, `ptfs25` in `dev/runs/release-panel.json`).
-- **"How to read this measure"** (release page, under the Savings result, id `rel-wealth-frame`). The note gives Duke Johnson's framing: with the basics guaranteed and work more optional, people need a savings reserve less, and the gain shows in how people live more than in dollars. It cites outside evidence that a guaranteed minimum lowers emergency saving (Hubbard, Skinner and Zeldes, 1995). It states that the model does not include this: the spending share is the same in both runs, no well-being is measured, and the gap comes from prices against unprotected savings and from lower pay after job loss. The verdict line is unchanged.
-- v5.4's notes are in CHANGELOG.md.
+- **Basket poverty under today's system, single payer, and single payer with a private layer**, with and without Compassionism, in Reference, Adverse and Stress, with 95% intervals, and the other measures beside it.
+- **Government's costs in a separate table**, with the safety net's outlays labelled as not financed in the model.
+- **Single payer's range** under the Yale preprint's central, cautious and high-cost cases, labelled as depending on a preprint that is not peer reviewed.
+- **The price channel**: the rise in "too little wealth" with Compassionism comes through the model's price response (with prices held flat it falls).
+- **What the results depend on**: Morris screening and the follow-up Sobol run, with the share of the spread each input explains.
+- Every number on the page comes from `data/studies/s137.json`, written by `dev/tools/study_data.py` from `dev/runs/s137/` and `dev/runs/s137b/`; `dev/tools/check_figures.js` compares each one with the data. Each table downloads as CSV or JSON.
+- v5.4.1's notes are in CHANGELOG.md.
 
 ---
 
@@ -358,7 +362,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. *(v5.3: the engine has one copy. `harness.js` reads it out of `index.html` when it loads, so an engine change is made once, in `index.html`; `dev/tools/port_engine.py` and the five listed differences between the two files are retired. `domtest.js` still compares the page with the script `harness.js` runs.)* If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->125<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->221<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->129<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->221<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -452,7 +456,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.4.1*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.5.0*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

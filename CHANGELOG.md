@@ -6,6 +6,16 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.4.1 Release Notes
+
+**Released as v5.4.1 (Oct 2026): how to read the wealth result.** Words only. No figure, row or engine line changes from v5.4, and the panels and release data are v5.4's. Plain-words report for Duke: `dev/reports/v5-24-wealth-measure-reading.md`; decision: `dev/DECISIONS.md`, session 1c.
+
+- **Why the 20-year wealth gap grew in Reference** (+11.0 points against v5.3's +5.5). The v5.4 report and notes now name the cause: mostly the 10% lower pay on return to work. Without that cut the gap is +6.6, with a 20% cut +15.7, and the new PTH and PTF rules move it by less than 0.3 (readings `cut0`, `cut20`, `pthbold`, `ptfs25` in `dev/runs/release-panel.json`).
+- **"How to read this measure"** (release page, under the Savings result, id `rel-wealth-frame`). The note gives Duke Johnson's framing: with the basics guaranteed and work more optional, people need a savings reserve less, and the gain shows in how people live more than in dollars. It cites outside evidence that a guaranteed minimum lowers emergency saving (Hubbard, Skinner and Zeldes, 1995). It states that the model does not include this: the spending share is the same in both runs, no well-being is measured, and the gap comes from prices against unprotected savings and from lower pay after job loss. The verdict line is unchanged.
+- v5.4's notes are in CHANGELOG.md.
+
+---
+
 ## v5.4 Release Notes
 
 **Released as v5.4 (Oct 2026): labour and markets.** One pull request into `main` (merging is the release). Plain-words report for Duke: `dev/reports/v5-23-v54-release.md`; the design note is `dev/reports/v5-21-v54-design.md`.
