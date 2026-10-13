@@ -3,7 +3,7 @@
 ## What shipped
 - No code or page changes this session; it reassessed the plan for Duke's last Claude Pro days (ends Oct 15, time of day unknown).
 - Version 5.5.0 (the 500-seed study on `study.html`) is merged and tagged `v5.5.0`; checks and deploy passed on `main`.
-- The tracking ledger now orders the remaining sessions and holds six open choices for Duke.
+- The tracking ledger now orders the remaining sessions and holds one open choice for Duke (how the findings page labels 5.5.0).
 
 ## Branch and pull request state
 - `main` is at 6a1ca3e (pull request #23 merged); pull request #15 (wealth-gap sentence) is also merged. No other pull request is open.
@@ -29,4 +29,4 @@
 - Pushes to `main` are refused; work on a branch and open a draft pull request.
 - `node harness.js unit`, `domtest.js` and `guard_test.js` each take minutes; run them in the background. A new check in `check_figures.js` changes the domtest count: run `node domtest.js --write-counts`.
 - `study.html` has had no visual check at 390 px or 1280 px.
-- Duke has not yet confirmed the new ledger choices (backtest, compare page, token, split of the old session, fact sheet, findings label); do not assume them.
+- Duke confirmed the plan on Oct 13: the history check is in (needs the Census poverty files he attaches), the compare page goes to the free plan, the token lapses. Still open for him: how the findings page labels 5.5.0 (ledger choice d200); if no answer, apply the first option and flag it.
