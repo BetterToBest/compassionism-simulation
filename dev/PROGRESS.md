@@ -223,3 +223,12 @@ Branch `claude/optimistic-wozniak-flwhbn`, from main f3f7f3d (pull request #17, 
 - [x] The prevention link (`PREV`, row option `pv`, off by default): zero, central and high cases, labelled; small in every case. The claim about genetically modified crops is kept out; reader notes with evidence status are in the report.
 - [x] The speed pass: profiled, no 2x available, stopped with no engine change. Time per run 0.375-0.436 s (health rows); 0.43 s per run per core for the Runpod estimate.
 - [x] Checks: validate; unit 221; domtest 125 after the lineage proof; guard identical.
+
+## Session 2d (Oct 13, 2026; ledger step s154): the outside audit, and the Runpod study (s137) launched
+
+Branch `claude/pensive-davinci-kll0u4`, from main 97d0389 (pull request #18 merged). Report: `dev/reports/v5-29-outside-audit.md`; decisions: `dev/DECISIONS.md`, Session 2d.
+
+- [x] GPT's and Grok's findings sorted: fix before Runpod (done), fix later, turned down (with reasons).
+- [x] Reports v5-27 and v5-28 corrected (cost-of-living line derived; setting C's arithmetic; safety-net financing; SNAP's work rule; 2025 dollars).
+- [x] Study tools: `health_check.js` (`--lo`, `--dump`, `--merge`, audit rows, `--thetaX`), `gsa.js` (`--lo`, `--out`, `morrisjoin`), `dev/tools/s137_jobs.sh`, `runpod.sh` (`STUDY=s137`). Merge tested identical; job script dry-run at tiny size passed. Checks: validate; unit 221; domtest 125.
+- [ ] s137 on Runpod: pod 2m5v523fcahyj3 (cpu3c, 16 vCPU, $0.48/h, EU-RO-1) created 06:13:57 UTC, engine a3582e2, runner 0d4a313, max 5 h. Results: BetterToBest/compassionism-sim-results, folder `s137-a3582e2/`.

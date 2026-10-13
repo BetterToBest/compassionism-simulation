@@ -1,32 +1,29 @@
-# Handoff (Oct 13, 2026; session 2c, ledger step s153: health financing finished)
+# Handoff (Oct 13, 2026; session 2d, ledger step s154: outside audit done; s137 launched)
 
 ## What shipped
-- Today's safety net (SNAP, EITC, refundable Child Tax Credit) on in every Compassionism comparison: `health_check.js --grid` runs the six cells (A, B, C, each without and with Compassionism) plus the no-programme, no-safety-net reference line, with costs beside results (2d8e6c8). The switch stays off by default.
-- The +0.4 point safety-net reading traced (`dev/tools/sn_trace.js`): it was setting A's own effect folded into the comparison. The safety net's own effect is +0.07 points, through prices.
-- Government's share under single payer fixed at its no-programme level (`HEALTH.gov` 'fixed'); the floating share is a sensitivity row and reproduces session 2b exactly.
-- Prevention link (`PREV`, row option `pv`, off by default): zero, central and high cases, labelled; small in every case. The claim about genetically modified crops is kept out.
-- Speed pass: profiled, no 2x available, stopped with no engine change. **Time per run: 0.375-0.436 s for health rows (use 0.43 s per run per core), 0.35 s without a health setting.**
-- Report `dev/reports/v5-28-safety-net-grid.md`; v5-27 updated to Duke's decisions; DECISIONS Session 2c; runs in `dev/runs/health/s2c*-*.json` (50f1a29).
-- Checks: validate; unit 221, 0 failed; domtest 125, all passed; guard identical; lineage link 7ec4e6c93ca9 -> 57e00367e58f.
+- The outside audit (GPT, Grok) sorted into fix before Runpod (done), fix later, turned down: `dev/reports/v5-29-outside-audit.md`; `dev/DECISIONS.md` Session 2d (a3582e2).
+- Reports v5-27 and v5-28 corrected: the $49,370 line is derived (unweighted mean of MIT's 51 state figures); setting C's 19.9% / 25.8% arithmetic; safety-net financing not modelled; SNAP's work rule; 2025 dollars.
+- Study tools: `health_check.js` seed ranges, dumps and exact merge (tested identical), the audit's rows, `--thetaX`; `gsa.js` seed blocks and the Morris noise check (`morrisjoin`); `dev/tools/s137_jobs.sh`; `dev/batch/runpod.sh` `STUDY=s137` with output hashes (a3582e2, runner pin 0d4a313).
+- Checks: validate; unit 221, 0 failed; domtest 125 passed. No engine change.
 
 ## Branch and pull request state
-- Branch `claude/optimistic-wozniak-flwhbn`, from main f3f7f3d (pull request #17 merged).
-- Pull request https://github.com/BetterToBest/compassionism-simulation/pull/18 into main, which this session merges once CI is green (the kickoff asked for it, so the auditors read the final engine). If it is still open, check CI and merge it. No version bump: no page change.
+- Branch `claude/pensive-davinci-kll0u4`, from main 97d0389. Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/19 (CI not yet reported at handoff). Duke merges it when the audit note reads right.
 
 ## Long jobs in flight
-None.
+- Runpod pod `2m5v523fcahyj3` (cpu3c, 16 vCPU, $0.48/h, EU-RO-1), created 06:13:57 UTC, max 5 hours (at most $2.40); expected about 1.2 hours. Engine pinned at a3582e2, runner 0d4a313. **Start not yet confirmed**: at 06:16 UTC the pod read RUNNING but its logs were empty (image still starting).
+- Results: BetterToBest/compassionism-sim-results, folder `s137-a3582e2/` (`run.txt`, `status.txt`, pieces, merged `s137table-ENV.json`, `s137flat-*`, `s137thx-*`, `gsa-morris-ENV.json`, `gsa-sobol-st.json`, `SHA256SUMS`). Done when `s137-a3582e2/DONE` exists; the pod then deletes itself.
 
 ## Next 3 actions
-1. **Outside audit (ledger step s154, Duke):** paste `outside-audit-prompt.md` (delivered Oct 12) into GPT and one other AI, each in a fresh chat, against main after pull request #18. Bring both replies to a Claude session, which sorts the findings into fix-before-Runpod, fix-later and reject (with reasons) and applies the first group.
-2. **Before the Runpod study (ledger step s137, Duke):** renew the GitHub token for BetterToBest/compassionism-sim-results (**it expires 2026-10-17 04:16 UTC**), update the Runpod secret `github_results_token`, and turn the Runpod connector on.
-3. **Runpod study (s137):** sensitivity (Morris, then Sobol), the comparison restudy, and the health financing table: `--grid` cells at 500 seeds in three environments, plus the floating-share rows (`BSNfl`, `CSNfl`) and the prevention link's central case (`ASNpv`, `BSNpv`, `CSNpv`). Cost: the table is about 18,000 runs (2.2 core-hours at 0.43 s) per set of six cells. Spend cap $8.
+1. Check the study: `git ls-remote https://github.com/BetterToBest/compassionism-sim-results` and fetch `s137-a3582e2/status.txt`. If there is no folder and the pod (Runpod `get-pod 2m5v523fcahyj3`) is still running after 30 minutes, read its logs, fix the cause, terminate that pod, and relaunch with the same command (in `dev/batch/runpod.sh`, header).
+2. When `DONE` is there: copy the merged files to `dev/runs/s137/`, read the Morris noise check (`gsa-morris-ENV.json`, `leaders`, `check`); if the leaders differ from part, bu, rho, spend, payCut and bleiBonus, run a follow-up Sobol on them.
+3. Write the results report `dev/reports/v5-30-s137-results.md` with the framing listed under "Fix later, E" in v5-29 (conditional on the Yale preprint; poverty and government cost as separate tables; captions).
 
 ## Files to touch
-`dev/batch/runpod.sh`, `dev/tools/v54_jobs.sh` (pieces, one per core). `dev/tools/health_check.js` (grep `const VAR`, `GRID`). It has no seed-range option yet, and the Runpod pieces need one (`tbStudy` takes a first seed, `lo`). `dev/reports/v5-28-safety-net-grid.md` (Reproduce section).
+`dev/tools/health_check.js` (grep `const VAR`, `MERGE`), `dev/tools/gsa.js` (grep `morrisjoin`), `dev/tools/s137_jobs.sh`, `dev/reports/v5-29-outside-audit.md`, `dev/DECISIONS.md` (grep `Session 2d`), `dev/PROGRESS.md` (last section).
 
 ## Pitfalls
-- `health_check.js` runs seeds 1..N in one process. Add the seed-range option before splitting the work into pieces; seeds are paired, so splitting changes no figure.
-- After any `index.html` edit, run `python3 dev/tools/sync_earlier.py`. An engine edit makes domtest's two provenance checks fail until `node dev/tools/engine_lineage.js prove "..."` records a link (about 10 minutes; do not edit `index.html` meanwhile).
-- `unit` changes the test count quoted in the docs: run `node harness.js unit --write-counts`.
-- Run `node --check` on tools before committing (an unescaped apostrophe once broke `health_check.js`).
-- Pro ends after Oct 18: Claude Code sessions are scarce, so start the Runpod job early in the session and do not poll it.
+- The results token expires **2026-10-17 04:16 UTC**; renew it and update the Runpod secret `github_results_token` before any later run.
+- The comparison restudy named for s137 is defined nowhere in the repository; it is not in this job. Define it before running it.
+- No model names in commit messages (CLAUDE.md); a trailer slipped in once this session and was rewritten before use.
+- Pieces of one seed fail (`--lo` needs two or more seeds per piece).
+- Pro ends after Oct 18: sessions are scarce.
