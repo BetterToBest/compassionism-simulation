@@ -1,0 +1,11 @@
+# Number counts allowed to move in the s147 wording pass. Each line: file TAB number TAB change in count.
+# findings.html: the no-script note and the table section named the v5.2 data file; the numbers shown come from v5.4. The link text now says v5.4.
+findings.html	5.2	-2
+findings.html	5.4	+2
+# CONTRIBUTING.md: a new note above the open-items table names the release numbers v5.2 to v5.5 and the year 2026. These are version labels, not figures.
+CONTRIBUTING.md	2026	+1
+CONTRIBUTING.md	5	+1
+CONTRIBUTING.md	5.2	+1
+CONTRIBUTING.md	5.3	+1
+CONTRIBUTING.md	5.4	+1
+CONTRIBUTING.md	5.5	+1

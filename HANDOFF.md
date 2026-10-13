@@ -1,32 +1,31 @@
-# Handoff (Oct 13, 2026, evening): findings page lists 5.5; study page panel, chart and review kit are in draft pull request 25
+# Handoff (Oct 13, 2026, night): the plain-language pass (ledger step s147) is in draft pull request 26; no figure changed
 
 ## What shipped
-- Release list has a 5.5 entry (plain words: no engine change, figures identical to 5.4, so the 5.4 data stays the data shown); the findings page opens on it, labelled "latest". Duke's choice d200, option 1. No figure or data file changed.
-- `study.html`: a "What would have to be true" panel, a sensitivity bar chart (Sobol results, one outcome at a time) and a table naming the two constants with no source (CCO relief 20%; PTF and PTH damping 0.5 and 0.1). Numbers all come from `data/studies/s137.json`.
-- `dev/tools/unsourced_check.py` shows the released figures do not use either constant (relief: no line changed; damping: only the optional "two former stand-ins on" row). Result in `dev/runs/unsourced-constants-check.txt`.
-- `ECONOMIST-REVIEW.md` (twelve rows) and `.github/ISSUE_TEMPLATE/economist-review.yml`, both written by `dev/tools/review_rows.py`; a check keeps them equal.
-- `index.html` and `harness.js` are untouched, so the engine is bit-identical. Decisions are in `dev/DECISIONS.md` (Session 5); the report has a new section 8b.
+- Wording only, seven commits on the session branch. Findings page text (written by `dev/tools/release_data.py`), study page text (`dev/tools/study_data.py`), front page text in `index.html` (its scripts are byte-identical), `findings.html`, chart row names in `site/findings.js`, `README.md`, and the economist checklist (`dev/tools/review_rows.py`, regenerated).
+- New test `dev/tools/no_figure_change.py`: engine fingerprints, a fingerprint of every number in the 34 data files, and the count of each number in the words of 103 files. All identical except 8 named, expected moves (`dev/tools/no_figure_change_allow.txt`).
+- The four checks in the old handoff pass before and after: `check_figures.js` (16), `release_data.py --check` (14 files), `study_data.py --check` (9 tables), `domtest.js` (130). `harness.js validate` and `unit` (25 suites) also pass.
+- Report `dev/reports/v5-31-clarity-pass.md`: what changed, the test results, and seven wording questions for Duke (section 3), none applied. Decision recorded in `dev/DECISIONS.md` (Session 6).
+- Notes added to `CONTRIBUTING.md` and `dev/PROGRESS.md` saying their open-item lists are out of date.
 
 ## Branch and pull request state
-- Branch `claude/relaxed-davinci-b6gp1b`, draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/25 into `main`; CI not yet reported (subscribed). Locally `validate`, `unit` (221), `domtest` (130) and `check_figures.js` (16 checks) pass. Merge it: the merge is the release.
+- Branch `claude/bold-pasteur-57cczu`, draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/26 into `main` (subscribed). CI not yet reported. Merge it when the report reads right; the merge is the release.
 
 ## Long jobs in flight
 - None.
 
 ## Next 3 actions
-1. Check pull request 25's CI; fix anything red. Duke reads report section 8b and the panel text, and merges.
-2. After 25 is merged: the plain-language pass over every page and report (ledger step s147), with a test that no figure changed (run `node dev/tools/check_figures.js`, `python3 dev/tools/release_data.py --check`, `python3 dev/tools/study_data.py --check` and `node domtest.js` before and after). List wording that changes meaning for Duke as a decision; apply nothing of that kind.
-3. History check (s146) only if Duke has attached the Census poverty files; otherwise the free-plan chat packets (s135).
+1. Check pull request 26's CI and fix anything red. Duke reads `dev/reports/v5-31-clarity-pass.md`, section 3, and answers the seven questions (the first, about what the damping constant belongs to, matters most).
+2. If Duke has attached the Census poverty series (ledger step s156): the history check, step s146. Otherwise the free-plan chat packets, step s135, including `dev/background/ledger-export.md`.
+3. Once Duke answers section 3: apply the approved wording changes in the generators (`study_data.py` unsourced table first), regenerate, and rerun `no_figure_change.py compare`.
 
 ## Files to touch
-- Action 2: every `*.html` at the root (grep long lines first), `dev/tools/study_data.py` (the page's words are in `content()`, lines 95 on), `dev/tools/release_data.py` (texts), `CONTRIBUTING.md` (its open-items table is headed v5.2 and is out of date), `dev/PROGRESS.md` (grep `\[ \]`).
-- Wording on generated pages is changed in the generator, then regenerated; never edit `data/` by hand.
+- Action 3: `dev/tools/study_data.py` (grep "inflation damping"), `dev/tools/review_rows.py` (row 2), `dev/tools/release_data.py` (grep "design-neutral" if defined), `site/findings.js` (grep "design-neutral").
+- Action 2: `dev/background/` (new `ledger-export.md`).
 
 ## Pitfalls
-- The two-constants test covers only the Adverse environment, 4 seeds, 8 years; the 500-seed figures are unchanged because no engine line changed.
-- The panel's "what would have to be true" wording is Claude's reading of the sensitivity results, not Duke's words; Duke should check it.
-- The 5.5 entry has status "latest" and shares the 5.4 data file; the 5.4 entry stays "current". Do not copy the data file (`dev/ADDING-A-RELEASE.md` explains).
-- A new check in `check_figures.js` changes the domtest count: run `node domtest.js --write-counts`.
-- Playwright for screenshots is at `/opt/node22/lib/node_modules/playwright`, not in the repository.
+- Before any wording pass: `python3 dev/tools/no_figure_change.py snapshot before.json`; after: `snapshot after.json`, then `compare before.json after.json`. A new number in the words needs a line in `dev/tools/no_figure_change_allow.txt` with a reason.
+- Wording on generated pages is changed in the generator, then regenerated; never edit `data/` by hand. Release data for v5.0 to v5.3 is an archive and was left alone.
+- Left unrewritten on purpose: `earlier-engine.html` (frozen) and the technical body of `replication.html` (about 60,000 words).
+- The study page and the economist checklist now disagree on what PTH is (health programmes versus community housing) until Duke answers question 1.
 - `node harness.js unit` and `domtest.js` take minutes each; run them in the background. GitHub GraphQL is blocked: use the pull request tools.
 - The results token expires 2026-10-17 04:16 UTC; nothing planned needs it. Pro ends Oct 15.

@@ -1,6 +1,6 @@
 # Creative-output backing, capacity speed and the octave limit: Claude's reading of the design
 
-Session 31, Oct 2, 2026. Ledger step s67; Duke's answers to d137, d138 and d139 (Oct 2). Written by Claude before any code. Everything below headed "Claude's reading of the design" is labelled that way wherever it appears on the page.
+Session 31, Oct 2, 2026. Ledger step s67; Duke's answers to three questions (Oct 2): how fast the essential-service providers add capacity (d137), what backs a creative payment (d138) and what limits an octave (d139). Written by Claude before any code. Everything below headed "Claude's reading of the design" is labelled that way wherever it appears on the page.
 
 ## Duke's three answers (quoted)
 
@@ -8,7 +8,7 @@ Session 31, Oct 2, 2026. Ledger step s67; Duke's answers to d137, d138 and d139 
 - **What backs a creative payment (d138):** "New output is offered to the public like a community chest of sorts, both belonging to the citizens, and offered a lower price than private market goods/services. This is the difference between price and value. For example, open-source software is free, but closed software costs 100/month. ... Collective contributors get a higher conversion rate and unlimited octave capacity for offering their software for free or for 1 dollar per month. Likewise, a band can sell out a stadium for ticket prices at $100, but they can offer tickets to collective members for 6 expired BUs. If the band has an earned conversion rate of 9*Phi or 14.56, they stay revenue neutral."
 - **What the octave limits (d139):** "ESPs who accept BUs have octave caps based on their capacity. Individuals and Creative Collective member groups have unlimited octave caps, but they must show their work to earn an elevated conversion rate."
 
-The Research Hub agrees with the d139 answer: "For PTF businesses, octave capacity tracks market throughput" (Glossary, Octave Levels), and Creative Collectives "manage peer-reviewed conversion processes" (Research Summary).
+The Research Hub agrees with Duke's answer on what limits an octave (d139): "For PTF businesses, octave capacity tracks market throughput" (Glossary, Octave Levels), and Creative Collectives "manage peer-reviewed conversion processes" (Research Summary).
 
 ## Claude's reading of the design
 

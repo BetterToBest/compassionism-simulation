@@ -235,7 +235,7 @@ def content(R):
     # Table 9. the two constants with no source
     tables.append({'id': 'unsourced', 'title': 'Two constants with no source',
                    'columns': ['Constant', 'Value', 'Source', 'Do the released figures use it?'],
-                   'rows': [[txt('CCO cost relief: how far CCO members\' cost of living is cut at the reference BU, and the ceiling on that cut'),
+                   'rows': [[txt('CCO (Creative Currency Octaves) cost relief: how far CCO members\' cost of living is cut at the reference BU, and the ceiling on that cut'),
                              {'p': [N('unsourced.ccoRelief', 'p0'), ' of the basket (ceiling ', N('unsourced.ccoCap', 'p0'), ')']},
                              txt('None found. The decision log records the search; the value is a placeholder.'),
                              txt('No. Raising it left every released row unchanged when tested. It belongs to the earlier engine.')],
@@ -246,19 +246,19 @@ def content(R):
     T['tables'] = tables
 
     X = {}
-    X['intro'] = ('The paid 500-seed study ran the same 500 simulated populations (500 adults each, 20 years) with and without Compassionism under three health systems and three economies, '
+    X['intro'] = ('The 500-seed study, run on a rented server, ran the same 500 simulated populations (500 adults each, 20 years) with and without Compassionism under three health systems and three economies, '
                   'and then asked which inputs the answer depends on. Every comparison is paired: the same people and the same luck in both runs. Figures are the study\'s, copied from its results report.')
-    X['basket'] = ('Compassionism lowers basket poverty in every cell. In Reference under today\'s health system it falls by {{drv.fall.ref|n1}} points '
+    X['basket'] = ('Compassionism lowers basket poverty in every combination of health system and economy. In Reference under today\'s health system it falls by {{drv.fall.ref|n1}} points '
                    '(Adverse {{drv.fall.adv|n1}}, Stress {{drv.fall.st|n1}}). Single payer lowers poverty before Compassionism starts, so Compassionism\'s own drop is '
                    '{{drv.ptsLess.ref|n1}} points smaller under it in Reference, and the level reached with both is the lowest of the three settings.')
-    X['cap.basket'] = ('Basket poverty counts the adult-years spent below the cost of living. Results for B and C depend on single-payer savings taken from the Yale preprint (Galvani, Pandey, Wells and Ye, medRxiv 2026), '
+    X['cap.basket'] = ('Basket poverty counts the adult-years spent below the cost of living. Results for B (single payer) and C (single payer with a private layer) depend on single-payer savings taken from the Yale preprint (Galvani, Pandey, Wells and Ye, medRxiv 2026), '
                        'which is not peer reviewed; their range is in the table on single payer. "With Compassionism" is the v5.4 release row. Today\'s safety net is on in both runs of rows A, B and C. Intervals are 95% intervals.')
-    X['cap.other'] = ('Poverty depth (FGT2) weighs each person\'s shortfall by its square, so the deepest poverty counts most. "Too little wealth" rises with Compassionism in every cell, as in the v5.4 release: '
+    X['cap.other'] = ('Poverty depth (FGT2) weighs each person\'s shortfall by its square, so the deepest poverty counts most. "Too little wealth" rises with Compassionism in every combination of health system and economy, as in the v5.4 release: '
                       'people in the programme hold less cash once their basket is covered. The price-channel table shows this rise comes from the model\'s price response, not from health financing. '
-                      'In Stress, BLEI poverty also rises slightly.')
+                      'In Stress, BLEI poverty (the days-of-basic-living measure) also rises slightly.')
     X['cap.costs'] = ('The safety net\'s outlays are today\'s programmes, paid in both runs; they are not programme cost. The model does not reconcile tax revenue with these outlays: it reports them, '
                       'it does not show that they are financed. Under A the household health bill is premiums and out-of-pocket costs. Under B and C it is the health tax less the employer\'s former premium share. '
-                      'Government\'s share of the plan is held at its level in the same seed\'s run without the programme.')
+                      'Government\'s share of the plan is held at its level in the matching run (same seed) without the programme.')
     X['single'] = ('The single-payer savings are inputs from the Yale preprint, not results of this model. The study ran the preprint\'s central case and two others. In the cautious case, savings are cut; '
                    'in the high-cost case providers are paid near commercial rates, so the savings vanish and only the added care remains. Single payer still lowers poverty with the cautious savings. '
                    'In the high-cost case the plan costs more per person than today\'s system, so any gain there comes from the financing rule, not from savings.')
@@ -269,14 +269,14 @@ def content(R):
                   'Making the responses stronger changes little, so what matters is whether the programme\'s inflation happens, not its strength. How strongly prices respond to benefit-funded demand is not settled.')
     X['cap.price'] = ('The flat column switches off every price response, including the programme\'s own inflation. It shows what prices do in the model; it is not a scenario anyone proposes. '
                       '"As released" carries the programme inflation the v5.4 release reports. In Adverse and Stress the flat runs keep the environments\' background inflation.')
-    X['sens'] = ('Two methods ask which inputs the answer depends on. Screening (Morris 1991) ranks how far each input moves an outcome over its range, on {{meta.morrisPaths|int}} random paths of {{meta.morrisSeeds|int}} paired seeds each. '
-                 'The follow-up Sobol run (Saltelli et al. 2010) splits the spread of each outcome among the inputs, with {{meta.sobolBase|int}} base points and {{meta.sobolSeeds|int}} paired seeds per point, in Stress. '
-                 'Participation and the BU amount explain most of the spread in poverty, BLEI poverty, cost and inflation. These are design choices about the programme\'s size, not uncertain facts about the world. '
+    X['sens'] = ('Two methods ask which inputs the answer depends on. Screening (the Morris method, 1991) ranks how far each input moves an outcome over its range, on {{meta.morrisPaths|int}} random paths of {{meta.morrisSeeds|int}} paired runs (seeds) each. '
+                 'The follow-up Sobol run (the Sobol method, Saltelli et al. 2010) splits the spread of each outcome among the inputs, with {{meta.sobolBase|int}} base points and {{meta.sobolSeeds|int}} paired runs (seeds) per point, in Stress. '
+                 'Participation and the amount of BU paid explain most of the spread in poverty, BLEI poverty, cost and inflation. These are design choices about the programme\'s size, not uncertain facts about the world. '
                  'For basket poverty, the income effect on earnings is the one uncertain behavioural constant that matters. "Too little wealth" depends most on the share of extra cash people spend.')
     X['cap.morris'] = ('A noise check was set before the run: an input\'s effect counts as measured only if the two seed blocks agree to within a quarter of it. The leaders hardly differ between environments (Reference and Adverse are in the data files).')
     X['cap.sobol'] = ('The total index counts an input alone and together with others; the first-order index counts it alone. Where the totals add to more than the first-order indices the inputs act together. '
                       'The first Sobol run was too noisy for its first-order figures (several fell outside their range), so only this follow-up\'s are shown. Inputs with a total index of 0.01 or less on every outcome are left out: '
-                      'wage elasticity, PTH uptake, top conversion rate and the PTF cut outside food and housing.')
+                      'wage elasticity, uptake of community housing (PTH), top conversion rate and the community-business (PTF) cut outside food and housing.')
     X['chart'] = ('Each bar is the share of the spread in one outcome that an input explains, alone and together with the others (the Sobol total index, Stress). A longer bar means the answer depends more on that input. '
                    'The line on each bar is its 95% interval. Pick an outcome to redraw the chart; every number is in the table below it.')
     X['true'] = ('A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. '
@@ -285,7 +285,7 @@ def content(R):
                      'and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt.')
     X['limits'] = ('All single-payer results rest on the Yale preprint\'s savings. The model does not reconcile tax revenue with today\'s safety-net outlays or with government\'s share of the plan. '
                    'The price response drives the "too little wealth" result and is not calibrated to outside evidence. The cost-of-living line is the unweighted state average. '
-                   'SNAP\'s work rules and a separate Child Tax Credit take-up are not modelled. PTF\'s health-sector cut under single payer is an upper reading. '
+                   'The work rules of SNAP (food stamps) and a separate Child Tax Credit take-up are not modelled. The community businesses\' (PTF) health-sector cut under single payer is an upper reading. '
                    'The model has not yet been reviewed by an independent economist.')
     X['asof'] = 'Study run on a rented server on {{meta.seeds|int}} paired seeds; the follow-up Sobol ran in Stress only.'
     T['text'] = X

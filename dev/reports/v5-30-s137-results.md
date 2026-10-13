@@ -145,7 +145,7 @@ The model raises essentials' prices when more of them are bought, and the progra
 
 ## 7. Smaller rows
 
-- **Government's share floating** (the sensitivity row for d194): the health tax falls a little with Compassionism (Reference, B: $6,242 instead of $6,331). Single payer's change to Compassionism's effect (section 1) moves by 0.05 to 0.15 points on basket poverty and by 0.2 to 0.4 on too little wealth, across the three environments.
+- **Government's share floating** (the sensitivity row for the fixed government share, d194): the health tax falls a little with Compassionism (Reference, B: $6,242 instead of $6,331). Single payer's change to Compassionism's effect (section 1) moves by 0.05 to 0.15 points on basket poverty and by 0.2 to 0.4 on too little wealth, across the three environments.
 - **The prevention link** (s141, central case): Compassionism's effect under A does not move (0.00, to two decimals, in every environment). The change to the effect under B or C is 0.01 or less. As the 20-seed reading found, the chronic state is entered too slowly for the programme's exposures to move it within 20 years.
 - **The safety net without a health setting** (against the reference line): Compassionism's effect on basket poverty moves -0.03 (Reference), -0.16 (Adverse) and **+0.50** (Stress). Claude's reading: in Stress, where the programme is small, the safety net and the programme reach the same households and partly overlap.
 
