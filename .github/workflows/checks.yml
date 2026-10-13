@@ -25,3 +25,16 @@ jobs:
         run: node harness.js unit
       - name: Page behaviour, and the unit suite and source parity against the page (jsdom)
         run: node domtest.js
+
+  # Session 2a (Oct 13, 2026): the guard test. 20 fixed seeds of the v5.4 panel's main rows in the three environments, compared output by output
+  # with the reference in dev/runs/guard (made before any engine edit). A switched-off mechanism must leave it identical. Runs beside the checks above.
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Guard test (every figure of 25 v5.4 panel rows, seeds 1-20, Reference, Adverse and Stress)
+        run: node dev/tools/guard_test.js

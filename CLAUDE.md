@@ -30,7 +30,7 @@ The Compassionism Simulation: an open, in-browser agent-based model of the Compa
 
 ## Standing guardrails (keep all)
 
-1. Every new mechanism sits behind a switch; switch off = bit-identical output (prove with full-output diffs). Record each engine change with `node dev/tools/engine_lineage.js prove "what changed"`.
+1. Every new mechanism sits behind a switch; switch off = bit-identical output (prove with full-output diffs; `node dev/tools/guard_test.js` must pass, about 3 minutes, also run in CI). Record each engine change with `node dev/tools/engine_lineage.js prove "what changed"`.
 2. Before/after comparisons are CRN-paired on seeds 1-500 in the Reference, Adverse and Stress environments.
 3. The three checks (`validate`, `unit`, `domtest`; exact commands in `.github/workflows/checks.yml`) run on every change.
 4. Eight random draws per agent-year (the CRN guarantee) must hold.
