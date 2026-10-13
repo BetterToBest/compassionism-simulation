@@ -15,6 +15,8 @@
  *   sobjoin ENV FILE1,FILE2,...   follow-up Sobol (Oct 13, 2026; dev/DECISIONS.md, Session 2f): joins Sobol runs of the same design on consecutive seed
  *                             blocks (--lo), so one Sobol can use every core: each point's result is the seed-weighted mean of the blocks' (the same as one run
  *                             on all their seeds); adds 95% bootstrap intervals over the N base points.
+ *                             Results report (Oct 13, 2026; dev/DECISIONS.md, Session 2g): every Sobol output also gives Sc, the first-order index with B's
+ *                             results centred on their mean before the product (the same expected value as S; much less noise when the mean is far from zero).
  * --lo=FIRST runs seeds FIRST..FIRST+SEEDS-1 at every point (default 1); --out=NAME names the output dev/runs/v54/NAME.json.
  * Each point runs SEEDS paired seeds (1..SEEDS): the paired difference is far less noisy than either run, and the same seeds at every point keep the noise
  * out of the comparisons between points. Ranges: sourced constants over their sources' ranges, design parameters over the ranges the reports sweep; each
@@ -79,8 +81,8 @@ function sobolIdx(names, fA, fB, fAB, rows) {
   const R = rows || fA.map((_, n) => n), N = R.length, out = {};
   K.forEach(m => { const ya = R.map(n => fA[n][m]), yb = R.map(n => fB[n][m]), all = ya.concat(yb), mean = all.reduce((a, b) => a + b, 0)/all.length, V = all.reduce((a, b) => a + (b - mean)*(b - mean), 0)/(all.length - 1);
     out[m] = {variance: V, mean};
-    names.forEach((nm, j) => { const yab = R.map(n => fAB[j][n][m]); let s1 = 0, st = 0; for (let n = 0; n < N; n++) { s1 += yb[n]*(yab[n] - ya[n]); st += (ya[n] - yab[n])*(ya[n] - yab[n]); }
-      out[m][nm] = {S: V > 0 ? s1/N/V : 0, ST: V > 0 ? st/(2*N)/V : 0}; }); });
+    names.forEach((nm, j) => { const yab = R.map(n => fAB[j][n][m]); let s1 = 0, sc = 0, st = 0; for (let n = 0; n < N; n++) { s1 += yb[n]*(yab[n] - ya[n]); sc += (yb[n] - mean)*(yab[n] - ya[n]); st += (ya[n] - yab[n])*(ya[n] - yab[n]); }
+      out[m][nm] = {S: V > 0 ? s1/N/V : 0, Sc: V > 0 ? sc/N/V : 0, ST: V > 0 ? st/(2*N)/V : 0}; }); });  /* Sc: S with B's results centred on the mean (same expected value; far less noise when the mean is large against the spread) */
   return out;
 }
 let res;
@@ -135,7 +137,7 @@ if (MODE === 'morris') {
   for (let b = 0; b < B; b++) { const rows = []; for (let n = 0; n < N; n++) rows.push(Math.floor(r()*N)); bs.push(sobolIdx(names, fA, fB, fAB, rows)); }
   const ci = (m, nm, w) => { const v = bs.map(x => x[m][nm][w]).sort((a, b) => a - b); return [v[Math.floor(0.025*B)], v[Math.ceil(0.975*B) - 1]]; };
   res = {N, seeds: S, lo: fs2[0].lo, blocks: fs2.map(q => q.lo + '-' + (q.lo + q.seeds - 1)), params: names, indices: sobolIdx(names, fA, fB, fAB), boot: B, ci: {}};
-  K.forEach(m => { res.ci[m] = {}; names.forEach(nm => { res.ci[m][nm] = {S: ci(m, nm, 'S'), ST: ci(m, nm, 'ST')}; }); });
+  K.forEach(m => { res.ci[m] = {}; names.forEach(nm => { res.ci[m][nm] = {S: ci(m, nm, 'S'), Sc: ci(m, nm, 'Sc'), ST: ci(m, nm, 'ST')}; }); });
 } else { console.error('usage: gsa.js morris|sobol|noise|morrisjoin|sobjoin ENV ...'); process.exit(1); }
 meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = path.join(dir, (arg('out') || 'gsa-' + MODE + '-' + env) + '.json');
@@ -144,5 +146,5 @@ console.log('gsa ' + MODE + ' ' + env + ' (' + meta.seconds + ' s) -> ' + path.r
 if (MODE === 'morrisjoin') K.forEach(m => console.log(m + ': leaders ' + res.leaders[m].joined.join(', ') + (res.leaders[m].same ? ' (same in every block)' : ' (blocks differ: ' + res.leaders[m].blocks.map(l => l.join('/')).join(' | ') + ')') + '; inputs not measured: ' + (IN.filter(([n]) => !res.check[n][m].measured).map(([n]) => n).join(', ') || 'none')));
 if (MODE === 'morris') K.forEach(m => { console.log(m + ': ' + IN.map(q => q[0]).sort((a, b) => res.inputs[b][m].muStar - res.inputs[a][m].muStar).slice(0, 6).map(n => n + ' ' + res.inputs[n][m].muStar.toFixed(2)).join(', ')); });
 if (MODE === 'sobol' || MODE === 'sobjoin') K.forEach(m => console.log(m + ': ' + res.params.map(n => n + ' S ' + res.indices[m][n].S.toFixed(2) + ' ST ' + res.indices[m][n].ST.toFixed(2)
-  + (res.ci ? ' (' + res.ci[m][n].ST.map(v => v.toFixed(2)).join(' to ') + ')' : '')).join('; ')));
+  + (res.ci ? ' (' + res.ci[m][n].ST.map(v => v.toFixed(2)).join(' to ') + '); Sc ' + res.indices[m][n].Sc.toFixed(2) + ' (' + res.ci[m][n].Sc.map(v => v.toFixed(2)).join(' to ') + ')' : '')).join('; ')));
 if (MODE === 'noise') console.log(JSON.stringify(res.sd));
