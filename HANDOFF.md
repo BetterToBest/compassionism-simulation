@@ -1,29 +1,37 @@
-# Handoff (Oct 12, 2026; session 1c)
+# Handoff (Oct 13, 2026; session 2a)
 
 ## What shipped
-- CI checked: pull request #13 (v5.4) merged into main as 270348b. Checks, release and pages workflows are all green, and the v5.4 tag exists.
-- Found why Reference's 20-year too-little-wealth gap grew from +5.5 to +11.0 points (`dev/runs/release-panel-ref.json`, rows `cut0`, `cut20`, `pthbold`, `ptfs25`, `v53`). Most of it is the 10% lower pay on return to work: with no cut the gap is +6.6, with 10% +11.0, with 20% +15.7. For each 10% of pay, the programme run rises about 6 points and the no-programme run 1.4. The PTH and PTF rules move it less than 0.3.
-- One sentence each added to `dev/reports/v5-23-v54-release.md` (the wealth bullet) and `CONTRIBUTING.md` (v5.4 Figures line). Commit 5b08a47. Validate passed, unit 208 run 0 failed, domtest 125 passed, versions match.
-- Duke asked for a note on reading the wealth measure (a guaranteed minimum means people need a savings reserve less). Added as v5.4.1, words only. The note, "How to read this measure", sits under the Savings result on the release page (`index.html` `relSentences`, id `rel-wealth-frame`). It gives his framing and cites Hubbard, Skinner and Zeldes (1995). It also states that the model has no such behaviour: the spending share is the same in both runs. Also: report `dev/reports/v5-24-wealth-measure-reading.md`, DECISIONS session 1c, v5.4.1 notes (CONTRIBUTING; v5.4's moved to CHANGELOG), and a replication timeline entry. The engine block is unchanged, so no lineage proof was needed.
+- Pay-cut check (e43b26d): with prices held flat, the 10% pay cut raises too little wealth by 0.6 points with the programme and 1.5 without (as released: 5.5 and 1.5), so the gap comes through prices. Paragraph in `dev/DECISIONS.md`, Session 2a; outputs in `dev/runs/v54/paycut*-ref.json`.
+- Guard test (bc93de3): `dev/tools/guard_test.js` compares every output of 25 v5.4 panel rows, seeds 1-20, three environments, with references made before any engine edit (`dev/runs/guard/`). It runs as its own CI job and is now guardrail 1's proof.
+- Today's health coverage, setting A (ae64431): a switch, off by default. It adds medical need by age, coverage, out-of-pocket cost, skipped care, medical debt and who pays, plus the shared income test (`incomeTest`, `medicaidEligible`). Report `dev/reports/v5-25-health-today.md`; sources `sources/health/README.md`.
+- The two price rules for health care, recorded in DECISIONS before single payer was written.
+- Single payer, public plan only, setting B (da6b80c): three cases from the Yale preprint. Central: health spending -19%, health tax 13.4% of money income, basket poverty without the programme 50.5% to 46.5%. Report `dev/reports/v5-26-single-payer.md`. 20 paired seeds per setting, three environments, in `dev/runs/health/`.
+- The attached country comparison failed 3 of 5 spot checks and is not used (kept in `dev/background/health/`).
+- Checks: validate passed; unit 214 run, 0 failed; domtest 125 passed; guard passed; two engine-lineage links recorded (`dev/runs/engine-lineage.json`).
 
 ## Branch and pull request state
-- Session branch `claude/beautiful-wozniak-lqpv4t` started from main (270348b). Head 5b08a47, plus this handoff.
-- Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/15 into main. It now carries v5.4.1 (words only; merging it is the release, and the workflow tags v5.4.1). Its CI had not reported when this was written. The session is subscribed to its events.
+- Session branch `claude/sharp-cori-rxgww2`, started from main 0f2e42e (v5.4.1); head is this handoff commit, on top of da6b80c.
+- Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/16 into main. Its CI (checks and guard) was running when this was written. No version bump: engine switches only, the page is unchanged.
 
 ## Long jobs in flight
-None. Job A (v5.4) is finished, and its pod is gone.
+None.
 
 ## Next 3 actions
-1. Check CI on #15 and fix anything red. When it is green, mark it ready so Duke can merge. After the merge, confirm the release workflow tagged v5.4.1.
-2. Session 2a (ledger step "Session 2a: guard test, today's-safety-net row, and single payer"), engine work only, in this order. (a) Build a guard test: rerun 20 fixed seeds on the v5.4 engine (main, 270348b) and fail if any figure changes. Make its reference before editing the engine. (b) Add the stylised current-US-policy row (SNAP, EITC, Child Tax Credit, with children modelled) to the comparison engine. (c) Add health setting B: single payer, public plan only, behind a switch, with central, cautious and costs-run-higher cases. (d) Test with 20 runs per setting, commit, then hand off. No long runs.
-3. Optional, if time is left: find why the programme run reacts about four times as strongly to the pay cut. Compare `medWealth`, `pov`, `srcPay`, `tau` and `infl` on rows `cut0`, `release` and `cut20` (`dev/runs/release-panel-ref.json`), and read the re-employment code (`index.html`, grep `_emCut`). Then refine the report sentence.
+1. Check CI on #16 and fix anything red. When it is green, mark #16 ready for Duke; his merge needs no release tag (no version change).
+2. Session 2b (ledger step "Session 2b"), engine only, behind switches. The guard test must pass, and each engine change needs a lineage proof:
+   - (a) the today's-safety-net row (SNAP, EITC, Child Tax Credit, children modelled), moved from 2a, reusing `incomeTest`;
+   - (b) single payer with a private layer, and Medicaid kept (setting C);
+   - (c) the benefit-cliff check, sweeping `HEALTH.countBU`;
+   - (d) under setting B, apply PTF's health-sector cut to the plan's costs, not to households (DECISIONS: "Nothing counted twice", item 7);
+   - (e) the prevention link; (f) the speed pass.
+3. Before session 3's Runpod job: renew the GitHub token for the results repository (it expires 2026-10-17 04:16 UTC) and update the Runpod secret `github_results_token`.
 
 ## Files to touch
-`harness.js` and `index.html` (grep `REL_V54`, `relMainCfgs`, `_emCut`; never read whole) · `dev/DECISIONS.md` (append; never read whole) · `dev/PROGRESS.md` (grep `^- \[ \]`) · `dev/tools/engine_lineage.js` (`prove`) · `dev/reports/v5-23-v54-release.md` line 26 and `CONTRIBUTING.md` line 51 (action 3 only).
+`index.html` (never read whole): grep `HEALTH_DEFAULTS`, `function hlYear`, `function hlSingle`, `function incomeTest`, `function tbSetV54`. `harness.js`: grep `function healthUnitSuite`, `HL_KEYS, HEALTH_DEFAULTS`. `dev/tools/health_check.js` (variant table `const VAR`). `dev/DECISIONS.md` (append only; grep `Session 2a`). `dev/reports/` (one report per mechanism).
 
 ## Pitfalls
-- The GitHub token for the results repository expires 2026-10-17 04:16 UTC. Renew the Runpod secret `github_results_token` before any new Runpod job.
-- The three checks together take more than 10 minutes. Run them in the background.
-- Re-running `release_data.py` rewrites `replication.html`, and its v5.4 timeline entry was added by hand.
-- Ledger artifact KMdxWQ5KAefQVFxQA236pV, document `projects/sim` (about 280 KB): read it to a file with `out_dir` and query it with Python. That worked this session.
-- Session 2a's health setting may use a country comparison that Duke attaches (ledger step "Optional, saves tokens"). Spot-check five of its figures against their sources before using any of them.
+- After any `index.html` edit, run `python3 dev/tools/sync_earlier.py`, or domtest fails twice ("DRIFTED" and "same script false").
+- Do not edit `index.html` while `engine_lineage.js prove` runs (about 10 minutes): its panels read the page when they finish.
+- A wait loop on a check's output file can read the previous run's file. Delete or timestamp the file first. `pkill -f guard_test.js` killed its own shell.
+- Model limits, reported rather than tuned: too few adults on Medicaid (the model has no adults outside the labour force), and medical debt read as an upper bound.
+- The ledger document is near the database's 256 KB limit. Shorten finished steps' notes before adding text.
