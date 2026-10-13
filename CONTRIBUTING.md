@@ -205,6 +205,8 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 
 ### 4. Model Architecture Feedback
 
+**Read this first:** the table below shows where each item stood at v5.2 (October 2026). It has not been re-checked against later releases (v5.3, v5.4 and v5.5), so a row marked "Open in v5" may since have been settled. For what is done and what is next now, see `dev/PROGRESS.md` and `HANDOFF.md`.
+
 **Where each item below stands (v5.2, Oct 2026; v5.2.1 changed presentation only, and the two rows it touches say so).** The list below was written for the earlier v4.22 engine. Since v5.0 the page's results come from the release engine (`harness.js` testbed, section `release`, ported into `index.html`); the earlier engine keeps its own settings panel (it moves to `earlier-engine.html` in this round). Each item is one of: **settled by v5** (and where), **earlier engine only** (it describes a part the release engine does not use), **settled by v5.2** (done in the v5.2 round), or **open in v5** (with the step of the v5.2 round that took it up, or "later" if none did). Steps are those of the v5.2 round in `dev/PROGRESS.md`; the full items follow the table, unchanged.
 
 | Item (as named below) | Status | Where it stands |
