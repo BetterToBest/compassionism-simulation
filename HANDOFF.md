@@ -1,32 +1,32 @@
-# Handoff (Oct 13, 2026, afternoon): version 5.5.0 is live; the findings page still lists 5.4 as latest
+# Handoff (Oct 13, 2026, evening): findings page lists 5.5; study page panel, chart and review kit are in draft pull request 25
 
 ## What shipped
-- No code or page changes this session; it reassessed the plan for Duke's last Claude Pro days (ends Oct 15, time of day unknown).
-- Version 5.5.0 (the 500-seed study on `study.html`) is merged and tagged `v5.5.0`; checks and deploy passed on `main`.
-- The tracking ledger now orders the remaining sessions and holds one open choice for Duke (how the findings page labels 5.5.0).
+- Release list has a 5.5 entry (plain words: no engine change, figures identical to 5.4, so the 5.4 data stays the data shown); the findings page opens on it, labelled "latest". Duke's choice d200, option 1. No figure or data file changed.
+- `study.html`: a "What would have to be true" panel, a sensitivity bar chart (Sobol results, one outcome at a time) and a table naming the two constants with no source (CCO relief 20%; PTF and PTH damping 0.5 and 0.1). Numbers all come from `data/studies/s137.json`.
+- `dev/tools/unsourced_check.py` shows the released figures do not use either constant (relief: no line changed; damping: only the optional "two former stand-ins on" row). Result in `dev/runs/unsourced-constants-check.txt`.
+- `ECONOMIST-REVIEW.md` (twelve rows) and `.github/ISSUE_TEMPLATE/economist-review.yml`, both written by `dev/tools/review_rows.py`; a check keeps them equal.
+- `index.html` and `harness.js` are untouched, so the engine is bit-identical. Decisions are in `dev/DECISIONS.md` (Session 5); the report has a new section 8b.
 
 ## Branch and pull request state
-- `main` is at 6a1ca3e (pull request #23 merged); pull request #15 (wealth-gap sentence) is also merged. No other pull request is open.
-- This file is delivered on branch `claude/handoff-findings-label` as draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/24 into `main`; CI not yet reported. Merge it so the next session sees it.
+- Branch `claude/relaxed-davinci-b6gp1b`, draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/25 into `main`; CI not yet reported (subscribed). Locally `validate`, `unit` (221), `domtest` (130) and `check_figures.js` (16 checks) pass. Merge it: the merge is the release.
 
 ## Long jobs in flight
-- None. The last Runpod pod is gone and its results are merged (`dev/runs/s137/`, `dev/runs/s137b/`).
+- None.
 
 ## Next 3 actions
-1. Priority: make the findings page show 5.5.0 as the latest release. Cause: `data/manifest.json` has no 5.5 entry, so v5.4 is still marked `"status": "current"`. 5.5.0 changed no engine figure, so the figures stay v5.4's. Read `dev/ADDING-A-RELEASE.md` (36 lines), add the smallest 5.5 entry that says so in plain words, and change no figure. Record the choice in `dev/DECISIONS.md`. Run the three checks; open a draft pull request.
-2. Add the "what would have to be true" panel and a sensitivity bar chart to `study.html`, built from the Morris and Sobol results, naming the two constants with no source (CCO relief 20%; PTF and PTH inflation damping 0.5 and 0.1). Add a one-page economist review checklist and a GitHub issue template with the same rows.
-3. After 1 and 2 are merged: the plain-language pass over every page and report, with a test that no figure changed. Wording that changes meaning is flagged for Duke as a decision, not applied.
+1. Check pull request 25's CI; fix anything red. Duke reads report section 8b and the panel text, and merges.
+2. After 25 is merged: the plain-language pass over every page and report (ledger step s147), with a test that no figure changed (run `node dev/tools/check_figures.js`, `python3 dev/tools/release_data.py --check`, `python3 dev/tools/study_data.py --check` and `node domtest.js` before and after). List wording that changes meaning for Duke as a decision; apply nothing of that kind.
+3. History check (s146) only if Duke has attached the Census poverty files; otherwise the free-plan chat packets (s135).
 
 ## Files to touch
-- Action 1: `data/manifest.json`, `data/releases/v5.4.json` (read only), `dev/tools/release_data.py` (grep `manifest` and line 792, the "release v" note), `findings.html` (grep `figs:headline`; line 83 is very long), `dev/tools/check_versions.js`.
-- Action 2: `dev/tools/study_data.py` (tables are built in `content()`), `study.html`, `data/studies/s137.json`, `dev/reports/v5-30-s137-results.md`, `ODD.md`, `.github/ISSUE_TEMPLATE/` (new).
-- Action 3: every `*.html` page at the root, `CONTRIBUTING.md` (its open-items table is headed v5.2 and is out of date), `dev/PROGRESS.md` (grep `\[ \]`).
+- Action 2: every `*.html` at the root (grep long lines first), `dev/tools/study_data.py` (the page's words are in `content()`, lines 95 on), `dev/tools/release_data.py` (texts), `CONTRIBUTING.md` (its open-items table is headed v5.2 and is out of date), `dev/PROGRESS.md` (grep `\[ \]`).
+- Wording on generated pages is changed in the generator, then regenerated; never edit `data/` by hand.
 
 ## Pitfalls
-- The findings page note "release v5.4 data" is accurate for the figures; the problem is the missing 5.5 entry, not wrong numbers.
-- The results token expires 2026-10-17 04:16 UTC. Nothing planned needs it; Duke may let it lapse.
-- GitHub GraphQL is blocked here, so `gh pr list` fails; use `gh api repos/BetterToBest/compassionism-simulation/pulls`.
-- Pushes to `main` are refused; work on a branch and open a draft pull request.
-- `node harness.js unit`, `domtest.js` and `guard_test.js` each take minutes; run them in the background. A new check in `check_figures.js` changes the domtest count: run `node domtest.js --write-counts`.
-- `study.html` has had no visual check at 390 px or 1280 px.
-- Duke confirmed the plan on Oct 13: the history check is in (needs the Census poverty files he attaches), the compare page goes to the free plan, the token lapses. Still open for him: how the findings page labels 5.5.0 (ledger choice d200); if no answer, apply the first option and flag it.
+- The two-constants test covers only the Adverse environment, 4 seeds, 8 years; the 500-seed figures are unchanged because no engine line changed.
+- The panel's "what would have to be true" wording is Claude's reading of the sensitivity results, not Duke's words; Duke should check it.
+- The 5.5 entry has status "latest" and shares the 5.4 data file; the 5.4 entry stays "current". Do not copy the data file (`dev/ADDING-A-RELEASE.md` explains).
+- A new check in `check_figures.js` changes the domtest count: run `node domtest.js --write-counts`.
+- Playwright for screenshots is at `/opt/node22/lib/node_modules/playwright`, not in the repository.
+- `node harness.js unit` and `domtest.js` take minutes each; run them in the background. GitHub GraphQL is blocked: use the pull request tools.
+- The results token expires 2026-10-17 04:16 UTC; nothing planned needs it. Pro ends Oct 15.
