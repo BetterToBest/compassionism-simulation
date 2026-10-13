@@ -30,7 +30,7 @@ Eligibility uses the same income test as Medicaid (income against the poverty gu
 
 Today's safety net makes poverty shallower but almost never lifts a household above the cost of living. That line is MIT's living wage ($49,370 for one adult; sourced), far above what these programmes pay. **Compassionism against the safety-net row** (simulated, Reference): basket poverty -30.3 points (interval -31.5 to -29.0), depth -5.8, child basket poverty -43.9. That is almost the same as against no programme (-30.2), because the safety net changes the headcount so little.
 
-Not decided here, and flagged for Duke: should the Compassionism runs keep today's safety net, so that every comparison is "against today's safety net"? That changes what the headline means, and the Hub would need to say whether Compassionism replaces these programmes, adds to them, or leaves it open. For now the row sits beside the no-programme run and nothing else changes.
+Decided since (Duke, ledger d192, Oct 13): the safety net stays on in every Compassionism run, so every comparison reads "against today's safety net", and the Hub says Compassionism adds to these programmes; no savings from replacing them are claimed. The six-cell grid is in session 2c's report, `dev/reports/v5-28-safety-net-grid.md`.
 
 ## 2. Setting C: single payer with a private layer
 
@@ -44,7 +44,7 @@ Setting C is setting B (one public plan for everyone, paid by a flat health tax)
 | **(a) Payment gap**: plans record more diagnoses, so payments run higher for the same person | 0 | 4% | 8% | MedPAC, March 2026 (4%) and March 2025 (8%); low is a design value |
 | **(b) Selection**: healthier people choose private plans, so payments set by risk exceed what they would have cost, and the public base keeps the costlier people | 5.5% | 11% | 16.5% | MedPAC, 2025 and 2026 (11%); low and high are design values |
 
-MedPAC's current total is **14% for 2026** ($76 billion), down from 20% in 2025 (sourced). The kickoff named roughly 20% as the payment gap. But 11 of MedPAC's 14 points are selection, so using 14% or 20% as the gap and adding selection on top would count selection twice. The gap here is therefore the coding part only. The central case's two together come to 15.4% (derived), close to MedPAC's 14%. MedPAC's 2025 figure of 20% is the high case of both together (1.08 x 1.11). **Flagged for Duke:** this is a narrower reading of "payment gap" than the kickoff's.
+MedPAC estimates private plans are paid about 14% more than the same people would cost in traditional Medicare (2026; 20% in 2025) (sourced; $76 billion in 2026). The model splits this into coding (central 4%, range 0-8%) and selection (central 11%, range 5.5-16.5%); 20% is the high case of both together (1.08 x 1.11). Using 14% or 20% as the gap and adding selection on top would count selection twice, because 11 of MedPAC's 14 points are selection. The central case's two together come to 15.4% (derived), close to MedPAC's 14%. (Duke accepted this reading and wording, ledger d193.)
 
 **How much of setting B's savings the private layer gives back** (simulated, 20 paired seeds, no programme; B saves $1,449 per person-year against today's $7,684 in Reference):
 
@@ -88,7 +88,7 @@ Under B and C the household's bill is the health tax on its income less the empl
 
 Adverse: Medicaid 12.0% to 2.6%, basket poverty 30.4% to 32.7%. Stress: 10.9% to 6.8%, and 52.7% to 53.4%.
 
-Under B and C, counting the BU removes no one's coverage. But one effect remains, and it is not a cliff. The government keeps paying what it pays for Medicaid today, so if fewer people qualified, government would pay less and the flat health tax would rise for everyone. The household bill in Reference rises by about $700 per adult-year under B and $770 under C, and basket poverty by 0.4 points. The cost is spread over every taxpayer instead of falling on the households near the limit. Fixing government's share at its no-programme level would remove it. That is noted for a later session, not applied.
+Under B and C, counting the BU removes no one's coverage. But one effect remains, and it is not a cliff. The government keeps paying what it pays for Medicaid today, so if fewer people qualified, government would pay less and the flat health tax would rise for everyone. The household bill in Reference rises by about $700 per adult-year under B and $770 under C, and basket poverty by 0.4 points. The cost is spread over every taxpayer instead of falling on the households near the limit. Fixing government's share at its no-programme level would remove it. (Since applied in the main runs, Duke's decision d194; the floating share is a sensitivity row: session 2c's report, section 6.)
 
 ## 4. Nothing counted twice
 
@@ -130,7 +130,7 @@ Twenty paired seeds per setting: A, B and C, each without and with Compassionism
 
 In short, in Reference single payer takes over part of what Compassionism does for basket poverty and depth, and C, which saves less, takes over less. In the harder environments the interaction on basket poverty is small and not distinguishable from zero. For children it runs the other way: Compassionism does more under single payer. Depth (FGT2) moves the same way in all three. Guardrail 6 asks for gains confirmed on basket poverty and wealth poverty, not depth alone, so the B and C gains are reported on all of them above, and they hold on basket poverty, depth and BLEI poverty in all three environments. Too little wealth, the measure the price rule decides (session 2a), improves under B and C without the programme in every environment.
 
-**Today's safety net under A** (simulated, Reference): adding SNAP, the EITC and the CTC to setting A raises basket poverty without the programme by 0.4 points (interval 0.3 to 0.5), against +0.04 without health coverage, while depth falls by 0.5. The cause has not been traced yet. It is listed for session 2c, not explained away.
+**Today's safety net under A** (simulated, Reference): adding SNAP, the EITC and the CTC to setting A raises basket poverty without the programme by 0.4 points (interval 0.3 to 0.5), against +0.04 without health coverage, while depth falls by 0.5. Traced in session 2c (`dev/reports/v5-28-safety-net-grid.md`, section 2): most of the 0.4 was this comparison, which set the A-with-safety-net row against the row with no health setting and so folded in setting A's own +0.36. Against setting A, the safety net's own effect is +0.07 points (0.04 to 0.09), and it comes through prices.
 
 **Time per run** (one row and one seed: 500 adults over 20 years, households, a health setting on, the one-year pre-pass for the tax rate included; three runs in parallel on four cores): **0.31 to 0.36 seconds** with prices free and 0.35 to 0.40 with prices flat (`_meta.perRun` in each file). The whole test took 4 to 5 minutes per environment for 20 rows. Session 3's Runpod estimate can use 0.36 seconds per run per core.
 

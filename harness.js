@@ -2591,11 +2591,35 @@ function healthUnitSuite(){
       if (!(Y[0].fgt2PY < X[0].fgt2PY)) d.push('FGT2 did not fall: ' + X[0].fgt2PY + ' -> ' + Y[0].fgt2PY); }
     finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
     return {pass:cnt[0] === 8*60*7 && cnt[1] === cnt[0] && d.length === 0, detail:'main-stream draws ' + cnt.join(' / ') + ' (off / on; expected ' + 8*60*7 + '); benefits per adult-year ' + (Y ? Math.round(Y[0].snAll) : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
+  t('health 2c: government\'s share under single payer fixed at the no-programme level (d194): the no-programme run is the same fixed or floating, every plan year of the programme run is fixed (100%), floating fixes none, and a programme run outside a study (no reference) floats', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60, years:4}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), d = [], R;
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), M = function(i, hl){ return Object.assign(relMainCfgs(PR)[i], {sc:SPEND_SOURCED, hl:hl}); };
+      R = tbStudy([M(0, {set:'B'}), M(1, {set:'B'}), M(0, {set:'B', gov:'float'}), M(1, {set:'B', gov:'float'})], 2, P, so, 2);
+      HL_KEYS.concat(['fgt0PY', 'cost']).forEach(function(k){ if (R[0][k] !== R[2][k] && !(isNaN(R[0][k]) && isNaN(R[2][k]))) d.push('no-programme run moved: ' + k); });
+      if (R[1].hlGovFix !== 100 || R[3].hlGovFix !== 0 || R[0].hlGovFix !== 0) d.push('fixed share ' + [R[0].hlGovFix, R[1].hlGovFix, R[3].hlGovFix].join(' / '));
+      if (Math.abs(R[1].hlGovB/R[0].hlGovB - 1) > 0.02) d.push('fixed government share per adult-year ' + R[1].hlGovB + ' against ' + R[0].hlGovB);
+      HEALTH = Object.assign({}, HEALTH_DEFAULTS, {set:'B'}); var c1 = relMainCfgs(PR)[1], r1 = tbRun(c1.p, 2, Object.assign({grp:{part:P.partRate, pth:P.pthUptake}}, so, c1.o || {}), s3BaseS(P, 2)).res; HEALTH = null;
+      if (r1.hlGovFix !== 0) d.push('outside a study: ' + r1.hlGovFix); }
+    finally { HEALTH = null; HL_GOVREF = null; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:d.length === 0, detail:'government per adult-year, no programme / fixed / floating ' + (R ? [R[0].hlGovB, R[1].hlGovB, R[3].hlGovB].map(Math.round).join(' / ') : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
+  t('prevention link (s141): USDA\'s food insecurity rates by income; risk ratios of 1 leave every figure unchanged; the high case draws nothing from the main stream (8 per adult-year), keeps the chronic share within 2 points of the run with the link off (which keeps MEPS\'s 25.9% in expectation; the year-0 normaliser), and does not raise it under single payer', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60, years:6}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), mb0 = mulberry32, cnt = [0, 0], which = 0, d = [], X, Y;
+    if (!(near(pvFood(0.5), 0.387) && near(pvFood(1.0), 0.341) && near(pvFood(1.5), 0.276) && near(pvFood(1.85), 0.075) && near(pvFood(9), 0.075))) d.push('food insecurity table');
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), b = function(hl, pv){ return Object.assign(relMainCfgs(PR)[0], {sc:SPEND_SOURCED, hl:hl, sn:{}}, pv ? {pv:pv} : {}); };
+      var Z = tbStudy([b({}, null), b({}, {care:1, food:1}), b({set:'B'}, null), b({set:'B'}, {care:1, food:1})], 3, P, so, 3);
+      [[0, 1], [2, 3]].forEach(function(q){ TB_KEYS.concat(HL_KEYS).forEach(function(k){ if (k !== 'hlPvX' && Z[q[0]][k] !== Z[q[1]][k] && !(isNaN(Z[q[0]][k]) && isNaN(Z[q[1]][k]))) d.push('ratios of 1 moved ' + k); }); });
+      mulberry32 = function(sd){ var g = mb0(sd); return sd === 3 ? function(){ cnt[which]++; return g(); } : g; };
+      X = tbStudy([b({}, null)], 3, P, so, 3); which = 1; Y = tbStudy([b({}, PREV_CASES.high), b({set:'B'}, PREV_CASES.high)], 3, P, so, 3); mulberry32 = mb0;
+      if (!(Y[0].hlPvX > 1) || Math.abs(Y[0].hlChron - X[0].hlChron) > 2) d.push('high case: weight ' + Y[0].hlPvX + ', chronic ' + Y[0].hlChron + ' against ' + X[0].hlChron + ' with the link off');
+      if (!(Y[1].hlChron <= Y[0].hlChron)) d.push('single payer did not lower the chronic share: ' + Y[0].hlChron + ' -> ' + Y[1].hlChron); }
+    finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:cnt[0] === 8*60*7 && cnt[1] === 2*cnt[0] && d.length === 0, detail:'main-stream draws ' + cnt.join(' / ') + ' (off / two rows on; expected ' + 8*60*7 + ' per row); chronic share, high case, A / B ' + (Y ? Y[0].hlChron.toFixed(1) + ' / ' + Y[1].hlChron.toFixed(1) : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
   return out;
 }
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
 Object.assign(module.exports, { SN_KEYS, SNET_DEFAULTS, snBen, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
+Object.assign(module.exports, { PREV_CASES, PREV_DEFAULTS, pvFood });  /* session 2c: the prevention link */
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
