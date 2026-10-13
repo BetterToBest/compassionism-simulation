@@ -2536,10 +2536,40 @@ function healthUnitSuite(){
       R.forEach(function(r, i){ if (!(r.hlRate > 0) || !(r.hlWait >= 0 && r.hlWait < 100) || !(r.hlTax > 0) || !(r.hlBack > 0)) d.push('case ' + i + ': rate ' + r.hlRate + ', wait ' + r.hlWait); }); }
     finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
     return {pass:d.length === 0 && cnt === 3*8*80*(1 + 4), detail:'main-stream draws ' + cnt + ' (expected ' + 3*8*80*5 + '); public plan per person-year ' + (R ? R.map(function(r){ return Math.round(r.hlSB); }).join(' / ') + ' against today\'s ' + Math.round(R[0].hlSA) : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
+  /* Session 2b (Oct 13, 2026; dev/reports/v5-27-health-financing.md): today's safety net. */
+  t('safety net: SNAP, the EITC and the refundable CTC by hand (single parent, two children, $20,000 of pay; a couple without children, $22,000), the income tax before credits, and the switches', function(){
+    var sv = SNET; SNET = Object.assign({}, SNET_DEFAULTS);
+    try { var a = snBen({nA:1, nK:2, k17:2, other:0, house:12000, care:0, old:false, okAge:true, takeS:true, takeT:true}, 20000);
+      var b = snBen({nA:2, nK:0, k17:0, other:0, house:10000, care:0, old:false, okAge:true, takeS:true, takeT:true}, 22000);
+      var c = snBen({nA:1, nK:0, k17:0, other:0, house:10000, care:0, old:false, okAge:false, takeS:false, takeT:true}, 9000);
+      var d = snBen({nA:2, nK:2, k17:2, other:0, house:15000, care:0, old:false, okAge:true, takeS:true, takeT:true}, 120000);
+      var tx = [snIncTax('s', 15750 + 11925), snIncTax('j', 31500 + 50000), snIncTax('h', 23625 + 70000)];
+      SNET.gross = 1.3; var e = snBen({nA:2, nK:0, k17:0, other:0, house:10000, care:0, old:false, okAge:true, takeS:true, takeT:true}, 28000); }
+    finally { SNET = sv; }
+    /* a: SNAP 12 x 785 - 0.3 x (20,000 - 4,000 - 2,508 - (12,000 - 6,746)) = 6,948.6; EITC at its two-child maximum 7,152; CTC 15% of 17,500 = 2,625 (no income tax).
+     * b: SNAP 6,552 - 0.3 x (15,092 - 2,454) = 2,760.6; EITC 649 - 649/8,484 x 4,270 = 322.35. c: no SNAP (not taken up), no childless EITC outside 25-64.
+     * d: nothing at $120,000 (CTC offsets tax; none refundable). e: the federal 130% gross limit ends a couple's SNAP at $28,000 (132%). */
+    var w = [[a[0], 6948.6], [a[1], 7152], [a[2], 2625], [b[0], 2760.6], [b[1], 649 - 649/8484*4270], [b[2], 0], [c[0] + c[1] + c[2], 0], [d[0] + d[1] + d[2], 0], [e[0], 0],
+      [tx[0], 1192.5], [tx[1], 2385 + 0.12*(50000 - 23850)], [tx[2], 7442 + 0.22*(70000 - 64850)]];
+    return {pass:w.every(function(x){ return near(x[0], x[1], 1e-6); }), detail:w.map(function(x){ return x[0].toFixed(2); }).join(', ')}; });
+  t('safety net: off leaves the run unchanged, on draws nothing from the main stream (8 per adult-year), pays benefits in the no-programme run (FGT2 falls), and adds nothing to programme cost or official-measure income', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60, years:6}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), mb0 = mulberry32, cnt = [0, 0], which = 0, d = [];
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), b = function(sn){ return Object.assign(relMainCfgs(PR)[0], {sc:SPEND_SOURCED}, sn ? {sn:sn} : {}); };
+      var Z = tbStudy([b(null)], 3, P, so, 3);
+      mulberry32 = function(sd){ var g = mb0(sd); return sd === 3 ? function(){ cnt[which]++; return g(); } : g; };
+      var X = tbStudy([b(null)], 3, P, so, 3); which = 1; var Y = tbStudy([b({})], 3, P, so, 3); mulberry32 = mb0;
+      TB_KEYS.forEach(function(k){ if (X[0][k] !== Z[0][k] && !(isNaN(X[0][k]) && isNaN(Z[0][k]))) d.push('off: ' + k); });
+      if (X[0].snSnap !== undefined || Y[0].snSnap === undefined) d.push('keys');
+      if (!(Y[0].snAll > 0) || !(Y[0].snSnap > 0 && Y[0].snSnap < 100)) d.push('no benefits: ' + Y[0].snAll);
+      if (Y[0].cCash !== X[0].cCash || Y[0].cost !== X[0].cost) d.push('programme cost moved: ' + X[0].cost + ' -> ' + Y[0].cost);
+      if (!(Y[0].fgt2PY < X[0].fgt2PY)) d.push('FGT2 did not fall: ' + X[0].fgt2PY + ' -> ' + Y[0].fgt2PY); }
+    finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:cnt[0] === 8*60*7 && cnt[1] === cnt[0] && d.length === 0, detail:'main-stream draws ' + cnt.join(' / ') + ' (off / on; expected ' + 8*60*7 + '); benefits per adult-year ' + (Y ? Math.round(Y[0].snAll) : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
   return out;
 }
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
+Object.assign(module.exports, { SN_KEYS, SNET_DEFAULTS, snBen, snIncTax, avoidWide });  /* session 2b: today's safety net */
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};
@@ -2935,7 +2965,7 @@ if (require.main === module) {
     V54U.forEach(function(x){ if (!x.pass) v54f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + V54U.length + ' run, ' + v54f + ' failed');
     var HLU = healthUnitSuite(), hlf = 0;
-    console.log('\n=== healthUnitSuite(): health coverage, setting A (harness-only) ===');
+    console.log('\n=== healthUnitSuite(): health coverage and today\'s safety net (sessions 2a-2b; harness-only) ===');
     HLU.forEach(function(x){ if (!x.pass) hlf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + HLU.length + ' run, ' + hlf + ' failed');
     if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf) process.exitCode = 1;
