@@ -6,7 +6,7 @@
 - `dev/tools/gsa.js`: new mode `sobjoin` joins Sobol runs on seed blocks and adds 95% bootstrap intervals (tested: equals one run to 2e-14). New job `dev/tools/s137b_jobs.sh`; `dev/batch/runpod.sh` gains `STUDY=s137b`. The engine is unchanged (`index.html` identical to a3582e2). validate, unit and domtest all pass.
 
 ## Branch and pull request state
-- Branch `claude/handoff-next-action-advycj` from main f371708 (pull request #20 merged). The draft pull request into `main` is opened at the end of this session; Duke merges it (tools and results only, no page change).
+- Branch `claude/handoff-next-action-advycj` from main f371708 (pull request #20 merged). Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/21 into `main`; CI not yet reported at handoff. Duke merges it (tools and results only, no page change).
 
 ## Long jobs in flight
 - Pod `lf78qp1tncv9hb` ("s137b-sobol"; cpu3c, 16 vCPU, $0.48/h, EU-CZ-1, image `node:22.22.0-bookworm`), created 18:14 UTC Oct 13. Runner b0a36f8, engine 41f2361, `STUDY=s137b`, `MAX_HOURS=3` (at most about $1.44). The log showed "results repository: HTTP/2 200" at 18:14:42.
@@ -19,6 +19,9 @@
 
 ## Files to touch
 `dev/runs/s137/*.log` (one-line summaries), `dev/tools/gsa.js` (grep `sobjoin`), `dev/tools/health_check.js` (grep `MERGE`), `dev/reports/v5-29-outside-audit.md` (grep `Fix later`), `dev/DECISIONS.md` (grep `Session 2f`), `dev/PROGRESS.md` (last section).
+
+## Ledger
+- Updated (version 396): s137 stays "doing" with a session 2f note; next, phase and a log line set.
 
 ## Pitfalls
 - The first create in EUR-IS-1 with a 20 GB disk failed ("no instances available") although the catalog showed HIGH stock; the default disk with EUR-IS-1 or EU-CZ-1 worked.
