@@ -11,7 +11,7 @@
 STUDY=${STUDY:-v54}
 case $STUDY in
   v54)  ENGINE=fe88599f9d2f4d26651f6e01370454206257beab; JOBSH=dev/tools/v54_jobs.sh;;   # head of pull request #13's branch: the v5.4 engine, pinned
-  s137) ENGINE=S137_ENGINE_COMMIT; JOBSH=dev/tools/s137_jobs.sh;;                     # the outside-audit fixes' commit (engine unchanged since 57e00367e58f)
+  s137) ENGINE=a3582e2ad2489619151b295d037cf99cb272fdd8; JOBSH=dev/tools/s137_jobs.sh;;                     # the outside-audit fixes' commit (engine unchanged since 57e00367e58f)
   *) echo "unknown STUDY $STUDY"; exit 1;;
 esac
 NODEV=22.22.0                                      # the Node version of the earlier local runs
