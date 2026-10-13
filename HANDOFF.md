@@ -1,37 +1,34 @@
-# Handoff (Oct 13, 2026; session 2a)
+# Handoff (Oct 13, 2026; session 2b, health financing)
 
 ## What shipped
-- Pay-cut check (e43b26d): with prices held flat, the 10% pay cut raises too little wealth by 0.6 points with the programme and 1.5 without (as released: 5.5 and 1.5), so the gap comes through prices. Paragraph in `dev/DECISIONS.md`, Session 2a; outputs in `dev/runs/v54/paycut*-ref.json`.
-- Guard test (bc93de3): `dev/tools/guard_test.js` compares every output of 25 v5.4 panel rows, seeds 1-20, three environments, with references made before any engine edit (`dev/runs/guard/`). It runs as its own CI job and is now guardrail 1's proof.
-- Today's health coverage, setting A (ae64431): a switch, off by default. It adds medical need by age, coverage, out-of-pocket cost, skipped care, medical debt and who pays, plus the shared income test (`incomeTest`, `medicaidEligible`). Report `dev/reports/v5-25-health-today.md`; sources `sources/health/README.md`.
-- The two price rules for health care, recorded in DECISIONS before single payer was written.
-- Single payer, public plan only, setting B (da6b80c): three cases from the Yale preprint. Central: health spending -19%, health tax 13.4% of money income, basket poverty without the programme 50.5% to 46.5%. Report `dev/reports/v5-26-single-payer.md`. 20 paired seeds per setting, three environments, in `dev/runs/health/`.
-- The attached country comparison failed 3 of 5 spot checks and is not used (kept in `dev/background/health/`).
-- Checks: validate passed; unit 214 run, 0 failed; domtest 125 passed; guard passed; two engine-lineage links recorded (`dev/runs/engine-lineage.json`).
+- Today's safety net (6d40e6f): SNAP, the EITC and the refundable Child Tax Credit as a comparison row (`SNET`, row option `sn`, off by default). It makes poverty shallower (FGT2 -0.35 in Reference) but leaves basket poverty almost unchanged.
+- Health setting C (3317679): single payer plus Medicaid kept plus a private layer. The payment gap and selection are split as MedPAC's March 2026 report splits its 14% (coding 4%, selection 11%). C gives back 30% of setting B's savings (low to high cases: 10-50%).
+- Benefit cliff (3317679): a household's own expected bill jumps $4,509 at the Medicaid limit under today's system, and 0 under B and C. The `HEALTH.countBU` sweep is included.
+- Overlaps (3317679): under B and C, PTF's health-sector cut lowers the plan's costs, not the household's. Avoided emergency and inpatient care is counted once (`avoidWide` takes the setting).
+- Six-result test and report (73592fa): `dev/reports/v5-27-health-financing.md`; outputs in `dev/runs/health/s2b-*.json` and `s2bflat-*.json`. Time per run 0.31-0.40 s. Decisions: `dev/DECISIONS.md`, Session 2b.
+- Checks: validate passed; unit 219 run, 0 failed; domtest 125 passed; guard identical; lineage links ad7817234bcb and 7ec4e6c93ca9.
 
 ## Branch and pull request state
-- Session branch `claude/sharp-cori-rxgww2`, started from main 0f2e42e (v5.4.1); head is this handoff commit, on top of da6b80c.
-- Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/16 into main. Its CI (checks and guard) was running when this was written. No version bump: engine switches only, the page is unchanged.
+- Branch `claude/kind-cray-obtb9m`, from main 5ab5225 (pull request #16 merged); head is this handoff commit.
+- Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/17 into main, watched. Its CI was starting when this was written. No version bump: there is no page change.
 
 ## Long jobs in flight
 None.
 
-## Next 3 actions
-1. Check CI on #16 and fix anything red. When it is green, mark #16 ready for Duke; his merge needs no release tag (no version change).
-2. Session 2b (ledger step "Session 2b"), engine only, behind switches. The guard test must pass, and each engine change needs a lineage proof:
-   - (a) the today's-safety-net row (SNAP, EITC, Child Tax Credit, children modelled), moved from 2a, reusing `incomeTest`;
-   - (b) single payer with a private layer, and Medicaid kept (setting C);
-   - (c) the benefit-cliff check, sweeping `HEALTH.countBU`;
-   - (d) under setting B, apply PTF's health-sector cut to the plan's costs, not to households (DECISIONS: "Nothing counted twice", item 7);
-   - (e) the prevention link; (f) the speed pass.
-3. Before session 3's Runpod job: renew the GitHub token for the results repository (it expires 2026-10-17 04:16 UTC) and update the Runpod secret `github_results_token`.
+## Next 3 actions (session 2c, ledger step s150)
+1. Check CI on #17 and fix anything red. **Prevention link (s141)**: behind a new switch, off by default, care received lowers later need. Make it labelled assumptions with a zero, central and high case, each sourced or marked as a design value. Keep the genetically modified crop claim out. Guard test and a lineage proof as usual.
+2. **Speed pass (s142)**, time-boxed to about 2 hours. Results must stay identical under the guard test. Stop and revert if the gain is under 2x. Baseline: 0.35 s per run (`_meta.perRun`).
+3. Rerun the six-result test with the prevention link (commands under "Reproduce" in the report). Write report v5-28, open a pull request, then do `/handoff`. Also decide or trace: (a) why the safety net under setting A raises basket poverty 0.4 points (report section 5); (b) whether government's Medicaid share under B and C should be fixed at its no-programme level (the countBU financing effect, report section 3).
+
+## Decisions flagged for Duke (meaning, not applied)
+- Should Compassionism runs keep today's safety net, so that every comparison is "against today's safety net"?
+- The payment gap is read as MedPAC's coding part (4%), not "roughly 20%". 20% is the high case of the gap and selection together.
 
 ## Files to touch
-`index.html` (never read whole): grep `HEALTH_DEFAULTS`, `function hlYear`, `function hlSingle`, `function incomeTest`, `function tbSetV54`. `harness.js`: grep `function healthUnitSuite`, `HL_KEYS, HEALTH_DEFAULTS`. `dev/tools/health_check.js` (variant table `const VAR`). `dev/DECISIONS.md` (append only; grep `Session 2a`). `dev/reports/` (one report per mechanism).
+`index.html` (never read whole): grep `HEALTH_DEFAULTS`, `function hlYear`, `function hlSingle`, `function hlNeedOf`, `function snYear`. `harness.js`: grep `function healthUnitSuite`. `dev/tools/health_check.js` (`const VAR`). `dev/DECISIONS.md` (append; grep `Session 2b`).
 
 ## Pitfalls
-- After any `index.html` edit, run `python3 dev/tools/sync_earlier.py`, or domtest fails twice ("DRIFTED" and "same script false").
-- Do not edit `index.html` while `engine_lineage.js prove` runs (about 10 minutes): its panels read the page when they finish.
-- A wait loop on a check's output file can read the previous run's file. Delete or timestamp the file first. `pkill -f guard_test.js` killed its own shell.
-- Model limits, reported rather than tuned: too few adults on Medicaid (the model has no adults outside the labour force), and medical debt read as an upper bound.
-- The ledger document is near the database's 256 KB limit. Shorten finished steps' notes before adding text.
+- After any `index.html` edit, run `python3 dev/tools/sync_earlier.py`. Do not edit while `engine_lineage.js prove` runs (about 10 minutes).
+- `unit` changes the test count quoted in the docs: run `node harness.js unit --write-counts`.
+- A string with an unescaped apostrophe broke `health_check.js` once. Run `node --check` on tools before committing.
+- Before session 3's Runpod job, renew the GitHub token for the results repository (it expires 2026-10-17 04:16 UTC) and update the Runpod secret `github_results_token`.
