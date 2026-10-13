@@ -286,6 +286,22 @@
    },
    "equal": true,
    "seconds": 179
+  },
+  {
+   "from": "ad7817234bcbd8fe051cdae82fcaf91b30939a34ec844bbc9e2bd59aa5f5d749",
+   "to": "7ec4e6c93ca9841a9722e36b207966be505269b0e631ce3736ba8b667408d447",
+   "date": "2026-10-13",
+   "change": "session 2b steps 2-4: health setting C (private layer, Medicaid kept), the benefit-cliff measure and countBU, PTF's health-sector cut applied to the plan's costs under single payer, avoided emergency and inpatient care counted once; all off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 172
   }
  ]
 }

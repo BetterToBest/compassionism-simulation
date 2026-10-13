@@ -2536,6 +2536,32 @@ function healthUnitSuite(){
       R.forEach(function(r, i){ if (!(r.hlRate > 0) || !(r.hlWait >= 0 && r.hlWait < 100) || !(r.hlTax > 0) || !(r.hlBack > 0)) d.push('case ' + i + ': rate ' + r.hlRate + ', wait ' + r.hlWait); }); }
     finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
     return {pass:d.length === 0 && cnt === 3*8*80*(1 + 4), detail:'main-stream draws ' + cnt + ' (expected ' + 3*8*80*5 + '); public plan per person-year ' + (R ? R.map(function(r){ return Math.round(r.hlSB); }).join(' / ') + ' against today\'s ' + Math.round(R[0].hlSA) : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
+  /* Session 2b (Oct 13, 2026; dev/reports/v5-27-health-financing.md): setting C, the benefit cliff, and PTF's health-sector cut under single payer. */
+  t('health C: with no payment gap and no selection, setting C costs what setting B costs; at the defaults it costs more, pays private plans, and keeps 8 main-stream draws per adult-year; the cliff is positive under A and 0 in the years under B and C (their figure is year 0\'s, under today\'s system: here 1 year of 4)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:80, years:4}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), mb0 = mulberry32, cnt = 0, d = [], R;
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), b = function(hl){ return Object.assign(relMainCfgs(PR)[0], {sc:SPEND_SOURCED, hl:hl}); };
+      mulberry32 = function(sd){ var g = mb0(sd); return sd === 2 ? function(){ cnt++; return g(); } : g; };
+      R = tbStudy([b({set:'B'}), b({set:'C', gap:0, sel:0}), b({set:'C'}), b({})], 2, P, so, 2); mulberry32 = mb0;
+      if (Math.abs(R[1].hlSB/R[0].hlSB - 1) > 1e-9 || R[1].fgt0PY !== R[0].fgt0PY) d.push('C at par differs from B: ' + R[0].hlSB + ' / ' + R[1].hlSB);
+      if (!(R[2].hlSB > R[0].hlSB && R[2].hlXtra > 0 && R[2].hlPriv > 20 && R[2].hlPriv < 80 && R[2].hlRate > R[0].hlRate)) d.push('C at the defaults: ' + [R[2].hlSB, R[2].hlXtra, R[2].hlPriv, R[2].hlRate].map(Math.round).join(' '));
+      if (!(R[3].hlCliff > 0 && R[3].hlCliffD > 0) || !(R[0].hlCliff < R[3].hlCliff/2) || !(R[2].hlCliff < R[3].hlCliff/2) || !(R[0].hlCliffN > 0)) d.push('cliff ' + [R[3].hlCliff, R[0].hlCliff, R[2].hlCliff, R[0].hlCliffN].join(' ')); }
+    finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:d.length === 0 && cnt === 4*8*80*(1 + 4), detail:'main-stream draws ' + cnt + ' (expected ' + 4*8*80*5 + '); plan per person-year B / C at par / C ' + (R ? [R[0].hlSB, R[1].hlSB, R[2].hlSB].map(Math.round).join(' / ') + '; cliff under A ' + R[3].hlCliff.toFixed(1) + ' points of the line' : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
+  t('health B: with PTF\'s health-sector cut on (0.25), the cut lowers the plan\'s cost, not the member\'s cost of living (under A it lowers the member\'s cost of living); countBU moves Medicaid only in the programme run', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:80, years:4}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), d = [], R;
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), m = function(hl, o){ var c = relMainCfgs(PR)[1]; c.hl = hl; if (o !== undefined) c.v54 = Object.assign({}, c.v54, {ptfs:Object.assign({}, c.v54.ptfs, {other:o})}); return c; };
+      R = tbStudy([m({set:'B'}), m({set:'B'}, 0.25), m({}), m({}, 0.25), m({countBU:true}), Object.assign(relMainCfgs(PR)[0], {sc:SPEND_SOURCED, hl:{countBU:true}}), Object.assign(relMainCfgs(PR)[0], {sc:SPEND_SOURCED, hl:{}})], 2, P, so);
+      if (!(R[1].hlPtfP > 0 && R[1].hlSB < R[0].hlSB) || R[0].hlPtfP !== 0) d.push('B: plan cut ' + R[1].hlPtfP + ', plan ' + R[0].hlSB + ' -> ' + R[1].hlSB);
+      if (!(R[1].pfCut < R[3].pfCut)) d.push('B: the member\'s cut still includes medical care (' + R[1].pfCut + ' against A\'s ' + R[3].pfCut + ')');
+      if (R[3].hlPtfP !== 0) d.push('A: plan cut ' + R[3].hlPtfP);
+      if (!(R[4].hlMcaid < R[2].hlMcaid)) d.push('countBU: Medicaid ' + R[2].hlMcaid + ' -> ' + R[4].hlMcaid);
+      if (R[5].hlMcaid !== R[6].hlMcaid || R[5].fgt0PY !== R[6].fgt0PY) d.push('countBU moved the no-programme run'); }
+    finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:d.length === 0, detail:R ? 'plan cut ' + Math.round(R[1].hlPtfP) + ' per person-year; member\'s cut ' + R[3].pfCut.toFixed(2) + '% (A) and ' + R[1].pfCut.toFixed(2) + '% (B); Medicaid with the programme ' + R[2].hlMcaid.toFixed(1) + '% -> ' + R[4].hlMcaid.toFixed(1) + '% with BU counted; problems: ' + (d.slice(0, 6).join('; ') || 'none') : ''}; });
+  t('avoided public costs: under single payer (B, C) the hospital and emergency parts are scaled by 1 - 100.0/1,634.7 (the preprint\'s avoided emergency and inpatient care), prisons and psychiatric care are not; without a setting nothing changes', function(){
+    var a = avoidWide(5000, 0.2), b = avoidWide(5000, 0.2, 'B'), c = avoidWide(5000, 0.2, 'C'), z = avoidWide(5000, 0.2, 'A'), k = 1 - 100/1634.7, W = AVOID_WIDE, h = avoidHomelessHl('B');
+    return {pass:near(b.main, 5000*W.jMain + 0.2*(W.hosp*k + W.psych)) && near(b.high - b.main, 5000*(W.jHigh - W.jMain) + 0.2*W.erHigh*k) && b.main === c.main && z.main === a.main && a.high === avoidWide(5000, 0.2).high && near(h.high, AVOID_HOMELESS.high*(1 - 0.53*(1 - k))) && avoidHomelessHl().high === AVOID_HOMELESS.high,
+      detail:'main ' + a.main.toFixed(1) + ' -> ' + b.main.toFixed(1) + '; high ' + a.high.toFixed(1) + ' -> ' + b.high.toFixed(1)}; });
   /* Session 2b (Oct 13, 2026; dev/reports/v5-27-health-financing.md): today's safety net. */
   t('safety net: SNAP, the EITC and the refundable CTC by hand (single parent, two children, $20,000 of pay; a couple without children, $22,000), the income tax before credits, and the switches', function(){
     var sv = SNET; SNET = Object.assign({}, SNET_DEFAULTS);
@@ -2569,7 +2595,7 @@ function healthUnitSuite(){
 }
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
-Object.assign(module.exports, { SN_KEYS, SNET_DEFAULTS, snBen, snIncTax, avoidWide });  /* session 2b: today's safety net */
+Object.assign(module.exports, { SN_KEYS, SNET_DEFAULTS, snBen, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
 function v52UnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, jn:JOIN, cs:COST, ml:MULT, gc:GATE_CURRENT, nr:applyNR6(), g:tbSetG(TB_PROFILE_G), rng:RNG, mb:mulberry32, ry:tbRepYear};

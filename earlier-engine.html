@@ -4233,9 +4233,15 @@ function relMainCfgs(PR, v53){ var X = v53 ? {} : REL_V54; return [Object.assign
 var AVOID_WIDE = (function(){ var pub = 0.469 + 0.194, rate = 0.0070/0.047;
   return {jMain:rate*30200/37700, jHigh:(30200 + 10800)/37700, hosp:0.085*(35.8/325.1)*(434.2e9/35.8e6)*321.943/245.120*pub, psych:0.085*14.8e9/340.1e6,
     erHigh:0.085*(107.4/332.0)*750*321.943/270.970*pub}; })();
-function avoidWide(gap, lift){  /* gap: poverty-gap dollars closed per adult-year; lift: share of person-years lifted above the cost of living */
-  var g = Math.max(0, gap), l = Math.max(0, lift), W = AVOID_WIDE;
-  return {low:0, main:g*W.jMain + l*(W.hosp + W.psych), high:g*W.jHigh + l*(W.hosp + W.psych + W.erHigh), jail:g*W.jMain, health:l*(W.hosp + W.psych)}; }
+function avoidWide(gap, lift, hl){  /* gap: poverty-gap dollars closed per adult-year; lift: share of person-years lifted above the cost of living */
+  /* Session 2b (DECISIONS, 'Nothing counted twice', item 6): hl, the run's health setting. Under single payer (B or C) the preprint's savings already include $100.0bn of
+   * avoided emergency and inpatient care (6.1% of hospital care, CMS 2024), so the hospital and emergency visits that income avoids are counted on the rest: each
+   * scaled by 1 - CFG.HL_B.avoided/CFG.HL_HOSP. Without hl (every earlier call) nothing changes. */
+  var g = Math.max(0, gap), l = Math.max(0, lift), W = AVOID_WIDE, k = hl === 'B' || hl === 'C' ? 1 - CFG.HL_B.avoided/CFG.HL_HOSP : 1;
+  return {low:0, main:g*W.jMain + l*(W.hosp*k + W.psych), high:g*W.jHigh + l*(W.hosp*k + W.psych + W.erHigh*k), jail:g*W.jMain, health:l*(W.hosp*k + W.psych)}; }
+/* Session 2b: homelessness's public cost (high end) under single payer: its health-care part (53%, Flaming et al. 2015) is scaled the same way, so emergency and
+ * inpatient care avoided by single payer is not counted again when a page shows both (session 4). */
+function avoidHomelessHl(hl){ var k = hl === 'B' || hl === 'C' ? 1 - CFG.HL_B.avoided/CFG.HL_HOSP : 1; return {low:AVOID_HOMELESS.low, high:AVOID_HOMELESS.high*(1 - 0.53*(1 - k))}; }
 var AVOID_HOMELESS = {low:581*12*321.943/214.537, high:520e6/7631*321.943/218.056};
 var OCT = null;
 var OCT_DEFAULTS = {gap:3};
@@ -5007,7 +5013,7 @@ function ptfsShares(a, HHA){  /* the member's basket shares: food, housing, tran
   if (HHA && a._hhS) return a._hhS; var c = function(k){ return PRICE ? PRICE.comp[k]/PRICE.bIdx : 1; };
   return {f:CFG.BASKET.food*c('food'), h:CFG.BASKET.housing*c('housing'), t:CFG.BASKET.transport*c('transport'), m:CFG.BASKET.medical*c('medical'), k:0}; }
 function ptfsCut(a, HHA, p, quiet){ var s = ptfsShares(a, HHA), eF = PFS && PFS.dens < CFG.PTFS_LOW_DENS ? CFG.PTFS_EPS_FOOD_LOW : CFG.PTFS_EPS_FOOD, o = PTFS.other;
-  var c = s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/CFG.PTFS_EPS_UTIL) + (s.t + s.m + s.k)*o; if (p.szh) c *= (0.12 + p.szhCoh*0.04)/0.12;
+  var c = s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/CFG.PTFS_EPS_UTIL) + (s.t + (HLS && HLS.planOn ? 0 : s.m) + s.k)*o;  /* session 2b (DECISIONS, 'Nothing counted twice', item 7): under single payer (B, C) the health-sector cut lowers the plan's costs (hlSingle), not the household's */ if (p.szh) c *= (0.12 + p.szhCoh*0.04)/0.12;
   if (PFS && !quiet){ PFS.cut += c; PFS.cn++; } return Math.min(0.95, c); }
 function ptfsYear(agentSet, yr){  /* before the year's adults: leavers, then the share of adults who are members (the food epsilon's density test) */
   var u = agentSet.map(function(){ return PFS.r(); }), m = 0;
@@ -5059,7 +5065,27 @@ function disRes(out){ var A = DSS, L = A ? A.list : [], Q = A ? A.ctl : [], rec 
  * and its line, in cash, on top of the basket (which still carries the average line, so BU, PTF's sector cut and the price module see what they saw).
  * Turning it on adds spread, not cost. */
 var HEALTH = null, HLS = null;
-var HEALTH_DEFAULTS = {set:'A', exp:true, skip:0.5, persist:0.9, countBU:false, cs:'central', start:1, adm:0.011, cap:0.5, induce:0.25};
+var HEALTH_DEFAULTS = {set:'A', exp:true, skip:0.5, persist:0.9, countBU:false, cs:'central', start:1, adm:0.011, cap:0.5, induce:0.25, gap:0.04, sel:0.11, priv:0.55};
+/* Setting C (session 2b, step 2; dev/reports/v5-27-health-financing.md): SINGLE PAYER WITH A PRIVATE LAYER. Everything in setting B holds (one public base for everyone
+ * from HEALTH.start, no premiums and no out-of-pocket cost, the same care, cost per unit, waits, administrative jobs, health tax and price rule), plus:
+ *  - Medicaid kept: people who would be on Medicaid today (the shared income test, take-up as in setting A) stay on Medicaid, run by states and counties and paid
+ *    by government as today. Their care costs what the public base pays per unit (a modelling assumption: keeping Medicaid changes who runs it, not its unit
+ *    cost), and they do not take private plans;
+ *  - a private layer: the household of anyone else may take a private plan that the public programme pays per person, as Medicare Advantage is paid. Share
+ *    HEALTH.priv (0.55: Medicare Advantage's share of beneficiaries with Parts A and B in 2025, MedPAC March 2026; applied at every age, a modelling assumption),
+ *    one draw per household head (hash slot 94), lasting. For each enrollee the programme pays the enrollee's public-base cost times (1 + gap) x (1 + sel):
+ *      gap  the payment gap from coding: plans record more diagnoses, so risk scores and payments are higher than for the same person in the public base.
+ *           MedPAC (March 2026 report; press release Mar 12, 2026): about 4% in 2026 after CMS's coding adjustment (central); 0 (low: risk adjustment removes
+ *           it); 8% (high: MedPAC's 2025 estimate, 20% in all less selection's 11%, before the V28 risk model was fully in place);
+ *      sel  selection: healthier people choose private plans, so the payment set by risk score exceeds what the enrollees would have cost the public base
+ *           (and the public base keeps the costlier people). MedPAC: about 11% in 2026 and in 2025 (central); half and one and a half times (5.5% and 16.5%,
+ *           design values) as low and high.
+ *    MedPAC's total for 2026 is about 14% ($76 billion); the central case's (1.04 x 1.11 = 15.4%) is close. Enrollees are drawn at random and selection enters as
+ *    the payment factor, which gives the same programme cost as a pool of healthier enrollees paid at average rates; who chooses, and why, is not modelled
+ *    (a stated limit). The extra payment funds plans' extra benefits and profit (MedPAC: rebates go to lower cost sharing, extra benefits, Part D and Part B
+ *    premiums, and administration and profit); here it is counted as programme cost only, not as value to enrollees (a stated limit).
+ * The health tax pays the larger plan cost, so the setting's question is how much of setting B's savings the private layer gives back. */
+CFG.HL_HOSP = 1634.7;  /* hospital care spending, 2024, $ billion (CMS National Health Expenditure fact sheet): the base for the preprint's avoided emergency and inpatient care (CFG.HL_B.avoided) */
 /* Setting B (session 2a, step 5): SINGLE PAYER, PUBLIC PLAN ONLY (as in the Medicare for All Act). From year HEALTH.start (1; year 0 is today's system, which sets
  * the calibration and the first incomes) everyone is covered by one public plan with no premiums and no out-of-pocket cost, paid for by a flat health tax on money
  * income. Today's system keeps running in the background as the counterfactual (who would have been covered how, and what each payer would have paid), so the
@@ -5082,7 +5108,7 @@ var HEALTH_DEFAULTS = {set:'A', exp:true, skip:0.5, persist:0.9, countBU:false, 
  *    al., PERI 2018, as reported by secondary summaries: the report itself was not read; over about 160 million employed) and enter the job-loss path: a spell
  *    of the usual length, unemployment insurance as for anyone, and the pay cut on return that a permanent loss carries. Only with the job-loss part on;
  *  - prices: no market price response for medical care (d-health-price rule a): the public payer sets rates; a shortage shows as waits. */
-CFG.HL_B = {base:5278.6, gross:{central:1345.2, cautious:663.3 + 304.0, high:304.0}, added:304.0, extra:54.7 + 51.7};
+CFG.HL_B = {base:5278.6, gross:{central:1345.2, cautious:663.3 + 304.0, high:304.0}, added:304.0, extra:54.7 + 51.7, avoided:100.0};
 CFG.HL_AGE = [[17, 4217], [44, 6669], [64, 12577], [84, 20503], [999, 35995]];  /* personal health care per person by age (upper age, $), 2020: CMS National Health Expenditure, Age and Sex tables (0-18, 19-44, 45-64, 65-84, 85+; the model's adults start at 18) */
 CFG.HL_AGE_NONE = 9154;  /* CMS 2020, working-age adults (19-64): for adults the model gives no age (no ageing) */
 CFG.HL_LEVEL = 15474/12530;  /* to year-0 dollars: national health spending per person, 2024 ($15,474, CMS NHE fact sheet) over 2020 ($12,530) */
@@ -5096,7 +5122,7 @@ CFG.HL_MKT = {prem:5964, kid:0.5, ded:2759, coins:0.20, oopMax:9200, oopCSR:3050
 CFG.HL_MCARE = {partB:2220, ded:257, coins:0.20, oopMax:9350};  /* Medicare 2025: Part B premium ($185 a month) and deductible, 20% coinsurance, capped at the Medicare Advantage in-network limit (a stand-in for supplemental cover) */
 CFG.HL_UNDER = {oop:0.10, oopLow:0.05, lowFpl:2.0, ded:0.05};  /* Commonwealth Fund: insured all year with out-of-pocket cost (not premiums) of 10% of income or more, 5% under 200% of poverty, or a deductible of 5% of income or more */
 CFG.HL_DEBT_LINE = 250;  /* medical debt counted above $250 (KFF analysis of SIPP 2021: about 1 in 12 adults) */
-var HL_KEYS = ['hlEsi', 'hlMkt', 'hlMcaid', 'hlMcare', 'hlUnins', 'hlUnder', 'hlSkip', 'hlSkipD', 'hlNeed', 'hlOop', 'hlPrem', 'hlEmp', 'hlGov', 'hlIns', 'hlPaid', 'hlLine', 'hlDev', 'hlDebt', 'hlDebtM', 'hlKap', 'hlKidMcaid', 'hlKidUnins', 'hlMcaidLost', 'hlTax', 'hlRate', 'hlWait', 'hlSA', 'hlSB', 'hlAdded', 'hlAdm', 'hlBack'];
+var HL_KEYS = ['hlEsi', 'hlMkt', 'hlMcaid', 'hlMcare', 'hlUnins', 'hlUnder', 'hlSkip', 'hlSkipD', 'hlNeed', 'hlOop', 'hlPrem', 'hlEmp', 'hlGov', 'hlIns', 'hlPaid', 'hlLine', 'hlDev', 'hlDebt', 'hlDebtM', 'hlKap', 'hlKidMcaid', 'hlKidUnins', 'hlMcaidLost', 'hlTax', 'hlRate', 'hlWait', 'hlSA', 'hlSB', 'hlAdded', 'hlAdm', 'hlBack', 'hlCliff', 'hlCliffD', 'hlCliffN', 'hlPriv', 'hlXtra', 'hlPtfP'];
 /* hlEsi..hlUnins: % of adult-years by coverage; hlUnder: % of insured adult-years underinsured; hlSkip: % of adult-years skipping some care for cost; hlSkipD: care skipped,
  * $ per adult-year; hlNeed: medical need (care used plus skipped) per person-year; hlOop, hlPrem: what households pay out of pocket and in premiums, per adult-year;
  * hlEmp: employers' premium share (pay forgone) per adult-year; hlGov: government (Medicaid, Medicare, premium tax credits) per adult-year; hlIns: insurers' claims per
@@ -5105,7 +5131,11 @@ var HL_KEYS = ['hlEsi', 'hlMkt', 'hlMcaid', 'hlMcare', 'hlUnins', 'hlUnder', 'hl
  * hlMcaidLost: % of adult-years that had Medicaid the year before and lost it to income. Setting B: hlTax, the health tax per adult-year; hlRate, its rate (% of
  * money income, mean over the years under B); hlWait, % of needed care delayed; hlSA and hlSB, today's system's spending and the public plan's, per person-year
  * (the years under B; all payers, after the calibration); hlAdded, the added care (% of today's care delivered); hlAdm, % of adults laid off from administrative
- * jobs; hlBack, the employer share returned per adult-year. In the years under B the coverage keys read the counterfactual (today's system). Dollars: year-0. */
+ * jobs; hlBack, the employer share returned per adult-year. In the years under B the coverage keys read the counterfactual (today's system). Dollars: year-0.
+ * Session 2b: hlCliff, the benefit cliff at the adult Medicaid limit (hlJump): the mean jump in a household's expected health bill when its tested income crosses the
+ * limit, over households within a quarter of the guideline of it, in points of the household's basket medical line (every year under today's system; in the years
+ * under B and C it is 0, because the bill does not depend on Medicaid, so their figure is year 0's share); hlCliffD, the same in dollars per household; hlCliffN, the share of household-years (%) near the limit; hlPriv, % of person-years in private plans (setting C); hlXtra, the programme's payments to private plans above the
+ * enrollees' public-base cost, per person-year; hlPtfP, PTF's health-sector cut to the plan's costs (B and C, with PTF's rate for health care above 0), per person-year. */
 function hlU(s, id, yr, j){  /* a uniform draw from the hash of (seed, person, year, slot): murmur3's finaliser over the mixed integers */
   var h = Math.imul(s ^ 0x5bd1e995, 0x85ebca6b) ^ Math.imul((id | 0) + 0x632be5ab, 0xc2b2ae35) ^ Math.imul((yr | 0) + 0x7f4a7c15, 0x27d4eb2f) ^ Math.imul((j | 0) + 0x165667b1, 0x9e3779b1);
   h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16; return ((h >>> 0) + 0.5)/4294967296; }
@@ -5137,7 +5167,7 @@ function hlInit(agents, seed){
   var A = CFG.HL_ACUTE, S = CFG.HL_SIGMA, G = [], i, w = agents.map(function(a){ return a.wage; }).sort(function(x, y){ return x - y; });
   for (i = 0; i < 1024; i++){ var u = [hlU(7, i, 0, 0), hlU(7, i, 0, 1), hlU(7, i, 0, 2), hlU(7, i, 0, 3)];
     G.push([u[0], Math.exp(S.base*normInv(u[1]) - S.base*S.base/2), u[2] < A.p ? Math.exp(S.acute*normInv(u[3]) - S.acute*S.acute/2)/A.p : 0]); }
-  HLS = {seed:seed | 0, G:G, w:w, kap:null, kap0:1, idxPrev:1, acc:{ay:0, ky:0, py:0, esi:0, mkt:0, mcaid:0, mcare:0, unins:0, insY:0, under:0, skipN:0, skipD:0, need:0, oop:0, prem:0, emp:0, gov:0, ins:0, paid:0, line:0, dev:0, debtN:0, debt:0, kMcaid:0, kUnins:0, lost:0, adm:0, admN:0, tax:0, back:0, paidB:0, devB:0, bY:0, rate:0, wait:0, SA:0, SB:0, QA:0, QB:0, pyB:0, ayB:0}};
+  HLS = {seed:seed | 0, G:G, w:w, kap:null, kap0:1, idxPrev:1, acc:{ay:0, ky:0, py:0, esi:0, mkt:0, mcaid:0, mcare:0, unins:0, insY:0, under:0, skipN:0, skipD:0, need:0, oop:0, prem:0, emp:0, gov:0, ins:0, paid:0, line:0, dev:0, debtN:0, debt:0, kMcaid:0, kUnins:0, lost:0, adm:0, admN:0, tax:0, back:0, paidB:0, devB:0, bY:0, rate:0, wait:0, SA:0, SB:0, QA:0, QB:0, pyB:0, ayB:0, cN:0, cD:0, cL:0, nP:0, priv:0, xtra:0, ptfP:0}};
   agents.forEach(function(a, j){ a._hlId = j; a._hlC = undefined; a._hlMd = 0; a._hlOopP = 0; });
 }
 function hlRank(a){ var w = HLS.w, lo = 0, hi = w.length; while (lo < hi){ var m = (lo + hi) >> 1; if (w[m] < a.wage) lo = m + 1; else hi = m; } return w.length ? lo/w.length : 0.5; }
@@ -5148,10 +5178,11 @@ function hlYear(agents, yr, p, HHON, inflRate){
   var E = HEALTH, M = CFG.HL_MCAID, S = HLS, ac = S.acc, k = hlK(), units = hlUnits(agents, HHON), next = 0;
   var gIdx = Math.pow(1 + inflRate, yr)*(PRICE ? PRICE.bIdx : 1), mIdx = Math.pow(1 + inflRate, yr)*(PRICE ? PRICE.comp.medical : 1);
   S.mIdx = mIdx; S.w = agents.map(function(a){ return a.wage; }).sort(function(x, y){ return x - y; });  /* this year's pay ranks (relative, so price rises do not move them) */
+  S.planOn = (E.set === 'B' || E.set === 'C') && yr >= E.start;  /* session 2b: the public plan pays this year (ptfsCut then leaves medical care out of the household's cut) */
   agents.forEach(function(a){ if (a._hlId === undefined){ a._hlId = 1000000 + (a._id !== undefined ? a._id : agents.length + next++); a._hlMd = 0; a._hlOopP = 0; } });  /* adults who arrive with ageing */
   var plan = units.map(function(u){
     var nA = u.a.length, nK = u.kids.length, Y = 0, parent = nK > 0, people = [], esiHH = false;
-    u.a.forEach(function(a){ Y += yr === 0 || a.yrWageUSD === undefined ? a.wage*12*CFG.WAGE_TO_USD : ((a.yrWageUSD || 0) + (a.yrSSUSD || 0) + (a.yrUbiUSD || 0) + (a.yrConvUSD || 0) + (a._hlTb || 0))/S.idxPrev; });
+    u.a.forEach(function(a){ Y += yr === 0 || a.yrWageUSD === undefined ? a.wage*12*CFG.WAGE_TO_USD : ((a.yrWageUSD || 0) + (a.yrSSUSD || 0) + (a.yrUbiUSD || 0) + (a.yrConvUSD || 0) + (a._hlTb || 0) + (E.countBU ? a._hlBU || 0 : 0))/S.idxPrev; });  /* session 2b: countBU counts last year's BU allowance (face value) as income in the test */
     var T = incomeTest(nA, nK, Math.max(0, Y));
     u.a.forEach(function(a){ var id = a._hlId, age = a.age, kid = false, cov;
       var psi1 = hlU(S.seed, id, 0, 91), psi2 = hlU(S.seed, id, 0, 92), psi3 = hlU(S.seed, id, 0, 93), u0 = hlU(S.seed, id, yr, 0);
@@ -5161,7 +5192,7 @@ function hlYear(agents, yr, p, HHON, inflRate){
       else if (medicaidEligible(T.ratio, false, parent, E.exp) && psi3 < M.take) cov = 'mcaid';
       else if (att){ cov = 'esi'; esiHH = true; }
       else cov = 'x';  /* decided below: the household's employer plan, the marketplace, or none */
-      people.push({a:a, id:id, kid:false, mu:hlMu(age), k:a._hlC ? k.c : k.n, cov:cov, psi2:psi2, wasMcaid:a._hlCov === 'mcaid'}); });
+      people.push({a:a, id:id, kid:false, mu:hlMu(age), k:a._hlC ? k.c : k.n, cov:cov, psi2:psi2, wasMcaid:a._hlCov === 'mcaid', att:att, mcTake:psi3 < M.take}); });
     u.kids.forEach(function(age, j){ var id = 10000000 + (u.H ? u.H.id : 0)*8 + j, psi3 = hlU(S.seed, id, 0, 93), cov;
       cov = medicaidEligible(T.ratio, true, true, E.exp) && psi3 < M.takeKids ? 'mcaid' : 'x';
       people.push({a:null, id:id, kid:true, mu:hlMu(age), k:1, cov:cov, psi2:hlU(S.seed, id, 0, 92)}); });
@@ -5192,6 +5223,7 @@ function hlYear(agents, yr, p, HHON, inflRate){
       if (q.cov === 'mcaid') gov += x; else if (q.cov === 'mcare') gov += Math.max(0, x - q.o - CFG.HL_MCARE.partB); else if (q.cov === 'esi' || q.cov === 'mkt') ins += x - q.o; });
     gov += P.sub;
     var paid = kap*(P.prem + oop), dev = paid - P.line;
+    if (!S.planOn){ ac.nP++; hlJump(ac, P, kap, E); }  /* session 2b: the benefit cliff, in every year households face today's system (reporting only) */
     /* reporting (adult-years; money per adult-year) */
     var insAll = true, under = false; P.people.forEach(function(q){ if (q.cov === 'unins') insAll = false; });
     if (insAll){ var ded = 0; P.people.forEach(function(q){ ded = Math.max(ded, hlDed(q.cov)); }); under = oop >= bT*Yp || ded >= CFG.HL_UNDER.ded*Yp; }
@@ -5205,29 +5237,49 @@ function hlYear(agents, yr, p, HHON, inflRate){
     u.a.forEach(function(a){ a._hlD = dev/nA; a._hlOopP = oop/nA; });  /* this year's gap from the line (paid in cash in the agent loop) and bill (next year's debt step) */
     ac.py += P.people.length; ac.need += need; ac.skipD += skipD; ac.oop += oop; ac.prem += P.prem; ac.emp += P.emp; ac.gov += gov; ac.ins += ins; ac.paid += paid; ac.line += P.line; ac.dev += Math.abs(dev);
   });
-  if (E.set === 'B' && yr >= E.start) hlSingle(agents, yr, plan, E, S);
+  if (S.planOn) hlSingle(agents, yr, plan, E, S, p);  /* session 2b: setting C too */
+  agents.forEach(function(a){ a._hlBU = 0; });  /* session 2b: this year's BU allowance is written again in the agent loop (countBU reads it next year) */
   S.idxPrev = gIdx;
 }
 /* Setting B for one year (see the block above HEALTH_DEFAULTS): the public plan's cost, the tax, the returned employer share, waits, and each household's gap
  * from its basket line. plan: today's system for this year, per household, as hlYear computed it (the counterfactual). */
-function hlSingle(agents, yr, plan, E, S){
-  var B = CFG.HL_B, ac = S.acc, uF = 1 - B.gross[E.cs]/B.base, SA = 0, QA = 0, QB = 0, GA = 0, Ytot = 0;
+function hlSingle(agents, yr, plan, E, S, p){
+  var B = CFG.HL_B, ac = S.acc, uF = 1 - B.gross[E.cs]/B.base, SA = 0, QA = 0, QB = 0, GA = 0, Ytot = 0, QW = 0, QX = 0, QM = 0;
+  var isC = E.set === 'C', fC = (1 + E.gap)*(1 + E.sel), cm = PTFS && PFS && p && p.ptf && PTFS.other > 0 ? Math.min(0.95, PTFS.other*(p.szh ? (0.12 + p.szhCoh*0.04)/0.12 : 1)) : 0;  /* session 2b: setting C's payment factor; PTF's health-sector cut, applied to the plan's costs */
   if (yr === E.start && EMPL && EMS && E.adm > 0) agents.forEach(function(a){  /* the administrative jobs that end: a spell from the job-loss path's own lengths; permanent, so the pay cut on return applies */
     if (a._ret || (a._emW || 0) > 0 || hlU(S.seed, a._hlId, yr, 20) >= E.adm) return;
     a._emW = emplWeeks(hlU(S.seed, a._hlId, yr, 21), false); a._emUi = !!EMPL.ui && hlU(S.seed, a._hlId, yr, 22) < CFG.EMPL_UI_RECIP; a._emUiW = 0;
     a._emCut = 2*EMPL.cut*hlU(S.seed, a._hlId, yr, 23); a._emAuto = false; EMS.spells++; if (a._emW > 26) EMS.long++; ac.adm++; });
   if (yr === E.start) ac.admN = agents.length;
-  plan.forEach(function(P){ var k = P.kap, qa = 0, qb = 0;
-    P.people.forEach(function(q){ qa += q.xn + q.xa - q.sk; qb += (q.xn + q.xa)*(q.cov === 'unins' ? 1 + E.induce : 1); });
+  plan.forEach(function(P){ var k = P.kap, qa = 0, qb = 0, qw = 0, qx = 0, qm = 0, mem = cm > 0 && P.u.a[0].inPTF, prv = isC && hlU(S.seed, P.u.a[0]._hlId, 0, 94) < E.priv;
+    P.people.forEach(function(q){ var x = (q.xn + q.xa)*(q.cov === 'unins' ? 1 + E.induce : 1), w = mem ? 1 - cm : 1; qa += q.xn + q.xa - q.sk; qb += x;
+      if (cm > 0 || isC){ if (mem) qm += x*cm; if (prv && q.cov !== 'mcaid'){ qx += x*w*(fC - 1); w *= fC; ac.priv++; } qw += x*w; } });  /* session 2b: private enrollees (not Medicaid) and PTF members */
     P.SA = k*(P.prem + P.oop + P.emp + P.gov); P.QA = k*qa; P.QB = k*qb; P.GA = k*P.gov;
-    SA += P.SA; QA += P.QA; QB += P.QB; GA += P.GA; Ytot += Math.max(0, P.Y); });
+    SA += P.SA; QA += P.QA; QB += P.QB; GA += P.GA; Ytot += Math.max(0, P.Y); QW += k*qw; QX += k*qx; QM += k*qm; });
   var cA = QA > 0 ? SA/QA : 1, K = QA*(1 + E.cap*Math.max(0, QB/QA - 1)), served = Math.min(QB, K), wait = QB > 0 ? (QB - served)/QB : 0;
-  var SB = uF*cA*served + B.extra/B.base*SA, T = Math.max(0, SB - GA), tau = Ytot > 0 ? T/Ytot : 0;
+  var adj = (isC || cm > 0) && QB > 0 ? QW/QB : 1, SB = uF*cA*served*adj + B.extra/B.base*SA, T = Math.max(0, SB - GA), tau = Ytot > 0 ? T/Ytot : 0;  /* session 2b: adj 1 in setting B without PTF's health cut */
+  if (QB > 0){ ac.xtra += uF*cA*served*QX/QB; ac.ptfP += uF*cA*served*QM/QB; }
   plan.forEach(function(P){ var nA = P.u.a.length, tx = tau*Math.max(0, P.Y), back = P.kap*P.emp, dev = tx - back - P.line;
     P.u.a.forEach(function(a){ a._hlD = dev/nA; a._hlOopP = 0; });
+    ac.nP++; if (hlNearLimit(P, E)){ ac.cN++; ac.cL += 0; ac.cD += 0; }  /* session 2b: the benefit cliff under the plan: the bill (the tax on income less the returned employer share) has no term that depends on Medicaid, so the jump at the limit is 0 */
     ac.tax += tx; ac.back += back; ac.paidB += tx - back; ac.devB += Math.abs(dev); });
   ac.bY++; ac.rate += tau; ac.wait += wait; ac.SA += SA; ac.SB += SB; ac.QA += QA; ac.QB += QB; plan.forEach(function(P){ ac.pyB += P.people.length; ac.ayB += P.u.a.length; });
 }
+/* Session 2b: the benefit cliff. For a household with an adult under 65 whose tested income is within a quarter of the poverty guideline of the adult Medicaid limit
+ * (expansion 138%; without expansion, parents' 40.5%, and no limit for adults without children), the jump in its expected health bill (premiums and expected
+ * out-of-pocket cost over the fixed sample of needs, after the calibration, year-0 dollars) when its income moves from just below the limit to just above it:
+ * its adults who would take Medicaid lose it and take the coverage they would have above the limit (the employer plan if attached, the marketplace by the same
+ * draw, or none); children keep theirs (their limit is higher). Reporting only. */
+function hlNearLimit(P, E){ var L = E.exp ? CFG.HL_MCAID.exp : P.u.kids.length ? CFG.HL_MCAID.parentNx : -1;
+  return L > 0 && Math.abs(P.T.ratio - L) < 0.25 && P.people.some(function(q){ return !q.kid && q.cov !== 'mcare'; }) ? L : 0; }
+function hlJump(ac, P, kap, E){ var L = hlNearLimit(P, E); if (!L) return;
+  var Y = L*P.T.line, b = [false, true].map(function(above){ var cov = [], esiHH = false, mkt = false, nE = 0, gross = 0, nB = 0, oop = 0;
+    P.people.forEach(function(q){ cov.push(q.kid ? (q.cov === 'mcaid' ? 'mcaid' : 'x') : q.cov === 'mcare' ? 'mcare' : !above && q.mcTake ? 'mcaid' : q.att ? (esiHH = true, 'esi') : 'x'); });
+    P.people.forEach(function(q, i){ if (cov[i] !== 'x') return; if (esiHH) cov[i] = 'esi'; else if (q.kid) cov[i] = mkt ? 'mkt' : 'unins'; else if (q.psi2 < CFG.HL_MKT.take){ cov[i] = 'mkt'; mkt = true; } else cov[i] = 'unins'; });
+    P.people.forEach(function(q, i){ if (cov[i] === 'esi') nE++; if (cov[i] === 'mkt') gross += CFG.HL_MKT.prem*(q.kid ? CFG.HL_MKT.kid : 1); if (cov[i] === 'mcare') nB++; oop += hlEOop(cov[i], q.mu, q.kid, L); });
+    var wk = nE ? (nE > 1 ? CFG.HL_ESI.wkF : CFG.HL_ESI.wkS) : 0, sub = gross > 0 ? Math.max(0, gross - hlPct(L)*Y) : 0;
+    return kap*(wk + gross - sub + nB*CFG.HL_MCARE.partB + oop); });
+  ac.cN++; ac.cD += b[1] - b[0]; ac.cL += (b[1] - b[0])/P.line; }
 function hlRes(out){ var A = HLS ? HLS.acc : null, ay = A && A.ay ? A.ay : 1, pc = function(x){ return A ? x/ay*100 : 0; };
   out.hlEsi = pc(A ? A.esi : 0); out.hlMkt = pc(A ? A.mkt : 0); out.hlMcaid = pc(A ? A.mcaid : 0); out.hlMcare = pc(A ? A.mcare : 0); out.hlUnins = pc(A ? A.unins : 0);
   out.hlUnder = A && A.insY ? A.under/A.insY*100 : 0; out.hlSkip = pc(A ? A.skipN : 0); out.hlSkipD = A ? A.skipD/ay : 0; out.hlNeed = A && A.py ? A.need/A.py : 0;
@@ -5238,6 +5290,8 @@ function hlRes(out){ var A = HLS ? HLS.acc : null, ay = A && A.ay ? A.ay : 1, pc
   out.hlTax = bY && A.ayB ? A.tax/A.ayB : 0; out.hlRate = bY ? A.rate/bY*100 : 0; out.hlWait = bY ? A.wait/bY*100 : 0; out.hlSA = bY && A.pyB ? A.SA/A.pyB : 0; out.hlSB = bY && A.pyB ? A.SB/A.pyB : 0;
   out.hlAdded = bY && A.QA > 0 ? (A.QB/A.QA - 1)*100 : 0; out.hlAdm = A && A.admN ? A.adm/A.admN*100 : 0; out.hlBack = bY && A.ayB ? A.back/A.ayB : 0;
   if (bY){ out.hlPaid = A.ayB ? A.paidB/A.ayB : 0; out.hlDev = A.ayB ? A.devB/A.ayB : 0; }  /* under B: the household's health bill is the tax less the returned employer share */
+  out.hlCliff = A && A.cN ? A.cL/A.cN*100 : 0; out.hlCliffD = A && A.cN ? A.cD/A.cN : 0; out.hlCliffN = A && A.nP ? A.cN/A.nP*100 : 0;  /* session 2b */
+  out.hlPriv = bY && A.pyB ? A.priv/A.pyB*100 : 0; out.hlXtra = bY && A.pyB ? A.xtra/A.pyB : 0; out.hlPtfP = bY && A.pyB ? A.ptfP/A.pyB : 0;
   return out; }
 /* ─── Session 2b (Oct 13, 2026; dev/reports/v5-27-health-financing.md, part 1; dev/DECISIONS.md, Session 2b): TODAY'S SAFETY NET, a comparison row ─────
  * SNET null (the default) adds nothing: no draw, no state any rule reads. When an object (row option sn), each household receives, from year 0, SNAP, the
@@ -5682,7 +5736,7 @@ function runYear(agentSet,yr,p,recSt){
       if(p.ptf&&a.inPTF)essF=PTFS?essF*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fSA;
       if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')essF-=PTH_HOUSING_CUT*hSA*rsPtfU;else essF*=0.65;}  // session 5 (d4)
       if(hcX>0)essF+=hcX;  // v5.2 step 7: BU pay the marked-up rent
-      var fwBudget=12*buA,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),spC=0,fwB0=fwB;if(tbY)TB.cur.buIss+=fwBudget;if(EDCS)a._edcBU=fwBudget;  // plan step 3: BU the Source issues (reporting)
+      var fwBudget=12*buA,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),spC=0,fwB0=fwB;if(tbY)TB.cur.buIss+=fwBudget;if(EDCS)a._edcBU=fwBudget;if(HEALTH)a._hlBU=fwBudget;  // plan step 3: BU the Source issues (reporting)
       if(SPON&&a._spE>0&&spDelta>0){var spE=mainLoopCostUSD*essF;  // plan step 1 (d99): the cut lowers essentials; BU buy the discounted essentials first
         if(SURP.bu==='cash')spC=spDelta*Math.max(0,spE-fwB);else{spC=spDelta*spE;fwB=Math.min(fwBudget,spE-spC);}
         a._spCutY=spC;var spY=SPS.y[yr];spY.cut+=spC;spY.freed+=fwB0-fwB;SPS.acc.cut+=spC/spIdx;SPS.acc.cutP+=spC/spIdx;SPS.acc.freed+=(fwB0-fwB)/spIdx;SPS.acc.cash+=(spC-(fwB0-fwB))/spIdx;}
@@ -6188,7 +6242,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
         if (!S || o.essMatched){ PE[k] = 1; return; }
         var sRef = o.supply === 'baseline' ? S[yr] : S[0]*Math.pow(1 + o.gS, yr);
         var dEff = o.supply === 'baseline' ? d : sRef + Math.max(0, d - sRef) - Math.max(0, S[yr] - sRef);
-        PE[k] = pmEssLevel(dEff, sRef, capShare*cut, k === 'medical' && HEALTH && HEALTH.set === 'B' && yr + 1 >= HEALTH.start ? 0 : o.theta[k]);  /* session 2a, d-health-price rule a: under single payer the public payer sets rates (a shortage shows as waits); this step sets next year's prices */
+        PE[k] = pmEssLevel(dEff, sRef, capShare*cut, k === 'medical' && HEALTH && (HEALTH.set === 'B' || HEALTH.set === 'C') && yr + 1 >= HEALTH.start ? 0 : o.theta[k]);  /* session 2a, d-health-price rule a: under single payer the public payer sets rates (a shortage shows as waits); this step sets next year's prices */
       });
       path.push({bIdx:PRICE.bIdx, PG:PG, U:U, Y:A.Y, tau:tauUsed, colaLevel:PRICE.colaLevel, full:C.idx});  /* session 8: full price level (exogenous x endogenous) */
       PRICE.piG = PGn/PG - 1; PG = PGn;
