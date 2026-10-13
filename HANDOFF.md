@@ -1,30 +1,28 @@
-# Handoff (Oct 13, 2026; session 2f, ledger step s137: results in, follow-up Sobol running)
+# Handoff (Oct 13, 2026; session 2g, ledger step s137 done: the 500-seed study's results report)
 
 ## What shipped
-- The s137 study finished (11:36 UTC); all 187 output hashes match; merged outputs copied to `dev/runs/s137/` (2.6 MB; the per-seed pieces stay in the results repository, folder `s137-a3582e2/`).
-- Morris noise check read: the leaders are the same in both seed blocks for every Stress outcome, but Stress also names tax, eps, pthUptake, maxMult and ptfOther, which the first Sobol left out. The pre-set rule therefore calls for a follow-up Sobol (`dev/DECISIONS.md`, "Session 2f").
-- `dev/tools/gsa.js`: new mode `sobjoin` joins Sobol runs on seed blocks and adds 95% bootstrap intervals (tested: equals one run to 2e-14). New job `dev/tools/s137b_jobs.sh`; `dev/batch/runpod.sh` gains `STUDY=s137b`. The engine is unchanged (`index.html` identical to a3582e2). validate, unit and domtest all pass.
+- Follow-up Sobol (s137b) finished 18:42 UTC; `DONE` present; all 17 hashes match; copied to `dev/runs/s137b/` (commit 1169426). The Runpod pod list is empty.
+- `dev/tools/gsa.js`: every Sobol output also gives Sc, a centred first-order index (less noise; S, ST and intervals bit-identical). Recomputed from the s137b blocks into `dev/runs/s137b/gsa-sobol-st-sc.json` (commit 698bce2).
+- `dev/reports/v5-30-s137-results.md`: the study's results report, framed as the outside audit's "fix later, E" asks. `dev/DECISIONS.md`, Session 2g, records the choices (commit dff9b15). The engine is unchanged; validate, unit and domtest all pass.
+- Main findings: Compassionism lowers basket poverty in every cell (Reference, today's health system: -31.7 points). "Too little wealth" rises, but with prices held flat it falls instead, so the price response drives that rise. Participation and the BU amount explain most of the spread.
 
 ## Branch and pull request state
-- Branch `claude/handoff-next-action-advycj` from main f371708 (pull request #20 merged). Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/21 into `main`; CI not yet reported at handoff. Duke merges it (tools and results only, no page change).
+- Branch `claude/pensive-knuth-nqiqvu`, from main 00b5866 (pull request #21 merged). Draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/22 into `main`; CI not yet reported at handoff. Duke reads the report and merges (report, results and tools only; no page change).
 
 ## Long jobs in flight
-- Pod `lf78qp1tncv9hb` ("s137b-sobol"; cpu3c, 16 vCPU, $0.48/h, EU-CZ-1, image `node:22.22.0-bookworm`), created 18:14 UTC Oct 13. Runner b0a36f8, engine 41f2361, `STUDY=s137b`, `MAX_HOURS=3` (at most about $1.44). The log showed "results repository: HTTP/2 200" at 18:14:42.
-- Sobol in Stress: 11 inputs, N=128, 32 seeds in 16 blocks of 2 (about 30-60 minutes). Results land in BetterToBest/compassionism-sim-results, folder `s137b-41f2361/`. It is done when `DONE` is there, and the pod then terminates itself. Relaunching the same settings resumes and skips finished blocks.
+- None.
 
 ## Next 3 actions
-1. Check `s137b-41f2361/DONE` in the results repository (clone it read-only) and check that the Runpod pod list is empty. If `DONE` is present and the pod is still there, terminate it.
-2. Copy `gsa-sobol-st.json`, `sobjoin-st.log`, `status.txt`, `run.txt` and `SHA256SUMS` to `dev/runs/s137b/`, then check the hashes.
-3. Write `dev/reports/v5-30-s137-results.md`, framed as under "Fix later, E" in `dev/reports/v5-29-outside-audit.md`: results conditional on the Yale preprint; poverty and government cost in separate tables; captions. Sources: `dev/runs/s137/` (health tables `s137table-*.json`, price channel `s137flat-*`/`s137thx-*`, Morris `gsa-morris-*.json`) and the new Sobol with its intervals. Report the first Sobol's noise (negative S values).
+1. Check that CI on pull request #22 is green. If a check fails, fix it on the same branch.
+2. Session 4 (ledger step s133): put the results on the pages as version 5.5: uncertainty and sensitivity, the compare page, and the health panel with and without Compassionism. Figures and wording come from `dev/reports/v5-30-s137-results.md`; keep its captions (single payer depends on the Yale preprint; the safety net's outlays are not financed in the model; "too little wealth" comes through prices). Set the version with `python3 dev/tools/set_version.py 5.5.0`, then run `node dev/tools/check_versions.js`. Run the three checks and `node dev/tools/guard_test.js`.
+3. Open its own draft pull request; do not stack on #22 once #22 has merged (restart the branch from `main`).
 
 ## Files to touch
-`dev/runs/s137/*.log` (one-line summaries), `dev/tools/gsa.js` (grep `sobjoin`), `dev/tools/health_check.js` (grep `MERGE`), `dev/reports/v5-29-outside-audit.md` (grep `Fix later`), `dev/DECISIONS.md` (grep `Session 2f`), `dev/PROGRESS.md` (last section).
-
-## Ledger
-- Updated (version 396): s137 stays "doing" with a session 2f note; next, phase and a log line set.
+`dev/reports/v5-30-s137-results.md` (sections 1-8), `index.html` (over 300 lines: grep `rel-panel`, `id="answer"`, `fx-sec`), `dev/runs/s137/s137table-*.json`, `dev/runs/s137b/gsa-sobol-st-sc.json`, `dev/PLAN.md` (grep `v5.5`), `dev/PROGRESS.md` (last section).
 
 ## Pitfalls
-- The first create in EUR-IS-1 with a 20 GB disk failed ("no instances available") although the catalog showed HIGH stock; the default disk with EUR-IS-1 or EU-CZ-1 worked.
-- A pod can read RUNNING with no logs (the container never started): check for the `[runpod.sh` line within 10 minutes.
-- The results token expires **2026-10-17 04:16 UTC**. Renew it and update the Runpod secret `github_results_token` before any later run.
-- Each Sobol or Morris block needs two or more seeds. Pro ends after Oct 18.
+- The results token expires **2026-10-17 04:16 UTC**. Renew it and update the Runpod secret `github_results_token` before any later Runpod run.
+- Duke's Claude Pro plan ends Oct 15 (ledger issue i19). Page work suits Sonnet at medium effort.
+- The study's comparison restudy is still undefined (it belongs to ledger step s95); do not guess it.
+- The first Sobol (s137) kept no per-point results, so its noisy first-order figures cannot be recomputed. Use its totals only.
+- `node harness.js unit` can take several minutes. Run it in the background, not in a 2-minute foreground call.

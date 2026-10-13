@@ -1,0 +1,18 @@
+start 2026-10-13T18:14:48Z at 41f2361, 16 at a time, max 3 h, 16 pieces
+sobol st lo15 done 2026-10-13T18:40:54Z exit 0
+sobol st lo7 done 2026-10-13T18:41:00Z exit 0
+sobol st lo27 done 2026-10-13T18:41:17Z exit 0
+sobol st lo19 done 2026-10-13T18:41:21Z exit 0
+sobol st lo5 done 2026-10-13T18:41:22Z exit 0
+sobol st lo13 done 2026-10-13T18:41:23Z exit 0
+sobol st lo9 done 2026-10-13T18:41:25Z exit 0
+sobol st lo25 done 2026-10-13T18:41:29Z exit 0
+sobol st lo1 done 2026-10-13T18:41:34Z exit 0
+sobol st lo3 done 2026-10-13T18:41:34Z exit 0
+sobol st lo23 done 2026-10-13T18:41:39Z exit 0
+sobol st lo29 done 2026-10-13T18:41:45Z exit 0
+sobol st lo11 done 2026-10-13T18:41:45Z exit 0
+sobol st lo31 done 2026-10-13T18:41:46Z exit 0
+sobol st lo17 done 2026-10-13T18:41:47Z exit 0
+sobol st lo21 done 2026-10-13T18:41:51Z exit 0
+all done 2026-10-13T18:41:58Z
