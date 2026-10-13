@@ -1,16 +1,16 @@
 {
  "_meta": {
-  "what": "health settings: the v5.4 release row and its no-programme run under each variant, paired by seed",
+  "what": "health settings: the v5.4 release row and its no-programme run under each variant, paired by seed; vsRef: the change in the programme's paired effect against the reference setting (A against off, B against A)",
   "env": "ref",
   "seeds": 20,
   "manifest": {
-   "commit": "bc93de368fafe356b8baa3ae779db96722f10467",
+   "commit": "ae64431d2b31ba8210b4405a2c35c231bb5826c0",
    "dirty": true,
    "node": "v22.22.0",
-   "harnessSha256": "79c088df525ccc319c8a01de4e64492ae56f381c1c96e2385cfd802ff559a2fb",
-   "engineBlockSha256": "9fd88940a292114a6bc6ee24f0bb9d95daf45567e5d3ab24865ac8786c8db28c",
-   "indexSha256": "83c8543e3c32e3cf1a8d8600a1a182e4a0c3effad182962fc9dfe5de36e3a69f",
-   "engineSha256": "eac7d55cdb4a1eb60e311430ce1891e16461c58f75205a6fe927359306023606"
+   "harnessSha256": "a917232a3968bd73ba02429e9562111dcf4d69dd046fd541eb5e3a433b25aaa8",
+   "engineBlockSha256": "fe44cd47875948b097f4c93aada1058e8809bfb39b96ba8067e487b71013c9b0",
+   "indexSha256": "ce5ce9d701a0bad39f981099a55838e5aaa18bb11a46a606fdec7d7424f9b45c",
+   "engineSha256": "d637d8db48f59b7cbdf1a547d753d864b01646c779402927c01db5478b7cf4fd"
   },
   "command": "node dev/tools/health_check.js ref 20 --rows=off,A --out=theta0 --theta=0",
   "health": {
@@ -18,13 +18,19 @@
    "exp": true,
    "skip": 0.5,
    "persist": 0.9,
-   "countBU": false
+   "countBU": false,
+   "cs": "central",
+   "start": 1,
+   "adm": 0.011,
+   "cap": 0.5,
+   "induce": 0.25
   },
-  "seconds": 31
+  "seconds": 28
  },
  "rows": {
   "off": {
    "hl": null,
+   "ref": null,
    "base": {
     "fgt0PY": 50.223,
     "fgt2PY": 7.765,
@@ -94,10 +100,11 @@
      -0.054
     ]
    },
-   "vsOff": {}
+   "vsRef": {}
   },
   "A": {
    "hl": {},
+   "ref": "off",
    "base": {
     "fgt0PY": 50.567,
     "fgt2PY": 7.835,
@@ -130,7 +137,15 @@
     "hlKap": 0.69,
     "hlKidMcaid": 45.645,
     "hlKidUnins": 3.29,
-    "hlMcaidLost": 0.949
+    "hlMcaidLost": 0.949,
+    "hlTax": 0,
+    "hlRate": 0,
+    "hlWait": 0,
+    "hlSA": 0,
+    "hlSB": 0,
+    "hlAdded": 0,
+    "hlAdm": 0,
+    "hlBack": 0
    },
    "prog": {
     "fgt0PY": 19.032,
@@ -164,7 +179,15 @@
     "hlKap": 0.69,
     "hlKidMcaid": 44.705,
     "hlKidUnins": 3.52,
-    "hlMcaidLost": 1.086
+    "hlMcaidLost": 1.086,
+    "hlTax": 0,
+    "hlRate": 0,
+    "hlWait": 0,
+    "hlSA": 0,
+    "hlSB": 0,
+    "hlAdded": 0,
+    "hlAdm": 0,
+    "hlBack": 0
    },
    "d": {
     "fgt0PY": [
@@ -326,9 +349,49 @@
      0.136,
      0.056,
      0.217
+    ],
+    "hlTax": [
+     0,
+     0,
+     0
+    ],
+    "hlRate": [
+     0,
+     0,
+     0
+    ],
+    "hlWait": [
+     0,
+     0,
+     0
+    ],
+    "hlSA": [
+     0,
+     0,
+     0
+    ],
+    "hlSB": [
+     0,
+     0,
+     0
+    ],
+    "hlAdded": [
+     0,
+     0,
+     0
+    ],
+    "hlAdm": [
+     0,
+     0,
+     0
+    ],
+    "hlBack": [
+     0,
+     0,
+     0
     ]
    },
-   "vsOff": {
+   "vsRef": {
     "fgt0PY": [
      -1.025,
      -1.176,

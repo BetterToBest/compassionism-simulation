@@ -4773,7 +4773,30 @@ function disRes(out){ var A = DSS, L = A ? A.list : [], Q = A ? A.ctl : [], rec 
  * and its line, in cash, on top of the basket (which still carries the average line, so BU, PTF's sector cut and the price module see what they saw).
  * Turning it on adds spread, not cost. */
 var HEALTH = null, HLS = null;
-var HEALTH_DEFAULTS = {set:'A', exp:true, skip:0.5, persist:0.9, countBU:false};
+var HEALTH_DEFAULTS = {set:'A', exp:true, skip:0.5, persist:0.9, countBU:false, cs:'central', start:1, adm:0.011, cap:0.5, induce:0.25};
+/* Setting B (session 2a, step 5): SINGLE PAYER, PUBLIC PLAN ONLY (as in the Medicare for All Act). From year HEALTH.start (1; year 0 is today's system, which sets
+ * the calibration and the first incomes) everyone is covered by one public plan with no premiums and no out-of-pocket cost, paid for by a flat health tax on money
+ * income. Today's system keeps running in the background as the counterfactual (who would have been covered how, and what each payer would have paid), so the
+ * comparison is like for like, person by person, every year:
+ *  - care: everyone's full need (nothing skipped for cost), plus HEALTH.induce (25%) more for people who would have been uninsured (the Oregon Health Insurance
+ *    Experiment: Medicaid coverage raised spending about 25%; Finkelstein et al., QJE 2012);
+ *  - cost per unit of care: today's (all payers, after the calibration) times the case's factor, from the Yale preprint (Galvani, Pandey, Wells and Ye, medRxiv
+ *    2026, doi 10.64898/2026.07.22.26358689; not peer reviewed): 2024 spending $5,278.6 billion; gross savings $1,345.2 billion (drug prices 377.5, Medicare rates
+ *    for providers 295.6, administration 286.3, fraud 285.7, avoided emergency and inpatient care 100.0); added $304.0 billion (induced use 197.7, dental 54.7,
+ *    care now unpaid 51.7); net 19.7%. Per unit: central 1 - 1345.2/5278.6; cautious (net savings of at least $663.3 billion, 12.6%: the preprint's lower bound
+ *    with the drug and fraud savings cut) 1 - (663.3 + 304.0)/5278.6; costs run higher (providers paid near commercial rates, so the savings vanish)
+ *    1 - 304.0/5278.6, so that with the added care the total is about today's. Dental and the payment for care now unpaid (54.7 + 51.7 = 2.0% of spending) are
+ *    added as a share of today's spending; the model's own added care (skipped care, induced use) replaces the preprint's induced use;
+ *  - financing: the government keeps paying what it pays today (Medicaid, Medicare, tax credits: financed as now, inside the basket's taxes); the rest of the
+ *    public plan's cost is a new flat tax on households' money income (the same base as the Medicaid test). The employer's former premium share comes back to
+ *    the household as a cost offset (it was counted as pay forgone; d-health-price rule b: health money enters costs, never total cash income);
+ *  - access: today's care delivered is the system's capacity; capacity grows to meet the share HEALTH.cap (0.5, a design parameter swept 0.25-1) of the extra
+ *    demand; demand beyond capacity waits (the share of needed care delayed), and the capped budget pays for the care delivered;
+ *  - administrative jobs: at the start, the share HEALTH.adm (1.1%) of working adults lose their jobs (about 1.8 million insurance and billing jobs, Pollin et
+ *    al., PERI 2018, as reported by secondary summaries: the report itself was not read; over about 160 million employed) and enter the job-loss path: a spell
+ *    of the usual length, unemployment insurance as for anyone, and the pay cut on return that a permanent loss carries. Only with the job-loss part on;
+ *  - prices: no market price response for medical care (d-health-price rule a): the public payer sets rates; a shortage shows as waits. */
+CFG.HL_B = {base:5278.6, gross:{central:1345.2, cautious:663.3 + 304.0, high:304.0}, added:304.0, extra:54.7 + 51.7};
 CFG.HL_AGE = [[17, 4217], [44, 6669], [64, 12577], [84, 20503], [999, 35995]];  /* personal health care per person by age (upper age, $), 2020: CMS National Health Expenditure, Age and Sex tables (0-18, 19-44, 45-64, 65-84, 85+; the model's adults start at 18) */
 CFG.HL_AGE_NONE = 9154;  /* CMS 2020, working-age adults (19-64): for adults the model gives no age (no ageing) */
 CFG.HL_LEVEL = 15474/12530;  /* to year-0 dollars: national health spending per person, 2024 ($15,474, CMS NHE fact sheet) over 2020 ($12,530) */
@@ -4787,13 +4810,16 @@ CFG.HL_MKT = {prem:5964, kid:0.5, ded:2759, coins:0.20, oopMax:9200, oopCSR:3050
 CFG.HL_MCARE = {partB:2220, ded:257, coins:0.20, oopMax:9350};  /* Medicare 2025: Part B premium ($185 a month) and deductible, 20% coinsurance, capped at the Medicare Advantage in-network limit (a stand-in for supplemental cover) */
 CFG.HL_UNDER = {oop:0.10, oopLow:0.05, lowFpl:2.0, ded:0.05};  /* Commonwealth Fund: insured all year with out-of-pocket cost (not premiums) of 10% of income or more, 5% under 200% of poverty, or a deductible of 5% of income or more */
 CFG.HL_DEBT_LINE = 250;  /* medical debt counted above $250 (KFF analysis of SIPP 2021: about 1 in 12 adults) */
-var HL_KEYS = ['hlEsi', 'hlMkt', 'hlMcaid', 'hlMcare', 'hlUnins', 'hlUnder', 'hlSkip', 'hlSkipD', 'hlNeed', 'hlOop', 'hlPrem', 'hlEmp', 'hlGov', 'hlIns', 'hlPaid', 'hlLine', 'hlDev', 'hlDebt', 'hlDebtM', 'hlKap', 'hlKidMcaid', 'hlKidUnins', 'hlMcaidLost'];
+var HL_KEYS = ['hlEsi', 'hlMkt', 'hlMcaid', 'hlMcare', 'hlUnins', 'hlUnder', 'hlSkip', 'hlSkipD', 'hlNeed', 'hlOop', 'hlPrem', 'hlEmp', 'hlGov', 'hlIns', 'hlPaid', 'hlLine', 'hlDev', 'hlDebt', 'hlDebtM', 'hlKap', 'hlKidMcaid', 'hlKidUnins', 'hlMcaidLost', 'hlTax', 'hlRate', 'hlWait', 'hlSA', 'hlSB', 'hlAdded', 'hlAdm', 'hlBack'];
 /* hlEsi..hlUnins: % of adult-years by coverage; hlUnder: % of insured adult-years underinsured; hlSkip: % of adult-years skipping some care for cost; hlSkipD: care skipped,
  * $ per adult-year; hlNeed: medical need (care used plus skipped) per person-year; hlOop, hlPrem: what households pay out of pocket and in premiums, per adult-year;
  * hlEmp: employers' premium share (pay forgone) per adult-year; hlGov: government (Medicaid, Medicare, premium tax credits) per adult-year; hlIns: insurers' claims per
  * adult-year; hlPaid and hlLine: the household's bill after calibration and its basket line, per adult-year; hlDev: the mean absolute gap between them; hlDebt: % of
  * adult-years with medical debt over $250; hlDebtM: mean medical debt per adult-year; hlKap: the calibration factor; hlKidMcaid, hlKidUnins: % of child-years;
- * hlMcaidLost: % of adult-years that had Medicaid the year before and lost it to income. Dollars are year-0 dollars. */
+ * hlMcaidLost: % of adult-years that had Medicaid the year before and lost it to income. Setting B: hlTax, the health tax per adult-year; hlRate, its rate (% of
+ * money income, mean over the years under B); hlWait, % of needed care delayed; hlSA and hlSB, today's system's spending and the public plan's, per person-year
+ * (the years under B; all payers, after the calibration); hlAdded, the added care (% of today's care delivered); hlAdm, % of adults laid off from administrative
+ * jobs; hlBack, the employer share returned per adult-year. In the years under B the coverage keys read the counterfactual (today's system). Dollars: year-0. */
 function hlU(s, id, yr, j){  /* a uniform draw from the hash of (seed, person, year, slot): murmur3's finaliser over the mixed integers */
   var h = Math.imul(s ^ 0x5bd1e995, 0x85ebca6b) ^ Math.imul((id | 0) + 0x632be5ab, 0xc2b2ae35) ^ Math.imul((yr | 0) + 0x7f4a7c15, 0x27d4eb2f) ^ Math.imul((j | 0) + 0x165667b1, 0x9e3779b1);
   h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16; return ((h >>> 0) + 0.5)/4294967296; }
@@ -4825,7 +4851,7 @@ function hlInit(agents, seed){
   var A = CFG.HL_ACUTE, S = CFG.HL_SIGMA, G = [], i, w = agents.map(function(a){ return a.wage; }).sort(function(x, y){ return x - y; });
   for (i = 0; i < 1024; i++){ var u = [hlU(7, i, 0, 0), hlU(7, i, 0, 1), hlU(7, i, 0, 2), hlU(7, i, 0, 3)];
     G.push([u[0], Math.exp(S.base*normInv(u[1]) - S.base*S.base/2), u[2] < A.p ? Math.exp(S.acute*normInv(u[3]) - S.acute*S.acute/2)/A.p : 0]); }
-  HLS = {seed:seed | 0, G:G, w:w, kap:null, kap0:1, idxPrev:1, acc:{ay:0, ky:0, py:0, esi:0, mkt:0, mcaid:0, mcare:0, unins:0, insY:0, under:0, skipN:0, skipD:0, need:0, oop:0, prem:0, emp:0, gov:0, ins:0, paid:0, line:0, dev:0, debtN:0, debt:0, kMcaid:0, kUnins:0, lost:0}};
+  HLS = {seed:seed | 0, G:G, w:w, kap:null, kap0:1, idxPrev:1, acc:{ay:0, ky:0, py:0, esi:0, mkt:0, mcaid:0, mcare:0, unins:0, insY:0, under:0, skipN:0, skipD:0, need:0, oop:0, prem:0, emp:0, gov:0, ins:0, paid:0, line:0, dev:0, debtN:0, debt:0, kMcaid:0, kUnins:0, lost:0, adm:0, admN:0, tax:0, back:0, paidB:0, devB:0, bY:0, rate:0, wait:0, SA:0, SB:0, QA:0, QB:0, pyB:0, ayB:0}};
   agents.forEach(function(a, j){ a._hlId = j; a._hlC = undefined; a._hlMd = 0; a._hlOopP = 0; });
 }
 function hlRank(a){ var w = HLS.w, lo = 0, hi = w.length; while (lo < hi){ var m = (lo + hi) >> 1; if (w[m] < a.wage) lo = m + 1; else hi = m; } return w.length ? lo/w.length : 0.5; }
@@ -4889,10 +4915,32 @@ function hlYear(agents, yr, p, HHON, inflRate){
       if (q.wasMcaid && q.cov !== 'mcaid' && q.cov !== 'mcare' && !medicaidEligible(P.T.ratio, false, u.kids.length > 0, E.exp)) ac.lost++;
       a._hlCov = q.cov;
       var md = Math.min((a._hlMd || 0) + Math.max(0, (a._hlOopP || 0) - Math.max(0, (a._hlW0 || 0))), Math.max(0, -a.wealth/gIdx)); a._hlMd = md; a._hlW0 = a.wealth/gIdx;  /* medical debt: last year's bill beyond the savings held at its start, while wealth stays below zero */ if (md > CFG.HL_DEBT_LINE) ac.debtN++; ac.debt += md; });
+    P.kap = kap; P.oop = oop; P.gov = gov; P.paid = paid; P.dev = dev;
     u.a.forEach(function(a){ a._hlD = dev/nA; a._hlOopP = oop/nA; });  /* this year's gap from the line (paid in cash in the agent loop) and bill (next year's debt step) */
     ac.py += P.people.length; ac.need += need; ac.skipD += skipD; ac.oop += oop; ac.prem += P.prem; ac.emp += P.emp; ac.gov += gov; ac.ins += ins; ac.paid += paid; ac.line += P.line; ac.dev += Math.abs(dev);
   });
+  if (E.set === 'B' && yr >= E.start) hlSingle(agents, yr, plan, E, S);
   S.idxPrev = gIdx;
+}
+/* Setting B for one year (see the block above HEALTH_DEFAULTS): the public plan's cost, the tax, the returned employer share, waits, and each household's gap
+ * from its basket line. plan: today's system for this year, per household, as hlYear computed it (the counterfactual). */
+function hlSingle(agents, yr, plan, E, S){
+  var B = CFG.HL_B, ac = S.acc, uF = 1 - B.gross[E.cs]/B.base, SA = 0, QA = 0, QB = 0, GA = 0, Ytot = 0;
+  if (yr === E.start && EMPL && EMS && E.adm > 0) agents.forEach(function(a){  /* the administrative jobs that end: a spell from the job-loss path's own lengths; permanent, so the pay cut on return applies */
+    if (a._ret || (a._emW || 0) > 0 || hlU(S.seed, a._hlId, yr, 20) >= E.adm) return;
+    a._emW = emplWeeks(hlU(S.seed, a._hlId, yr, 21), false); a._emUi = !!EMPL.ui && hlU(S.seed, a._hlId, yr, 22) < CFG.EMPL_UI_RECIP; a._emUiW = 0;
+    a._emCut = 2*EMPL.cut*hlU(S.seed, a._hlId, yr, 23); a._emAuto = false; EMS.spells++; if (a._emW > 26) EMS.long++; ac.adm++; });
+  if (yr === E.start) ac.admN = agents.length;
+  plan.forEach(function(P){ var k = P.kap, qa = 0, qb = 0;
+    P.people.forEach(function(q){ qa += q.xn + q.xa - q.sk; qb += (q.xn + q.xa)*(q.cov === 'unins' ? 1 + E.induce : 1); });
+    P.SA = k*(P.prem + P.oop + P.emp + P.gov); P.QA = k*qa; P.QB = k*qb; P.GA = k*P.gov;
+    SA += P.SA; QA += P.QA; QB += P.QB; GA += P.GA; Ytot += Math.max(0, P.Y); });
+  var cA = QA > 0 ? SA/QA : 1, K = QA*(1 + E.cap*Math.max(0, QB/QA - 1)), served = Math.min(QB, K), wait = QB > 0 ? (QB - served)/QB : 0;
+  var SB = uF*cA*served + B.extra/B.base*SA, T = Math.max(0, SB - GA), tau = Ytot > 0 ? T/Ytot : 0;
+  plan.forEach(function(P){ var nA = P.u.a.length, tx = tau*Math.max(0, P.Y), back = P.kap*P.emp, dev = tx - back - P.line;
+    P.u.a.forEach(function(a){ a._hlD = dev/nA; a._hlOopP = 0; });
+    ac.tax += tx; ac.back += back; ac.paidB += tx - back; ac.devB += Math.abs(dev); });
+  ac.bY++; ac.rate += tau; ac.wait += wait; ac.SA += SA; ac.SB += SB; ac.QA += QA; ac.QB += QB; plan.forEach(function(P){ ac.pyB += P.people.length; ac.ayB += P.u.a.length; });
 }
 function hlRes(out){ var A = HLS ? HLS.acc : null, ay = A && A.ay ? A.ay : 1, pc = function(x){ return A ? x/ay*100 : 0; };
   out.hlEsi = pc(A ? A.esi : 0); out.hlMkt = pc(A ? A.mkt : 0); out.hlMcaid = pc(A ? A.mcaid : 0); out.hlMcare = pc(A ? A.mcare : 0); out.hlUnins = pc(A ? A.unins : 0);
@@ -4900,6 +4948,10 @@ function hlRes(out){ var A = HLS ? HLS.acc : null, ay = A && A.ay ? A.ay : 1, pc
   out.hlOop = A ? A.oop/ay : 0; out.hlPrem = A ? A.prem/ay : 0; out.hlEmp = A ? A.emp/ay : 0; out.hlGov = A ? A.gov/ay : 0; out.hlIns = A ? A.ins/ay : 0;
   out.hlPaid = A ? A.paid/ay : 0; out.hlLine = A ? A.line/ay : 0; out.hlDev = A ? A.dev/ay : 0; out.hlDebt = pc(A ? A.debtN : 0); out.hlDebtM = A ? A.debt/ay : 0; out.hlKap = HLS ? HLS.kap0 : 0;
   out.hlKidMcaid = A && A.ky ? A.kMcaid/A.ky*100 : 0; out.hlKidUnins = A && A.ky ? A.kUnins/A.ky*100 : 0; out.hlMcaidLost = pc(A ? A.lost : 0);
+  var bY = A && A.bY ? A.bY : 0;  /* setting B (zeros otherwise) */
+  out.hlTax = bY && A.ayB ? A.tax/A.ayB : 0; out.hlRate = bY ? A.rate/bY*100 : 0; out.hlWait = bY ? A.wait/bY*100 : 0; out.hlSA = bY && A.pyB ? A.SA/A.pyB : 0; out.hlSB = bY && A.pyB ? A.SB/A.pyB : 0;
+  out.hlAdded = bY && A.QA > 0 ? (A.QB/A.QA - 1)*100 : 0; out.hlAdm = A && A.admN ? A.adm/A.admN*100 : 0; out.hlBack = bY && A.ayB ? A.back/A.ayB : 0;
+  if (bY){ out.hlPaid = A.ayB ? A.paidB/A.ayB : 0; out.hlDev = A.ayB ? A.devB/A.ayB : 0; }  /* under B: the household's health bill is the tax less the returned employer share */
   return out; }
 function tbSetV54(o){ var old = {rk:RISK_MEASURE, em:EMPL, pb:PTHB, pf:PTFS, ds:DIS}; if (o){ if (o.rk !== undefined) RISK_MEASURE = !!o.rk; if (o.empl) EMPL = Object.assign({}, EMPL_DEFAULTS, o.empl === true ? {} : o.empl);
   if (o.pthb) PTHB = Object.assign({}, PTHB_DEFAULTS, o.pthb === true ? {} : o.pthb); if (o.ptfs) PTFS = Object.assign({}, PTFS_DEFAULTS, o.ptfs === true ? {} : o.ptfs);
@@ -5774,7 +5826,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
         if (!S || o.essMatched){ PE[k] = 1; return; }
         var sRef = o.supply === 'baseline' ? S[yr] : S[0]*Math.pow(1 + o.gS, yr);
         var dEff = o.supply === 'baseline' ? d : sRef + Math.max(0, d - sRef) - Math.max(0, S[yr] - sRef);
-        PE[k] = pmEssLevel(dEff, sRef, capShare*cut, o.theta[k]);
+        PE[k] = pmEssLevel(dEff, sRef, capShare*cut, k === 'medical' && HEALTH && HEALTH.set === 'B' && yr + 1 >= HEALTH.start ? 0 : o.theta[k]);  /* session 2a, d-health-price rule a: under single payer the public payer sets rates (a shortage shows as waits); this step sets next year's prices */
       });
       path.push({bIdx:PRICE.bIdx, PG:PG, U:U, Y:A.Y, tau:tauUsed, colaLevel:PRICE.colaLevel, full:C.idx});  /* session 8: full price level (exogenous x endogenous) */
       PRICE.piG = PGn/PG - 1; PG = PGn;

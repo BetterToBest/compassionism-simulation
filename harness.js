@@ -2525,6 +2525,17 @@ function healthUnitSuite(){
     finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
     /* one year's realised bills scatter around the line; their mean over 200 adults lands within 15% of it, and the factor is positive and finite */
     return {pass:r.hlKap > 0 && isFinite(r.hlKap) && Math.abs(r.hlPaid/r.hlLine - 1) < 0.15, detail:'factor ' + r.hlKap.toFixed(3) + '; bill / line ' + (r.hlPaid/r.hlLine).toFixed(3)}; });
+  t('health B: single payer before its start year is today\'s system; under it, the three cases order as the preprint does (central < cautious < today < costs run higher), the tax is positive, waits are a share, and the main stream keeps 8 draws per adult-year', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:80, years:4}), PR = tbPresets(P), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), mb0 = mulberry32, cnt = 0, d = [], R, R1;
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), b = function(hl){ return Object.assign(relMainCfgs(PR)[0], {sc:SPEND_SOURCED, hl:hl}); };
+      R1 = tbStudy([b({}), b({set:'B', start:9})], 2, P, so);  /* B never starts within the run: identical to A */
+      TB_KEYS.concat(HL_KEYS).forEach(function(k){ if (R1[0][k] !== R1[1][k] && !(isNaN(R1[0][k]) && isNaN(R1[1][k]))) d.push('before start: ' + k); });
+      mulberry32 = function(sd){ var g = mb0(sd); return sd === 2 ? function(){ cnt++; return g(); } : g; };
+      R = tbStudy([b({set:'B'}), b({set:'B', cs:'cautious'}), b({set:'B', cs:'high'})], 2, P, so, 2); mulberry32 = mb0;
+      if (!(R[0].hlSB < R[1].hlSB && R[1].hlSB < R[0].hlSA && R[0].hlSA < R[2].hlSB)) d.push('case order ' + [R[0].hlSB, R[1].hlSB, R[0].hlSA, R[2].hlSB].map(Math.round).join(' '));
+      R.forEach(function(r, i){ if (!(r.hlRate > 0) || !(r.hlWait >= 0 && r.hlWait < 100) || !(r.hlTax > 0) || !(r.hlBack > 0)) d.push('case ' + i + ': rate ' + r.hlRate + ', wait ' + r.hlWait); }); }
+    finally { mulberry32 = mb0; resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:d.length === 0 && cnt === 3*8*80*(1 + 4), detail:'main-stream draws ' + cnt + ' (expected ' + 3*8*80*5 + '); public plan per person-year ' + (R ? R.map(function(r){ return Math.round(r.hlSB); }).join(' / ') + ' against today\'s ' + Math.round(R[0].hlSA) : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
   return out;
 }
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */

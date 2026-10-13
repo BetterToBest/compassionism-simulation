@@ -62,4 +62,4 @@ Health does not yet change with care received: skipping care does not make next 
 
 ## Reproduce
 
-`node dev/tools/health_check.js ref 20 --rows=off,A,Anx` (also `adv`, `st`; `--theta=0`, `--theta=1` with `--out=theta0` / `theta1`). Outputs are in `dev/runs/health/`. Tests: `node harness.js unit` (healthUnitSuite). Guard: `node dev/tools/guard_test.js`.
+`node dev/tools/health_check.js ref 20 --rows=off,A,Anx,B,Bcau,Bhigh --out=all` (also `adv`, `st`; `--theta=0`, `--theta=1` with `--out=theta0` / `theta1`). Outputs are in `dev/runs/health/`. Tests: `node harness.js unit` (healthUnitSuite). Guard: `node dev/tools/guard_test.js`.
