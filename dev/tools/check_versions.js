@@ -24,6 +24,9 @@ function findStale(root) {
   const fdF = path.join(root, 'findings.html'), fd = fs.existsSync(fdF) ? fs.readFileSync(fdF, 'utf8') : null;  /* v5.2.1: the findings explorer */
   if (fd){ all('findings.html', fd, '<title>', /<title>[^<]*? v(\d+(?:\.\d+)+)[^<]*<\/title>/); all('findings.html', fd, 'meta sim-version', /<meta name="sim-version" content="([^"]+)"/); all('findings.html', fd, 'JSON-LD softwareVersion', /"softwareVersion":"([^"]+)"/);
     all('findings.html', fd, 'footer .meta-ver label', /class="meta-ver">v([^<]+)</); all('findings.html', fd, 'site/ cache keys', /(?:src|href)="site\/[a-z]+\.(?:js|css)\?v=([^"]+)"/); }
+  const sdF = path.join(root, 'study.html'), sd = fs.existsSync(sdF) ? fs.readFileSync(sdF, 'utf8') : null;  /* v5.5: the 500-seed study page */
+  if (sd){ all('study.html', sd, '<title>', /<title>[^<]*? v(\d+(?:\.\d+)+)[^<]*<\/title>/); all('study.html', sd, 'meta sim-version', /<meta name="sim-version" content="([^"]+)"/); all('study.html', sd, 'JSON-LD softwareVersion', /"softwareVersion":"([^"]+)"/);
+    all('study.html', sd, 'footer .meta-ver label', /class="meta-ver">v([^<]+)</); all('study.html', sd, 'site/ cache keys', /(?:src|href)="site\/[a-z]+\.(?:js|css)\?v=([^"]+)"/); }
   all('index.html', idx, 'site/ cache keys', /(?:src|href)="site\/[a-z]+\.(?:js|css)\?v=([^"]+)"/);
   all('replication.html', rep, 'meta sim-version', /<meta name="sim-version" content="([^"]+)"/);
   all('replication.html', rep, 'JSON-LD name', /"name": "Compassionism Framework Simulation v(\d+(?:\.\d+)+)"/);

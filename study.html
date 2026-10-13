@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 500-seed study | Compassionism Framework Simulation v5.5.0</title>
+<meta name="description" content="The 500-seed study of three health systems with and without Compassionism: basket poverty, government costs, the price channel and which inputs the results depend on. Every number comes from one data file.">
+<meta name="author" content="Duke Johnson, Claude (Anthropic)">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="sim-version" content="5.5.0">
+<link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/study.html">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bettertobest.github.io/compassionism-simulation/study.html">
+<meta property="og:title" content="The 500-seed study: Compassionism Framework Simulation">
+<meta property="og:description" content="Health financing, the price channel and what the results depend on, from the 500-seed study.">
+<meta property="og:site_name" content="Compassionism Simulation">
+<meta property="og:image" content="https://bettertobest.github.io/research-hub/assets/images/og-image-simulation.png">
+<meta name="theme-color" content="#1D9E75">
+<link rel="icon" type="image/svg+xml" href="https://bettertobest.github.io/research-hub/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
+<link rel="stylesheet" href="site/findings.css?v=5.5.0">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: the 500-seed study","softwareVersion":"5.5.0","url":"https://bettertobest.github.io/compassionism-simulation/study.html",
+ "description":"Results of the 500-seed study: three health systems, three economies, the price channel and a sensitivity analysis, with and without Compassionism.",
+ "creator":[{"@type":"Person","name":"Duke Johnson"},{"@type":"Organization","name":"Claude (Anthropic)"}],"license":"https://creativecommons.org/licenses/by/4.0/","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2",
+ "distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://bettertobest.github.io/compassionism-simulation/data/studies/s137.json"}]}
+</script>
+<style>
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--fx-canvas);color:var(--fx-ink);font:16px/1.6 var(--fx-sans)}
+a{color:var(--fx-accent);text-underline-offset:2px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--fx-surface);padding:6px 12px;border-radius:8px;z-index:400}
+.skip:focus{left:12px}
+.top{background:var(--fx-surface);border-bottom:1px solid var(--fx-rule)}
+.top-in,.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.2;text-decoration:none;color:var(--fx-ink);padding:6px 0}
+.brand b{font-size:15px;font-weight:600}.brand span{font-size:11.5px;color:var(--fx-ink-3)}
+.links{display:flex;gap:6px;flex-wrap:wrap}
+.links a{font-size:12.5px;text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid var(--fx-rule);color:var(--fx-ink-2)}
+.links a:hover{background:var(--fx-surface-2);color:var(--fx-ink)}
+.hero{background:var(--fx-surface);border-bottom:1px solid var(--fx-rule)}
+.hero .wrap{padding-top:34px;padding-bottom:26px}
+h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.12;letter-spacing:-.02em;margin:0 0 10px;font-weight:650}
+.attr{font-size:13.5px;font-style:italic;color:var(--fx-ink-2);max-width:72ch;margin:0 0 12px}
+.lede{font-size:17px;max-width:66ch;margin:0 0 14px}
+main .wrap{padding-bottom:60px}
+.fx-nav .wrap{display:block}
+.st-sec .fx-lead{max-width:72ch}.st-cap{max-width:80ch;margin:8px 0 0}
+.layer-h{font-size:13px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--fx-ink-3);margin:30px 0 4px}
+footer{border-top:1px solid var(--fx-rule);background:var(--fx-surface);font-size:13px;color:var(--fx-ink-2)}
+footer .wrap{padding:22px 20px 30px}
+footer p{margin:0 0 6px}
+.cite{font-size:12.5px}
+@media (max-width:560px){.top-in,.wrap{padding:0 16px}.links a:not(.keep){display:none}.lede{font-size:16px}}
+</style>
+</head>
+<body class="fx">
+<a class="skip" href="#content">Skip to the study</a>
+<header class="top"><div class="top-in">
+  <a class="brand" href="./"><b>Compassionism Simulation</b><span>The 500-seed study</span></a>
+  <nav class="links" aria-label="Site"><a class="keep" href="./">Simulation</a><a href="findings.html">Findings</a><a href="replication.html">Replication</a><a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a><a href="https://bettertobest.github.io/research-hub/">Research Hub</a></nav>
+</div></header>
+<div class="hero"><div class="wrap">
+  <h1>Health financing, prices and what the results depend on</h1>
+  <p class="attr" id="attribution">The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson's book <cite>Better To Best</cite> and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.</p>
+  <p class="lede" id="lede">Loading the study&hellip;</p>
+  <p class="fx-note" id="asof"></p>
+</div></div>
+
+<nav class="fx-nav" aria-label="Sections"><div class="wrap"><div class="fx-nav-in" id="nav-links"></div></div></nav>
+
+<main id="content"><div class="wrap" id="study"><p class="fx-loading">The study loads from <a href="data/studies/s137.json">data/studies/s137.json</a>.</p>
+  <noscript><p class="fx-banner">The tables on this page need JavaScript. Every figure is in the data file, <a href="data/studies/s137.json">data/studies/s137.json</a>, and the plain-words report is <a href="dev/reports/v5-30-s137-results.md">dev/reports/v5-30-s137-results.md</a>.</p></noscript>
+</div></main>
+
+<footer><div class="wrap">
+  <p>Compassionism Simulation <span class="meta-ver">v5.5.0</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
+  <p><a href="./">Simulation</a> &middot; <a href="replication.html">Replication framework</a> &middot; <a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a> &middot; <a href="https://doi.org/10.17605/OSF.IO/QWTE2">DOI: 10.17605/OSF.IO/QWTE2</a></p>
+  <p class="cite">Suggested citation: Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. <a href="https://doi.org/10.17605/OSF.IO/QWTE2">https://doi.org/10.17605/OSF.IO/QWTE2</a></p>
+</div></footer>
+
+<script src="site/charts.js?v=5.5.0"></script>
+<script src="site/findings.js?v=5.5.0"></script>
+<script>
+/* The study page: loads data/studies/s137.json (written by dev/tools/study_data.py) and renders its sections and tables with site/findings.js.
+ * Nothing here holds a figure: every number is a path into that file, printed in a numbered span the figure check compares with the data. */
+(function () {
+  'use strict';
+  var F = window.CSF, $ = function (id) { return document.getElementById(id); };
+  function render(R) {
+    $('lede').innerHTML = F.text(R, 'intro'); $('asof').innerHTML = F.text(R, 'asof');
+    var host = $('study'), nav = $('nav-links'); host.innerHTML = ''; nav.innerHTML = '';
+    R.sections.forEach(function (s) {
+      var sec = document.createElement('section'); sec.className = 'fx-sec st-sec'; sec.id = s.id; sec.setAttribute('aria-labelledby', s.id + '-h');
+      var h = '<h2 class="fx-h2" id="' + s.id + '-h">' + F.esc(s.title) + ' <a class="fx-anchor" href="#' + s.id + '" aria-label="Link to this section">#</a></h2>';
+      if (s.lead) h += '<p class="fx-lead">' + F.text(R, s.lead) + '</p>';
+      sec.innerHTML = h;
+      s.tables.forEach(function (id) { var t = F.tableById(R, id), w = document.createElement('div'); w.innerHTML = F.tableHTML(R, t, null); w.appendChild(F.tableTools(R, t, null)); sec.appendChild(w); });
+      if (s.note) { var p = document.createElement('p'); p.className = 'fx-note st-cap'; p.innerHTML = F.text(R, s.note); sec.appendChild(p); }
+      host.appendChild(sec);
+      var a = document.createElement('a'); a.href = '#' + s.id; a.textContent = s.title.replace(/^(.{26}).{2,}$/, '$1\u2026'); nav.appendChild(a);
+    });
+    F.spy(document.querySelector('.fx-nav'));
+    if (location.hash && $(location.hash.slice(1))) $(location.hash.slice(1)).scrollIntoView();
+  }
+  F.fetchJSON('data/studies/s137.json').then(render).catch(function (e) {
+    $('study').innerHTML = '<p class="fx-banner">The study data could not be loaded (' + F.esc(e.message) + '). If you opened this page as a file, open it through a web server or on the live site; the data is in data/studies/.</p>';
+  });
+})();
+</script>
+</body>
+</html>

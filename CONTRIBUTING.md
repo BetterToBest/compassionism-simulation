@@ -40,13 +40,17 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.4.1 Release Notes
+## v5.5.0 Release Notes
 
-**Released as v5.4.1 (Oct 2026): how to read the wealth result.** Words only. No figure, row or engine line changes from v5.4, and the panels and release data are v5.4's. Plain-words report for Duke: `dev/reports/v5-24-wealth-measure-reading.md`; decision: `dev/DECISIONS.md`, session 1c.
+**Released as v5.5.0 (Oct 2026): the 500-seed health and sensitivity study on its own page.** A new page, `study.html`, shows the results of the paid 500-seed study (three health systems, three economies, with and without Compassionism) and its sensitivity analysis. No engine line changes and no figure of the v5.4 release changes; the simulation page and findings explorer show the same figures. Plain-words report for Duke: `dev/reports/v5-30-s137-results.md`.
 
-- **Why the 20-year wealth gap grew in Reference** (+11.0 points against v5.3's +5.5). The v5.4 report and notes now name the cause: mostly the 10% lower pay on return to work. Without that cut the gap is +6.6, with a 20% cut +15.7, and the new PTH and PTF rules move it by less than 0.3 (readings `cut0`, `cut20`, `pthbold`, `ptfs25` in `dev/runs/release-panel.json`).
-- **"How to read this measure"** (release page, under the Savings result, id `rel-wealth-frame`). The note gives Duke Johnson's framing: with the basics guaranteed and work more optional, people need a savings reserve less, and the gain shows in how people live more than in dollars. It cites outside evidence that a guaranteed minimum lowers emergency saving (Hubbard, Skinner and Zeldes, 1995). It states that the model does not include this: the spending share is the same in both runs, no well-being is measured, and the gap comes from prices against unprotected savings and from lower pay after job loss. The verdict line is unchanged.
-- v5.4's notes are in CHANGELOG.md.
+- **Basket poverty under today's system, single payer, and single payer with a private layer**, with and without Compassionism, in Reference, Adverse and Stress, with 95% intervals, and the other measures beside it.
+- **Government's costs in a separate table**, with the safety net's outlays labelled as not financed in the model.
+- **Single payer's range** under the Yale preprint's central, cautious and high-cost cases, labelled as depending on a preprint that is not peer reviewed.
+- **The price channel**: the rise in "too little wealth" with Compassionism comes through the model's price response (with prices held flat it falls).
+- **What the results depend on**: Morris screening and the follow-up Sobol run, with the share of the spread each input explains.
+- Every number on the page comes from `data/studies/s137.json`, written by `dev/tools/study_data.py` from `dev/runs/s137/` and `dev/runs/s137b/`; `dev/tools/check_figures.js` compares each one with the data. Each table downloads as CSV or JSON.
+- v5.4.1's notes are in CHANGELOG.md.
 
 ---
 
@@ -452,7 +456,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.4.1*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.5.0*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

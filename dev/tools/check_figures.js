@@ -144,6 +144,24 @@ async function run(opts) {
   /* 9. the generator */
   let g = { status: 1, stdout: '' }; try { g = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'release_data.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }
   add('v5.2.1: python3 dev/tools/release_data.py --check: the release data, the manifest and the pages\' static figures are what the generator writes from dev/runs/', g.status === 0, g.stdout.trim().split('\n').pop());
+  /* 10. v5.5 (ledger s133): the 500-seed study page (study.html), whose figures are in data/studies/s137.json (dev/tools/study_data.py) */
+  { const S = rj('data/studies/s137.json'), sp2 = [], pbs = [];
+    const chk = (p, where) => { if (typeof resolve(S, p) !== 'number') pbs.push(where + ' ' + p); };
+    S.tables.forEach(t => t.rows.forEach(r => r.forEach(c => (c.p || []).concat(c.s || []).forEach(x => { if (typeof x === 'object') chk(x.src, 'table ' + t.id); }))));
+    Object.entries(S.text).forEach(([k, t]) => { for (const m of t.matchAll(/\{\{([^|}]+)\|([a-z0-9]+)\}\}/g)) chk(m[1], 'text ' + k); });
+    S.sections.forEach(x => { [x.lead, x.note].filter(Boolean).forEach(k => { if (!S.text[k]) pbs.push('section ' + x.id + ' lacks text ' + k); }); x.tables.forEach(id => { if (!F.tableById(S, id)) pbs.push('section ' + x.id + ' lacks table ' + id); }); });
+    if (!(V || '').startsWith(S.version)) pbs.push('study v' + S.version + ' but the page is v' + V);
+    add('v5.5: in the study file every table cell and text points to a number in the file, every section\'s text and tables exist, and the study\'s version is the page\'s', pbs.length === 0, pbs.length ? pbs.slice(0, 5).join('; ') : S.tables.length + ' tables, ' + Object.keys(S.text).length + ' texts');
+    const dom = new JSDOM(rd('study.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/study.html' }), w = dom.window;
+    w.scrollTo = () => {}; serve(w); w.eval(chartsSrc); w.eval(findingsSrc); const inline = [...w.document.querySelectorAll('script')].filter(x => !x.src && !x.type); w.eval(inline[0].textContent);
+    await settle(w); await settle(w);
+    const r = spanProbs(w.document, S, 'study'); sp2.push(...r.bad);
+    if (w.document.querySelectorAll('.st-sec').length !== S.sections.length || w.document.querySelectorAll('.st-sec table').length !== S.tables.length) sp2.push('a section or table did not render');
+    add('v5.5: on the study page every number (the texts and all tables) equals the study file\'s data', sp2.length === 0 && r.n > 300, sp2.length ? sp2.slice(0, 4).join('; ') : r.n + ' numbers checked');
+    const un = unmarked(w.document.getElementById('content'), 'study');
+    add('v5.5: no percentage, dollar figure or price level is typed into the study page', un.length === 0, un.length ? un.slice(0, 5).join('; ') : 'the whole study page');
+    let g2 = { status: 1, stdout: '' }; try { g2 = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'study_data.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g2 = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }
+    add('v5.5: python3 dev/tools/study_data.py --check: the study file is what the generator writes from dev/runs/s137 and dev/runs/s137b', g2.status === 0, g2.stdout.trim().split('\n').pop()); }
   return out;
 }
 
