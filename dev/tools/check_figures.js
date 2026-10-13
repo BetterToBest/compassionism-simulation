@@ -34,13 +34,17 @@ async function run(opts) {
   const V = (rd('index.html').match(/var META = \{\s*VERSION:'([^']+)'/) || [])[1];
   if (cur.length !== 1) mp.push(cur.length + ' current releases');
   const REL = {};
-  M.releases.forEach(r => { const f = path.join('data', r.file); if (!fs.existsSync(path.join(ROOT, f))) { mp.push('missing ' + f); return; }
+  const FIG = r => !!r.figuresFrom;  /* a release with no engine change (status "latest") uses the figures of the release it names */
+  M.releases.filter(r => !FIG(r)).forEach(r => { const f = path.join('data', r.file); if (!fs.existsSync(path.join(ROOT, f))) { mp.push('missing ' + f); return; }
     const R = rj(f); REL[r.version] = R; if (R.version !== r.version || R.date !== r.date || R.tag !== r.tag || R.status !== r.status) mp.push(r.version + ': file and manifest differ'); });
+  M.releases.filter(FIG).forEach(r => { const src = M.releases.filter(x => x.version === r.figuresFrom && !FIG(x))[0];
+    if (!src || src.status !== 'current' || src.file !== r.file || r.status !== 'latest' || !REL[src.version]) mp.push(r.version + ': a "latest" release must name the current release it takes its figures from, and its file'); else REL[r.version] = REL[src.version]; });
+  if (M.releases.filter(r => r.status === 'latest').length > 1) mp.push('more than one latest release');
   const C = cur[0] && REL[cur[0].version];
   if (C && C.shownIn && C.shownIn !== V && !(V || '').startsWith(C.version)) mp.push('current release shown in v' + C.shownIn + ' but the page is v' + V);
   const order = M.releases.map(r => r.version), sorted = order.slice().sort((a, b) => { const x = a.split('.').map(Number), y = b.split('.').map(Number); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (y[i] || 0) - (x[i] || 0); } return 0; });
   if (order.join() !== sorted.join()) mp.push('manifest not newest first');
-  add('v5.2.1: the list of releases (data/manifest.json) and the release files agree: one current release, every file present with its version, date and tag', mp.length === 0, mp.length ? mp.join('; ') : M.releases.map(r => 'v' + r.version + (r.status === 'current' ? ' (current)' : '')).join(', '));
+  add('v5.2.1: the list of releases (data/manifest.json) and the release files agree: one current release, every file present with its version, date and tag', mp.length === 0, mp.length ? mp.join('; ') : M.releases.map(r => 'v' + r.version + (r.status === 'current' ? ' (current)' : r.status === 'latest' ? ' (latest, figures from v' + r.figuresFrom + ')' : '')).join(', '));
 
   /* 2. the current panels are the 500-seed panels */
   const html = rd('index.html'), emb = {}; for (const m of html.matchAll(/<script type="application\/json" id="(rel-data(?:-40)?)">([\s\S]*?)<\/script>/g)) emb[m[1]] = JSON.parse(m[2]);

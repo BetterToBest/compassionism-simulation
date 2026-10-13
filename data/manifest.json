@@ -2,6 +2,16 @@
  "about": "The releases of the Compassionism Simulation’s findings, newest first. Written by dev/tools/release_data.py; see dev/ADDING-A-RELEASE.md.",
  "releases": [
   {
+   "version": "5.5",
+   "date": "2026-10-13",
+   "tag": "v5.5.0",
+   "file": "releases/v5.4.json",
+   "summary": "No engine change: every figure is identical to 5.4’s, so the 5.4 data stays the data shown on this page. What 5.5 adds is the 500-seed study of which settings the results are most sensitive to (the study page).",
+   "status": "latest",
+   "shownIn": null,
+   "figuresFrom": "5.4"
+  },
+  {
    "version": "5.4",
    "date": "2026-10-12",
    "tag": "v5.4",
