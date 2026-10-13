@@ -8,6 +8,11 @@
  *                             (A, B and one A-with-B's-column matrix per input: N(k+2) points); first-order index S (Saltelli et al. 2010) and total
  *                             index ST (Jansen 1999) of each input's share of the result's variance.
  *   noise ENV SEEDS           run-to-run uncertainty: the paired effect's spread across seeds at the main values.
+ *   morrisjoin ENV FILE1,FILE2   outside audit (Oct 13, 2026; dev/reports/v5-29-outside-audit.md): joins Morris runs of the same trajectories on disjoint seed
+ *                             blocks (--lo): each elementary effect is the seed-weighted mean of the blocks' (the same as one run on all their seeds), and the
+ *                             noise check compares the blocks: an input's mu* counts as measured when the blocks' mu* differ by less than a quarter of it
+ *                             (rule set before the run), and the six leaders are the same in both blocks or the difference is reported.
+ * --lo=FIRST runs seeds FIRST..FIRST+SEEDS-1 at every point (default 1); --out=NAME names the output dev/runs/v54/NAME.json.
  * Each point runs SEEDS paired seeds (1..SEEDS): the paired difference is far less noisy than either run, and the same seeds at every point keep the noise
  * out of the comparisons between points. Ranges: sourced constants over their sources' ranges, design parameters over the ranges the reports sweep; each
  * range is the study's choice and is printed with the results. The engine is not changed; every input is restored after each point.
@@ -18,7 +23,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const C = H.CFG, ROOT = path.join(__dirname, '..', '..');
 const arg = k => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.split('=')[1] : null; };
 const pos = process.argv.slice(2).filter(x => !x.startsWith('--'));
-const MODE = pos[0], env = pos[1] || 'ref', NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
+const MODE = pos[0], env = pos[1] || 'ref', LO = +(arg('lo') || 1), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 const V54 = {empl: {}, pthb: {}, ptfs: {}};
 const K = ['fgt0PY', 'pov', 'bOAPy', 'cost', 'endoAnn'];
 /* The inputs: [name, lo, hi, what, how it is set]. P: the preset; S: the study's spending share; L: LABOR_DEFAULTS; G: CFG; T: the price module's supply
@@ -55,7 +60,7 @@ function evalPoint(x, seeds) {
     const PR = H.tbPresets(s.P), M = H.relMainCfgs(PR), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000; const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
     try {
       const cfg = [Object.assign(M[0], {sc: s.sc, v54: s.v54}), Object.assign(M[1], {sc: s.sc, v54: s.v54})];
-      const R = H.tbStudy(cfg, seeds, s.P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: s.sc}, H.REL_V52_STUDY)), out = {}, per = {};
+      const R = H.tbStudy(cfg, LO + seeds - 1, s.P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: s.sc}, H.REL_V52_STUDY), LO), out = {}, per = {};
       K.forEach(k => { const f = k === 'endoAnn' ? 100 : 1, d = Array.from(R[1]._s[k]).map((v, j) => (v - R[0]._s[k][j])*f); per[k] = d; out[k] = d.reduce((a, b) => a + b, 0)/d.length; });
       return {y: out, per};
     } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
@@ -77,7 +82,8 @@ if (MODE === 'morris') {
       K.forEach((m, j) => EE[i][j].push((y1[m] - y0[m])/D)); u = u2; y0 = y1; }
     process.stderr.write('trajectory ' + (t + 1) + ' of ' + R + ' (' + Math.round((Date.now() - t0)/1000) + ' s)\n');
   }
-  res = {R, seeds: S, inputs: {}};
+  res = {R, seeds: S, lo: LO, inputs: {}, ee: {}};
+  IN.forEach(([n], i) => { res.ee[n] = {}; K.forEach((m, j) => { res.ee[n][m] = EE[i][j]; }); });  /* outside audit: kept so seed blocks can be joined */
   IN.forEach(([n], i) => { res.inputs[n] = {}; K.forEach((m, j) => { const e = EE[i][j], mu = e.reduce((a, b) => a + b, 0)/e.length;
     res.inputs[n][m] = {muStar: e.reduce((a, b) => a + Math.abs(b), 0)/e.length, mu, sigma: Math.sqrt(e.reduce((a, b) => a + (b - mu)*(b - mu), 0)/Math.max(1, e.length - 1))}; }); });
 } else if (MODE === 'sobol') {
@@ -95,11 +101,25 @@ if (MODE === 'morris') {
 } else if (MODE === 'noise') {
   const S = +(pos[2] || 100), e = evalPoint(mainVals(), S); res = {seeds: S, mean: e.y, sd: {}, sd500: {}};
   K.forEach(m => { const d = e.per[m], mu = e.y[m], sd = Math.sqrt(d.reduce((a, b) => a + (b - mu)*(b - mu), 0)/(d.length - 1)); res.sd[m] = sd; res.sd500[m] = sd/Math.sqrt(500); });
-} else { console.error('usage: gsa.js morris|sobol|noise ENV ...'); process.exit(1); }
+} else if (MODE === 'morrisjoin') {
+  const fs2 = (pos[2] || '').split(',').filter(Boolean).map(f => JSON.parse(fs.readFileSync(f, 'utf8')).result);
+  if (fs2.length < 2 || fs2.some(q => !q.ee || q.R !== fs2[0].R)) { console.error('morrisjoin needs two or more morris outputs (with ee) of the same trajectories'); process.exit(1); }
+  const lo = fs2.map(q => q.lo).sort((a, b) => a - b); fs2.sort((a, b) => a.lo - b.lo);
+  fs2.forEach((q, i) => { if (i && q.lo !== fs2[i - 1].lo + fs2[i - 1].seeds) { console.error('seed blocks are not consecutive: ' + lo.join(',')); process.exit(1); } });
+  const S = fs2.reduce((a, q) => a + q.seeds, 0), st = e => { const mu = e.reduce((a, b) => a + b, 0)/e.length;
+    return {muStar: e.reduce((a, b) => a + Math.abs(b), 0)/e.length, mu, sigma: Math.sqrt(e.reduce((a, b) => a + (b - mu)*(b - mu), 0)/Math.max(1, e.length - 1))}; };
+  res = {R: fs2[0].R, seeds: S, lo: fs2[0].lo, blocks: fs2.map(q => q.lo + '-' + (q.lo + q.seeds - 1)), inputs: {}, check: {}};
+  IN.forEach(([n]) => { res.inputs[n] = {}; res.check[n] = {}; K.forEach(m => { const e = fs2[0].ee[n][m].map((_, t) => fs2.reduce((a, q) => a + q.ee[n][m][t]*q.seeds, 0)/S);
+    res.inputs[n][m] = st(e); const ms = fs2.map(q => st(q.ee[n][m]).muStar), diff = Math.max(...ms) - Math.min(...ms);
+    res.check[n][m] = {blocks: ms, diff, measured: diff < 0.25*res.inputs[n][m].muStar}; }); });
+  res.leaders = {}; K.forEach(m => { const top = q => IN.map(x => x[0]).sort((a, b) => st(q.ee[b][m]).muStar - st(q.ee[a][m]).muStar).slice(0, 6).sort();
+    const L = fs2.map(top); res.leaders[m] = {joined: IN.map(x => x[0]).sort((a, b) => res.inputs[b][m].muStar - res.inputs[a][m].muStar).slice(0, 6), same: L.every(l => l.join() === L[0].join()), blocks: L}; });
+} else { console.error('usage: gsa.js morris|sobol|noise|morrisjoin ENV ...'); process.exit(1); }
 meta.seconds = Math.round((Date.now() - t0)/1000);
-const file = path.join(dir, 'gsa-' + MODE + '-' + env + '.json');
+const file = path.join(dir, (arg('out') || 'gsa-' + MODE + '-' + env) + '.json');
 fs.writeFileSync(file, JSON.stringify({_meta: meta, result: res}, null, 1) + '\n');
 console.log('gsa ' + MODE + ' ' + env + ' (' + meta.seconds + ' s) -> ' + path.relative(ROOT, file));
+if (MODE === 'morrisjoin') K.forEach(m => console.log(m + ': leaders ' + res.leaders[m].joined.join(', ') + (res.leaders[m].same ? ' (same in every block)' : ' (blocks differ: ' + res.leaders[m].blocks.map(l => l.join('/')).join(' | ') + ')') + '; inputs not measured: ' + (IN.filter(([n]) => !res.check[n][m].measured).map(([n]) => n).join(', ') || 'none')));
 if (MODE === 'morris') K.forEach(m => { console.log(m + ': ' + IN.map(q => q[0]).sort((a, b) => res.inputs[b][m].muStar - res.inputs[a][m].muStar).slice(0, 6).map(n => n + ' ' + res.inputs[n][m].muStar.toFixed(2)).join(', ')); });
 if (MODE === 'sobol') K.forEach(m => console.log(m + ': ' + res.params.map(n => n + ' S ' + res.indices[m][n].S.toFixed(2) + ' ST ' + res.indices[m][n].ST.toFixed(2)).join('; ')));
 if (MODE === 'noise') console.log(JSON.stringify(res.sd));
