@@ -238,6 +238,22 @@
    },
    "equal": true,
    "seconds": 209
+  },
+  {
+   "from": "99fb4b577ef1bb095cf24287abdddd2c8f60379e339e3cd1ad90ca16a485dc0b",
+   "to": "9fd88940a292114a6bc6ee24f0bb9d95daf45567e5d3ab24865ac8786c8db28c",
+   "date": "2026-10-13",
+   "change": "Session 2a: health coverage setting A (HEALTH, off by default) and the shared income test; off is bit-identical",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 180
   }
  ]
 }

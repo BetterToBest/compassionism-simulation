@@ -4757,6 +4757,150 @@ function disRes(out){ var A = DSS, L = A ? A.list : [], Q = A ? A.ctl : [], rec 
   out.dsHit = A && A.n ? A.hit/A.n*100 : 0; out.dsRec3 = disRec(L, 3); out.dsRecEnd = disRec(L, 1e9);
   out.dsRecYrs = rec.length ? rec.reduce(function(s, a){ return s + a._disRecY; }, 0)/rec.length : 0; out.dsCtl3 = disRec(Q, 3); out.dsCtlEnd = disRec(Q, 1e9); return out; }
 /* v5.4: one entry point for the round's switches, per row (tbStudy's row option v54, an object; absent = every switch as it is). Returns the old values. */
+/* ─── Session 2a (Oct 13, 2026): HEALTH COVERAGE MADE EXPLICIT, setting A (today's system) ───────────────────────────────────────────
+ * Design and sources: dev/reports/v5-25-health-today.md; choices: dev/DECISIONS.md, Session 2a. HEALTH null (the default) adds nothing: no draw, no
+ * state any rule reads (dev/tools/guard_test.js proves it). With HEALTH on, every person (each adult and, with households, each child) has a yearly
+ * medical need in year-0 dollars: the CMS spending for the age (adults without an age take the working-age figure), times a lasting chronic state
+ * (multiple chronic conditions, MEPS), a spread fitted to MEPS's concentration of spending, and an acute shock. The draws come from a counter-based
+ * hash of (seed, person, year, slot), not from any stream the engine uses, so the main stream's eight draws per adult-year and every other stream are
+ * untouched, and a person's draws are the same in the programme run and the no-programme run. Coverage each year: Medicare from 65 (only adults who
+ * age reach it), Medicaid by the shared income test (incomeTest; expansion and non-expansion limits), employer coverage (more likely at higher pay; lost
+ * in a year mostly out of work), the ACA marketplace (premium tax credit by income), or none. Out-of-pocket cost follows each plan's deductible,
+ * coinsurance and limit; a household whose bills are high against its income skips part of its non-acute care; bills it cannot pay become medical
+ * debt (tracked; the debt is the negative wealth the bills caused). Who pays is recorded (household, employer, government, insurer).
+ * Calibration (no constant tuned to a result): the household's expected premiums and out-of-pocket cost are scaled, by household type, so that their
+ * average equals the basket's medical line (6.85% of the MIT basket, by household type). Each household then pays the difference between its own bill
+ * and its line, in cash, on top of the basket (which still carries the average line, so BU, PTF's sector cut and the price module see what they saw).
+ * Turning it on adds spread, not cost. */
+var HEALTH = null, HLS = null;
+var HEALTH_DEFAULTS = {set:'A', exp:true, skip:0.5, persist:0.9, countBU:false};
+CFG.HL_AGE = [[17, 4217], [44, 6669], [64, 12577], [84, 20503], [999, 35995]];  /* personal health care per person by age (upper age, $), 2020: CMS National Health Expenditure, Age and Sex tables (0-18, 19-44, 45-64, 65-84, 85+; the model's adults start at 18) */
+CFG.HL_AGE_NONE = 9154;  /* CMS 2020, working-age adults (19-64): for adults the model gives no age (no ageing) */
+CFG.HL_LEVEL = 15474/12530;  /* to year-0 dollars: national health spending per person, 2024 ($15,474, CMS NHE fact sheet) over 2020 ($12,530) */
+CFG.HL_MCC = {prev:0.259, share:0.57};  /* adults treated for two or more chronic conditions: 25.9% of adults, 57.0% of spending (MEPS 2012; AHRQ Statistical Brief 485) */
+CFG.HL_ACUTE = {p:0.08, share:0.30};  /* an acute event (a hospital stay) in a year and its share of mean spending: design parameters (swept), not sourced */
+CFG.HL_SIGMA = {base:1.5, acute:0.6};  /* log spreads, fitted to MEPS 2017's concentration (top 1% 21.9%, top 5% 50.1%, bottom half 2.9% of spending; Statistical Brief 528): the fit gives 22.2 / 50.4 / 3.5 */
+CFG.HL_FPL = {one:15650, add:5500};  /* HHS poverty guidelines 2025, 48 states: one person, each added person */
+CFG.HL_MCAID = {exp:1.38, parentNx:0.405, adultNx:0, kids:2.55, take:0.80, takeKids:0.90};  /* income limits, share of the poverty guideline (KFF state indicators, Jan 2026): expansion states 138%; non-expansion parents, the median of the ten states' limits (15-105%); non-expansion adults without children 0; children (Medicaid and CHIP) 255%. Take-up among the eligible: design parameters */
+CFG.HL_ESI = {premS:9325, wkS:1440, premF:26993, wkF:6850, ded:1886, coins:0.20, oopMax:9200, offer:[0.20, 0.80]};  /* KFF Employer Health Benefits Survey 2025: premiums and the worker's share (single, family), single deductible; coinsurance 20% (design); the ACA's 2025 out-of-pocket limit; offer-and-take-up rising from 20% at the lowest pay to 80% at the highest, set so about 63% of the model's adult-years have employer coverage (Census 2024, ages 19-64: private coverage 74.0%, of which about 11 points direct purchase) */
+CFG.HL_MKT = {prem:5964, kid:0.5, ded:2759, coins:0.20, oopMax:9200, oopCSR:3050, take:0.60};  /* KFF: benchmark silver premium for a 40-year-old, 2025 ($497 a month); a child's at half (design); average marketplace deductible 2025; cost-sharing reductions cap out-of-pocket cost at $3,050 under 200% of poverty (2025); take-up among those not otherwise covered, set so about 11-13% of the model's adult-years are uninsured (Census 2024: 11% at 19-64; the model has too few adults on Medicaid, see the report) */
+CFG.HL_MCARE = {partB:2220, ded:257, coins:0.20, oopMax:9350};  /* Medicare 2025: Part B premium ($185 a month) and deductible, 20% coinsurance, capped at the Medicare Advantage in-network limit (a stand-in for supplemental cover) */
+CFG.HL_UNDER = {oop:0.10, oopLow:0.05, lowFpl:2.0, ded:0.05};  /* Commonwealth Fund: insured all year with out-of-pocket cost (not premiums) of 10% of income or more, 5% under 200% of poverty, or a deductible of 5% of income or more */
+CFG.HL_DEBT_LINE = 250;  /* medical debt counted above $250 (KFF analysis of SIPP 2021: about 1 in 12 adults) */
+var HL_KEYS = ['hlEsi', 'hlMkt', 'hlMcaid', 'hlMcare', 'hlUnins', 'hlUnder', 'hlSkip', 'hlSkipD', 'hlNeed', 'hlOop', 'hlPrem', 'hlEmp', 'hlGov', 'hlIns', 'hlPaid', 'hlLine', 'hlDev', 'hlDebt', 'hlDebtM', 'hlKap', 'hlKidMcaid', 'hlKidUnins', 'hlMcaidLost'];
+/* hlEsi..hlUnins: % of adult-years by coverage; hlUnder: % of insured adult-years underinsured; hlSkip: % of adult-years skipping some care for cost; hlSkipD: care skipped,
+ * $ per adult-year; hlNeed: medical need (care used plus skipped) per person-year; hlOop, hlPrem: what households pay out of pocket and in premiums, per adult-year;
+ * hlEmp: employers' premium share (pay forgone) per adult-year; hlGov: government (Medicaid, Medicare, premium tax credits) per adult-year; hlIns: insurers' claims per
+ * adult-year; hlPaid and hlLine: the household's bill after calibration and its basket line, per adult-year; hlDev: the mean absolute gap between them; hlDebt: % of
+ * adult-years with medical debt over $250; hlDebtM: mean medical debt per adult-year; hlKap: the calibration factor; hlKidMcaid, hlKidUnins: % of child-years;
+ * hlMcaidLost: % of adult-years that had Medicaid the year before and lost it to income. Dollars are year-0 dollars. */
+function hlU(s, id, yr, j){  /* a uniform draw from the hash of (seed, person, year, slot): murmur3's finaliser over the mixed integers */
+  var h = Math.imul(s ^ 0x5bd1e995, 0x85ebca6b) ^ Math.imul((id | 0) + 0x632be5ab, 0xc2b2ae35) ^ Math.imul((yr | 0) + 0x7f4a7c15, 0x27d4eb2f) ^ Math.imul((j | 0) + 0x165667b1, 0x9e3779b1);
+  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16; return ((h >>> 0) + 0.5)/4294967296; }
+function hlMu(age){ if (typeof age !== 'number') return CFG.HL_AGE_NONE*CFG.HL_LEVEL; for (var i = 0; i < CFG.HL_AGE.length; i++) if (age <= CFG.HL_AGE[i][0]) return CFG.HL_AGE[i][1]*CFG.HL_LEVEL; return CFG.HL_AGE[CFG.HL_AGE.length - 1][1]*CFG.HL_LEVEL; }
+function hlK(){ var M = CFG.HL_MCC, r = (M.share/M.prev)/((1 - M.share)/(1 - M.prev)), kN = 1/(1 + M.prev*(r - 1)); return {n:kN, c:r*kN}; }  /* need multipliers without and with the chronic state (mean 1 over adults) */
+function hlNeedOf(mu, k, u1, u2, u3){  /* need = mu x [(1 - phi) k LN(sigma) + phi (1[acute]/p) LN(sigmaA)]; returns [non-acute, acute] */
+  var A = CFG.HL_ACUTE, S = CFG.HL_SIGMA, b = Math.exp(S.base*normInv(u1) - S.base*S.base/2), ac = u2 < A.p ? Math.exp(S.acute*normInv(u3) - S.acute*S.acute/2)/A.p : 0;
+  return [mu*(1 - A.share)*k*b, mu*A.share*ac]; }
+/* The shared income test (session 2a; reused by the today's-safety-net row and session 2b's benefit-cliff check): a household's money income against the
+ * poverty guideline for its size. income in year-0 dollars; returns {n: people, line: the guideline, ratio: income over the guideline}. */
+function incomeTest(nAdults, nKids, income){ var n = Math.max(1, nAdults + nKids), line = CFG.HL_FPL.one + CFG.HL_FPL.add*(n - 1); return {n:n, line:line, ratio:income/line}; }
+function medicaidEligible(ratio, kid, parent, exp){ var M = CFG.HL_MCAID; return kid ? ratio <= M.kids : ratio <= (exp ? M.exp : parent ? M.parentNx : M.adultNx); }
+function hlPct(f){  /* the share of income a marketplace household pays for the benchmark plan (2026 schedule; IRS Rev. Proc. 2025-25), 100-400% of poverty */
+  if (f < 1.33) return 0.0210; if (f < 1.5) return 0.0314 + (f - 1.33)/0.17*(0.0419 - 0.0314); if (f < 2) return 0.0419 + (f - 1.5)/0.5*(0.0660 - 0.0419);
+  if (f < 2.5) return 0.0660 + (f - 2)/0.5*(0.0844 - 0.0660); if (f < 3) return 0.0844 + (f - 2.5)/0.5*(0.0996 - 0.0844); return 0.0996; }
+function hlOop(cov, x, f){  /* a person's out-of-pocket cost for care x under the plan (f: the household's income ratio, for cost-sharing reductions) */
+  var P, o;
+  if (cov === 'mcaid' || cov === 'pub') return 0;
+  if (cov === 'unins') return x;
+  P = cov === 'esi' ? CFG.HL_ESI : cov === 'mkt' ? CFG.HL_MKT : CFG.HL_MCARE;
+  o = x <= P.ded ? x : P.ded + P.coins*(x - P.ded);
+  return Math.min(o, cov === 'mkt' && f >= 1 && f < 2 ? P.oopCSR : P.oopMax); }
+function hlDed(cov){ return cov === 'esi' ? CFG.HL_ESI.ded : cov === 'mkt' ? CFG.HL_MKT.ded : cov === 'mcare' ? CFG.HL_MCARE.ded : 0; }
+function hlEOop(cov, mu, kid, f){  /* expected out-of-pocket cost over a fixed sample of needs (seed-free, so the calibration is the same in every run) */
+  var G = HLS.G, s = 0, k = hlK(), i; if (cov === 'mcaid' || cov === 'pub') return 0;
+  for (i = 0; i < G.length; i++){ var g = G[i], kk = kid ? 1 : (g[0] < CFG.HL_MCC.prev ? k.c : k.n), x = mu*((1 - CFG.HL_ACUTE.share)*kk*g[1] + CFG.HL_ACUTE.share*g[2]); s += hlOop(cov, x, f); }
+  return s/G.length; }
+function hlInit(agents, seed){
+  var A = CFG.HL_ACUTE, S = CFG.HL_SIGMA, G = [], i, w = agents.map(function(a){ return a.wage; }).sort(function(x, y){ return x - y; });
+  for (i = 0; i < 1024; i++){ var u = [hlU(7, i, 0, 0), hlU(7, i, 0, 1), hlU(7, i, 0, 2), hlU(7, i, 0, 3)];
+    G.push([u[0], Math.exp(S.base*normInv(u[1]) - S.base*S.base/2), u[2] < A.p ? Math.exp(S.acute*normInv(u[3]) - S.acute*S.acute/2)/A.p : 0]); }
+  HLS = {seed:seed | 0, G:G, w:w, kap:null, kap0:1, idxPrev:1, acc:{ay:0, ky:0, py:0, esi:0, mkt:0, mcaid:0, mcare:0, unins:0, insY:0, under:0, skipN:0, skipD:0, need:0, oop:0, prem:0, emp:0, gov:0, ins:0, paid:0, line:0, dev:0, debtN:0, debt:0, kMcaid:0, kUnins:0, lost:0}};
+  agents.forEach(function(a, j){ a._hlId = j; a._hlC = undefined; a._hlMd = 0; a._hlOopP = 0; });
+}
+function hlRank(a){ var w = HLS.w, lo = 0, hi = w.length; while (lo < hi){ var m = (lo + hi) >> 1; if (w[m] < a.wage) lo = m + 1; else hi = m; } return w.length ? lo/w.length : 0.5; }
+function hlUnits(agents, HHON){ return HHON ? HHS.list.filter(function(H){ return H.a.length > 0; }).map(function(H){ return {a:H.a, kids:H.kids, H:H}; }) : agents.map(function(a){ return {a:[a], kids:[], H:null}; }); }
+function hlType(u){ return u.a.length + 'a' + Math.min(3, u.kids.length) + 'k'; }
+function hlLine(u){ return u.H ? u.H.need.medical : CFG.LIVING_WAGE_ANNUAL*CFG.BASKET.medical; }  /* the household's medical line (one adult's without households) */
+function hlYear(agents, yr, p, HHON, inflRate){
+  var E = HEALTH, M = CFG.HL_MCAID, S = HLS, ac = S.acc, k = hlK(), units = hlUnits(agents, HHON), next = 0;
+  var gIdx = Math.pow(1 + inflRate, yr)*(PRICE ? PRICE.bIdx : 1), mIdx = Math.pow(1 + inflRate, yr)*(PRICE ? PRICE.comp.medical : 1);
+  S.mIdx = mIdx; S.w = agents.map(function(a){ return a.wage; }).sort(function(x, y){ return x - y; });  /* this year's pay ranks (relative, so price rises do not move them) */
+  agents.forEach(function(a){ if (a._hlId === undefined){ a._hlId = 1000000 + (a._id !== undefined ? a._id : agents.length + next++); a._hlMd = 0; a._hlOopP = 0; } });  /* adults who arrive with ageing */
+  var plan = units.map(function(u){
+    var nA = u.a.length, nK = u.kids.length, Y = 0, parent = nK > 0, people = [], esiHH = false;
+    u.a.forEach(function(a){ Y += yr === 0 || a.yrWageUSD === undefined ? a.wage*12*CFG.WAGE_TO_USD : ((a.yrWageUSD || 0) + (a.yrSSUSD || 0) + (a.yrUbiUSD || 0) + (a.yrConvUSD || 0) + (a._hlTb || 0))/S.idxPrev; });
+    var T = incomeTest(nA, nK, Math.max(0, Y));
+    u.a.forEach(function(a){ var id = a._hlId, age = a.age, kid = false, cov;
+      var psi1 = hlU(S.seed, id, 0, 91), psi2 = hlU(S.seed, id, 0, 92), psi3 = hlU(S.seed, id, 0, 93), u0 = hlU(S.seed, id, yr, 0);
+      if (a._hlC === undefined) a._hlC = u0 < CFG.HL_MCC.prev; else a._hlC = a._hlC ? u0 < E.persist : u0 < CFG.HL_MCC.prev*(1 - E.persist)/(1 - CFG.HL_MCC.prev);  /* the chronic state: lasting (stays with probability persist), onset keeps the share at 25.9% */
+      var att = !a._ret && (a._hlOut || 0) < 0.5 && psi1 < CFG.HL_ESI.offer[0] + (CFG.HL_ESI.offer[1] - CFG.HL_ESI.offer[0])*hlRank(a);
+      if (typeof age === 'number' && age >= 65) cov = 'mcare';
+      else if (medicaidEligible(T.ratio, false, parent, E.exp) && psi3 < M.take) cov = 'mcaid';
+      else if (att){ cov = 'esi'; esiHH = true; }
+      else cov = 'x';  /* decided below: the household's employer plan, the marketplace, or none */
+      people.push({a:a, id:id, kid:false, mu:hlMu(age), k:a._hlC ? k.c : k.n, cov:cov, psi2:psi2, wasMcaid:a._hlCov === 'mcaid'}); });
+    u.kids.forEach(function(age, j){ var id = 10000000 + (u.H ? u.H.id : 0)*8 + j, psi3 = hlU(S.seed, id, 0, 93), cov;
+      cov = medicaidEligible(T.ratio, true, true, E.exp) && psi3 < M.takeKids ? 'mcaid' : 'x';
+      people.push({a:null, id:id, kid:true, mu:hlMu(age), k:1, cov:cov, psi2:hlU(S.seed, id, 0, 92)}); });
+    var mktOK = T.ratio >= 1 && T.ratio <= 4, mktAny = false;  /* the premium tax credit's range */
+    people.forEach(function(q){ if (q.cov !== 'x') return;
+      if (esiHH) q.cov = 'esi';  /* the household's employer plan covers the family */
+      else if (q.kid) q.cov = mktAny ? 'mkt' : 'unins';  /* children follow a parent on the marketplace (adults come first in the list) */
+      else if (q.psi2 < CFG.HL_MKT.take && T.ratio >= 1){ q.cov = 'mkt'; mktAny = true; }  /* under 100% of poverty there is no tax credit (the coverage gap) */
+      else q.cov = 'unins'; });
+    /* premiums (household-level, year-0 dollars) */
+    var nE = 0, gross = 0, nB = 0; people.forEach(function(q){ if (q.cov === 'esi') nE++; if (q.cov === 'mkt') gross += CFG.HL_MKT.prem*(q.kid ? CFG.HL_MKT.kid : 1); if (q.cov === 'mcare') nB++; });
+    var wk = nE ? (nE > 1 ? CFG.HL_ESI.wkF : CFG.HL_ESI.wkS) : 0, emp = nE ? (nE > 1 ? CFG.HL_ESI.premF : CFG.HL_ESI.premS) - wk : 0;
+    var sub = gross > 0 && mktOK ? Math.max(0, gross - hlPct(T.ratio)*Math.max(0, Y)) : 0, prem = wk + (gross - sub) + nB*CFG.HL_MCARE.partB;
+    return {u:u, Y:Y, T:T, people:people, wk:wk, emp:emp, gross:gross, sub:sub, prem:prem, line:hlLine(u), type:hlType(u)};
+  });
+  if (!S.kap){  /* year 0: the calibration factor by household type, from expected bills under year-0 coverage (the same in both runs: no programme acts before year 0's incomes) */
+    var num = {}, den = {}, N0 = 0, D0 = 0;
+    plan.forEach(function(P){ var e = P.prem; P.people.forEach(function(q){ e += hlEOop(q.cov, q.mu, q.kid, P.T.ratio); }); num[P.type] = (num[P.type] || 0) + P.line; den[P.type] = (den[P.type] || 0) + e; N0 += P.line; D0 += e; });
+    S.kap = {}; Object.keys(num).forEach(function(t){ S.kap[t] = den[t] > 0 ? num[t]/den[t] : 1; }); S.kap0 = D0 > 0 ? N0/D0 : 1; }
+  plan.forEach(function(P){
+    var u = P.u, nA = u.a.length, oop0 = 0, need = 0, nonAc = 0, kap = S.kap[P.type] || S.kap0;
+    P.people.forEach(function(q){ var x = hlNeedOf(q.mu, q.k, hlU(S.seed, q.id, yr, 1), hlU(S.seed, q.id, yr, 2), hlU(S.seed, q.id, yr, 3)); q.xn = x[0]; q.xa = x[1]; q.o0 = hlOop(q.cov, x[0] + x[1], P.T.ratio); oop0 += q.o0; need += x[0] + x[1]; });
+    /* care skipped for cost: a household whose bills (before skipping) pass the Commonwealth Fund's burden line skips, with a chance rising from 0 at the line to 1 at three
+     * times it, the share HEALTH.skip of its non-acute care (acute care is not skipped). The household's draw: its first adult's slot 4. */
+    var Yp = Math.max(1000, P.Y), bT = P.T.ratio < CFG.HL_UNDER.lowFpl ? CFG.HL_UNDER.oopLow : CFG.HL_UNDER.oop, pS = Math.min(1, Math.max(0, oop0/Yp - bT)/(2*bT));
+    var s = hlU(S.seed, u.a[0]._hlId, yr, 4) < pS ? E.skip : 0, oop = 0, skipD = 0, gov = 0, ins = 0;
+    P.people.forEach(function(q){ var sk = q.o0 > 0 ? s*q.xn : 0, x = q.xn + q.xa - sk; q.sk = sk; q.o = hlOop(q.cov, x, P.T.ratio); oop += q.o; skipD += sk;
+      if (q.cov === 'mcaid') gov += x; else if (q.cov === 'mcare') gov += Math.max(0, x - q.o - CFG.HL_MCARE.partB); else if (q.cov === 'esi' || q.cov === 'mkt') ins += x - q.o; });
+    gov += P.sub;
+    var paid = kap*(P.prem + oop), dev = paid - P.line;
+    /* reporting (adult-years; money per adult-year) */
+    var insAll = true, under = false; P.people.forEach(function(q){ if (q.cov === 'unins') insAll = false; });
+    if (insAll){ var ded = 0; P.people.forEach(function(q){ ded = Math.max(ded, hlDed(q.cov)); }); under = oop >= bT*Yp || ded >= CFG.HL_UNDER.ded*Yp; }
+    P.people.forEach(function(q){
+      if (q.kid){ ac.ky++; if (q.cov === 'mcaid') ac.kMcaid++; if (q.cov === 'unins') ac.kUnins++; return; }
+      var a = q.a; ac.ay++; ac[q.cov]++; if (q.cov !== 'unins'){ ac.insY++; if (under) ac.under++; } if (q.sk > 0) ac.skipN++;
+      if (q.wasMcaid && q.cov !== 'mcaid' && q.cov !== 'mcare' && !medicaidEligible(P.T.ratio, false, u.kids.length > 0, E.exp)) ac.lost++;
+      a._hlCov = q.cov;
+      var md = Math.min((a._hlMd || 0) + Math.max(0, (a._hlOopP || 0) - Math.max(0, (a._hlW0 || 0))), Math.max(0, -a.wealth/gIdx)); a._hlMd = md; a._hlW0 = a.wealth/gIdx;  /* medical debt: last year's bill beyond the savings held at its start, while wealth stays below zero */ if (md > CFG.HL_DEBT_LINE) ac.debtN++; ac.debt += md; });
+    u.a.forEach(function(a){ a._hlD = dev/nA; a._hlOopP = oop/nA; });  /* this year's gap from the line (paid in cash in the agent loop) and bill (next year's debt step) */
+    ac.py += P.people.length; ac.need += need; ac.skipD += skipD; ac.oop += oop; ac.prem += P.prem; ac.emp += P.emp; ac.gov += gov; ac.ins += ins; ac.paid += paid; ac.line += P.line; ac.dev += Math.abs(dev);
+  });
+  S.idxPrev = gIdx;
+}
+function hlRes(out){ var A = HLS ? HLS.acc : null, ay = A && A.ay ? A.ay : 1, pc = function(x){ return A ? x/ay*100 : 0; };
+  out.hlEsi = pc(A ? A.esi : 0); out.hlMkt = pc(A ? A.mkt : 0); out.hlMcaid = pc(A ? A.mcaid : 0); out.hlMcare = pc(A ? A.mcare : 0); out.hlUnins = pc(A ? A.unins : 0);
+  out.hlUnder = A && A.insY ? A.under/A.insY*100 : 0; out.hlSkip = pc(A ? A.skipN : 0); out.hlSkipD = A ? A.skipD/ay : 0; out.hlNeed = A && A.py ? A.need/A.py : 0;
+  out.hlOop = A ? A.oop/ay : 0; out.hlPrem = A ? A.prem/ay : 0; out.hlEmp = A ? A.emp/ay : 0; out.hlGov = A ? A.gov/ay : 0; out.hlIns = A ? A.ins/ay : 0;
+  out.hlPaid = A ? A.paid/ay : 0; out.hlLine = A ? A.line/ay : 0; out.hlDev = A ? A.dev/ay : 0; out.hlDebt = pc(A ? A.debtN : 0); out.hlDebtM = A ? A.debt/ay : 0; out.hlKap = HLS ? HLS.kap0 : 0;
+  out.hlKidMcaid = A && A.ky ? A.kMcaid/A.ky*100 : 0; out.hlKidUnins = A && A.ky ? A.kUnins/A.ky*100 : 0; out.hlMcaidLost = pc(A ? A.lost : 0);
+  return out; }
 function tbSetV54(o){ var old = {rk:RISK_MEASURE, em:EMPL, pb:PTHB, pf:PTFS, ds:DIS}; if (o){ if (o.rk !== undefined) RISK_MEASURE = !!o.rk; if (o.empl) EMPL = Object.assign({}, EMPL_DEFAULTS, o.empl === true ? {} : o.empl);
   if (o.pthb) PTHB = Object.assign({}, PTHB_DEFAULTS, o.pthb === true ? {} : o.pthb); if (o.ptfs) PTFS = Object.assign({}, PTFS_DEFAULTS, o.ptfs === true ? {} : o.ptfs);
   if (o.dis) DIS = Object.assign({}, DIS_DEFAULTS, o.dis === true ? {} : o.dis); } return old; }
@@ -4852,6 +4996,7 @@ function runYear(agentSet,yr,p,recSt){
    * unchanged from the historical value and is now the ceiling reached at 100% membership. */
   if(p.pth&&inflRate>0&&!(PRICE&&PRICE.noDamp))inflRate*=(1-pthMemberFrac*0.10);
   var dollarCost=CFG.BASE_DAILY_COST*365*Math.pow(1+inflRate,yr);
+  if(HEALTH&&HLS)hlYear(agentSet,yr,p,HHON,inflRate);  // session 2a: health coverage (setting A); off by default; its own hashed draws, none from any stream
   if(PRICE)dollarCost*=PRICE.bIdx;  // session 2: endogenous basket index (price module only)
   var popShock=recSt.active?recSt.incomeMultiplier:1.0;
   if(EMPL&&EMPL.rec==='replace'&&recSt.active)popShock=1-Math.max(0,(1-popShock)-(CFG.EMPL_P_REC*CFG.EMPL_W_REC-CFG.EMPL_P*CFG.EMPL_W)/52);  // v5.4 item 2: the recession's job loss is not counted twice
@@ -5144,6 +5289,7 @@ function runYear(agentSet,yr,p,recSt){
     var emQ=null;if(EMPL&&EMS){var emU=[EMS.r(),EMS.r(),EMS.r(),EMS.r(),EMS.r(),EMS.r()];if(!a._ret)emQ=emplYear(a,recSt.active,popAIDisp,emU,a.wage*12*CFG.WAGE_TO_USD*incomeShock/52);}  // v5.4 item 2: job loss (own stream, six draws whatever the state)
     var annualWageUSD=a._ret?0:a.wage*12*CFG.WAGE_TO_USD*incomeShock*(1+mlNT);
     if(emQ)annualWageUSD*=1-emQ.out;
+    if(HEALTH)a._hlOut=emQ?emQ.out:0;  // session 2a: a year mostly out of work loses employer coverage next year
     if(dsOn)annualWageUSD*=1-Math.min(52,DIS.weeks)/52;  // v5.4 item 5: weeks of work lost to the disaster  // v5.2 step 4: a retiree earns no wage  // v5.2 step 6: mlNT = 0 unless the spending layer fills normal-times slack
     var tbG=0,tbPT=0;if(tbY&&COST&&p.ptf&&a.inPTF){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
     if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fSA+(p.tb.groc.housing?hSA:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
@@ -5168,6 +5314,7 @@ function runYear(agentSet,yr,p,recSt){
       a._pjHW=pjD;PJS.acc.hrs+=pjH;PJS.acc.disp+=(PROJ.hours==='displace'?pjD:0)/pjIdx;}}
     if(tbG)cf-=tbG/mainLoopCostUSD;  // session 6: public grocery (applied after the labor block reads the CCO relief)
     var costUSD=mainLoopCostUSD*cf;
+    if(HEALTH&&HLS&&a._hlD)costUSD+=a._hlD*HLS.mIdx;  // session 2a: the household's medical bill above (or below) its basket line, in cash, at medical prices
     a.wealth+=annualWageUSD-costUSD;
     if(SPEND_GRADE){var grA=annualWageUSD+(a._ret?a._ssY:0)+(p.ubi>0?p.ubi:0)+(emQ?emQ.ui:0);a._grCut=0;if(HHP){a._grA=grA;a._grC=costUSD;}else if(costUSD>0&&grA<costUSD){a._grCut=costUSD-costUSD*Math.pow(Math.max(0,grA)/costUSD,SPEND_GRADE.eps);a.wealth+=a._grCut;if(ACCT)a._acGr=a._grCut;}}  // v5.3 B7: less income, less spending (off by default)
     a.yrSSUSD=a._ret?a._ssY:0;if(a._ret){a.wealth+=a._ssY;if(LEDGER)ledAdd(yr,'ssBenefit',a._ssY);}  // v5.2 step 4: the Social Security benefit (money income)
@@ -5179,7 +5326,7 @@ function runYear(agentSet,yr,p,recSt){
     if(dsOn){var dsP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1),dsD=((a._disAid?CFG.DIS_AID:0)-DIS.loss)*dsP/a._disN;a.wealth+=dsD;if(ACCT)a._acU=(a._acU||0)+dsD;}  // v5.4 item 5: the damage and federal aid (both runs)  // session 4: UBI comparator (harness-only; unset in every preset)
     var yrCashSurplus=annualWageUSD-costUSD+(p.ubi>0?p.ubi:0)+(a._ret?a._ssY:0);
     if(emQ&&emQ.ui>0)yrCashSurplus+=emQ.ui;  // v5.4 item 2  // v5.2 step 4: + the benefit  // session 1: for SURPLUS_CONSUMPTION_BASE 'cash' (harness-only; no RNG)
-    if(tbY){var tbK=tbCashFlow(a,tbY,annualWageUSD,yr);a.wealth+=tbK.net+tbK.endow;yrCashSurplus+=tbK.net;if(ACCT)a._acT=tbK.net+tbK.endow;}  // session 6: cash transfers less the contribution; an endowment is wealth, not consumable surplus
+    if(tbY){var tbK=tbCashFlow(a,tbY,annualWageUSD,yr);a.wealth+=tbK.net+tbK.endow;yrCashSurplus+=tbK.net;if(HEALTH)a._hlTb=tbK.net;if(ACCT)a._acT=tbK.net+tbK.endow;}  // session 6: cash transfers less the contribution; an endowment is wealth, not consumable surplus
     if(LEDGER){  // A1 ledger (reporting only): no RNG, no state read by any dynamic
       ledAdd(yr,'agentYears',1);if(a.inCCO)ledAdd(yr,'partYears',1);
       ledAdd(yr,'wage',annualWageUSD);ledAdd(yr,'cost',costUSD);ledAdd(yr,'basket',mainLoopCostUSD);
@@ -5553,6 +5700,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var wq = latent.map(function(l){ return l.wage; }).sort(function(x, y){ return x - y; }), w1 = wq[Math.floor(wq.length/3)], w2 = wq[Math.floor(2*wq.length/3)];
   agents.forEach(function(a, i){ var l = latent[i]; a._tbU = gR(); a._tbEl = !!(spec.endow && l.wealth < spec.endow.thresh); a._tbPart = l.uCCO < grp.part; a._tbPTH = l.uPTH < grp.pth; a._tbLow = l.wage < w1; a._tbTop = l.wage >= w2; });
   if (EMPL) emplInit(agents, seed); else EMS = null;
+  if (HEALTH) hlInit(agents, seed); else HLS = null;  /* session 2a: health coverage (no draw on any stream) */
   if (PTHB && p.pth) pthbInit(agents, latent, seed); else PBS = null;
   if (DIS) DSS = {r:mulberry32(seed + 600053), hit:0, n:0, list:[], ctl:[]}; else DSS = null;  /* v5.4 item 5 */
   if (PTFS && p.ptf) PFS = {r:mulberry32(seed + 600047), cut:0, cn:0, leave:0, mem:0, yrs:0, dens:1}; else PFS = null;  /* v5.4 item 4 */  /* v5.4 item 3: the PTH trust's books */  /* v5.4 item 2: job loss, on its own stream */
@@ -5663,6 +5811,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var emR = EMPL && EMS ? emplRes({}) : null;  /* v5.4 item 2 */
   if (PTHB) emR = pthbRes(emR || {});
   if (PTFS) emR = ptfsRes(emR || {});  /* v5.4 item 4 */
+  if (HEALTH && HLS) emR = hlRes(emR || {});  /* session 2a */
   if (DIS) emR = disRes(emR || {});  /* v5.4 item 5 */  /* v5.4 item 3 (zeros in the no-programme run) */
   return {path:path, res:Object.assign(fbsRes(FBSS, edcRes(EDCS, hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
     endoAnn:Math.pow(bI, 1/(T - 1)) - 1, endoMax:mx, pov:pov/n*100, bleiPov:bpov/n*100, nbleiPov:nbpov/n*100, tgt:L.pd > 0 ? L.tgt/L.pd : 0, medWealthReal:medianOf(agents.map(function(a){ return a.wealth; }))/full,
@@ -5755,6 +5904,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var fb0 = FBS50; if (c.fb) FBS50 = Object.assign({dist:'lambda', scale:1}, c.fb === true ? {} : c.fb);  /* v5.3 B7: FBS50 for this row */
       var hh0 = HOUSEHOLDS; if (c.hh) HOUSEHOLDS = Object.assign({}, HH_DEFAULTS, c.hh === true ? {} : c.hh);  /* v5.3 B3: households for this row ({} = the defaults) */
       var v540 = tbSetV54(c.v54);  /* v5.4: the round's switches for this row */
+      var hl0 = HEALTH; if (c.hl) HEALTH = Object.assign({}, HEALTH_DEFAULTS, c.hl === true ? {} : c.hl);  /* session 2a: the health setting for this row (no programme rows too) */
       var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0, wmed:c.lt.m ? CFG.SCF_WAGE_MEDIAN : 0};  /* v5.2 step 5: {w, r, s, m} flags */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS || SPEND_GRADE ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
@@ -5762,11 +5912,12 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.dsHit !== undefined) DIS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 5 */
         if (r.pfCut !== undefined) PTFS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 4 */
         if (r.pbV !== undefined) PTHB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 3 */
+        if (r.hlEsi !== undefined) HL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* session 2a */
         if (r.emUrate !== undefined) EMPL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 2 */
         if (r.rkEv !== undefined) RISK_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 1 */
         if (r.edcM !== undefined) EDC_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B6 */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { tbResetV54(v540); CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; FBS50 = fb0; FBSS = null; } });
+      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; FBS50 = fb0; FBSS = null; } });
   }
   return out;
 }
