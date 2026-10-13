@@ -2,7 +2,8 @@
  * Used by the simulation page (index.html), the findings explorer (findings.html) and the replication page; the compare page will reuse it.
  * Two primitives cover every chart on the pages:
  *   CSC.xy(el, spec)    lines over x (years, or a share), with optional bands (10th-90th percentile), whiskers (95% intervals), extra marks and a zero line;
- *   CSC.rows(el, spec)  one row per item with dots (with / without / a reading), intervals, reference lines and shaded target strips (dumbbells, range charts).
+ *   CSC.rows(el, spec)  one row per item with dots (with / without / a reading), intervals, reference lines and shaded target strips (dumbbells, range charts);
+ *                       with spec.bars, bars from zero with a 95% interval line and the value at the end (the study page's sensitivity chart).
  * Colours come from CSS custom properties in site/findings.css (validated for colour-blind readers in light and dark, dataviz skill validator);
  * identity is never colour alone: series also differ by line style or marker shape and carry a legend and direct labels. Every chart has a text
  * summary (aria-label) and its numbers in a table beside it (site/findings.js). Tooltips enhance, never gate.
@@ -129,8 +130,11 @@
       if (!narrow && lab.getComputedTextLength && lw) { try { var L = lab.getComputedTextLength(); if (L > lw - 8) { var s = r.label; while (s.length > 4 && lab.getComputedTextLength() > lw - 14) { s = s.slice(0, -2); lab.textContent = s + '…'; } } } catch (e) {} }
       var ms = r.marks.filter(function (k) { return k.v != null; });
       if (ms.length === 2 && !r.noConnect) el('line', {x1: sx(ms[0].v), x2: sx(ms[1].v), y1: cy, y2: cy, class: 'fx-conn'}, row);
-      ms.forEach(function (k) { if (k.lo != null) el('line', {x1: sx(k.lo), x2: sx(k.hi), y1: cy, y2: cy, class: (k.cls || '') + ' fx-whisker'}, row); });
-      ms.forEach(function (k) { marker(row, k.shape || 'circle', sx(k.v), cy, 5, (k.cls || '') + ' fx-mk', k.hollow); });
+      if (!spec.bars) ms.forEach(function (k) { if (k.lo != null) el('line', {x1: sx(k.lo), x2: sx(k.hi), y1: cy, y2: cy, class: (k.cls || '') + ' fx-whisker'}, row); });
+      if (spec.bars) ms.forEach(function (k) { var x0 = sx(Math.max(0, X.lo)), x1 = sx(k.v); el('rect', {x: Math.min(x0, x1), y: cy - 8, width: Math.max(1, Math.abs(x1 - x0)), height: 16, rx: 3, class: (k.cls || '') + ' fx-bar'}, row);
+        if (k.lo != null) el('line', {x1: sx(k.lo), x2: sx(k.hi), y1: cy, y2: cy, class: 'fx-bar-ci'}, row);
+        if (spec.valFmt) txt(row, sx(k.hi != null ? k.hi : k.v) + 6, cy + 4, spec.valFmt(k.v), {class: 'fx-tick'}); });
+      else ms.forEach(function (k) { marker(row, k.shape || 'circle', sx(k.v), cy, 5, (k.cls || '') + ' fx-mk', k.hollow); });
       var aria = r.label + ': ' + ms.map(function (k) { return (k.name ? k.name + ' ' : '') + (spec.tipFmt ? spec.tipFmt(k.v) : k.v) + (k.lo != null ? ' (' + spec.tipFmt(k.lo) + ' to ' + spec.tipFmt(k.hi) + ')' : ''); }).join('; ');
       row.setAttribute('aria-label', aria);
       function show(ev) { var b = svg.getBoundingClientRect(); showTip('<div class="fx-tip-h">' + esc(r.label) + (r.sub ? ' <small>' + esc(r.sub) + '</small>' : '') + '</div>' + ms.map(function (k) { return '<div class="fx-tip-r"><i class="fx-key ' + (k.cls || '') + '"></i><b>' + esc(spec.tipFmt ? spec.tipFmt(k.v) : k.v) + '</b> ' + esc(k.name || '') + (k.lo != null ? ' <small>(' + esc(spec.tipFmt(k.lo)) + ' to ' + esc(spec.tipFmt(k.hi)) + ')</small>' : '') + '</div>'; }).join('') + (r.note ? '<div class="fx-tip-n">' + esc(r.note) + '</div>' : ''),

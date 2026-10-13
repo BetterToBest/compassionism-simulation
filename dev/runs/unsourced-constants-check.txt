@@ -1,0 +1,5 @@
+Do the constants with no source enter the released figures? (dev/tools/unsourced_check.py 4 8; Adverse environment, release rows, 4 seeds, 8 years)
+output lines compared: 373
+CCO relief raised from 0.20 to 0.35 at the reference BU: 0 lines differ (must be 0)
+PTF damping 0.5 -> 0.9 and PTH damping 0.10 -> 0.5: 7 lines differ, 0 of them outside the optional row "the two former stand-ins on" (must be 0; the optional row must differ)
+RESULT: PASS

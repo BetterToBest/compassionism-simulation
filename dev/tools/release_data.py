@@ -8,7 +8,7 @@ dev/tools/explore_export.js). It writes:
                                   comes from), the explorer's tables and texts (numbers as pointers into this file, never as typed text);
   data/releases/v<VERSION>/       the lazily loaded extras: bands-20.json, bands-40.json (spread across seeds, savings deciles) and
                                   lives-ENV-YEARS.json (one stated seed's adults), from dev/runs/explore-ENV-YEARS.json;
-  data/manifest.json              the list of releases (version, date, tag, file, one-line summary, status current or earlier);
+  data/manifest.json              the list of releases (version, date, tag, file, one-line summary, status current or earlier; a release with no engine change is listed with status latest and figuresFrom, and uses the earlier release's file);
   index.html, findings.html, replication.html: the static headline blocks between <!-- figs:NAME --> and <!-- /figs:NAME --> markers.
 
 Usage:
@@ -37,6 +37,12 @@ CURRENT53 = {'version': '5.3', 'date': '2026-10-07', 'tag': 'v5.3', 'shownIn': '
            'summary': 'Households and children: adults live in households as US adults do, children bring a quarter of the adult allowance, households pool their money, start with the wealth the Federal Reserve\u2019s survey shows and spend less when income is short; and what each part of the design does is measured.'}
 CURRENT52 = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '5.2.2',
              'summary': 'The model round: savings that keep up with prices, ageing, the no-programme run against US data, a middle backing reading and robustness readings, each beside an unchanged main result.'}
+
+# A release that changed no engine figure is listed on its own but carries the figures of the release it names (status "latest", figuresFrom): the page
+# names it as the newest release and keeps showing the earlier release's data file. v5.5.0 added the study page and changed no figure of v5.4.
+LATEST = {'version': '5.5', 'date': '2026-10-13', 'tag': 'v5.5.0', 'file': 'releases/v5.4.json',
+          'summary': 'No engine change: every figure is identical to 5.4\u2019s, so the 5.4 data stays the data shown on this page. What 5.5 adds is the 500-seed study of which settings the results are most sensitive to (the study page).',
+          'status': 'latest', 'shownIn': None, 'figuresFrom': '5.4'}
 
 def current():
     """the release the figures in dev/runs/ are: v5.4's once its panels (labour and markets, harness.js --v54) are there, v5.3's for the v5.3 panels (households and children, --v53), else v5.2's"""
@@ -871,7 +877,7 @@ def plan(backfill=None):
         if R.get('attrib'):  # v5.3: the attribution alone, for the simulation page's "What each part does" (the same numbers, at the same paths, as in the release file)
             files['data/releases/v%s/attrib.json' % R['version']] = dumps({'version': R['version'], 'attrib': R['attrib']})
         for r in manifest['releases']:
-            if r['version'] != R['version']:
+            if r['version'] != R['version'] and not r.get('figuresFrom'):
                 r['status'] = 'earlier'
                 fp = os.path.join(ROOT, 'data', r['file'])  # v5.3: the release that was current says so in its own file too (check_figures compares them)
                 if os.path.exists(fp):
@@ -885,6 +891,8 @@ def plan(backfill=None):
             H = open(p, encoding='utf-8').read(); H0 = H
             for name, blk in blocks: H, _ = put_block(H, name, blk)
             files[page] = H
+    if LATEST['figuresFrom'] == R['version'] or any(r['version'] == LATEST['figuresFrom'] for r in manifest['releases']):
+        manifest['releases'] = [r for r in manifest['releases'] if r['version'] != LATEST['version']] + [dict(LATEST)]
     key = lambda r: [int(x) for x in r['version'].split('.')]
     manifest['releases'].sort(key=key, reverse=True)
     files['data/manifest.json'] = json.dumps(manifest, ensure_ascii=False, indent=1) + '\n'

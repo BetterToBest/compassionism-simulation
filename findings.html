@@ -126,19 +126,21 @@ footer p{margin:0 0 6px}
     var links = $('nav-links'); Array.prototype.forEach.call(links.querySelectorAll('a'), function (a) { var id = a.getAttribute('href').slice(1); a.hidden = !document.getElementById(id); });
     window.scrollTo(0, y);
   }
+  function newest() { return MAN.releases.filter(function (r) { return r.status === 'latest'; })[0] || MAN.releases.filter(function (r) { return r.status === 'current'; })[0]; }
   function open(ver) {
-    var ent = MAN.releases.filter(function (r) { return r.version === ver; })[0] || MAN.releases.filter(function (r) { return r.status === 'current'; })[0];
-    $('version-badge').textContent = ent.status === 'current' ? 'current' : 'earlier release'; $('version-badge').className = 'fx-badge' + (ent.status === 'current' ? '' : ' fx-old');
+    var ent = MAN.releases.filter(function (r) { return r.version === ver; })[0] || newest();
+    var fresh = ent.status === 'current' || ent.status === 'latest';
+    $('version-badge').textContent = ent.status === 'latest' ? 'latest' : ent.status === 'current' ? 'current' : 'earlier release'; $('version-badge').className = 'fx-badge' + (fresh ? '' : ' fx-old');
     $('version-sum').textContent = 'v' + ent.version + ' (' + ent.date + (ent.shownIn ? '; shown here as released in v' + ent.shownIn + ', figures unchanged' : '') + '): ' + ent.summary;
     $('release-file').href = 'data/' + ent.file; $('release-file').textContent = 'data/' + ent.file;
-    return F.fetchJSON('data/' + ent.file).then(function (d) { R = d; st.v = d.version; F.writeState(st, ['v']); controls(); render();
+    return F.fetchJSON('data/' + ent.file).then(function (d) { R = d; st.v = ent.version; F.writeState(st, ['v']); controls(); render();
       $('version-changed').innerHTML = d.text && d.text['release.changed'] ? F.text(d, 'release.changed') : ''; $('version-changed').hidden = !(d.text && d.text['release.changed']);
       if (location.hash && document.getElementById(location.hash.slice(1))) document.getElementById(location.hash.slice(1)).scrollIntoView(); });
   }
   F.fetchJSON('data/manifest.json').then(function (m) {
     MAN = m; var sel = $('version'); sel.innerHTML = '';
-    m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = 'v' + r.version + ' · ' + r.date + (r.status === 'current' ? ' (current)' : ''); sel.appendChild(o); });
-    var cur = (m.releases.filter(function (r) { return r.version === st.v; })[0] || m.releases.filter(function (r) { return r.status === 'current'; })[0]).version; sel.value = cur;
+    m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = 'v' + r.version + ' · ' + r.date + (r.status === 'latest' ? ' (latest; figures from v' + r.figuresFrom + ')' : r.status === 'current' ? ' (current figures)' : ''); sel.appendChild(o); });
+    var cur = (m.releases.filter(function (r) { return r.version === st.v; })[0] || newest()).version; sel.value = cur;
     sel.onchange = function () { open(sel.value); };
     return open(cur);
   }).then(function () { F.spy(document.querySelector('.fx-nav')); }).catch(function (e) {

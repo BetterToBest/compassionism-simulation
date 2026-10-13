@@ -22,6 +22,10 @@ for ENV `ref`, `adv` and `st`. Then merge: `python3 dev/tools/merge_panel.py`, `
 2. `python3 dev/tools/release_data.py` writes `data/releases/v<version>.json`, the explore files in `data/releases/v<version>/`, the entry in `data/manifest.json` (the previous current release becomes "earlier"), and the headline numbers in the pages' static blocks (`<!-- figs:NAME -->`).
 3. An earlier release is added with `python3 dev/tools/release_data.py --backfill vX.Y` (it reads the files committed at that tag), and only after its panels were regenerated from the tag and match the published ones exactly (as in `dev/runs/v521-backfill-check.txt`).
 
+### A release that changes no figure
+
+Do not copy the data. Set `LATEST` in `dev/tools/release_data.py` (version, date, tag, plain-words summary, `figuresFrom` the release whose figures stay shown), run `python3 dev/tools/release_data.py`, then `node dev/tools/check_figures.js`. The explorer opens on that entry, labelled "latest"; the figures' own release keeps the status "current".
+
 ## 3. When the release brings a new kind of figure
 
 - A new reading row in the panel appears by itself in the explorer's readings chart and table and in the simulation page's "How sure are we?" chart. Give it a short label and a group in `site/findings.js` (`SHORT`, `GROUPS`); without one it shows its panel label in the "other" group.

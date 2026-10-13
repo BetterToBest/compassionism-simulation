@@ -108,6 +108,8 @@ details.fx-more>div{padding:0 14px 12px;font-size:14px;line-height:1.6;color:var
 .fx-dash{stroke-dasharray:5 4}
 .fx-band{stroke:none;opacity:.14}
 .fx-whisker{stroke-width:1.6;stroke-linecap:round}
+.fx-bar-ci{stroke:var(--fx-ink);stroke-width:1.6;stroke-linecap:round;fill:none}
+rect.fx-bar{stroke:none;fill-opacity:.9}
 .fx-mk{stroke:var(--fx-surface);stroke-width:2;paint-order:stroke}
 .fx-mk.fx-hollow{fill:var(--fx-surface)!important;stroke-width:2}
 .fx-conn{stroke:var(--fx-ink-3);stroke-width:1.5;opacity:.6}

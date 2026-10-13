@@ -48,6 +48,11 @@ h1{font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.12;letter-spacing:-.02em;mar
 main .wrap{padding-bottom:60px}
 .fx-nav .wrap{display:block}
 .st-sec .fx-lead{max-width:72ch}.st-cap{max-width:80ch;margin:8px 0 0}
+.st-pick{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 8px}
+.st-btn{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--fx-rule);background:var(--fx-surface);color:var(--fx-ink-2);cursor:pointer;min-height:36px}
+.st-btn[aria-pressed="true"]{background:var(--fx-accent-wash);color:var(--fx-ink);border-color:var(--fx-accent);font-weight:600}
+.st-btn:focus-visible{outline:2px solid var(--fx-accent);outline-offset:2px}
+.st-chart{margin:4px 0 10px}
 .layer-h{font-size:13px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--fx-ink-3);margin:30px 0 4px}
 footer{border-top:1px solid var(--fx-rule);background:var(--fx-surface);font-size:13px;color:var(--fx-ink-2)}
 footer .wrap{padding:22px 20px 30px}
@@ -89,6 +94,26 @@ footer p{margin:0 0 6px}
 (function () {
   'use strict';
   var F = window.CSF, $ = function (id) { return document.getElementById(id); };
+  /* The sensitivity bar chart: for one outcome, the Sobol total index of each input (bar) with its 95% interval (line), longest first. The numbers are the
+   * data file's (R.sobol); the table under the chart carries every one of them. */
+  function sensitivity(R, textKey) {
+    var wrap = document.createElement('div'); wrap.className = 'st-sens';
+    var C = R.chart, cur = C.outcomes[0];
+    wrap.innerHTML = '<p class="fx-note st-cap">' + F.text(R, textKey) + '</p><div class="st-pick" role="group" aria-label="Outcome shown in the chart"></div><div class="st-chart"></div>';
+    var pick = wrap.querySelector('.st-pick'), host = wrap.querySelector('.st-chart');
+    function draw() {
+      var rows = C.inputs.map(function (i) { var d = R.sobol[cur][i]; return {label: C.inputNames[i], marks: [{v: d.ST, lo: Math.max(0, d.ciST[0]), hi: d.ciST[1], name: 'total index', cls: 's-alt'}]}; })
+        .sort(function (a, b) { return b.marks[0].v - a.marks[0].v; }).filter(function (r) { return r.marks[0].v > 0.005; });
+      var two = function (v) { return F.fmt(v, 'n2'); };
+      window.CSC.responsive(host, function () { window.CSC.rows(host, {rows: rows, bars: true, xMin: 0, xFmt: function (v) { return F.fmt(v, 'n1'); }, tipFmt: two, valFmt: two,
+        xTitle: 'Share of the spread in ' + C.outcomeNames[cur].toLowerCase() + ' that the input explains (Sobol total index, Stress)', label: 'Sensitivity of ' + C.outcomeNames[cur].toLowerCase() + ' to each input'}); });
+    }
+    C.outcomes.forEach(function (o) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = C.outcomeNames[o]; b.className = 'st-btn'; b.setAttribute('aria-pressed', o === cur ? 'true' : 'false');
+      b.onclick = function () { cur = o; Array.prototype.forEach.call(pick.children, function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); draw(); };
+      pick.appendChild(b); });
+    setTimeout(draw, 0); return wrap;
+  }
   function render(R) {
     $('lede').innerHTML = F.text(R, 'intro'); $('asof').innerHTML = F.text(R, 'asof');
     var host = $('study'), nav = $('nav-links'); host.innerHTML = ''; nav.innerHTML = '';
@@ -97,6 +122,7 @@ footer p{margin:0 0 6px}
       var h = '<h2 class="fx-h2" id="' + s.id + '-h">' + F.esc(s.title) + ' <a class="fx-anchor" href="#' + s.id + '" aria-label="Link to this section">#</a></h2>';
       if (s.lead) h += '<p class="fx-lead">' + F.text(R, s.lead) + '</p>';
       sec.innerHTML = h;
+      if (s.chart) sec.appendChild(sensitivity(R, s.chart));
       s.tables.forEach(function (id) { var t = F.tableById(R, id), w = document.createElement('div'); w.innerHTML = F.tableHTML(R, t, null); w.appendChild(F.tableTools(R, t, null)); sec.appendChild(w); });
       if (s.note) { var p = document.createElement('p'); p.className = 'fx-note st-cap'; p.innerHTML = F.text(R, s.note); sec.appendChild(p); }
       host.appendChild(sec);
