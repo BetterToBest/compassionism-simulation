@@ -7,7 +7,7 @@
 
 ## Branch and pull request state
 - `main` is at 6a1ca3e (pull request #23 merged); pull request #15 (wealth-gap sentence) is also merged. No other pull request is open.
-- This file is delivered on branch `claude/handoff-findings-label`, as a draft pull request into `main`. Merge it so the next session sees it.
+- This file is delivered on branch `claude/handoff-findings-label` as draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/24 into `main`; CI not yet reported. Merge it so the next session sees it.
 
 ## Long jobs in flight
 - None. The last Runpod pod is gone and its results are merged (`dev/runs/s137/`, `dev/runs/s137b/`).
