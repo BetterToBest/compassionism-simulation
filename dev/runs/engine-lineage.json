@@ -318,6 +318,22 @@
    },
    "equal": true,
    "seconds": 210
+  },
+  {
+   "from": "57e00367e58fe1f6da05f2b098286584fd573a81fd23e16ae3f682381531b70f",
+   "to": "e1f8fe896760b4fa249801c134dca19fdcd9b17fb7fde97dd1949ea69676d2ac",
+   "date": "2026-10-14",
+   "change": "SNAP work rule behind a switch (SNET.abawd, off), and the reporting hook receives the year's extreme poverty",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 168
   }
  ]
 }
