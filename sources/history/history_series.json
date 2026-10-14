@@ -1,0 +1,1132 @@
+{
+ "_meta": {
+  "breaks": {
+   "2013": "official and supplemental measures: split panel; value = redesigned income questions (forward-comparable), value_original = traditional questions",
+   "2017": "updated processing system; value = updated, value_original or notes = prior processing",
+   "2019-2024 supplemental": "restated in September 2026 (BLS corrected thresholds July 2026); value = restated, value_original = first published (only 2019 and 2020 carry it)",
+   "2020": "pandemic nonresponse in the survey; Census research puts the official rate about 0.5 point higher with alternative weights",
+   "official_threshold": "the two-adult, two-child cell, not the weighted four-person average"
+  },
+  "built_by": "dev/tools/history_data.py build",
+  "files": {
+   "macro_drivers.csv": "069a4c5fece6d293",
+   "policy_events.csv": "378e5f407c86aa56",
+   "poverty_official.csv": "0af92dba57404ded",
+   "poverty_spm.csv": "8b55ab460b9ad1bc",
+   "poverty_spm_history.csv": "2343d8e1d15a205f",
+   "scf_wealth.csv": "7c1a098ea32edf64",
+   "snap.csv": "8ee12b3fbe0ce4d6",
+   "thresholds.csv": "703833c833fdd9fb"
+  },
+  "groups": [
+   "all",
+   "under_18",
+   "18_64",
+   "65_plus"
+  ],
+  "income_year": "every year is the income (reference) year, not the publication year; 2025 is the latest (Census P60-290, September 2026)",
+  "pack_b_cells_agreeing": 166,
+  "pack_b_cells_differing": 51,
+  "read_first": "sources/history/README.md",
+  "status": "outside data, not verified against the sources by this repository; use for a rough shape check only",
+  "units": {
+   "household_net_worth_yearend": "billions of nominal dollars",
+   "number_in_poverty": "thousands of people",
+   "official_poverty_rate": "percent",
+   "real_median_household_income": "2025 dollars",
+   "snap_total_benefits": "millions of nominal dollars",
+   "spm_rate": "percent",
+   "thresholds": "dollars, same-year (nominal)"
+  }
+ },
+ "disputed": [
+  {
+   "group": "all",
+   "pack_a_value": "15.6",
+   "pack_b_value": "15.3",
+   "series": "SPM_rate",
+   "year": "2014"
+  },
+  {
+   "group": "under_18",
+   "pack_a_value": "17.1",
+   "pack_b_value": "16.7",
+   "series": "SPM_rate",
+   "year": "2014"
+  },
+  {
+   "group": "18_64",
+   "pack_a_value": "15.3",
+   "pack_b_value": "14.7",
+   "series": "SPM_rate",
+   "year": "2014"
+  },
+  {
+   "group": "under_18",
+   "pack_a_value": "16.2",
+   "pack_b_value": "16.1",
+   "series": "SPM_rate",
+   "year": "2015"
+  },
+  {
+   "group": "18_64",
+   "pack_a_value": "14.1",
+   "pack_b_value": "13.8",
+   "series": "SPM_rate",
+   "year": "2015"
+  },
+  {
+   "group": "65_plus",
+   "pack_a_value": "13.6",
+   "pack_b_value": "12.8",
+   "series": "SPM_rate",
+   "year": "2018"
+  },
+  {
+   "group": "65_plus",
+   "pack_a_value": "9.4",
+   "pack_b_value": "9.3",
+   "series": "SPM_rate",
+   "year": "2020"
+  }
+ ],
+ "macro": {
+  "cpi_u_annual_avg_index": {
+   "2005": 195.3,
+   "2006": 201.6,
+   "2007": 207.342,
+   "2008": 215.303,
+   "2009": 214.537,
+   "2010": 218.056,
+   "2011": 224.939,
+   "2012": 229.594,
+   "2013": 232.957,
+   "2014": 236.736,
+   "2015": 237.017,
+   "2016": 240.007,
+   "2017": 245.12,
+   "2018": 251.107,
+   "2019": 255.657,
+   "2020": 258.811,
+   "2021": 270.97,
+   "2022": 292.655,
+   "2023": 304.702,
+   "2024": 313.689,
+   "2025": 321.943
+  },
+  "cpi_u_annual_avg_pct_change": {
+   "2005": 3.4,
+   "2006": 3.2,
+   "2007": 2.8,
+   "2008": 3.8,
+   "2009": -0.4,
+   "2010": 1.6,
+   "2011": 3.2,
+   "2012": 2.1,
+   "2013": 1.5,
+   "2014": 1.6,
+   "2015": 0.1,
+   "2016": 1.3,
+   "2017": 2.1,
+   "2018": 2.4,
+   "2019": 1.8,
+   "2020": 1.2,
+   "2021": 4.7,
+   "2022": 8.0,
+   "2023": 4.1,
+   "2024": 2.9,
+   "2025": 2.6
+  },
+  "fhfa_hpi_purchase_only_dec_dec_pct_change": {
+   "2005": 9.93,
+   "2006": 2.24,
+   "2007": -3.43,
+   "2008": -10.43,
+   "2009": -1.96,
+   "2010": -3.97,
+   "2011": -1.75,
+   "2012": 5.11,
+   "2013": 6.71,
+   "2014": 4.72,
+   "2015": 5.32,
+   "2016": 6.0,
+   "2017": 6.18,
+   "2018": 5.33,
+   "2019": 5.91,
+   "2020": 11.74,
+   "2021": 17.48,
+   "2022": 6.11,
+   "2023": 6.52,
+   "2024": 4.85,
+   "2025": 2.09
+  },
+  "household_net_worth_yearend": {
+   "2005": 63319.233,
+   "2006": 68268.625,
+   "2007": 69913.512,
+   "2008": 61132.025,
+   "2009": 61510.958,
+   "2010": 65965.364,
+   "2011": 67087.78,
+   "2012": 71627.513,
+   "2013": 80316.298,
+   "2014": 86377.535,
+   "2015": 89394.228,
+   "2016": 94819.015,
+   "2017": 103709.036,
+   "2018": 103703.692,
+   "2019": 114985.456,
+   "2020": 130050.386,
+   "2021": 151002.013,
+   "2022": 143079.491,
+   "2023": 155674.256,
+   "2024": 168721.51,
+   "2025": 182274.207
+  },
+  "real_gdp_growth": {
+   "2005": 3.5,
+   "2006": 2.8,
+   "2007": 2.0,
+   "2008": 0.1,
+   "2009": -2.6,
+   "2010": 2.7,
+   "2011": 1.6,
+   "2012": 2.3,
+   "2013": 2.1,
+   "2014": 2.5,
+   "2015": 2.9,
+   "2016": 1.8,
+   "2017": 2.5,
+   "2018": 3.0,
+   "2019": 2.6,
+   "2020": -2.1,
+   "2021": 6.3,
+   "2022": 2.4,
+   "2023": 2.9,
+   "2024": 3.0,
+   "2025": 2.3
+  },
+  "real_median_household_income": {
+   "2005": 72810.0,
+   "2006": 73620.0,
+   "2007": 74810.0,
+   "2008": 72260.0,
+   "2009": 71790.0,
+   "2010": 70110.0,
+   "2011": 69070.0,
+   "2012": 69070.0,
+   "2013": 71670.0,
+   "2014": 70760.0,
+   "2015": 74590.0,
+   "2016": 77230.0,
+   "2017": 78600.0,
+   "2018": 79620.0,
+   "2019": 85320.0,
+   "2020": 83590.0,
+   "2021": 83270.0,
+   "2022": 81460.0,
+   "2023": 84730.0,
+   "2024": 85210.0,
+   "2025": 87460.0
+  },
+  "unemployment_rate_annual_avg": {
+   "2005": 5.1,
+   "2006": 4.6,
+   "2007": 4.6,
+   "2008": 5.8,
+   "2009": 9.3,
+   "2010": 9.6,
+   "2011": 8.9,
+   "2012": 8.1,
+   "2013": 7.4,
+   "2014": 6.2,
+   "2015": 5.3,
+   "2016": 4.9,
+   "2017": 4.4,
+   "2018": 3.9,
+   "2019": 3.7,
+   "2020": 8.1,
+   "2021": 5.3,
+   "2022": 3.6,
+   "2023": 3.6,
+   "2024": 4.0,
+   "2025": 4.3
+  }
+ },
+ "official": {
+  "number_thousands": {
+   "18_64": {
+    "2005": 20450.0,
+    "2006": 20240.0,
+    "2007": 20400.0,
+    "2008": 22110.0,
+    "2009": 24680.0,
+    "2010": 26500.0,
+    "2011": 26490.0,
+    "2012": 26500.0,
+    "2013": 25900.0,
+    "2014": 26530.0,
+    "2015": 24410.0,
+    "2016": 22800.0,
+    "2017": 21910.0,
+    "2018": 21130.0,
+    "2019": 18660.0,
+    "2020": 20910.0,
+    "2021": 20980.0,
+    "2022": 21240.0,
+    "2023": 20000.0,
+    "2024": 19390.0,
+    "2025": 18530.0
+   },
+   "65_plus": {
+    "2005": 3603.0,
+    "2006": 3394.0,
+    "2007": 3556.0,
+    "2008": 3656.0,
+    "2009": 3433.0,
+    "2010": 3558.0,
+    "2011": 3620.0,
+    "2012": 3926.0,
+    "2013": 4569.0,
+    "2014": 4590.0,
+    "2015": 4201.0,
+    "2016": 4568.0,
+    "2017": 4893.0,
+    "2018": 5146.0,
+    "2019": 4858.0,
+    "2020": 4852.0,
+    "2021": 5802.0,
+    "2022": 5897.0,
+    "2023": 5768.0,
+    "2024": 6268.0,
+    "2025": 6373.0
+   },
+   "all": {
+    "2005": 36950.0,
+    "2006": 36460.0,
+    "2007": 37280.0,
+    "2008": 39830.0,
+    "2009": 43570.0,
+    "2010": 46340.0,
+    "2011": 46250.0,
+    "2012": 46500.0,
+    "2013": 46270.0,
+    "2014": 46660.0,
+    "2015": 43120.0,
+    "2016": 40620.0,
+    "2017": 39560.0,
+    "2018": 38150.0,
+    "2019": 33980.0,
+    "2020": 37550.0,
+    "2021": 37930.0,
+    "2022": 37920.0,
+    "2023": 36790.0,
+    "2024": 36030.0,
+    "2025": 34510.0
+   },
+   "under_18": {
+    "2005": 12900.0,
+    "2006": 12830.0,
+    "2007": 13320.0,
+    "2008": 14070.0,
+    "2009": 15450.0,
+    "2010": 16290.0,
+    "2011": 16130.0,
+    "2012": 16070.0,
+    "2013": 15800.0,
+    "2014": 15540.0,
+    "2015": 14510.0,
+    "2016": 13250.0,
+    "2017": 12760.0,
+    "2018": 11870.0,
+    "2019": 10470.0,
+    "2020": 11790.0,
+    "2021": 11150.0,
+    "2022": 10780.0,
+    "2023": 11020.0,
+    "2024": 10370.0,
+    "2025": 9607.0
+   }
+  },
+  "rate": {
+   "18_64": {
+    "2005": 11.1,
+    "2006": 10.8,
+    "2007": 10.9,
+    "2008": 11.7,
+    "2009": 12.9,
+    "2010": 13.8,
+    "2011": 13.7,
+    "2012": 13.7,
+    "2013": 13.3,
+    "2014": 13.5,
+    "2015": 12.4,
+    "2016": 11.6,
+    "2017": 11.1,
+    "2018": 10.7,
+    "2019": 9.4,
+    "2020": 10.5,
+    "2021": 10.5,
+    "2022": 10.6,
+    "2023": 10.0,
+    "2024": 9.6,
+    "2025": 9.2
+   },
+   "65_plus": {
+    "2005": 10.1,
+    "2006": 9.4,
+    "2007": 9.7,
+    "2008": 9.7,
+    "2009": 8.9,
+    "2010": 8.9,
+    "2011": 8.7,
+    "2012": 9.1,
+    "2013": 10.2,
+    "2014": 10.0,
+    "2015": 8.8,
+    "2016": 9.3,
+    "2017": 9.6,
+    "2018": 9.7,
+    "2019": 8.9,
+    "2020": 8.9,
+    "2021": 10.3,
+    "2022": 10.2,
+    "2023": 9.7,
+    "2024": 9.9,
+    "2025": 9.8
+   },
+   "all": {
+    "2005": 12.6,
+    "2006": 12.3,
+    "2007": 12.5,
+    "2008": 13.2,
+    "2009": 14.3,
+    "2010": 15.1,
+    "2011": 15.0,
+    "2012": 15.0,
+    "2013": 14.8,
+    "2014": 14.8,
+    "2015": 13.5,
+    "2016": 12.7,
+    "2017": 12.3,
+    "2018": 11.8,
+    "2019": 10.5,
+    "2020": 11.5,
+    "2021": 11.6,
+    "2022": 11.5,
+    "2023": 11.1,
+    "2024": 10.7,
+    "2025": 10.2
+   },
+   "under_18": {
+    "2005": 17.6,
+    "2006": 17.4,
+    "2007": 18.0,
+    "2008": 19.0,
+    "2009": 20.7,
+    "2010": 22.0,
+    "2011": 21.9,
+    "2012": 21.8,
+    "2013": 21.5,
+    "2014": 21.1,
+    "2015": 19.7,
+    "2016": 18.0,
+    "2017": 17.4,
+    "2018": 16.2,
+    "2019": 14.4,
+    "2020": 16.0,
+    "2021": 15.3,
+    "2022": 15.0,
+    "2023": 15.3,
+    "2024": 14.4,
+    "2025": 13.4
+   }
+  },
+  "rate_first_published": {
+   "18_64": {
+    "2013": 13.6,
+    "2017": 11.2,
+    "2024": 9.6
+   },
+   "65_plus": {
+    "2013": 9.5,
+    "2017": 9.2,
+    "2024": 9.9
+   },
+   "all": {
+    "2013": 14.5,
+    "2017": 12.3,
+    "2024": 10.6
+   },
+   "under_18": {
+    "2013": 19.9,
+    "2017": 17.5,
+    "2024": 14.3
+   }
+  },
+  "share_below_half_of_line": {
+   "all": {
+    "2005": 5.4,
+    "2006": 5.2,
+    "2007": 5.2,
+    "2008": 5.7,
+    "2009": 6.3,
+    "2010": 6.7,
+    "2011": 6.6,
+    "2012": 6.6,
+    "2013": 6.5,
+    "2014": 6.6,
+    "2015": 6.1,
+    "2016": 5.8,
+    "2017": 5.6,
+    "2018": 5.3,
+    "2019": 4.7,
+    "2020": 5.5,
+    "2021": 5.5,
+    "2022": 5.5,
+    "2023": 5.2,
+    "2024": 5.0,
+    "2025": 4.9
+   }
+  }
+ },
+ "policy_events": [
+  {
+   "amount_or_rule": "Maximum SNAP benefits increased 13.6% (Thrifty Food Plan basis); added benefit $24/month for 1-person household; $44 for 2 persons; $63 for 3 persons; $80 for 4 persons",
+   "end_date": "2013-10-31",
+   "event": "ARRA SNAP maximum benefit increase",
+   "legal_citation": "Pub. L. No. 111-5 (ARRA); sunset set by Pub. L. No. 111-296 Sec. 442",
+   "start_date": "2009-04-01"
+  },
+  {
+   "amount_or_rule": "Refundable tax credit up to $400 for working individuals; up to $800 for married taxpayers filing joint returns; applied in tax years 2009 and 2010",
+   "end_date": "2010-12-31",
+   "event": "ARRA Making Work Pay tax credit",
+   "legal_citation": "Pub. L. No. 111-5",
+   "start_date": "2009-01-01"
+  },
+  {
+   "amount_or_rule": "EUC08 continued: Tier I 20 weeks (all states); Tier II additional 13 weeks (33 weeks total) if state total unemployment rate >=6% or insured unemployment rate >=4%; 100% federally funded",
+   "end_date": "2009-12-26",
+   "event": "ARRA Emergency Unemployment Compensation (EUC08) extension",
+   "legal_citation": "Pub. L. No. 111-5",
+   "start_date": "2009-02-22"
+  },
+  {
+   "amount_or_rule": "Additional $25/week for recipients of regular UC, EUC08, EB, Disaster Unemployment Assistance, or Trade Adjustment Assistance",
+   "end_date": "2010-06-02",
+   "event": "ARRA Federal Additional Compensation (FAC)",
+   "legal_citation": "Pub. L. No. 111-5 (FAC expired June 2 2010 per CRS Table A-4)",
+   "start_date": "2009-02-22"
+  },
+  {
+   "amount_or_rule": "100% federal funding of Extended Benefit (EB) program (vs. 50% federal share under permanent law)",
+   "end_date": "2013-12-31",
+   "event": "ARRA 100% federal financing of Extended Benefits (EB)",
+   "legal_citation": "Pub. L. No. 111-5",
+   "start_date": "2009-02-22"
+  },
+  {
+   "amount_or_rule": "Refundable credit up to $1200 per eligible individual ($2400 joint return) plus $500 per qualifying child; phases out at 5% of AGI above $75000 single / $112500 head of household / $150000 joint; advance refunds to be made as rapidly as possible and before Jan 1 2021",
+   "end_date": "2020-12-31",
+   "event": "CARES Act Economic Impact Payment (first round EIP)",
+   "legal_citation": "Pub. L. No. 116-136 Sec. 2201(a) (IRC Sec. 6428)",
+   "start_date": "2020-03-27"
+  },
+  {
+   "amount_or_rule": "Additional $600 per week to individuals collecting regular UC, PEUC, PUA, EB, STC, TRA, DUA, or SEA; fully federally funded; state agreements executed as of March 28 2020; payments end after last week of unemployment before July 31 2020",
+   "end_date": "2020-07-31",
+   "event": "CARES Act Federal Pandemic Unemployment Compensation (FPUC) $600",
+   "legal_citation": "Pub. L. No. 116-136 Sec. 2104",
+   "start_date": "2020-03-28"
+  },
+  {
+   "amount_or_rule": "Up to 39 weeks of benefits for individuals not eligible for regular UC (incl. self-employed, independent contractors, gig workers); retroactive to weeks starting on or after Jan 27 2020; enacted Mar 27 2020; no PUA for weeks ending after Dec 31 2020",
+   "end_date": "2020-12-31",
+   "event": "CARES Act Pandemic Unemployment Assistance (PUA)",
+   "legal_citation": "Pub. L. No. 116-136 Sec. 2102",
+   "start_date": "2020-01-27"
+  },
+  {
+   "amount_or_rule": "Additional PEUC equal to 13 times the individual's average weekly benefit amount after exhausting regular UC",
+   "end_date": "2020-12-31",
+   "event": "CARES Act Pandemic Emergency Unemployment Compensation (PEUC)",
+   "legal_citation": "Pub. L. No. 116-136 Sec. 2107",
+   "start_date": "2020-03-27"
+  },
+  {
+   "amount_or_rule": "Up to $600 per eligible individual ($1200 married joint) plus up to $600 per qualifying child; full amount at AGI up to $75000 single / $150000 joint; advance refunds to be made as rapidly as possible and before Jan 15 2021",
+   "end_date": "2021-01-15",
+   "event": "Second Economic Impact Payment (CAA 2021)",
+   "legal_citation": "Pub. L. No. 116-260 (Coronavirus Response and Relief Supplemental Appropriations Act 2021, Div. M; COVID-related Tax Relief Act of 2020; IRC Sec. 6428A)",
+   "start_date": "2020-12-27"
+  },
+  {
+   "amount_or_rule": "$300 per week FPUC for weeks of unemployment beginning after Dec 26 2020 and ending on or before Mar 14 2021, for recipients of regular UC, PEUC, PUA, EB, STC, TRA, DUA, SEA",
+   "end_date": "2021-03-14",
+   "event": "Continued Assistance Act FPUC $300",
+   "legal_citation": "Pub. L. No. 116-260 (Continued Assistance for Unemployed Workers Act of 2020)",
+   "start_date": "2020-12-27"
+  },
+  {
+   "amount_or_rule": "Additional 11 weeks of PUA (50 weeks total) and additional PEUC equal to 11x average WBA (24x total) for weeks beginning on or after Dec 27 2020",
+   "end_date": "2021-03-14",
+   "event": "Continued Assistance Act PUA and PEUC extension",
+   "legal_citation": "Pub. L. No. 116-260 (Continued Assistance for Unemployed Workers Act of 2020)",
+   "start_date": "2020-12-27"
+  },
+  {
+   "amount_or_rule": "Additional $100/week for certain individuals collecting regular UC, PEUC, EB, STC, TRA, DUA, SEA (excluding PUA); optional for states; created by Continued Assistance Act (payable from week ending Jan 2 2021 through Mar 14 2021) and extended by ARPA through week ending on or before Sep 6 2021",
+   "end_date": "2021-09-06",
+   "event": "Mixed Earners Unemployment Compensation (MEUC)",
+   "legal_citation": "Pub. L. No. 116-260; extended by Pub. L. No. 117-2",
+   "start_date": "2021-01-02"
+  },
+  {
+   "amount_or_rule": "Refundable credit up to $1400 per eligible individual ($2800 joint) plus $1400 per qualifying dependent (incl. adult dependents); full amount at AGI up to $75000 single / $112500 head of household / $150000 joint; fully phased out at $80000 / $120000 / $160000; advance refunds by Dec 31 2021, incl. plus-up payments",
+   "end_date": "2021-12-31",
+   "event": "Third Economic Impact Payment (American Rescue Plan)",
+   "legal_citation": "Pub. L. No. 117-2 Sec. 9601(a) (IRC Sec. 6428B)",
+   "start_date": "2021-03-11"
+  },
+  {
+   "amount_or_rule": "FPUC extended at $300/week for weeks of unemployment ending on or before Sep 6 2021",
+   "end_date": "2021-09-06",
+   "event": "American Rescue Plan FPUC $300 extension",
+   "legal_citation": "Pub. L. No. 117-2",
+   "start_date": "2021-03-11"
+  },
+  {
+   "amount_or_rule": "PUA extended by additional 29 weeks (79 weeks total) and PEUC by additional 29x average WBA (53x total); PUA, PEUC, FPUC, and MEUC all through Sep 6 2021",
+   "end_date": "2021-09-06",
+   "event": "American Rescue Plan PUA and PEUC extension",
+   "legal_citation": "Pub. L. No. 117-2",
+   "start_date": "2021-03-11"
+  },
+  {
+   "amount_or_rule": "Maximum credit $3600 per qualifying child under age 6; $3000 per qualifying child ages 6-17; fully refundable; includes children who turn 17 in 2021; half of estimated credit payable in advance; expansion applied only to tax year 2021 (not extended)",
+   "end_date": "2021-12-31",
+   "event": "Expanded Child Tax Credit 2021 (American Rescue Plan)",
+   "legal_citation": "Pub. L. No. 117-2",
+   "start_date": "2021-01-01"
+  },
+  {
+   "amount_or_rule": "Advance payments up to $300/month per child under age 6; up to $250/month per child ages 6-17; payment dates Jul 15, Aug 13, Sep 15, Oct 15, Nov 15, Dec 15 2021; first batch about $15 billion to about 35 million families",
+   "end_date": "2021-12-15",
+   "event": "Advance Child Tax Credit monthly payments 2021",
+   "legal_citation": "Pub. L. No. 117-2",
+   "start_date": "2021-07-15"
+  }
+ ],
+ "scf": {
+  "dfa_bottom50_net_worth_yearend_billions_nominal": {
+   "2005": 1514.611,
+   "2006": 1467.174,
+   "2007": 1117.505,
+   "2008": 583.311,
+   "2009": 335.825,
+   "2010": 249.057,
+   "2011": 272.062,
+   "2012": 490.982,
+   "2013": 685.438,
+   "2014": 835.305,
+   "2015": 1007.917,
+   "2016": 1152.509,
+   "2017": 1402.516,
+   "2018": 1552.057,
+   "2019": 1864.152,
+   "2020": 2699.841,
+   "2021": 3472.527,
+   "2022": 3478.716,
+   "2023": 3672.42,
+   "2024": 3896.629,
+   "2025": 4135.838
+  },
+  "median_net_worth_all_families_thousands_nominal": {
+   "2007": 120.6,
+   "2010": 77.3,
+   "2013": 81.2,
+   "2016": 97.3,
+   "2019": 121.7,
+   "2022": 192.9
+  }
+ },
+ "snap": {
+  "SNAP_avg_monthly_participants": {
+   "2005": 25628456.0,
+   "2006": 26548833.0,
+   "2007": 26316045.0,
+   "2008": 28222630.0,
+   "2009": 33489974.0,
+   "2010": 40301878.0,
+   "2011": 44708726.0,
+   "2012": 46609072.0,
+   "2013": 47636090.0,
+   "2014": 46663872.0,
+   "2015": 45766672.0,
+   "2016": 44219656.0,
+   "2017": 42316550.0,
+   "2018": 40775705.0,
+   "2019": 35702472.0,
+   "2020": 39852778.0,
+   "2021": 41603712.0,
+   "2022": 41208251.0,
+   "2023": 42176946.0,
+   "2024": 41709123.0,
+   "2025": 42142184.0
+  },
+  "SNAP_total_benefits": {
+   "2005": 28567.88,
+   "2006": 30187.35,
+   "2007": 30373.27,
+   "2008": 34608.4,
+   "2009": 50359.92,
+   "2010": 64702.16,
+   "2011": 71810.92,
+   "2012": 74619.34,
+   "2013": 76066.32,
+   "2014": 69998.84,
+   "2015": 69645.14,
+   "2016": 66539.27,
+   "2017": 63711.05,
+   "2018": 60916.85,
+   "2019": 55622.28,
+   "2020": 73905.39,
+   "2021": 107042.27,
+   "2022": 113243.42,
+   "2023": 106645.38,
+   "2024": 93475.89,
+   "2025": 95767.6
+  }
+ },
+ "spm_census": {
+  "lifted_out_of_poverty_percentage_points": {
+   "EITC": {},
+   "SNAP": {
+    "2021": 0.85
+   },
+   "Social_Security": {
+    "2021": 8.01
+   },
+   "housing_subsidies": {
+    "2021": 0.73
+   },
+   "refundable_child_credits": {
+    "2021": 1.63
+   },
+   "refundable_tax_credits": {
+    "2021": 2.93
+   },
+   "stimulus_payments": {
+    "2021": 2.71
+   },
+   "unemployment_insurance": {
+    "2021": 0.7
+   }
+  },
+  "lifted_out_of_poverty_thousands": {
+   "EITC": {
+    "2024": 4325.0,
+    "2025": 4032.0
+   },
+   "SNAP": {
+    "2019": 2500.0,
+    "2022": 3670.0,
+    "2023": 3427.0,
+    "2024": 3554.0,
+    "2025": 3116.0
+   },
+   "Social_Security": {
+    "2019": 26500.0,
+    "2020": 26502.0,
+    "2022": 28930.0,
+    "2023": 27620.0,
+    "2024": 28980.0,
+    "2025": 28830.0
+   },
+   "housing_subsidies": {
+    "2019": 2600.0,
+    "2020": 2407.0,
+    "2022": 2641.0,
+    "2023": 2758.0,
+    "2024": 2093.0,
+    "2025": 2076.0
+   },
+   "refundable_child_credits": {
+    "2022": 2392.0,
+    "2023": 2353.0,
+    "2024": 2498.0,
+    "2025": 2319.0
+   },
+   "refundable_tax_credits": {
+    "2019": 7500.0,
+    "2020": 5281.0,
+    "2022": 6417.0,
+    "2023": 6388.0,
+    "2024": 6789.0,
+    "2025": 6135.0
+   },
+   "stimulus_payments": {
+    "2020": 11684.0
+   },
+   "unemployment_insurance": {
+    "2019": 500.0,
+    "2020": 5545.0,
+    "2022": 404.0,
+    "2023": 308.0,
+    "2024": 427.0,
+    "2025": 349.0
+   }
+  },
+  "market_income_only_count_thousands": {
+   "all": {
+    "2023": 77800.0
+   }
+  },
+  "rate": {
+   "18_64": {
+    "2009": 14.4,
+    "2010": 15.2,
+    "2011": 15.5,
+    "2012": 15.5,
+    "2013": 15.1,
+    "2014": 15.3,
+    "2015": 14.1,
+    "2016": 13.3,
+    "2017": 12.4,
+    "2018": 12.2,
+    "2019": 11.1,
+    "2020": 8.8,
+    "2021": 7.8,
+    "2022": 11.6,
+    "2023": 12.1,
+    "2024": 12.2,
+    "2025": 12.3
+   },
+   "65_plus": {
+    "2009": 14.9,
+    "2010": 15.8,
+    "2011": 15.1,
+    "2012": 14.8,
+    "2013": 15.6,
+    "2014": 14.4,
+    "2015": 13.7,
+    "2016": 14.5,
+    "2017": 13.6,
+    "2018": 13.6,
+    "2019": 12.7,
+    "2020": 9.4,
+    "2021": 10.6,
+    "2022": 13.8,
+    "2023": 14.0,
+    "2024": 15.1,
+    "2025": 15.4
+   },
+   "all": {
+    "2009": 15.1,
+    "2010": 15.9,
+    "2011": 16.1,
+    "2012": 16.0,
+    "2013": 15.9,
+    "2014": 15.6,
+    "2015": 14.5,
+    "2016": 14.0,
+    "2017": 13.0,
+    "2018": 12.8,
+    "2019": 11.7,
+    "2020": 9.1,
+    "2021": 7.7,
+    "2022": 12.1,
+    "2023": 12.7,
+    "2024": 13.0,
+    "2025": 13.1
+   },
+   "under_18": {
+    "2009": 17.0,
+    "2010": 17.9,
+    "2011": 18.0,
+    "2012": 18.0,
+    "2013": 18.1,
+    "2014": 17.1,
+    "2015": 16.2,
+    "2016": 15.2,
+    "2017": 14.2,
+    "2018": 13.7,
+    "2019": 12.4,
+    "2020": 9.6,
+    "2021": 5.1,
+    "2022": 12.0,
+    "2023": 13.5,
+    "2024": 13.5,
+    "2025": 13.4
+   }
+  },
+  "rate_first_published": {
+   "18_64": {
+    "2019": 11.2,
+    "2020": 8.9,
+    "2021": 7.9,
+    "2022": 11.9,
+    "2023": 12.2,
+    "2024": 12.2
+   },
+   "65_plus": {
+    "2019": 12.8,
+    "2020": 9.5,
+    "2021": 10.7,
+    "2022": 14.1,
+    "2023": 14.2,
+    "2024": 15.0
+   },
+   "all": {
+    "2019": 11.8,
+    "2020": 9.2,
+    "2021": 7.8,
+    "2022": 12.4,
+    "2023": 12.9,
+    "2024": 12.9
+   },
+   "under_18": {
+    "2019": 12.6,
+    "2020": 9.7,
+    "2021": 5.2,
+    "2022": 12.4,
+    "2023": 13.7,
+    "2024": 13.4
+   }
+  }
+ },
+ "spm_columbia_2005_2012": {
+  "anchored_SPM_rate": {
+   "18_64": {
+    "2005": 12.96,
+    "2006": 12.97,
+    "2007": 13.16,
+    "2008": 13.13,
+    "2009": 13.98,
+    "2010": 14.6,
+    "2011": 14.9,
+    "2012": 15.45
+   },
+   "65_plus": {
+    "2005": 17.06,
+    "2006": 17.75,
+    "2007": 17.24,
+    "2008": 16.7,
+    "2009": 14.36,
+    "2010": 15.17,
+    "2011": 14.53,
+    "2012": 14.83
+   },
+   "all": {
+    "2005": 14.54,
+    "2006": 14.54,
+    "2007": 14.75,
+    "2008": 14.64,
+    "2009": 14.63,
+    "2010": 15.29,
+    "2011": 15.41,
+    "2012": 15.99
+   },
+   "under_18": {
+    "2005": 17.26,
+    "2006": 16.95,
+    "2007": 17.53,
+    "2008": 17.41,
+    "2009": 16.45,
+    "2010": 17.14,
+    "2011": 17.24,
+    "2012": 18.08
+   }
+  },
+  "anchored_SPM_rate_before_transfers": {
+   "18_64": {
+    "2005": 17.44,
+    "2006": 16.94,
+    "2007": 17.24,
+    "2008": 18.43,
+    "2009": 22.0,
+    "2010": 22.61,
+    "2011": 22.66,
+    "2012": 22.91
+   },
+   "65_plus": {
+    "2005": 55.39,
+    "2006": 54.81,
+    "2007": 53.99,
+    "2008": 53.41,
+    "2009": 55.33,
+    "2010": 54.69,
+    "2011": 54.59,
+    "2012": 55.14
+   },
+   "all": {
+    "2005": 23.62,
+    "2006": 23.16,
+    "2007": 23.44,
+    "2008": 24.46,
+    "2009": 27.95,
+    "2010": 28.42,
+    "2011": 28.53,
+    "2012": 29.01
+   },
+   "under_18": {
+    "2005": 23.81,
+    "2006": 23.44,
+    "2007": 24.0,
+    "2008": 25.07,
+    "2009": 28.88,
+    "2010": 29.39,
+    "2011": 29.21,
+    "2012": 29.67
+   }
+  },
+  "historical_SPM_rate": {
+   "18_64": {
+    "2005": 12.19,
+    "2006": 12.3,
+    "2007": 12.86,
+    "2008": 13.23,
+    "2009": 14.45,
+    "2010": 15.21,
+    "2011": 15.51,
+    "2012": 15.45
+   },
+   "65_plus": {
+    "2005": 16.02,
+    "2006": 16.85,
+    "2007": 17.06,
+    "2008": 17.13,
+    "2009": 14.89,
+    "2010": 15.82,
+    "2011": 15.08,
+    "2012": 14.83
+   },
+   "all": {
+    "2005": 13.67,
+    "2006": 13.79,
+    "2007": 14.43,
+    "2008": 14.77,
+    "2009": 15.16,
+    "2010": 15.95,
+    "2011": 16.07,
+    "2012": 15.99
+   },
+   "under_18": {
+    "2005": 16.23,
+    "2006": 16.06,
+    "2007": 17.1,
+    "2008": 17.49,
+    "2009": 17.11,
+    "2010": 17.95,
+    "2011": 18.08,
+    "2012": 18.08
+   }
+  },
+  "historical_SPM_rate_before_transfers": {
+   "18_64": {
+    "2005": 16.96,
+    "2006": 16.48,
+    "2007": 17.05,
+    "2008": 18.49,
+    "2009": 22.31,
+    "2010": 23.07,
+    "2011": 23.0,
+    "2012": 22.91
+   },
+   "65_plus": {
+    "2005": 54.73,
+    "2006": 54.13,
+    "2007": 53.91,
+    "2008": 53.68,
+    "2009": 55.55,
+    "2010": 55.03,
+    "2011": 54.83,
+    "2012": 55.14
+   },
+   "all": {
+    "2005": 23.07,
+    "2006": 22.6,
+    "2007": 23.24,
+    "2008": 24.54,
+    "2009": 28.27,
+    "2010": 28.91,
+    "2011": 28.91,
+    "2012": 29.01
+   },
+   "under_18": {
+    "2005": 23.11,
+    "2006": 22.69,
+    "2007": 23.71,
+    "2008": 25.12,
+    "2009": 29.28,
+    "2010": 30.05,
+    "2011": 29.77,
+    "2012": 29.67
+   }
+  }
+ },
+ "thresholds": {
+  "official_two_adults_two_children": {
+   "2005": 19806.0,
+   "2006": 20444.0,
+   "2007": 21027.0,
+   "2008": 21834.0,
+   "2009": 21756.0,
+   "2010": 22113.0,
+   "2011": 22811.0,
+   "2012": 23283.0,
+   "2013": 23624.0,
+   "2014": 24008.0,
+   "2015": 24036.0,
+   "2016": 24339.0,
+   "2017": 24858.0,
+   "2018": 25465.0,
+   "2019": 25926.0,
+   "2020": 26246.0,
+   "2021": 27479.0,
+   "2022": 29678.0,
+   "2023": 30900.0,
+   "2024": 31812.0,
+   "2025": 32649.0
+  },
+  "spm_renters_first_published": {
+   "2009": 23874.0,
+   "2010": 24391.0,
+   "2011": 25222.0,
+   "2012": 25105.0,
+   "2013": 25144.0,
+   "2014": 25460.0,
+   "2015": 25583.0,
+   "2016": 26104.0,
+   "2017": 27005.0,
+   "2018": 28166.0,
+   "2019": 28913.0,
+   "2024": 39220.0,
+   "2025": 41701.0
+  }
+ },
+ "years": [
+  "2005",
+  "2006",
+  "2007",
+  "2008",
+  "2009",
+  "2010",
+  "2011",
+  "2012",
+  "2013",
+  "2014",
+  "2015",
+  "2016",
+  "2017",
+  "2018",
+  "2019",
+  "2020",
+  "2021",
+  "2022",
+  "2023",
+  "2024",
+  "2025"
+ ]
+}

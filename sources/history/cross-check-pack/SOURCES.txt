@@ -1,0 +1,15 @@
+SOURCES
+- https://www.census.gov/data/tables/2026/demo/income-poverty/p60-290.html (Poverty in the United States: 2025, Tables 3, 8, 11); accessed 2026-10-14
+- https://www.census.gov/data/tables/time-series/demo/income-poverty/historical-poverty-people.html (Historical Poverty Tables, hstpov1.xlsx, hstpov3.xlsx/Table 3, hstpov5.xlsx); accessed 2026-10-14
+- https://www2.census.gov/programs-surveys/demo/tables/p60/290/ (xlsx files for P60-290); accessed 2026-10-14
+- https://povertycenter.columbia.edu/historical-spm-data-registration and related CPSP pages/PDF (Historical SPM series description, 1967–present; anchored to 2012 in some series); accessed 2026-10-14
+
+GAPS & DOUBTS
+- poverty_spm_history.csv: empty. Exact numerical historical SPM rates (Columbia CPSP / Wimer-Fox et al. series, 2005–2008 and 2009–2012 overlap, including market-income/pre-tax-transfer variants and 2012-anchored) require registration/download of the public-use table or IPUMS extract; PDF databook contains figures only, no extractable annual table values opened here. Label: historical SPM (Columbia); thresholds typically anchored to 2012 in the public series.
+- SPM market-income-only rates and number of people lifted by specific programs (SNAP, EITC, CTC, UI, Social Security, housing, stimulus): Table 5/6 of P60-290 opened but full multi-year program-effect series not fully extracted into CSV (only rates above); 2025 program effects available in source but not transcribed row-by-row.
+- Official thresholds for exact “two adults + two children” (not weighted-average family-of-4) available in annual poverty-threshold xlsx files on census.gov but only weighted averages transcribed from hstpov1; 2025 official two-adult-two-child is given as 32649 in secondary CRS but primary table not re-opened for every year.
+- SPM renter thresholds pre-2024: not opened year-by-year from BLS SPM research pages.
+- Tier 2 and Tier 3 not started (room/time); unemployment, CPI, GDP, median income, house prices, net worth, SNAP FY participants/benefits, policy_events, SCF/DFA wealth all remain.
+- Series breaks flagged where dual estimates appear in source tables (2013 redesign, 2017 processing). 2020 nonresponse and weighting changes noted in Census documentation.
+
+Verification: Re-opened 10 values against source xlsx: 2025 OPM all-people rate 10.2; 2025 under-18 13.4; 2025 OPM number 34510; 2005 OPM all-people 12.6; 2008 OPM all-people 13.2; 2025 SPM all-people 13.1; 2025 SPM under-18 13.4; 2025 SPM 65+ 15.4; 2025 official threshold family-of-4 32970; 2025 SPM renter threshold ~41701. All matched. verified 10 of 10.
