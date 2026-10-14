@@ -2563,6 +2563,20 @@ function healthUnitSuite(){
     return {pass:near(b.main, 5000*W.jMain + 0.2*(W.hosp*k + W.psych)) && near(b.high - b.main, 5000*(W.jHigh - W.jMain) + 0.2*W.erHigh*k) && b.main === c.main && z.main === a.main && a.high === avoidWide(5000, 0.2).high && near(h.high, AVOID_HOMELESS.high*(1 - 0.53*(1 - k))) && avoidHomelessHl().high === AVOID_HOMELESS.high,
       detail:'main ' + a.main.toFixed(1) + ' -> ' + b.main.toFixed(1) + '; high ' + a.high.toFixed(1) + ' -> ' + b.high.toFixed(1)}; });
   /* Session 2b (Oct 13, 2026; dev/reports/v5-27-health-financing.md): today's safety net. */
+  /* Session 7 (Oct 14, 2026; dev/reports/v5-33-snap-work-rule.md): SNAP's work rule, by hand. */
+  t('SNAP work rule: the 3-months-in-36 clock (countable months 5, 4, 4, 1, then exempt, then not receiving) and the household cut (a single adult, a couple; 8% State exemptions)', function(){
+    var sv = SNET; SNET = Object.assign({}, SNET_DEFAULTS, {abawd:true});
+    try { var a = {}, L = [];
+      [[5, true, true], [4, true, true], [4, true, true], [1, true, true], [6, false, true], [6, true, false], [2, true, true]].forEach(function(y){ a._snAbC = y[0]; L.push(snAbClock(a, y[1], y[2])); });
+      var h1 = {nA:1, nK:0, k17:0, other:0, house:10000, care:0, old:false, okAge:true, takeS:true, takeT:true}, h2 = Object.assign({}, h1, {nA:2});
+      var s1 = snBen(h1, 9000)[0], s2 = snBen(h2, 9000)[0], c = [snAbCut(h1, 9000, s1, [12]), snAbCut(h1, 9000, s1, [3]), snAbCut(h2, 9000, s2, [6]), snAbCut(h1, 9000, s1, []), snAbCut(h1, 9000, 0, [12])]; }
+    finally { SNET = sv; }
+    /* Clock: 5 countable -> 3 credited, 2 lost; then 4 and 4 lost (3 used in the window); year 4: the first year's 3 have left the window, 3 credited
+     * of 1 -> 0 lost; an exempt year and a year without SNAP lose nothing and credit nothing; then 2 countable with nothing credited in the window -> 0 lost.
+     * Cut: one adult, $9,000 of pay, $10,000 housing: SNAP 12 x 298 = 3,576 (net income 0 after the shelter deduction); a year lost -> 0.92 x 3,576;
+     * 3 months -> 0.23 x 3,576. A couple: 12 x 546 = 6,552, one member fewer 3,576; 6 months -> 0.46 x 2,976. */
+    var w = [[L.join(','), '2,4,4,0,0,0,0'], [s1, 3576], [s2, 6552], [c[0], 0.92*3576], [c[1], 0.23*3576], [c[2], 0.46*2976], [c[3], 0], [c[4], 0]];
+    return {pass:w.every(function(x){ return typeof x[1] === 'string' ? x[0] === x[1] : near(x[0], x[1], 1e-9); }), detail:'clock ' + L.join(',') + '; cuts ' + c.map(function(x){ return x.toFixed(2); }).join(', ')}; });
   t('safety net: SNAP, the EITC and the refundable CTC by hand (single parent, two children, $20,000 of pay; a couple without children, $22,000), the income tax before credits, and the switches', function(){
     var sv = SNET; SNET = Object.assign({}, SNET_DEFAULTS);
     try { var a = snBen({nA:1, nK:2, k17:2, other:0, house:12000, care:0, old:false, okAge:true, takeS:true, takeT:true}, 20000);
@@ -2618,7 +2632,7 @@ function healthUnitSuite(){
 }
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
-Object.assign(module.exports, { SN_KEYS, SNET_DEFAULTS, snBen, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
+Object.assign(module.exports, { SN_KEYS, SN_AB_KEYS, SNET_DEFAULTS, snBen, snAbClock, snAbCut, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
 Object.assign(module.exports, { PREV_CASES, PREV_DEFAULTS, pvFood });  /* session 2c: the prevention link */
 function v52UnitSuite(){
   var out = [];
