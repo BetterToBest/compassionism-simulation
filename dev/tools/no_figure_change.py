@@ -5,7 +5,8 @@
   python3 dev/tools/no_figure_change.py compare BEFORE.json AFTER.json   exit 1 unless the two agree
 
 A wording pass may change words but no number. The snapshot holds:
-  engine   SHA-256 of harness.js and of every <script> block in index.html (the engine is read out of index.html)
+  engine   SHA-256 of harness.js, of the engine harness.js reads out of index.html, and of index.html's other script blocks
+           (the page-drawing code around the engine may change its words, but the count of every number in it is compared)
   numeric  for each data/*.json file, SHA-256 of every numeric value with its path (not the words)
   tokens   for each page, report, data file and site script, how many times each number appears in the words
            (a file that exists on only one side is listed, not compared: a new report has no 'before')
@@ -13,12 +14,13 @@ A comparison fails if the engine hashes or numeric hashes differ. A changed toke
 the line is named in dev/tools/no_figure_change_allow.txt (one 'file<TAB>token<TAB>delta' per line, each with a reason in
 the report), so every number that moves in the words is looked at by a person.
 """
-import glob, hashlib, json, os, re, sys
+import glob, hashlib, json, os, re, subprocess, sys
 from collections import Counter
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 NUM = re.compile(r'\d[\d,]*(?:\.\d+)?')
-TEXT_FILES = (['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'] + sorted(glob.glob('*.md')) +
+# HANDOFF.md is left out (session 7): the session log, rewritten every session; it publishes no figure.
+TEXT_FILES = (['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'] + sorted(f for f in glob.glob('*.md') if f != 'HANDOFF.md') +
               sorted(glob.glob('dev/reports/*.md')) + sorted(glob.glob('site/*.js')) + sorted(glob.glob('.github/ISSUE_TEMPLATE/*.yml')))
 
 
@@ -52,7 +54,16 @@ def snapshot():
     S = {'engine': {}, 'numeric': {}, 'tokens': {}}
     S['engine']['harness.js'] = sha(open(os.path.join(ROOT, 'harness.js'), 'rb').read())
     idx = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
-    S['engine']['index.html scripts'] = sha('\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', idx, flags=re.S)))
+    # Session 7 (Oct 14): the engine is what harness.js runs, cut out of index.html by its own csEngineSource; it must not change by one byte.
+    # The rest of the page's main script draws the page: its words may change (wording passes), but no number in it may (counted under tokens).
+    # Every other script block (the embedded release panels, the structured data) is hashed whole.
+    eng = subprocess.run(['node', '-e', "const fs=require('fs'),H=require('./harness.js');process.stdout.write(H.csEngineSource(fs.readFileSync('index.html','utf8')))"],
+                         cwd=ROOT, capture_output=True, check=True).stdout
+    S['engine']['index.html engine (what harness.js runs)'] = sha(eng)
+    blocks = re.findall(r'<script[^>]*>(.*?)</script>', idx, flags=re.S)
+    main = max(blocks, key=len)
+    S['engine']['index.html other script blocks'] = sha('\n'.join(b for b in blocks if b is not main))
+    S['tokens']['index.html page code (numbers in the main script)'] = dict(tokens(main))
     for f in sorted(glob.glob(os.path.join(ROOT, 'data', '**', '*.json'), recursive=True)):
         rel = os.path.relpath(f, ROOT)
         j = json.load(open(f, encoding='utf-8'))

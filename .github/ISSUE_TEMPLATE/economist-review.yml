@@ -4,7 +4,7 @@ title: "Economist review: "
 body:
   - type: markdown
     attributes:
-      value: "One page for an independent economist. Each row names one thing to check, where it is in the repository, and what the model does today. Mark each row agree, disagree or cannot tell, with a line of why. You need not do every row. Rows about what the framework means (as opposed to how it is modelled) belong to its author, Duke Johnson; say so in a comment."
+      value: "One page for an independent economist. Each row names one thing to check, where it is in the repository, and what the model does today. Mark each row agree, disagree or cannot tell, with a line of why. You need not do every row. Rows about what the framework means (as opposed to how it is modeled) belong to its author, Duke Johnson; say so in a comment."
   - type: input
     id: who
     attributes:
@@ -21,7 +21,7 @@ body:
   - type: textarea
     id: unsourced_damping
     attributes:
-      label: "2. PTF (community businesses) and PTH (community housing) inflation damping has no source (0.5 and 0.1 times the share who joined)"
+      label: "2. Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH) has no source: how much of outside inflation they absorb, applied to the overall inflation rate (0.5 and 0.1 times the share who joined)"
       description: "Where: index.html: grep \"inflRate*=(1-\"; dev/runs/unsourced-constants-check.txt. Today: Off in every main row; on only in one optional row. Is a source known for its size? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
@@ -29,7 +29,7 @@ body:
     id: rho
     attributes:
       label: "3. The income effect on earnings (how far people cut paid work when given money; sourced range 0.05 to 0.30)"
-      description: "Where: dev/reports/v5-30-s137-results.md, section 8; dev/DECISIONS.md. Today: The one uncertain behavioural constant that matters for basket poverty. Is the range right for a payment of this size and kind? Say agree, disagree or cannot tell, and why."
+      description: "Where: dev/reports/v5-30-s137-results.md, section 8; dev/DECISIONS.md. Today: The one uncertain behavioral constant that matters for basket poverty. Is the range right for a payment of this size and kind? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
   - type: textarea
@@ -56,7 +56,7 @@ body:
   - type: textarea
     id: price_rule
     attributes:
-      label: "7. The price rule: how programme spending and extra demand raise prices"
+      label: "7. The price rule: how program spending and extra demand raise prices"
       description: "Where: dev/reports/v5-30-s137-results.md, section 6; dev/DECISIONS.md. Today: Not calibrated to outside evidence on benefit-funded demand. The \"too little wealth\" rise comes through it. Which evidence would calibrate it? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
@@ -84,14 +84,21 @@ body:
   - type: textarea
     id: us_data
     attributes:
-      label: "11. The no-programme run against US data (poverty, debt, savings)"
+      label: "11. The no-program run against US data (poverty, debt, savings)"
       description: "Where: findings.html; dev/DECISIONS.md. Today: Which gaps with US data would change a conclusion, and which would not? Say agree, disagree or cannot tell, and why."
+    validations:
+      required: false
+  - type: textarea
+    id: wwtbt
+    attributes:
+      label: "12. The study page's \"What would have to be true\" panel is Claude's reading of the sensitivity results, not a finding of the study"
+      description: "Where: study.html, \"What would have to be true (Claude's reading)\"; dev/tools/study_data.py (table wwtbt). Today: For each headline result it names what would have to be true and what the study found when those inputs were varied. Does any line claim more than the study shows, or miss a condition? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
   - type: textarea
     id: safety_net
     attributes:
-      label: "12. Tax revenue is not reconciled with today's safety-net outlays or government's share of the plan"
+      label: "13. Tax revenue is not reconciled with today's safety-net outlays or government's share of the plan"
       description: "Where: dev/reports/v5-30-s137-results.md, section 9. Today: The model reports these costs; it does not show they are financed. Is that an acceptable limit, stated this way? Say agree, disagree or cannot tell, and why."
     validations:
       required: false

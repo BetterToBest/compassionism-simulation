@@ -177,7 +177,7 @@ async function run(opts) {
 
 function unmarked(root, tag) {  /* text with a %, a $ amount or a times sign outside a numbered span, outside chart drawings and outside the page's own results text (checked by Phases 11-13) */
   const bad = []; if (!root) return bad;
-  const skip = el => el.closest('[data-src], [data-rel-text], svg, script, style, #rel-out, #rel-tg-out, #rel-path-out, #rel-more, #rel-src, #rel-live, #fd-old, .fd-ctl, .fd-dl, #rel-env-note, .fx-tip, select, option');
+  const skip = el => el.closest('[data-src], [data-rel-text], svg, script, style, #rel-out, #rel-tg-out, #rel-path-out, #rel-more, #rel-src, #rel-live, #fd-old, .fd-ctl, .fd-dl, #rel-env-note, .fx-tip, select, option, #glossary');  /* d204: the shared glossary's definitions state design parameters, as on the front page (site/glossary.json; glossary.py --check) */
   const walk = root.ownerDocument.createTreeWalker(root, 4); let n;
   while ((n = walk.nextNode())) { const t = n.nodeValue.replace(/95% (confidence )?interval/g, 'interval'); if (!/\d/.test(t)) continue; if (skip(n.parentElement)) continue;
     const m = t.match(/\d[\d,.]*\s?%|\$\s?\d|\d\s?×/); if (m) bad.push(tag + ': "' + t.trim().slice(0, 60) + '"'); }

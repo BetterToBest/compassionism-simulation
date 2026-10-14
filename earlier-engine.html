@@ -164,9 +164,9 @@ table{width:100%;font-size:12.5px;border-collapse:collapse}th{text-align:left;fo
 /* v3.6: table overflow fix — min-width:640px previously forced horizontal scroll on all mobile viewports regardless of content; tables now shrink with available width and only scroll if content genuinely exceeds it */
 @media(max-width:600px){table{font-size:11px}th,td{padding:5px 6px}}
 .sbadge{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:var(--rs);font-weight:500}.sb-base{background:var(--red-bg);color:var(--red)}.sb-cco{background:var(--blue-bg);color:var(--blue)}.sb-user{background:var(--gold-bg);color:var(--gold);border:.5px solid var(--gold)}
-/* v4.18: Poverty by Five Measures card — scenario-coloured headers (same badges as the System
- * comparison table), grouped rows, row-scaled bars in each scenario's chart colour, and change
- * cells coloured like the KPI deltas. Definitions are visible sub-lines rather than hover tips:
+/* v4.18: Poverty by Five Measures card — scenario-colored headers (same badges as the System
+ * comparison table), grouped rows, row-scaled bars in each scenario's chart color, and change
+ * cells colored like the KPI deltas. Definitions are visible sub-lines rather than hover tips:
  * a tip inside .tbl-scroll (overflow-x:auto) would be clipped at the top rows. */
 .sb-y0{background:var(--bg3);color:var(--text2);border:.5px solid var(--border)}
 .p5-tbl th{vertical-align:bottom}.p5-tbl th.p5-n,.p5-tbl td.p5-n{text-align:right;white-space:nowrap}
@@ -825,7 +825,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  * Changelog v4.19 → v4.20 (three external audits — Grok, Claude Sonnet, ChatGPT — checked claim by
  * claim, plus an internal audit; Duke signed off on the four decisions they raised. The seed-42
  * regression MOVES ONCE, by design: 1,965d · $559,223 · 0.534 · 16.6% · 88.5% → 1,975d · $570,661 ·
- * 0.518 · 15.8% · 88.8%. Same population statistics, a different random realisation):
+ * 0.518 · 15.8% · 88.8%. Same population statistics, a different random realization):
  *
  *  1. automationRisk: drawAutomationRisk() samples Beta(6,1)/Beta(1,6) by exact inverse CDF, two RNG
  *     draws per agent, instead of through beta()'s rejection sampler (a variable number of draws),
@@ -892,7 +892,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     wellnessZoneReach(), extremePovertyOf(). An expected share from three pathways
  *     (economic, serious mental illness, voluntary) layered on engine state; runYear() records
  *     start-of-year wealth (a.yrWealthStartUSD) for it. Exported in CSV and JSON.
- *  2. The poverty card is restyled (scenario badges, grouped rows, row-scaled bars, coloured
+ *  2. The poverty card is restyled (scenario badges, grouped rows, row-scaled bars, colored
  *     change cells) and renamed Poverty by Five Measures; extreme rows read per 10,000.
  *  3. The <title> is filled from META.VERSION; the JSON-LD description (still v4.16) updated.
  *
@@ -903,7 +903,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  * (Sessions 38/40, run against pinned v4.15) and an external Claude Sonnet audit of v4.15.
  * Every finding checked by direct computation. The seed-42/Full Integration/20yr regression
  * is UNCHANGED: 1,965d · $559,223 · 0.534 · 16.6% · 88.5% — every change below is reporting,
- * labelling or bookkeeping, and none draws RNG):
+ * labeling or bookkeeping, and none draws RNG):
  *
  *  1. Version labels: header/footer were hardcoded "v4.15"; all now read META.VERSION.
  *  2. downloadCSV(): BU Expiry (months) added — the one run parameter every export omitted.
@@ -913,7 +913,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     incomeBasketYear0() and a Poverty by Five Measures card (relative income, basket, wealth,
  *     BLEI; against year 0 and the Baseline), exported in CSV and JSON.
  *  5. PRESETS.adverse: reference settings in the Stress Test's adverse environment.
- *  6. The 55% CCO participation level and θ's "PTF density" gate relabelled as a design
+ *  6. The 55% CCO participation level and θ's "PTF density" gate relabeled as a design
  *     reference and a proxy respectively; Known Limitations gains four entries (papers'
  *     headline not reproduced; basket gap behind the Baseline's deterioration; exogenous
  *     prices; these two thresholds).
@@ -969,12 +969,12 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     adoption-scale quantity at all (not even a slider), so a config with 5% PTH uptake got
  *     exactly the same 10% population-wide inflation reduction as one with 50%; PTH switched
  *     on with ZERO members still damped inflation. Fixed as inflRate*=(1-pthMemberFrac*0.10),
- *     where pthMemberFrac is the population's realised PTH share, counted the same no-RNG way
+ *     where pthMemberFrac is the population's realized PTH share, counted the same no-RNG way
  *     ptfAdoptFrac is (existing a.inPTH flags only — no draw shifts anywhere). The 0.10
  *     coefficient (=1-0.90) is unchanged and becomes the ceiling at 100% membership, exactly
  *     as the v4.14 PTF fix kept its own 0.5. PTH membership is drawn once at construction and
  *     never grows during a run (there is no Bass/distress path for PTH), so unlike PTF there
- *     is no organic adoption to track — the fraction is simply the realised initial share.
+ *     is no organic adoption to track — the fraction is simply the realized initial share.
  *     Scope, proven by sweep rather than argued: all five shipped presets are bit-for-bit
  *     identical old-vs-new at seed 42 except Stress Test (the only one combining pth:true with
  *     nonzero inflRate); a PTH-uptake sweep (5% to 100%) is identical at inflRate=0 for every
@@ -1009,7 +1009,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     superseded (v4.3 and v4.5) and both missed by the v4.12 staleness sweep. Corrected.
  *     (MuseAI located this in the "ODD panel"; it lives in the Empirical Calibration panel.
  *     The ODD panel's own Submodels card was separately updated to state that inflation
- *     damping scales with realised PTF and PTH shares.)
+ *     damping scales with realized PTF and PTH shares.)
  *
  * CHECKED AND NOT CHANGED (see CHANGELOG.md's v4.15 Release Notes for the full account):
  *  - Grok independently found no additional mechanics bug on the default or documented paths.
@@ -1017,7 +1017,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *    CFG.SIM_COST_SCALE's own definition. Its git-tags/GitHub-Releases suggestion is a
  *    repository action for Duke, logged in CONTRIBUTING.md, not a code change.
  *  - A sweep of every population-level p.* read in runYear() for the same pattern (a scalar
- *    or bare toggle standing in for realised membership) found no further instance: the
+ *    or bare toggle standing in for realized membership) found no further instance: the
  *    remaining reads are SZH's zone-coherence scalar (by design), CIP's participation scalar
  *    (CIP has no per-agent membership flag), and the PTF-cap comparison (the slider IS the
  *    intended ceiling there).
@@ -1035,7 +1035,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  * TWO GENUINE MECHANICS BUGS, BOTH PROVEN ZERO-EFFECT ON EVERY DOCUMENTED FIGURE:
  *  1. BU expiry (months) — the decay factor was a step function: expiry=1 → decay=0,
  *     expiry=2/3/4/5/6 → decay=0.7, IDENTICALLY, regardless of which of those five
- *     values was selected. A six-position slider implementing only two behaviours.
+ *     values was selected. A six-position slider implementing only two behaviors.
  *     Confirmed directly: expiry=3 and expiry=6 produced bit-identical output before
  *     this fix. Replaced with a continuous decay=1-1/expiry (the same "documented
  *     annual-approximation interpretation" pattern pthLiquidShare() already uses for a
@@ -1045,7 +1045,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     attempted here. At expiry=1 — the value every one of the five shipped presets,
  *     every VAL_TEST/OAT/LHS mini-simulation, and every documented regression figure
  *     uses, none of which ever vary this slider — decay=1-1/1=0, IDENTICAL to the prior
- *     behaviour. Zero effect on anything documented; only affects a user who manually
+ *     behavior. Zero effect on anything documented; only affects a user who manually
  *     drags this one slider away from its default.
  *  2. PTF inflation damping used p.ptfShare — the STATIC initial-adoption slider — where
  *     it should have used the population's ACTUAL current PTF membership. The correct
@@ -1141,7 +1141,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     Neither defect is visible from reading the code in isolation; both were found by
  *     loading the actual page in jsdom and exercising it. That harness is new this
  *     release and is described in CHANGELOG.md's v4.13 Release Notes — it is the
- *     first time this project has been able to verify DOM behaviour rather than flagging
+ *     first time this project has been able to verify DOM behavior rather than flagging
  *     it "not verified in a browser," the standing caveat on every UI change since v4.8.
  *
  * A METRIC THAT REPORTED A PERFECT SCORE WHERE IT HAD NO DATA:
@@ -1202,11 +1202,11 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     sweep grepped CSS and these are inline strings. The Monte Carlo summary also never
  *     reflowed on a phone; it is now auto-fit with a real minimum.
  *  9. Toggle buttons now expose aria-pressed. Until now every On/Off pair communicated
- *     its state through colour alone — a screen reader heard two identically-labelled
+ *     its state through color alone — a screen reader heard two identically-labeled
  *     buttons with no indication of which was active. Same class of gap v3.7 closed for
  *     the charts. Set statically in the markup (so the attribute is already correct
  *     before any script runs) and kept in sync by tog() thereafter — the DOM harness
- *     caught the JS-only version leaving the PTF-cap pair unlabelled, since no preset
+ *     caught the JS-only version leaving the PTF-cap pair unlabeled, since no preset
  *     calls tog() for it.
  * 10. Exported JSON asserted a flat "CC BY 4.0" license, unchanged since before the v4.8
  *     relicensing split, and the CSV's mechanics list was still headed "--- v4.0 FIXES
@@ -1752,7 +1752,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     0.88 : 0.60, plus a RNG()×0.08 noise term) with structuralStability():
  *     the inverse coefficient of variation of median wealth and median BLEI
  *     over the run's final quarter. No RNG call, no manual per-mechanism
- *     bonus (dropped the old CIP term — a genuinely stabilising mechanism
+ *     bonus (dropped the old CIP term — a genuinely stabilizing mechanism
  *     now shows up endogenously via lower volatility, since every mechanism
  *     already feeds wealth/BLEI inside runYear()). Baseline/CCO-Only table
  *     rows, previously hardcoded "~65%"/"~88%", now compute the same metric
@@ -1772,7 +1772,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     per-seed agreement, because of the within-run RNG-coupling property
  *     found in (3) — at n=200 this check only agreed 2–3/10 seeds tried
  *     during development (noise, not signal); at n=500 the mean and every
- *     individual seed favour non-participants doing SLIGHTLY BETTER under
+ *     individual seed favor non-participants doing SLIGHTLY BETTER under
  *     CCO, not worse (mean ≈ −2.6pp in testing).
  *  7. Added a structural-invariants check: population conservation across
  *     BLEI tiers, octave/wealth-floor/participation bounds, Gini bounds.
@@ -1806,7 +1806,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *    framework's absence of traditional macro constraints is a stated
  *    hypothesis under test (see Known Limitations — "Framework design
  *    intent"), not an oversight; adding a constrained-capacity mode is an
- *    economic-modelling design decision for the framework's authors, not a
+ *    economic-modeling design decision for the framework's authors, not a
  *    bug-fix pass.
  *  - Shared parameter-builder across getCurrentParams()/OAT/validation/
  *    runSim(): still an accepted, if imperfect, duplication (documented at
@@ -1843,7 +1843,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     of BLEI or quality. CIP support now raises effective λ (was a flat
  *     bump to the old fixed probability).
  *  2. Octave now governs CCO conversion-RATE CAPACITY (the achievable
- *     ceiling); quality modulates the realised rate within that ceiling.
+ *     ceiling); quality modulates the realized rate within that ceiling.
  *     Previously quality/maxMult alone set the rate and octave had no role
  *     in conversion at all — only in wage growth (unchanged, still applies).
  *     BU allocation remains flat/octave-independent, as documented.
@@ -2004,8 +2004,8 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *  not debiting a treasury/production account is only partially addressed
  *  (fix #20, transparency tracking). Adding a genuine aggregate production
  *  constraint that could ration agent-level conversion is an economic-
- *  modelling design decision (production function, capacity limits, failure
- *  behaviour when exhausted) beyond what a bug-fix pass should invent
+ *  modeling design decision (production function, capacity limits, failure
+ *  behavior when exhausted) beyond what a bug-fix pass should invent
  *  unilaterally — flagged in Known Limitations, not implemented here.
  * ═══════════════════════════════════════════════════════════════════════
  *
@@ -2143,9 +2143,9 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  * TRANSPARENCY & LABELING:
  *  1. PTF slider relabeled "PTF market share" → "Initial PTF share": the slider
  *     only sets the t=0 adoption probability (ptfShare in simulate()); organic
- *     per-agent adoption checks in runYear() mean realised final share can and
+ *     per-agent adoption checks in runYear() mean realized final share can and
  *     does exceed the slider value. CSV export label and run-config chip updated
- *     to match; slider caption now states the organic-growth behaviour explicitly.
+ *     to match; slider caption now states the organic-growth behavior explicitly.
  *  2. Added an ⓘ tooltip on the System Stability KPI flagging that it is a
  *     trend+noise heuristic (stabBase = 0.88/0.60 by poverty trend, + CIP bonus,
  *     + RNG()×0.08), not a structural metric derived from wealth variance or BLEI
@@ -2571,7 +2571,7 @@ var charts={};var running=false;var SIM_RESULTS=null;
  * bottom of this file, creating an implicit global. Declared explicitly here. */
 var IS_REF_RUN=false;
 /* v4.5: set true when a shared "Copy parameters as URL" link supplied at least one
- * recognised query param — see applyParamsFromURL(). Suppresses the page-load
+ * recognized query param — see applyParamsFromURL(). Suppresses the page-load
  * illustrative-reference-run banner/seed-42 forcing below, since a shared-link load is
  * by definition not that run. */
 var URL_PARAMS_APPLIED=false;
@@ -2598,10 +2598,10 @@ var FMT={bu:function(v){return v==0?'$0 (off)':'$'+parseInt(v).toLocaleString();
   stabm:function(v){return '×'+parseFloat(v).toFixed(2);},stabk:function(v){return '+'+parseFloat(v).toFixed(1)+'%';},stabth:function(v){return v+'%';},emtk:function(v){return v+'%';},colath:function(v){return parseFloat(v).toFixed(1)+'%';}};  // v4.19
 function sv(key,raw){var el=document.getElementById('v-'+key);if(el)el.textContent=FMT[key]?FMT[key](raw):raw;var sl=document.getElementById('s-'+key);if(sl&&el)sl.setAttribute('aria-valuetext',el.textContent);if(key==='mult')updateEffMax();updatePills();}  // v4.20: aria-valuetext
 /* v4.13: toggle state is now also exposed via aria-pressed. Before this, every On/Off pair
- * in the sidebar communicated its state through colour and a CSS class alone — a screen
- * reader heard two identically-labelled buttons with no indication of which was active,
+ * in the sidebar communicated its state through color and a CSS class alone — a screen
+ * reader heard two identically-labeled buttons with no indication of which was active,
  * the same class of gap v3.7 closed for the charts (which had no accessible name at all).
- * Purely an attribute; no visual, class, or behavioural change. */
+ * Purely an attribute; no visual, class, or behavioral change. */
 function tog(key,val){ST[key]=val;var on=document.getElementById(key+'-on'),off=document.getElementById(key+'-off');
   if(on){on.className='tb'+(val?(' on'+(key==='szh'?' on-blue':key==='cip'?' on-purple':'')):'');on.setAttribute('aria-pressed',val?'true':'false');}
   if(off){off.className='tb'+(!val?' on':'');off.setAttribute('aria-pressed',val?'false':'true');}
@@ -2660,11 +2660,11 @@ function fdRun(name){try{applyPreset(name);var o=document.getElementById('fd-old
 function relCi(d){return d?' <span class="fd-ci">(change '+fdSg(d[0],1)+' points'+(d.length>2?', 95% interval '+fdSg(d[1],1)+' to '+fdSg(d[2],1):'')+')</span>':'';}
 function relPct(x){return (+x).toFixed(1)+'%';}
 function relLev(x){return x>=10?Math.round(x).toLocaleString('en-US'):(+x).toFixed(2);}  /* a price level, in times today's prices */
-/* One everyday sentence per result; b = no programme, r = the release row, h = the H1 row (optional). */
+/* One everyday sentence per result; b = no program, r = the release row, h = the H1 row (optional). */
 /* v5.2 step 8: what a month of the BU and of wages still buys, wherever the page quotes a price rise (from the year-by-year path; today's dollars) */
 function relBuys(b,r,T){if(!r||!r.path||!b||!b.path)return '';var P=r.path,Q=b.path,n=Math.min(T,P.wageR.length)-1;if(n<1)return '';
-  return ' What a month still buys, in today’s dollars: by year '+T+' a month of the median wage buys what '+fdMoney(P.wageR[n])+' bought at the start (it was '+fdMoney(P.wageR[0])+'; with no programme '+fdMoney(Q.wageR[n])+')'+(P.buR[n]>0?', and a month of the BU what '+fdMoney(P.buR[n])+' bought':'')+'.';}
-/* v5.2 step 8: small year-by-year charts, no programme beside Compassionism (inline SVG, no library; a table of the numbers sits beneath them) */
+  return ' What a month still buys, in today’s dollars: by year '+T+' a month of the median wage buys what '+fdMoney(P.wageR[n])+' bought at the start (it was '+fdMoney(P.wageR[0])+'; with no program '+fdMoney(Q.wageR[n])+')'+(P.buR[n]>0?', and a month of the BU what '+fdMoney(P.buR[n])+' bought':'')+'.';}
+/* v5.2 step 8: small year-by-year charts, no program beside Compassionism (inline SVG, no library; a table of the numbers sits beneath them) */
 function relPathCharts(b,r,T){if(!b||!b.path||!r||!r.path)return '';var B=b.path,P=r.path,n=Math.min(T,P.f0.length);if(n<2)return '';
   function nice(lo,hi){var span=Math.max(1e-9,hi-lo),raw=span/3,mag=Math.pow(10,Math.floor(Math.log(raw)/Math.LN10)),st=[1,2,2.5,5,10].map(function(m){return m*mag;}).filter(function(x){return x>=raw;})[0];return {lo:Math.floor(lo/st)*st,hi:Math.ceil(hi/st)*st,st:st};}
   function ch(id,title,unit,ser,fmt,zero){var W=340,H=190,L=48,R=98,T0=40,Bm=28,pw=W-L-R,ph=H-T0-Bm,all=[];ser.forEach(function(x){all=all.concat(x.v.slice(0,n));});
@@ -2678,38 +2678,38 @@ function relPathCharts(b,r,T){if(!b||!b.path||!r||!r.path)return '';var B=b.path
     lab.forEach(function(l){o.push('<text x="'+(L+pw+5)+'" y="'+(l.y+3.5).toFixed(1)+'" class="fd-pc-n '+l.cls+'">'+l.name+'</text>');});
     o.push('</svg>');return o.join('');}
   var pc=function(v){return Math.round(v)+'%';},usd=function(v){var a=Math.abs(v);return (v<0?'−':'')+'$'+(a>=10000?Math.round(a/1000)+'k':a>=1000?(a/1000).toFixed(1).replace(/\.0$/,'')+'k':Math.round(a));};
-  var h='<div class="fd-paths" id="rel-paths"><p class="fd-pc-h"><strong>Year by year.</strong> The same 500 adults each year, with Compassionism and with no programme (means over the paired runs).</p><div class="fd-pc-row">'+
-    ch('pc1','Below the cost of living','% of adults each year',[{name:'No programme',cls:'fd-pc-b',v:B.f0},{name:'Compassionism',cls:'fd-pc-c',v:P.f0}],pc,true)+
-    ch('pc2','Savings','median, today’s dollars',[{name:'No programme',cls:'fd-pc-b',v:B.medW},{name:'Compassionism',cls:'fd-pc-c',v:P.medW}],usd,true)+
-    ch('pc3','What a month buys','median wage, and the BU (dashed); today’s dollars',[{name:'No programme',cls:'fd-pc-b',v:B.wageR},{name:'Compassionism',cls:'fd-pc-c',v:P.wageR},{name:'BU',cls:'fd-pc-c',v:P.buR,dash:true}],usd,true)+'</div>';
+  var h='<div class="fd-paths" id="rel-paths"><p class="fd-pc-h"><strong>Year by year.</strong> The same 500 adults each year, with Compassionism and with no program (means over the paired runs).</p><div class="fd-pc-row">'+
+    ch('pc1','Below the cost of living','% of adults each year',[{name:'No program',cls:'fd-pc-b',v:B.f0},{name:'Compassionism',cls:'fd-pc-c',v:P.f0}],pc,true)+
+    ch('pc2','Savings','median, today’s dollars',[{name:'No program',cls:'fd-pc-b',v:B.medW},{name:'Compassionism',cls:'fd-pc-c',v:P.medW}],usd,true)+
+    ch('pc3','What a month buys','median wage, and the BU (dashed); today’s dollars',[{name:'No program',cls:'fd-pc-b',v:B.wageR},{name:'Compassionism',cls:'fd-pc-c',v:P.wageR},{name:'BU',cls:'fd-pc-c',v:P.buR,dash:true}],usd,true)+'</div>';
   var yrs=[];for(var t=1;t<=n;t+=(n>20?5:n>10?3:1))yrs.push(t);if(yrs[yrs.length-1]!==n)yrs.push(n);
   var row=function(lbl,v,f){return '<tr><td>'+lbl+'</td>'+yrs.map(function(t){return '<td>'+f(v[t-1])+'</td>';}).join('')+'</tr>';},fm=function(v){return fdMoney(v);};
   h+='<details class="fd-about"><summary>The numbers behind the charts</summary><div class="fd-tw"><table class="fd-t fd-pt"><thead><tr><th scope="col">Year</th>'+yrs.map(function(t){return '<th scope="col">'+t+'</th>';}).join('')+'</tr></thead><tbody>'+
-    row('Below the cost of living, no programme',B.f0,pc)+row('Below the cost of living, Compassionism',P.f0,pc)+row('Median savings, no programme',B.medW,fm)+row('Median savings, Compassionism',P.medW,fm)+
-    row('A month of the median wage buys, no programme',B.wageR,fm)+row('A month of the median wage buys, Compassionism',P.wageR,fm)+row('A month of the BU buys',P.buR,fm)+'</tbody></table></div>'+
+    row('Below the cost of living, no program',B.f0,pc)+row('Below the cost of living, Compassionism',P.f0,pc)+row('Median savings, no program',B.medW,fm)+row('Median savings, Compassionism',P.medW,fm)+
+    row('A month of the median wage buys, no program',B.wageR,fm)+row('A month of the median wage buys, Compassionism',P.wageR,fm)+row('A month of the BU buys',P.buR,fm)+'</tbody></table></div>'+
     '<p class="fd-note">Today’s dollars: each year’s figure divided by that year’s cost of living (the living-wage basket) relative to the start.</p></details></div>';
   return h;}
 function relSentences(b,r,h,T,X){
   T=T||20;X=X||{};
   var s=[],better=function(d){return d&&(d.length>2?d[2]<0:d[0]<0);},worse=function(d){return d&&(d.length>2?d[1]>0:d[0]>0);};
-  s.push('<p><strong>Basic living covered.</strong> With Compassionism, '+relPct(r.bOAPy)+' of adult-years fall below 30 days of basic living, against '+relPct(b.bOAPy)+' with no programme'+relCi(r.dBO)+'. On the design-neutral reading (the same rules for everyone), '+relPct(r.bNAPy)+' against '+relPct(b.bNAPy)+relCi(r.dBN)+'. The difference between the two readings with Compassionism, '+(r.bNAPy-r.bOAPy).toFixed(1)+' points, is the benefit from lower prices and in-kind support. The typical adult’s resources cover '+Math.round(r.bOAMd)+' days at year '+T+', against '+Math.round(b.bOAMd)+'.</p>');
+  s.push('<p><strong>Basic living covered.</strong> With Compassionism, '+relPct(r.bOAPy)+' of adult-years fall below 30 days of basic living, against '+relPct(b.bOAPy)+' with no program'+relCi(r.dBO)+'. On the same-rules reading (earlier called design-neutral: the same rules for everyone: 12% of a month\'s wage and the ordinary daily cost of living, plus one month of whatever regular support a design pays; it leaves out the two extras the BLEI paper gives participants (20% of wage, and a lower daily cost in community housing)), '+relPct(r.bNAPy)+' against '+relPct(b.bNAPy)+relCi(r.dBN)+'. The difference between the two readings with Compassionism, '+(r.bNAPy-r.bOAPy).toFixed(1)+' points, is what those two participant extras add. The typical adult’s resources cover '+Math.round(r.bOAMd)+' days at year '+T+', against '+Math.round(b.bOAMd)+'.</p>');
   s.push('<p><strong>Living below the cost of living.</strong> '+relPct(r.fgt0PY)+' of adult-years, against '+relPct(b.fgt0PY)+relCi(r.dF0)+'; how far below people fall (poverty severity) changes by '+fdSg(r.dFgt2[0])+(r.dFgt2.length>2?' <span class="fd-ci">(95% interval '+fdSg(r.dFgt2[1])+' to '+fdSg(r.dFgt2[2])+')</span>':'')+'.</p>');
   s.push('<p><strong>Savings.</strong> '+relPct(r.pov)+' of adults end with too little wealth at year '+T+', against '+relPct(b.pov)+relCi(r.dPov)+'.</p>');
   /* v5.4.1: how to read the wealth measure (Duke Johnson's framing, d-wealth-frame in dev/DECISIONS.md); words only, no figure */
   s.push('<p class="fd-note" id="rel-wealth-frame"><strong>How to read this measure.</strong> “Too little wealth” counts adults whose net wealth is below six months of their own cost of living: a reserve against a lost job or an emergency. Today that reserve is what stands between a setback and hardship, so people are right to build it. '+
     'The framework expects people to need it less. When next month’s basics are guaranteed, and work becomes more a choice than a condition of security as AI and robotics take on more of it, many would stop saving a large reserve and spend more of their time and money on what they value: family, craft, learning, community, travel. In that world, smaller savings would not mean less security, and the gain would be measured in surveys of how people live and how they feel, more than in dollars (Duke Johnson’s framing; the Research Hub’s glossary, “Post-Scarcity Economics”). Economists see a version of this today: a guaranteed minimum reduces how much lower-income households save for emergencies (Hubbard, Skinner and Zeldes, <em>Journal of Political Economy</em>, 1995). '+
-    '<em>What the model does not do:</em> its adults spend the same share of income above their costs with and without the programme (the share that matches today’s US saving rate), so no one here saves less because they feel secure, and the model measures no well-being by survey. The gap above comes from the model’s mechanics (prices rising while savings earn nothing, and lower pay after a job loss), not from that change of mindset; the framing explains how the measure should be read in a guaranteed-minimum world, and does not turn the result into a gain.</p>');
+    '<em>What the model does not do:</em> its adults spend the same share of income above their costs with and without the program (the share that matches today’s US saving rate), so no one here saves less because they feel secure, and the model measures no well-being by survey. The gap above comes from the model’s mechanics (prices rising while savings earn nothing, and lower pay after a job loss), not from that change of mindset; the framing explains how the measure should be read in a guaranteed-minimum world, and does not turn the result into a gain.</p>');
   /* v5.3 B10: children (the household reading's measures: every child counted with their household's status) */
-  if(r.hhCostKidPY!==undefined&&b.hhCostKidPY!==undefined){var k53=r.d53||{};s.push('<p id="rel-kids"><strong>Children.</strong> '+relPct(r.hhCostKidPY)+' of children’s years are spent below their family’s cost of living with Compassionism, against '+relPct(b.hhCostKidPY)+' with no programme'+relCi(k53.hhCostKidPY)+'; '+relPct(r.hhBleiKidPY)+' below 30 days of basic living, against '+relPct(b.hhBleiKidPY)+relCi(k53.hhBleiKidPY)+'. At year '+T+', '+relPct(r.hhWlthKidEnd)+' of children live in households with too little wealth, against '+relPct(b.hhWlthKidEnd)+relCi(k53.hhWlthKidEnd)+'.</p>');}
-  /* v5.2 step 3: savings that keep up with prices, a reading in both runs (X.sav against its own no-programme row X.savB) */
-  /* v5.2 step 4: adults who age, retire at 67 with Social Security and are replaced (X.age against its own no-programme row X.ageB) */
+  if(r.hhCostKidPY!==undefined&&b.hhCostKidPY!==undefined){var k53=r.d53||{};s.push('<p id="rel-kids"><strong>Children.</strong> '+relPct(r.hhCostKidPY)+' of children’s years are spent below their family’s cost of living with Compassionism, against '+relPct(b.hhCostKidPY)+' with no program'+relCi(k53.hhCostKidPY)+'; '+relPct(r.hhBleiKidPY)+' below 30 days of basic living, against '+relPct(b.hhBleiKidPY)+relCi(k53.hhBleiKidPY)+'. At year '+T+', '+relPct(r.hhWlthKidEnd)+' of children live in households with too little wealth, against '+relPct(b.hhWlthKidEnd)+relCi(k53.hhWlthKidEnd)+'.</p>');}
+  /* v5.2 step 3: savings that keep up with prices, a reading in both runs (X.sav against its own no-program row X.savB) */
+  /* v5.2 step 4: adults who age, retire at 67 with Social Security and are replaced (X.age against its own no-program row X.ageB) */
   var hh53=r.hhCostKidPY!==undefined;  /* v5.3: the main row has households and children */
-  if(X.age&&X.ageB)s.push('<p class="fd-note" id="rel-age"><strong>'+(hh53?'If families lived through the years.':'If adults aged.')+'</strong> '+(hh53?'In the main reading families stay as first drawn. If instead adults aged, retired at 67 on the average Social Security benefit and died at the rates of the US life table, children grew up, were born and left home, grown children took the places of adults who died, and estates passed to partners and children (with and without the programme), ':'In the main reading the same adults stay the same age. If instead they aged, retired at 67 on the average Social Security benefit, died at the rates of the US life table and were replaced by new 25-year-olds (with and without the programme), ')+relPct(X.age.pov)+' of adults would end with too little wealth at year '+T+', against '+relPct(X.ageB.pov)+' with no programme'+relCi(X.age.dPov)+', and '+relPct(X.age.fgt0PY)+' of adult-years would fall below the cost of living, against '+relPct(X.ageB.fgt0PY)+relCi(X.age.dF0)+'. Retirees keep the BU for life and may still convert expired BU through creative work (Claude’s reading of the design, where the Hub is silent); by year '+T+' about '+Math.round(X.age.agRet||0)+'% of adults are retired.'+(hh53?' Couples stay as first drawn (no new couples, no separations), so over the years fewer families have young children; the later years describe the families first drawn, not a typical population.':'')+'</p>');
-  if(X.sav&&X.savB)s.push('<p class="fd-note" id="rel-sav"><strong>If savings kept up with prices.</strong> The model has no bank: savings earn nothing, so when prices rise they lose value. If every adult’s savings earned the year’s price rise plus 0.97% (the average real yield on inflation-protected US Treasury bonds), with and without the programme, '+relPct(X.sav.pov)+' of adults would end with too little wealth at year '+T+', against '+relPct(X.savB.pov)+' with no programme'+relCi(X.sav.dPov)+'. '+
-    'That interest would come to about '+fdMoney(X.sav.svInt)+' per adult a year in today’s dollars ('+fdMoney(X.sav.svIntR)+' of it above inflation)'+(X.sav.svInt>r.cost?', more than the programme itself costs,':'')+' and the model does not say who would pay it, so this reading shows how much of the savings result is the missing protection of savings, not a version of the design that works as it stands.</p>');
+  if(X.age&&X.ageB)s.push('<p class="fd-note" id="rel-age"><strong>'+(hh53?'If families lived through the years.':'If adults aged.')+'</strong> '+(hh53?'In the main reading families stay as first drawn. If instead adults aged, retired at 67 on the average Social Security benefit and died at the rates of the US life table, children grew up, were born and left home, grown children took the places of adults who died, and estates passed to partners and children (with and without the program), ':'In the main reading the same adults stay the same age. If instead they aged, retired at 67 on the average Social Security benefit, died at the rates of the US life table and were replaced by new 25-year-olds (with and without the program), ')+relPct(X.age.pov)+' of adults would end with too little wealth at year '+T+', against '+relPct(X.ageB.pov)+' with no program'+relCi(X.age.dPov)+', and '+relPct(X.age.fgt0PY)+' of adult-years would fall below the cost of living, against '+relPct(X.ageB.fgt0PY)+relCi(X.age.dF0)+'. Retirees keep the BU for life and may still convert expired BU through creative work (Claude’s reading of the design, where the Hub is silent); by year '+T+' about '+Math.round(X.age.agRet||0)+'% of adults are retired.'+(hh53?' Couples stay as first drawn (no new couples, no separations), so over the years fewer families have young children; the later years describe the families first drawn, not a typical population.':'')+'</p>');
+  if(X.sav&&X.savB)s.push('<p class="fd-note" id="rel-sav"><strong>If savings kept up with prices.</strong> The model has no bank: savings earn nothing, so when prices rise they lose value. If every adult’s savings earned the year’s price rise plus 0.97% (the average real yield on inflation-protected US Treasury bonds), with and without the program, '+relPct(X.sav.pov)+' of adults would end with too little wealth at year '+T+', against '+relPct(X.savB.pov)+' with no program'+relCi(X.sav.dPov)+'. '+
+    'That interest would come to about '+fdMoney(X.sav.svInt)+' per adult a year in today’s dollars ('+fdMoney(X.sav.svIntR)+' of it above inflation)'+(X.sav.svInt>r.cost?', more than the program itself costs,':'')+' and the model does not say who would pay it, so this reading shows how much of the savings result is the missing protection of savings, not a version of the design that works as it stands.</p>');
   var ok=better(r.dF0)&&better(r.dPov)&&better(r.dBO),mixed=(better(r.dF0)||better(r.dBO))&&worse(r.dPov);
   s.push('<p class="'+(ok?'fd-good':'fd-bad')+'"><strong>'+(ok?'A confirmed gain:':mixed?'Not a confirmed gain:':'No confirmed gain:')+'</strong> '+(ok?'fewer people below the cost of living, fewer below 30 days of basic living, and fewer with too little wealth.':mixed?'fewer people live below the cost of living, but more end with too little wealth'+(r.infl>0?', because prices rise and savings are not protected from inflation':'')+'.':'the measures do not all improve.')+'</p>');
-  if(r.grp)s.push('<p><strong>Who gains.</strong> Real resources a year against no programme: adults who took part '+fdMoney(r.grp.part)+', adults who did not '+fdMoney(r.grp.non)+', the poorest third by starting wage '+fdMoney(r.grp.low)+', the richest third '+fdMoney(r.grp.top)+'.'+(r.live?relLiveWorse(r):relWorse(r.worse))+'</p>');
+  if(r.grp)s.push('<p><strong>Who gains.</strong> Real resources a year against no program: adults who took part '+fdMoney(r.grp.part)+', adults who did not '+fdMoney(r.grp.non)+', the poorest third by starting wage '+fdMoney(r.grp.low)+', the richest third '+fdMoney(r.grp.top)+'.'+(r.live?relLiveWorse(r):relWorse(r.worse))+'</p>');
   s.push('<p><strong>Work.</strong> Hours worked change by '+fdSg(r.hrs,1)+'% (people work '+(r.hrs<-5?'less':'a little less')+' when they receive money they did not work for, by the rate measured in the largest US study of unconditional cash).</p>');
   /* v5.2.2: the percentile pair behind every price range on the page (pLevEndP10, pLevEndP90) and the words for how many runs in ten it holds. */
   var REL_BAND=[10,90],relRunsIn=function(lo,hi){var n=Math.round((hi-lo)/10);return ['no','one','two','three','four','five','six','seven','eight','nine','all ten'][n]+(n===1?' run':' runs')+(n===10?'':' in ten');};
@@ -2719,13 +2719,13 @@ function relSentences(b,r,h,T,X){
    * Where the typical run is above 1,000 times today's the figure is an artefact of the price rule, so the sentence says so instead of printing it; the exact figures stay on the replication page.
    * A single live run has no range: its own figure is shown (or the same words above 1,000). */
   var lev=r.pLevEndMed!==undefined?r.pLevEndMed:r.pLevEnd,typ=r.pLevEndMed!==undefined;
-  s.push('<p><strong>Prices.</strong> '+(r.infl>0?'The programme raises prices by '+(+r.infl).toFixed(1)+'% a year; '+(lev>1000?'the model’s price rule has no central bank, no interest rate and no protection for savings, so in this environment prices run away, to more than 1,000 times today’s by year '+T+(typ?' in the typical run':'')+'. That is a limit of the model, not a forecast; the exact 500-seed figures are on the replication page':'by year '+T+(typ?' the typical run (the median of the 500) is '+relLev(lev)+' times today’s, and '+relRunsIn(REL_BAND[0],REL_BAND[1])+' fall between '+relLev(r.pLevEndP10)+' and '+(r.pLevEndP90>1000?'more than 1,000':relLev(r.pLevEndP90)):' they are '+relLev(lev)+' times today’s'))+'. The allowance keeps its value through the cost-of-living adjustment; savings do not.'+relBuys(b,r,T):'The programme adds no inflation of its own.')+'</p>');
+  s.push('<p><strong>Prices.</strong> '+(r.infl>0?'The program raises prices by '+(+r.infl).toFixed(1)+'% a year; '+(lev>1000?'the model’s price rule has no central bank, no interest rate and no protection for savings, so in this environment prices run away, to more than 1,000 times today’s by year '+T+(typ?' in the typical run':'')+'. That is a limit of the model, not a forecast; the exact 500-seed figures are on the replication page':'by year '+T+(typ?' the typical run (the median of the 500) is '+relLev(lev)+' times today’s, and '+relRunsIn(REL_BAND[0],REL_BAND[1])+' fall between '+relLev(r.pLevEndP10)+' and '+(r.pLevEndP90>1000?'more than 1,000':relLev(r.pLevEndP90)):' they are '+relLev(lev)+' times today’s'))+'. The allowance keeps its value through the cost-of-living adjustment; savings do not.'+relBuys(b,r,T):'The program adds no inflation of its own.')+'</p>');
   s.push('<p><strong>Cost and how it is paid.</strong> '+fdMoney(r.cost)+' per adult a year (today’s dollars). The Source pays '+fdMoney(r.srcPay)+' at conversion and keeps '+fdMoney(r.srcTax)+' in conversion tax; '+fdMoney(r.srcM)+' of it is backed by new output (capacity built and project work). A flat contribution of '+(+r.tau).toFixed(1)+'% of wages pays for the community price cuts.</p>');
-  if(r.avoidHi!==undefined)s.push('<p><strong>Public costs avoided.</strong> Homelessness falls by '+(+r.unhousedAvoided).toFixed(1)+' person-years per 1,000 adults a year, saving '+fdMoney(r.avoidLo)+' to '+fdMoney(r.avoidHi)+' per adult a year in shelter, health care and justice costs.'+(r.avoidW!==undefined?' Fewer people in prison and fewer hospital and psychiatric stays save about '+fdMoney(r.avoidW)+' more'+(r.avoidWHi!==undefined?' (up to '+fdMoney(r.avoidWHi)+' if the largest published prison effect applied to everyone)':'')+'.':'')+' Together these are a small share of the programme’s cost.</p>');
-  if(h)s.push('<p><strong>The optimistic end.</strong> If every dollar the Source pays were backed by new output, prices would not rise from the programme, '+relPct(h.bOAPy)+' of adult-years would fall below 30 days of basic living, and '+relPct(h.pov)+' of adults would end with too little wealth (no programme: '+relPct(b.pov)+').'+(REL.env!=='ref'?' In this environment that end is held back by a rule of the model: the BU is indexed to prices only in a year when prices rise faster than 5%, so with 2% outside inflation and none from the programme it loses value over the years.'+(X.h1idx?' With the BU indexed every year instead, '+relPct(X.h1idx.pov)+' would end with too little wealth, and the programme would cost '+fdMoney(X.h1idx.cost)+' per adult a year instead of '+fdMoney(h.cost)+'.':''):'')+' <a href="replication.html#backing-share">The replication page draws the points in between</a>, from none of the Source’s payout backed by new output to all of it.</p>');
-  /* v5.2 step 6 (decision B): the middle backing reading, a labelled band anchored by the Kenya study; the headline stays at the cautious end */
+  if(r.avoidHi!==undefined)s.push('<p><strong>Public costs avoided.</strong> Homelessness falls by '+(+r.unhousedAvoided).toFixed(1)+' person-years per 1,000 adults a year, saving '+fdMoney(r.avoidLo)+' to '+fdMoney(r.avoidHi)+' per adult a year in shelter, health care and justice costs.'+(r.avoidW!==undefined?' Fewer people in prison and fewer hospital and psychiatric stays save about '+fdMoney(r.avoidW)+' more'+(r.avoidWHi!==undefined?' (up to '+fdMoney(r.avoidWHi)+' if the largest published prison effect applied to everyone)':'')+'.':'')+' Together these are a small share of the program’s cost.</p>');
+  if(h)s.push('<p><strong>The optimistic end.</strong> If every dollar the Source pays were backed by new output, prices would not rise from the program, '+relPct(h.bOAPy)+' of adult-years would fall below 30 days of basic living, and '+relPct(h.pov)+' of adults would end with too little wealth (no program: '+relPct(b.pov)+').'+(REL.env!=='ref'?' In this environment that end is held back by a rule of the model: the BU is indexed to prices only in a year when prices rise faster than 5%, so with 2% outside inflation and none from the program it loses value over the years.'+(X.h1idx?' With the BU indexed every year instead, '+relPct(X.h1idx.pov)+' would end with too little wealth, and the program would cost '+fdMoney(X.h1idx.cost)+' per adult a year instead of '+fdMoney(h.cost)+'.':''):'')+' <a href="replication.html#backing-share">The replication page draws the points in between</a>, from none of the Source’s payout backed by new output to all of it.</p>');
+  /* v5.2 step 6 (decision B): the middle backing reading, a labeled band anchored by the Kenya study; the headline stays at the cautious end */
   if(X&&X.mid&&X.midlo&&X.midhi){var mP=[X.midlo.pov,X.midhi.pov],mI=[X.midlo.infl,X.midhi.infl],mA=[X.midlo.bkA,X.midhi.bkA],rng=function(v,f){var lo=Math.min(v[0],v[1]),hi=Math.max(v[0],v[1]);return f(lo)+' to '+f(hi);},pc1=function(x){return (+x).toFixed(1)+'%';};
-    s.push('<p class="fd-note" id="rel-mid"><strong>A middle reading (Claude’s reading of the evidence, not the Hub’s).</strong> The truth is probably between the two ends. The best evidence on how an economy absorbs a large flow of new spending is a randomised study of cash transfers in rural Kenya (Egger, Haushofer, Miguel, Niehaus and Walker, <em>Econometrica</em>, 2022): transfers worth about 16% of a year’s local output in the peak year were met by more local output, with prices up about 0.1%. Read as “new output backs the Source’s payout up to 8% to 16% of a year’s earned income” (8% is all of the US’s underused labour, BLS U-6, 2025; 16% is Kenya’s peak year), '+rng(mA,pc1)+' of the payout would be backed, prices would rise '+rng(mI,pc1)+' a year from the programme instead of '+pc1(r.infl)+', and '+rng(mP,relPct)+' of adults would end with too little wealth (no programme: '+relPct(b.pov)+'; 12%, the middle of the band: '+relPct(X.mid.pov)+')'+(X.mid.path&&r.path&&X.mid.path.wageR.length>1?'; in the middle of the band a month of the median wage would buy what '+fdMoney(X.mid.path.wageR[X.mid.path.wageR.length-1])+' bought at the start (main reading: '+fdMoney(r.path.wageR[r.path.wageR.length-1])+')':'')+'. Kenya does not set the US number: the transfers were paid once, from outside the area rather than with new money, into villages where many one-person businesses had time to spare; here the Source pays about '+Math.round(+X.mid.bkPY)+'% of earned income every year. So the headline stays at the cautious end.'+(X.slack?' Letting the programme’s spending also put idle workers to work in years without a recession (the part of U-6 above its lowest level, 1.1% of wages) adds about '+fdMoney(X.slack.mlNT)+' of wages per adult a year and changes the results little: '+relPct(X.slack.pov)+' with too little wealth, against '+relPct(r.pov)+' in the main reading.':'')+'</p>');}
+    s.push('<p class="fd-note" id="rel-mid"><strong>A middle reading (Claude’s reading of the evidence, not the Hub’s).</strong> The truth is probably between the two ends. The best evidence on how an economy absorbs a large flow of new spending is a randomized study of cash transfers in rural Kenya (Egger, Haushofer, Miguel, Niehaus and Walker, <em>Econometrica</em>, 2022): transfers worth about 16% of a year’s local output in the peak year were met by more local output, with prices up about 0.1%. Read as “new output backs the Source’s payout up to 8% to 16% of a year’s earned income” (8% is all of the US’s underused labor, BLS U-6, 2025; 16% is Kenya’s peak year), '+rng(mA,pc1)+' of the payout would be backed, prices would rise '+rng(mI,pc1)+' a year from the program instead of '+pc1(r.infl)+', and '+rng(mP,relPct)+' of adults would end with too little wealth (no program: '+relPct(b.pov)+'; 12%, the middle of the band: '+relPct(X.mid.pov)+')'+(X.mid.path&&r.path&&X.mid.path.wageR.length>1?'; in the middle of the band a month of the median wage would buy what '+fdMoney(X.mid.path.wageR[X.mid.path.wageR.length-1])+' bought at the start (main reading: '+fdMoney(r.path.wageR[r.path.wageR.length-1])+')':'')+'. Kenya does not set the US number: the transfers were paid once, from outside the area rather than with new money, into villages where many one-person businesses had time to spare; here the Source pays about '+Math.round(+X.mid.bkPY)+'% of earned income every year. So the headline stays at the cautious end.'+(X.slack?' Letting the program’s spending also put idle workers to work in years without a recession (the part of U-6 above its lowest level, 1.1% of wages) adds about '+fdMoney(X.slack.mlNT)+' of wages per adult a year and changes the results little: '+relPct(X.slack.pov)+' with too little wealth, against '+relPct(r.pov)+' in the main reading.':'')+'</p>');}
   return s.join('');
 }
 /* v5.1 (audit E1): the Hub's own targets beside what the model reaches. Source: the Research Hub's Integrated Implementation Roadmap, "Success Metrics by Year 7" and Appendix I:
@@ -2744,18 +2744,18 @@ function relGiniVerdictW(g){return (g<=REL_HUB.giniW?'at or below 0.25':'above 0
 function relTargets(b,r,T){
   if(!(r&&r.rep&&b&&b.rep&&r.rep.y7&&b.rep.y7))return relTargetsV51(b,r,T);
   var B7=b.rep.y7,BE=b.rep.end,R7=r.rep.y7,RE=r.rep.end,h='',pv=function(x){return x<REL_HUB.pov?'met':'not met';};
-  var cell=function(x,bx,d,v){return '<td>'+(+x).toFixed(d)+(d>2?'':'%')+'<span class="fd-ci">'+v+'</span><span class="fd-ci">no programme '+(+bx).toFixed(d)+(d>2?'':'%')+'</span></td>';};
+  var cell=function(x,bx,d,v){return '<td>'+(+x).toFixed(d)+(d>2?'':'%')+'<span class="fd-ci">'+v+'</span><span class="fd-ci">no program '+(+bx).toFixed(d)+(d>2?'':'%')+'</span></td>';};
   [['Below the US official poverty line (money income, as the official rate counts it)','fpl',1],['Below the poverty line on resources closer to the Census Supplemental Poverty Measure (after the contribution, with the BU and price cuts counted)','fplX',1],
-   ['Below 30 days of basic living (BLEI, as the BLEI paper defines it)','bO',1],['Below 30 days of basic living, design-neutral reading (the same rules for everyone)','bN',1],['Below the cost of living (the MIT living-wage basket)','f0',1],
+   ['Below 30 days of basic living (BLEI, as the BLEI paper defines it)','bO',1],['Below 30 days of basic living, same-rules reading (the same rules for everyone)','bN',1],['Below the cost of living (the MIT living-wage basket)','f0',1],
    ['Too little wealth (net wealth under '+fdMoney(CFG.POVERTY_LINE)+' in today’s money)','pov',1],['Unhoused, the model’s extreme-poverty figure','ep',2]].forEach(function(x){var k=x[1];
     h+='<tr><td>'+x[0]+'</td><td>under 2%</td>'+cell(R7[k],B7[k],x[2],pv(R7[k]))+cell(RE[k],BE[k],x[2],pv(RE[k]))+'</tr>';});
   [['Gini of disposable income','giniD','0.25 to 0.30',relGiniVerdict],['Gini of income counting the value of price cuts too','giniX','0.25 to 0.30',relGiniVerdict],['Gini of wealth (debts counted as zero)','giniW','0.25 (BLEI paper)',relGiniVerdictW]].forEach(function(x){var k=x[1];
     h+='<tr><td>'+x[0]+'</td><td>'+x[2]+'</td>'+cell(R7[k],B7[k],3,x[3](R7[k]))+cell(RE[k],BE[k],3,x[3](RE[k]))+'</tr>';});
-  return '<div class="fd-targets" id="rel-targets"><p><strong>Against the Hub’s own targets.</strong> The Research Hub sets two targets for Year 7 of a programme: a poverty rate under 2% (from about 12%) and a Gini coefficient of 0.25 to 0.30 (from 0.48); the BLEI paper adds 0.25 as its design target for the spread of wealth. This table shows each measure at Year 7 and at year '+T+'.</p>'+
-    '<div class="fd-tw"><table class="fd-t fd-tg fd-tg2" aria-label="The Hub’s Year 7 targets against the model’s results at Year 7 and year '+T+', Compassionism with no programme beside it"><thead><tr><th scope="col">Measure (share of adults that year)</th><th scope="col">Hub target</th><th scope="col">Year 7</th><th scope="col">Year '+T+'</th></tr></thead><tbody>'+h+'</tbody></table></div>'+
-    '<p class="fd-note">The first row is the measure behind the Hub’s starting point: the US official poverty line for one person ($'+(CFG.POVERTY_THRESHOLD_ONE).toLocaleString('en-US')+' in 2025, moved with prices as the Census moves it) against money income before tax, which does not count the BU, as the official rate does not count food stamps. The model’s adults are working-age, live alone and all earn wages, and it has no children, so with no programme it reads '+(+B7.fpl).toFixed(1)+'% at Year 7, below the national 10.2% of 2025 and the Hub’s start of about 12%: the same definition, a different population. '+
-    'The Hub does not say which poverty measure its rate is, so the other rows show the same 2% against each of the model’s own measures, which are stricter. The unhoused figure starts from 0.22% at year 0 by construction, so it sits under 2% whatever the programme does. '+
-    'The Gini of income is the like-for-like figure for the Hub’s 0.48 start (the model’s no-programme Gini, '+(+B7.giniD).toFixed(2)+' at Year 7, is already below it, so the model does not start where the Hub’s path starts); the BLEI paper’s 0.25 is for wealth less a year of extraction costs, which this engine does not model, so the plain wealth Gini is the nearest figure. Every Gini is corrected for the small sample (×500/499), and a reading within 0.002 of a line is labelled as on it. Source of the targets: <a href="'+REL_HUB.url+'" rel="noopener">the Integrated Implementation Roadmap</a> (Success Metrics by Year 7; Appendix I) and the BLEI paper on the <a href="'+REL_HUB.blei+'" rel="noopener">Research Hub</a>.</p></div>';
+  return '<div class="fd-targets" id="rel-targets"><p><strong>Against the Hub’s own targets.</strong> The Research Hub sets two targets for Year 7 of a program: a poverty rate under 2% (from about 12%) and a Gini coefficient of 0.25 to 0.30 (from 0.48); the BLEI paper adds 0.25 as its design target for the spread of wealth. This table shows each measure at Year 7 and at year '+T+'.</p>'+
+    '<div class="fd-tw"><table class="fd-t fd-tg fd-tg2" aria-label="The Hub’s Year 7 targets against the model’s results at Year 7 and year '+T+', Compassionism with no program beside it"><thead><tr><th scope="col">Measure (share of adults that year)</th><th scope="col">Hub target</th><th scope="col">Year 7</th><th scope="col">Year '+T+'</th></tr></thead><tbody>'+h+'</tbody></table></div>'+
+    '<p class="fd-note">The first row is the measure behind the Hub’s starting point: the US official poverty line for one person ($'+(CFG.POVERTY_THRESHOLD_ONE).toLocaleString('en-US')+' in 2025, moved with prices as the Census moves it) against money income before tax, which does not count the BU, as the official rate does not count food stamps. The model’s adults are working-age, live alone and all earn wages, and it has no children, so with no program it reads '+(+B7.fpl).toFixed(1)+'% at Year 7, below the national 10.2% of 2025 and the Hub’s start of about 12%: the same definition, a different population. '+
+    'The Hub does not say which poverty measure its rate is, so the other rows show the same 2% against each of the model’s own measures, which are stricter. The unhoused figure starts from 0.22% at year 0 by construction, so it sits under 2% whatever the program does. '+
+    'The Gini of income is the like-for-like figure for the Hub’s 0.48 start (the model’s no-program Gini, '+(+B7.giniD).toFixed(2)+' at Year 7, is already below it, so the model does not start where the Hub’s path starts); the BLEI paper’s 0.25 is for wealth less a year of extraction costs, which this engine does not model, so the plain wealth Gini is the nearest figure. Every Gini is corrected for the small sample (×500/499), and a reading within 0.002 of a line is labeled as on it. Source of the targets: <a href="'+REL_HUB.url+'" rel="noopener">the Integrated Implementation Roadmap</a> (Success Metrics by Year 7; Appendix I) and the BLEI paper on the <a href="'+REL_HUB.blei+'" rel="noopener">Research Hub</a>.</p></div>';
 }
 function relTargetsV51(b,r,T){
   var h='',pv=function(x){return x<REL_HUB.pov?'met':'not met';};
@@ -2763,11 +2763,11 @@ function relTargetsV51(b,r,T){
     h+='<tr><td>'+x[0]+'</td><td>under 2%</td><td>'+(+b[x[1]]).toFixed(x[2])+'%</td><td>'+(+r[x[1]]).toFixed(x[2])+'%<span class="fd-ci">'+pv(r[x[1]])+'</span></td></tr>';});
   [['Gini coefficient of disposable income, year '+T,'giniD'],['Gini coefficient counting the value of price cuts too','giniX']].forEach(function(x){
     h+='<tr><td>'+x[0]+'</td><td>0.25 to 0.30</td><td>'+(+b[x[1]]).toFixed(3)+'</td><td>'+(+r[x[1]]).toFixed(3)+'<span class="fd-ci">'+relGiniVerdict(r[x[1]])+'</span></td></tr>';});
-  return '<div class="fd-targets" id="rel-targets"><p><strong>Against the Hub’s own targets.</strong> The Research Hub sets two targets for Year 7 of a programme: a poverty rate under 2% (from about 12%) and a Gini coefficient of 0.25 to 0.30 (from 0.48). This table shows what the model reaches by year '+T+'.</p>'+
-    '<div class="fd-tw"><table class="fd-t fd-tg" aria-label="The Hub’s Year 7 targets against the model’s results, with no programme and with Compassionism"><thead><tr><th scope="col">Measure</th><th scope="col">Hub target</th><th scope="col">No programme</th><th scope="col">Compassionism, and where it stands against the target</th></tr></thead><tbody>'+h+'</tbody></table></div>'+
-    '<p class="fd-note">The Hub does not say which poverty measure its rate is, so the same 2% is shown against each of the model’s. They are stricter than the official rate (the Hub starts from about 12%; with no programme the model reads '+Math.round(b.pov)+'% on the wealth measure and '+Math.round(b.fgt0PY)+'% on the cost-of-living measure here), so none of them is the Hub’s rate. The unhoused figure starts from 0.22% at year 0 by construction, so it sits under 2% whatever the programme does. The model’s no-programme Gini ('+(+b.giniD).toFixed(2)+') is already below the Hub’s starting 0.48, so the model does not start where the Hub’s path starts; do not read the Gini rows as a test of that path. The Gini formula reads about 0.2% low with 500 adults, and a mean over 500 runs has its own sampling error, so a reading within 0.002 of a line is labelled as on it. Source: the Hub’s <a href="'+REL_HUB.url+'" rel="noopener">Integrated Implementation Roadmap</a> (Success Metrics by Year 7; Appendix I).</p></div>';
+  return '<div class="fd-targets" id="rel-targets"><p><strong>Against the Hub’s own targets.</strong> The Research Hub sets two targets for Year 7 of a program: a poverty rate under 2% (from about 12%) and a Gini coefficient of 0.25 to 0.30 (from 0.48). This table shows what the model reaches by year '+T+'.</p>'+
+    '<div class="fd-tw"><table class="fd-t fd-tg" aria-label="The Hub’s Year 7 targets against the model’s results, with no program and with Compassionism"><thead><tr><th scope="col">Measure</th><th scope="col">Hub target</th><th scope="col">No program</th><th scope="col">Compassionism, and where it stands against the target</th></tr></thead><tbody>'+h+'</tbody></table></div>'+
+    '<p class="fd-note">The Hub does not say which poverty measure its rate is, so the same 2% is shown against each of the model’s. They are stricter than the official rate (the Hub starts from about 12%; with no program the model reads '+Math.round(b.pov)+'% on the wealth measure and '+Math.round(b.fgt0PY)+'% on the cost-of-living measure here), so none of them is the Hub’s rate. The unhoused figure starts from 0.22% at year 0 by construction, so it sits under 2% whatever the program does. The model’s no-program Gini ('+(+b.giniD).toFixed(2)+') is already below the Hub’s starting 0.48, so the model does not start where the Hub’s path starts; do not read the Gini rows as a test of that path. The Gini formula reads about 0.2% low with 500 adults, and a mean over 500 runs has its own sampling error, so a reading within 0.002 of a line is labeled as on it. Source: the Hub’s <a href="'+REL_HUB.url+'" rel="noopener">Integrated Implementation Roadmap</a> (Success Metrics by Year 7; Appendix I).</p></div>';
 }
-/* "part (w), non (riw)" -> plain words: which group is worse off than with no programme, and on which test (r resources, i income poverty, w wealth poverty). */
+/* "part (w), non (riw)" -> plain words: which group is worse off than with no program, and on which test (r resources, i income poverty, w wealth poverty). */
 /* Audit fix (finding 1, Oct 2, 2026): a single live run carried worse:'none', so its text said "No group is worse off ... on any test" even when its own
  * numbers showed a group losing (Reference, seeds 1-6: adults who did not take part lose $415-$1,441; Adverse and Stress, seeds 1-6: wealth poverty rises).
  * One run has no interval and no per-group poverty tests, so this reads only what a run has: the sign of the change in real resources by group, and the sign
@@ -2775,14 +2775,14 @@ function relTargetsV51(b,r,T){
 function relLiveWorse(r){var G={part:'adults who took part',non:'adults who did not',low:'the poorest third',top:'the richest third'},bad=[];
   ['part','non','low','top'].forEach(function(k){if(r.grp&&r.grp[k]<0)bad.push(G[k]+' (less real income)');});
   if(r.dPov&&r.dPov[0]>0)bad.push('adults overall (more wealth poverty)');
-  return bad.length?' Worse off than with no programme in this run: '+bad.join('; ')+'.':' On the two tests one run can show (real resources by group, and wealth poverty overall), no group is worse off in this run.';}
-function relWorse(w){if(!w||w==='none')return ' No group is worse off than with no programme on any test.';
+  return bad.length?' Worse off than with no program in this run: '+bad.join('; ')+'.':' On the two tests one run can show (real resources by group, and wealth poverty overall), no group is worse off in this run.';}
+function relWorse(w){if(!w||w==='none')return ' No group is worse off than with no program on any test.';
   var G={part:'adults who took part',non:'adults who did not',PTH:'community-housing members',low:'the poorest third',top:'the richest third'},T={r:'less real income',i:'more income poverty',w:'more wealth poverty'};
   var parts=w.split(',').map(function(x){var m=x.trim().match(/^(\w+) \((\w+)\)$/);if(!m)return x.trim();return (G[m[1]]||m[1])+' ('+m[2].split('').map(function(c){return T[c]||c;}).join(', ')+')';});
-  return ' Worse off than with no programme: '+parts.join('; ')+'.';}
+  return ' Worse off than with no program: '+parts.join('; ')+'.';}
 function relYears(y){REL.yrs=y===40?40:20;[20,40].forEach(function(k){var b=document.getElementById('rel-yrs-'+k);if(b)b.setAttribute('aria-pressed',k===REL.yrs?'true':'false');});relRender();relSyncUrl();}
 function relSet(e){REL.env=e;['ref','adv','st'].forEach(function(k){var b=document.getElementById('rel-env-'+k);if(b)b.setAttribute('aria-pressed',k===e?'true':'false');});relRender();relSyncUrl();}
-function relBaseWord(k){return /^ag/.test(k)?'ageing rule':/^lt/.test(k)?'US-data reading':/^sv/.test(k)?'savings rule':({b53:'rules as in v5.3 (no job loss)',bcut0:'pay rule on return to work',bcut20:'pay rule on return to work',bautopay:'automation rule',bdis:'disaster',b52:'population as in v5.2',badults:'adults living alone',bindiv:'rule for sharing money',bwmodel:'starting savings',bnosg:'spending rule',bshock50:'income swings'})[k]||'rule';}  /* v5.3: what a reading's own no-programme run shares with it */
+function relBaseWord(k){return /^ag/.test(k)?'aging rule':/^lt/.test(k)?'US-data reading':/^sv/.test(k)?'savings rule':({b53:'rules as in v5.3 (no job loss)',bcut0:'pay rule on return to work',bcut20:'pay rule on return to work',bautopay:'automation rule',bdis:'disaster',b52:'population as in v5.2',badults:'adults living alone',bindiv:'rule for sharing money',bwmodel:'starting savings',bnosg:'spending rule',bshock50:'income swings'})[k]||'rule';}  /* v5.3: what a reading's own no-program run shares with it */
 function relRender(){
   var out=document.getElementById('rel-out');if(!out)return;var D=REL.data,n=document.getElementById('rel-env-note'),lk=document.getElementById('rel-link');if(lk)try{lk.setAttribute('href',relViewSearch()+'#front-door');}catch(x){}if(n)n.textContent=REL_ENV_NOTE[REL.env]||'';
   if(REL.yrs===40)D=REL.data40;var th=document.getElementById('rel-th-pov');if(th)th.textContent='Too little wealth, year '+REL.yrs;
@@ -2790,15 +2790,15 @@ function relRender(){
   var E=D.envs[REL.env],R=E.rows;out.innerHTML=(REL.yrs===40?'<p class="fd-note">Over 40 years: the same '+(R.release&&R.release.hhCostKidPY!==undefined?'households':'adults')+' followed for twice as long. In the main reading no one ages, so this shows where the same rules lead, not a life course'+(R.age?'; the reading in which people age, retire and are replaced is below':'')+'.</p>':'')+relSentences(E.base,R.release,R.h1,REL.yrs,{sav:R.sav,savB:E.bases&&E.bases.sv,h1idx:R.h1idx,age:R.age,ageB:E.bases&&E.bases.ag,mid:R.mid,midlo:R.midlo,midhi:R.midhi,slack:R.slack});
   var pgo=document.getElementById('rel-path-out');if(pgo)pgo.innerHTML=relPathCharts(E.base,R.release,REL.yrs);  /* v5.2 step 8 */
   var tgo=document.getElementById('rel-tg-out');if(tgo)tgo.innerHTML=relTargets(E.base,R.release,REL.yrs);  /* v5.1 (audit E1): its own block under the sentences, so the walk-through's spotlight on the sentences keeps its height */
-  var tb=document.getElementById('rel-rows'),h='',ORDER=['release','v53','cut0','cut20','autopay','pthbold','ptfs25','dis','v52','adults','core','indiv','cb0','cb50','wmodel','nosg','shock50','fbs50','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia','ageleave','agecps','fixw','fixr','fixs','fixm','fixall','mid','midlo','midhi','slack','slacku6','hcap','hcaphi','rev5','rev10','rev20','rev20n','giftrun','progtax','landtax'];  /* v5.3: + v5.3's readings (rows absent from a panel are skipped) */  /* v5.2 step 3: + the savings and indexing readings (a row with vsBase is read against no programme with the same savings rule) */
-  ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+(r.vsBase?'<span class="fd-ci">against no programme with the same '+relBaseWord(r.vsBase)+'</span>':'')+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
+  var tb=document.getElementById('rel-rows'),h='',ORDER=['release','v53','cut0','cut20','autopay','pthbold','ptfs25','dis','v52','adults','core','indiv','cb0','cb50','wmodel','nosg','shock50','fbs50','h1','face','cost','cap5','tax','all','free','standins','s30','v422','sav','sav0','idx','h1idx','h1both','age','agenc','agenone','agepia','ageleave','agecps','fixw','fixr','fixs','fixm','fixall','mid','midlo','midhi','slack','slacku6','hcap','hcaphi','rev5','rev10','rev20','rev20n','giftrun','progtax','landtax'];  /* v5.3: + v5.3's readings (rows absent from a panel are skipped) */  /* v5.2 step 3: + the savings and indexing readings (a row with vsBase is read against no program with the same savings rule) */
+  ORDER.forEach(function(k){var r=R[k];if(!r)return;h+='<tr data-k="'+k+'"'+(k==='release'?' class="fd-flag"':'')+'><td>'+r.label+(r.vsBase?'<span class="fd-ci">against no program with the same '+relBaseWord(r.vsBase)+'</span>':'')+'</td><td>'+fdSg(r.dBO[0],1)+'; '+fdSg(r.dBN[0],1)+'</td><td>'+fdSg(r.dF0[0],1)+'</td><td>'+fdSg(r.dPov[0],1)+'</td><td>'+(+r.infl).toFixed(1)+'%</td><td>'+fdMoney(r.cost)+'</td></tr>';});
   if(tb)tb.innerHTML=h;
   var src=document.getElementById('rel-src'),M=D._meta||{};if(src)src.innerHTML='Figures: '+(M.seeds||500)+' paired runs of '+(M.agents||500)+' simulated adults per environment, written '+(M.written||'')+'. Reproduce: <code>'+(M.command||'node harness.js testbed 500 release ref,adv,st')+'</code>.';
 }
-/* The live run: the page's release engine, one seed, no programme against the release row (and H1 for the optimistic end). */
+/* The live run: the page's release engine, one seed, no program against the release row (and H1 for the optimistic end). */
 function relLiveRows(env,seed){
   var P=Object.assign({},{ref:FULL_INTEGRATION,adv:ADVERSE_REFERENCE,st:STRESS_TEST}[env],REL.yrs===40?{years:40}:{}),svN=applyNR6(),svG=tbSetG(TB_PROFILE_G);
-  try{var PR=tbPresets(P);  /* v5.3 B10: the v5.3 main row and its no-programme run (relMainCfgs) */
+  try{var PR=tbPresets(P);  /* v5.3 B10: the v5.3 main row and its no-program run (relMainCfgs) */
     var R=tbStudy(relMainCfgs(PR),seed,P,{fin:'tax',aT:0,a:0,X:0,sc:SPEND_SOURCED},seed);
     var b=R[0],r=R[1],d=function(k){return [r[k]-b[k]];},av=(b.epPY-r.epPY)/100;
     return {b:{bOAPy:b.bOAPy,bNAPy:b.bNAPy,bOAMd:b.bOAMd,fgt0PY:b.fgt0PY,pov:b.pov},r:{bOAPy:r.bOAPy,bNAPy:r.bNAPy,bOAMd:r.bOAMd,fgt0PY:r.fgt0PY,pov:r.pov,dBO:d('bOAPy'),dBN:d('bNAPy'),dF0:d('fgt0PY'),dPov:d('pov'),dFgt2:d('fgt2PY'),
@@ -2824,7 +2824,7 @@ var REL_CSV_ORDER=['release','v53','cut0','cut20','autopay','pthbold','ptfs25','
 function relExport(fmt){
   var D=REL.yrs===40?REL.data40:REL.data,E=D&&D.envs&&D.envs[REL.env];if(!E)return null;var M=D._meta||{},stem='compassionism-v'+META.VERSION+'-'+REL.env+'-'+REL.yrs+'y';
   var meta={simulation:'Compassionism Framework Simulation',version:META.VERSION,environment:E.name,environmentKey:REL.env,years:REL.yrs,seeds:M.seeds,agents:M.agents,written:M.written,command:M.command,manifest:M.manifest||null,
-    source:'the 500-seed panel embedded in index.html (#rel-data'+(REL.yrs===40?'-40':'')+')',note:'Changes are against no programme on the same paired seeds; intervals are 95%. Poverty and cost figures are shares of adult-years or adults, in percent; cost is dollars per adult a year (year-0 dollars).'};
+    source:'the 500-seed panel embedded in index.html (#rel-data'+(REL.yrs===40?'-40':'')+')',note:'Changes are against no program on the same paired seeds; intervals are 95%. Poverty and cost figures are shares of adult-years or adults, in percent; cost is dollars per adult a year (year-0 dollars).'};
   if(fmt==='json')return {name:stem+'.json',mime:'application/json',text:JSON.stringify({_meta:meta,base:E.base,rows:E.rows},null,1)+'\n'};
   var C=[['reading',function(r,k){return k;}],['label',function(r){return r.label;}],['below_30_days_of_basic_living_pct',function(r){return r.bOAPy;}],['below_30_days_change_pts',function(r){return r.dBO&&r.dBO[0];}],['below_30_days_change_lo',function(r){return r.dBO&&r.dBO[1];}],['below_30_days_change_hi',function(r){return r.dBO&&r.dBO[2];}],
     ['design_neutral_below_30_days_pct',function(r){return r.bNAPy;}],['design_neutral_change_pts',function(r){return r.dBN&&r.dBN[0];}],['design_neutral_change_lo',function(r){return r.dBN&&r.dBN[1];}],['design_neutral_change_hi',function(r){return r.dBN&&r.dBN[2];}],
@@ -2843,7 +2843,7 @@ function relExport(fmt){
   var L=['# '+meta.simulation+' v'+meta.version+': '+meta.environment+', '+meta.years+' years','# '+meta.seeds+' paired seeds of '+meta.agents+' adults, written '+meta.written+'; source: '+meta.source,'# Reproduce: '+meta.command];
   if(meta.manifest)L.push('# Build: commit '+meta.manifest.commit+(meta.manifest.dirty?' (tracked files differed)':'')+', Node '+meta.manifest.node+', harness.js SHA-256 '+meta.manifest.harnessSha256+', engine block SHA-256 '+meta.manifest.engineBlockSha256);
   L.push('# '+meta.note,C.map(function(c){return c[0];}).join(','));
-  var br={reading:'no_programme',label:'No programme',below_30_days_of_basic_living_pct:E.base.bOAPy,design_neutral_below_30_days_pct:E.base.bNAPy,below_cost_of_living_pct:E.base.fgt0PY,too_little_wealth_pct:E.base.pov,gini_disposable_income:E.base.giniD,gini_with_price_cuts:E.base.giniX,unhoused_pct:E.base.epPY,people_below_cost_of_living_pct:E.base.hhCostPY,children_below_cost_of_living_pct:E.base.hhCostKidPY,children_below_30_days_pct:E.base.hhBleiKidPY,children_in_households_with_too_little_wealth_last_year_pct:E.base.hhWlthKidEnd,edc_measured_pct:E.base.edcM,edc_design_target_proxy_pct:E.base.edcProxy};  /* the no-programme reading: the panel's base row */
+  var br={reading:'no_programme',label:'No program',below_30_days_of_basic_living_pct:E.base.bOAPy,design_neutral_below_30_days_pct:E.base.bNAPy,below_cost_of_living_pct:E.base.fgt0PY,too_little_wealth_pct:E.base.pov,gini_disposable_income:E.base.giniD,gini_with_price_cuts:E.base.giniX,unhoused_pct:E.base.epPY,people_below_cost_of_living_pct:E.base.hhCostPY,children_below_cost_of_living_pct:E.base.hhCostKidPY,children_below_30_days_pct:E.base.hhBleiKidPY,children_in_households_with_too_little_wealth_last_year_pct:E.base.hhWlthKidEnd,edc_measured_pct:E.base.edcM,edc_design_target_proxy_pct:E.base.edcProxy};  /* the no-program reading: the panel's base row */
   C.forEach(function(c){if(br[c[0]]===undefined&&E.base.rep&&/year7|last_year/.test(c[0]))br[c[0]]=c[1](E.base);});  /* v5.2: the base row's Year 7 and last-year block */
   L.push(C.map(function(c){return relCsvCell(br[c[0]]);}).join(','));
   REL_CSV_ORDER.forEach(function(k){var r=E.rows[k];if(r)L.push(C.map(function(c){return relCsvCell(c[1](r,k));}).join(','));});
@@ -2877,7 +2877,7 @@ function copyParamsURL(){
 /* v4.5: applies ?bu=…&ptfOn=1… query params on load, mirroring applyPreset()'s own
  * slider/toggle-setting pattern (see getShareableParams() above for the key convention).
  * Silently ignores unknown/malformed keys rather than warning — a partial or hand-edited
- * URL should still apply whatever it can. Returns true if at least one recognised param
+ * URL should still apply whatever it can. Returns true if at least one recognized param
  * was applied, so the caller can skip the default reference-preset auto-load. */
 function applyParamsFromURL(){
   if(typeof window==='undefined'||!window.location||!window.location.search)return false;
@@ -3220,12 +3220,12 @@ function makeAgent(cfgP){
 function cancelSim(){
   if(!running)return;
   CANCELLED=true;
-  document.getElementById('stxt').textContent='Cancelling…';
+  document.getElementById('stxt').textContent='Canceling…';
 }
 function resetRunUIAfterCancel(){
   running=false;CANCELLED=false;MR.active=false;MR.suppressUI=false;
   document.getElementById('sdot').className='dot';
-  document.getElementById('stxt').textContent='Run cancelled.';
+  document.getElementById('stxt').textContent='Run canceled.';
   document.getElementById('spct').textContent='';
   document.getElementById('pbar').style.width='0%';
   document.getElementById('run-btn').disabled=false;document.getElementById('run-btn').textContent='▶ Run Simulation';
@@ -3369,7 +3369,7 @@ function simulate(p,warns){
    * poverty and the income measures are policy-neutral: every scenario starts from the same
    * latent population. BLEI is not — agentBLEI() credits BU, γ=0.20 and a reduced daily cost
    * to participants the moment they are enrolled — so the policy-neutral BLEI figure is the
-   * Baseline population's (same agents, no programme). Both are kept: see NEEC maintainers'
+   * Baseline population's (same agents, no program). Both are kept: see NEEC maintainers'
    * notes 3-4 in CHANGELOG.md's v4.17 Release Notes. */
   var yearZero={pov:calcMetrics(baseAgents).pov*100,
     bleiPovNeutral:bleiPovOf(bleiMetrics(baseAgents,0,false,false,false,0,false)),
@@ -6809,7 +6809,7 @@ function dominanceClause(rel,otherName,noun){
  * the final quarter of the run (same window the old heuristic used for its trend check)
  * into a single [0,0.99] score via 1/(1+CV) — 0 volatility maps to ~1.0, high volatility
  * decays toward 0. No RNG call and no manual per-mechanism bonus (e.g. the old CIP term):
- * if a mechanism genuinely stabilises outcomes, that now shows up endogenously as lower
+ * if a mechanism genuinely stabilizes outcomes, that now shows up endogenously as lower
  * wealth/BLEI volatility, since every mechanism already feeds wealth and BLEI within
  * runYear(). See changelog v4.1→v4.2 and CONTRIBUTING.md Model Architecture Feedback. */
 function coeffVar(arr){
@@ -7103,7 +7103,7 @@ function renderFloorDiagnostic(mainFrac,baseFrac){
  * reduction alone overstates what the policy achieves relative to where agents started.
  * v4.18: adds the extreme-poverty overlay (extremePovertyOf) as a fifth measure with its three
  * pathways as sub-rows, groups rows as stock / flow / extreme, and restyles the card to the
- * page's scenario colours. Row keys (k) from v4.17 are unchanged; the JSON export keeps its
+ * page's scenario colors. Row keys (k) from v4.17 are unchanged; the JSON export keeps its
  * v4.17 key (povertyByFourMeasures) so existing parsers keep working. */
 function buildPovertyPanel(sr,extras){
   var y0=sr.yearZero||{},ib=sr.incomeBasket||{},i0=y0.income||{},ep=sr.extremePoverty||{};
@@ -7142,7 +7142,7 @@ function renderPovertyPanel(pp){
   function cell(r,key,color,cls){
     var v=r[key],dp=1,mx=Math.max.apply(null,COLS.map(function(c){return ok(r[c[0]])?r[c[0]]:0;}));
     var w=ok(v)&&mx>0?Math.max(2,v/mx*100):0;
-    var note=(key==='y0'&&ok(r.y0Scenario))?'<span class="p5-note">'+pc(r.y0Scenario,dp,r.p10k)+' under your settings\' rules (BU counted from enrolment)</span>':'';
+    var note=(key==='y0'&&ok(r.y0Scenario))?'<span class="p5-note">'+pc(r.y0Scenario,dp,r.p10k)+' under your settings\' rules (BU counted from enrollment)</span>':'';
     return '<td class="p5-n'+cls+'"><span class="p5-v">'+pc(v,dp,r.p10k)+'</span>'+(ok(v)?'<span class="p5-bar"><i style="width:'+w.toFixed(1)+'%;background:'+color+'"></i></span>':'')+note+'</td>';
   }
   function chg(r,d,rel){
@@ -7877,7 +7877,7 @@ var VAL_TESTS=[
      * carried the subset's own sampling noise (a proportion near 0.3 over ~45 agents has a
      * standard error near 7pp) against a 2pp tolerance. Across seeds 1-10 plus VAL_SEEDS the
      * difference ranged from -21pp to +3pp in both v4.19 and v4.20; v4.19's VAL_SEEDS happened
-     * to land inside the tolerance, and v4.20's new random realisation put one seed (3456) at
+     * to land inside the tolerance, and v4.20's new random realization put one seed (3456) at
      * +2.9pp. The claim is about the same people, and the two arms are common-random-numbers
      * paired (one latent population, eight draws per agent-year), so the check now reads the
      * p1 non-participants' own outcomes in both arms. Over 20 seeds that difference is never
@@ -7918,7 +7918,7 @@ var VAL_TESTS=[
     var inCCOCount=agents.filter(function(a){return a.inCCO;}).length;
     var giniOK=(function(){var g=calcMetrics(agents,p.ccoOn,p.pth).gini;return g>=0&&g<=1;})();
     /* v4.16: extended with the named assertions CONTRIBUTING.md Good First Issues item (f)
-     * asked for, each checking a guarantee the engine claims but never itemised:
+     * asked for, each checking a guarantee the engine claims but never itemized:
      *   buOK/acreOK — BU balance stays in [0, 3×monthly BU]; Acre Equity never negative.
      *   lamOK — every λ lies in [FBS_LAMBDA_LO, FBS_LAMBDA_HI], which (with FBS clamped ≥0)
      *     is what keeps P(advance)=1−exp(−λ·FBS) inside [0,1).
@@ -7927,7 +7927,7 @@ var VAL_TESTS=[
      *   drawOK — runYear() consumes exactly 8 RNG draws per agent per year whatever the
      *     toggles, participation or cap state: the v4.3 common-random-numbers guarantee that
      *     all Baseline/CCO-Only/Main pairing rests on, previously asserted only in prose.
-     *   capOK — with the PTF cap on, realised PTF membership never ends above
+     *   capOK — with the PTF cap on, realized PTF membership never ends above
      *     max(year-0 draw, ceil(n × slider)), the documented contract of the v4.6 cap. */
     var buOK=agents.every(function(a){return a.buBalance>=-1e-9&&a.buBalance<=p.bu*3+1e-6;});
     var acreOK=agents.every(function(a){return typeof a.acreEquity==='number'&&a.acreEquity>=0;});
@@ -8004,7 +8004,7 @@ function renderSens(){
   var inn=document.getElementById('sens-inner');if(!inn)return;
   var items=[{p:'BU allocation',i:'High',n:'$800→~91% BLEI Threshold; $1,200→~97%. Primary welfare lever.'},
     {p:'PTF market share',i:'High',n:'<12%: minimal cost reduction. ~18%: optimal. >30%: distortion risk.'},
-    {p:'CCO participation rate',i:'High',n:'Roughly linear here: about −0.24 pts wealth poverty per point of participation, with no break at the papers\' 55% minimum-viable level (not modelled — v4.17).'},
+    {p:'CCO participation rate',i:'High',n:'Roughly linear here: about −0.24 pts wealth poverty per point of participation, with no break at the papers\' 55% minimum-viable level (not modeled — v4.17).'},
     {p:'Annual cost / inflation',i:'Medium',n:'3%/yr adds 81% cost increase over 20 years. PTF/PTH damp inflation by up to 55% at full membership of both (about 28% at reference membership).'},
     {p:'AI automation (avg)',i:'Medium',n:'High-risk agents lose wages 3–5× faster. CCO floor provides buffer.'},
     {p:'Conversion tax',i:'Low',n:'10–15% optimal. Below 10%: underfunded. Above 15%: conversion deterred.'}];
@@ -8103,7 +8103,7 @@ function downloadCSV(){
   } else {lines.push(row(['(not computed for this run)','']));}
   /* v4.13: this block's header read "--- v4.0 FIXES ---" in every CSV this tool has ever
    * exported, including at v4.12, listing a hand-picked selection that stopped being
-   * "the fixes" nine releases ago. Relabelled to say what it actually is — a short
+   * "the fixes" nine releases ago. Relabeled to say what it actually is — a short
    * orientation list of the mechanics changes that most affect how an exported number
    * should be read — and pointed at the canonical, maintained account rather than trying
    * to grow an enumerated changelog inside a CSV. */
@@ -8112,9 +8112,9 @@ function downloadCSV(){
   lines.push(row(['Unit system (v4.0)','wage (SIU) converted to USD via CFG.SIU_TO_USD before mixing with USD-typed wealth/BLEI/FBS terms — SUPERSEDED v4.4, see below']));
   lines.push(row(['Unit system (v4.4)','BLEI/FBS/Gini wage→USD conversion unified onto CFG.WAGE_TO_USD (the same Census/BLS-sourced anchor the main wealth loop already used) — CFG.SIU_TO_USD retired']));
   lines.push(row(['Octave advancement','FBS-gated: P(advance)=1-exp(-λ·FBS), replaces fixed-probability advancement']));
-  lines.push(row(['Octave role','now governs CCO conversion-rate ceiling; quality modulates realised rate within it']));
+  lines.push(row(['Octave role','now governs CCO conversion-rate ceiling; quality modulates realized rate within it']));
   lines.push(row(['PTH Acre Equity','a share of PTH housing-cost savings now routes to Acre Equity (was appreciation-only)']));
-  lines.push(row(['SZH synergy (θ)','threshold-gated on the SZH zone-coherence slider as a proxy for PTF density (0 below 0.55, scales to 0.25 at 0.90) — realised PTF density does not enter (v4.17 correction)']));
+  lines.push(row(['SZH synergy (θ)','threshold-gated on the SZH zone-coherence slider as a proxy for PTF density (0 below 0.55, scales to 0.25 at 0.90) — realized PTF density does not enter (v4.17 correction)']));
   lines.push(row(['Baseline/CCO-only comparisons','independently re-initialised from their own scenario params (was inherited from the tested scenario); baseline anchored to 3% CPI; shocks paired across all three trajectories when enabled']));
   lines.push(row(['Gini metric','EDC-adjusted net wealth per BLEI paper Table 6 (W_net = W_nominal − EDC×Y×12)']));
   lines.push(row(['Recession distribution','beta(5,2) over [0.70,0.95]; mode 0.90 (10% loss), mean ≈0.88 (~12% loss); NBER-calibrated. (Corrected from a documentation error: mode was previously misstated as ≈0.86/14% — the beta(5,2) formula itself is unchanged.)']));

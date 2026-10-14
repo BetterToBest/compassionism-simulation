@@ -9,3 +9,29 @@ CONTRIBUTING.md	5.2	+1
 CONTRIBUTING.md	5.3	+1
 CONTRIBUTING.md	5.4	+1
 CONTRIBUTING.md	5.5	+1
+# s160 (Oct 14), clarity answers. Compared against main at the merge of pull request 26.
+# d202: the same-rules reading's definition quotes the existing BLEI rules (12% and 20% of a month's wage), from dev/reports/08-blei.md. Not figures.
+index.html	12	+1
+index.html	20	+1
+index.html page code (numbers in the main script)	12	+1
+index.html page code (numbers in the main script)	20	+1
+replication.html	12	+1
+replication.html	20	+1
+# d202: the replication page's note on the new name says the old one was used "in releases up to v5.5". A version label.
+replication.html	5.5	+1
+# d204: the findings page now carries the front page's glossary (site/glossary.json); these are the numbers in its definitions, unchanged on the front page.
+findings.html	0	+1
+findings.html	1	+2
+findings.html	12	+2
+findings.html	16	+1
+findings.html	20	+1
+findings.html	4	+1
+findings.html	5.3	+1
+# d206: CONTRIBUTING.md's note now dates the table as a record closed on October 14 and no longer lists the later releases by number.
+CONTRIBUTING.md	14	+1
+CONTRIBUTING.md	5.3	-1
+CONTRIBUTING.md	5.4	-1
+CONTRIBUTING.md	5.5	-1
+# d207: the economist checklist gains a row for the "What would have to be true" panel, so the checklist has 13 rows (a row number, not a figure).
+.github/ISSUE_TEMPLATE/economist-review.yml	13	+1
+ECONOMIST-REVIEW.md	13	+1
