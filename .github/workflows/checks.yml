@@ -1,3 +1,5 @@
+# Oct 14, 2026 (ledger issue i20): pinned to ubuntu-24.04, Node 22.22.0 (the version the 500-seed panels record) and Python 3.13, so a
+# runner-image change (ubuntu-latest moves to Ubuntu 26 on Oct 19) cannot change outputs or timings with no code change.
 # v4.20: runs the project's three checks on every push and pull request. Duke signed off on
 # jsdom as a dev-only dependency (open since v4.12). Nothing here builds or changes index.html;
 # the simulation still runs by opening that one file. See CONTRIBUTING.md, Code Contributions.
@@ -10,13 +12,16 @@ on:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '22.22.0'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
       - name: Install jsdom (the only dev dependency; see package.json)
         run: npm install --no-audit --no-fund
       - name: Engine regression (seed 42; and the legacy switch against v4.19)
@@ -31,12 +36,12 @@ jobs:
   # Session 2a (Oct 13, 2026): the guard test. 20 fixed seeds of the v5.4 panel's main rows in the three environments, compared output by output
   # with the reference in dev/runs/guard (made before any engine edit). A switched-off mechanism must leave it identical. Runs beside the checks above.
   guard:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '22.22.0'
       - name: Guard test (every figure of 25 v5.4 panel rows, seeds 1-20, Reference, Adverse and Stress)
         run: node dev/tools/guard_test.js

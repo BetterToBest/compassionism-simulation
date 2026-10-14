@@ -7,6 +7,7 @@
 # v5.2.2 (audit A9): it also attaches a reproduction archive to the release: the engine and pages, the release data and the 500-seed panels, the
 # tools and sources, REPRODUCE.md and the specifications, package.json and package-lock.json, and the Node version the checks ran on
 # (NODE_VERSION.txt), all from the tagged commit. Run by hand with a version, it (re)attaches the archive to that tag's release.
+# Oct 14, 2026 (ledger issue i20): pinned to ubuntu-24.04 and Node 22.22.0, the version the checks and the 500-seed panels use; this job runs no Python.
 name: release
 
 on:
@@ -24,7 +25,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
@@ -32,7 +33,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          node-version: '22.22.0'
       - name: Tag and release the version in META.VERSION, if untagged
         id: tag
         env:
