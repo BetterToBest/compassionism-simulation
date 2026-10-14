@@ -1,0 +1,50 @@
+[
+ {
+  "term": "CCO — Creative Currency Octaves",
+  "def": "Dual-currency layer. Participants get monthly Basic Units (BU), spent on essentials at essential-service providers (ESPs), community-owned or private; expired BU are converted to primary currency (dollars) at merit-scaled rates through the Creative Collectives."
+ },
+ {
+  "term": "BU — Basic Units",
+  "def": "The community currency issued by CCO. Pegged 1:1 to primary currency, accepted for essentials by essential-service providers (ESPs), community-owned (PTF) or private, and expires monthly."
+ },
+ {
+  "term": "ESP — Essential-service provider",
+  "def": "A business that sells essentials (groceries, utilities, health care, meals) and accepts BU. Community-owned ESPs are PTFs; privately owned ESPs pass what conversion adds to their BU customers as lower prices."
+ },
+ {
+  "term": "Creative Collectives",
+  "def": "Networks of artists, makers and other contributors, part of CCO, that review members' work and manage the conversion of expired BU into primary currency at elevated rates."
+ },
+ {
+  "term": "PTF — Public Trust Foundations",
+  "def": "Community-owned, not-for-profit businesses that accept BU. Modelled as a cost-reduction mechanism (12–16% lower costs), not a wealth-addition channel."
+ },
+ {
+  "term": "PTH — Public Trust Housing",
+  "def": "Community-owned housing; monthly payments build Acre Equity instead of paying market rent or mortgage interest."
+ },
+ {
+  "term": "AE — Acre Equity",
+  "def": "Community equity built by PTH residents, appreciating ~4%/yr, accessible at exit subject to a tenure-based liquidity haircut."
+ },
+ {
+  "term": "SZH — Social Zone Harmonization",
+  "def": "Spatial governance layer organizing where PTF/PTH deploy; gates cooperative synergy effects behind a zone-participation threshold."
+ },
+ {
+  "term": "CIP — Citizens Internet Portal",
+  "def": "Digital platform administering CCO currency operations and democratic voting for PTH/PTF decisions."
+ },
+ {
+  "term": "BLEI — Basic Living Economic Index",
+  "def": "Primary welfare metric: how many days of basic living an agent's accessible resources cover (cash + income + benefit buffers). Two readings are shown: the BLEI paper's own, and the same-rules reading (earlier called design-neutral): the same rules for everyone: 12% of a month's wage and the ordinary daily cost of living, plus one month of whatever regular support a design pays; it leaves out the two extras the BLEI paper gives participants (20% of wage, and a lower daily cost in community housing)."
+ },
+ {
+  "term": "EDC — Extractive Drain Coefficient",
+  "def": "Share of income captured by contracts that build zero household wealth (rent, interest, fees). PTH payments have EDC = 0. The earlier engine's EDC figures are a design target proxy: a formula set to the BLEI paper's target bands, not measured from the model's flows (since v5.3 the model also measures it from rent and interest paid)."
+ },
+ {
+  "term": "FBS — Financial Bandwidth Score",
+  "def": "Monthly residual resources above the basic-living threshold; gates an agent's probability of advancing an octave level."
+ }
+]

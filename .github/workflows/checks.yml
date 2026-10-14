@@ -25,6 +25,8 @@ jobs:
         run: node harness.js unit
       - name: Page behaviour, and the unit suite and source parity against the page (jsdom)
         run: node domtest.js
+      - name: One glossary on the front page and the findings page (site/glossary.json)
+        run: python3 dev/tools/glossary.py --check
 
   # Session 2a (Oct 13, 2026): the guard test. 20 fixed seeds of the v5.4 panel's main rows in the three environments, compared output by output
   # with the reference in dev/runs/guard (made before any engine edit). A switched-off mechanism must leave it identical. Runs beside the checks above.

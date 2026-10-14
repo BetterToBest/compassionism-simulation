@@ -54,6 +54,10 @@ footer .wrap{padding:22px 20px 30px}
 footer p{margin:0 0 6px}
 .cite{font-size:12.5px}
 @media (max-width:560px){.top-in,.wrap{padding:0 16px}.links a:not(.keep){display:none}.lede{font-size:16px}}
+.fd-gloss{margin:18px 0 0;border:1px solid var(--fx-rule);border-radius:10px;background:var(--fx-surface);padding:10px 16px}
+.fd-gloss>summary{cursor:pointer;font-weight:600;font-size:14px}
+.gloss-item{padding:8px 0;border-bottom:1px solid var(--fx-rule)}.gloss-item:last-child{border-bottom:none}
+.gloss-term{font-size:14px;font-weight:600}.gloss-def{font-size:14px;color:var(--fx-ink-2);margin:2px 0 0;max-width:72ch}
 </style>
 </head>
 <body class="fx">
@@ -77,6 +81,22 @@ footer p{margin:0 0 6px}
 </div></nav>
 
 <main id="content"><div class="wrap">
+  <details class="fd-gloss" id="glossary"><summary>Terms used on this page (glossary)</summary>
+      <!-- glossary:items -->
+      <div class="gloss-item"><div class="gloss-term">CCO — Creative Currency Octaves</div><p class="gloss-def">Dual-currency layer. Participants get monthly Basic Units (BU), spent on essentials at essential-service providers (ESPs), community-owned or private; expired BU are converted to primary currency (dollars) at merit-scaled rates through the Creative Collectives.</p></div>
+      <div class="gloss-item"><div class="gloss-term">BU — Basic Units</div><p class="gloss-def">The community currency issued by CCO. Pegged 1:1 to primary currency, accepted for essentials by essential-service providers (ESPs), community-owned (PTF) or private, and expires monthly.</p></div>
+      <div class="gloss-item"><div class="gloss-term">ESP — Essential-service provider</div><p class="gloss-def">A business that sells essentials (groceries, utilities, health care, meals) and accepts BU. Community-owned ESPs are PTFs; privately owned ESPs pass what conversion adds to their BU customers as lower prices.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Creative Collectives</div><p class="gloss-def">Networks of artists, makers and other contributors, part of CCO, that review members' work and manage the conversion of expired BU into primary currency at elevated rates.</p></div>
+      <div class="gloss-item"><div class="gloss-term">PTF — Public Trust Foundations</div><p class="gloss-def">Community-owned, not-for-profit businesses that accept BU. Modelled as a cost-reduction mechanism (12–16% lower costs), not a wealth-addition channel.</p></div>
+      <div class="gloss-item"><div class="gloss-term">PTH — Public Trust Housing</div><p class="gloss-def">Community-owned housing; monthly payments build Acre Equity instead of paying market rent or mortgage interest.</p></div>
+      <div class="gloss-item"><div class="gloss-term">AE — Acre Equity</div><p class="gloss-def">Community equity built by PTH residents, appreciating ~4%/yr, accessible at exit subject to a tenure-based liquidity haircut.</p></div>
+      <div class="gloss-item"><div class="gloss-term">SZH — Social Zone Harmonization</div><p class="gloss-def">Spatial governance layer organizing where PTF/PTH deploy; gates cooperative synergy effects behind a zone-participation threshold.</p></div>
+      <div class="gloss-item"><div class="gloss-term">CIP — Citizens Internet Portal</div><p class="gloss-def">Digital platform administering CCO currency operations and democratic voting for PTH/PTF decisions.</p></div>
+      <div class="gloss-item"><div class="gloss-term">BLEI — Basic Living Economic Index</div><p class="gloss-def">Primary welfare metric: how many days of basic living an agent's accessible resources cover (cash + income + benefit buffers). Two readings are shown: the BLEI paper's own, and the same-rules reading (earlier called design-neutral): the same rules for everyone: 12% of a month's wage and the ordinary daily cost of living, plus one month of whatever regular support a design pays; it leaves out the two extras the BLEI paper gives participants (20% of wage, and a lower daily cost in community housing).</p></div>
+      <div class="gloss-item"><div class="gloss-term">EDC — Extractive Drain Coefficient</div><p class="gloss-def">Share of income captured by contracts that build zero household wealth (rent, interest, fees). PTH payments have EDC = 0. The earlier engine's EDC figures are a design target proxy: a formula set to the BLEI paper's target bands, not measured from the model's flows (since v5.3 the model also measures it from rent and interest paid).</p></div>
+      <div class="gloss-item"><div class="gloss-term">FBS — Financial Bandwidth Score</div><p class="gloss-def">Monthly residual resources above the basic-living threshold; gates an agent's probability of advancing an octave level.</p></div>
+      <!-- /glossary:items -->
+  </details>
   <p class="layer-h">Layer 1 &middot; The answer</p>
   <section class="fx-sec" id="headline" aria-labelledby="headline-h">
     <h2 class="fx-h2" id="headline-h">The answer in numbers <a class="fx-anchor" href="#headline" aria-label="Link to this section">#</a></h2>
