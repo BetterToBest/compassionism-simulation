@@ -1,31 +1,37 @@
-# Handoff (Oct 14, 2026, UTC): the visual suite page built
+# Handoff (Oct 14, 2026, 12:30 UTC): the measures study and the visual suite's second pass
 
 ## What shipped
-- **The visual suite page** (`suite.html`, "Beyond one poverty line"; ledger step s161). It is stand-alone: no other page links to it and it carries `noindex`. It reads the newest release through `data/manifest.json` and prints every number through `site/findings.js`. Sections: the six BLEI-paper measures, the BLEI ladder year by year, the bottom and the top by backing reading, what the days are made of, participants, four measures side by side, the spread across environments, and limits.
-- **Its data**: `release_data.py` copies the suite series into `data/releases/v5.6/suite-20.json` and `suite-40.json` (listed under `explore.suite`). No figure changed and there was no engine change.
-- **Checks**: `check_figures.js` block 11 covers 3,804 numbers in 12 views and nothing typed in by hand. `domtest.js` gains Phase 15 (139 checks in all). `set_version.py`, `check_versions.js` and `no_figure_change.py` now cover the page. `site/charts.js` gains `CSC.stack`.
-- Report: `dev/reports/v5-33-visual-suite.md`. Decisions: `dev/DECISIONS.md`, Session 11. Progress: `dev/PROGRESS.md`, Session 11.
-- All passed before the pull request: validate, unit (222), domtest (139), guard test (identical), check_figures, and `no_figure_change.py compare` (34 moved counts, each allowed with a reason).
+- **The measures study's export (reporting only):** `dev/tools/explore_export.js --study` with `dev/tools/study_fields.js`. It gives EPPM against each adult's no-program twin, the monthly surplus for everyone in both runs, Acre Equity and the simulated CSI reading, the wealth Gini net of drain, movement between tiers, and breakdowns. The engine is unchanged; with the new switches on, all 4,696 results of a three-seed comparison were identical.
+- **Runpod job** `STUDY=study12` (`dev/tools/study12_jobs.sh`; `dev/batch/runpod.sh`). The 20-year results are ingested (`dev/runs/explore-study-ENV-20.json`, `data/releases/v5.6/study-20.json`); every 500-seed self-check passed.
+- **Suite page, second pass** (`suite.html`): one card per BLEI-paper measure with a status badge; IPBI shows the public costs avoided; the plan's corrections; a new "Who gains, and how people move" section. The 40-year view says it is waiting on the study.
+- **Checks:** domtest 142 (Phase 15 gains three), check_figures (20 passed), validate, unit 222, glossary, and `no_figure_change.py` (10 moved counts, each allowed). The two-seed test fixture is at `dev/tools/fixtures/study-fixture-20.json`.
+- **Written up:** report `dev/reports/v5-36-measures-study.md` (with the 20-year results); `dev/DECISIONS.md` Session 12; plans in `dev/plans/` (suite-v2, next-study, audit prompt, `tier-b-packets.md`).
 
 ## Branch and pull request state
-- v5.6 release: https://github.com/BetterToBest/compassionism-simulation/pull/32 **merged by Duke** (Oct 14, main 126a9c3); v5.6 is the live release.
-- Visual suite: branch `claude/magical-einstein-umkin2`, draft https://github.com/BetterToBest/compassionism-simulation/pull/33. CI green, no conflict with main; its diff is now only the page. Duke merges it after reading the report.
-- The reports pull request (31) has merged.
+- Branch `claude/fervent-hypatia-ypn11h`, draft https://github.com/BetterToBest/compassionism-simulation/pull/34 into main (subscribed; CI not yet reported at writing). Version unchanged (5.6.0): Duke assigns versions.
 
 ## Long jobs in flight
-- None. The results token expires 2026-10-17 04:16 UTC.
+- Pod `hsa5yxhf0lwj4s` (cpu3c, 16 vCPU, $0.48/h, EU-RO-1; runner 23c5095, engine 65abdc6; MAX_HOURS=4). Results go to BetterToBest/compassionism-sim-results under `study12-65abdc6/` (public; `git clone` works without a token). At 12:26 UTC four of six pieces were in; the 40-year Reference and Adverse pieces were still running. It is done when `study12-65abdc6/DONE` exists; then the pod deletes itself.
 
 ## Next 3 actions
-1. **If 33 shows red CI or a merge conflict:** merge main into its branch (never rebase), fix and push.
-2. **The CoMSES package and the fact sheet (ledger step s119)**, with every figure traced to the release data (`data/releases/v5.6.json`).
-3. **If Duke approves the suite page:** link it from the findings explorer and drop `noindex` (a one-line change each). Domtest Phase 15's "no other page links to it" check must then be changed to expect the link.
+1. **Ingest the 40-year study:** clone the results repository; copy `explore-study-ENV-40-snab.json` to `dev/runs/explore-study-ENV-40.json` (ref, adv, st); run `python3 dev/tools/release_data.py`, `node dev/tools/check_figures.js`, `node domtest.js`, and `no_figure_change.py` (snapshot main in a worktree, then compare; allow `v5.6.json 5.6` +1 and similar file-name counts with a reason). Add the 40-year lines to the report, then commit and push. Confirm the pod is gone (Runpod list-pods).
+2. **Pull request 34:** fix any red CI or conflict (merge main in, never rebase). Duke reads `dev/reports/v5-36-measures-study.md` and merges.
+3. **Part B, only after Duke approves the page:** a separate pull request that links `suite.html` from `findings.html`, drops `noindex`, adds a canonical link, and changes domtest Phase 15's "stands alone" check (`dev/plans/suite-v2-plan.md`, section 8).
 
 ## Files to touch
-- Suite page: `suite.html` (grep `function indices` / `function floor`), `dev/tools/check_figures.js` (grep `11. session 11`), `domtest.js` (grep `phase15`).
-- Release data layout: `dev/tools/release_data.py` (grep `def explore_files`).
+- `dev/tools/release_data.py` (grep `study = {`), `suite.html` (grep `function indices`, `function moves`), `domtest.js` (grep `session 12`), `dev/tools/check_figures.js` (grep `session 12`), `dev/tools/no_figure_change_allow.txt` (end of file).
 
 ## Pitfalls
-- `no_figure_change.py` now lists a new data file instead of failing on it. A changed count still needs a line in `dev/tools/no_figure_change_allow.txt`.
-- After adding domtest checks, run `node domtest.js --write-counts` (README and CONTRIBUTING quote the count).
-- In jsdom, chart legends are also `svg` elements: select `svg.fx-svg` for the drawings.
-- No model or assistant names in pushed files. Claude Code's Pro plan ends Thursday.
+- In the main reading the program's prices rise about 50% a year (the release's `infl` is a yearly compound rate, checked). EPPM's parts are therefore split in real terms; a split with a separate price-level part gave two huge parts that cancelled.
+- Without ageing, adults have no `_id`: twins are matched by position (`study_fields.js`). A shared id silently paired everyone once; the export now fails on duplicate ids.
+- The 500-seed 40-year export uses about 2.2 GB, so the job gives Node a 6 GB heap.
+- The results token expires 2026-10-17 04:16 UTC. Claude Code's Pro plan ends Thursday. The audit prompt had no replies by the launch.
+- No model or assistant names in pushed files.
+
+## Ledger updates for Duke
+(No ledger tool was loaded this session; please apply in one write to `projects/sim`.)
+- Steps done: the measures study launched and its 20-year results ingested (new step: "Run the dedicated measures study on one Runpod pod"); the suite page's second pass (Stage 1) built, draft pull request 34.
+- Decision recorded: "What gives way to the study in the last Pro days?" Answer: option 1 (Duke, Oct 14): the study today; CoMSES package, fact sheet and share kit wait.
+- New issue (medium): "Tier B (wider safety net, financing, demand multiplier, cost line, more avoided costs) is not built; packets in dev/plans/tier-b-packets.md."
+- `next`: "Ingest the 40-year measures study (HANDOFF.md action 1); Duke reads report v5-36 and merges pull request 34."
+- Log: "Oct 14: measures study run on Runpod (20-year results in); suite page cards with status badges; draft PR 34."
