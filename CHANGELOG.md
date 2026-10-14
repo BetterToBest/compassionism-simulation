@@ -1,8 +1,22 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1, the v5.4.1 notes at v5.5.0, the v5.5.0 notes at v5.6.0) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
+
+---
+
+## v5.5.0 Release Notes
+
+**Released as v5.5.0 (Oct 2026): the 500-seed health and sensitivity study on its own page.** A new page, `study.html`, shows the results of the paid 500-seed study (three health systems, three economies, with and without Compassionism) and its sensitivity analysis. No engine line changes and no figure of the v5.4 release changes; the simulation page and findings explorer show the same figures. Plain-words report for Duke: `dev/reports/v5-30-s137-results.md`.
+
+- **Basket poverty under today's system, single payer, and single payer with a private layer**, with and without Compassionism, in Reference, Adverse and Stress, with 95% intervals, and the other measures beside it.
+- **Government's costs in a separate table**, with the safety net's outlays labelled as not financed in the model.
+- **Single payer's range** under the Yale preprint's central, cautious and high-cost cases, labelled as depending on a preprint that is not peer reviewed.
+- **The price channel**: the rise in "too little wealth" with Compassionism comes through the model's price response (with prices held flat it falls).
+- **What the results depend on**: Morris screening and the follow-up Sobol run, with the share of the spread each input explains.
+- Every number on the page comes from `data/studies/s137.json`, written by `dev/tools/study_data.py` from `dev/runs/s137/` and `dev/runs/s137b/`; `dev/tools/check_figures.js` compares each one with the data. Each table downloads as CSV or JSON.
+- v5.4.1's notes are in CHANGELOG.md.
 
 ---
 

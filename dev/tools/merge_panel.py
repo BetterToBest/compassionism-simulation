@@ -18,7 +18,9 @@ for e in ['ref', 'adv', 'st']:
         sys.exit('merge_panel: the manifests of the per-environment panels differ (commit, file hashes or Node version); rerun all three from one commit')
     out['envs'][e] = d['envs'][e]
 YF = ' --years=' + Y if Y else ''
-out['_meta']['command'] = 'node harness.js testbed %d release ref,adv,st%s (one process per environment: release ref%s --json=dev/runs/release-panel%s-ref.json, and adv, st; then python3 dev/tools/merge_panel.py%s)' % (out['_meta']['seeds'], YF, YF, SUF, ' ' + Y if Y else '')
+# v5.6 (session 10): keep the run's switches (--v54 --snab --slope ...) in the merged command; before, they were dropped
+FLAGS = ''.join(' ' + t for t in out['_meta'].get('command', '').split('(')[0].split() if t.startswith('--') and not t.startswith(('--json', '--years', '--part')))
+out['_meta']['command'] = 'node harness.js testbed %d release ref,adv,st%s%s (one process per environment: release ref%s --json=dev/runs/release-panel%s-ref.json, and adv, st; then python3 dev/tools/merge_panel.py%s)' % (out['_meta']['seeds'], YF, FLAGS, YF, SUF, ' ' + Y if Y else '')
 def rnd(x, nd=3):
     if isinstance(x, float): return round(x, nd)
     if isinstance(x, dict): return {k: rnd(v, 4 if k.lower().find('gini') >= 0 else nd) for k, v in x.items()}  # v5.1: Gini keeps four decimals (E1); v5.2: every Gini key (giniW, giniWN, y7GiniD, ...)
