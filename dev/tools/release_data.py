@@ -115,7 +115,7 @@ MEAS = [  # key in the catalogue, label, panel key, change key, unit, basis, wha
      'In a typical year, the share of adults whose income falls short of the cost of a basic living (the MIT living-wage basket for one adult).'),
     ('pov', 'Too little wealth', 'pov', 'dPov', '% of adults at the last year',  # v5.2.2: the line comes from CFG.POVERTY_LINE (A3) and the measure is net wealth (A4)
      'At the end of the run, the share of adults with less than {{inputs.wealthLine|usd}} of net wealth (what someone owns minus what they owe) in today’s money.'),
-    ('bN', 'Below 30 days of basic living, design-neutral', 'bNAPy', 'dBN', '% of adult-years',
+    ('bN', 'Below 30 days of basic living, same-rules reading', 'bNAPy', 'dBN', '% of adult-years',
      'The same 30-day measure with the no-programme rules applied to everyone, so the design’s own definitions cannot flatter it.'),
     ('kid', 'Children below the cost of living', 'hhCostKidPY', 'd53.hhCostKidPY', '% of child-years',  # v5.3 (B8); the fourth headline card
      'In a typical year, the share of children whose household’s income falls short of the household’s cost of a basic living (the MIT living-wage basket for its adults and children).')]
@@ -193,7 +193,7 @@ def rel_table(R, Y):
                         'Price level at the last year (times today’s)' + (': median over the runs, with the 10th to 90th percentile and the mean' if new else ': mean over the runs'),
                         'Too little wealth if every Source dollar were backed (H1)', 'Cost per adult a year'] + (['Children below the cost of living, and the change (95% interval)'] if kids(R) else []), 'rows': rows}
 
-PAIRED = [('bOAPy', 'dBO', 'Below 30 days of basic living (BLEI)'), ('bNAPy', 'dBN', 'Below 30 days, design-neutral'), ('fgt0PY', 'dF0', 'Below the cost of living'), ('pov', 'dPov', 'Too little wealth at the last year'),
+PAIRED = [('bOAPy', 'dBO', 'Below 30 days of basic living (BLEI)'), ('bNAPy', 'dBN', 'Below 30 days, same-rules reading'), ('fgt0PY', 'dF0', 'Below the cost of living'), ('pov', 'dPov', 'Too little wealth at the last year'),
           ('hhCostKidPY', 'd53.hhCostKidPY', 'Children below the cost of living'), ('hhWlthKidEnd', 'd53.hhWlthKidEnd', 'Children in a household with too little wealth, last year')]
 
 def paired_table(R):
@@ -215,7 +215,7 @@ def paired_table(R):
             'columns': ['Years', 'Environment', 'Measure (lower is better)', 'Mean change, points (95% interval)', 'Runs in which the programme does better', 'Runs in which it does worse', 'Change in the 10th / middle / 90th run, points'], 'rows': rows}
 
 TG_MEASURES = [('fpl', 'Below the US official poverty line (money income)', 'under 2% (from about 12%)', 'p1', 'pov'), ('fplX', 'Below the poverty line, Supplemental-style resources', 'under 2%', 'p1', 'pov'),
-               ('bO', 'Below 30 days of basic living (BLEI, BLEI paper)', 'under 2%', 'p1', 'pov'), ('bN', 'Below 30 days of basic living (design-neutral)', 'under 2%', 'p1', 'pov'),
+               ('bO', 'Below 30 days of basic living (BLEI, BLEI paper)', 'under 2%', 'p1', 'pov'), ('bN', 'Below 30 days of basic living (same-rules reading)', 'under 2%', 'p1', 'pov'),
                ('f0', 'Below the cost of living', 'under 2%', 'p1', 'pov'), ('pov', 'Too little wealth', 'under 2%', 'p1', 'pov'), ('ep', 'Unhoused (extreme poverty)', 'under 2%', 'p2', 'pov'),
                ('giniD', 'Gini of disposable income', '0.25 to 0.30 (from 0.48)', 'n3', 'gini'), ('giniX', 'Gini of income counting price cuts', '0.25 to 0.30', 'n3', 'gini'), ('giniW', 'Gini of wealth (debts as zero)', '0.25 (BLEI paper)', 'n3', 'giniW')]
 
@@ -815,7 +815,7 @@ def summary_html(R):
     rep = E['ref']['rows']['release'].get('rep')
     if rep:  # which of the poverty measures meet the Hub's Year 7 target of under 2% (Reference)
         SH = {'fpl': 'the official poverty line ({{panels.20.envs.ref.rows.release.rep.y7.fpl|p1}})', 'fplX': 'the poverty line on Supplemental-style resources ({{panels.20.envs.ref.rows.release.rep.y7.fplX|p1}})',
-              'bO': '30 days of basic living ({{panels.20.envs.ref.rows.release.rep.y7.bO|p1}})', 'bN': '30 days, design-neutral ({{panels.20.envs.ref.rows.release.rep.y7.bN|p1}})',
+              'bO': '30 days of basic living ({{panels.20.envs.ref.rows.release.rep.y7.bO|p1}})', 'bN': '30 days, same-rules reading ({{panels.20.envs.ref.rows.release.rep.y7.bN|p1}})',
               'f0': 'the cost of living ({{panels.20.envs.ref.rows.release.rep.y7.f0|p1}})', 'pov': 'too little wealth ({{panels.20.envs.ref.rows.release.rep.y7.pov|p1}})', 'ep': 'unhoused ({{panels.20.envs.ref.rows.release.rep.y7.ep|p2}})'}
         met = [SH[k] for k, lbl, tgt, f, kind in TG_MEASURES if kind == 'pov' and rep['y7'][k] < 2]
         nmet = [SH[k] for k, lbl, tgt, f, kind in TG_MEASURES if kind == 'pov' and rep['y7'][k] >= 2]
@@ -841,7 +841,7 @@ def concepts_html(R):
          '<li><strong>Three environments:</strong> Reference (' + ENV_DESC['ref'] + '); Adverse (' + ENV_DESC['adv'] + '); Stress Test (' + ENV_DESC['st'] + ').</li>'
          '<li><strong>The main reading</strong> is Compassionism as specified on the Research Hub, every mechanism in, paid for by a Source that issues the BU; cautiously, what the Source pays out is new money except what new output backs. Every other assumption is a labelled reading beside it.</li></ul></div>'
          '<div class="kc"><h3>The measures</h3><ul>'
-         '<li><strong>Below {{inputs.bleiDays|int}} days of basic living</strong> (the Basic Living Economic Index, BLEI): savings, pay and support cover fewer than {{inputs.bleiDays|int}} days of basic costs. The BLEI paper\u2019s definition, with a design-neutral reading beside it.</li>'
+         '<li><strong>Below {{inputs.bleiDays|int}} days of basic living</strong> (the Basic Living Economic Index, BLEI): savings, pay and support cover fewer than {{inputs.bleiDays|int}} days of basic costs. The BLEI paper\u2019s definition, with the same-rules reading beside it (earlier called design-neutral: the same rules for everyone: 12% of a month\u2019s wage and the ordinary daily cost of living, plus one month of whatever regular support a design pays; it leaves out the two extras the BLEI paper gives participants (20% of wage, and a lower daily cost in community housing)).</li>'
          + ('<li><strong>Below the cost of living:</strong> a household’s income short of the MIT living-wage basket for its adults and children; counted for adults, for children and for everyone.</li>' if kids(R) else
             '<li><strong>Below the cost of living:</strong> income short of the MIT living-wage basket for one adult.</li>') +
          '<li><strong>Too little wealth:</strong> net wealth (what someone owns minus what they owe) under {{inputs.wealthLine|usd}} in today\u2019s money.</li>'

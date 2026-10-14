@@ -173,7 +173,7 @@
   };
   function tgt(R) { return R.inputs ? R.inputs.hubPovertyTarget : 2; }
   function gin(R) { return R.inputs ? R.inputs.hubGini : [0.25, 0.3]; }
-  var TG = [['fpl', 'Official poverty line'], ['fplX', 'Poverty line, Supplemental-style'], ['bO', 'Below 30 days (BLEI paper)'], ['bN', 'Below 30 days (design-neutral)'], ['f0', 'Below the cost of living'], ['pov', 'Too little wealth'], ['ep', 'Unhoused']];
+  var TG = [['fpl', 'Official poverty line'], ['fplX', 'Poverty line, Supplemental-style'], ['bO', 'Below 30 days (BLEI paper)'], ['bN', 'Below 30 days (same-rules reading)'], ['f0', 'Below the cost of living'], ['pov', 'Too little wealth'], ['ep', 'Unhoused']];
   CHARTS.targets = function (R, host, st) {
     var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || !E.rows.release.rep) return false;
     var rows = [], mk = function (t, k) { return [{v: E.base.rep[t][k], cls: 's-without', hollow: true, name: 'no programme'}, {v: E.rows.release.rep[t][k], cls: 's-with', name: 'Compassionism'}]; };
