@@ -21,3 +21,16 @@ replication.html	12	+1
 replication.html	20	+1
 # d202: the replication page's note on the new name says the old one was used "in releases up to v5.5". A version label.
 replication.html	5.5	+1
+# d204: the findings page now carries the front page's glossary (site/glossary.json); these are the numbers in its definitions, unchanged on the front page.
+findings.html	0	+1
+findings.html	1	+2
+findings.html	12	+2
+findings.html	16	+1
+findings.html	20	+1
+findings.html	4	+1
+findings.html	5.3	+1
+# d206: CONTRIBUTING.md's note now dates the table as a record closed on October 14 and no longer lists the later releases by number.
+CONTRIBUTING.md	14	+1
+CONTRIBUTING.md	5.3	-1
+CONTRIBUTING.md	5.4	-1
+CONTRIBUTING.md	5.5	-1
