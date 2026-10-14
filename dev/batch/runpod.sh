@@ -6,7 +6,7 @@
 #   bash -c 'git clone -q https://github.com/BetterToBest/compassionism-simulation /w/sim && cd /w/sim && git checkout -q RUNNER && bash dev/batch/runpod.sh'
 # Pod env: GH_TOKEN = {{ RUNPOD_SECRET_github_results_token }}; MAX_HOURS (default 10); MODE=smoke for the smoke test
 # (token expiry, one small file pushed, then terminate); STUDY=s137 for ledger step s137 (dev/tools/s137_jobs.sh), s137b for its follow-up Sobol
-# (dev/tools/s137b_jobs.sh), s165 for the v5.6 study (dev/tools/s165_jobs.sh; about 2.6 hours on 16 vCPU, --estimate); default v54, the v5.4 batch.
+# (dev/tools/s137b_jobs.sh), s165 for the v5.6 study (dev/tools/s165_jobs.sh; about 2.7 hours on 16 vCPU, --estimate); default v54, the v5.4 batch.
 # The token is never printed or written to disk. The engine commit is pinned below; the batch refuses to start if its worktree is not clean,
 # and run.txt records the engine, runner, Node version and command; SHA256SUMS (s137) records every output's hash.
 STUDY=${STUDY:-v54}
@@ -14,7 +14,7 @@ case $STUDY in
   v54)  ENGINE=fe88599f9d2f4d26651f6e01370454206257beab; JOBSH=dev/tools/v54_jobs.sh;;   # head of pull request #13's branch: the v5.4 engine, pinned
   s137) ENGINE=a3582e2ad2489619151b295d037cf99cb272fdd8; JOBSH=dev/tools/s137_jobs.sh;;                     # the outside-audit fixes' commit (engine unchanged since 57e00367e58f)
   s137b) ENGINE=41f236124d27ac282e4241acc0b916c24d036c49; JOBSH=dev/tools/s137b_jobs.sh;;                  # s137's follow-up Sobol (gsa.js sobjoin; engine unchanged since 57e00367e58f)
-  s165) ENGINE=c88c1e096e74380341996f3953407bd9d701622b; JOBSH=dev/tools/s165_jobs.sh;;                   # ledger s165: the panel with today's safety net and SNAP's work rule, the rule's own effect, the visual-suite export (s166, s164)
+  s165) ENGINE=5bf5bcc0e31d10e8fab8443f4d3972988e4bdf3b; JOBSH=dev/tools/s165_jobs.sh;;                   # ledger s165: the panel with today's safety net (SNET.slope, session 9) and SNAP's work rule, the rule's own effect, the visual-suite export, the history check, the safety-net trace (s166, s164, s146, i24-1); re-pinned from c88c1e0
   *) echo "unknown STUDY $STUDY"; exit 1;;
 esac
 NODEV=22.22.0                                      # the Node version of the earlier local runs
