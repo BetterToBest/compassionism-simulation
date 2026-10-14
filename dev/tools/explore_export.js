@@ -34,7 +34,7 @@
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), V54 = process.argv.indexOf('--v54') >= 0, V53 = V54 || process.argv.indexOf('--v53') >= 0;
-const SUITE = process.argv.indexOf('--suite') >= 0, SNAB = process.argv.indexOf('--snab') >= 0, SN = SNAB || process.argv.indexOf('--sn') >= 0, PANEL_ARG = (process.argv.find(a => a.startsWith('--panel=')) || '').slice(8);
+const SUITE = process.argv.indexOf('--suite') >= 0, SNAB = process.argv.indexOf('--snab') >= 0, SN = SNAB || process.argv.indexOf('--sn') >= 0, SLOPE = SN && process.argv.indexOf('--slope') >= 0, PANEL_ARG = (process.argv.find(a => a.startsWith('--panel=')) || '').slice(8);
 const env = ARG[0] || 'ref', YRS = +(ARG[1] || 20), N = +(ARG[2] || 500), LS = +(ARG[3] || 1);
 const NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME || (YRS !== 20 && YRS !== 40) || !(LS >= 1 && LS <= N)) { console.error('usage: explore_export.js ref|adv|st [20|40] [SEEDS] [LIFESEED]'); process.exit(1); }
@@ -44,14 +44,14 @@ const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the
 const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
 const ROWS = ['base', 'release', 'h1', 'mid'];
 const out = {_meta: {what: 'year-by-year spread across seeds, savings deciles and one seed\'s adults, for the pages\' explore sections (presentation only)', env, years: YRS, seeds: N, lifeSeed: LS,
-  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V54 ? ' --v54' : V53 ? ' --v53' : '') + (SUITE ? ' --suite' : '') + (SNAB ? ' --snab' : SN ? ' --sn' : '') + (PANEL_ARG ? ' --panel=' + PANEL_ARG : ''),
+  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V54 ? ' --v54' : V53 ? ' --v53' : '') + (SUITE ? ' --suite' : '') + (SNAB ? ' --snab' : SN ? ' --sn' : '') + (SLOPE ? ' --slope' : '') + (PANEL_ARG ? ' --panel=' + PANEL_ARG : ''),
   flags: {1: 'below 30 days of basic living (BLEI paper)', 2: 'below the cost of living', 4: 'too little wealth', 8: 'taking part in the programme'}}, bands: {}, deciles: {}, lives: {}};
 let segs = [], cur = null;
 try {
   const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P), rel = V54 ? H.releaseRowsV54(SC) : V53 ? H.releaseRowsV53(SC) : H.releaseRows(SC), byJ = {};
   rel.forEach(r => { byJ[r.j] = r; });
   const cfg = [Object.assign({p: PR.baseline(), sc: SC}, V53 ? {hh: H.REL_V53.hh, sg: H.REL_V53.sg, g: H.REL_V53.g} : {}, V54 ? H.REL_V54 : {})].concat(['release', 'h1', 'mid'].map(j => { const r = byJ[j], c = H.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return c; }));
-  if (SN) cfg.forEach(c => { c.sn = SNAB ? {abawd: true} : {}; });  /* session 7: today's safety net, and SNAP's work rule */
+  if (SN) cfg.forEach(c => { c.sn = Object.assign(SNAB ? {abawd: true} : {}, SLOPE ? {slope: true} : {}); });  /* session 7: today's safety net, and SNAP's work rule; session 9: --slope, SNET.slope (i24-1) */
   const T = YRS, L30 = C.BLEI_PRECARIOUS_MAX, TB = [C.BLEI_CRISIS_MAX, C.BLEI_PRECARIOUS_MAX, C.BLEI_THRESHOLD_MAX, C.BLEI_STABLE_MAX, C.BLEI_SECURE_MAX];
   const tierOf = d => { let k = 0; while (k < TB.length && d >= TB[k]) k++; return k; }, med = x => x.length ? H.quantileOf(x, 0.5) : null, mean = x => x.length ? x.reduce((s, v) => s + v, 0)/x.length : 0;
   /* session 7 (--suite): one year of one run, the visual suite's series */

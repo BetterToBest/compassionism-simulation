@@ -5095,7 +5095,7 @@ function hlRes(out){ var A = HLS ? HLS.acc : null, ay = A && A.ay ? A.ay : 1, pc
  * benefits enter as unconditional dollars linearised at last year's earnings (the adult's share of the benefits + m x the adult's earnings), the one income
  * effect. Draws: take-up is a hash of (seed, household head, slot) with the health block's hash on its own seed offset; no stream the engine uses. */
 var SNET = null, SNS = null;
-var SNET_DEFAULTS = {gross:2.0, snapTake:0.88, taxTake:0.808, snap:true, eitc:true, ctc:true, abawd:false, abawdEx:0.08};  /* abawd, abawdEx: session 7, SNAP's work rule (below) */
+var SNET_DEFAULTS = {gross:2.0, snapTake:0.88, taxTake:0.808, snap:true, eitc:true, ctc:true, abawd:false, abawdEx:0.08, slope:false};  /* abawd, abawdEx: session 7, SNAP's work rule (below); slope: session 9, the marginal rate without SNAP's income-limit cliff (below) */
 CFG.SN_SNAP = {max:[298, 546, 785, 994, 1183, 1421, 1571, 1789], add:218, std:[209, 209, 209, 223, 261, 299], shCap:744, min:24, earnDed:0.20, rate:0.30, old:60};
 CFG.SN_EITC = [{inc:8490, max:649, ps:10620, pj:17730, es:19104, ej:26214}, {inc:12730, max:4328, ps:23350, pj:30470, es:50434, ej:57554},
   {inc:17880, max:7152, ps:23350, pj:30470, es:57310, ej:64430}, {inc:17880, max:8046, ps:23350, pj:30470, es:61555, ej:68675}];  /* none, one, two, three or more children */
@@ -5108,9 +5108,9 @@ var SN_AB_KEYS = ['snAbN', 'snAbM', 'snAbLost'];  /* session 7, only with SNET.a
  * marginal rate (%) over adult-years in receiving households; snKids: % of child-years in households receiving any of the three. */
 function snIncTax(f, agi){ var T = CFG.SN_TAX, x = Math.max(0, agi - T.std[f]), lo = 0, t = 0;  /* income tax before credits, filing status f ('s', 'h', 'j') */
   T.br[f].some(function(b){ t += Math.max(0, Math.min(x, b[0]) - lo)*b[1]; lo = b[0]; return x <= b[0]; }); return t; }
-function snBen(h, earn){  /* one household's yearly benefits in year-0 dollars at earnings earn: [snap, eitc, ctc]. h: {nA, nK, k17, other, house, care, old, okAge, takeS, takeT} */
+function snBen(h, earn, keep){  /* one household's yearly benefits in year-0 dollars at earnings earn: [snap, eitc, ctc]. h: {nA, nK, k17, other, house, care, old, okAge, takeS, takeT}; keep (session 9, SNET.slope): SNAP's gross income test is passed */
   var E = SNET, Y = Math.max(0, earn + h.other), T = incomeTest(h.nA, h.nK, Y), n = T.n, f = h.nA >= 2 ? 'j' : h.nK > 0 ? 'h' : 's', snap = 0, eitc = 0, ctc = 0;
-  if (E.snap && h.takeS && T.ratio <= E.gross){ var S = CFG.SN_SNAP, ni = Math.max(0, Y - S.earnDed*earn - 12*S.std[Math.min(n, S.std.length) - 1] - h.care), sh = Math.max(0, h.house - 0.5*ni);
+  if (E.snap && h.takeS && (keep || T.ratio <= E.gross)){ var S = CFG.SN_SNAP, ni = Math.max(0, Y - S.earnDed*earn - 12*S.std[Math.min(n, S.std.length) - 1] - h.care), sh = Math.max(0, h.house - 0.5*ni);
     if (!h.old) sh = Math.min(sh, 12*S.shCap); ni = Math.max(0, ni - sh);
     var mx = 12*(n <= S.max.length ? S.max[n - 1] : S.max[S.max.length - 1] + S.add*(n - S.max.length)); snap = Math.max(0, mx - S.rate*ni); if (n <= 2) snap = Math.max(snap, 12*S.min); }
   if (E.eitc && h.takeT && (h.nK > 0 || h.okAge)){ var P = CFG.SN_EITC[Math.min(3, h.nK)], st = f === 'j' ? P.pj : P.ps, en = f === 'j' ? P.ej : P.es;
@@ -5135,7 +5135,7 @@ function snYear(agents, yr, HHON, inflRate){
     u.kids.forEach(function(age){ if (age < CFG.SN_CTC.age) k17++; });
     var h = {nA:nA, nK:nK, k17:k17, other:other, house:u.H ? u.H.need.housing : CFG.LIVING_WAGE_ANNUAL*CFG.BASKET.housing, care:u.H ? (u.H.need.childcare || 0) : 0, old:old, okAge:okAge,
       takeS:hlU(S.seed, hd, 0, 31) < SNET.snapTake, takeT:hlU(S.seed, hd, 0, 32) < SNET.taxTake};
-    var b0 = snBen(h, earn), b1 = snBen(h, earn + 1000);
+    var b0 = snBen(h, earn), b1 = snBen(h, earn + 1000, SNET.slope && b0[0] > 0);  /* session 9: with SNET.slope a household receiving SNAP keeps passing the gross test at +$1,000 (comment above) */
     if (SNET.abawd){ var abK = u.kids.some(function(age){ return age < 14; }), abL = [];  /* session 7: SNAP's work rule (comment above) */
       u.a.forEach(function(a){ var l = snAbClock(a, !abK && !a._ret && (typeof a.age !== 'number' || (a.age >= 18 && a.age <= 64)), b0[0] > 0); if (l > 0){ abL.push(l); ac.abN++; ac.abL += l; } });
       var abCut = snAbCut(h, earn, b0[0], abL); b0[0] -= abCut; b1[0] -= snAbCut(h, earn + 1000, b1[0], abL); ac.abM += abCut; }
@@ -5849,7 +5849,7 @@ function priceRun(p, seed, o, S){
   RNG = mulberry32(seed + 700003);
   var agents = makeLatentPopulation(p.nAgents).map(function(l){ return instantiateAgent(l, p); });
   if (HOUSEHOLDS) hhInit(agents, seed);  /* v5.3 B3: the same households as the testbed run of this seed */
-  var recPath = p.shock ? buildRecessionPath(p.years, seed) : null;
+  var recPath = p.shock ? (REC_SCRIPT ? recScriptPath(p.years) : buildRecessionPath(p.years, seed)) : null;  /* session 9: REC_SCRIPT (comment above tbOpts), so the supply path sees the same scripted path */
   RNG = mulberry32(seed);
   var comp = {}; CFG.BASKET_KEYS.forEach(function(k){ comp[k] = 1; });
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
@@ -5935,6 +5935,12 @@ var TB_RUN = {wIdx:1, labor:LABOR_DEFAULTS};
  * still shows the attribution off and on). The global default stays false, so the unit tests and the index.html parity checks
  * are unchanged; tbUnitSuite checks the profile directly. */
 var TB_PROFILE_G = {N7_BLEI:true};
+/* Session 9 (Oct 14, 2026; ledger s146; dev/plans/s146-history-check.md; dev/reports/v5-34-history-check.md): A SCRIPTED RECESSION PATH for the history check.
+ * REC_SCRIPT null (the default) adds nothing: the testbed draws its recessions as before (buildRecessionPath, its own stream). When an array of
+ * {active, incomeMultiplier}, a testbed run with p.shock (and the price run that gives its supply path) uses it, year by year, for every seed and both
+ * arms (years past its end are calm); the random path is not built, and since buildRecessionPath draws only from its own stream and restores the main one, no other draw moves. No draw is added. */
+var REC_SCRIPT = null;
+function recScriptPath(years){ var out = []; for (var y = 0; y < years; y++){ var r = REC_SCRIPT[y]; out.push(r ? {active:!!r.active, incomeMultiplier:+r.incomeMultiplier} : {active:false, incomeMultiplier:1.0}); } return out; }
 function tbOpts(o){ o = o || {}; var r = Object.assign({}, PM_DEFAULTS, TB_DEFAULTS, TB_RUN, o); r.theta = Object.assign({}, PM_DEFAULTS.theta, o.theta || {}); return r; }
 /* Session 8 (A5): Gini coefficient of a list of incomes (negatives count as 0), the standard sorted-rank formula. */
 function giniOfArr(x){ var v = x.map(function(z){ return Math.max(0, +z || 0); }).sort(function(a, b){ return a - b; }), n = v.length, t = 0, w = 0;
@@ -5945,7 +5951,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   RNG = mulberry32(seed + 700003);
   var latent = makeLatentPopulation(p.nAgents); if (LATENT) latent.forEach(latentAdjust);  /* v5.2 step 5: the readings that close known gaps with US data (no draw added) */
   var agents = latent.map(function(l){ return instantiateAgent(l, p); });
-  var recPath = p.shock ? buildRecessionPath(p.years, seed) : null;
+  var recPath = p.shock ? (REC_SCRIPT ? recScriptPath(p.years) : buildRecessionPath(p.years, seed)) : null;  /* session 9: REC_SCRIPT, a fixed recession path (comment above tbOpts) */
   var spec = p.tb || {}, gR = mulberry32(seed + 900001), grp = o.grp || {part:0, pth:0};
   var wq = latent.map(function(l){ return l.wage; }).sort(function(x, y){ return x - y; }), w1 = wq[Math.floor(wq.length/3)], w2 = wq[Math.floor(2*wq.length/3)];
   agents.forEach(function(a, i){ var l = latent[i]; a._tbU = gR(); a._tbEl = !!(spec.endow && l.wealth < spec.endow.thresh); a._tbPart = l.uCCO < grp.part; a._tbPTH = l.uPTH < grp.pth; a._tbLow = l.wage < w1; a._tbTop = l.wage >= w2; });
