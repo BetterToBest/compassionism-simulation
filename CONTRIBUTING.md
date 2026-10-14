@@ -40,17 +40,17 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.5.0 Release Notes
+## v5.6.0 Release Notes
 
-**Released as v5.5.0 (Oct 2026): the 500-seed health and sensitivity study on its own page.** A new page, `study.html`, shows the results of the paid 500-seed study (three health systems, three economies, with and without Compassionism) and its sensitivity analysis. No engine line changes and no figure of the v5.4 release changes; the simulation page and findings explorer show the same figures. Plain-words report for Duke: `dev/reports/v5-30-s137-results.md`.
+**Released as v5.6.0 (Oct 2026): today's safety net in both runs.** The release figures come from a new 500-seed study (engine commit 5bf5bcc) in which both runs, with and without Compassionism, have today's safety net: SNAP (with its work rule for adults aged 18 to 64 with no child under 14, Public Law 119-21), the earned income tax credit and the refundable Child Tax Credit, paid on last year's income. "No program" now means today's US policy, and each change is what Compassionism adds to it. Plain-words report for Duke: `dev/reports/v5-34-v56-release.md`.
 
-- **Basket poverty under today's system, single payer, and single payer with a private layer**, with and without Compassionism, in Reference, Adverse and Stress, with 95% intervals, and the other measures beside it.
-- **Government's costs in a separate table**, with the safety net's outlays labelled as not financed in the model.
-- **Single payer's range** under the Yale preprint's central, cautious and high-cost cases, labelled as depending on a preprint that is not peer reviewed.
-- **The price channel**: the rise in "too little wealth" with Compassionism comes through the model's price response (with prices held flat it falls).
-- **What the results depend on**: Morris screening and the follow-up Sobol run, with the share of the spread each input explains.
-- Every number on the page comes from `data/studies/s137.json`, written by `dev/tools/study_data.py` from `dev/runs/s137/` and `dev/runs/s137b/`; `dev/tools/check_figures.js` compares each one with the data. Each table downloads as CSV or JSON.
-- v5.4.1's notes are in CHANGELOG.md.
+- **Compassionism's measured gain moved little**: by under one point for adults in every environment and horizon, and by 0.7 to 1.7 points for children; no result changed sign. The Stress Test is where the gain shrinks on every measure (by 0.2 to 0.8 points).
+- **SNAP's work rule adds almost nothing** (at most 0.07 points on the gain); nearly all of the move is the safety net itself.
+- **SNAP's income limit is no longer read as a tax on all earnings** (`SNET.slope`): the safety net's marginal rate is the slope of the benefit schedule, not its cliff.
+- The attribution runs and the US-data check are still v5.3's, with no safety net; the pages say so.
+- Each switch is off by default in the engine, and with all three off every figure of v5.5 is reproduced exactly (`guard_test.js`, `snap_rule_check.js`).
+- `merge_panel.py` and `backing_chart.py` now keep the run's switches in the merged files' reproduce command.
+- v5.5.0's notes are in CHANGELOG.md.
 
 ---
 
