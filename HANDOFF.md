@@ -6,7 +6,7 @@
 - **Pull requests 27 and 28 are merged** (main head 0282579 before pull request 29).
 
 ## Branch and pull request state
-- Branch `claude/history-data-s156`, head 8737c3b, draft pull request 29 into `main`. It touches no code the checks run, so CI is expected green (checks and guard run on every push). If it is still unmerged, branch from it; if merged, restart from `main`.
+- Branch `claude/history-data-s156`, draft pull request 29 into `main` (head = the newest commit on the branch). It touches no code the checks run, so CI is expected green (checks and guard run on every push). If it is still unmerged, branch from it; if merged, restart from `main`.
 
 ## Long jobs in flight
 - None. The study (ledger s165) is not launched. The results token expires 2026-10-17 04:16 UTC.
