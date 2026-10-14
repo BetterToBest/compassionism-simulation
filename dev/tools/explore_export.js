@@ -137,7 +137,7 @@ try {
         if (Math.abs(x - e[sd]) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' ' + g + ': ' + x + ' vs ' + e[sd]); } }); });
     delete out.bands; delete out.deciles; delete out.lives; }
   if (bad.length) { console.error('SELF-CHECK FAILED (' + bad.length + '):\n  ' + bad.slice(0, 20).join('\n  ')); process.exit(1); }
-  out._meta.selfCheck = (full ? '' : 'NOT COMPARED WITH THE PANEL (seeds differ); ') + 'yearly means equal the published path (' + PANEL.replace(ROOT + path.sep, '') + '); seed ' + LS + '\'s adults add up to the engine\'s yearly shares';
+  out._meta.selfCheck = (full ? '' : 'NOT COMPARED WITH THE PANEL (seeds differ); ') + 'yearly means equal the published path (' + PANEL.replace(ROOT + path.sep, '') + '); seed ' + LS + '\'s adults add up to the engine\'s yearly shares' + (STUDY ? '; study: no accounting identity failed, the adults\' below-30-days count equals the engine\'s bO, the wealth Gini equals the engine\'s at Year 7 and the last year, every adult has a twin, EPPM\'s parts add up' : '');
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const OUTF = (process.argv.find(a => a.startsWith('--out=')) || '').slice(6);  /* session 7: --out=FILE writes there (the s165 job keeps its worktree clean) */
