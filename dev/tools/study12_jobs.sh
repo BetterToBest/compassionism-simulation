@@ -19,7 +19,7 @@ cd "$W" || exit 1; END=; [ -n "$MAXH" ] && END=$(( $(date +%s) + $(awk "BEGIN{pr
 J=(); for y in 40 20; do for e in ref adv st; do J+=("$e $y"); done; done   # the long pieces first
 done_(){ [ -n "$ON_DONE" ] && $ON_DONE "$@"; return 0; }
 run(){ set -- $1; local s= f=$OUT/explore-study-$1-$2-snab.json; [ $2 = 40 ] && s=-40; [ -s $f ] && return
-  node dev/tools/explore_export.js $1 $2 $N 1 --v54 --study --snab --slope --panel=dev/runs/release-panel$s-$1.json --out=$f.tmp > $OUT/st-$1-$2.log 2>&1 && mv $f.tmp $f
+  NODE_OPTIONS=--max-old-space-size=6144 node dev/tools/explore_export.js $1 $2 $N 1 --v54 --study --snab --slope --panel=dev/runs/release-panel$s-$1.json --out=$f.tmp > $OUT/st-$1-$2.log 2>&1 && mv $f.tmp $f
   local r=$?; echo "study $* done $(date -u +%FT%TZ) exit $r" >> $OUT/status.txt; [ $r = 0 ] && done_ "$f"; }
 late(){ [ -n "$END" ] && [ $(date +%s) -ge $END ]; }
 echo "start $(date -u +%FT%TZ) at $(git rev-parse --short HEAD), $P at a time${MAXH:+, max $MAXH h}" >> $OUT/status.txt

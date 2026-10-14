@@ -78,7 +78,7 @@ try {
   /* The hook sees every simulated year of every run in tbStudy's order (seed outer, row inner). tbRun may first run one year to set the contribution
    * rate; that short run is recognised (it ends after one year) and dropped. */
   function close() { if (cur && cur.length === T) segs.push(cur); cur = null; }
-  let k = 0, twinYr = [], seqMap = null;
+  let k = 0, twinYr = [], seqMap = null; const stKeys = [];
   H.setRepHook(function (agents, yr, TT, lf, ep) {
     if (yr === 0) close();
     if (yr === 0) cur = [];
@@ -91,7 +91,8 @@ try {
     if (SUITE) rec.s = suiteYear(agents, cfg[row].p, lf, ep);
     if (STUDY) { const recs = agents.map((a, ix) => SF.adult(H, a, cfg[row].p, lf, tierOf, ix)); if (row === 0) twinYr[yr] = new Map(recs.map(r => [r.id, r]));
       if (yr === 0) seqMap = new Map(); recs.forEach(r => { if (!seqMap.has(r.id)) seqMap.set(r.id, []); seqMap.get(r.id)[yr] = r.tier; });
-      const y = SF.yearSummary(recs, row === 0 ? null : twinYr[yr], L30); rec.st = y.s; rec.stPaired = y.paired; rec.stN = y.n; rec.stBO = recs.filter(r => r.bo < L30).length/recs.length*100;
+      const y = SF.yearSummary(recs, row === 0 ? null : twinYr[yr], L30), K = stKeys[row] || (stKeys[row] = Object.keys(y.s));  /* packed: about 1 MB a seed instead of 9 */
+      if (K.length !== Object.keys(y.s).length) throw new Error('study keys changed'); rec.st = Float64Array.from(K, x => y.s[x] === null || y.s[x] === undefined ? NaN : y.s[x]); rec.stPaired = y.paired; rec.stN = y.n; rec.stBO = recs.filter(r => r.bo < L30).length/recs.length*100;
       if (yr === T - 1) rec.run = SF.runSummary(seqMap, T); }
     cur.push(rec); k++;
   });
@@ -125,15 +126,15 @@ try {
     out._meta.study = {tiers: ['Crisis', 'Precarious', 'Threshold', 'Stable', 'Secure', 'Flourishing'], definitions: 'dev/tools/study_fields.js', units: 'dollars a month in today\'s prices; shares in %; days of basic living; EPPM a ratio and its parts shares of the twins\' total',
       acct: {checks: ACC.n, failures: ACC.nFail}};
     Object.keys(ACC.nFail).forEach(id => { if (ACC.nFail[id]) bad.push('accounting identity ' + id + ' failed ' + ACC.nFail[id] + ' times'); });
-    ROWS.forEach((j, i) => { const S = out.study[j] = {}, keys = new Set();
-      for (let sd = 0; sd < N; sd++) for (let t = 0; t < T; t++) { const y = segs[sd*cfg.length + i][t]; Object.keys(y.st).forEach(x => keys.add(x));
+    ROWS.forEach((j, i) => { const S = out.study[j] = {};
+      for (let sd = 0; sd < N; sd++) for (let t = 0; t < T; t++) { const y = segs[sd*cfg.length + i][t];
         const eng = R[i]._s['pbO_' + t][sd]; if (Math.abs(y.stBO - eng) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' study bO year ' + (t + 1) + ': ' + y.stBO + ' vs ' + eng);
         if (i > 0 && y.stPaired !== y.stN) bad.push(j + ' seed ' + (sd + 1) + ' year ' + (t + 1) + ': ' + (y.stN - y.stPaired) + ' adults without a twin'); }
-      keys.forEach(key => { const m = [], lo = [], hi = []; for (let t = 0; t < T; t++) { const v = []; for (let sd = 0; sd < N; sd++) { const x = segs[sd*cfg.length + i][t].st[key]; if (x !== null && x !== undefined) v.push(x); }
+      stKeys[i].forEach((key, ki) => { const m = [], lo = [], hi = []; for (let t = 0; t < T; t++) { const v = []; for (let sd = 0; sd < N; sd++) { const x = segs[sd*cfg.length + i][t].st[ki]; if (!isNaN(x)) v.push(x); }
         const r = SM(v); m.push(r[0]); lo.push(r[1]); hi.push(r[2]); } S[key] = {mean: m, p10: lo, p90: hi}; });
       const RS = out.studyRun[j] = {}, rk = Object.keys(segs[i][T - 1].run);
       rk.forEach(key => { const v = []; for (let sd = 0; sd < N; sd++) { const x = segs[sd*cfg.length + i][T - 1].run[key]; if (x !== null && x !== undefined) v.push(x); } const r = SM(v); RS[key] = {mean: r[0], p10: r[1], p90: r[2]}; });
-      [['y7GiniW', 6], ['eGiniW', T - 1]].forEach(([g, t]) => { const e = R[i]._s[g]; if (!e) return; for (let sd = 0; sd < N; sd++) { const n = segs[sd*cfg.length + i][t].stN, x = segs[sd*cfg.length + i][t].st.giniW*n/(n - 1);
+      [['y7GiniW', 6], ['eGiniW', T - 1]].forEach(([g, t]) => { const e = R[i]._s[g]; if (!e) return; for (let sd = 0; sd < N; sd++) { const n = segs[sd*cfg.length + i][t].stN, x = segs[sd*cfg.length + i][t].st[stKeys[i].indexOf('giniW')]*n/(n - 1);
         if (Math.abs(x - e[sd]) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' ' + g + ': ' + x + ' vs ' + e[sd]); } }); });
     delete out.bands; delete out.deciles; delete out.lives; }
   if (bad.length) { console.error('SELF-CHECK FAILED (' + bad.length + '):\n  ' + bad.slice(0, 20).join('\n  ')); process.exit(1); }
