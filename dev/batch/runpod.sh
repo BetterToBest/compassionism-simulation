@@ -16,7 +16,7 @@ case $STUDY in
   s137) ENGINE=a3582e2ad2489619151b295d037cf99cb272fdd8; JOBSH=dev/tools/s137_jobs.sh;;                     # the outside-audit fixes' commit (engine unchanged since 57e00367e58f)
   s137b) ENGINE=41f236124d27ac282e4241acc0b916c24d036c49; JOBSH=dev/tools/s137b_jobs.sh;;                  # s137's follow-up Sobol (gsa.js sobjoin; engine unchanged since 57e00367e58f)
   s165) ENGINE=5bf5bcc0e31d10e8fab8443f4d3972988e4bdf3b; JOBSH=dev/tools/s165_jobs.sh;;                   # ledger s165: the panel with today's safety net (SNET.slope, session 9) and SNAP's work rule, the rule's own effect, the visual-suite export, the history check, the safety-net trace (s166, s164, s146, i24-1); re-pinned from c88c1e0
-  study12) ENGINE=a852eb6ef3d92a51f56f31a0bd6d05c0ad4c35df; JOBSH=dev/tools/study12_jobs.sh;;                # session 12: the measures study for the visual suite (explore_export.js --study; engine block unchanged since 5bf5bcc)
+  study12) ENGINE=65abdc6b7575c30ef0b1218f62069219e49d410b; JOBSH=dev/tools/study12_jobs.sh;;                # session 12: the measures study for the visual suite (explore_export.js --study; engine block unchanged since 5bf5bcc)
   *) echo "unknown STUDY $STUDY"; exit 1;;
 esac
 NODEV=22.22.0                                      # the Node version of the earlier local runs
