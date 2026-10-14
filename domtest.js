@@ -1253,7 +1253,7 @@ function phase15(done) {
     const secs = d.querySelectorAll('.su-sec').length, svgs = d.querySelectorAll('.su-sec svg.fx-svg').length, tierCols = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length);
     const tables = d.querySelectorAll('#suite table').length, dl = d.querySelectorAll('#suite .fx-tools button').length;
     check('session 11: every section, chart and table draws; each ladder chart has one column a year; every table has CSV and JSON downloads',
-      secs === 9 && svgs === 11 && tierCols.join() === '40,40' && tables === 7 && dl === 2*tables, secs + ' sections, ' + svgs + ' charts, ladder columns ' + tierCols.join(' and ') + ', ' + tables + ' tables, ' + dl + ' download buttons');
+      secs === 9 && svgs === 11 && tierCols.join() === '40,40' && tables === 7 + (S.R.study && S.R.study[S.st.years] ? 6 : 0) && dl === 2*tables,  /* session 12: + the movement section's six tables when the study covers this horizon */ secs + ' sections, ' + svgs + ' charts, ladder columns ' + tierCols.join(' and ') + ', ' + tables + ' tables, ' + dl + ' download buttons');
     [...d.querySelectorAll('#controls button')].filter(b => b.dataset.value === 'ref' || b.dataset.value === '20' || b.dataset.value === 'release').forEach(b => b.click());
     [...d.querySelectorAll('#tiers button')].filter(b => b.dataset.value === 'part')[0].click(); await later(100);
     const q = new URLSearchParams(a.w.location.search), cols20 = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();

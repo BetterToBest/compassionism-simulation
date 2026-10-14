@@ -8,7 +8,7 @@ Oct 14, 2026. Plain-words report for Duke. The plans behind this work are `dev/p
 2. **The visual suite page has a second pass** (not yet linked from anywhere, as before). Each of the paper's six measures now has its own card: the question in plain words, the answer for no program and Compassionism, how it is computed here, how that differs from your paper, what it does not show, and a status badge: *Measured*, *Measured differently from the paper*, *Partly modelled* or *Not modelled*. A new section, "Who gains, and how people move", fills in when the study's data is added. Until then, the cards that need the study say so.
 3. **IPBI now shows what the model does have:** the public costs avoided (prisons, hospital and psychiatric stays, homelessness), the same figures as the main page's cost section, beside the program's cost. In the Stress Test the homelessness figure is negative (more people unhoused), and the card says so in words.
 
-## First results (20 years; the 40-year results follow)
+## Results
 
 All figures are for Year 20, as means over 500 paired runs, in today's prices. "Main reading" means the Source's payout is mostly new money; "every dollar backed" means new output backs all of it, so prices do not rise.
 
@@ -32,6 +32,20 @@ What this says in plain words:
 - **The wealth Gini misses drain.** Net of a year's rent and interest, wealth is more unequal than the ordinary Gini shows (Reference, main reading: 0.566 instead of 0.491; no program: 0.759 instead of 0.754). The program narrows both.
 - **A warning the page now shows: in the Stress Test's main reading, the program leaves the poorest fifth slightly worse on the 30-day line** (75.1% under 30 days, against 69.2% with no program), and the richest fifth much worse (20.3% against 7.2%), because the price rise outruns the support. This is a model result reported as it is, not hidden.
 - **Interest on debt is zero in this configuration** (the model's saving rule charges no interest on debt), so the drain is rent only and EPPM's interest part is zero.
+
+### Over 40 years
+
+| Year 40 | Reference | Adverse | Stress Test |
+|---|---|---|---|
+| EPPM, participants (main reading) | 1.28 | 1.74 | 1.58 |
+| EPPM, participants in the poorest fifth | 1.96 | 2.71 | 2.37 |
+| EPPM, adults who do not take part (main reading) | 0.84 | 0.86 | 0.88 |
+| EPPM, adults who do not take part (every dollar backed) | 1.17 | 1.20 | 1.08 |
+| Adults with no surplus at all, no program → Compassionism | 34% → 14% | 84% → 63% | 84% → 80% |
+| Years in Crisis per adult (of 40), no program → Compassionism | 8.6 → 1.6 | 14.8 → 3.6 | 14.8 → 12.4 |
+| Poorest fifth under 30 days, no program → Compassionism | 75.2% → 23.5% | 82.7% → 47.8% | 82.7% → 85.7% |
+
+Over 40 years the pattern holds and sharpens. The cost to people who do not take part grows in the main reading (their money goes 12% to 16% less far), and so does their gain when every dollar is backed (8% to 20%). At Reference and Adverse, Crisis shrinks to a fraction of its no-program size. In the Stress Test's main reading, the poorest fifth again ends slightly worse on the 30-day line.
 
 ## Things to check against your vision
 
@@ -58,4 +72,4 @@ These are flagged, not asked: you delegated the math, but each touches a claim i
 
 ## What happens next
 
-The 20-year files are in the release data and the page fills in at 20 years; the 40-year files are added when the pod finishes. Linking the page from the findings explorer waits for your approval, in a separate pull request.
+All six study files (three environments, 20 and 40 years) are in the release data, and the page fills in for every view. Linking the page from the findings explorer waits for your approval, in a separate pull request.
