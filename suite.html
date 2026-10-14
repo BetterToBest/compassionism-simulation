@@ -93,7 +93,7 @@ footer p{margin:0 0 6px}
 </div></nav>
 
 <main id="content"><div class="wrap" id="suite"><p class="fx-loading">The suite loads from the latest release in <a href="data/manifest.json">data/manifest.json</a>.</p>
-  <noscript><p class="fx-banner">The charts and tables on this page need JavaScript. Every figure is in the release data: <a href="data/manifest.json">data/manifest.json</a> lists the releases, and each release's suite series are in data/releases/v&lt;version&gt;/suite-20.json and suite-40.json. The plain-words report is <a href="dev/reports/v5-33-visual-suite.md">dev/reports/v5-33-visual-suite.md</a>.</p></noscript>
+  <noscript><p class="fx-banner">The charts and tables on this page need JavaScript. Every figure is in the release data: <a href="data/manifest.json">data/manifest.json</a> lists the releases, and each release's suite series are in data/releases/v&lt;version&gt;/suite-20.json and suite-40.json. The plain-words reports are <a href="dev/reports/v5-33-visual-suite.md">dev/reports/v5-33-visual-suite.md</a> and, for the measure cards and the measures study, <a href="dev/reports/v5-36-measures-study.md">dev/reports/v5-36-measures-study.md</a>.</p></noscript>
 </div></main>
 
 <footer><div class="wrap">
@@ -379,7 +379,7 @@ footer p{margin:0 0 6px}
     s.appendChild(ul);
     var cmds = Object.keys(M.commands).map(function (e) { return '<code>' + esc(M.commands[e]) + '</code>'; }).join('<br>');
     s.appendChild(para('Data: release v' + esc(R.version) + ' (<a href="data/' + esc(ENT.file) + '">data/' + esc(ENT.file) + '</a>) and its suite series (<a href="data/releases/' + esc(R.explore.suite[st.years]) + '">data/releases/' + esc(R.explore.suite[st.years]) + '</a>), produced at commit <code>' + esc(M.manifest.commit) + '</code> by:<br>' + cmds +
-      '<br>Each table has CSV and JSON downloads; the JSON gives every number with its path in the data. The plain-words report is <a href="dev/reports/v5-33-visual-suite.md">dev/reports/v5-33-visual-suite.md</a>.'));
+      '<br>Each table has CSV and JSON downloads; the JSON gives every number with its path in the data. The plain-words reports are <a href="dev/reports/v5-33-visual-suite.md">dev/reports/v5-33-visual-suite.md</a> and, for the measure cards and the measures study, <a href="dev/reports/v5-36-measures-study.md">dev/reports/v5-36-measures-study.md</a>.'));
     return s;
   }
 
