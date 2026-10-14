@@ -51,7 +51,7 @@ Where your writing is silent on how a measure maps to the model, I chose the cau
 
 - `validate`, `unit` and `domtest` pass; `domtest` gains Phase 15 (six checks on how the page behaves: it opens the newest release, the address carries the view both ways, every chart and table draws with one column a year, the charts answer the keyboard, every table has downloads, no other page links to it, and a release without the suite gets a plain note).
 - `check_figures.js` gains three checks: the suite series agree with the release (the share under 30 days equals the published path to its rounding; the six tiers add up to all adults every year; no one takes part without the program), every number on the page equals the data in 12 views (3,804 numbers), and nothing is typed in.
-- `guard_test.js` passes (no engine change). `no_figure_change.py compare` passes: no engine hash and no number in any existing data file moved; the new files and the new words are listed.
+- `guard_test.js` passes (no engine change). `no_figure_change.py compare` passes: no engine hash and no number in any existing data file moved. Two kinds of count moved and are allowed, each with its reason in `dev/tools/no_figure_change_allow.txt`: the release file names its two new suite files ("v5.6/suite-20.json", "v5.6/suite-40.json"), and the shared chart code gained the stacked-column chart's layout sizes. The tool now lists a data file that is new, instead of failing on it (a removed file still fails), and counts the numbers in `suite.html` from now on.
 - Looked at in a browser at desktop and phone widths, light and dark, with no sideways scrolling.
 
 ## Limits

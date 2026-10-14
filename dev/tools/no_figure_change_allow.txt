@@ -35,3 +35,36 @@ CONTRIBUTING.md	5.5	-1
 # d207: the economist checklist gains a row for the "What would have to be true" panel, so the checklist has 13 rows (a row number, not a figure).
 .github/ISSUE_TEMPLATE/economist-review.yml	13	+1
 ECONOMIST-REVIEW.md	13	+1
+# Session 11 (Oct 14), the visual suite page (ledger s161; dev/reports/v5-33-visual-suite.md). Compared against the v5.6 release branch at a006ded.
+# data/releases/v5.6.json: the release file now lists its suite files by path ("v5.6/suite-20.json", "v5.6/suite-40.json"). File names, not figures.
+data/releases/v5.6.json	5.6	+2
+data/releases/v5.6.json	20	+1
+data/releases/v5.6.json	40	+1
+# site/charts.js: the new stacked-column chart (CSC.stack): margins, sizes and tick steps in its drawing code. Layout constants, not figures.
+site/charts.js	0	+21
+site/charts.js	0.2	+1
+site/charts.js	0.46	+1
+site/charts.js	0.5	+3
+site/charts.js	1	+17
+site/charts.js	1.5	+1
+site/charts.js	2	+7
+site/charts.js	3	+2
+site/charts.js	4	+3
+site/charts.js	5	+1
+site/charts.js	8	+1
+site/charts.js	10	+2
+site/charts.js	11	+2
+site/charts.js	12	+2
+site/charts.js	14	+1
+site/charts.js	16	+1
+site/charts.js	24	+1
+site/charts.js	25	+1
+site/charts.js	30	+1
+site/charts.js	34	+1
+site/charts.js	40	+1
+site/charts.js	46	+1
+site/charts.js	50	+1
+site/charts.js	75	+1
+site/charts.js	100	+4
+site/charts.js	200	+1
+site/charts.js	300	+1

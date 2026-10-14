@@ -10,7 +10,7 @@ A wording pass may change words but no number. The snapshot holds:
   numeric  for each data/*.json file, SHA-256 of every numeric value with its path (not the words)
   tokens   for each page, report, data file and site script, how many times each number appears in the words
            (a file that exists on only one side is listed, not compared: a new report has no 'before')
-A comparison fails if the engine hashes or numeric hashes differ. A changed token count is listed; it fails too unless
+A comparison fails if the engine hashes or numeric hashes differ (a data file that is new in AFTER is listed, not compared; a removed one fails). A changed token count is listed; it fails too unless
 the line is named in dev/tools/no_figure_change_allow.txt (one 'file<TAB>token<TAB>delta' per line, each with a reason in
 the report), so every number that moves in the words is looked at by a person.
 """
@@ -20,7 +20,7 @@ from collections import Counter
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 NUM = re.compile(r'\d[\d,]*(?:\.\d+)?')
 # HANDOFF.md is left out (session 7): the session log, rewritten every session; it publishes no figure.
-TEXT_FILES = (['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'] + sorted(f for f in glob.glob('*.md') if f != 'HANDOFF.md') +
+TEXT_FILES = (['index.html', 'findings.html', 'study.html', 'suite.html', 'replication.html', 'earlier-engine.html'] + sorted(f for f in glob.glob('*.md') if f != 'HANDOFF.md') +
               sorted(glob.glob('dev/reports/*.md')) + sorted(glob.glob('site/*.js')) + sorted(glob.glob('.github/ISSUE_TEMPLATE/*.yml')))
 
 
@@ -82,6 +82,9 @@ def compare(a, b):
     bad = []
     for sec in ('engine', 'numeric'):
         for k in sorted(set(a[sec]) | set(b[sec])):
+            if sec == 'numeric' and k not in a[sec]:  # session 11: a new data file has no 'before'; it is listed, and its numbers are checked where it is made
+                print('new file  %s (numbers not compared: no counterpart)' % k)
+                continue
             if a[sec].get(k) != b[sec].get(k):
                 bad.append('%s differs: %s' % (sec, k))
     allow = set()
