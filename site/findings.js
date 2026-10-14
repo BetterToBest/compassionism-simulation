@@ -342,9 +342,23 @@
       d.addEventListener('toggle', function () { if (d.open && !w.firstChild) { w.innerHTML = tableHTML(R, t, null); w.appendChild(tableTools(R, t, null)); } });
       d.appendChild(w); host.appendChild(d); });
   }
+  /* ---- session 13: "Reading the measures" on the findings page. The paragraph the simulation page carries as "If savings kept up with prices" (index.html, id rel-sav),
+   * filled from the release data: the run where every adult's savings earn the year's price rise plus the real yield, with and without the program. A release
+   * without that run (earlier than v5.6) gives '' and the page hides the paragraph. The words match the simulation page; check_figures compares the two texts. ---- */
+  function savingsNote(R, env, yrs) {
+    var b = 'panels.' + yrs + '.envs.' + env, sp = b + '.rows.sav', sb = b + '.bases.sv';
+    if (!has(R, sp + '.pov') || !has(R, sb + '.pov') || !has(R, 'inputs.savRealYield')) return '';
+    var ci = has(R, sp + '.dPov.2') ? ', 95% interval ' + num(R, sp + '.dPov.1', 's1') + ' to ' + num(R, sp + '.dPov.2', 's1') : '';
+    return '<p class="fx-note" id="measures-sav-p"><strong>If savings kept up with prices.</strong> The model has no bank: savings earn nothing, so when prices rise they lose value. If every adult\u2019s savings earned the year\u2019s price rise plus ' +
+      num(R, 'inputs.savRealYield', 'p2') + ' (the average real yield on inflation-protected US Treasury bonds), with and without the program, ' + num(R, sp + '.pov', 'p1') + ' of adults would end with too little wealth at year ' + yrs + ', against ' +
+      num(R, sb + '.pov', 'p1') + ' with no program <span class="fx-ci">(change ' + num(R, sp + '.dPov.0', 's1') + ' points' + ci + ')</span>. ' +
+      'That interest would come to about ' + num(R, sp + '.svInt', 'usd') + ' per adult a year in today\u2019s dollars (' + num(R, sp + '.svIntR', 'usd') + ' of it above inflation)' +
+      (has(R, b + '.rows.release.cost') && get(R, sp + '.svInt') > get(R, b + '.rows.release.cost') ? ', more than the program itself costs,' : '') +
+      ' and the model does not say who would pay it, so this reading shows how much of the savings result is the missing protection of savings, not a version of the design that works as it stands.</p>';
+  }
   function fetchJSON(url) { return fetch(url, {cache: 'no-cache'}).then(function (r) { if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); }); }
 
   root.CSF = {fmt: fmt, get: get, has: has, num: num, text: text, esc: esc, cellHTML: cellHTML, tableHTML: tableHTML, tableById: tableById, csvOf: csvOf, jsonOf: jsonOf, download: download, tableTools: tableTools,
     cardsHTML: cardsHTML, MEANINGS: MEANINGS, MEANINGS53: MEANINGS53, meaningOf: meaningOf, fillPlain: fillPlain, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
-    readingsRows: readingsRows, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, SHORT53: SHORT53, GROUPS: GROUPS, hasKids: hasKids, avoidSmall: avoidSmall, HHM: HHM, WKM: WKM, AT: AT};
+    readingsRows: readingsRows, savingsNote: savingsNote, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, SHORT53: SHORT53, GROUPS: GROUPS, hasKids: hasKids, avoidSmall: avoidSmall, HHM: HHM, WKM: WKM, AT: AT};
 })(typeof window !== 'undefined' ? window : this);

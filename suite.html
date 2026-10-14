@@ -78,7 +78,7 @@ footer p{margin:0 0 6px}
 <a class="skip" href="#content">Skip to the suite</a>
 <header class="top"><div class="top-in">
   <a class="brand" href="./"><b>Compassionism Simulation</b><span>The visual suite</span></a>
-  <nav class="links" aria-label="Site"><a class="keep" href="./">Simulation</a><a href="findings.html">Findings</a><a href="study.html">Study</a><a href="replication.html">Replication</a><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI paper</a></nav>
+  <nav class="links" aria-label="Site"><a class="keep" href="./">Simulation</a><a href="findings.html">Findings</a><a href="study.html">Health Study</a><a href="replication.html">Replication</a><a href="https://bettertobest.github.io/research-hub/basic-living-economic-index.html">BLEI paper</a></nav>
 </div></header>
 <div class="hero"><div class="wrap">
   <h1>Beyond one poverty line</h1>
@@ -113,8 +113,8 @@ footer p{margin:0 0 6px}
 (function () {
   'use strict';
   var F = window.CSF, C = window.CSC, $ = function (id) { return document.getElementById(id); };
-  var q = new URLSearchParams(location.search), st = F.readState({env: 'ref', years: '20'});
-  st.read = /^(release|mid|h1)$/.test(q.get('read') || '') ? q.get('read') : 'release';
+  var q = new URLSearchParams(location.search), st = F.readState({env: 'ref', years: '40'});  /* session 13: opens at 40 years and on the "Every dollar backed" reading; the other readings and 20 years are one click away */
+  st.read = /^(release|mid|h1)$/.test(q.get('read') || '') ? q.get('read') : 'h1';
   st.grp = /^(all|part|non)$/.test(q.get('grp') || '') ? q.get('grp') : 'all';
   var R = null, ENT = null;
   var READS = [['release', 'Main reading'], ['mid', 'Middle reading'], ['h1', 'Every dollar backed']];
@@ -395,6 +395,7 @@ footer p{margin:0 0 6px}
     var host = $('suite'), y = window.scrollY; host.innerHTML = '';
     var env = R.meta.envs[st.env];
     var note = para('<strong>' + esc(env.name) + '</strong>: ' + esc(env.about) + '. ' + st.years + ' years; Compassionism in ' + esc(READ_LONG[st.read]) + '.', 'fx-note su-sub'); note.setAttribute('data-rel-text', '1'); host.appendChild(note);  /* the release file's own words */
+    if (st.read === 'h1') { var opt = para('This is the optimistic end of the range, where new output backs every dollar the Source pays; the headline figures on the other pages stay at the cautious end, the main reading.', 'fx-note su-sub'); opt.id = 'optimistic'; host.appendChild(opt); }
     [indices, tiers, floor, parts, who, measures, moves, spread, limits].forEach(function (fn) { host.appendChild(fn()); });
     window.scrollTo(0, y);
   }

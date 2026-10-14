@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   apply:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # session 13 (ledger issue i20): pinned like checks.yml and release.yml, so the Oct 19 ubuntu-latest move (Ubuntu 26) changes nothing
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6

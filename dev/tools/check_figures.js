@@ -97,6 +97,7 @@ async function run(opts) {
 
   // 5b. the simulation page, rendered, in every environment and horizon
   const sp = []; let spN = 0, scan = [];
+  const svp = [], norm = t => String(t || '').replace(/\s+/g, ' ').trim(), noteDoc = new JSDOM('<body></body>').window.document; let svN = 0;  /* session 13: the findings page's reading notes against the simulation page's */
   { const dom = new JSDOM(html, { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/' }), w = dom.window;
     w.Chart = function () { this.destroy = function () {}; }; w.scrollTo = () => {}; w.HTMLCanvasElement.prototype.getContext = () => ({});
     const addEL = w.addEventListener.bind(w); w.addEventListener = (t, fn, o) => { if (t === 'load' || t === 'DOMContentLoaded') return; return addEL(t, fn, o); };
@@ -108,10 +109,28 @@ async function run(opts) {
       const r = spanProbs(w.document, withX, 'index ' + e + ' ' + y + 'y'); spN += r.n; sp.push(...r.bad);
       if (!w.document.querySelector('#fx-people-body .fx-grid500') || !w.document.querySelector('#fx-time-chart svg') || !w.document.querySelector('#fx-who-dec svg')) sp.push('index ' + e + ' ' + y + 'y: a section did not render');
       scan.push(...unmarked(w.document.getElementById('explore'), 'index ' + e + ' ' + y + 'y'));
+      { const want = norm((w.document.getElementById('rel-sav') || {}).textContent), tag = 'savings note ' + e + ' ' + y + 'y';  /* session 13 (ledger: findings page, "Reading the measures") */
+        noteDoc.body.innerHTML = F.savingsNote(withX, e, String(y)); const got = norm(noteDoc.body.textContent), q = spanProbs(noteDoc, withX, tag); svN += q.n; svp.push(...q.bad);
+        if (!want || !got) svp.push(tag + ': ' + (want ? 'the findings page has no paragraph' : 'the simulation page has no paragraph')); else if (got !== want) svp.push(tag + ' differs from the simulation page: "' + got.slice(0, 90) + '" vs "' + want.slice(0, 90) + '"');
+        if (q.n !== 8 && want) svp.push(tag + ': expected eight numbers in the paragraph, found ' + q.n);
+        if (e === 'ref' && y === 20) { const fw = new JSDOM(rd('findings.html')).window.document.getElementById('measures-wealth'), sw = w.document.getElementById('rel-wealth-frame');
+          if (!fw || !sw || norm(fw.textContent) !== norm(sw.textContent)) svp.push('the wealth-measure paragraph on the findings page differs from the simulation page\'s'); } }
     }
     w.relSet('ref'); w.relYears(20);
   }
   add('v5.2.1: on the simulation page every number the guided sections show equals the release data, in all three environments at 20 and 40 years', sp.length === 0 && spN > 600, sp.length ? sp.slice(0, 4).join('; ') : spN + ' numbers checked in 6 views');
+
+  { /* the savings-indexed figures: the catalogue carries them, each equals the panel it points to, and the yield is the page's own constant */
+    const sc = [], pg = (html.match(/SAVE_DEFAULTS\s*=\s*\{\s*r:\s*([0-9.]+)/) || [])[1], hv = require(path.join(ROOT, 'harness.js'));
+    if (!C.inputs.savRealYield || Math.abs(C.inputs.savRealYield - 100 * +pg) > 1e-9) sc.push('inputs.savRealYield ' + C.inputs.savRealYield + ' is not the page\'s SAVE_DEFAULTS.r (' + pg + ')');
+    if (/SAVE_DEFAULTS\s*=\s*\{\s*r:\s*([0-9.]+)/.test(rd('harness.js')) ? +RegExp.$1 !== +pg : false) sc.push('harness.js and the page disagree on SAVE_DEFAULTS.r');
+    for (const y of ['20', '40']) for (const e of ['ref', 'adv', 'st']) { const E = C.panels[y].envs[e], P = 'panels.' + y + '.envs.' + e, id = e + '.' + y + '.sav.';
+      const want = { with: [P + '.rows.sav.pov', E.rows.sav.pov], without: [P + '.bases.sv.pov', E.bases.sv.pov], change: [P + '.rows.sav.dPov.0', E.rows.sav.dPov[0]], int: [P + '.rows.sav.svInt', E.rows.sav.svInt], intR: [P + '.rows.sav.svIntR', E.rows.sav.svIntR] };
+      Object.entries(want).forEach(([k, [src, v]]) => { const f = C.figures.find(x => x.id === id + k); if (!f || f.src !== src || f.value !== v || f.years !== +y || f.env !== e) sc.push(id + k); });
+      const ch = C.figures.find(x => x.id === id + 'change'); if (!ch || !ch.ci || ch.ci.length !== 2 || resolve(C, ch.ci[0]) !== E.rows.sav.dPov[1] || resolve(C, ch.ci[1]) !== E.rows.sav.dPov[2]) sc.push(id + 'change interval'); }
+    add('session 13: the savings-indexed reading (savings earn the year\'s price rise plus the real yield) is in the release\'s figure catalogue, with and without the program, its change and interval, and its interest, in every environment at 20 and 40 years, each equal to its panel; the yield is the page\'s own constant', sc.length === 0, sc.length ? sc.slice(0, 5).join('; ') : '30 catalogue figures; real yield ' + C.inputs.savRealYield + '% = SAVE_DEFAULTS.r');
+  }
+  add('session 13: the findings page\'s "Reading the measures" paragraph on savings that keep up with prices is filled from the release (eight numbers, none typed) and reads the same, word for word, as the simulation page\'s, in all three environments at 20 and 40 years; the wealth-measure paragraph beside it is the simulation page\'s', svp.length === 0 && svN === 48, svp.length ? svp.slice(0, 4).join('; ') : svN + ' numbers in 6 views');
 
   // 5c. the explorer, every release
   const ep = []; let epN = 0, edoc = null;
@@ -172,6 +191,17 @@ async function run(opts) {
     if (uns.length !== 4) sp2.push('the two constants with no source should show four numbers, not ' + uns.length);
     if (w.document.querySelectorAll('#true table').length !== 2) sp2.push('"What would have to be true" needs its two tables');
     add('v5.5: on the study page every number (the texts and all tables) equals the study file\'s data, the sensitivity chart draws, and the two constants with no source are named', sp2.length === 0 && r.n > 300, sp2.length ? sp2.slice(0, 4).join('; ') : r.n + ' numbers checked');
+    { /* session 13: "Tested against history: 2008 and 2020". The seven comparisons are the 500-seed history check's own (dev/runs/history/history-check.json), the table shows each file verdict, and the safety-net miss is on the page with its figures */
+      const H = rj('dev/runs/history/history-check.json'), hp = [], sec = w.document.getElementById('history'), tr = sec ? [...sec.querySelectorAll('tbody tr')] : [];
+      if (H._meta.seeds !== 500) hp.push('the history file is not the 500-seed run');
+      if (H.comparisons.length !== 7 || !H.comparisons.every((c, i) => c.n === i + 1)) hp.push('the history file does not have its seven comparisons');
+      H.comparisons.forEach(c => { const k = S.hist && S.hist.c['c' + c.n]; if (!k || JSON.stringify(k) !== JSON.stringify(c)) hp.push('comparison ' + c.n + ' in the study file differs from the history file'); });
+      if (tr.length !== 7) hp.push('the history table has ' + tr.length + ' rows, not 7'); else H.comparisons.forEach((c, i) => { const v = tr[i].lastElementChild.textContent; if (!v.startsWith(c.verdict)) hp.push('row ' + c.n + ' verdict "' + v + '" is not the file\'s "' + c.verdict + '"'); });
+      const c5 = H.comparisons[4], need = [['hist.c.c5.model', c5.model], ['hist.c.c5.data', c5.data], ['hist.c.c5.modelRises.0', c5.modelRises[0]], ['hist.c.c5.modelRises.1', c5.modelRises[1]], ['hist.c.c5.dataRises.0', c5.dataRises[0]], ['hist.c.c5.dataRises.1', c5.dataRises[1]]];
+      need.forEach(([p, v]) => { const n = sec && [...sec.querySelectorAll('.num[data-src="' + p + '"]')]; if (!n || n.length < 2 || resolve(S, p) !== v) hp.push(p + ' is not shown in the table and in the words (or differs from the file)'); });
+      if (!sec || !/safety net/i.test(sec.textContent) || !/\(a\).*\(b\).*\(c\)/s.test(sec.textContent)) hp.push('the safety-net miss and its three reasons are not on the page');
+      if (S.hist.count.matches + S.hist.count.diff + S.hist.count.no + S.hist.count.rep !== 7) hp.push('the verdict tally does not add to seven');
+      add('session 13: the study page\'s "Tested against history: 2008 and 2020" section carries the 500-seed history check\'s seven comparisons as the file gives them (changes, with each verdict), and the safety-net miss and its three reasons, every figure shown from the file', hp.length === 0, hp.length ? hp.slice(0, 5).join('; ') : '7 comparisons, 500 seeds, commit ' + H._meta.manifest.commit.slice(0, 7)); }
     const un = unmarked(w.document.getElementById('content'), 'study');
     add('v5.5: no percentage, dollar figure or price level is typed into the study page', un.length === 0, un.length ? un.slice(0, 5).join('; ') : 'the whole study page');
     let g2 = { status: 1, stdout: '' }; try { g2 = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'study_data.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g2 = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }

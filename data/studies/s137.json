@@ -34,7 +34,11 @@
   "morrisPaths": 20,
   "morrisSeeds": 20,
   "report": "dev/reports/v5-30-s137-results.md",
-  "runs": "dev/runs/s137/ and dev/runs/s137b/"
+  "runs": "dev/runs/s137/ and dev/runs/s137b/",
+  "history": {
+   "report": "dev/reports/v5-34-history-check.md",
+   "file": "dev/runs/history/history-check.json"
+  }
  },
  "v": {
   "ref": {
@@ -6435,6 +6439,86 @@
    }
   }
  },
+ "hist": {
+  "seeds": 500,
+  "commit": "5bf5bcc0e31d10e8fab8443f4d3972988e4bdf3b",
+  "command": "node dev/tools/history_check.js --seeds=500 --engine=/w/engine --series=/w/sim/sources/history/history_series.json --out=/w/res/s165-5bf5bcc/history-check.json.tmp",
+  "band": 20,
+  "count": {
+   "matches": 2,
+   "diff": 2,
+   "no": 1,
+   "rep": 2
+  },
+  "c": {
+   "c1": {
+    "n": 1,
+    "what": "Direction, recession: basket poverty with the safety net higher in 2009 and 2010 than in 2007",
+    "model": [
+     2.89,
+     4.9
+    ],
+    "data": [
+     1.8,
+     2.6
+    ],
+    "verdict": "matches"
+   },
+   "c2": {
+    "n": 2,
+    "what": "Size, recession: the rise at the model's peak between half and double the official rise at its 2010 peak (1.3 to 5.2 points)",
+    "model": 6.86,
+    "modelYear": 2012,
+    "data": 2.6,
+    "verdict": "same direction, different size"
+   },
+   "c3": {
+    "n": 3,
+    "what": "Timing: the model's peak within one year of 2010",
+    "model": 2012,
+    "data": 2010,
+    "verdict": "does not match"
+   },
+   "c4": {
+    "n": 4,
+    "what": "Recovery, two years after the peak: share of the rise gone (reported, no verdict)",
+    "model": null,
+    "modelNote": "the model's peak is less than two years before the end of the window (2012)",
+    "data": 3.85,
+    "verdict": "reported"
+   },
+   "c5": {
+    "n": 5,
+    "what": "How much the safety net absorbs, 2007 to 2012: (rise without - rise with) / rise without, %; band: within 20 points of the data",
+    "model": 0.48,
+    "modelRises": [
+     6.9,
+     6.86
+    ],
+    "data": 72.96,
+    "dataRises": [
+     5.77,
+     1.56
+    ],
+    "verdict": "same direction, different size",
+    "note": "the model's transfers are SNAP, EITC and the refundable CTC (unemployment insurance is in both arms); Columbia's \"before transfers\" also removes unemployment insurance, Social Security, housing aid and the tax system"
+   },
+   "c6": {
+    "n": 6,
+    "what": "2020, official-style measure (as amended before any run: basket poverty without SNAP and tax credits, which the official measure leaves out): higher in 2020 than in 2019",
+    "model": 1.53,
+    "data": 1,
+    "verdict": "matches"
+   },
+   "c7": {
+    "n": 7,
+    "what": "2020, supplemental measure (reported, no verdict: the data fell because of payments the engine does not have)",
+    "model": 1.53,
+    "data": -2.6,
+    "verdict": "reported"
+   }
+  }
+ },
  "sobol": {
   "fgt0PY": {
    "part": {
@@ -10578,6 +10662,267 @@
      }
     ]
    ]
+  },
+  {
+   "id": "history",
+   "title": "Tested against history: the seven comparisons fixed in advance, as changes in points",
+   "columns": [
+    "Comparison",
+    "Model: change in basket poverty",
+    "Data: change in the poverty rate",
+    "Verdict (as the file gives it)"
+   ],
+   "rows": [
+    [
+     {
+      "p": [
+       "Poverty is higher in 2009 and 2010 than in 2007"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c1.model.0",
+        "f": "s2"
+       },
+       " and ",
+       {
+        "src": "hist.c.c1.model.1",
+        "f": "s2"
+       }
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c1.data.0",
+        "f": "s1"
+       },
+       " and ",
+       {
+        "src": "hist.c.c1.data.1",
+        "f": "s1"
+       },
+       " (official rate)"
+      ]
+     },
+     {
+      "p": [
+       "matches"
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "The rise at the model's peak is between half and double the official rise at its peak"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c2.model",
+        "f": "s2"
+       },
+       " (peak in ",
+       {
+        "src": "hist.c.c2.modelYear",
+        "f": "n0"
+       },
+       ")"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c2.data",
+        "f": "s1"
+       },
+       " (peak in ",
+       {
+        "src": "hist.c.c3.data",
+        "f": "n0"
+       },
+       ")"
+      ]
+     },
+     {
+      "p": [
+       "same direction, different size"
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "The model's peak falls within one year of the official rate's peak"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c3.model",
+        "f": "n0"
+       }
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c3.data",
+        "f": "n0"
+       }
+      ]
+     },
+     {
+      "p": [
+       "does not match"
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "Share of the rise gone two years after the peak (no verdict was set)"
+      ]
+     },
+     {
+      "p": [
+       "not available: the model's peak is the last year of the window"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c4.data",
+        "f": "p2"
+       }
+      ]
+     },
+     {
+      "p": [
+       "reported"
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "Share of the rise in poverty that the safety net absorbs, 2007 to 2012 (to be within ",
+       {
+        "src": "hist.band",
+        "f": "n0"
+       },
+       " points of the data)"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c5.model",
+        "f": "p2"
+       }
+      ],
+      "s": [
+       "rise ",
+       {
+        "src": "hist.c.c5.modelRises.0",
+        "f": "s2"
+       },
+       " without the safety net, ",
+       {
+        "src": "hist.c.c5.modelRises.1",
+        "f": "s2"
+       },
+       " with it"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c5.data",
+        "f": "p2"
+       }
+      ],
+      "s": [
+       "rise ",
+       {
+        "src": "hist.c.c5.dataRises.0",
+        "f": "s2"
+       },
+       " before taxes and transfers, ",
+       {
+        "src": "hist.c.c5.dataRises.1",
+        "f": "s2"
+       },
+       " after"
+      ]
+     },
+     {
+      "p": [
+       "same direction, different size; in substance a miss (below)"
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "2020: poverty is higher than in 2019, on the official-style measure (the model without SNAP and tax credits, which the official measure leaves out)"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c6.model",
+        "f": "s2"
+       }
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c6.data",
+        "f": "s1"
+       },
+       " (official rate)"
+      ]
+     },
+     {
+      "p": [
+       "matches"
+      ]
+     }
+    ],
+    [
+     {
+      "p": [
+       "2020, supplemental measure (no verdict was set: the data fell because of payments the model does not have)"
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c7.model",
+        "f": "s2"
+       }
+      ]
+     },
+     {
+      "p": [
+       {
+        "src": "hist.c.c7.data",
+        "f": "s1"
+       },
+       " (Census supplemental rate)"
+      ]
+     },
+     {
+      "p": [
+       "reported"
+      ]
+     }
+    ]
+   ]
   }
  ],
  "text": {
@@ -10597,6 +10942,8 @@
   "true": "Claude's reading of the results, not yet checked by an outside reader; it is a named item for the outside audits. A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. It does not say they are true. It says where an economist should look first. Two constants have no source at all; they are named after the table.",
   "cap.true": "The two constants with no source do not enter the released figures: the study could not vary them, because they are not in the model that produced those figures. They are listed so a reviewer can check the claim, and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt.",
   "limits": "All single-payer results rest on the Yale preprint's savings. The model does not reconcile tax revenue with today's safety-net outlays or with government's share of the plan. The price response drives the \"too little wealth\" result and is not calibrated to outside evidence. The cost-of-living line is the unweighted state average. The work rules of SNAP (food stamps) and a separate Child Tax Credit take-up are not modeled. The community businesses' (PTF) health-sector cut under single payer is an upper reading. The model has not yet been reviewed by an independent economist.",
+  "history": "A separate check, run on the same model: it was put through a scripted 2008 to 2012 recession and through 2020 and 2021, and compared with what happened. The seven comparisons below, and what would count as a match, were fixed before the model was run, and no constant was adjusted to fit the past. <strong>The check reads changes, not levels.</strong> The model's adults are built from 2022 data, so it asks how a population like today's would respond to a shock like 2008 or 2020, not whether it reproduces those years. The model's figure is the rise in basket poverty (adults below the cost of living) with today's safety net, the shock run minus the same run with no recession, over {{hist.seeds|int}} paired seeds; the data's is the change from the year before the shock. In short: the direction is right (poverty rises in both shocks, as in the data), the size is too big (a rise of {{hist.c.c2.model|s2}} points at the model's peak against {{hist.c.c2.data|s1}} in the official rate) and the peak comes too late. Verdicts: matches {{hist.count.matches|int}}; same direction, different size {{hist.count.diff|int}}; does not match {{hist.count.no|int}}; reported with no verdict {{hist.count.rep|int}}.",
+  "cap.history": "<strong>The clearest miss is the safety net.</strong> In the data the safety net absorbed about {{hist.c.c5.data|p0}} of the recession's rise in poverty (a rise of {{hist.c.c5.dataRises.0|s2}} points before taxes and transfers, {{hist.c.c5.dataRises.1|s2}} after). In the model it absorbs about {{hist.c.c5.model|p1}} (a rise of {{hist.c.c5.modelRises.0|s2}} points without the safety net, {{hist.c.c5.modelRises.1|s2}} with it). The file's label is \"same direction, different size\", because the model's share is just above zero and the rule fixed in advance gives that label to any positive share; the gap is far outside the band of {{hist.band|n0}} points, so in substance it is a miss. Three reasons, all in the model's design: (a) SNAP and the tax credits are paid on last year's income, so they arrive a year late; (b) the model's cost-of-living line is high, and benefits of a few thousand dollars seldom lift someone over it (they shrink the gap instead); (c) the data's \"before transfers\" removes far more than the model's three programs (SNAP, the Earned Income Tax Credit and the refundable Child Tax Credit): it also removes unemployment insurance, Social Security, housing aid and the tax system, while in the model unemployment insurance is in both runs and the others do not respond to the shock. So in a downturn the model's baseline safety net is weaker than the real one, and a comparison of Compassionism against today's safety net in a recession should be read with that in mind. The model has no stimulus payments or weekly unemployment top-up, which is why the 2020 supplemental rate (reported, no verdict) fell in the data and rose in the model. The data are outside figures, not verified against Census, BLS or the Federal Reserve by this repository. Plain-words report: <a href=\"dev/reports/v5-34-history-check.md\">dev/reports/v5-34-history-check.md</a>; data: <a href=\"dev/runs/history/history-check.json\">dev/runs/history/history-check.json</a>.",
   "asof": "Study run on a rented server on {{meta.seeds|int}} paired seeds; the follow-up Sobol ran in Stress only."
  },
  "sections": [
@@ -10665,6 +11012,15 @@
     "unsourced"
    ],
    "note": "cap.true"
+  },
+  {
+   "id": "history",
+   "title": "Tested against history: 2008 and 2020",
+   "lead": "history",
+   "tables": [
+    "history"
+   ],
+   "note": "cap.history"
   },
   {
    "id": "limits",

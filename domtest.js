@@ -1274,6 +1274,55 @@ function phase15(done) {
     const b = open('', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) { j = Object.assign({}, j, { explore: Object.assign({}, j.explore) }); delete j.explore.suite; return j; } }); await later(300);
     const ban = b.w.document.querySelector('#suite .fx-banner');
     check('session 11: a release without the suite series shows a plain note, not a broken page', !!ban && /no suite series/.test(ban.textContent) && b.errs.length === 0, ban ? ban.textContent.slice(0, 90) : 'no note');
+    /* session 13: the page opens at 40 years on the "Every dollar backed" reading, says plainly that this is the optimistic end, and the other readings and 20 years are one click away; it stays out of search engines */
+    const e = open(''); await later(400); const de = e.w.document, SE = e.w.suiteState(), pr = [...de.querySelectorAll('#controls button[aria-pressed="true"]')].map(x => x.dataset.value).sort().join(',');
+    const opt = de.getElementById('optimistic');
+    check('session 13: the suite page opens at 40 years on "Every dollar backed", and in that view one plain sentence says it is the optimistic end and the headline figures elsewhere stay at the cautious end',
+      SE.st.years === '40' && SE.st.read === 'h1' && pr === '40,h1,ref' && !!opt && /optimistic end/.test(opt.textContent) && /cautious end/.test(opt.textContent) && e.errs.length === 0, 'state ' + SE.st.years + '/' + SE.st.read + '; pressed ' + pr + '; sentence ' + (opt ? opt.textContent.slice(0, 60) : 'missing'));
+    [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === 'release').forEach(x => x.click()); await later(100);
+    const gone = !de.getElementById('optimistic'); [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === '20').forEach(x => x.click()); await later(100);
+    check('session 13: one click on "Main reading" removes the sentence and one click on 20 years shows the 20-year view; the page still carries noindex', gone && e.w.suiteState().st.years === '20' && e.w.suiteState().st.read === 'release' && /noindex/.test(rd('suite.html').match(/<meta name="robots"[^>]*>/)[0]),
+      'sentence gone ' + gone + '; years ' + e.w.suiteState().st.years);
+    phase16(done);
+  })().catch(e => { check('session 11: the suite page checks run', false, String(e && e.stack || e).slice(0, 300)); phase16(done); });
+}
+
+/* ── Phase 16 (session 13): the links, the findings page's "Reading the measures", the history section on the study page, and the pinned runner. Phase 14 (check_figures.js)
+ * checks every number in them against the data; this phase checks that they are there and behave. */
+function phase16(done) {
+  console.log('\n--- Phase 16: links, reading notes, history section (session 13) ---');
+  const ROOT = path.dirname(FILE), rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const later = ms => new Promise(r => setTimeout(r, ms));
+  const serve = (w, tweak) => { w.fetch = url => { const u = String(url).split('?')[0].replace(/^\.?\//, ''), p = path.join(ROOT, u);
+    if (!fs.existsSync(p)) return Promise.resolve({ ok: false, status: 404, json: () => Promise.reject(new Error('404')) });
+    let j = JSON.parse(fs.readFileSync(p, 'utf8')); if (tweak) j = tweak(u, j) || j; return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(j) }); }; };
+  (async () => {
+    const navOf = f => [...new JSDOM(rd(f)).window.document.querySelectorAll('nav.links a, nav.bar-links a, .hd-links a, a.hlink')].map(a => [a.textContent.trim(), a.getAttribute('href')]);
+    const has = (f, text, href) => navOf(f).some(([t, h]) => t === text && new RegExp(href).test(h));
+    const bare = ['findings.html', 'suite.html', 'replication.html', 'study.html'].filter(f => navOf(f).some(([t, h]) => t === 'Study'));
+    check('session 13: the top navigation of the findings, suite, replication and study pages reads "Health Study" (to study.html, which keeps its file name), and the study page also links Findings and Replication; no page still says "Study" alone',
+      bare.length === 0 && ['findings.html', 'suite.html', 'replication.html', 'study.html'].every(f => has(f, 'Health Study', '^(\\./)?study\\.html$')) && has('study.html', 'Findings', 'findings\\.html') && has('study.html', 'Replication', 'replication\\.html'),
+      bare.length ? 'still "Study": ' + bare.join(', ') : 'four pages');
+    check('session 13: the simulation page\'s header links Findings and Health Study beside Replication and Wiki', has('index.html', 'Findings', 'findings\\.html$') && has('index.html', 'Health Study', 'study\\.html$') && has('index.html', 'Replication', 'replication\\.html') && has('index.html', 'Wiki', 'wiki'), navOf('index.html').map(x => x[0]).join(' | '));
+    /* the findings page: "Reading the measures" is collapsed, carries both paragraphs for the newest release, and shows only the words for a release without the savings-indexed run */
+    const open = async (q, tweak) => { const w = new JSDOM(rd('findings.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/findings.html' + q }).window, errs = [];
+      w.scrollTo = () => {}; w.addEventListener('error', e => errs.push(String(e.message))); serve(w, tweak); w.eval(rd('site/charts.js')); w.eval(rd('site/findings.js'));
+      try { w.eval([...w.document.querySelectorAll('script')].filter(x => !x.src && !x.type)[0].textContent); } catch (e) { errs.push(String(e.message)); } await later(500); return { w, errs, d: w.document }; };
+    const f1 = await open(''), rm = f1.d.getElementById('reading-measures'), sv = f1.d.getElementById('measures-sav'), wf = f1.d.getElementById('measures-wealth');
+    check('session 13: findings.html has a collapsed section "Reading the measures" with the wealth-measure paragraph and, for the current release, the savings-kept-up-with-prices paragraph filled with eight numbers from the release data',
+      !!rm && rm.tagName === 'DETAILS' && !rm.open && /Reading the measures/.test(rm.querySelector('summary').textContent) && !!wf && /How to read this measure/.test(wf.textContent) && !!sv && !sv.hidden && sv.querySelectorAll('.num').length === 8 && /If savings kept up with prices/.test(sv.textContent) && f1.errs.length === 0,
+      'section ' + !!rm + '; savings paragraph numbers ' + (sv ? sv.querySelectorAll('.num').length : 'none') + (f1.errs.length ? '; errors ' + f1.errs.join('; ') : ''));
+    const f2 = await open('?v=5.4'), sv2 = f2.d.getElementById('measures-sav');
+    check('session 13: for a release without the savings-indexed run (v5.4) the savings paragraph is hidden and the wealth-measure paragraph stays', !!sv2 && sv2.hidden && sv2.innerHTML === '' && !!f2.d.getElementById('measures-wealth') && f2.errs.length === 0, sv2 ? 'hidden ' + sv2.hidden : 'no element');
+    /* the study page: the history section draws its table; the replication page links to it */
+    const sw = new JSDOM(rd('study.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/study.html' }).window, serrs = [];
+    sw.scrollTo = () => {}; sw.addEventListener('error', e => serrs.push(String(e.message))); serve(sw); sw.eval(rd('site/charts.js')); sw.eval(rd('site/findings.js'));
+    try { sw.eval([...sw.document.querySelectorAll('script')].filter(x => !x.src && !x.type)[0].textContent); } catch (e) { serrs.push(String(e.message)); } await later(500);
+    const hs = sw.document.getElementById('history'), links = /href="study\.html#history"/.test(rd('replication.html'));
+    check('session 13: study.html has "Tested against history: 2008 and 2020" (seven comparisons with verdicts, and the safety-net miss with its three reasons), and the replication page links to it',
+      !!hs && /Tested against history: 2008 and 2020/.test(hs.querySelector('h2').textContent) && hs.querySelectorAll('tbody tr').length === 7 && /\(a\).*\(b\).*\(c\)/s.test(hs.textContent) && links && serrs.length === 0, 'rows ' + (hs ? hs.querySelectorAll('tbody tr').length : 0) + '; replication link ' + links + (serrs.length ? '; errors ' + serrs.join('; ') : ''));
+    const wf3 = fs.readdirSync(path.join(ROOT, '.github', 'workflows')).filter(x => /\.ya?ml$/.test(x)), latest = wf3.filter(x => /runs-on:\s*ubuntu-latest/.test(fs.readFileSync(path.join(ROOT, '.github', 'workflows', x), 'utf8')));
+    check('session 13: every workflow runs on ubuntu-24.04 (none on ubuntu-latest), so the Oct 19 runner change cannot alter a run', latest.length === 0, latest.length ? 'ubuntu-latest in ' + latest.join(', ') : wf3.length + ' workflows pinned');
     done();
-  })().catch(e => { check('session 11: the suite page checks run', false, String(e && e.stack || e).slice(0, 300)); done(); });
+  })().catch(e => { check('session 13: the link and reading-notes checks run', false, String(e && e.stack || e).slice(0, 300)); done(); });
 }

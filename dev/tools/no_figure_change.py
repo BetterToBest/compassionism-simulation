@@ -10,11 +10,14 @@ A wording pass may change words but no number. The snapshot holds:
   numeric  for each data/*.json file, SHA-256 of every numeric value with its path (not the words)
   tokens   for each page, report, data file and site script, how many times each number appears in the words
            (a file that exists on only one side is listed, not compared: a new report has no 'before')
-A comparison fails if the engine hashes or numeric hashes differ (a data file that is new in AFTER is listed, not compared; a removed one fails). A changed token count is listed; it fails too unless
+A comparison fails if the engine hashes or numeric hashes differ (a data file that is new in AFTER is listed, not compared; a removed one fails).
+Session 13: a data file may gain new numbers (a new figure, a new block) without any old number moving. The snapshot also holds one hash per chunk of each data file
+(the first two parts of a number's path; a list of items that carry an "id" is keyed by it, so adding an item shifts nothing). When a file's whole hash differs, every
+chunk of BEFORE must still be there with the same hash; chunks only in AFTER are listed as ADDED and fail unless named in the allow file as 'file<TAB>added<TAB>chunk'. A changed token count is listed; it fails too unless
 the line is named in dev/tools/no_figure_change_allow.txt (one 'file<TAB>token<TAB>delta' per line, each with a reason in
 the report), so every number that moves in the words is looked at by a person.
 """
-import glob, hashlib, json, os, re, subprocess, sys
+import fnmatch, glob, hashlib, json, os, re, subprocess, sys
 from collections import Counter
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -39,6 +42,22 @@ def leaves(o, p=''):
         yield p, o
 
 
+def chunk_of(path_parts):
+    return '.'.join(path_parts[:2])
+
+
+def leaves_keyed(o, parts=()):
+    """like leaves(), but a list item that is a dict with an 'id' is keyed by it, and the path is a tuple of parts"""
+    if isinstance(o, dict):
+        for k in sorted(o):
+            yield from leaves_keyed(o[k], parts + (k,))
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            yield from leaves_keyed(v, parts + ((str(v['id']) if isinstance(v, dict) and 'id' in v else '[%d]' % i),))
+    else:
+        yield parts, o
+
+
 def words_of(path, text):
     if path.endswith('.html'):
         text = re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', text, flags=re.S)
@@ -51,7 +70,7 @@ def tokens(text):
 
 
 def snapshot():
-    S = {'engine': {}, 'numeric': {}, 'tokens': {}}
+    S = {'engine': {}, 'numeric': {}, 'chunks': {}, 'tokens': {}}
     S['engine']['harness.js'] = sha(open(os.path.join(ROOT, 'harness.js'), 'rb').read())
     idx = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
     # Session 7 (Oct 14): the engine is what harness.js runs, cut out of index.html by its own csEngineSource; it must not change by one byte.
@@ -69,6 +88,11 @@ def snapshot():
         j = json.load(open(f, encoding='utf-8'))
         nums = [(p, v) for p, v in leaves(j) if isinstance(v, (int, float)) and not isinstance(v, bool)]
         S['numeric'][rel] = sha(json.dumps(nums))
+        ch = {}
+        for ps, v in leaves_keyed(j):
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                ch.setdefault(chunk_of(ps), []).append(('.'.join(ps), v))
+        S['chunks'][rel] = {c: sha(json.dumps(x)) for c, x in ch.items()}
         strs = ' '.join(v for p, v in leaves(j) if isinstance(v, str))
         S['tokens'][rel] = dict(tokens(strs))
     for rel in TEXT_FILES:
@@ -80,17 +104,32 @@ def snapshot():
 
 def compare(a, b):
     bad = []
+    allow = set()
+    ap = os.path.join(ROOT, 'dev', 'tools', 'no_figure_change_allow.txt')
+    if os.path.exists(ap):
+        allow = {l.rstrip('\n') for l in open(ap) if l.strip() and not l.startswith('#')}
     for sec in ('engine', 'numeric'):
         for k in sorted(set(a[sec]) | set(b[sec])):
             if sec == 'numeric' and k not in a[sec]:  # session 11: a new data file has no 'before'; it is listed, and its numbers are checked where it is made
                 print('new file  %s (numbers not compared: no counterpart)' % k)
                 continue
             if a[sec].get(k) != b[sec].get(k):
-                bad.append('%s differs: %s' % (sec, k))
-    allow = set()
-    ap = os.path.join(ROOT, 'dev', 'tools', 'no_figure_change_allow.txt')
-    if os.path.exists(ap):
-        allow = {l.rstrip('\n') for l in open(ap) if l.strip() and not l.startswith('#')}
+                if sec == 'numeric' and k in a.get('chunks', {}) and k in b.get('chunks', {}):  # session 13: no old number may move; new ones are listed
+                    ca_, cb_ = a['chunks'][k], b['chunks'][k]
+                    changed = [c for c in ca_ if cb_.get(c) != ca_[c]]
+                    added = [c for c in cb_ if c not in ca_]
+                    for c in changed:
+                        bad.append('numeric differs: %s (%s)' % (k, c))
+                    for c in added:
+                        line = '%s\tadded\t%s' % (k, c)
+                        ok = any(fnmatch.fnmatchcase(line, p) for p in allow if '\tadded\t' in p)  # an allow line may end in a wildcard pattern
+                        print(('allowed  ' if ok else 'ADDED    ') + line)
+                        if not ok:
+                            bad.append('numbers added: %s %s' % (k, c))
+                    if not changed and not added:
+                        bad.append('%s differs: %s' % (sec, k))
+                else:
+                    bad.append('%s differs: %s' % (sec, k))
     moved = []
     for k in sorted(set(a['tokens']) | set(b['tokens'])):
         if k not in a['tokens'] or k not in b['tokens']:
