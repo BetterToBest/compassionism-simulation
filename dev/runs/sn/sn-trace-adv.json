@@ -1,0 +1,392 @@
+{
+ "_meta": {
+  "what": "today's safety net in the v5.4 main row and its no-programme run: its paired effect (row with sn minus the same row without), with SNAP's cliff in the marginal rate (sn, as released) and without (slope), under four engines (as released, work response off, prices flat, both off)",
+  "env": "adv",
+  "seeds": 500,
+  "command": "node dev/tools/sn_v54_trace.js adv 500 --engines=released,noWork,flat --rows=slope --out=/w/res/s165-5bf5bcc/sn-trace-adv.json.tmp",
+  "manifest": {
+   "commit": "5bf5bcc0e31d10e8fab8443f4d3972988e4bdf3b",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "bed37dfc44ebea534098903eeaba8332c9c9837be1043eec615da7679449eedb",
+   "engineBlockSha256": "973e7ce472d159cdcd17fe2cb38d0fc9b4c604bc1db641e3298ef513155136da",
+   "indexSha256": "4e82ae901a797eacdfce32b9e889161aae155a2d06cb3ad1ef995e8ab09f8b64",
+   "engineSha256": "85425e6400d1fa08ad019584d65c22b9097c659e59a3de27442f926e1691ac2f"
+  },
+  "seconds": 1318
+ },
+ "eng": {
+  "released": {
+   "levels": {
+    "base|off": {
+     "fgt0PY": 65.975,
+     "fgt2PY": 13.046,
+     "pov": 45.058,
+     "bOAPy": 31.537,
+     "hrs": 0,
+     "emp": 99.634,
+     "pLev20": 1.457
+    },
+    "base|slope": {
+     "fgt0PY": 65.995,
+     "fgt2PY": 11.948,
+     "pov": 45.089,
+     "bOAPy": 31.567,
+     "hrs": -0.038,
+     "emp": 99.634,
+     "snAll": 1616.929,
+     "snSnapM": 1035.702,
+     "snEitcM": 362.761,
+     "snMtr": 22.864,
+     "pLev20": 1.457
+    },
+    "prog|off": {
+     "fgt0PY": 31.325,
+     "fgt2PY": 2.841,
+     "pov": 79.964,
+     "bOAPy": 17.333,
+     "hrs": -0.077,
+     "emp": 99.63,
+     "pLev20": 10578.026
+    },
+    "prog|slope": {
+     "fgt0PY": 31.067,
+     "fgt2PY": 2.372,
+     "pov": 80.92,
+     "bOAPy": 17.498,
+     "hrs": -0.113,
+     "emp": 99.61,
+     "snAll": 1603.458,
+     "snSnapM": 1035.663,
+     "snEitcM": 366.352,
+     "snMtr": 20.073,
+     "pLev20": 12550.438
+    }
+   },
+   "effect": {
+    "base|slope": {
+     "fgt0PY": [
+      0.02,
+      0.018,
+      0.022
+     ],
+     "fgt2PY": [
+      -1.098,
+      -1.115,
+      -1.081
+     ],
+     "pov": [
+      0.031,
+      0.012,
+      0.05
+     ],
+     "bOAPy": [
+      0.031,
+      0.025,
+      0.036
+     ],
+     "hrs": [
+      -0.038,
+      -0.038,
+      -0.038
+     ],
+     "emp": [
+      0,
+      0,
+      0
+     ],
+     "pLev20": [
+      0,
+      0,
+      0
+     ]
+    },
+    "prog|slope": {
+     "fgt0PY": [
+      -0.258,
+      -0.292,
+      -0.225
+     ],
+     "fgt2PY": [
+      -0.469,
+      -0.476,
+      -0.462
+     ],
+     "pov": [
+      0.955,
+      0.904,
+      1.006
+     ],
+     "bOAPy": [
+      0.164,
+      0.157,
+      0.172
+     ],
+     "hrs": [
+      -0.036,
+      -0.036,
+      -0.035
+     ],
+     "emp": [
+      -0.02,
+      -0.024,
+      -0.017
+     ],
+     "pLev20": [
+      1972.412,
+      1917.596,
+      2027.228
+     ]
+    }
+   }
+  },
+  "noWork": {
+   "levels": {
+    "base|off": {
+     "fgt0PY": 65.975,
+     "fgt2PY": 13.046,
+     "pov": 45.058,
+     "bOAPy": 31.537,
+     "hrs": 0,
+     "emp": 99.634,
+     "pLev20": 1.457
+    },
+    "base|slope": {
+     "fgt0PY": 65.964,
+     "fgt2PY": 10.953,
+     "pov": 44.872,
+     "bOAPy": 31.335,
+     "hrs": 0,
+     "emp": 99.634,
+     "snAll": 1226.474,
+     "snSnapM": 803.557,
+     "snEitcM": 252.183,
+     "snMtr": 23.501,
+     "pLev20": 1.457
+    },
+    "prog|off": {
+     "fgt0PY": 26.209,
+     "fgt2PY": 2.368,
+     "pov": 75.441,
+     "bOAPy": 15.872,
+     "hrs": 0.007,
+     "emp": 99.634,
+     "pLev20": 7722.175
+    },
+    "prog|slope": {
+     "fgt0PY": 23.727,
+     "fgt2PY": 1.848,
+     "pov": 75.697,
+     "bOAPy": 15.619,
+     "hrs": 0.007,
+     "emp": 99.634,
+     "snAll": 952.375,
+     "snSnapM": 624.118,
+     "snEitcM": 193.381,
+     "snMtr": 22.986,
+     "pLev20": 7867.613
+    }
+   },
+   "effect": {
+    "base|slope": {
+     "fgt0PY": [
+      -0.011,
+      -0.014,
+      -0.009
+     ],
+     "fgt2PY": [
+      -2.092,
+      -2.114,
+      -2.071
+     ],
+     "pov": [
+      -0.187,
+      -0.21,
+      -0.164
+     ],
+     "bOAPy": [
+      -0.201,
+      -0.208,
+      -0.195
+     ],
+     "hrs": [
+      0,
+      0,
+      0
+     ],
+     "emp": [
+      0,
+      0,
+      0
+     ],
+     "pLev20": [
+      0,
+      0,
+      0
+     ]
+    },
+    "prog|slope": {
+     "fgt0PY": [
+      -2.481,
+      -2.535,
+      -2.428
+     ],
+     "fgt2PY": [
+      -0.52,
+      -0.527,
+      -0.513
+     ],
+     "pov": [
+      0.256,
+      0.229,
+      0.283
+     ],
+     "bOAPy": [
+      -0.253,
+      -0.264,
+      -0.242
+     ],
+     "hrs": [
+      0,
+      0,
+      0
+     ],
+     "emp": [
+      0,
+      0,
+      0
+     ],
+     "pLev20": [
+      145.438,
+      141.518,
+      149.359
+     ]
+    }
+   }
+  },
+  "flat": {
+   "levels": {
+    "base|off": {
+     "fgt0PY": 65.992,
+     "fgt2PY": 13.05,
+     "pov": 45.066,
+     "bOAPy": 31.55,
+     "hrs": 0,
+     "emp": 99.634,
+     "pLev20": 1.457
+    },
+    "base|slope": {
+     "fgt0PY": 66.007,
+     "fgt2PY": 11.95,
+     "pov": 45.094,
+     "bOAPy": 31.576,
+     "hrs": -0.038,
+     "emp": 99.634,
+     "snAll": 1617.419,
+     "snSnapM": 1036.016,
+     "snEitcM": 362.876,
+     "snMtr": 22.866,
+     "pLev20": 1.457
+    },
+    "prog|off": {
+     "fgt0PY": 31.449,
+     "fgt2PY": 3.664,
+     "pov": 21.4,
+     "bOAPy": 11.303,
+     "hrs": -0.049,
+     "emp": 99.633,
+     "pLev20": 1.457
+    },
+    "prog|slope": {
+     "fgt0PY": 31.364,
+     "fgt2PY": 3.225,
+     "pov": 21.27,
+     "bOAPy": 11.139,
+     "hrs": -0.078,
+     "emp": 99.626,
+     "snAll": 1280.779,
+     "snSnapM": 826.996,
+     "snEitcM": 286.923,
+     "snMtr": 21.197,
+     "pLev20": 1.457
+    }
+   },
+   "effect": {
+    "base|slope": {
+     "fgt0PY": [
+      0.015,
+      0.013,
+      0.017
+     ],
+     "fgt2PY": [
+      -1.1,
+      -1.117,
+      -1.083
+     ],
+     "pov": [
+      0.028,
+      0.009,
+      0.047
+     ],
+     "bOAPy": [
+      0.026,
+      0.021,
+      0.031
+     ],
+     "hrs": [
+      -0.038,
+      -0.038,
+      -0.038
+     ],
+     "emp": [
+      0,
+      0,
+      0
+     ],
+     "pLev20": [
+      0,
+      0,
+      0
+     ]
+    },
+    "prog|slope": {
+     "fgt0PY": [
+      -0.085,
+      -0.11,
+      -0.059
+     ],
+     "fgt2PY": [
+      -0.438,
+      -0.446,
+      -0.431
+     ],
+     "pov": [
+      -0.129,
+      -0.172,
+      -0.086
+     ],
+     "bOAPy": [
+      -0.164,
+      -0.176,
+      -0.151
+     ],
+     "hrs": [
+      -0.029,
+      -0.029,
+      -0.029
+     ],
+     "emp": [
+      -0.007,
+      -0.009,
+      -0.005
+     ],
+     "pLev20": [
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  }
+ }
+}

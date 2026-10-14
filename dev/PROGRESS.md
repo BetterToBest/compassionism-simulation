@@ -255,3 +255,9 @@ Branch `claude/sleepy-darwin-7num3o`, from main 1775417 (pull request #22 merged
 - [x] `check_figures.js` block 10 (study file pointers, every number on the page, no typed amounts, generator check); `set_version.py` and `check_versions.js` cover `study.html`.
 - [x] Version 5.5.0; release notes in CONTRIBUTING.md (v5.4.1's moved to CHANGELOG.md); replication timeline panel; links from the simulation, findings and replication pages.
 - [ ] The compare page (undefined; see Decisions), the safety-net take-up and setting C rows on the page, the comparison restudy (ledger step s95).
+
+## Session 10 (Oct 14, 2026; ledger steps s165, s146, s167): the study's results in
+
+Branch `claude/nice-fermi-31kcam`, from main 8e78d9d (pull request #30 merged).
+
+- [x] The s165 study (engine 5bf5bcc, runner 1125516) finished at 07:12:07 UTC (`DONE`); every piece in status.txt exited 0; the pod list is empty. Checked by files, not by count (`dev/tools/s165_verify.py`): the job list has 49 pieces (18 forty-year and 12 twenty-year panel pieces, 3 backing sweeps, 6 SNAP-rule checks, the history check, 3 safety-net traces, 6 explore exports), all 49 are in status.txt and in the folder, plus the 6 merged panels (merges are not logged in status.txt; their logs show 51 rows each), 55 JSON files in all, no extra ones. Every file records commit 5bf5bcc, a clean tree, 500 seeds; the six exports passed their self-check against the merged panels; no log has an error. (The dry run's "54 pieces" was a different count; the files settle it.)
