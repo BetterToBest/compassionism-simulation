@@ -1,9 +1,10 @@
 /* Compassionism Simulation: shared charts (v5.2.1, Oct 2026). Hand-written SVG, no library.
  * Used by the simulation page (index.html), the findings explorer (findings.html) and the replication page; the compare page will reuse it.
- * Two primitives cover every chart on the pages:
+ * Three primitives cover every chart on the pages:
  *   CSC.xy(el, spec)    lines over x (years, or a share), with optional bands (10th-90th percentile), whiskers (95% intervals), extra marks and a zero line;
  *   CSC.rows(el, spec)  one row per item with dots (with / without / a reading), intervals, reference lines and shaded target strips (dumbbells, range charts);
  *                       with spec.bars, bars from zero with a 95% interval line and the value at the end (the study page's sensitivity chart).
+ *   CSC.stack(el, spec) stacked columns over x, as values or as shares of each column (session 11: the visual suite page's BLEI tiers and the parts of BLEI).
  * Colors come from CSS custom properties in site/findings.css (validated for color-blind readers in light and dark, dataviz skill validator);
  * identity is never color alone: series also differ by line style or marker shape and carry a legend and direct labels. Every chart has a text
  * summary (aria-label) and its numbers in a table beside it (site/findings.js). Tooltips enhance, never gate.
@@ -153,9 +154,50 @@
     return svg;
   }
 
+  /* CSC.stack(host, spec)  (session 11, the visual suite page): stacked columns, one per x, layers bottom to top, a 2px surface gap between segments.
+   * spec: {x: [values], xLabel(v, long) -> text, layers: [{name, cls, values: [v|null]}], share: true (each column drawn as shares of its own total),
+   *        yMax, yFmt(v), tipFmt(v), yTitle, xTitle, label (aria summary), height, legend: true}
+   * A column whose values are all null (a group with no adults) is left empty and says so in its tooltip. */
+  function stack(host, spec) {
+    host.innerHTML = '';
+    var W = width(host), H = spec.height || Math.round(Math.min(300, Math.max(200, W*0.46))), m = {l: 46, r: 12, t: 14, b: 34};
+    var xs = spec.x, n = xs.length, L = spec.layers;
+    var tot = xs.map(function (_, i) { var s = 0, any = false; L.forEach(function (l) { var v = l.values[i]; if (v != null) { s += v; any = true; } }); return any ? s : null; });
+    var hi = spec.share ? 100 : spec.yMax != null ? spec.yMax : Math.max.apply(null, tot.filter(function (v) { return v != null; }).concat([1]));
+    var Y = spec.share ? {lo: 0, hi: 100, ticks: [0, 25, 50, 75, 100]} : nice(0, hi, 4);
+    var pw = W - m.l - m.r, cw = pw/n, bw = Math.max(2, cw - (n > 24 ? 1.5 : 3)), sy = function (v) { return m.t + (1 - (v - Y.lo)/(Y.hi - Y.lo))*(H - m.t - m.b); };
+    var svg = el('svg', {class: 'fx-svg', viewBox: '0 0 ' + W + ' ' + H, width: W, height: H, role: 'img', 'aria-label': spec.label || ''}, host);
+    var g = el('g', {class: 'fx-grid'}, svg);
+    Y.ticks.forEach(function (t) { el('line', {x1: m.l, x2: W - m.r, y1: sy(t), y2: sy(t)}, g); txt(g, m.l - 8, sy(t) + 4, spec.yFmt ? spec.yFmt(t) : String(t), {class: 'fx-tick', 'text-anchor': 'end'}); });
+    var every = n > 30 ? 10 : n > 12 ? 5 : 1;
+    xs.forEach(function (v, i) { if (i === 0 || i === n - 1 || (typeof v === 'number' && v % every === 0) || typeof v !== 'number') txt(g, m.l + cw*(i + 0.5), H - m.b + 16, spec.xLabel ? spec.xLabel(v) : String(v), {class: 'fx-tick', 'text-anchor': 'middle'}); });
+    if (spec.xTitle) txt(g, m.l + pw/2, H - 4, spec.xTitle, {class: 'fx-axis-t', 'text-anchor': 'middle'});
+    if (spec.yTitle) txt(g, m.l - 40, m.t - 2, spec.yTitle, {class: 'fx-axis-t'});
+    var cols = [];
+    xs.forEach(function (x, i) {
+      var c = el('g', {class: 'fx-col'}, svg), base = 0, x0 = m.l + cw*i + (cw - bw)/2; cols.push(c);
+      if (tot[i] == null) return;
+      L.forEach(function (l) { var v = l.values[i]; if (v == null || v <= 0) return; var s = spec.share ? v/tot[i]*100 : v, y0 = sy(base), y1 = sy(base + s), h = y0 - y1;
+        if (h > 0.2) el('rect', {x: x0, y: y1, width: bw, height: Math.max(0.5, h - (h > 3 ? 1 : 0)), class: l.cls + ' fx-seg-r'}, c); base += s; });
+    });
+    var cross = el('rect', {class: 'fx-colhl', x: 0, y: m.t, width: cw, height: H - m.t - m.b, visibility: 'hidden'}, svg), hit = el('rect', {x: m.l, y: m.t, width: pw, height: H - m.t - m.b, class: 'fx-hit'}, svg), cur = -1;
+    svg.insertBefore(cross, svg.firstChild.nextSibling);
+    function at(i, cx, cy) { cur = i; cross.setAttribute('x', m.l + cw*i); cross.setAttribute('visibility', 'visible');
+      var rows = tot[i] == null ? '<div class="fx-tip-r">' + esc(spec.emptyNote || 'No one in this group') + '</div>' : L.slice().reverse().map(function (l) { var v = l.values[i]; return '<div class="fx-tip-r"><i class="fx-key ' + l.cls + '"></i><b>' + esc(v == null ? '–' : spec.tipFmt ? spec.tipFmt(v) : v) + '</b> ' + esc(l.name) + '</div>'; }).join('');
+      var b = svg.getBoundingClientRect(); showTip('<div class="fx-tip-h">' + esc(spec.xLabel ? spec.xLabel(xs[i], true) : xs[i]) + '</div>' + rows, cx != null ? cx : b.left + (m.l + cw*(i + 0.5))*(b.width/W), cy != null ? cy : b.top + m.t*(b.height/H) + 10); }
+    function nearest(ev) { var b = svg.getBoundingClientRect(), x = (ev.clientX - b.left)*(W/b.width); return Math.max(0, Math.min(n - 1, Math.floor((x - m.l)/cw))); }
+    hit.addEventListener('pointermove', function (ev) { at(nearest(ev), ev.clientX, ev.clientY); });
+    hit.addEventListener('pointerleave', function () { cross.setAttribute('visibility', 'hidden'); hideTip(); });
+    host.tabIndex = 0; host.setAttribute('role', 'group'); host.setAttribute('aria-label', (spec.label || 'Chart') + '. Use the left and right arrow keys to read each column.');
+    host.onkeydown = function (ev) { if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return; ev.preventDefault(); at(cur < 0 ? (ev.key === 'ArrowRight' ? 0 : n - 1) : Math.max(0, Math.min(n - 1, cur + (ev.key === 'ArrowRight' ? 1 : -1)))); };
+    host.onblur = function () { hideTip(); cross.setAttribute('visibility', 'hidden'); cur = -1; };
+    if (spec.legend !== false) legend(host, L.map(function (l) { return {label: l.name, cls: l.cls, shape: 'square'}; }));
+    return svg;
+  }
+
   /* Re-draw a chart when its box changes width (phones turning, windows resizing). */
   function responsive(host, draw) { draw(); if (!root.ResizeObserver) return; var w = host.clientWidth, t = null;
     var ro = new ResizeObserver(function () { if (Math.abs(host.clientWidth - w) < 24) return; w = host.clientWidth; clearTimeout(t); t = setTimeout(draw, 120); }); ro.observe(host); host._fxRO = ro; }
 
-  root.CSC = {xy: xy, rows: rows, legend: legend, marker: marker, responsive: responsive, nice: nice, showTip: showTip, hideTip: hideTip, svgEl: el};
+  root.CSC = {xy: xy, rows: rows, stack: stack, legend: legend, marker: marker, responsive: responsive, nice: nice, showTip: showTip, hideTip: hideTip, svgEl: el};
 })(typeof window !== 'undefined' ? window : this);

@@ -14,6 +14,8 @@
  *  7. every anchor the replication and simulation pages had at v5.2 still exists (dev/tools/anchors-v5.2.json);
  *  8. the cards' plain meanings in site/findings.js are the release file's (v5.2.2: with no typed amount, and the release file's lines equal the harness's CFG);
  *  9. dev/tools/release_data.py --check: the data files, the manifest and the static blocks are what the generator writes from dev/runs/.
+ * 10. (v5.5) the study page (study.html) against data/studies/s137.json; 11. (session 11) the visual suite page (suite.html): its series agree with the release, and
+ *     every number it prints, in four views and three groups of adults, equals the newest release's data and suite series, with nothing typed.
  * Usage: node dev/tools/check_figures.js   (exit 1 on any failure). domtest.js runs it as Phase 14 (module.exports.run). */
 'use strict';
 const fs = require('fs'), path = require('path'), cp = require('child_process');
@@ -176,6 +178,35 @@ async function run(opts) {
     add('v5.5: python3 dev/tools/study_data.py --check: the study file is what the generator writes from dev/runs/s137 and dev/runs/s137b', g2.status === 0, g2.stdout.trim().split('\n').pop());
     let g3 = { status: 1, stdout: '' }; try { g3 = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'review_rows.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g3 = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }
     add('v5.5: python3 dev/tools/review_rows.py --check: the economist review checklist and the GitHub issue template are written from the same rows', g3.status === 0, g3.stdout.trim().split('\n').pop()); }
+  /* 11. session 11 (ledger s161): the visual suite page (suite.html). It reads the newest release through the manifest and that release's suite series
+   * (explore.suite: data/releases/v<version>/suite-YEARS.json); every number is a path into the release file with the suite files under R.suite[years]. */
+  { const ent = M.releases.filter(r => r.status === 'latest')[0] || cur[0], RS = ent && REL[ent.version], sp3 = [], sf = [];
+    const S = {}; if (RS && RS.explore && RS.explore.suite) Object.entries(RS.explore.suite).forEach(([y, f]) => { S[y] = rj(path.join('data/releases', f)); }); else sf.push('the newest release lists no suite series');
+    const RW = Object.assign({}, RS, { suite: S });
+    /* the series agree with the release: the share under 30 days is the published path (to its rounding), the tiers of all adults add up to the whole, and a group with no adults is null */
+    Object.entries(S).forEach(([y, X]) => ['ref', 'adv', 'st'].forEach(e => ['base', 'release', 'h1', 'mid'].forEach(row => { const Z = X.envs[e] && X.envs[e][row]; if (!Z) { sf.push(y + 'y ' + e + ' ' + row + ' missing'); return; }
+      const pub = row === 'base' ? RS.panels[y].envs[e].base.path.bO : RS.panels[y].envs[e].rows[row].path.bO;
+      if (Z.bO.mean.length !== +y || Z.bO.mean.some((v, t) => Math.abs(v - pub[t]) > 0.05 + 1e-9)) sf.push(y + 'y ' + e + ' ' + row + ' bO differs from the published path');
+      for (let t = 0; t < +y; t++) { const s = [0, 1, 2, 3, 4, 5].reduce((a, i) => a + Z['tier' + i + '_all'].mean[t], 0); if (Math.abs(s - 100) > 0.01) sf.push(y + 'y ' + e + ' ' + row + ' year ' + (t + 1) + ' tiers add to ' + s); }
+      if (row === 'base' && Z.tier0_part.mean.some(v => v !== null)) sf.push(y + 'y ' + e + ' no program has participants'); })));
+    add('session 11: the visual suite series (data/releases/v' + (RS && RS.version) + '/suite-*.json) agree with the release: the share under 30 days equals the published path to its rounding, each year\'s six tiers add up to all adults, and no one takes part without the program', sf.length === 0,
+      sf.length ? sf.slice(0, 5).join('; ') : Object.keys(S).length + ' horizons x 3 environments x 4 rows');
+    const dom = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html' }), w = dom.window;
+    w.scrollTo = () => {}; serve(w); w.eval(chartsSrc); w.eval(findingsSrc); const inline = [...w.document.querySelectorAll('script')].filter(x => !x.src && !x.type); w.eval(inline[0].textContent);
+    await settle(w); await settle(w);
+    let n3 = 0;
+    for (const [e, y, rd2] of [['ref', '20', 'release'], ['adv', '40', 'mid'], ['st', '20', 'h1'], ['st', '40', 'release']]) {
+      if (!S[y]) continue;
+      for (const b of [...w.document.querySelectorAll('#controls button')].filter(b => b.dataset.value === e || b.dataset.value === y || b.dataset.value === rd2)) { b.click(); await settle(w); }
+      for (const g of ['all', 'part', 'non']) { const gb = [...w.document.querySelectorAll('#tiers button')].filter(b => b.dataset.value === g)[0]; if (gb) { gb.click(); await settle(w); }
+        w.document.querySelectorAll('#suite details').forEach(d => { d.open = true; });
+        const x = spanProbs(w.document, RW, 'suite ' + e + ' ' + y + 'y ' + rd2 + ' ' + g); n3 += x.n; sp3.push(...x.bad);
+        if (w.document.querySelectorAll('.su-sec').length !== 8 || w.document.querySelectorAll('.su-sec svg.fx-svg').length !== 11) sp3.push('suite ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
+        scan.push(...unmarked(w.document.getElementById('content'), 'suite ' + e + ' ' + y + 'y')); } }
+    add('session 11: on the visual suite page every number (texts, cards and all tables) equals the newest release\'s data and suite series, in four views of environment, horizon and backing reading and all three groups of adults', sp3.length === 0 && n3 > 2000,
+      sp3.length ? sp3.slice(0, 4).join('; ') : n3 + ' numbers checked in 12 views');
+    const un3 = scan.filter(s => s.startsWith('suite'));
+    add('session 11: no percentage, dollar figure or price level is typed into the visual suite page', un3.length === 0, un3.length ? [...new Set(un3)].slice(0, 5).join('; ') : 'the whole page in 12 views'); }
   return out;
 }
 

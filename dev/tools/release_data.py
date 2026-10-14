@@ -7,7 +7,8 @@ dev/tools/explore_export.js). It writes:
                                   pages quote, a catalogue of headline figures (label, value, unit, environment, horizon, basis, what it means, where it
                                   comes from), the explorer's tables and texts (numbers as pointers into this file, never as typed text);
   data/releases/v<VERSION>/       the lazily loaded extras: bands-20.json, bands-40.json (spread across seeds, savings deciles) and
-                                  lives-ENV-YEARS.json (one stated seed's adults), from dev/runs/explore-ENV-YEARS.json;
+                                  lives-ENV-YEARS.json (one stated seed's adults), from dev/runs/explore-ENV-YEARS.json; and suite-20.json, suite-40.json
+                                  (the visual suite's series, read by suite.html) when those files carry them (explore_export.js --suite);
   data/manifest.json              the list of releases (version, date, tag, file, one-line summary, status current or earlier; a release with no engine change is listed with status latest and figuresFrom, and uses the earlier release's file);
   index.html, findings.html, replication.html: the static headline blocks between <!-- figs:NAME --> and <!-- /figs:NAME --> markers.
 
@@ -777,6 +778,7 @@ def explore_files(R):
     out = {}; idx = {'bands': {}, 'lives': {}}
     for Y in ('20', '40'):
         bands = {'_meta': None, 'envs': {}}
+        suite = {'_meta': None, 'envs': {}}  # session 11 (ledger s161): the visual suite's series (explore_export.js --suite), for suite.html
         for e, _ in ENVS:
             p = os.path.join(ROOT, 'dev', 'runs', 'explore-%s-%s.json' % (e, Y))
             if not os.path.exists(p): return None, None
@@ -789,8 +791,16 @@ def explore_files(R):
             bands['envs'][e] = {'bands': X['bands'], 'deciles': X['deciles']}
             out['lives-%s-%s.json' % (e, Y)] = {'_meta': dict(meta, env=e, years=int(Y), command=m['command']), 'lives': X['lives']}
             idx['lives']['%s-%s' % (e, Y)] = 'v%s/lives-%s-%s.json' % (R['version'], e, Y)
+            if 'suite' in X:
+                suite['_meta'] = suite['_meta'] or dict({k: m[k] for k in ('seeds', 'rows', 'manifest', 'selfCheck')}, what='the visual suite: for each row and year, the mean over the runs and the 10th and 90th percentile across them', years=int(Y), suite=m['suite'], commands={})
+                suite['_meta']['commands'][e] = m['command']
+                suite['envs'][e] = X['suite']
         out['bands-%s.json' % Y] = bands
         idx['bands'][Y] = 'v%s/bands-%s.json' % (R['version'], Y)
+        if len(suite['envs']) == len(ENVS):
+            out['suite-%s.json' % Y] = suite
+            idx.setdefault('suite', {})[Y] = 'v%s/suite-%s.json' % (R['version'], Y)
+        elif suite['envs']: sys.exit('release_data: the suite series are in some environments\' explore files but not all (%s years)' % Y)
     idx['lifeSeed'] = out['bands-20.json']['_meta']['lifeSeed']
     return out, idx
 

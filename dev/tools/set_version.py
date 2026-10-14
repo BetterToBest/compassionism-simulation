@@ -42,8 +42,14 @@ SD, n9f = re.subn(r'(<meta name="sim-version" content=")[^"]+(")', r'\g<1>' + v 
 SD, n9g = re.subn(r'("softwareVersion":")[^"]+(")', r'\g<1>' + v + r'\2', SD)
 SD, n9h = re.subn(r'(class="meta-ver">v)[^<]+(</span>)', r'\g<1>' + v + r'\2', SD)
 open('study.html', 'w').write(SD)
+UD = open('suite.html').read()  # session 11 (ledger s161): the visual suite page
+UD, n9i = re.subn(r'(<title>The visual suite \| Compassionism Framework Simulation v)[^<]+(</title>)', r'\g<1>' + v + r'\2', UD)
+UD, n9j = re.subn(r'(<meta name="sim-version" content=")[^"]+(")', r'\g<1>' + v + r'\2', UD)
+UD, n9k = re.subn(r'("softwareVersion":")[^"]+(")', r'\g<1>' + v + r'\2', UD)
+UD, n9l = re.subn(r'(class="meta-ver">v)[^<]+(</span>)', r'\g<1>' + v + r'\2', UD)
+open('suite.html', 'w').write(UD)
 nq = 0
-for f in ('index.html', 'findings.html', 'study.html'):
+for f in ('index.html', 'findings.html', 'study.html', 'suite.html'):
     T = open(f).read(); T, k = re.subn(r'((?:src|href)="site/[a-z]+\.(?:js|css)\?v=)[^"]+(")', r'\g<1>' + v + r'\2', T); nq += k; open(f, 'w').write(T)
 print('findings.html title/meta/JSON-LD/label', n9, n9b, n9c, n9d, '| site/ cache keys', nq)
 CF = open('CITATION.cff').read()  # v5.2.2 (audit A9): the citation file's version
