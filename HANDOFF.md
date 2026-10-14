@@ -8,15 +8,15 @@
 - All passed before the pull request: validate, unit (222), domtest (139), guard test (identical), check_figures, and `no_figure_change.py compare` (34 moved counts, each allowed with a reason).
 
 ## Branch and pull request state
-- v5.6 release: branch `claude/nice-fermi-31kcam-v56`, draft https://github.com/BetterToBest/compassionism-simulation/pull/32. CI is green. **Only Duke merges it.**
-- Visual suite: branch `claude/magical-einstein-umkin2`, built on the v5.6 branch at a006ded. Draft https://github.com/BetterToBest/compassionism-simulation/pull/33. CI was running at handoff. **It must merge after 32**; until then its diff also shows the release.
+- v5.6 release: https://github.com/BetterToBest/compassionism-simulation/pull/32 **merged by Duke** (Oct 14, main 126a9c3); v5.6 is the live release.
+- Visual suite: branch `claude/magical-einstein-umkin2`, draft https://github.com/BetterToBest/compassionism-simulation/pull/33. CI green, no conflict with main; its diff is now only the page. Duke merges it after reading the report.
 - The reports pull request (31) has merged.
 
 ## Long jobs in flight
 - None. The results token expires 2026-10-17 04:16 UTC.
 
 ## Next 3 actions
-1. **If 32 or 33 shows red CI or a merge conflict:** fix it on its branch (merge main into it; never rebase) and push. If 32 merges first, merge main into 33's branch.
+1. **If 33 shows red CI or a merge conflict:** merge main into its branch (never rebase), fix and push.
 2. **The CoMSES package and the fact sheet (ledger step s119)**, with every figure traced to the release data (`data/releases/v5.6.json`).
 3. **If Duke approves the suite page:** link it from the findings explorer and drop `noindex` (a one-line change each). Domtest Phase 15's "no other page links to it" check must then be changed to expect the link.
 
