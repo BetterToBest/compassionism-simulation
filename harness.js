@@ -2563,6 +2563,20 @@ function healthUnitSuite(){
     return {pass:near(b.main, 5000*W.jMain + 0.2*(W.hosp*k + W.psych)) && near(b.high - b.main, 5000*(W.jHigh - W.jMain) + 0.2*W.erHigh*k) && b.main === c.main && z.main === a.main && a.high === avoidWide(5000, 0.2).high && near(h.high, AVOID_HOMELESS.high*(1 - 0.53*(1 - k))) && avoidHomelessHl().high === AVOID_HOMELESS.high,
       detail:'main ' + a.main.toFixed(1) + ' -> ' + b.main.toFixed(1) + '; high ' + a.high.toFixed(1) + ' -> ' + b.high.toFixed(1)}; });
   /* Session 2b (Oct 13, 2026; dev/reports/v5-27-health-financing.md): today's safety net. */
+  /* Session 7 (Oct 14, 2026; dev/reports/v5-33-snap-work-rule.md): SNAP's work rule, by hand. */
+  t('SNAP work rule: the 3-months-in-36 clock (countable months 5, 4, 4, 1, then exempt, then not receiving) and the household cut (a single adult, a couple; 8% State exemptions)', function(){
+    var sv = SNET; SNET = Object.assign({}, SNET_DEFAULTS, {abawd:true});
+    try { var a = {}, L = [];
+      [[5, true, true], [4, true, true], [4, true, true], [1, true, true], [6, false, true], [6, true, false], [2, true, true]].forEach(function(y){ a._snAbC = y[0]; L.push(snAbClock(a, y[1], y[2])); });
+      var h1 = {nA:1, nK:0, k17:0, other:0, house:10000, care:0, old:false, okAge:true, takeS:true, takeT:true}, h2 = Object.assign({}, h1, {nA:2});
+      var s1 = snBen(h1, 9000)[0], s2 = snBen(h2, 9000)[0], c = [snAbCut(h1, 9000, s1, [12]), snAbCut(h1, 9000, s1, [3]), snAbCut(h2, 9000, s2, [6]), snAbCut(h1, 9000, s1, []), snAbCut(h1, 9000, 0, [12])]; }
+    finally { SNET = sv; }
+    /* Clock: 5 countable -> 3 credited, 2 lost; then 4 and 4 lost (3 used in the window); year 4: the first year's 3 have left the window, 3 credited
+     * of 1 -> 0 lost; an exempt year and a year without SNAP lose nothing and credit nothing; then 2 countable with nothing credited in the window -> 0 lost.
+     * Cut: one adult, $9,000 of pay, $10,000 housing: SNAP 12 x 298 = 3,576 (net income 0 after the shelter deduction); a year lost -> 0.92 x 3,576;
+     * 3 months -> 0.23 x 3,576. A couple: 12 x 546 = 6,552, one member fewer 3,576; 6 months -> 0.46 x 2,976. */
+    var w = [[L.join(','), '2,4,4,0,0,0,0'], [s1, 3576], [s2, 6552], [c[0], 0.92*3576], [c[1], 0.23*3576], [c[2], 0.46*2976], [c[3], 0], [c[4], 0]];
+    return {pass:w.every(function(x){ return typeof x[1] === 'string' ? x[0] === x[1] : near(x[0], x[1], 1e-9); }), detail:'clock ' + L.join(',') + '; cuts ' + c.map(function(x){ return x.toFixed(2); }).join(', ')}; });
   t('safety net: SNAP, the EITC and the refundable CTC by hand (single parent, two children, $20,000 of pay; a couple without children, $22,000), the income tax before credits, and the switches', function(){
     var sv = SNET; SNET = Object.assign({}, SNET_DEFAULTS);
     try { var a = snBen({nA:1, nK:2, k17:2, other:0, house:12000, care:0, old:false, okAge:true, takeS:true, takeT:true}, 20000);
@@ -2618,7 +2632,7 @@ function healthUnitSuite(){
 }
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
-Object.assign(module.exports, { SN_KEYS, SNET_DEFAULTS, snBen, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
+Object.assign(module.exports, { tbCashIncome, SN_KEYS, SN_AB_KEYS, SNET_DEFAULTS, snBen, snAbClock, snAbCut, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
 Object.assign(module.exports, { PREV_CASES, PREV_DEFAULTS, pvFood });  /* session 2c: the prevention link */
 function v52UnitSuite(){
   var out = [];
@@ -4639,6 +4653,7 @@ if (require.main === module) {
       rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
       var cfg = [Object.assign({p:PR.baseline()}, base || {})], lbl = ['No program (Baseline)' + (base && typeof base.sc === 'number' ? ', spending share ' + base.sc : '')];
       rows.forEach(function(r){ var c = r.base ? Object.assign({p:PR.baseline()}, r.v) : n1Row(PR, cm, r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); cfg.push(c); lbl.push(r.l); });
+      if (base && base.snAll){ delete cfg[0].snAll; cfg.forEach(function(c){ c.sn = Object.assign({}, base.snAll); }); }  /* session 7 (s165): --sn / --snab, today's safety net (and SNAP's work rule) in every run of the panel */
       function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
       var t0 = Date.now(), R = tbStudy(cfg, nT, P, Object.assign({}, o, base && base.so || {}, base && typeof base.sc === 'number' ? {sc:base.sc} : {})), B = R[0], TD = R[idx.today];  /* v5.2: base.so = extra study-level options (the v5.2 reporting) */
       function ci(d, n){ return sg(d.m, n) + ' [' + sg(d.lo, n) + ', ' + sg(d.hi, n) + ']'; }
@@ -4762,6 +4777,8 @@ if (require.main === module) {
       if (V52) RJ._meta.v52 = {report:Object.assign({}, SO52), thresholdOne2025:CFG.POVERTY_THRESHOLD_ONE};
       if (V53){ RJ._meta.v53 = {households:HH_V53, buScope:'hub', spendGrade:CFG.CE_SPEND_ELAST, corrections:ACCT_V53}; RJ._meta.command += V54 ? ' --v54' : ' --v53'; }
       if (V54) RJ._meta.v54 = {parts:V54_MAIN, empl:EMPL_DEFAULTS, pthb:PTHB_DEFAULTS, ptfs:PTFS_DEFAULTS, dis:DIS_DEFAULTS};
+      var SNALL = process.argv.indexOf('--snab') >= 0 ? {abawd:true} : process.argv.indexOf('--sn') >= 0 ? {} : null;  /* session 7 (s165): every run with today's safety net, and with --snab SNAP's work rule */
+      if (SNALL){ RJ._meta.sn = Object.assign({}, SNET_DEFAULTS, SNALL); RJ._meta.command += SNALL.abawd ? ' --snab' : ' --sn'; }
       envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
@@ -4778,7 +4795,7 @@ if (require.main === module) {
            ['Prisons, hospitals and psychiatric care avoided per adult-year: main (prisons + health) / high', function(r){ var w = aw(r); return $(w.main) + ' (' + $(w.jail) + ' + ' + $(w.health) + ') / ' + $(w.high); }],
            ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
-           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}, V54 ? {v54:V54_MAIN} : {}));
+           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}, V54 ? {v54:V54_MAIN} : {}, SNALL ? {snAll:SNALL} : {}));
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
         if (V52){ rep52Print(R, ['No programme'].concat(rows.map(function(rw){ return rw.l.trim(); })), E[0], YRS > 0 ? YRS : 20); out.base.rep = rep52Keys(B, null); out.base.path = path52(B, YRS > 0 ? YRS : 20); }
         var BX = {}; rows.forEach(function(rw, i){ if (rw.base) BX[rw.j] = R[i + 1]; });  /* v5.2: the paired no-programme rows */
@@ -4805,10 +4822,11 @@ if (require.main === module) {
     if (secT === 'backing'){ var BJ = {_meta:{engine:'release engine (harness.js testbed, section backing)', manifest:runManifest(), seeds:nT, agents:AG, written:new Date().toISOString().slice(0, 10), years:YRS > 0 ? YRS : 20, shares:[0, 0.25, 0.5, 0.75, 1],
         command:'node harness.js testbed ' + nT + ' backing ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + (process.argv.indexOf('--v54') >= 0 ? ' --v54' : process.argv.indexOf('--v53') >= 0 ? ' --v53' : '') + ' --json=dev/runs/backing-share-ENV.json'}, envs:{}},
       BPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
-      var B54 = process.argv.indexOf('--v54') >= 0, B53 = B54 || process.argv.indexOf('--v53') >= 0;  /* v5.3 B10: the sweep on the v5.3 main row and its no-programme run; v5.4 step 9: --v54 on v5.4's */
+      var B54 = process.argv.indexOf('--v54') >= 0, B53 = B54 || process.argv.indexOf('--v53') >= 0, BSN = process.argv.indexOf('--snab') >= 0 ? {abawd:true} : process.argv.indexOf('--sn') >= 0 ? {} : null;  /* session 7: --sn / --snab as in the release section */
+      if (BSN){ BJ._meta.sn = Object.assign({}, SNET_DEFAULTS, BSN); BJ._meta.command += BSN.abawd ? ' --snab' : ' --sn'; }  /* v5.3 B10: the sweep on the v5.3 main row and its no-programme run; v5.4 step 9: --v54 on v5.4's */
       envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5, B53 ? REL_V53 : {}, B54 ? REL_V54 : {}), W = function(x){ return Object.assign({}, ALL, x); };
         var rows = BJ._meta.shares.map(function(a, i){ return {l:'a = ' + a + (a === 0 ? ' (the release row: nothing the Source pays is backed by new output)' : a === 1 ? ' (H1: every Source dollar backed by new output)' : ''), v:W({a:a}), k:i === 0 ? 'today' : 's', vs:'today', j:'a' + Math.round(a*100)}; });  /* the release row (a = 0) is the comparison row every other point is read against */
-        var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], Object.assign({sc:SC}, B53 ? {hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g} : {}, B54 ? REL_V54 : {}));
+        var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], Object.assign({sc:SC}, B53 ? {hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g} : {}, B54 ? REL_V54 : {}, BSN ? {snAll:BSN} : {}));
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, epPY:B.epPY}, rows:{}};
         function d3(r, k){ var x = tbDiff(r, B, k); return [+x.m.toFixed(2), +x.lo.toFixed(2), +x.hi.toFixed(2)]; }
         function d3p(r, k){ var x = tbDiff(r, B, k); return [+(x.m*100).toFixed(2), +(x.lo*100).toFixed(2), +(x.hi*100).toFixed(2)]; }  /* a rate as percentage points a year */
