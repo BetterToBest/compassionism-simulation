@@ -52,6 +52,11 @@ main .wrap{padding-bottom:60px}
 @media (max-width:760px){.su-grid{grid-template-columns:1fr}}
 .su-grid .fx-figure{margin:0}
 .su-limits li{margin:0 0 8px;max-width:78ch}
+.su-badge{display:inline-block;font-size:12px;font-weight:650;border-radius:999px;padding:1px 9px;margin:0 0 6px;border:1px solid var(--fx-rule);background:var(--fx-surface-2);color:var(--fx-ink-2)}
+.su-b-m{border-color:var(--fx-ink-3);color:var(--fx-ink)}
+.su-b-p,.su-b-n{border-style:dashed}
+.su-q{margin:2px 0 6px;color:var(--fx-ink-2)}
+.su-ans{margin:0 0 6px;font-weight:600;color:var(--fx-ink)}
 /* The BLEI tiers: two ordinal ramps split at the 30-day line (warm below it, blue above), each checked with the dataviz skill's validator
  * (--ordinal: one hue, monotone lightness, visible steps, the end nearest the surface clears 2:1), in light and in dark. */
 .fx{--t0:#7d2c0c;--t1:#e39257;--t2:#86b6ef;--t3:#3987e5;--t4:#1c5cab;--t5:#0d366b}
@@ -83,12 +88,12 @@ footer p{margin:0 0 6px}
 </div></div>
 
 <nav class="fx-nav" aria-label="Sections and view"><div class="wrap">
-  <div class="fx-nav-in" id="nav-links"><a href="#indices">Six measures</a><a href="#tiers">The ladder</a><a href="#floor">Bottom and top</a><a href="#parts">What the days are made of</a><a href="#who">Who takes part</a><a href="#measures">Four lines</a><a href="#spread">Across the runs</a><a href="#limits">Limits and data</a></div>
+  <div class="fx-nav-in" id="nav-links"><a href="#indices">Six measures</a><a href="#tiers">The ladder</a><a href="#floor">Bottom and top</a><a href="#parts">What the days are made of</a><a href="#who">Who takes part</a><a href="#measures">Four lines</a><a href="#moves">Who gains, who moves</a><a href="#spread">Across the runs</a><a href="#limits">Limits and data</a></div>
   <div class="fx-strip-bar" id="controls"></div>
 </div></nav>
 
 <main id="content"><div class="wrap" id="suite"><p class="fx-loading">The suite loads from the latest release in <a href="data/manifest.json">data/manifest.json</a>.</p>
-  <noscript><p class="fx-banner">The charts and tables on this page need JavaScript. Every figure is in the release data: <a href="data/manifest.json">data/manifest.json</a> lists the releases, and each release's suite series are in data/releases/v&lt;version&gt;/suite-20.json and suite-40.json. The plain-words report is <a href="dev/reports/v5-33-visual-suite.md">dev/reports/v5-33-visual-suite.md</a>.</p></noscript>
+  <noscript><p class="fx-banner">The charts and tables on this page need JavaScript. Every figure is in the release data: <a href="data/manifest.json">data/manifest.json</a> lists the releases, and each release's suite series are in data/releases/v&lt;version&gt;/suite-20.json and suite-40.json. The plain-words reports are <a href="dev/reports/v5-33-visual-suite.md">dev/reports/v5-33-visual-suite.md</a> and, for the measure cards and the measures study, <a href="dev/reports/v5-36-measures-study.md">dev/reports/v5-36-measures-study.md</a>.</p></noscript>
 </div></main>
 
 <footer><div class="wrap">
@@ -142,25 +147,67 @@ footer p{margin:0 0 6px}
   var LAST = function () { return T() - 1; }, Y7 = 6;
   var tsel = function (t) { return t === Y7 ? 'Year 7' : 'Year ' + T(); };
 
-  /* 1. the six measures of the BLEI paper */
+  /* 1. the six measures of the BLEI paper (session 12: one card each, with a status badge; dev/plans/suite-v2-plan.md, 5.1) */
+  var STATUS = {m: 'Measured', d: 'Measured differently from the paper', p: 'Partly modelled', n: 'Not modelled'};
+  function hasStudy() { return !!(R.study && R.study[st.years] && R.study[st.years].envs[st.env]); }
+  function sy(row, key, stat, t) { return 'study.' + st.years + '.envs.' + st.env + '.series.' + row + '.' + key + '.' + stat + '.' + t; }
+  function sr(row, key, stat) { return 'study.' + st.years + '.envs.' + st.env + '.run.' + row + '.' + key + '.' + stat; }
+  /* a figure quoted from the BLEI paper (checked against the Research Hub text, Oct 14, 2026), not from the model: marked so dev/tools/check_figures.js tells it apart */
+  function pq(t) { return '<span class="su-pq" data-paper="BLEI paper">' + t + '</span>'; }
+  var WAIT = 'Waiting on the measures study: this card fills in when its data is added to the release.';
+  function signed(p, f, plus, minus) { var v = get(p); return N(p, f) + (typeof v === 'number' && v < 0 ? ' (' + minus + ')' : plus ? ' (' + plus + ')' : ''); }
   function indices() {
-    var r = st.read, L = LAST(), s = section('indices', 'The six measures of the BLEI paper, and what the model shows',
-      'The BLEI paper proposes six measures that standard statistics miss: how long a household’s resources last, how much of its income drains away to rent and interest, how far its money goes, how much room it has above basic living, how its security compounds, and what people who do not take part gain. Here is what this simulation measures of each, for the environment and horizon you chose. <span class="su-reading">Claude’s reading of the design</span>');
-    var t = {id: 'suite-indices', title: 'The six BLEI-paper measures in this model', columns: ['Measure', 'What it asks', 'What this model measures', 'No program', 'Compassionism'], rows: [
-      [{p: ['Basic Living Economic Index (BLEI)']}, {p: ['How many days of basic living a person’s savings, pay and support cover']}, {p: ['Measured for every adult every year, on the BLEI paper’s reading, in today’s prices. Shown: the median adult’s days in the last year; below it, the share under 30 days.']},
-        cell(sp('base', 'med_all', 'mean', L), 'int', [{src: sp('base', 'bO', 'mean', L), f: 'p1'}, ' under 30 days']), cell(sp(r, 'med_all', 'mean', L), 'int', [{src: sp(r, 'bO', 'mean', L), f: 'p1'}, ' under 30 days'])],
-      [{p: ['Extractive Drain Coefficient (EDC)']}, {p: ['How much income goes to contracts that build no wealth: rent and interest']}, {p: ['Measured from each year’s payments: rent paid to landlords and interest on debt over all income (the allowance counted at face value); community housing payments count as zero. Mean over person-years.']},
-        cell(pp('base', 'edcM'), 'p1'), cell(pp(r, 'edcM'), 'p1')],
-      [{p: ['Effective Purchasing Power Multiplier (EPPM)']}, {p: ['How far a participant’s money goes against the same income without the program']}, {p: ['Not computed as one number in this release. Its parts (the allowance, community prices, the drain above) are in the model; combining them as the paper does is a possible next measure.']}, {p: ['–']}, {p: ['–']}],
-      [{p: ['Financial Bandwidth Score (FBS)']}, {p: ['How much money is left each month above basic living: room to plan and advance']}, {p: ['Measured for participants only: the share of participant-years whose free monthly surplus reaches the level at which the chance of advancing a level is even. Without the program no one takes part, so there is no figure to compare.']},
-        {p: ['–']}, cell(pp(r, 'fbsAbove'), 'p1')],
-      [{p: ['Compound Stability Index (CSI)']}, {p: ['How security compounds over months and years']}, {p: ['Not computed as the paper’s formula. The model simulates the years directly instead: the ladder and the median days on this page are its year-by-year answer to the same question.']}, {p: ['–']}, {p: ['–']}],
-      [{p: ['Indirect Participant Benefit Index (IPBI)']}, {p: ['What people who do not take part gain indirectly: less crime, better health, property values, productivity, larger markets']}, {p: ['Not measured: the model has none of these channels. It can show the direct effect on adults who do not take part, through prices, wages and the safety net (see “Who takes part”).']}, {p: ['–']}, {p: ['–']}]]};
-    var ul = document.createElement('ul'); ul.className = 'su-key';
-    t.rows.forEach(function (r) { var li = document.createElement('li'); li.innerHTML = '<b>' + F.cellHTML(R, r[0]) + '</b>' + F.cellHTML(R, r[1]) + '<p class="su-sub">' + F.cellHTML(R, r[2]) + '</p>' +
-      (r[3].p[0] === '–' && r[4].p[0] === '–' ? '' : '<p class="su-sub">No program: ' + F.cellHTML(R, r[3]) + ' · Compassionism: ' + F.cellHTML(R, r[4]) + '</p>'); ul.appendChild(li); });
-    s.appendChild(ul); s.appendChild(tableBox(t, false));
-    s.appendChild(para('Two of the six (EPPM and IPBI) describe gains the model has no way to produce or measure, and one (CSI) is a projection the model replaces with simulated years. A reader should not take their absence here as evidence for or against them; it means this model cannot test them yet.'));
+    var r = st.read, L = LAST(), S = hasStudy(), s = section('indices', 'The six measures of the BLEI paper, and what the model shows',
+      'The BLEI paper proposes six measures that standard statistics miss: how long a household’s resources last, how much of its income drains away to rent and interest, how far its money goes, how much room it has above basic living, how its security compounds, and what people who do not take part gain. Each card says what the measure asks, what this simulation finds for the environment and horizon you chose, how it is computed here, how that differs from the paper, and what it does not show. <span class="su-reading">Claude’s reading of the design</span>');
+    var y = 'Year ' + T(), avoidRow = get(pp(r, 'cost')) !== undefined ? F.get(R, 'panels.' + st.years + '.envs.' + st.env + '.rows.' + r) : null;
+    var C6 = [
+      {name: 'Basic Living Economic Index (BLEI)', st: 'm', q: 'How many days of basic living do a person’s accessible resources cover: a fifth of their savings, part of a month’s pay and one month of the allowance?',
+       ans: 'Median adult in ' + y + ': ' + N(sp('base', 'med_all', 'mean', L), 'int') + ' days with no program, ' + N(sp(r, 'med_all', 'mean', L), 'int') + ' with Compassionism. Under 30 days: ' + N(sp('base', 'bO', 'mean', L), 'p1') + ' and ' + N(sp(r, 'bO', 'mean', L), 'p1') + ' of adults.',
+       how: 'For every adult every year, on the BLEI paper’s reading, in today’s prices.', not: 'Adults only: children are in the model’s households but not on this ladder. Days of basic living, not dollars; savings beyond the fifth counted are not shown.'},
+      {name: 'Extractive Drain Coefficient (EDC)', st: 'm', q: 'What share of income goes to contracts that build no wealth: rent to landlords and interest on debt?',
+       ans: 'Mean over person-years: ' + N(pp('base', 'edcM'), 'p1') + ' of income with no program, ' + N(pp(r, 'edcM'), 'p1') + ' with Compassionism.',
+       how: 'Each year’s rent paid to landlords plus interest on debt, over all income with the allowance at face value; community housing payments count as zero, as the glossary defines them.',
+       paper: 'The paper’s worked example is one near-poverty household; this is the mean over all adults, so it is lower. The paper’s own figures for that household disagree (' + pq('0.625') + ' in its tables, ' + pq('0.744') + ' in its appendix).',
+       not: 'Who receives the drain, and drain by income group.'},
+      {name: 'Effective Purchasing Power Multiplier (EPPM)', st: 'd', q: 'How far does a person’s money go with the program, against the same person without it?',
+       ans: S ? 'Participants in ' + y + ': ' + N(sy(r, 'eppm_part', 'mean', L), 'n2') + ' times their resources without the program (participants in the poorest fifth: ' + N(sy(r, 'eppm_pq1', 'mean', L), 'n2') + '; adults who do not take part: ' + N(sy(r, 'eppm_non', 'mean', L), 'n2') + ').' : WAIT,
+       how: 'Real resources: cash income after the contribution (wages, transfers, today’s safety net), plus the allowance spent and the community price cuts, less interest paid, each at its own run’s price level. Each adult is compared with the same adult in the no-program run of the same seed, and the group’s totals are divided. Because a person is compared with themselves, self-selection does not bias it; the program’s effects on prices and wages are included.',
+       paper: 'The paper values the allowance at about twice its face value (' + pq('$2,502') + ' a month of market purchasing power for ' + pq('$1,200') + ' of allowance) and gets ' + pq('5.80×') + ' for its near-poverty example. The model counts the allowance at face value and models the community price cuts separately, so using the paper’s factor as well would count the same gain twice. Expect population figures well below the paper’s example.',
+       not: 'Time and quality of what is bought; anything outside the basic basket.'},
+      {name: 'Financial Bandwidth Score (FBS)', st: 'd', q: 'How much money is left each month above basic living: room to plan and advance?',
+       ans: (S ? 'Median monthly surplus in ' + y + ', today’s dollars: ' + N(sy('base', 'sur_all', 'mean', L), 'usd') + ' with no program, ' + N(sy(r, 'sur_all', 'mean', L), 'usd') + ' with Compassionism; adults with no surplus at all: ' + N(sy('base', 'sur0_all', 'mean', L), 'p1') + ' and ' + N(sy(r, 'sur0_all', 'mean', L), 'p1') + '. ' : '') +
+         'Participant-years whose surplus reaches the level at which the chance of advancing a level is even: ' + N(pp(r, 'fbsAbove'), 'p1') + '.' + (S ? '' : ' The surplus for every adult in both runs is waiting on the measures study.'),
+       how: 'Cash income after the contribution, less what the adult pays for the basic basket (after the allowance and price cuts) and interest, a month, floored at zero; for every adult in both runs.',
+       paper: 'The paper compares ' + pq('$0') + ' with no program against ' + pq('$2,281') + ' for its example participant. The model uses its own cost basket (MIT living wage), not the paper’s ' + pq('$1,950') + '. The chance of advancing is a model rule, not an observed rate: the paper’s own range saturates (' + pq('89.8% to 100%') + ' at ' + pq('$2,281') + '), so the model uses a separate, provisional range.',
+       not: 'Whether people use the room to advance; that step is a rule in the model.'},
+      {name: 'Compound Stability Index (CSI)', st: 'd', q: 'How does security compound over months and years, counting the equity community-housing members build?',
+       ans: (S ? 'Adults with two years or more of basic living in ' + y + ': ' + N(sy(r, 'b730_all', 'mean', L), 'p1') + ' on the ladder, ' + N(sy(r, 'c730_all', 'mean', L), 'p1') + ' adding Acre Equity (no program: ' + N(sy('base', 'b730_all', 'mean', L), 'p1') + '). Community-housing members’ median Acre Equity: ' + N(sy(r, 'eqdMedPth', 'mean', L), 'int') + ' days.' : WAIT) + ' The ladder and the median days on this page are the simulated years themselves.',
+       how: 'Simulated year by year, not projected: BLEI days plus Acre Equity counted in full, in days of basic living. Acre Equity is kept apart from savings in the model (never counted in both), and the ladder leaves it out because it cannot be spent now.',
+       paper: 'The paper’s CSI is a closed-form projection with constant growth rates and ' + pq('$600') + ' a month of equity growing at ' + pq('4%') + ' (' + pq('2% to 7%') + '); it gives no worked CSI number. The model simulates the years instead, so the formula is not computed.',
+       not: 'Whether equity could be drawn on in a crisis; it is shown as not accessible now.'},
+      {name: 'Indirect Participant Benefit Index (IPBI)', st: 'p', q: 'What do people who do not take part gain indirectly: less crime, better health, property values, productivity, larger markets?',
+       ans: avoidRow ? 'Public costs avoided per adult a year, today’s dollars: prisons ' + N(pp(r, 'avoidJail'), 'usd') + ', hospital and psychiatric stays ' + N(pp(r, 'avoidHealth'), 'usd') + ', homelessness ' + N(pp(r, 'avoidLo'), 'usd') + ' to ' + N(pp(r, 'avoidHi'), 'usd') +
+         ' (' + signed(pp(r, 'unhousedAvoided'), 'n1', 'fewer unhoused person-years per 1,000 adults a year', 'more unhoused person-years per 1,000 adults a year: a cost, not a saving') + '). The program costs ' + N(pp(r, 'cost'), 'usd') + ' per adult a year' + (F.avoidSmall(avoidRow) ? '; these savings are a small share of it.' : '.') : '–',
+       how: 'Public budgets only, from the change in the poverty gap and published causal estimates (the same figures as the main page’s cost section); they are savings across the whole population, not gains to people who do not take part.',
+       paper: 'The paper’s five channels add to ' + pq('$22,800 to $59,900') + ' a year for a non-participant household, with no causal identification claimed. The model covers only the public-cost side of two of them and does not reproduce those dollars.',
+       not: 'Crime victims’ losses; child welfare savings.',
+       need: 'Market expansion needs a sourced demand multiplier from participants’ spending to other people’s incomes; productivity needs employers in the model; property values need places and a housing market, and an expert.'}];
+    var ul = document.createElement('ul'); ul.className = 'su-key su-cards';
+    C6.forEach(function (c) { var li = document.createElement('li');
+      li.innerHTML = '<b>' + esc(c.name) + '</b><span class="su-badge su-b-' + c.st + '">' + STATUS[c.st] + '</span><p class="su-q">' + esc(c.q) + '</p><p class="su-ans">' + c.ans + '</p>' +
+        '<p class="su-sub"><strong>How it is computed here.</strong> ' + esc(c.how) + '</p>' + (c.paper ? '<p class="su-sub"><strong>How it differs from the paper.</strong> ' + c.paper + '</p>' : '') +
+        '<p class="su-sub"><strong>What it does not show.</strong> ' + esc(c.not) + '</p>' + (c.need ? '<p class="su-sub"><strong>What the rest would need.</strong> ' + esc(c.need) + '</p>' : ''); ul.appendChild(li); });
+    s.appendChild(ul);
+    var t = {id: 'suite-indices', title: 'The six BLEI-paper measures in this model', columns: ['Measure', 'Status', 'What it asks', 'No program', 'Compassionism'], rows: [
+      [{p: ['BLEI: median days']}, {p: [STATUS.m]}, {p: [C6[0].q]}, cell(sp('base', 'med_all', 'mean', L), 'int', [{src: sp('base', 'bO', 'mean', L), f: 'p1'}, ' under 30 days']), cell(sp(r, 'med_all', 'mean', L), 'int', [{src: sp(r, 'bO', 'mean', L), f: 'p1'}, ' under 30 days'])],
+      [{p: ['EDC']}, {p: [STATUS.m]}, {p: [C6[1].q]}, cell(pp('base', 'edcM'), 'p1'), cell(pp(r, 'edcM'), 'p1')],
+      [{p: ['EPPM, participants']}, {p: [STATUS.d]}, {p: [C6[2].q]}, {p: ['1 (the comparison)']}, S ? cell(sy(r, 'eppm_part', 'mean', L), 'n2') : {p: ['–']}],
+      [{p: ['FBS: participant-years at even odds of advancing']}, {p: [STATUS.d]}, {p: [C6[3].q]}, {p: ['–']}, cell(pp(r, 'fbsAbove'), 'p1')]]
+      .concat(S ? [[{p: ['FBS: median monthly surplus']}, {p: [STATUS.d]}, {p: [C6[3].q]}, cell(sy('base', 'sur_all', 'mean', L), 'usd'), cell(sy(r, 'sur_all', 'mean', L), 'usd')],
+        [{p: ['CSI: two years or more, with Acre Equity']}, {p: [STATUS.d]}, {p: [C6[4].q]}, cell(sy('base', 'c730_all', 'mean', L), 'p1'), cell(sy(r, 'c730_all', 'mean', L), 'p1')]] : [[{p: ['CSI']}, {p: [STATUS.d]}, {p: [C6[4].q]}, {p: ['–']}, {p: ['–']}]])
+      .concat([[{p: ['IPBI: prisons and hospital stays avoided, per adult a year']}, {p: [STATUS.p]}, {p: [C6[5].q]}, {p: ['–']}, cell(pp(r, 'avoidW'), 'usd')]])};
+    s.appendChild(tableBox(t, false));
+    s.appendChild(para('Of the six, two are measured as the paper defines them (BLEI and EDC), three are measured in the model’s own terms (EPPM, FBS and CSI, each card says how and why), and one is only partly modelled (IPBI: the public costs avoided; its market, productivity and property channels are not in the model). A gap is a limit of this model, not evidence for or against the measure.'));
     return s;
   }
 
@@ -168,7 +215,7 @@ footer p{margin:0 0 6px}
   function tiers() {
     var r = st.read, names = tierNames(), cls = ['t0', 't1', 't2', 't3', 't4', 't5'], g = st.grp;
     var s = section('tiers', 'The BLEI ladder, year by year',
-      'Each column is one year; its six bands are the shares of adults on each step of the BLEI paper’s ladder, from Crisis (under a week of basic living covered) to Flourishing (two years and more). The two warm bands are below the 30-day line the paper treats as the edge of poverty. Each share is the average over ' + F.num(R, 'meta.seeds', 'int') + ' paired runs.');
+      'Each column is one year; its six bands are the shares of adults on each step of the BLEI paper’s ladder, from Crisis (under a week of basic living covered) to Flourishing (two years and more). The two warm bands are below the 30-day line the paper treats as the edge of poverty. The paper keeps the name “Flourishing” for configurations where community prices make the top step durable; this page uses the one name in both runs, as the data file does. Each share is the average over ' + F.num(R, 'meta.seeds', 'int') + ' paired runs.');
     var pick = document.createElement('div'); pick.className = 'fx-strip-bar'; pick.appendChild(F.seg('Adults shown', GRPS, g, function (v) { st.grp = v; F.writeState(st, ['grp']); render(); })); s.appendChild(pick);
     var grid = document.createElement('div'); grid.className = 'su-grid'; s.appendChild(grid);
     [['base', g === 'part' ? 'all' : g], [r, g]].forEach(function (x) { var row = x[0], k = x[1];
@@ -270,6 +317,37 @@ footer p{margin:0 0 6px}
     return s;
   }
 
+  /* 6b. session 12: the measures study (who gains, how people move, wealth net of drain); filled from R.study when the release carries it */
+  function moves() {
+    var r = st.read, L = LAST(), s = section('moves', 'Who gains, and how people move',
+      'Shares can hide movement: a ladder with the same shares every year can mean people churning through Crisis or one group stuck there. This section follows the same simulated adults, and compares each adult with the same adult in the no-program run (their “twin”), so the groups are the same people in both runs.');
+    if (!hasStudy()) { s.appendChild(para(WAIT)); return s; }
+    var tn = R.study[st.years]._meta.study.tiers, cl = function (row, k) { return cell(sr(row, k, 'mean'), 'p1'); };
+    s.appendChild(tableBox({id: 'suite-moves', title: 'Adults who start in Crisis: where they are 5 and 10 years later (share of those adults, mean over the runs)', columns: ['Step', 'No program, Year 6', 'Compassionism, Year 6', 'No program, Year 11', 'Compassionism, Year 11'],
+      rows: tn.map(function (n, k) { return [{p: [n]}, cl('base', 'trC5_' + k), cl(r, 'trC5_' + k), cl('base', 'trC10_' + k), cl(r, 'trC10_' + k)]; })}, true));
+    s.appendChild(tableBox({id: 'suite-crisis', title: 'Time in Crisis (mean over the runs)', columns: ['Measure', 'No program', 'Compassionism'], rows: [
+      [{p: ['Adults in Crisis in Year 1']}, cl('base', 'startCrisis'), cl(r, 'startCrisis')],
+      [{p: ['Adults ever in Crisis over the ' + T() + ' years']}, cl('base', 'everCrisis'), cl(r, 'everCrisis')],
+      [{p: ['Years in Crisis per adult']}, cell(sr('base', 'yrsCrisis', 'mean'), 'n2'), cell(sr(r, 'yrsCrisis', 'mean'), 'n2')],
+      [{p: ['Of those starting in Crisis, still there every year']}, cl('base', 'neverExit'), cl(r, 'neverExit')],
+      [{p: ['Of those who leave Crisis, back in it within two years']}, cl('base', 'reentry2'), cl(r, 'reentry2')]]}, false));
+    var Q = [['q1', 'Poorest fifth'], ['q2', 'Second fifth'], ['q3', 'Middle fifth'], ['q4', 'Fourth fifth'], ['q5', 'Richest fifth']];
+    s.appendChild(tableBox({id: 'suite-fifths', title: 'By income fifth without the program (the twin’s cash income), ' + 'Year ' + T() + ' (mean over the runs)', columns: ['Group', 'Under 30 days, no program', 'Under 30 days, Compassionism', 'EPPM', 'Program received, a month', 'Contribution paid, a month'],
+      rows: Q.map(function (q) { return [{p: [q[1]]}, cell(sy(r, 'bOt_' + q[0], 'mean', L), 'p1'), cell(sy(r, 'bOw_' + q[0], 'mean', L), 'p1'), cell(sy(r, 'eppm_' + q[0], 'mean', L), 'n2'), cell(sy(r, 'recv_' + q[0], 'mean', L), 'usd'), cell(sy(r, 'paid_' + q[0], 'mean', L), 'usd')]; })}, false));
+    s.appendChild(para('“Program received” is the allowance spent, the community price cuts, conversion income and the program’s cash; “contribution paid” is the flat contribution on wages. Both are in today’s dollars a month. This is not a full incidence study: prices, wages and the safety net also change, and the Source’s new money is paid for by everyone through prices.'));
+    var G = [['hs', 'Living alone'], ['hc', 'Couple, no children'], ['hk', 'With children'], ['a1', 'Under 35'], ['a2', '35 to 54'], ['a3', '55 to 64'], ['a4', '65 and over'], ['pth', 'Community-housing members'], ['ptf', 'Community-business members']];
+    s.appendChild(tableBox({id: 'suite-groups', title: 'EPPM by group, Year ' + T() + ' (each adult against their twin; mean over the runs)', columns: ['Group', 'EPPM', 'Share better off than their twin'],
+      rows: G.filter(function (g) { return isN(sy(r, 'eppm_' + g[0], 'mean', L)); }).map(function (g) { return [{p: [g[1]]}, cell(sy(r, 'eppm_' + g[0], 'mean', L), 'n2'), cell(sy(r, 'up_' + g[0], 'mean', L), 'p1')]; })}, false));
+    s.appendChild(tableBox({id: 'suite-eppm', title: 'EPPM and its parts, Year ' + T() + ' (each part’s share of the twins’ resources; they add up to EPPM minus 1)', columns: ['Group', 'EPPM', 'Cash income', 'Allowance', 'Community prices and other basket changes', 'Interest'],
+      rows: [['part', 'Participants'], ['pq1', 'Participants in the poorest fifth'], ['non', 'Not taking part'], ['all', 'All adults']].map(function (g) { return [{p: [g[1]]}, cell(sy(r, 'eppm_' + g[0], 'mean', L), 'n2')].concat(['eD_', 'eB_', 'eP_', 'eI_'].map(function (k) { return cell(sy(r, k + g[0], 'mean', L), 's2'); })); })}, false));
+    s.appendChild(para('Each run is valued at its own price level, so a general rise in prices caused by the program shows inside the cash part. The price level in Year ' + T() + ' is ' + N(sy(r, 'lf', 'mean', L), 'lev') + ' its starting level with Compassionism and ' + N(sy('base', 'lf', 'mean', L), 'lev') + ' with no program.'));
+    s.appendChild(tableBox({id: 'suite-gini', title: 'What the wealth Gini misses: wealth net of a year’s drain (rent and interest), Year ' + T(), columns: ['Measure', 'No program', 'Compassionism'], rows: [
+      [{p: ['Gini of wealth (debts counted as zero)']}, cell(sy('base', 'giniW', 'mean', L), 'n3'), cell(sy(r, 'giniW', 'mean', L), 'n3')],
+      [{p: ['Gini of wealth net of drain (debts counted as zero)']}, cell(sy('base', 'giniWnet', 'mean', L), 'n3'), cell(sy(r, 'giniWnet', 'mean', L), 'n3')],
+      [{p: ['Gini of wealth net of drain (debts kept)']}, cell(sy('base', 'giniWnetN', 'mean', L), 'n3'), cell(sy(r, 'giniWnetN', 'mean', L), 'n3')]]}, false));
+    return s;
+  }
+
   /* 7. across the runs and the environments */
   function spread() {
     var r = st.read, L = LAST(), envs = F.ENVS, sv = function (e, row, k, stat) { return 'suite.' + st.years + '.envs.' + e + '.' + row + '.' + k + '.' + stat + '.' + L; };
@@ -293,13 +371,15 @@ footer p{margin:0 0 6px}
     var ul = document.createElement('ul'); ul.className = 'su-limits';
     ['It is not a forecast. It shows what the model’s rules imply over ' + F.num(R, 'meta.seeds', 'int') + ' paired runs of ' + F.num(R, 'meta.agents', 'int') + ' simulated adults; the model has not been reviewed by an independent economist.',
      'The BLEI tiers use the BLEI paper’s reading in today’s prices. The paper names the top tier “Flourishing” where community prices make it durable; this page uses the one name for both runs, as the data file does.',
-     'Three of the paper’s six measures (EPPM, CSI and IPBI) are not computed, and the model has no crime, health, property-value or employer channels, so it cannot show indirect gains.',
+     'EPPM, FBS and CSI are measured in the model’s own terms, not with the paper’s formulas (each card says why). IPBI is only partly modelled: the public costs avoided are in the model; crime victims’ losses, property values, productivity and market expansion are not.',
+     'The ladder is adults only. Households and children are in the model (a child allowance, pooled household money), but children are not on this ladder.',
+     'In the main reading the Source’s payout is new money, and the program’s price index rises by tens of percent a year; every figure here is in today’s prices, so that rise is already taken out, but savings held in dollars lose their worth.',
      'Participants and non-participants are self-selected groups; differences between them are not effects of the program alone.',
      'The runs carry today’s safety net in both arms (SNAP with its work rule, the earned income tax credit and the refundable Child Tax Credit), as the release does.'].forEach(function (t) { var li = document.createElement('li'); li.innerHTML = t; ul.appendChild(li); });
     s.appendChild(ul);
     var cmds = Object.keys(M.commands).map(function (e) { return '<code>' + esc(M.commands[e]) + '</code>'; }).join('<br>');
     s.appendChild(para('Data: release v' + esc(R.version) + ' (<a href="data/' + esc(ENT.file) + '">data/' + esc(ENT.file) + '</a>) and its suite series (<a href="data/releases/' + esc(R.explore.suite[st.years]) + '">data/releases/' + esc(R.explore.suite[st.years]) + '</a>), produced at commit <code>' + esc(M.manifest.commit) + '</code> by:<br>' + cmds +
-      '<br>Each table has CSV and JSON downloads; the JSON gives every number with its path in the data. The plain-words report is <a href="dev/reports/v5-33-visual-suite.md">dev/reports/v5-33-visual-suite.md</a>.'));
+      '<br>Each table has CSV and JSON downloads; the JSON gives every number with its path in the data. The plain-words reports are <a href="dev/reports/v5-33-visual-suite.md">dev/reports/v5-33-visual-suite.md</a> and, for the measure cards and the measures study, <a href="dev/reports/v5-36-measures-study.md">dev/reports/v5-36-measures-study.md</a>.'));
     return s;
   }
 
@@ -315,7 +395,7 @@ footer p{margin:0 0 6px}
     var host = $('suite'), y = window.scrollY; host.innerHTML = '';
     var env = R.meta.envs[st.env];
     var note = para('<strong>' + esc(env.name) + '</strong>: ' + esc(env.about) + '. ' + st.years + ' years; Compassionism in ' + esc(READ_LONG[st.read]) + '.', 'fx-note su-sub'); note.setAttribute('data-rel-text', '1'); host.appendChild(note);  /* the release file's own words */
-    [indices, tiers, floor, parts, who, measures, spread, limits].forEach(function (fn) { host.appendChild(fn()); });
+    [indices, tiers, floor, parts, who, measures, moves, spread, limits].forEach(function (fn) { host.appendChild(fn()); });
     window.scrollTo(0, y);
   }
   function newest(m) { return m.releases.filter(function (r) { return r.status === 'latest'; })[0] || m.releases.filter(function (r) { return r.status === 'current'; })[0]; }
@@ -326,10 +406,12 @@ footer p{margin:0 0 6px}
       if (!rel.explore || !rel.explore.suite) { $('suite').innerHTML = '<p class="fx-banner">Release v' + esc(ENT.version) + ' has no suite series; this page needs a release whose explore files were made with the suite (dev/tools/explore_export.js --suite).</p>'; return null; }
       var ys = Object.keys(rel.explore.suite);
       return Promise.all(ys.map(function (y) { return F.fetchJSON('data/releases/' + rel.explore.suite[y]); })).then(function (fs) {
-        R = Object.assign({}, rel, {suite: {}}); ys.forEach(function (y, i) { R.suite[y] = fs[i]; });
+        R = Object.assign({}, rel, {suite: {}, study: {}}); ys.forEach(function (y, i) { R.suite[y] = fs[i]; });
+        var zs = rel.explore.study ? Object.keys(rel.explore.study) : [];  /* session 12: the measures study, when the release carries it */
+        return Promise.all(zs.map(function (y) { return F.fetchJSON('data/releases/' + rel.explore.study[y]); })).then(function (gs) { zs.forEach(function (y, i) { R.study[y] = gs[i]; });
         controls(); render(); F.spy(document.querySelector('.fx-nav'));
         if (location.hash && $(location.hash.slice(1))) $(location.hash.slice(1)).scrollIntoView();
-        return R; });
+        return R; }); });
     });
   }).catch(function (e) {
     $('suite').innerHTML = '<p class="fx-banner">The release data could not be loaded (' + esc(e.message) + '). If you opened this page as a file, open it through a web server or on the live site; the data is in data/releases/.</p>';

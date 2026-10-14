@@ -9,6 +9,7 @@ dev/tools/explore_export.js). It writes:
   data/releases/v<VERSION>/       the lazily loaded extras: bands-20.json, bands-40.json (spread across seeds, savings deciles) and
                                   lives-ENV-YEARS.json (one stated seed's adults), from dev/runs/explore-ENV-YEARS.json; and suite-20.json, suite-40.json
                                   (the visual suite's series, read by suite.html) when those files carry them (explore_export.js --suite);
+                                  and study-20.json, study-40.json (session 12, the measures study) from dev/runs/explore-study-ENV-YEARS.json when present;
   data/manifest.json              the list of releases (version, date, tag, file, one-line summary, status current or earlier; a release with no engine change is listed with status latest and figuresFrom, and uses the earlier release's file);
   index.html, findings.html, replication.html: the static headline blocks between <!-- figs:NAME --> and <!-- /figs:NAME --> markers.
 
@@ -801,6 +802,19 @@ def explore_files(R):
             out['suite-%s.json' % Y] = suite
             idx.setdefault('suite', {})[Y] = 'v%s/suite-%s.json' % (R['version'], Y)
         elif suite['envs']: sys.exit('release_data: the suite series are in some environments\' explore files but not all (%s years)' % Y)
+        study = {'_meta': None, 'envs': {}}  # session 12: the measures study (explore_export.js --study), for suite.html; dev/runs/explore-study-ENV-YRS.json
+        for e, _ in ENVS:
+            p = os.path.join(ROOT, 'dev', 'runs', 'explore-study-%s-%s.json' % (e, Y))
+            if not os.path.exists(p): continue
+            X = json.load(open(p)); m = X['_meta']
+            if m['seeds'] != R['meta']['seeds'] or 'NOT COMPARED' in m.get('selfCheck', ''): sys.exit('release_data: %s was not made on the panel\'s seeds' % p)
+            study['_meta'] = study['_meta'] or dict({k: m[k] for k in ('seeds', 'rows', 'manifest', 'selfCheck')}, what='the measures study: for each row and year, the mean over the runs and the 10th and 90th percentile across them (series); for each row, per-run summaries of movement between the tiers (run)', years=int(Y), study=m['study'], commands={})
+            study['_meta']['commands'][e] = m['command']
+            study['envs'][e] = {'series': X['study'], 'run': X['studyRun']}
+        if len(study['envs']) == len(ENVS):
+            out['study-%s.json' % Y] = study
+            idx.setdefault('study', {})[Y] = 'v%s/study-%s.json' % (R['version'], Y)
+        elif study['envs']: sys.exit('release_data: the study series are in some environments but not all (%s years)' % Y)
     idx['lifeSeed'] = out['bands-20.json']['_meta']['lifeSeed']
     return out, idx
 

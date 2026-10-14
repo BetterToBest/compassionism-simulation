@@ -1253,7 +1253,7 @@ function phase15(done) {
     const secs = d.querySelectorAll('.su-sec').length, svgs = d.querySelectorAll('.su-sec svg.fx-svg').length, tierCols = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length);
     const tables = d.querySelectorAll('#suite table').length, dl = d.querySelectorAll('#suite .fx-tools button').length;
     check('session 11: every section, chart and table draws; each ladder chart has one column a year; every table has CSV and JSON downloads',
-      secs === 8 && svgs === 11 && tierCols.join() === '40,40' && tables === 7 && dl === 2*tables, secs + ' sections, ' + svgs + ' charts, ladder columns ' + tierCols.join(' and ') + ', ' + tables + ' tables, ' + dl + ' download buttons');
+      secs === 9 && svgs === 11 && tierCols.join() === '40,40' && tables === 7 + (S.R.study && S.R.study[S.st.years] ? 6 : 0) && dl === 2*tables,  /* session 12: + the movement section's six tables when the study covers this horizon */ secs + ' sections, ' + svgs + ' charts, ladder columns ' + tierCols.join(' and ') + ', ' + tables + ' tables, ' + dl + ' download buttons');
     [...d.querySelectorAll('#controls button')].filter(b => b.dataset.value === 'ref' || b.dataset.value === '20' || b.dataset.value === 'release').forEach(b => b.click());
     [...d.querySelectorAll('#tiers button')].filter(b => b.dataset.value === 'part')[0].click(); await later(100);
     const q = new URLSearchParams(a.w.location.search), cols20 = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();
@@ -1262,6 +1262,15 @@ function phase15(done) {
     check('session 11: the charts answer the keyboard (an arrow key on a ladder chart shows Year 1 with its six steps)', !!tip && tip.querySelector('.fx-tip-h').textContent === 'Year 1' && tip.querySelectorAll('.fx-tip-r').length === 6, tip ? tip.textContent.slice(0, 80) : 'no tooltip');
     const linked = ['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'].filter(f => /href="(\.\/)?suite\.html/.test(rd(f)));
     check('session 11: the suite page stands alone: no other page links to it yet', linked.length === 0, linked.length ? 'linked from ' + linked.join(', ') : 'no links');
+    /* session 12: the six cards carry a status badge each; without the measures study the waiting cards say so, and with it (a two-seed test fixture, not a
+     * result) they fill in and the movement section draws its six tables */
+    const badges = [...d.querySelectorAll('#indices .su-badge')].map(x => x.textContent), wait = [...d.querySelectorAll('#indices .su-ans')].filter(x => /Waiting on the measures study/.test(x.textContent)).length;
+    const haveStudy = !!(S.R.study && S.R.study[S.st.years]);  /* the study may cover one horizon before the other */
+    check('session 12: each of the six measures has a card with its status (Measured, Measured differently from the paper, Partly modelled), and a card the measures study fills says it is waiting when the study is not in the release',
+      badges.length === 6 && badges.filter(x => x === 'Measured').length === 2 && badges.filter(x => x === 'Partly modelled').length === 1 && (haveStudy ? wait === 0 : wait === 2 && /Waiting/.test(d.querySelector('#moves').textContent)), badges.join(' | ') + '; waiting cards ' + wait);
+    const c = open('?env=ref&years=20', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) return Object.assign({}, j, { explore: Object.assign({}, j.explore, { study: { 20: '../../dev/tools/fixtures/study-fixture-20.json' } }) }); }); await later(400);
+    const dc = c.w.document, mt = dc.querySelectorAll('#moves table').length, cw = [...dc.querySelectorAll('#indices .su-ans')].filter(x => /Waiting/.test(x.textContent)).length, nums = dc.querySelectorAll('#moves .num').length;
+    check('session 12: with the measures study in the release, the cards fill in and the movement section draws its six tables, each with downloads', mt === 6 && cw === 0 && nums >= 90 && c.errs.length === 0 && dc.querySelectorAll('#moves .fx-tools button').length === 12, mt + ' tables, ' + nums + ' numbers, waiting cards ' + cw + (c.errs.length ? '; errors: ' + c.errs.join('; ') : ''));
     const b = open('', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) { j = Object.assign({}, j, { explore: Object.assign({}, j.explore) }); delete j.explore.suite; return j; } }); await later(300);
     const ban = b.w.document.querySelector('#suite .fx-banner');
     check('session 11: a release without the suite series shows a plain note, not a broken page', !!ban && /no suite series/.test(ban.textContent) && b.errs.length === 0, ban ? ban.textContent.slice(0, 90) : 'no note');
