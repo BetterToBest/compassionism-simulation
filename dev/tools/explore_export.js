@@ -28,7 +28,7 @@
  *  - relPov: relative income poverty, cash income below 60% of the same run's median (the definition the page's Five Measures card used);
  *  - ep: extreme poverty (unhoused), the engine's own yearly figure; part: the share taking part in the programme.
  *  A group with no adults (participants, with no programme) is null, not 0; a seed with none is left out of that year's mean and percentiles.
- * --sn runs every row with today's safety net (row option sn); --snab with SNAP's work rule on as well (SNET.abawd). --panel=FILE compares the yearly
+ * --out=FILE writes the file there instead. --sn runs every row with today's safety net (row option sn); --snab with SNAP's work rule on as well (SNET.abawd). --panel=FILE compares the yearly
  * means with that merged panel instead of the default one (a panel made with the same options; the v5.6 study makes its own).
  * Extra self-checks with --suite: the hook's bO equals the published path's measure year by year, and the mean over years of ep equals each run's epPY. */
 const fs = require('fs'), path = require('path');
@@ -110,6 +110,7 @@ try {
   out._meta.selfCheck = (full ? '' : 'NOT COMPARED WITH THE PANEL (seeds differ); ') + 'yearly means equal the published path (' + PANEL.replace(ROOT + path.sep, '') + '); seed ' + LS + '\'s adults add up to the engine\'s yearly shares';
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
-const file = path.join(ROOT, 'dev', 'runs', (SUITE ? 'explore-suite-' : 'explore-') + env + '-' + YRS + (SNAB ? '-snab' : SN ? '-sn' : '') + '.json');
+const OUTF = (process.argv.find(a => a.startsWith('--out=')) || '').slice(6);  /* session 7: --out=FILE writes there (the s165 job keeps its worktree clean) */
+const file = OUTF ? path.resolve(OUTF) : path.join(ROOT, 'dev', 'runs', (SUITE ? 'explore-suite-' : 'explore-') + env + '-' + YRS + (SNAB ? '-snab' : SN ? '-sn' : '') + '.json');
 fs.writeFileSync(file, JSON.stringify(out));
 console.log('self-check passed; wrote ' + file + ' (' + out._meta.seconds + ' s)');
