@@ -31,6 +31,8 @@ ENV_DESC = {'ref': 'the model\u2019s main settings, with no recessions and no ou
             'adv': 'recessions, 2% outside inflation and an automation wave',
             'st': 'the Adverse environment with weaker settings (40% take part, a smaller allowance)'}
 # The figures each release's current (presentation) version describes. v5.2.1 changed only how the v5.2 figures are shown; v5.2.2 corrected words and added derived figures.
+CURRENT56 = {'version': '5.6', 'date': '2026-10-14', 'tag': 'v5.6.0',  # session 10: the s165 study (engine 5bf5bcc; --v54 --snab --slope)
+             'summary': 'Today\u2019s safety net in every run: SNAP (with its work rule for adults without children under 14), the earned income tax credit and the refundable Child Tax Credit are paid in the no-program run and beside Compassionism, so the program is measured against today\u2019s US policy; SNAP\u2019s income limit is no longer read as a tax on all earnings.'}
 CURRENT54 = {'version': '5.4', 'date': '2026-10-12', 'tag': 'v5.4',
              'summary': 'Labor and markets: people lose jobs and find new ones (with unemployment insurance, and lower pay after a permanent loss), community housing keeps its own books, community businesses cut prices sector by sector and members can leave, and new measures of risk: how far savings fall, how fast income recovers, how often people fall back into poverty.'}
 CURRENT53 = {'version': '5.3', 'date': '2026-10-07', 'tag': 'v5.3', 'shownIn': '5.3.1',  # v5.3.1 re-releases the same figures at the complete commit (the v5.3 tag marks an intermediate one)
@@ -40,13 +42,15 @@ CURRENT52 = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '
 
 # A release that changed no engine figure is listed on its own but carries the figures of the release it names (status "latest", figuresFrom): the page
 # names it as the newest release and keeps showing the earlier release's data file. v5.5.0 added the study page and changed no figure of v5.4.
+# v5.6 (session 10): with v5.6's own figures current, v5.5 stays listed with 5.4's figures, now as an earlier release.
 LATEST = {'version': '5.5', 'date': '2026-10-13', 'tag': 'v5.5.0', 'file': 'releases/v5.4.json',
           'summary': 'No engine change: every figure is identical to 5.4\u2019s, so the 5.4 data stays the data shown on this page. What 5.5 adds is the 500-seed study of which settings the results are most sensitive to (the study page).',
-          'status': 'latest', 'shownIn': None, 'figuresFrom': '5.4'}
+          'status': 'earlier', 'shownIn': None, 'figuresFrom': '5.4'}
 
 def current():
-    """the release the figures in dev/runs/ are: v5.4's once its panels (labor and markets, harness.js --v54) are there, v5.3's for the v5.3 panels (households and children, --v53), else v5.2's"""
+    """the release the figures in dev/runs/ are: v5.6's once its panels carry today's safety net (--snab), v5.4's once its panels (labor and markets, harness.js --v54) are there, v5.3's for the v5.3 panels (households and children, --v53), else v5.2's"""
     p = load_json(None, 'dev/runs/release-panel.json')
+    if p and p['_meta'].get('v54') and p['_meta'].get('sn', {}).get('snap'): return CURRENT56  # v5.6: the v5.4 engine with today's safety net (--snab)
     return CURRENT54 if p and p['_meta'].get('v54') else CURRENT53 if p and p['_meta'].get('v53') else CURRENT52
 
 BACKFILL = {  # earlier releases whose panels were regenerated from their tags and matched exactly (dev/ADDING-A-RELEASE.md); filled in by --backfill
@@ -682,6 +686,13 @@ def texts(R):
                                  'The top row is the whole program against no program. Parts work together, so the parts need not add up to the whole; the gap is the interaction, in the table.')
         if R.get('us'):
             Tx['us.lead'] = Tx.get('us.lead', '') + ' This check is v5.3’s no-program run (before job loss joined it); job loss changes the no-program run, so rerunning the check is listed as follow-up work.'
+    if (R['panels']['20']['_meta'].get('sn') or {}).get('snap'):  # v5.6 (session 10): today's safety net is in both runs of every row
+        SN = ('In this release both runs also have today’s safety net: SNAP (food stamps, with its work rule for adults aged 18 to 64 with no child under 14), the earned income tax credit and the refundable Child Tax Credit, paid on last year’s income. '
+              '“No program” therefore means today’s US policy, and each change is what Compassionism adds to it.')
+        Tx['lede'] += ' ' + SN
+        Tx['results.lead'] += ' ' + SN
+        if R.get('attrib'): Tx['attrib.lead'] += ' They have no safety net in either run (v5.6 added it).'
+        if R.get('us'): Tx['us.lead'] += ' It has no safety net (v5.6 added it to both runs); rerunning it with the safety net is listed as follow-up work.'
     return Tx
 
 STORIES = [  # the explorer's guided reads: id, title, chart kind, tables, required data
@@ -797,7 +808,7 @@ def headline_html(R, e='ref', Y='20'):
         cards.append(('<div class="fx-card%s"><p class="fx-card-k">%s</p><p class="fx-card-v">{{%s.rows.release.%s|p1}}</p><p class="fx-card-vs">with Compassionism, against {{%s.base.%s|p1}} with no program</p>'
                       '<p class="fx-card-d">%s {{%s.rows.release.%s.0|s1}} points</p><p class="fx-card-m" data-rel-text="meaning">%s</p></div>') % (
             ' fx-worse' if worse else '', lbl, b, pk, b, pk, 'Worse:' if worse else 'Change:', b, dk, mean))
-    head = ('<p class="fx-static-note">%s environment, %s years; averages over {{meta.seeds|int}} paired runs of {{meta.agents|int}} simulated adults%s (release v%s data).</p>' % (R['meta']['envs'][e]['name'], Y, ' and their children, in households' if kids(R) else '', R['version']))
+    head = ('<p class="fx-static-note">%s environment, %s years; averages over {{meta.seeds|int}} paired runs of {{meta.agents|int}} simulated adults%s (release v%s data)%s.</p>' % (R['meta']['envs'][e]['name'], Y, ' and their children, in households' if kids(R) else '', R['version'], '; both runs include today’s safety net' if (R['panels']['20']['_meta'].get('sn') or {}).get('snap') else ''))
     return render_static(R, '<div class="fx-cards">' + ''.join(cards) + '</div>' + head)
 
 def summary_html(R):

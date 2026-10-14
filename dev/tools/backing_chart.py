@@ -27,7 +27,9 @@ def load():
         if d['_meta'].get('manifest') != out['_meta'].get('manifest'):
             sys.exit('backing_chart: the manifests of the per-environment files differ; rerun all three from one commit')
         out['envs'][e] = d['envs'][e]
-    out['_meta']['command'] = 'node harness.js testbed %d backing ref,adv,st (one process per environment: backing ref --json=dev/runs/backing-share-ref.json, and adv, st; then python3 dev/tools/backing_chart.py)' % out['_meta']['seeds']
+    # v5.6 (session 10): keep the run's switches (--v54 --snab --slope ...) in the merged command; before, they were dropped
+    FLAGS = ''.join(' ' + t for t in out['_meta'].get('command', '').split('(')[0].split() if t.startswith('--') and not t.startswith(('--json', '--years', '--part')))
+    out['_meta']['command'] = 'node harness.js testbed %d backing ref,adv,st%s (one process per environment: backing ref --json=dev/runs/backing-share-ref.json, and adv, st; then python3 dev/tools/backing_chart.py)' % (out['_meta']['seeds'], FLAGS)
     json.dump(out, open('dev/runs/backing-share.json', 'w'), indent=1)
     return out
 

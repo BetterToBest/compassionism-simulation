@@ -2,17 +2,17 @@
  "_meta": {
   "engine": "release engine (harness.js testbed, section backing)",
   "manifest": {
-   "commit": "fe88599f9d2f4d26651f6e01370454206257beab",
+   "commit": "5bf5bcc0e31d10e8fab8443f4d3972988e4bdf3b",
    "dirty": false,
    "node": "v22.22.0",
-   "harnessSha256": "7f28093ffe8619d2914e1fe48f8e4ca0e09b6b109cd2d1b9ee028a8f534006da",
-   "engineBlockSha256": "99fb4b577ef1bb095cf24287abdddd2c8f60379e339e3cd1ad90ca16a485dc0b",
-   "indexSha256": "92721cf4ad2850093140e921b0bbc749bbc0c544e5f980134ae110820370a760",
-   "engineSha256": "2b3e042d4f528202905ade0f39ecda611833b18b1138358514e7be7df0fcc33c"
+   "harnessSha256": "bed37dfc44ebea534098903eeaba8332c9c9837be1043eec615da7679449eedb",
+   "engineBlockSha256": "973e7ce472d159cdcd17fe2cb38d0fc9b4c604bc1db641e3298ef513155136da",
+   "indexSha256": "4e82ae901a797eacdfce32b9e889161aae155a2d06cb3ad1ef995e8ab09f8b64",
+   "engineSha256": "85425e6400d1fa08ad019584d65c22b9097c659e59a3de27442f926e1691ac2f"
   },
   "seeds": 500,
   "agents": 500,
-  "written": "2026-10-12",
+  "written": "2026-10-14",
   "years": 20,
   "shares": [
    0,
@@ -21,162 +21,173 @@
    0.75,
    1
   ],
-  "command": "node harness.js testbed 500 backing adv --v54 --json=dev/runs/backing-share-ENV.json"
+  "command": "node harness.js testbed 500 backing adv --v54 --json=dev/runs/backing-share-ENV.json --snab --slope",
+  "sn": {
+   "gross": 2,
+   "snapTake": 0.88,
+   "taxTake": 0.808,
+   "snap": true,
+   "eitc": true,
+   "ctc": true,
+   "abawd": true,
+   "abawdEx": 0.08,
+   "slope": true
+  }
  },
  "envs": {
   "adv": {
    "name": "Adverse Environment",
    "base": {
-    "fgt0PY": 65.97536000000002,
-    "pov": 45.05840000000001,
-    "bOAPy": 31.536720000000024,
-    "bNAPy": 31.536720000000024,
-    "epPY": 0.34411238986758413
+    "fgt0PY": 65.99382000000006,
+    "pov": 45.086800000000004,
+    "bOAPy": 31.56534000000002,
+    "bNAPy": 31.56534000000002,
+    "epPY": 0.3464838347885294
    },
    "rows": {
     "a0": {
      "a": 0,
-     "pov": 80,
-     "fgt0PY": 31.3,
-     "bOAPy": 17.3,
-     "bNAPy": 23.6,
-     "infl": 59.5,
-     "pLevEnd": 10578.026,
-     "pLevEndMed": 10302.975,
-     "pLevEndP10": 7981.723,
-     "pLevEndP90": 13543.334,
-     "cost": 28603,
-     "srcPay": 27365,
-     "srcM": 1844,
+     "pov": 80.9,
+     "fgt0PY": 31.1,
+     "bOAPy": 17.5,
+     "bNAPy": 23.5,
+     "infl": 60.9,
+     "pLevEnd": 12526.818,
+     "pLevEndMed": 12159.654,
+     "pLevEndP10": 9281.262,
+     "pLevEndP90": 16343.902,
+     "cost": 28467,
+     "srcPay": 27227,
+     "srcM": 1808,
      "dPov": [
-      34.91,
-      34.69,
-      35.12
+      35.82,
+      35.61,
+      36.03
      ],
      "dF0": [
-      -34.65,
-      -34.85,
-      -34.45
+      -34.9,
+      -35.09,
+      -34.71
      ],
      "dBO": [
+      -14.07,
       -14.2,
-      -14.34,
-      -14.07
+      -13.93
      ],
      "dBN": [
-      -7.91,
-      -8.05,
-      -7.76
+      -8.11,
+      -8.25,
+      -7.96
      ],
      "dInfl": [
-      59.49,
-      59.33,
-      59.64
+      60.89,
+      60.72,
+      61.06
      ]
     },
     "a25": {
      "a": 0.25,
-     "pov": 70.1,
-     "fgt0PY": 29.3,
-     "bOAPy": 15.7,
-     "bNAPy": 20.7,
-     "infl": 45.2,
-     "pLevEnd": 1766.16,
-     "pLevEndMed": 1730.546,
-     "pLevEndP10": 1401.32,
-     "pLevEndP90": 2179.335,
-     "cost": 30260,
-     "srcPay": 29019,
-     "srcM": 2174,
+     "pov": 71.4,
+     "fgt0PY": 28.8,
+     "bOAPy": 15.9,
+     "bNAPy": 20.3,
+     "infl": 46.2,
+     "pLevEnd": 2014.773,
+     "pLevEndMed": 1963.909,
+     "pLevEndP10": 1585.07,
+     "pLevEndP90": 2524.411,
+     "cost": 30136,
+     "srcPay": 28893,
+     "srcM": 2143,
      "dPov": [
-      25.01,
-      24.76,
-      25.25
+      26.29,
+      26.04,
+      26.53
      ],
      "dF0": [
-      -36.64,
-      -36.84,
-      -36.44
+      -37.15,
+      -37.35,
+      -36.95
      ],
      "dBO": [
-      -15.83,
-      -15.96,
-      -15.69
+      -15.71,
+      -15.84,
+      -15.58
      ],
      "dBN": [
-      -10.8,
-      -10.94,
-      -10.66
+      -11.31,
+      -11.45,
+      -11.17
      ],
      "dInfl": [
-      45.2,
-      45.08,
-      45.32
+      46.2,
+      46.07,
+      46.32
      ]
     },
     "a50": {
      "a": 0.5,
-     "pov": 53.6,
-     "fgt0PY": 27.1,
-     "bOAPy": 13.5,
-     "bNAPy": 17.2,
-     "infl": 30.5,
-     "pLevEnd": 231.423,
-     "pLevEndMed": 228.425,
-     "pLevEndP10": 196.386,
-     "pLevEndP90": 271.071,
-     "cost": 32502,
-     "srcPay": 31258,
-     "srcM": 2590,
+     "pov": 54.8,
+     "fgt0PY": 26.4,
+     "bOAPy": 13.7,
+     "bNAPy": 16.5,
+     "infl": 31.1,
+     "pLevEnd": 253.433,
+     "pLevEndMed": 250.235,
+     "pLevEndP10": 213.635,
+     "pLevEndP90": 300.111,
+     "cost": 32399,
+     "srcPay": 31153,
+     "srcM": 2562,
      "dPov": [
-      8.52,
-      8.28,
-      8.76
+      9.75,
+      9.51,
+      9.99
      ],
      "dF0": [
-      -38.85,
-      -39.05,
-      -38.64
+      -39.54,
+      -39.75,
+      -39.34
      ],
      "dBO": [
-      -17.99,
-      -18.12,
-      -17.86
+      -17.89,
+      -18.02,
+      -17.76
      ],
      "dBN": [
-      -14.36,
-      -14.49,
-      -14.22
+      -15.04,
+      -15.18,
+      -14.91
      ],
      "dInfl": [
-      30.52,
-      30.44,
-      30.59
+      31.14,
+      31.05,
+      31.22
      ]
     },
     "a75": {
      "a": 0.75,
-     "pov": 33.2,
-     "fgt0PY": 24.3,
-     "bOAPy": 10.5,
-     "bNAPy": 12.6,
-     "infl": 15.4,
-     "pLevEnd": 22.369,
-     "pLevEndMed": 22.213,
-     "pLevEndP10": 20.388,
-     "pLevEndP90": 24.566,
-     "cost": 35305,
-     "srcPay": 34054,
-     "srcM": 3289,
+     "pov": 34.1,
+     "fgt0PY": 23.5,
+     "bOAPy": 10.6,
+     "bNAPy": 12.1,
+     "infl": 15.7,
+     "pLevEnd": 23.445,
+     "pLevEndMed": 23.266,
+     "pLevEndP10": 21.319,
+     "pLevEndP90": 25.897,
+     "cost": 35255,
+     "srcPay": 34003,
+     "srcM": 3265,
      "dPov": [
-      -11.85,
-      -12.06,
-      -11.64
+      -10.96,
+      -11.17,
+      -10.75
      ],
      "dF0": [
-      -41.72,
-      -41.93,
-      -41.52
+      -42.51,
+      -42.71,
+      -42.3
      ],
      "dBO": [
       -21,
@@ -184,54 +195,54 @@
       -20.88
      ],
      "dBN": [
-      -18.93,
-      -19.06,
-      -18.8
+      -19.5,
+      -19.63,
+      -19.37
      ],
      "dInfl": [
-      15.45,
-      15.41,
-      15.48
+      15.73,
+      15.69,
+      15.77
      ]
     },
     "a100": {
      "a": 1,
      "pov": 22.6,
-     "fgt0PY": 33,
-     "bOAPy": 12.2,
-     "bNAPy": 13.7,
-     "infl": 0,
-     "pLevEnd": 1.468,
-     "pLevEndMed": 1.468,
-     "pLevEndP10": 1.464,
-     "pLevEndP90": 1.472,
-     "cost": 26690,
-     "srcPay": 25432,
-     "srcM": 2131,
+     "fgt0PY": 33.1,
+     "bOAPy": 12,
+     "bNAPy": 13.5,
+     "infl": 0.1,
+     "pLevEnd": 1.471,
+     "pLevEndMed": 1.471,
+     "pLevEndP10": 1.467,
+     "pLevEndP90": 1.475,
+     "cost": 26631,
+     "srcPay": 25372,
+     "srcM": 2115,
      "dPov": [
-      -22.43,
-      -22.62,
-      -22.24
+      -22.48,
+      -22.67,
+      -22.29
      ],
      "dF0": [
-      -32.96,
-      -33.15,
-      -32.77
+      -32.92,
+      -33.11,
+      -32.73
      ],
      "dBO": [
-      -19.37,
-      -19.5,
-      -19.25
+      -19.53,
+      -19.66,
+      -19.4
      ],
      "dBN": [
-      -17.79,
-      -17.92,
-      -17.66
+      -18.03,
+      -18.16,
+      -17.9
      ],
      "dInfl": [
-      0.04,
-      0.04,
-      0.04
+      0.05,
+      0.05,
+      0.05
      ]
     }
    }
