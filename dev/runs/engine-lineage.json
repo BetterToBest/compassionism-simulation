@@ -334,6 +334,22 @@
    },
    "equal": true,
    "seconds": 168
+  },
+  {
+   "from": "e1f8fe896760b4fa249801c134dca19fdcd9b17fb7fde97dd1949ea69676d2ac",
+   "to": "973e7ce472d159cdcd17fe2cb38d0fc9b4c604bc1db641e3298ef513155136da",
+   "date": "2026-10-14",
+   "change": "Session 9: SNET.slope (the safety net's marginal rate without SNAP's gross income cliff) and REC_SCRIPT (a scripted recession path for the history check), both off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 202
   }
  ]
 }

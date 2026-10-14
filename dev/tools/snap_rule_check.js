@@ -6,11 +6,12 @@
  * identical. --on also runs both rows with the rule on and prints what moved (no reference is written for that).
  * --out=FILE (with --on and one --env): also write every output's mean for the four rows and, for the headline measures, each seed's value, so the
  * rule's own effect (rule on minus rule off, paired by seed) can be read at 500 seeds (the s165 study; the reference check is skipped). --years=40: 40 years.
- * Usage: node dev/tools/snap_rule_check.js [--write] [--on] [--env=ref|adv|st] [--seeds=20] [--years=40] [--out=FILE]   (no --env: the three environments at once) */
+ * --slope (session 9, i24-1): every row with SNET.slope, the safety net's marginal rate without SNAP's gross income cliff (use with --out; the reference has no slope).
+ * Usage: node dev/tools/snap_rule_check.js [--write] [--on] [--env=ref|adv|st] [--seeds=20] [--years=40] [--out=FILE] [--slope]   (no --env: the three environments at once) */
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), cp = require('child_process');
 const arg = k => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.split('=')[1] : null; };
-const WRITE = process.argv.includes('--write'), ON = process.argv.includes('--on'), N = +(arg('seeds') || 20), ENVS = (arg('env') || 'ref,adv,st').split(','), OUT = arg('out'), YRS = +(arg('years') || 0);
+const WRITE = process.argv.includes('--write'), ON = process.argv.includes('--on'), N = +(arg('seeds') || 20), ENVS = (arg('env') || 'ref,adv,st').split(','), OUT = arg('out'), YRS = +(arg('years') || 0), SL = process.argv.includes('--slope') ? {slope: true} : {};
 const ROOT = path.join(__dirname, '..', '..'), DIR = path.join(ROOT, 'dev', 'runs', 'guard');
 const HEAD = ['fgt0PY', 'fgt2PY', 'pov', 'bOAPy', 'snSnap', 'snSnapM', 'snAll', 'hrs', 'emp', 'snAbN', 'snAbM', 'snAbLost'];
 
@@ -29,8 +30,8 @@ function run(env){
   try {
     const P = Object.assign({}, P0, YRS ? {years: YRS} : {}), PR = H.tbPresets(P), base = {sc: SC, so: H.REL_V52_STUDY, hh: H.REL_V53.hh, sg: true, g: H.ACCT_V53, em: true, fb: true, v54: H.REL_V54.v54};
     const R = H.releaseRowsV54(SC).filter(r => r.j === 'release')[0], main = H.n1Row(PR, 'framework', R.v); if (R.v.o) Object.assign(main.o || (main.o = {}), R.v.o);
-    const cfg = [Object.assign({p: PR.baseline()}, base, {sn: {}}), Object.assign({}, main, {sn: {}})], names = ['base+sn', 'release+sn'];
-    if (ON){ cfg.push(Object.assign({p: PR.baseline()}, base, {sn: {abawd: true}}), Object.assign({}, main, {sn: {abawd: true}})); names.push('base+sn+rule', 'release+sn+rule'); }
+    const cfg = [Object.assign({p: PR.baseline()}, base, {sn: Object.assign({}, SL)}), Object.assign({}, main, {sn: Object.assign({}, SL)})], names = ['base+sn', 'release+sn'];
+    if (ON){ cfg.push(Object.assign({p: PR.baseline()}, base, {sn: Object.assign({abawd: true}, SL)}), Object.assign({}, main, {sn: Object.assign({abawd: true}, SL)})); names.push('base+sn+rule', 'release+sn+rule'); }
     S = H.tbStudy(cfg, N, P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0}, H.REL_V52_STUDY, {sc: SC}));
     S.forEach((r, i) => { const h = crypto.createHash('sha256');
       KEYS.forEach(k => { h.update(k); h.update(Buffer.from(r._s[k].buffer, r._s[k].byteOffset, r._s[k].byteLength)); });

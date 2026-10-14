@@ -959,6 +959,7 @@ function projUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { projUnitSuite, PROJ_DEFAULTS, tbSetG, setProj:function(x){ PROJ = x; }, getPJS:function(){ return PJS; } });
+Object.assign(module.exports, { setRecScript:function(x){ var o = REC_SCRIPT; REC_SCRIPT = x || null; return o; } });  /* session 9 (s146): the history check's scripted recession path (index.html, REC_SCRIPT) */
 
 /* N1, session 19 (s38): ESP payroll's tests (harness-only; N1-design-esp-payroll.md, Section 8). Each restores ESP, ESS, PROJ, FW,
  * LABOR, LEDGER and the conversion model. Bit-identity of ESP = null to the harness before ESP existed (b1bc475) was checked in
@@ -4778,7 +4779,8 @@ if (require.main === module) {
       if (V53){ RJ._meta.v53 = {households:HH_V53, buScope:'hub', spendGrade:CFG.CE_SPEND_ELAST, corrections:ACCT_V53}; RJ._meta.command += V54 ? ' --v54' : ' --v53'; }
       if (V54) RJ._meta.v54 = {parts:V54_MAIN, empl:EMPL_DEFAULTS, pthb:PTHB_DEFAULTS, ptfs:PTFS_DEFAULTS, dis:DIS_DEFAULTS};
       var SNALL = process.argv.indexOf('--snab') >= 0 ? {abawd:true} : process.argv.indexOf('--sn') >= 0 ? {} : null;  /* session 7 (s165): every run with today's safety net, and with --snab SNAP's work rule */
-      if (SNALL){ RJ._meta.sn = Object.assign({}, SNET_DEFAULTS, SNALL); RJ._meta.command += SNALL.abawd ? ' --snab' : ' --sn'; }
+      if (SNALL && process.argv.indexOf('--slope') >= 0) SNALL.slope = true;  /* session 9 (i24-1): the safety net's marginal rate without SNAP's gross income cliff (SNET.slope) */
+      if (SNALL){ RJ._meta.sn = Object.assign({}, SNET_DEFAULTS, SNALL); RJ._meta.command += (SNALL.abawd ? ' --snab' : ' --sn') + (SNALL.slope ? ' --slope' : ''); }
       envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
@@ -4823,7 +4825,8 @@ if (require.main === module) {
         command:'node harness.js testbed ' + nT + ' backing ' + envT.join(',') + (YRS > 0 ? ' --years=' + YRS : '') + (process.argv.indexOf('--v54') >= 0 ? ' --v54' : process.argv.indexOf('--v53') >= 0 ? ' --v53' : '') + ' --json=dev/runs/backing-share-ENV.json'}, envs:{}},
       BPATH = (process.argv.filter(function(a){ return /^--json=/.test(a); })[0] || '').split('=')[1];
       var B54 = process.argv.indexOf('--v54') >= 0, B53 = B54 || process.argv.indexOf('--v53') >= 0, BSN = process.argv.indexOf('--snab') >= 0 ? {abawd:true} : process.argv.indexOf('--sn') >= 0 ? {} : null;  /* session 7: --sn / --snab as in the release section */
-      if (BSN){ BJ._meta.sn = Object.assign({}, SNET_DEFAULTS, BSN); BJ._meta.command += BSN.abawd ? ' --snab' : ' --sn'; }  /* v5.3 B10: the sweep on the v5.3 main row and its no-programme run; v5.4 step 9: --v54 on v5.4's */
+      if (BSN && process.argv.indexOf('--slope') >= 0) BSN.slope = true;  /* session 9 (i24-1): SNET.slope, as in the release section */
+      if (BSN){ BJ._meta.sn = Object.assign({}, SNET_DEFAULTS, BSN); BJ._meta.command += (BSN.abawd ? ' --snab' : ' --sn') + (BSN.slope ? ' --slope' : ''); }  /* v5.3 B10: the sweep on the v5.3 main row and its no-programme run; v5.4 step 9: --v54 on v5.4's */
       envT.forEach(function(e){ var SC = SPEND_SOURCED, ALL = Object.assign({fin:'source', a:0, jn:{}, cs:{}, sc:SC}, REL_V5, B53 ? REL_V53 : {}, B54 ? REL_V54 : {}), W = function(x){ return Object.assign({}, ALL, x); };
         var rows = BJ._meta.shares.map(function(a, i){ return {l:'a = ' + a + (a === 0 ? ' (the release row: nothing the Source pays is backed by new output)' : a === 1 ? ' (H1: every Source dollar backed by new output)' : ''), v:W({a:a}), k:i === 0 ? 'today' : 's', vs:'today', j:'a' + Math.round(a*100)}; });  /* the release row (a = 0) is the comparison row every other point is read against */
         var R = stepSection('backing share (E2)', e, rows, [['Price level, last year (median over seeds)', function(r){ return quantileOf(r._s.pLev20, 0.5).toFixed(2); }]], Object.assign({sc:SC}, B53 ? {hh:REL_V53.hh, sg:REL_V53.sg, g:REL_V53.g} : {}, B54 ? REL_V54 : {}, BSN ? {snAll:BSN} : {}));

@@ -1,29 +1,29 @@
-# Handoff (Oct 14, 2026, UTC): outside history data staged; history check ready to build; study launch next
+# Handoff (Oct 14, 2026, UTC): safety-net question answered; history check built; the study is running on Runpod
 
 ## What shipped
-- **Pull request 29 (draft; data and plan only, no engine, page or figure change):** `sources/history/` (two outside data packs, a read-first README, `CROSSCHECK.csv`, and `history_series.json`, 22 KB), `dev/tools/history_data.py` (build, check, crosscheck), `dev/plans/s146-history-check.md` (the plan, with seven comparisons and pass bands fixed before any run), and Session 8 entries in `dev/DECISIONS.md`. Ledger steps s156 and s168 done.
-- **The two packs agree on 166 of 217 shared cells.** 44 of the 51 differences have a reason (a threshold label, a first-published value, the other row of a split table); 7 supplemental-rate cells are disputed. All the data are unverified against Census, BLS and the Federal Reserve (this machine cannot reach them).
-- **Pull requests 27 and 28 are merged** (main head 0282579 before pull request 29).
+- **Issue i24-1 answered (not a bug, mostly behaviour):** as benefits phase out, people near the cost-of-living line work 3-4% fewer hours, so some land just below it while the depth of poverty falls. A smaller part is essential prices rising as the poorest buy more. Report `dev/reports/v5-35-safety-net-poverty.md`; tool `dev/tools/sn_v54_trace.js`; 20-seed results `dev/runs/sn/`.
+- **One small flaw fixed behind a switch:** SNAP's income limit leaked into the marginal rate (up to 90% on all earnings for households near the limit). `SNET.slope` (off by default) reads the true slope; −0.05 to −0.12 points with Compassionism. On in every safety-net run of the study (`--slope`).
+- **History check built (ledger s146):** plan section 8 committed (8e5faf0) before any run; engine switch `REC_SCRIPT` (off by default); tool `dev/tools/history_check.js`; draft report `dev/reports/v5-34-history-check.md` with 20-seed smoke figures (direction right; rise about 3 times the official and 2 years late; the model's safety net absorbs almost none of it, data about 73%).
+- **Proofs:** guard test and SNAP-rule guard identical; engine lineage link recorded (six 12-seed panels identical); validate, unit (222), domtest (130/130), glossary all pass. Decisions in `dev/DECISIONS.md`, Session 9.
+- **Study job:** `dev/tools/s165_jobs.sh` gains the history check and the safety-net trace as resumable pieces, `--slope` everywhere, the broken history hook replaced; estimate 38.8 core-hours, about 2.7 h on 16 vCPU. Engine re-pinned c88c1e0 → 5bf5bcc; 2-seed dry run of the whole job passed (54 pieces).
 
 ## Branch and pull request state
-- Branch `claude/history-data-s156`, draft pull request 29 into `main` (head = the newest commit on the branch). It touches no code the checks run, so CI is expected green (checks and guard run on every push). If it is still unmerged, branch from it; if merged, restart from `main`.
+- Branch `claude/pensive-einstein-93s0r1`, draft pull request https://github.com/BetterToBest/compassionism-simulation/pull/30 into `main` (no page or figure change). CI runs on each push; check its state on the pull request. Pull request 29 is merged.
 
 ## Long jobs in flight
-- None. The study (ledger s165) is not launched. The results token expires 2026-10-17 04:16 UTC.
+- **Runpod pod objddch5qd3pa8** (cpu3c, 16 vCPU, $0.48/h, EU-RO-1, image node:22.22.0-bookworm), created 04:16 UTC Oct 14. Engine 5bf5bcc, runner 1125516, `STUDY=s165 MAX_HOURS=5`. First log line 04:16:53 (results repository HTTP 200). Results go to BetterToBest/compassionism-sim-results, folder `s165-5bf5bcc/` (status.txt, run.txt, then each piece). Done when `s165-5bf5bcc/DONE` exists; the pod then terminates itself. If DONE is missing after 5 hours, read status.txt: a rerun of the same pod command resumes.
 
 ## Next 3 actions
-1. **Explain issue i24-1 (20 seeds):** why today's safety net slightly raises basket poverty (`dev/reports/v5-33-snap-work-rule.md`, section 5, names the likely cause: people working a little less as benefits phase out). Show it with hours and income traced in the safety-net arm (`dev/tools/sn_trace.js`). A bug would change the engine, so this comes before the launch. If it is behaviour, write two plain lines for the report; add a row to the study job only if it is cheap.
-2. **Build the history check (ledger s146)** exactly as `dev/plans/s146-history-check.md` says. Commit the plan with any change, and its reason, before the first 500-seed run. Smoke test on 20 seeds locally. Fix the hook at the end of `dev/tools/s165_jobs.sh` (it looks for the tool inside the pinned engine worktree, where it cannot exist). Do not change the engine pin c88c1e0.
-3. **Launch the study (s165) once, then stop:** runner = the commit that holds the history check (merged `main`, or the branch head); `STUDY=s165 MAX_HOURS=5`; before launch run `SEEDS=2 bash dev/tools/s165_jobs.sh ...` end to end and `--estimate` (it should now include the history check). After launch check once that `s165-c88c1e0/status.txt` and `run.txt` appear in BetterToBest/compassionism-sim-results; write the pod id here; end the session. Do not wait.
+1. **Check the study once:** `s165-5bf5bcc/DONE` and status.txt in the results repository; confirm the pod list is empty (Runpod). If pieces are missing, relaunch with the same command (header of `dev/batch/runpod.sh`, runner 1125516) before the Pro plan ends (Thursday).
+2. **Fill in the 500-seed figures:** copy `history-check.json` and `sn-trace-*.json` into `dev/runs/history/` and `dev/runs/sn/`; replace the 20-seed tables in `v5-34-history-check.md` (section 1, verdicts from the file, no change to bands) and give the two 500-seed lines in `v5-35-safety-net-poverty.md` (section 5).
+3. **Then the v5.6 work (ledger s167, s161), only if Duke still wants it:** the release file from the merged panels (`release_data.py`), `set_version.py 5.6.0`, then the visual suite page.
 
 ## Files to touch
-- Action 1: `dev/tools/snap_rule_check.js`, `dev/tools/sn_trace.js` (trace tools); engine code in `index.html` only via a switch (grep `SNET.abawd`).
-- Action 2: new `dev/tools/history_check.js`; `dev/tools/s165_jobs.sh` (grep `history check`); `dev/reports/v5-34-history-check.md` (new); data in `sources/history/history_series.json`.
-- Action 3: `dev/batch/runpod.sh` (start command in its header), `dev/tools/s165_jobs.sh`.
+- Action 2: `dev/reports/v5-34-history-check.md` (section 1 table, section 2), `dev/reports/v5-35-safety-net-poverty.md` (section 5).
+- Action 3: `dev/tools/release_data.py`, `dev/tools/set_version.py`, `dev/PLAN.md` (grep `s167`).
 
 ## Pitfalls
-- **Compare changes, not levels:** the start population is built from 2022 data. Say so first in the report.
-- **No retuning to fit history** (guardrail 5), and no model or assistant names in any pushed file (the packs are "pack A" and "pack B").
-- **Do not read the CSVs in `sources/history/` whole** (330 KB); read `history_series.json` and the README.
-- **Claude Code cannot launch another pod after the Pro plan ends (Thursday):** anything that could change the engine or the job is settled before this launch.
-- Wording passes need `no_figure_change.py` snapshots; `explore_export.js` without `--suite` or `--out` overwrites published data; `unit` and `domtest.js` take minutes: use the shell's background option. GitHub GraphQL is blocked (use the REST API).
+- The results token expires **2026-10-17 04:16 UTC**; Claude Code cannot launch another pod after the Pro plan ends (Thursday). This session's GitHub access reaches only this repository, not the results repository (read it from a session that has it, or ask Duke).
+- `earlier-engine.html` must be resynced (`python3 dev/tools/sync_earlier.py`) after any engine edit, or domtest fails.
+- Compare changes, not levels, in the history check; no retuning (guardrail 5). No model or assistant names in pushed files.
+- Do not read the CSVs in `sources/history/` whole; `unit` and `domtest.js` take minutes (use the shell's background option).
