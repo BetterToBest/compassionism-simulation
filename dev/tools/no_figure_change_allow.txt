@@ -34,3 +34,6 @@ CONTRIBUTING.md	14	+1
 CONTRIBUTING.md	5.3	-1
 CONTRIBUTING.md	5.4	-1
 CONTRIBUTING.md	5.5	-1
+# d207: the economist checklist gains a row for the "What would have to be true" panel, so the checklist has 13 rows (a row number, not a figure).
+.github/ISSUE_TEMPLATE/economist-review.yml	13	+1
+ECONOMIST-REVIEW.md	13	+1

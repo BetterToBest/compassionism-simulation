@@ -89,9 +89,16 @@ body:
     validations:
       required: false
   - type: textarea
+    id: wwtbt
+    attributes:
+      label: "12. The study page's \"What would have to be true\" panel is Claude's reading of the sensitivity results, not a finding of the study"
+      description: "Where: study.html, \"What would have to be true (Claude's reading)\"; dev/tools/study_data.py (table wwtbt). Today: For each headline result it names what would have to be true and what the study found when those inputs were varied. Does any line claim more than the study shows, or miss a condition? Say agree, disagree or cannot tell, and why."
+    validations:
+      required: false
+  - type: textarea
     id: safety_net
     attributes:
-      label: "12. Tax revenue is not reconciled with today's safety-net outlays or government's share of the plan"
+      label: "13. Tax revenue is not reconciled with today's safety-net outlays or government's share of the plan"
       description: "Where: dev/reports/v5-30-s137-results.md, section 9. Today: The model reports these costs; it does not show they are financed. Is that an acceptable limit, stated this way? Say agree, disagree or cannot tell, and why."
     validations:
       required: false

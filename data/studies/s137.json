@@ -10594,7 +10594,7 @@
   "cap.morris": "A noise check was set before the run: an input's effect counts as measured only if the two seed blocks agree to within a quarter of it. The leaders hardly differ between environments (Reference and Adverse are in the data files).",
   "cap.sobol": "The total index counts an input alone and together with others; the first-order index counts it alone. Where the totals add to more than the first-order indices the inputs act together. The first Sobol run was too noisy for its first-order figures (several fell outside their range), so only this follow-up's are shown. Inputs with a total index of 0.01 or less on every outcome are left out: wage elasticity, uptake of community housing (PTH), top conversion rate and the community-business (PTF) cut outside food and housing.",
   "chart": "Each bar is the share of the spread in one outcome that an input explains, alone and together with the others (the Sobol total index, Stress). A longer bar means the answer depends more on that input. The line on each bar is its 95% interval. Pick an outcome to redraw the chart; every number is in the table below it.",
-  "true": "A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. It does not say they are true. It says where an economist should look first. Two constants have no source at all; they are named after the table.",
+  "true": "Claude's reading of the results, not yet checked by an outside reader; it is a named item for the outside audits. A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. It does not say they are true. It says where an economist should look first. Two constants have no source at all; they are named after the table.",
   "cap.true": "The two constants with no source do not enter the released figures: the study could not vary them, because they are not in the model that produced those figures. They are listed so a reviewer can check the claim, and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt.",
   "limits": "All single-payer results rest on the Yale preprint's savings. The model does not reconcile tax revenue with today's safety-net outlays or with government's share of the plan. The price response drives the \"too little wealth\" result and is not calibrated to outside evidence. The cost-of-living line is the unweighted state average. The work rules of SNAP (food stamps) and a separate Child Tax Credit take-up are not modelled. The community businesses' (PTF) health-sector cut under single payer is an upper reading. The model has not yet been reviewed by an independent economist.",
   "asof": "Study run on a rented server on {{meta.seeds|int}} paired seeds; the follow-up Sobol ran in Stress only."
@@ -10658,7 +10658,7 @@
   },
   {
    "id": "true",
-   "title": "What would have to be true",
+   "title": "What would have to be true (Claude's reading)",
    "lead": "true",
    "tables": [
     "wwtbt",

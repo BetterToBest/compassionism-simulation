@@ -17,7 +17,8 @@ Send it by opening an issue with the "Economist review" template (Issues, New is
 | 9 | The cost-of-living line is the unweighted state average | dev/reports/v5-30-s137-results.md, section 9 | A population-weighted line is a known later fix. How much would it matter? |  |
 | 10 | Every gain is confirmed on basket poverty (below the cost of living) and on wealth poverty (too little wealth), not on one measure | study.html; findings.html | Compassionism lowers basket poverty and raises "too little wealth". Is the way both are reported fair? |  |
 | 11 | The no-programme run against US data (poverty, debt, savings) | findings.html; dev/DECISIONS.md | Which gaps with US data would change a conclusion, and which would not? |  |
-| 12 | Tax revenue is not reconciled with today's safety-net outlays or government's share of the plan | dev/reports/v5-30-s137-results.md, section 9 | The model reports these costs; it does not show they are financed. Is that an acceptable limit, stated this way? |  |
+| 12 | The study page's "What would have to be true" panel is Claude's reading of the sensitivity results, not a finding of the study | study.html, "What would have to be true (Claude's reading)"; dev/tools/study_data.py (table wwtbt) | For each headline result it names what would have to be true and what the study found when those inputs were varied. Does any line claim more than the study shows, or miss a condition? |  |
+| 13 | Tax revenue is not reconciled with today's safety-net outlays or government's share of the plan | dev/reports/v5-30-s137-results.md, section 9 | The model reports these costs; it does not show they are financed. Is that an acceptable limit, stated this way? |  |
 
 Everything on the pages comes from files you can run: `node harness.js validate`, `unit`, `domtest`; the 500-seed figures are in `data/`. The study page (`study.html`) names what the results depend on and the two constants with no source.
 

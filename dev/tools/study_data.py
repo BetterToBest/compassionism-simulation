@@ -279,7 +279,7 @@ def content(R):
                       'wage elasticity, uptake of community housing (PTH), top conversion rate and the community-business (PTF) cut outside food and housing.')
     X['chart'] = ('Each bar is the share of the spread in one outcome that an input explains, alone and together with the others (the Sobol total index, Stress). A longer bar means the answer depends more on that input. '
                    'The line on each bar is its 95% interval. Pick an outcome to redraw the chart; every number is in the table below it.')
-    X['true'] = ('A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. '
+    X['true'] = ('Claude\'s reading of the results, not yet checked by an outside reader; it is a named item for the outside audits. A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. '
                  'It does not say they are true. It says where an economist should look first. Two constants have no source at all; they are named after the table.')
     X['cap.true'] = ('The two constants with no source do not enter the released figures: the study could not vary them, because they are not in the model that produced those figures. They are listed so a reviewer can check the claim, '
                      'and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt.')
@@ -296,7 +296,7 @@ def content(R):
         {'id': 'single', 'title': 'Single payer depends on the Yale preprint', 'lead': 'single', 'tables': ['single-payer-range'], 'note': 'cap.single'},
         {'id': 'prices', 'title': 'The price channel', 'lead': 'price', 'tables': ['price-channel'], 'note': 'cap.price'},
         {'id': 'depends', 'title': 'What the results depend on', 'lead': 'sens', 'chart': 'chart', 'tables': ['morris', 'sobol'], 'note': 'cap.sobol'},
-        {'id': 'true', 'title': 'What would have to be true', 'lead': 'true', 'tables': ['wwtbt', 'unsourced'], 'note': 'cap.true'},
+        {'id': 'true', 'title': 'What would have to be true (Claude\'s reading)', 'lead': 'true', 'tables': ['wwtbt', 'unsourced'], 'note': 'cap.true'},
         {'id': 'limits', 'title': 'Limits and what is still open', 'lead': 'limits', 'tables': [], 'note': None},
     ]
     return T
