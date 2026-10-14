@@ -68,3 +68,8 @@ site/charts.js	75	+1
 site/charts.js	100	+4
 site/charts.js	200	+1
 site/charts.js	300	+1
+# Session 11: domtest gains nine checks (six in Phase 15, three in the figure check), so the check count quoted in README.md and CONTRIBUTING.md moves from 130 to 139 (written by node domtest.js --write-counts). A count of checks, not a figure.
+README.md	130	-1
+README.md	139	+1
+CONTRIBUTING.md	130	-1
+CONTRIBUTING.md	139	+1

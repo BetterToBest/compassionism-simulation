@@ -1250,16 +1250,16 @@ function phase15(done) {
     const pressed = [...d.querySelectorAll('button[aria-pressed="true"]')].map(b => b.dataset.value).sort().join(',');
     check('session 11: the suite page opens the newest release in the manifest (v' + newest.version + ') and reads the view from the address (environment, years, backing reading, group of adults)',
       S.R && S.R.version === (newest.figuresFrom || newest.version) && pressed === '40,adv,h1,non' && a.errs.length === 0, 'release v' + (S.R && S.R.version) + '; pressed ' + pressed + (a.errs.length ? '; errors: ' + a.errs.join('; ') : ''));
-    const secs = d.querySelectorAll('.su-sec').length, svgs = d.querySelectorAll('.su-sec svg.fx-svg').length, tierCols = [...d.querySelectorAll('#tiers svg')].map(s => s.querySelectorAll('.fx-col').length);
+    const secs = d.querySelectorAll('.su-sec').length, svgs = d.querySelectorAll('.su-sec svg.fx-svg').length, tierCols = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length);
     const tables = d.querySelectorAll('#suite table').length, dl = d.querySelectorAll('#suite .fx-tools button').length;
     check('session 11: every section, chart and table draws; each ladder chart has one column a year; every table has CSV and JSON downloads',
       secs === 8 && svgs === 11 && tierCols.join() === '40,40' && tables === 7 && dl === 2*tables, secs + ' sections, ' + svgs + ' charts, ladder columns ' + tierCols.join(' and ') + ', ' + tables + ' tables, ' + dl + ' download buttons');
     [...d.querySelectorAll('#controls button')].filter(b => b.dataset.value === 'ref' || b.dataset.value === '20' || b.dataset.value === 'release').forEach(b => b.click());
     [...d.querySelectorAll('#tiers button')].filter(b => b.dataset.value === 'part')[0].click(); await later(100);
-    const q = new URLSearchParams(a.w.location.search), cols20 = [...d.querySelectorAll('#tiers svg')].map(s => s.querySelectorAll('.fx-col').length).join();
+    const q = new URLSearchParams(a.w.location.search), cols20 = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();
     check('session 11: changing the view writes it to the address, so any view can be shared', q.get('env') === 'ref' && q.get('years') === '20' && q.get('read') === 'release' && q.get('grp') === 'part' && cols20 === '20,20', a.w.location.search + '; ladder columns ' + cols20);
     const host = d.querySelector('#tiers .fx-chart'); host.onkeydown({ key: 'ArrowRight', preventDefault() {} }); const tip = d.querySelector('.fx-tip.on');
-    check('session 11: the charts answer the keyboard (an arrow key on a ladder chart shows Year 1 with its six steps)', !!tip && /Year 1/.test(tip.textContent) && tip.querySelectorAll('.fx-tip-r').length === 6, tip ? tip.textContent.slice(0, 80) : 'no tooltip');
+    check('session 11: the charts answer the keyboard (an arrow key on a ladder chart shows Year 1 with its six steps)', !!tip && tip.querySelector('.fx-tip-h').textContent === 'Year 1' && tip.querySelectorAll('.fx-tip-r').length === 6, tip ? tip.textContent.slice(0, 80) : 'no tooltip');
     const linked = ['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'].filter(f => /href="(\.\/)?suite\.html/.test(rd(f)));
     check('session 11: the suite page stands alone: no other page links to it yet', linked.length === 0, linked.length ? 'linked from ' + linked.join(', ') : 'no links');
     const b = open('', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) { j = Object.assign({}, j, { explore: Object.assign({}, j.explore) }); delete j.explore.suite; return j; } }); await later(300);

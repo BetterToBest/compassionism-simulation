@@ -261,3 +261,13 @@ Branch `claude/sleepy-darwin-7num3o`, from main 1775417 (pull request #22 merged
 Branch `claude/nice-fermi-31kcam`, from main 8e78d9d (pull request #30 merged).
 
 - [x] The s165 study (engine 5bf5bcc, runner 1125516) finished at 07:12:07 UTC (`DONE`); every piece in status.txt exited 0; the pod list is empty. Checked by files, not by count (`dev/tools/s165_verify.py`): the job list has 49 pieces (18 forty-year and 12 twenty-year panel pieces, 3 backing sweeps, 6 SNAP-rule checks, the history check, 3 safety-net traces, 6 explore exports), all 49 are in status.txt and in the folder, plus the 6 merged panels (merges are not logged in status.txt; their logs show 51 rows each), 55 JSON files in all, no extra ones. Every file records commit 5bf5bcc, a clean tree, 500 seeds; the six exports passed their self-check against the merged panels; no log has an error. (The dry run's "54 pieces" was a different count; the files settle it.)
+
+## Session 11 (Oct 14, 2026; ledger step s161): the visual suite page
+
+Branch `claude/magical-einstein-umkin2`, from the v5.6 release branch at a006ded (pull request 32 not yet merged; merge it first).
+
+- [x] `release_data.py` copies the suite series into `data/releases/v5.6/suite-20.json` and `suite-40.json` (listed under `explore.suite`).
+- [x] `suite.html`, stand-alone and not indexed: the six BLEI-paper measures, the ladder year by year (all adults, taking part, not taking part), the bottom and the top by backing reading, the parts of BLEI, participants, four measures, the spread across environments, limits and data. `site/charts.js` gains `CSC.stack`.
+- [x] `check_figures.js` block 11 (series against the release, every number in 12 views, nothing typed); `domtest.js` Phase 15 (behaviour); `set_version.py`, `check_versions.js` and `no_figure_change.py` cover the page.
+- [x] Report `dev/reports/v5-33-visual-suite.md`; decisions in `dev/DECISIONS.md`, Session 11.
+- [ ] Duke reads the report; whether to link the page from the findings explorer and drop `noindex` is his call.
