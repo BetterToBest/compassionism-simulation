@@ -1265,7 +1265,7 @@ function phase15(done) {
     /* session 12: the six cards carry a status badge each; without the measures study the waiting cards say so, and with it (a two-seed test fixture, not a
      * result) they fill in and the movement section draws its six tables */
     const badges = [...d.querySelectorAll('#indices .su-badge')].map(x => x.textContent), wait = [...d.querySelectorAll('#indices .su-ans')].filter(x => /Waiting on the measures study/.test(x.textContent)).length;
-    const haveStudy = !!(S.R.explore && S.R.explore.study);
+    const haveStudy = !!(S.R.study && S.R.study[S.st.years]);  /* the study may cover one horizon before the other */
     check('session 12: each of the six measures has a card with its status (Measured, Measured differently from the paper, Partly modelled), and a card the measures study fills says it is waiting when the study is not in the release',
       badges.length === 6 && badges.filter(x => x === 'Measured').length === 2 && badges.filter(x => x === 'Partly modelled').length === 1 && (haveStudy ? wait === 0 : wait === 2 && /Waiting/.test(d.querySelector('#moves').textContent)), badges.join(' | ') + '; waiting cards ' + wait);
     const c = open('?env=ref&years=20', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) return Object.assign({}, j, { explore: Object.assign({}, j.explore, { study: { 20: '../../dev/tools/fixtures/study-fixture-20.json' } }) }); }); await later(400);
