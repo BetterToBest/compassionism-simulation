@@ -1225,10 +1225,10 @@ function phase14(done) {
     .catch(e => { check('v5.2.1: the figure check runs', false, String(e && e.stack || e).slice(0, 300)); phase15(done); });
 }
 
-/* ── Phase 15 (session 11, ledger s161): the visual suite page (suite.html), a stand-alone page that reads the newest release through data/manifest.json and that
+/* ── Phase 15 (session 11, ledger s161): the visual suite page (suite.html), a page (linked from the findings explorer only) that reads the newest release through data/manifest.json and that
  * release's suite series. Phase 14 (dev/tools/check_figures.js) checks every number on it against the data; this phase checks how it behaves: the page opens the
  * newest release, the address carries the view (environment, years, backing reading, group of adults) both ways, every section, chart and table draws, the tier
- * charts have one column a year, the charts answer the keyboard, every table has its downloads, no other page links to it, and a release without the suite
+ * charts have one column a year, the charts answer the keyboard, every table has its downloads, only the findings explorer links to it, and a release without the suite
  * series gets a plain note instead of a broken page. */
 function phase15(done) {
   console.log('\n--- Phase 15: the visual suite page (session 11) ---');
@@ -1261,7 +1261,9 @@ function phase15(done) {
     const host = d.querySelector('#tiers .fx-chart'); host.onkeydown({ key: 'ArrowRight', preventDefault() {} }); const tip = d.querySelector('.fx-tip.on');
     check('session 11: the charts answer the keyboard (an arrow key on a ladder chart shows Year 1 with its six steps)', !!tip && tip.querySelector('.fx-tip-h').textContent === 'Year 1' && tip.querySelectorAll('.fx-tip-r').length === 6, tip ? tip.textContent.slice(0, 80) : 'no tooltip');
     const linked = ['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'].filter(f => /href="(\.\/)?suite\.html/.test(rd(f)));
-    check('session 11: the suite page stands alone: no other page links to it yet', linked.length === 0, linked.length ? 'linked from ' + linked.join(', ') : 'no links');
+    check('suite go-live: findings.html links to the suite page; index, study, replication and earlier-engine do not (the main-page decision is open)', linked.join() === 'findings.html', 'linked from ' + (linked.join(', ') || 'no page'));
+    const sh = rd('suite.html');
+    check('suite go-live: the suite page is indexable (no noindex) and names its own canonical address', !/noindex/.test(sh) && /rel="canonical" href="https:\/\/bettertobest\.github\.io\/compassionism-simulation\/suite\.html"/.test(sh), 'robots and canonical read');
     /* session 12: the six cards carry a status badge each; without the measures study the waiting cards say so, and with it (a two-seed test fixture, not a
      * result) they fill in and the movement section draws its six tables */
     const badges = [...d.querySelectorAll('#indices .su-badge')].map(x => x.textContent), wait = [...d.querySelectorAll('#indices .su-ans')].filter(x => /Waiting on the measures study/.test(x.textContent)).length;
@@ -1281,7 +1283,7 @@ function phase15(done) {
       SE.st.years === '40' && SE.st.read === 'h1' && pr === '40,h1,ref' && !!opt && /optimistic end/.test(opt.textContent) && /cautious end/.test(opt.textContent) && e.errs.length === 0, 'state ' + SE.st.years + '/' + SE.st.read + '; pressed ' + pr + '; sentence ' + (opt ? opt.textContent.slice(0, 60) : 'missing'));
     [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === 'release').forEach(x => x.click()); await later(100);
     const gone = !de.getElementById('optimistic'); [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === '20').forEach(x => x.click()); await later(100);
-    check('session 13: one click on "Main reading" removes the sentence and one click on 20 years shows the 20-year view; the page still carries noindex', gone && e.w.suiteState().st.years === '20' && e.w.suiteState().st.read === 'release' && /noindex/.test(rd('suite.html').match(/<meta name="robots"[^>]*>/)[0]),
+    check('session 13: one click on "Main reading" removes the sentence and one click on 20 years shows the 20-year view; the page is indexable (suite go-live)', gone && e.w.suiteState().st.years === '20' && e.w.suiteState().st.read === 'release' && !/noindex/.test(rd('suite.html').match(/<meta name="robots"[^>]*>/)[0]),
       'sentence gone ' + gone + '; years ' + e.w.suiteState().st.years);
     phase16(done);
   })().catch(e => { check('session 11: the suite page checks run', false, String(e && e.stack || e).slice(0, 300)); phase16(done); });
