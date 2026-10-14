@@ -38,7 +38,9 @@ async function run(opts) {
   M.releases.filter(r => !FIG(r)).forEach(r => { const f = path.join('data', r.file); if (!fs.existsSync(path.join(ROOT, f))) { mp.push('missing ' + f); return; }
     const R = rj(f); REL[r.version] = R; if (R.version !== r.version || R.date !== r.date || R.tag !== r.tag || R.status !== r.status) mp.push(r.version + ': file and manifest differ'); });
   M.releases.filter(FIG).forEach(r => { const src = M.releases.filter(x => x.version === r.figuresFrom && !FIG(x))[0];
-    if (!src || src.status !== 'current' || src.file !== r.file || r.status !== 'latest' || !REL[src.version]) mp.push(r.version + ': a "latest" release must name the current release it takes its figures from, and its file'); else REL[r.version] = REL[src.version]; });
+    /* v5.6: once a later release has its own figures, a release with no figures of its own is "earlier" and names an earlier release */
+    const ok = src && src.file === r.file && REL[src.version] && (r.status === 'latest' ? src.status === 'current' : r.status === 'earlier' && src.status === 'earlier');
+    if (!ok) mp.push(r.version + ': a release with no figures of its own must name the release it takes its figures from, and its file (current if it is "latest", earlier if it is "earlier")'); else REL[r.version] = REL[src.version]; });
   if (M.releases.filter(r => r.status === 'latest').length > 1) mp.push('more than one latest release');
   const C = cur[0] && REL[cur[0].version];
   if (C && C.shownIn && C.shownIn !== V && !(V || '').startsWith(C.version)) mp.push('current release shown in v' + C.shownIn + ' but the page is v' + V);
@@ -154,8 +156,10 @@ async function run(opts) {
     S.tables.forEach(t => t.rows.forEach(r => r.forEach(c => (c.p || []).concat(c.s || []).forEach(x => { if (typeof x === 'object') chk(x.src, 'table ' + t.id); }))));
     Object.entries(S.text).forEach(([k, t]) => { for (const m of t.matchAll(/\{\{([^|}]+)\|([a-z0-9]+)\}\}/g)) chk(m[1], 'text ' + k); });
     S.sections.forEach(x => { [x.lead, x.note].filter(Boolean).forEach(k => { if (!S.text[k]) pbs.push('section ' + x.id + ' lacks text ' + k); }); x.tables.forEach(id => { if (!F.tableById(S, id)) pbs.push('section ' + x.id + ' lacks table ' + id); }); });
-    if (!(V || '').startsWith(S.version)) pbs.push('study v' + S.version + ' but the page is v' + V);
-    add('v5.5: in the study file every table cell and text points to a number in the file, every section\'s text and tables exist, and the study\'s version is the page\'s', pbs.length === 0, pbs.length ? pbs.slice(0, 5).join('; ') : S.tables.length + ' tables, ' + Object.keys(S.text).length + ' texts');
+    /* v5.6: the study keeps the version it was released in; it must be a listed release no newer than the page */
+    const vn = v => String(v || '').split('.').map(Number), newer = (a, b) => { const x = vn(a), y = vn(b); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); } return false; };
+    if (!M.releases.some(r => r.version === S.version) || newer(S.version, V)) pbs.push('study v' + S.version + ' is not a listed release up to the page\'s v' + V);
+    add('v5.5: in the study file every table cell and text points to a number in the file, every section\'s text and tables exist, and the study\'s version is a listed release up to the page\'s', pbs.length === 0, pbs.length ? pbs.slice(0, 5).join('; ') : S.tables.length + ' tables, ' + Object.keys(S.text).length + ' texts');
     const dom = new JSDOM(rd('study.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/study.html' }), w = dom.window;
     w.scrollTo = () => {}; serve(w); w.eval(chartsSrc); w.eval(findingsSrc); const inline = [...w.document.querySelectorAll('script')].filter(x => !x.src && !x.type); w.eval(inline[0].textContent);
     await settle(w); await settle(w);

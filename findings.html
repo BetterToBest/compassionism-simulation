@@ -159,7 +159,7 @@ footer p{margin:0 0 6px}
   }
   F.fetchJSON('data/manifest.json').then(function (m) {
     MAN = m; var sel = $('version'); sel.innerHTML = '';
-    m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = 'v' + r.version + ' · ' + r.date + (r.status === 'latest' ? ' (latest; figures from v' + r.figuresFrom + ')' : r.status === 'current' ? ' (current figures)' : ''); sel.appendChild(o); });
+    m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = 'v' + r.version + ' · ' + r.date + (r.status === 'latest' ? ' (latest; figures from v' + r.figuresFrom + ')' : r.figuresFrom ? ' (figures from v' + r.figuresFrom + ')' : r.status === 'current' ? ' (current figures)' : ''); sel.appendChild(o); });
     var cur = (m.releases.filter(function (r) { return r.version === st.v; })[0] || newest()).version; sel.value = cur;
     sel.onchange = function () { open(sel.value); };
     return open(cur);
