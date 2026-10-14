@@ -4555,7 +4555,7 @@ function tbRepYear(R, agents, p, o, yr, T, ep){
   var wk = agents.filter(function(a){ return !a._ret && a.yrWageUSD > 0; }).map(function(a){ return a.yrWageUSD/12/lf; });  /* v5.2 step 8: the year's path */
   R.path.f0[yr] = s.f0/n*100; R.path.pov[yr] = s.pov/n*100; R.path.bO[yr] = s.bO/n*100; R.path.medW[yr] = quantileOf(agents.map(function(a){ return a.wealth/lf; }), 0.5);
   R.path.buR[yr] = p.ccoOn && p.bu > 0 && PRICE && PRICE.buY ? PRICE.buY/lf : 0; R.path.wageR[yr] = wk.length ? quantileOf(wk, 0.5) : 0;
-  if (REP_HOOK) REP_HOOK(agents, yr, T, lf);
+  if (REP_HOOK) REP_HOOK(agents, yr, T, lf, ep);  /* session 7: + the year's extreme-poverty figure (explore_export.js --suite) */
   if (yr === 0 || yr === 6 || yr === T - 1){ var gc = o.giniNN1 && n > 1 ? n/(n - 1) : 1, q = {ep:ep};
     Object.keys(s).forEach(function(k){ q[k] = s[k]/n*100; });
     q.giniD = giniOfArr(agents.map(function(a){ return a._tbDisp || 0; }))*gc; q.giniX = giniOfArr(agents.map(function(a){ return a._tbExt || 0; }))*gc;
