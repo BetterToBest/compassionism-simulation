@@ -1,4 +1,4 @@
-# Handoff (Oct 14, 2026, early morning): clarity answers in pull request 27; SNAP's work rule, the visual-suite export and the study job in pull request 28
+# Handoff (Oct 14, 2026, early morning): clarity answers in pull request 27; SNAP's work rule, the visual-suite export and the study job merged in pull request 28
 
 ## What shipped
 **Pull request 27** (wording only, no figure; branch `claude/wonderful-fermat-ukn1ph`). Ledger step s160 and issue i20. One commit per decision:
@@ -12,7 +12,7 @@
 - **d205:** no change, as decided.
 - **Tools:** `no_figure_change.py` now fingerprints the engine exactly as harness.js runs it, and counts the numbers in the page code.
 
-**Pull request 28** (no figure, no page change; branch `claude/wonderful-fermat-ukn1ph-snap`). Ledger steps s166 and s164:
+**Pull request 28, merged into main Oct 14 01:50 UTC** (no figure, no page change; branch `claude/wonderful-fermat-ukn1ph-snap`, head b14efc3). Pull request 27 has main merged in (one conflict, dev/DECISIONS.md, both sections kept). Ledger steps s166 and s164:
 - **SNAP's work rule** behind `SNET.abawd`, off by default. Each element was checked against 7 U.S.C. 2015(o) as amended by Public Law 119-21 sec. 10102 and USDA's Oct 2025 memos (`sources/snap_work_rule.md`). No random draw is added. Report: `dev/reports/v5-33-snap-work-rule.md`.
 - **The explore export** for the visual suite: `explore_export.js --suite [--sn|--snab] [--panel=] [--out=]`. Two-seed smoke tests only.
 - **The study job:** `dev/tools/s165_jobs.sh`, with `STUDY=s165` in `dev/batch/runpod.sh` and the engine pinned at c88c1e0. Estimate: about 37 core-hours, about 2.6 hours on a 16-vCPU pod (`--estimate`). A full dry run with 2 seeds passed.
@@ -31,13 +31,13 @@
 ## Open: for Duke
 1. **Read** `dev/reports/v5-32-clarity-answers.md` (section 1, d213), **then merge pull request 27** if it reads right.
 2. **New finding (report v5-33, section 5): the published main results have no today's safety net (SNAP, EITC, CTC) in either arm.** d209's note assumed they did. A v5.6 "with the SNAP rule" therefore also adds the safety net, which moves figures on its own. On 20 seeds, basket poverty with Compassionism moves +0.11 (Reference), −0.20 (Adverse) and +0.54 (Stress); the no-program run moves +0.03 to +0.04. The safety net slightly *raising* basket poverty needs explaining before any release; the likely cause is its own work response. It belongs to issue i23.
-3. **Pull request 28:** read `dev/reports/v5-33-snap-work-rule.md`. Merging it changes no figure. The study can run from its branch either way: the pod clones every branch.
+3. **Pull request 28 is merged.** Read `dev/reports/v5-33-snap-work-rule.md` before deciding issues i23 and i24.
 
 ## Long jobs in flight
 - None. No 500-seed job was started.
 
 ## Next 3 actions
-1. **Wednesday evening, s165:** launch the Runpod study with `STUDY=s165`, using the runner commit = pull request 28's head. Check once that it started, then end the session.
+1. **Wednesday evening, s165:** launch the Runpod study with `STUDY=s165`, using as the runner commit main's head (it holds pull request 28; b14efc3 or any later main commit works, since the engine is pinned at c88c1e0). Check once that it started, then end the session.
 2. **Thursday, s167:** read the results; write the v5.6 release report setting the safety-net effect, the rule's own effect and v5.5 side by side. Duke decides i23.
 3. **Thursday, s161:** build the visual suite on the s165 export, or on the v5.5 export if the study is late.
 
