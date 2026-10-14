@@ -30,11 +30,19 @@
  *  A group with no adults (participants, with no programme) is null, not 0; a seed with none is left out of that year's mean and percentiles.
  * --out=FILE writes the file there instead. --sn runs every row with today's safety net (row option sn); --snab with SNAP's work rule on as well (SNET.abawd). --panel=FILE compares the yearly
  * means with that merged panel instead of the default one (a panel made with the same options; the v5.6 study makes its own).
- * Extra self-checks with --suite: the hook's bO equals the published path's measure year by year, and the mean over years of ep equals each run's epPY. */
+ * Extra self-checks with --suite: the hook's bO equals the published path's measure year by year, and the mean over years of ep equals each run's epPY.
+ * Session 12 (Oct 14, 2026; dev/plans/next-study-plan.md Tier A, dev/DECISIONS.md Session 12): --study adds the next study's per-person fields
+ * (dev/tools/study_fields.js: EPPM and its parts against each adult's no-programme twin, the monthly surplus in both runs, Acre Equity in days and
+ * the simulated CSI reading, the wealth Gini net of drain, breakdowns by the twin's income fifth, household type, age band and membership, what each
+ * fifth receives and pays, movement between the six tiers) and writes dev/runs/explore-study-ENV-YRS[-sn|-snab].json without the bands, deciles
+ * and lives. It runs every row with the measured EDC (row option em) and the accounting check (ACCT) on; both are reporting only, and the bands'
+ * self-check against the published panel proves the figures unchanged. Extra self-checks: no accounting identity fails; the per-adult below-30-days
+ * count equals the engine's bO; the ordinary wealth Gini equals the engine's at Year 7 and the last year; every adult of a programme run has a twin;
+ * EPPM's parts add up (study_fields.js throws otherwise). */
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), V54 = process.argv.indexOf('--v54') >= 0, V53 = V54 || process.argv.indexOf('--v53') >= 0;
-const SUITE = process.argv.indexOf('--suite') >= 0, SNAB = process.argv.indexOf('--snab') >= 0, SN = SNAB || process.argv.indexOf('--sn') >= 0, SLOPE = SN && process.argv.indexOf('--slope') >= 0, PANEL_ARG = (process.argv.find(a => a.startsWith('--panel=')) || '').slice(8);
+const STUDY = process.argv.indexOf('--study') >= 0, SF = STUDY ? require('./study_fields.js') : null, SUITE = process.argv.indexOf('--suite') >= 0, SNAB = process.argv.indexOf('--snab') >= 0, SN = SNAB || process.argv.indexOf('--sn') >= 0, SLOPE = SN && process.argv.indexOf('--slope') >= 0, PANEL_ARG = (process.argv.find(a => a.startsWith('--panel=')) || '').slice(8);
 const env = ARG[0] || 'ref', YRS = +(ARG[1] || 20), N = +(ARG[2] || 500), LS = +(ARG[3] || 1);
 const NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME || (YRS !== 20 && YRS !== 40) || !(LS >= 1 && LS <= N)) { console.error('usage: explore_export.js ref|adv|st [20|40] [SEEDS] [LIFESEED]'); process.exit(1); }
@@ -44,13 +52,14 @@ const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the
 const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
 const ROWS = ['base', 'release', 'h1', 'mid'];
 const out = {_meta: {what: 'year-by-year spread across seeds, savings deciles and one seed\'s adults, for the pages\' explore sections (presentation only)', env, years: YRS, seeds: N, lifeSeed: LS,
-  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V54 ? ' --v54' : V53 ? ' --v53' : '') + (SUITE ? ' --suite' : '') + (SNAB ? ' --snab' : SN ? ' --sn' : '') + (SLOPE ? ' --slope' : '') + (PANEL_ARG ? ' --panel=' + PANEL_ARG : ''),
+  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V54 ? ' --v54' : V53 ? ' --v53' : '') + (SUITE ? ' --suite' : '') + (STUDY ? ' --study' : '') + (SNAB ? ' --snab' : SN ? ' --sn' : '') + (SLOPE ? ' --slope' : '') + (PANEL_ARG ? ' --panel=' + PANEL_ARG : ''),
   flags: {1: 'below 30 days of basic living (BLEI paper)', 2: 'below the cost of living', 4: 'too little wealth', 8: 'taking part in the programme'}}, bands: {}, deciles: {}, lives: {}};
 let segs = [], cur = null;
 try {
   const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P), rel = V54 ? H.releaseRowsV54(SC) : V53 ? H.releaseRowsV53(SC) : H.releaseRows(SC), byJ = {};
   rel.forEach(r => { byJ[r.j] = r; });
   const cfg = [Object.assign({p: PR.baseline(), sc: SC}, V53 ? {hh: H.REL_V53.hh, sg: H.REL_V53.sg, g: H.REL_V53.g} : {}, V54 ? H.REL_V54 : {})].concat(['release', 'h1', 'mid'].map(j => { const r = byJ[j], c = H.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return c; }));
+  if (STUDY) cfg.forEach(c => { c.em = true; });  /* session 12: the measured EDC's rent and interest (reporting only) */
   if (SN) cfg.forEach(c => { c.sn = Object.assign(SNAB ? {abawd: true} : {}, SLOPE ? {slope: true} : {}); });  /* session 7: today's safety net, and SNAP's work rule; session 9: --slope, SNET.slope (i24-1) */
   const T = YRS, L30 = C.BLEI_PRECARIOUS_MAX, TB = [C.BLEI_CRISIS_MAX, C.BLEI_PRECARIOUS_MAX, C.BLEI_THRESHOLD_MAX, C.BLEI_STABLE_MAX, C.BLEI_SECURE_MAX];
   const tierOf = d => { let k = 0; while (k < TB.length && d >= TB[k]) k++; return k; }, med = x => x.length ? H.quantileOf(x, 0.5) : null, mean = x => x.length ? x.reduce((s, v) => s + v, 0)/x.length : 0;
@@ -69,7 +78,7 @@ try {
   /* The hook sees every simulated year of every run in tbStudy's order (seed outer, row inner). tbRun may first run one year to set the contribution
    * rate; that short run is recognised (it ends after one year) and dropped. */
   function close() { if (cur && cur.length === T) segs.push(cur); cur = null; }
-  let k = 0;
+  let k = 0, twinYr = [], seqMap = null;
   H.setRepHook(function (agents, yr, TT, lf, ep) {
     if (yr === 0) close();
     if (yr === 0) cur = [];
@@ -80,9 +89,15 @@ try {
         return (bo/lf < L30 ? 1 : 0) | ((a._tbGap || 0) > 0 ? 2 : 0) | (a.wealth < C.POVERTY_LINE*lf ? 4 : 0) | (a.inCCO ? 8 : 0); });
       rec.w = agents.map(a => Math.round(a.wealth/lf/100)); rec.n = agents.length; }
     if (SUITE) rec.s = suiteYear(agents, cfg[row].p, lf, ep);
+    if (STUDY) { const recs = agents.map((a, ix) => SF.adult(H, a, cfg[row].p, lf, tierOf, ix)); if (row === 0) twinYr[yr] = new Map(recs.map(r => [r.id, r]));
+      if (yr === 0) seqMap = new Map(); recs.forEach(r => { if (!seqMap.has(r.id)) seqMap.set(r.id, []); seqMap.get(r.id)[yr] = r.tier; });
+      const y = SF.yearSummary(recs, row === 0 ? null : twinYr[yr], L30); rec.st = y.s; rec.stPaired = y.paired; rec.stN = y.n; rec.stBO = recs.filter(r => r.bo < L30).length/recs.length*100;
+      if (yr === T - 1) rec.run = SF.runSummary(seqMap, T); }
     cur.push(rec); k++;
   });
+  if (STUDY) H.setAcct(H.acctNew());  /* session 12: the per-adult flows of the accounting check (reporting only) */
   let R; try { R = H.tbStudy(cfg, N, P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: SC}, H.REL_V52_STUDY)); close(); } finally { H.setRepHook(null); }
+  const ACC = STUDY ? H.getAcct() : null; if (STUDY) H.setAcct(null);
   if (segs.length !== N*cfg.length) throw new Error('expected ' + N*cfg.length + ' runs from the hook, saw ' + segs.length);
   const PJ = JSON.parse(fs.readFileSync(PANEL, 'utf8')), panel = PJ.envs[env], full = N === PJ._meta.seeds, bad = [];  /* check (1) needs the panel's own seeds */
   ROWS.forEach((j, i) => {
@@ -106,11 +121,26 @@ try {
       for (let sd = 0; sd < N; sd++) { const seg = segs[sd*cfg.length + i], ep = mean(seg.map(y => y.s.ep)), e = R[i]._s.epPY[sd];
         if (Math.abs(ep - e) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ': mean yearly ep ' + ep + ' vs epPY ' + e);
         for (let t = 0; t < T; t++) { const b = seg[t].s.bO, eng = R[i]._s['pbO_' + t][sd]; if (Math.abs(b - eng) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' bO year ' + (t + 1) + ': ' + b + ' vs ' + eng); } } }); }
+  if (STUDY) { out.study = {}; out.studyRun = {}; const SM = function (v) { return v.length ? [+mean(v).toFixed(4), +H.quantileOf(v, 0.1).toFixed(4), +H.quantileOf(v, 0.9).toFixed(4)] : [null, null, null]; };
+    out._meta.study = {tiers: ['Crisis', 'Precarious', 'Threshold', 'Stable', 'Secure', 'Flourishing'], definitions: 'dev/tools/study_fields.js', units: 'dollars a month in today\'s prices; shares in %; days of basic living; EPPM a ratio and its parts shares of the twins\' total',
+      acct: {checks: ACC.n, failures: ACC.nFail}};
+    Object.keys(ACC.nFail).forEach(id => { if (ACC.nFail[id]) bad.push('accounting identity ' + id + ' failed ' + ACC.nFail[id] + ' times'); });
+    ROWS.forEach((j, i) => { const S = out.study[j] = {}, keys = new Set();
+      for (let sd = 0; sd < N; sd++) for (let t = 0; t < T; t++) { const y = segs[sd*cfg.length + i][t]; Object.keys(y.st).forEach(x => keys.add(x));
+        const eng = R[i]._s['pbO_' + t][sd]; if (Math.abs(y.stBO - eng) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' study bO year ' + (t + 1) + ': ' + y.stBO + ' vs ' + eng);
+        if (i > 0 && y.stPaired !== y.stN) bad.push(j + ' seed ' + (sd + 1) + ' year ' + (t + 1) + ': ' + (y.stN - y.stPaired) + ' adults without a twin'); }
+      keys.forEach(key => { const m = [], lo = [], hi = []; for (let t = 0; t < T; t++) { const v = []; for (let sd = 0; sd < N; sd++) { const x = segs[sd*cfg.length + i][t].st[key]; if (x !== null && x !== undefined) v.push(x); }
+        const r = SM(v); m.push(r[0]); lo.push(r[1]); hi.push(r[2]); } S[key] = {mean: m, p10: lo, p90: hi}; });
+      const RS = out.studyRun[j] = {}, rk = Object.keys(segs[i][T - 1].run);
+      rk.forEach(key => { const v = []; for (let sd = 0; sd < N; sd++) { const x = segs[sd*cfg.length + i][T - 1].run[key]; if (x !== null && x !== undefined) v.push(x); } const r = SM(v); RS[key] = {mean: r[0], p10: r[1], p90: r[2]}; });
+      [['y7GiniW', 6], ['eGiniW', T - 1]].forEach(([g, t]) => { const e = R[i]._s[g]; if (!e) return; for (let sd = 0; sd < N; sd++) { const n = segs[sd*cfg.length + i][t].stN, x = segs[sd*cfg.length + i][t].st.giniW*n/(n - 1);
+        if (Math.abs(x - e[sd]) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' ' + g + ': ' + x + ' vs ' + e[sd]); } }); });
+    delete out.bands; delete out.deciles; delete out.lives; }
   if (bad.length) { console.error('SELF-CHECK FAILED (' + bad.length + '):\n  ' + bad.slice(0, 20).join('\n  ')); process.exit(1); }
   out._meta.selfCheck = (full ? '' : 'NOT COMPARED WITH THE PANEL (seeds differ); ') + 'yearly means equal the published path (' + PANEL.replace(ROOT + path.sep, '') + '); seed ' + LS + '\'s adults add up to the engine\'s yearly shares';
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const OUTF = (process.argv.find(a => a.startsWith('--out=')) || '').slice(6);  /* session 7: --out=FILE writes there (the s165 job keeps its worktree clean) */
-const file = OUTF ? path.resolve(OUTF) : path.join(ROOT, 'dev', 'runs', (SUITE ? 'explore-suite-' : 'explore-') + env + '-' + YRS + (SNAB ? '-snab' : SN ? '-sn' : '') + '.json');
+const file = OUTF ? path.resolve(OUTF) : path.join(ROOT, 'dev', 'runs', (STUDY ? 'explore-study-' : SUITE ? 'explore-suite-' : 'explore-') + env + '-' + YRS + (SNAB ? '-snab' : SN ? '-sn' : '') + '.json');
 fs.writeFileSync(file, JSON.stringify(out));
 console.log('self-check passed; wrote ' + file + ' (' + out._meta.seconds + ' s)');
