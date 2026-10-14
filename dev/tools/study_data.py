@@ -239,7 +239,7 @@ def content(R):
                              {'p': [N('unsourced.ccoRelief', 'p0'), ' of the basket (ceiling ', N('unsourced.ccoCap', 'p0'), ')']},
                              txt('None found. The decision log records the search; the value is a placeholder.'),
                              txt('No. Raising it left every released row unchanged when tested. It belongs to the earlier engine.')],
-                            [txt('PTF and PTH inflation damping: how much of outside inflation the food and the health programmes absorb'),
+                            [txt('Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH): how much of outside inflation they absorb, applied to the overall inflation rate'),
                              {'p': ['PTF ', N('unsourced.ptfDamp', 'n1'), ', PTH ', N('unsourced.pthDamp', 'n1'), ' (times the share of people who joined)']},
                              txt('None found. The decision log records the search; no source gives its size.'),
                              txt('Only in one optional row, off by default and labelled "the two former stand-ins on"; no main row. Raising both changed that row and no other.')]]})

@@ -9,7 +9,7 @@ ROWS = [
     ('unsourced-cco', 'CCO (Creative Currency Octaves) cost relief has no source (20% of the basket at the reference BU, ceiling 50%)',
      'index.html: CCO_RELIEF_AT_REF, CCO_RELIEF_CAP; dev/runs/unsourced-constants-check.txt',
      'Earlier engine only. Raising it left every released row unchanged. Is that right, and is there a source or a range worth sweeping?'),
-    ('unsourced-damping', 'PTF (community businesses) and PTH (community housing) inflation damping has no source (0.5 and 0.1 times the share who joined)',
+    ('unsourced-damping', 'Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH) has no source: how much of outside inflation they absorb, applied to the overall inflation rate (0.5 and 0.1 times the share who joined)',
      'index.html: grep "inflRate*=(1-"; dev/runs/unsourced-constants-check.txt',
      'Off in every main row; on only in one optional row. Is a source known for its size?'),
     ('rho', 'The income effect on earnings (how far people cut paid work when given money; sourced range 0.05 to 0.30)',

@@ -26,6 +26,5 @@
 - Before any wording pass: `python3 dev/tools/no_figure_change.py snapshot before.json`; after: `snapshot after.json`, then `compare before.json after.json`. A new number in the words needs a line in `dev/tools/no_figure_change_allow.txt` with a reason.
 - Wording on generated pages is changed in the generator, then regenerated; never edit `data/` by hand. Release data for v5.0 to v5.3 is an archive and was left alone.
 - Left unrewritten on purpose: `earlier-engine.html` (frozen) and the technical body of `replication.html` (about 60,000 words).
-- The study page and the economist checklist now disagree on what PTH is (health programmes versus community housing) until Duke answers question 1.
 - `node harness.js unit` and `domtest.js` take minutes each; run them in the background. GitHub GraphQL is blocked: use the pull request tools.
 - The results token expires 2026-10-17 04:16 UTC; nothing planned needs it. Pro ends Oct 15.
