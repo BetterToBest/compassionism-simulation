@@ -10,8 +10,6 @@ CONTRIBUTING.md	5.3	+1
 CONTRIBUTING.md	5.4	+1
 CONTRIBUTING.md	5.5	+1
 # s160 (Oct 14), clarity answers. Compared against main at the merge of pull request 26.
-# d201/d213: the PTH pitfall in HANDOFF.md named "question 1"; the pitfall is resolved and removed.
-HANDOFF.md	1	-1
 # d202: the same-rules reading's definition quotes the existing BLEI rules (12% and 20% of a month's wage), from dev/reports/08-blei.md. Not figures.
 index.html	12	+1
 index.html	20	+1

@@ -44,13 +44,14 @@ One improvement to the test came first, because two of the answers change words 
 
 So the test is as strict as before on the engine and stricter on numbers.
 
-Result after the last edit: **PASS**. Engine and embedded data identical; all 34 data files' numbers identical; 105 files' number counts compared. 22 number counts moved, all listed with a reason in `dev/tools/no_figure_change_allow.txt`:
+Result after the last edit: **PASS**. Engine and embedded data identical; all 34 data files' numbers identical; 104 files' number counts compared. 21 number counts moved, all listed with a reason in `dev/tools/no_figure_change_allow.txt`:
 
 - the same-rules definition quotes the existing BLEI rules (12% and 20%) on the front page, its code and the replication page; the replication note says "releases up to v5.5";
 - the findings page's new glossary brings the numbers in the front page's definitions (for example the ~4% a year in Acre Equity's definition);
 - CONTRIBUTING.md's dated note (14 for the date; three release numbers no longer listed);
-- the economist checklist's new row 13;
-- the removed HANDOFF.md warning, which named "question 1".
+- the economist checklist's new row 13.
+
+HANDOFF.md is no longer compared: it is the session log, rewritten every session, and publishes no figure.
 
 The figure check scans the findings page for typed percentages; it now skips the glossary panel, as it already skipped the front page's (the definitions state design parameters, not results).
 

@@ -19,7 +19,8 @@ from collections import Counter
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 NUM = re.compile(r'\d[\d,]*(?:\.\d+)?')
-TEXT_FILES = (['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'] + sorted(glob.glob('*.md')) +
+# HANDOFF.md is left out (session 7): the session log, rewritten every session; it publishes no figure.
+TEXT_FILES = (['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'] + sorted(f for f in glob.glob('*.md') if f != 'HANDOFF.md') +
               sorted(glob.glob('dev/reports/*.md')) + sorted(glob.glob('site/*.js')) + sorted(glob.glob('.github/ISSUE_TEMPLATE/*.yml')))
 
 
