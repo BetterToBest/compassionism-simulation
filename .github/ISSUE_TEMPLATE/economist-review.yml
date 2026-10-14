@@ -4,7 +4,7 @@ title: "Economist review: "
 body:
   - type: markdown
     attributes:
-      value: "One page for an independent economist. Each row names one thing to check, where it is in the repository, and what the model does today. Mark each row agree, disagree or cannot tell, with a line of why. You need not do every row. Rows about what the framework means (as opposed to how it is modelled) belong to its author, Duke Johnson; say so in a comment."
+      value: "One page for an independent economist. Each row names one thing to check, where it is in the repository, and what the model does today. Mark each row agree, disagree or cannot tell, with a line of why. You need not do every row. Rows about what the framework means (as opposed to how it is modeled) belong to its author, Duke Johnson; say so in a comment."
   - type: input
     id: who
     attributes:
@@ -29,7 +29,7 @@ body:
     id: rho
     attributes:
       label: "3. The income effect on earnings (how far people cut paid work when given money; sourced range 0.05 to 0.30)"
-      description: "Where: dev/reports/v5-30-s137-results.md, section 8; dev/DECISIONS.md. Today: The one uncertain behavioural constant that matters for basket poverty. Is the range right for a payment of this size and kind? Say agree, disagree or cannot tell, and why."
+      description: "Where: dev/reports/v5-30-s137-results.md, section 8; dev/DECISIONS.md. Today: The one uncertain behavioral constant that matters for basket poverty. Is the range right for a payment of this size and kind? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
   - type: textarea
@@ -56,7 +56,7 @@ body:
   - type: textarea
     id: price_rule
     attributes:
-      label: "7. The price rule: how programme spending and extra demand raise prices"
+      label: "7. The price rule: how program spending and extra demand raise prices"
       description: "Where: dev/reports/v5-30-s137-results.md, section 6; dev/DECISIONS.md. Today: Not calibrated to outside evidence on benefit-funded demand. The \"too little wealth\" rise comes through it. Which evidence would calibrate it? Say agree, disagree or cannot tell, and why."
     validations:
       required: false
@@ -84,7 +84,7 @@ body:
   - type: textarea
     id: us_data
     attributes:
-      label: "11. The no-programme run against US data (poverty, debt, savings)"
+      label: "11. The no-program run against US data (poverty, debt, savings)"
       description: "Where: findings.html; dev/DECISIONS.md. Today: Which gaps with US data would change a conclusion, and which would not? Say agree, disagree or cannot tell, and why."
     validations:
       required: false

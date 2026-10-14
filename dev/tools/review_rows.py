@@ -14,7 +14,7 @@ ROWS = [
      'Off in every main row; on only in one optional row. Is a source known for its size?'),
     ('rho', 'The income effect on earnings (how far people cut paid work when given money; sourced range 0.05 to 0.30)',
      'dev/reports/v5-30-s137-results.md, section 8; dev/DECISIONS.md',
-     'The one uncertain behavioural constant that matters for basket poverty. Is the range right for a payment of this size and kind?'),
+     'The one uncertain behavioral constant that matters for basket poverty. Is the range right for a payment of this size and kind?'),
     ('wage-elasticity', 'One wage elasticity for every change in the return to work',
      'dev/DECISIONS.md (fairness rule)',
      'Every change in the return to work uses the same elasticity. Is that the right treatment?'),
@@ -24,7 +24,7 @@ ROWS = [
     ('participation', 'Participation and the amount of BU (Basic Units) paid are design choices, not facts about the world',
      'study.html, "What the results depend on"',
      'They explain most of the spread in poverty, cost and inflation. What take-up should be assumed, and on what evidence?'),
-    ('price-rule', 'The price rule: how programme spending and extra demand raise prices',
+    ('price-rule', 'The price rule: how program spending and extra demand raise prices',
      'dev/reports/v5-30-s137-results.md, section 6; dev/DECISIONS.md',
      'Not calibrated to outside evidence on benefit-funded demand. The "too little wealth" rise comes through it. Which evidence would calibrate it?'),
     ('single-payer', 'Single-payer savings come from one preprint that is not peer reviewed',
@@ -36,7 +36,7 @@ ROWS = [
     ('both-measures', 'Every gain is confirmed on basket poverty (below the cost of living) and on wealth poverty (too little wealth), not on one measure',
      'study.html; findings.html',
      'Compassionism lowers basket poverty and raises "too little wealth". Is the way both are reported fair?'),
-    ('us-data', 'The no-programme run against US data (poverty, debt, savings)',
+    ('us-data', 'The no-program run against US data (poverty, debt, savings)',
      'findings.html; dev/DECISIONS.md',
      'Which gaps with US data would change a conclusion, and which would not?'),
     ('wwtbt', 'The study page\'s "What would have to be true" panel is Claude\'s reading of the sensitivity results, not a finding of the study',
@@ -47,7 +47,7 @@ ROWS = [
      'The model reports these costs; it does not show they are financed. Is that an acceptable limit, stated this way?'),
 ]
 INTRO = ('One page for an independent economist. Each row names one thing to check, where it is in the repository, and what the model does today. '
-         'Mark each row agree, disagree or cannot tell, with a line of why. You need not do every row. Rows about what the framework means (as opposed to how it is modelled) belong to its author, Duke Johnson; say so in a comment.')
+         'Mark each row agree, disagree or cannot tell, with a line of why. You need not do every row. Rows about what the framework means (as opposed to how it is modeled) belong to its author, Duke Johnson; say so in a comment.')
 ATTRIB = ('The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson\'s book *Better To Best* and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. '
           'The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.')
 

@@ -93,7 +93,7 @@
       var d = get(R, b + '.rows.release.' + c[3] + '.0'), worse = d > 0;
       var wo = opt.view === 'without', big = wo ? b + '.base.' + c[2] : b + '.rows.release.' + c[2], other = wo ? b + '.rows.release.' + c[2] : b + '.base.' + c[2];
       out += '<div class="fx-card' + (worse ? ' fx-worse' : '') + '"><p class="fx-card-k">' + c[1] + '</p><p class="fx-card-v"' + (opt.count ? ' data-count="1"' : '') + '>' + num(R, big, 'p1') + '</p>' +
-        '<p class="fx-card-vs">' + (wo ? 'with no programme, against ' + num(R, other, 'p1') + ' with Compassionism' : 'with Compassionism, against ' + num(R, other, 'p1') + ' with no programme') + '</p>' +
+        '<p class="fx-card-vs">' + (wo ? 'with no program, against ' + num(R, other, 'p1') + ' with Compassionism' : 'with Compassionism, against ' + num(R, other, 'p1') + ' with no program') + '</p>' +
         '<p class="fx-card-d">' + (worse ? 'Worse:' : 'Change:') + ' ' + num(R, b + '.rows.release.' + c[3] + '.0', 's1') + ' points</p>' +
         '<p class="fx-card-m" data-rel-text="meaning">' + fillHTML(R, meaningOf(R, c[0])) + '</p></div>';
     });
@@ -102,7 +102,7 @@
   function underCards(R, env, yrs) {  /* decision 1 (v5.2.1): the price rise and the cost sit directly under the three cards */
     var r = 'panels.' + yrs + '.envs.' + env + '.rows.release';
     var lev = has(R, r + '.pLevEndMed') ? 'by the last year the typical run is at ' + num(R, r + '.pLevEndMed', 'lev') : 'by the last year prices are on average at ' + num(R, r + '.pLev20', 'lev');
-    return '<p class="fx-under">The programme raises prices by ' + num(R, r + '.infl', 'p1') + ' a year (the cautious reading); ' + lev +
+    return '<p class="fx-under">The program raises prices by ' + num(R, r + '.infl', 'p1') + ' a year (the cautious reading); ' + lev +
       ' today’s prices. Cost: ' + num(R, r + '.cost', 'usd') + ' per adult a year. If every dollar the Source pays were backed by new output (H1), ' + num(R, 'panels.' + yrs + '.envs.' + env + '.rows.h1.pov', 'p1') + ' would end with too little wealth.</p>';
   }
   /* counters: the three card values count up once when they come into view; never under reduced motion */
@@ -164,11 +164,11 @@
     var rows = [];
     var ks = ['bO', 'f0', 'pov'].concat(hasKids(R) ? ['kid'] : []);
     ENVS.forEach(function (e) { ks.forEach(function (k) { var E = P.envs[e[0]], M = MEAS[k], d = get(E.rows.release, M[2]);
-      rows.push({group: e[1], label: M[0], marks: [{v: E.base[M[1]], cls: 's-without', hollow: true, name: 'no programme'}, {v: E.rows.release[M[1]], cls: 's-with', name: 'Compassionism'}],
+      rows.push({group: e[1], label: M[0], marks: [{v: E.base[M[1]], cls: 's-without', hollow: true, name: 'no program'}, {v: E.rows.release[M[1]], cls: 's-with', name: 'Compassionism'}],
         note: 'Change ' + pts(d[0]) + ' (95% interval ' + fmt(d[1], 's1') + ' to ' + fmt(d[2], 's1') + ')'}); }); });
     root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xMax: 100, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share below the line (' + st.years + ' years)' + (ks.length > 3 ? ': adults, and children for the last row' : ''),
-      label: 'Compassionism against no programme on ' + ks.length + ' poverty measures in three environments over ' + st.years + ' years',
-      legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+      label: 'Compassionism against no program on ' + ks.length + ' poverty measures in three environments over ' + st.years + ' years',
+      legend: [{label: 'No program', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
     return true;
   };
   function tgt(R) { return R.inputs ? R.inputs.hubPovertyTarget : 2; }
@@ -176,21 +176,21 @@
   var TG = [['fpl', 'Official poverty line'], ['fplX', 'Poverty line, Supplemental-style'], ['bO', 'Below 30 days (BLEI paper)'], ['bN', 'Below 30 days (same-rules reading)'], ['f0', 'Below the cost of living'], ['pov', 'Too little wealth'], ['ep', 'Unhoused']];
   CHARTS.targets = function (R, host, st) {
     var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || !E.rows.release.rep) return false;
-    var rows = [], mk = function (t, k) { return [{v: E.base.rep[t][k], cls: 's-without', hollow: true, name: 'no programme'}, {v: E.rows.release.rep[t][k], cls: 's-with', name: 'Compassionism'}]; };
+    var rows = [], mk = function (t, k) { return [{v: E.base.rep[t][k], cls: 's-without', hollow: true, name: 'no program'}, {v: E.rows.release.rep[t][k], cls: 's-with', name: 'Compassionism'}]; };
     [['y7', 'Year 7 (the Hub’s date)'], ['end', 'Year ' + st.years + ' (last year)']].forEach(function (t) { TG.forEach(function (m) { rows.push({group: t[1], label: m[1], marks: mk(t[0], m[0])}); }); });
     var g1 = document.createElement('div'), g2 = document.createElement('div'); g1.className = g2.className = 'fx-chart'; host.innerHTML = ''; host.appendChild(g1);
     var cap = document.createElement('p'); cap.className = 'fx-note'; cap.textContent = 'The spread of income and wealth (Gini), against the Hub’s target band for income (shaded):'; host.appendChild(cap); host.appendChild(g2);
     root.CSC.responsive(g1, function () { root.CSC.rows(g1, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, strip: {from: 0, to: tgt(R), label: 'Hub target: under ' + tgt(R) + '%'}, xTitle: 'Share of adults below the line that year',
-      label: 'Poverty measures at Year 7 and the last year against the Hub target of under 2 percent, ' + envName(st.env) + ', ' + st.years + ' years', legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+      label: 'Poverty measures at Year 7 and the last year against the Hub target of under 2 percent, ' + envName(st.env) + ', ' + st.years + ' years', legend: [{label: 'No program', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
     var gr = []; [['y7', 'Year 7'], ['end', 'Year ' + st.years]].forEach(function (t) { [['giniD', 'Income'], ['giniX', 'Income counting price cuts'], ['giniW', 'Wealth (debts as zero)']].forEach(function (m) { gr.push({group: t[1], label: m[1], marks: mk(t[0], m[0])}); }); });
     root.CSC.responsive(g2, function () { root.CSC.rows(g2, {rows: gr, xMin: 0, xMax: 1, xFmt: function (v) { return v.toFixed(1); }, tipFmt: function (v) { return fmt(v, 'n3'); }, strip: {from: 0.25, to: 0.30, label: '0.25–0.30'}, xTitle: 'Gini coefficient (0 = equal, 1 = one person has everything)',
-      label: 'Gini coefficients against the Hub target', legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+      label: 'Gini coefficients against the Hub target', legend: [{label: 'No program', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
     return true;
   };
   CHARTS.fixed = function (R, host, st) {
     var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || !E.rows.release.rep) return false;
     var r = E.rows.release, b = E.base, rows = [];
-    [['Compassionism', r], ['No programme', b]].forEach(function (g) { var x = g[1];
+    [['Compassionism', r], ['No program', b]].forEach(function (g) { var x = g[1];
       rows.push({group: g[0], label: 'Too little wealth, last year', marks: [{v: x.rep.end.povNom, cls: 's-alt', shape: 'diamond', hollow: true, name: 'line fixed in dollars'}, {v: x.rep.end.pov, cls: 's-with', name: 'line moved with prices'}]});
       rows.push({group: g[0], label: 'Below 30 days, over the run', marks: [{v: x.rep.py.bONom, cls: 's-alt', shape: 'diamond', hollow: true, name: 'line fixed in dollars'}, {v: x.bOAPy, cls: 's-with', name: 'line moved with prices'}]});
       rows.push({group: g[0], label: 'Official poverty line, last year', marks: [{v: x.rep.end.fplNom, cls: 's-alt', shape: 'diamond', hollow: true, name: 'line fixed in dollars'}, {v: x.rep.end.fpl, cls: 's-with', name: 'line moved with prices'}]}); });
@@ -205,40 +205,40 @@
     var extra = [], P = R.panels['20'];
     ENVS.forEach(function (e) { ['midlo', 'mid', 'midhi'].forEach(function (k) { var r = P && P.envs[e[0]].rows[k]; if (r && r.bkA != null) extra.push({x: r.bkA/100, y: r.dPov[0], cls: cls[e[0]], shape: 'diamond', hollow: true}); }); });
     var g1 = document.createElement('div'), g2 = document.createElement('div'); g1.className = g2.className = 'fx-chart'; host.innerHTML = ''; host.appendChild(g1);
-    var cap = document.createElement('p'); cap.className = 'fx-note'; cap.textContent = 'The price rise the programme itself causes, at each share:'; host.appendChild(cap); host.appendChild(g2);
+    var cap = document.createElement('p'); cap.className = 'fx-note'; cap.textContent = 'The price rise the program itself causes, at each share:'; host.appendChild(cap); host.appendChild(g2);
     root.CSC.responsive(g1, function () { root.CSC.xy(g1, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, xTitle: 'Share of the Source’s payout backed by new output (a)', yFmt: function (v) { return (v > 0 ? '+' : v < 0 ? MINUS : '') + Math.abs(v); }, tipFmt: pts,
-      series: series, extra: extra, zero: true, label: 'Change in too little wealth against no programme as the backed share rises from 0 to 1, three environments',
+      series: series, extra: extra, zero: true, label: 'Change in too little wealth against no program as the backed share rises from 0 to 1, three environments',
       legendExtra: extra.length ? [{label: 'Middle reading (the Kenya-anchored band)', cls: 's-without', shape: 'diamond', hollow: true}] : []}); });
     var inf = ENVS.map(function (e) { var rs = B.envs[e[0]].rows; return {name: e[1], cls: cls[e[0]], shape: shp[e[0]], values: K.map(function (k) { return rs[k].infl; })}; });
-    root.CSC.responsive(g2, function () { root.CSC.xy(g2, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, yFmt: function (v) { return v + '%'; }, tipFmt: function (v) { return fmt(v, 'p1') + ' a year'; }, series: inf, yMin: 0, height: 200, label: 'Programme inflation by backed share', legend: false, endLabels: false}); });
+    root.CSC.responsive(g2, function () { root.CSC.xy(g2, {x: xs, xTicks: xs, xLabel: function (v) { return 'a = ' + v; }, yFmt: function (v) { return v + '%'; }, tipFmt: function (v) { return fmt(v, 'p1') + ' a year'; }, series: inf, yMin: 0, height: 200, label: 'Program inflation by backed share', legend: false, endLabels: false}); });
     return true;
   };
   var GROUPS = [['v5.4\u2019s choices, and a disaster', ['v53', 'cut0', 'cut20', 'autopay', 'pthbold', 'ptfs25', 'dis']], ['v5.3\u2019s new choices, each undone in turn', ['v52', 'adults', 'core', 'indiv', 'cb0', 'cb50', 'wmodel', 'nosg', 'shock50', 'fbs50']],
-    ['The two ends and the middle backing band', ['h1', 'mid', 'midlo', 'midhi']], ['Savings and the BU', ['sav', 'sav0', 'idx', 'h1idx', 'h1both']], ['Ageing', ['age', 'agenc', 'agenone', 'agepia', 'ageleave', 'agecps']],
+    ['The two ends and the middle backing band', ['h1', 'mid', 'midlo', 'midhi']], ['Savings and the BU', ['sav', 'sav0', 'idx', 'h1idx', 'h1both']], ['Aging', ['age', 'agenc', 'agenone', 'agepia', 'ageleave', 'agecps']],
     ['Closer to US data', ['fixw', 'fixr', 'fixs', 'fixm', 'fixall']], ['Idle workers in normal years', ['slack', 'slacku6']], ['Robustness risks', ['hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun']],
     ['Other ways to pay (not specified by the Hub)', ['tax', 'progtax', 'landtax']], ['Other readings of the design', ['face', 'cost', 'cap5', 'all', 'free', 'standins']]];
-  var SHORT = {h1: 'H1: every Source dollar backed', mid: 'Middle backing reading (Kenya-anchored)', midlo: 'Middle band, low end (US idle labour)', midhi: 'Middle band, high end (Kenya peak year)', sav: 'Savings keep up with prices (plus a real yield)', sav0: 'Savings keep only their value',
-    idx: 'BU indexed every year', h1idx: 'H1 with the BU indexed every year', h1both: 'H1 with both', age: 'Adults age, retire and are replaced', agenc: 'Ageing, no conversion after retirement', agenone: 'Ageing, retirees leave the programme', agepia: 'Ageing, benefit from own wage',
-    fixw: 'Savings from the US survey', fixr: 'Automation risk linked to wages', fixs: 'Wages spread as in the survey', fixm: 'Wages centred on the survey median', fixall: 'All four US-data readings', slack: 'Idle labour in normal years', slacku6: 'All of U-6, the broadest measure of idle labour, idle (upper bound)',
+  var SHORT = {h1: 'H1: every Source dollar backed', mid: 'Middle backing reading (Kenya-anchored)', midlo: 'Middle band, low end (US idle labor)', midhi: 'Middle band, high end (Kenya peak year)', sav: 'Savings keep up with prices (plus a real yield)', sav0: 'Savings keep only their value',
+    idx: 'BU indexed every year', h1idx: 'H1 with the BU indexed every year', h1both: 'H1 with both', age: 'Adults age, retire and are replaced', agenc: 'Aging, no conversion after retirement', agenone: 'Aging, retirees leave the program', agepia: 'Aging, benefit from own wage',
+    fixw: 'Savings from the US survey', fixr: 'Automation risk linked to wages', fixs: 'Wages spread as in the survey', fixm: 'Wages centered on the survey median', fixall: 'All four US-data readings', slack: 'Idle labor in normal years', slacku6: 'All of U-6, the broadest measure of idle labor, idle (upper bound)',
     hcap: 'Rent capture, BU tenants (voucher evidence)', hcaphi: 'Rent capture, every renter (upper end)', rev5: 'Review errors, low (audits catch half)', rev10: 'Review errors, middle', rev20: 'Review errors, high', rev20n: 'Review errors, high, no audits', giftrun: 'Launch gift paid over the run',
     tax: 'Flat contribution on wages', progtax: 'Progressive income tax', landtax: 'Land-value tax', face: 'BU essentials counted as backed', cost: 'Creative work at the cost of its hours', cap5: 'Capacity only as reinvestment pays', all: 'Taking part costs nothing', free: 'Price cuts free', standins: 'The two former stand-ins on',
     v53: 'v5.3\u2019s main row (no job loss; community housing and community businesses as in v5.3)', cut0: 'No pay cut on return to work', cut20: 'A pay cut of a fifth on return to work', autopay: 'Automation as a lasting pay drag (the earlier rule)',
     pthbold: 'Acre Equity by the earlier rule (three to five per cent a year)', ptfs25: 'Community businesses (PTF) cut a quarter off transport, health care and childcare', dis: 'A disaster in Year 7 (a scenario)',
     v52: 'v5.2\u2019s main row (adults alone, v5.2\u2019s choices)', adults: 'Adults living alone (no households)', core: 'BU buy only food, housing and medical care', indiv: 'Each adult keeps their own money (no pooling)',
     cb0: 'No child allowance', cb50: 'A child allowance of half the adult BU', wmodel: 'Starting savings from the model\u2019s own draw', nosg: 'Everyone pays their full cost (no graded spending)',
-    shock50: 'Partners\u2019 income swings strongly linked', fbs50: 'Surplus for an even chance of advancing (FBS50), spread evenly over its range', ageleave: 'Ageing, every estate leaves the model', agecps: 'Ageing, wages follow US earnings by age'};
-  var SHORT53 = {age: 'Ageing: children grow up and are born; estates pass on', agenone: 'Ageing, retirees leave the programme', agepia: 'Ageing, benefit from own wage', fixall: 'All three wage and risk readings'};  /* v5.3: the ageing row is the households' (children's lives) */
+    shock50: 'Partners\u2019 income swings strongly linked', fbs50: 'Surplus for an even chance of advancing (FBS50), spread evenly over its range', ageleave: 'Aging, every estate leaves the model', agecps: 'Aging, wages follow US earnings by age'};
+  var SHORT53 = {age: 'Aging: children grow up and are born; estates pass on', agenone: 'Aging, retirees leave the program', agepia: 'Aging, benefit from own wage', fixall: 'All three wage and risk readings'};  /* v5.3: the aging row is the households' (children's lives) */
   function readingsRows(R, yrs, env, k, opts) {
     var E = R.panels[yrs] && R.panels[yrs].envs[env]; if (!E) return null; var M = MEAS[k], rows = [], mm = M && get(E.rows.release, M[2]); if (!mm) return null;
     var v53 = E.rows.release.hhCostKidPY !== undefined;
     GROUPS.forEach(function (G) { G[1].forEach(function (j) { var r = E.rows[j], d = r && get(r, M[2]); if (!d) return; if (opts && opts.only && opts.only.indexOf(j) < 0) return;
-      rows.push({group: G[0], label: (v53 && SHORT53[j]) || SHORT[j] || r.label, marks: [{v: d[0], lo: d[1], hi: d[2], cls: 's-alt', shape: 'circle', name: 'change against no programme'}], note: r.label}); }); });
+      rows.push({group: G[0], label: (v53 && SHORT53[j]) || SHORT[j] || r.label, marks: [{v: d[0], lo: d[1], hi: d[2], cls: 's-alt', shape: 'circle', name: 'change against no program'}], note: r.label}); }); });
     return {rows: rows, main: mm[0]};
   }
   CHARTS.readings = function (R, host, st) {
     var k = st.measure || 'pov', X = readingsRows(R, st.years, st.env, k); if (!X || !X.rows.length) return false;
-    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: X.rows, tipFmt: pts, xFmt: function (v) { return (v > 0 ? '+' : v < 0 ? MINUS : '') + Math.abs(v); }, refs: [{v: X.main, label: 'main row ' + fmt(X.main, 's1')}, {v: 0, label: 'no programme'}],
-      xTitle: MEAS[k][0] + ': change against no programme, points (left is better)', label: 'How far each reading moves the change in ' + MEAS[k][0].toLowerCase() + ', ' + envName(st.env) + ', ' + st.years + ' years',
+    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: X.rows, tipFmt: pts, xFmt: function (v) { return (v > 0 ? '+' : v < 0 ? MINUS : '') + Math.abs(v); }, refs: [{v: X.main, label: 'main row ' + fmt(X.main, 's1')}, {v: 0, label: 'no program'}],
+      xTitle: MEAS[k][0] + ': change against no program, points (left is better)', label: 'How far each reading moves the change in ' + MEAS[k][0].toLowerCase() + ', ' + envName(st.env) + ', ' + st.years + ' years',
       legend: [{label: 'Reading (95% interval)', cls: 's-alt', shape: 'circle'}, {label: 'Vertical line: the main row', cls: 's-without', line: true}]}); });
     return true;
   };
@@ -246,14 +246,14 @@
   var AT = {pov: 'pov', f0: 'fgt0PY', bO: 'bOAPy', kid: 'hhCostKidPY'};
   CHARTS.attrib = function (R, host, st) {
     var A = R.attrib && R.attrib[st.env], k = AT[st.measure || 'pov']; if (!A || !A.whole[k]) return false;
-    var rows = [{group: 'The whole programme', label: 'Every part together', note: 'The main row against no programme', marks: [{v: A.whole[k][0], lo: A.whole[k][1], hi: A.whole[k][2], cls: 's-with', shape: 'circle', name: 'change'}]}];
+    var rows = [{group: 'The whole program', label: 'Every part together', note: 'The main row against no program', marks: [{v: A.whole[k][0], lo: A.whole[k][1], hi: A.whole[k][2], cls: 's-with', shape: 'circle', name: 'change'}]}];
     Object.keys(A.parts).forEach(function (j) { var q = A.parts[j][k]; var L = A.parts[j].label.replace(/^without /, ''); rows.push({group: 'What each part adds (the main row against the main row without it)', label: L.replace(/ \(.*\)$/, ''), note: L, marks: [{v: q[0], lo: q[1], hi: q[2], cls: 's-alt', shape: 'circle', name: 'what the part adds'}]}); });
     root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, tipFmt: pts, xFmt: function (v) { return (v > 0 ? '+' : v < 0 ? MINUS : '') + Math.abs(v); }, refs: [{v: 0, label: 'no effect'}],
       xTitle: MEAS[st.measure || 'pov'][0] + ': change, points (left is better)', label: 'What each part of the design does to ' + MEAS[st.measure || 'pov'][0].toLowerCase() + ', ' + envName(st.env) + ', ' + A._meta.years + ' years',
-      legend: [{label: 'The whole programme against no programme (95% interval)', cls: 's-with', shape: 'circle'}, {label: 'What the part adds (95% interval)', cls: 's-alt', shape: 'circle'}]}); });
+      legend: [{label: 'The whole program against no program (95% interval)', cls: 's-with', shape: 'circle'}, {label: 'What the part adds (95% interval)', cls: 's-alt', shape: 'circle'}]}); });
     return true;
   };
-  /* v5.3 (B8): households and children, with Compassionism against no programme */
+  /* v5.3 (B8): households and children, with Compassionism against no program */
   var HHM = [['Children', 'Below the cost of living', 'hhCostKidPY'], ['Children', 'Below 30 days of basic living', 'hhBleiKidPY'], ['Children', 'Too little household wealth, last year', 'hhWlthKidEnd'],
     ['Everyone (adults and children)', 'Below the cost of living', 'hhCostPY'], ['Everyone (adults and children)', 'Too little household wealth, last year', 'hhWlthEnd'],
     ['Below the cost of living, by household', 'Single adults', 'hhCost_sg'], ['Below the cost of living, by household', 'Single parents and their children', 'hhCost_sp'],
@@ -261,13 +261,13 @@
   CHARTS.hh = function (R, host, st) {
     var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || E.rows.release.hhCostKidPY === undefined) return false;
     var rows = HHM.filter(function (m) { return E.rows.release[m[2]] !== undefined && E.base[m[2]] !== undefined; }).map(function (m) {
-      return {group: m[0], label: m[1], marks: [{v: E.base[m[2]], cls: 's-without', hollow: true, name: 'no programme'}, {v: E.rows.release[m[2]], cls: 's-with', name: 'Compassionism'}]}; });
+      return {group: m[0], label: m[1], marks: [{v: E.base[m[2]], cls: 's-without', hollow: true, name: 'no program'}, {v: E.rows.release[m[2]], cls: 's-with', name: 'Compassionism'}]}; });
     root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xMax: 100, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of people below the line (' + st.years + ' years)',
-      label: 'Households and children: Compassionism against no programme, ' + envName(st.env) + ', ' + st.years + ' years',
-      legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+      label: 'Households and children: Compassionism against no program, ' + envName(st.env) + ', ' + st.years + ' years',
+      legend: [{label: 'No program', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
     return true;
   };
-  /* v5.4: jobs and risk, with Compassionism against no programme (the measures both runs have; PTH's books and PTF's cut are in the table) */
+  /* v5.4: jobs and risk, with Compassionism against no program (the measures both runs have; PTH's books and PTF's cut are in the table) */
   var WKM = [['Work', 'Out of work (adult-years)', 'emUrate'], ['Work', 'Spells longer than 26 weeks', 'emLong'],
     ['Risk', 'Savings fell 6+ months of costs', 'rkDdW6'], ['Risk', 'Basic-living days fell 30+', 'rkDdB30'],
     ['Risk', 'Income back within 3 years', 'rkRec3'], ['Risk', 'Back below cost of living (5 yrs)', 'rkReC5']];
@@ -277,10 +277,10 @@
   CHARTS.work = function (R, host, st) {
     var E = R.panels[st.years] && R.panels[st.years].envs[st.env]; if (!E || E.rows.release.emUrate === undefined) return false;
     var rows = WKM.filter(function (m) { return E.rows.release[m[2]] !== undefined && E.base[m[2]] !== undefined; }).map(function (m) {
-      return {group: m[0], label: m[1], marks: [{v: E.base[m[2]], cls: 's-without', hollow: true, name: 'no programme'}, {v: E.rows.release[m[2]], cls: 's-with', name: 'Compassionism'}]}; });
+      return {group: m[0], label: m[1], marks: [{v: E.base[m[2]], cls: 's-without', hollow: true, name: 'no program'}, {v: E.rows.release[m[2]], cls: 's-with', name: 'Compassionism'}]}; });
     root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xMax: 100, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of adults, of adult-years or of spells (' + st.years + ' years)',
-      label: 'Jobs and risk: Compassionism against no programme, ' + envName(st.env) + ', ' + st.years + ' years',
-      legend: [{label: 'No programme', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
+      label: 'Jobs and risk: Compassionism against no program, ' + envName(st.env) + ', ' + st.years + ' years',
+      legend: [{label: 'No program', cls: 's-without', shape: 'circle', hollow: true}, {label: 'Compassionism', cls: 's-with', shape: 'circle'}]}); });
     return true;
   };
   CHARTS.us = function (R, host) {
@@ -290,16 +290,16 @@
       var rows5 = T5.filter(function (t) { return us.scfHH[t[0]] && n.hh.wealth.y7[t[0]]; }).map(function (t) { return {group: 'Households in debt (net worth below zero)', label: t[1],
         marks: [{v: us.scfHH[t[0]].neg, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US (SCF 2022)'}, {v: n.hh.wealth.y7[t[0]].neg, cls: 's-without', name: 'model, Year 7'}]}; });
       rows5.push({group: 'Below the official poverty line', label: 'Everyone (household thresholds)', marks: [{v: us.official.all, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US, everyone (2025)'}, {v: n.hh.fpl.y7, cls: 's-without', name: 'model, Year 7'}]});
-      root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows5, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of households (debt) or of people (poverty)', label: 'The no-programme run at Year 7 against US figures',
-        legend: [{label: 'US figure', cls: 's-alt', shape: 'diamond', hollow: true}, {label: 'Model, no programme, Year 7 (Reference)', cls: 's-without', shape: 'circle'}]}); });
+      root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows5, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of households (debt) or of people (poverty)', label: 'The no-program run at Year 7 against US figures',
+        legend: [{label: 'US figure', cls: 's-alt', shape: 'diamond', hollow: true}, {label: 'Model, no program, Year 7 (Reference)', cls: 's-without', shape: 'circle'}]}); });
       return true;
     }
     var rows = [{label: 'Below the official poverty line', marks: [{v: us.official.workers, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US workers (2025)'}, {v: n.fpl.y0, cls: 's-without', name: 'model, first year'}]},
       {label: 'Below the line, Supplemental-style', marks: [{v: us.spm.workers, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US workers (2025)'}, {v: n.spm.y0, cls: 's-without', name: 'model, first year'}]},
       {label: 'In debt (net worth below zero)', marks: [{v: us.scf.neg, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US comparison group (SCF 2022)'}, {v: n.wealth.y0.neg, cls: 's-without', name: 'model, first year'}]},
       {label: 'Net wealth under ' + fmt(R.inputs.wealthLine, 'usd'), marks: [{v: us.scf.below25k, cls: 's-alt', shape: 'diamond', hollow: true, name: 'US comparison group (SCF 2022)'}, {v: n.wealth.y0.below25k, cls: 's-without', name: 'model, first year'}]}];
-    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of adults', label: 'The no-programme run in its first year against US figures',
-      legend: [{label: 'US figure', cls: 's-alt', shape: 'diamond', hollow: true}, {label: 'Model, no programme, first year (Reference)', cls: 's-without', shape: 'circle'}]}); });
+    root.CSC.responsive(host, function () { root.CSC.rows(host, {rows: rows, xMin: 0, xFmt: function (v) { return v + '%'; }, tipFmt: pct, xTitle: 'Share of adults', label: 'The no-program run in its first year against US figures',
+      legend: [{label: 'US figure', cls: 's-alt', shape: 'diamond', hollow: true}, {label: 'Model, no program, first year (Reference)', cls: 's-without', shape: 'circle'}]}); });
     return true;
   };
 

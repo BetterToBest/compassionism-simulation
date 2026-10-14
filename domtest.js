@@ -1039,8 +1039,8 @@ function phase13(done) {
   [['ref', 'FULL_INTEGRATION'], ['adv', 'ADVERSE_REFERENCE']].forEach(e => {
     w.REL.env = e[0]; w.REL.yrs = 20; const x = w.relLiveRows(e[0], 1), txt = w.relSentences(x.b, x.r, null, 20).replace(/<[^>]+>/g, ''),
       loses = ['part', 'non', 'low', 'top'].some(k => x.r.grp[k] < 0) || x.r.dPov[0] > 0;
-    if (loses && /No group is worse off than with no programme on any test/.test(txt)) bad.push(e[0] + ' seed 1');
-    if (loses && !/Worse off than with no programme in this run/.test(txt)) bad.push(e[0] + ' seed 1 (no loss named)'); });
+    if (loses && /No group is worse off than with no program on any test/.test(txt)) bad.push(e[0] + ' seed 1');
+    if (loses && !/Worse off than with no program in this run/.test(txt)) bad.push(e[0] + ' seed 1 (no loss named)'); });
   check('audit finding 1: live runs (Reference and Adverse, seed 1) state the losses their own numbers show', bad.length === 0, bad.length ? bad.join('; ') : 'both consistent');
   /* v5.1 (audit F3, E1, E5): the regenerated 500-seed panels. (a) every row carries the price level as mean, median and 10th/90th percentiles under the new key names (the old key
    * pLev20 is gone from the export); the Prices sentence gives the typical run and its range, and above 1,000 times today's names the price rule and says "a limit of the model, not a forecast"
@@ -1087,7 +1087,7 @@ function phase13(done) {
   const V52 = [emb20, emb40].every(Pn => ENVN.every(e => Pn.envs[e].rows.release.rep && Pn.envs[e].base.rep));
   const nearW = g => Math.abs(g - 0.25) < 0.002, verdW = g => (g <= 0.25 ? 'at or below 0.25' : 'above 0.25') + (nearW(g) ? ' (on the line: within 0.002)' : '');
   const V52M = [['fpl', 1, 'p'], ['fplX', 1, 'p'], ['bO', 1, 'p'], ['bN', 1, 'p'], ['f0', 1, 'p'], ['pov', 1, 'p'], ['ep', 2, 'p'], ['giniD', 3, 'g'], ['giniX', 3, 'g'], ['giniW', 3, 'w']];
-  const v52Cell = (x, bx, d, kind) => (+x).toFixed(d) + (kind === 'p' ? '%' : '') + (kind === 'p' ? (x < 2 ? 'met' : 'not met') : kind === 'g' ? verd(x) : verdW(x)) + 'no programme ' + (+bx).toFixed(d) + (kind === 'p' ? '%' : '');
+  const v52Cell = (x, bx, d, kind) => (+x).toFixed(d) + (kind === 'p' ? '%' : '') + (kind === 'p' ? (x < 2 ? 'met' : 'not met') : kind === 'g' ? verd(x) : verdW(x)) + 'no program ' + (+bx).toFixed(d) + (kind === 'p' ? '%' : '');
   if (V52) [[20, emb20], [40, emb40]].forEach(([yrs, Pn]) => ENVN.forEach(e => { wr.relSet(e); wr.relYears(yrs); const E = Pn.envs[e], b = E.base.rep, r = E.rows.release.rep, el = dr.getElementById('rel-targets'), tr = el ? [...el.querySelectorAll('tbody tr')].map(x => [...x.children].map(c => c.textContent)) : [], tx = el ? el.textContent : '';
     const okRows = tr.length === V52M.length && tr.every((c, i) => { const m = V52M[i]; return c.length === 4 && c[2] === v52Cell(r.y7[m[0]], b.y7[m[0]], m[1], m[2]) && c[3] === v52Cell(r.end[m[0]], b.end[m[0]], m[1], m[2]) && (m[2] === 'p' ? c[1] === 'under 2%' : m[2] === 'g' ? c[1] === '0.25 to 0.30' : c[1] === '0.25 (BLEI paper)'); });
     const a = el ? el.querySelector('a') : null;
@@ -1116,7 +1116,7 @@ function phase13(done) {
     const P = E.rows.release.path, B = E.base.path, n = Math.min(yrs, P.f0.length) - 1, t = prices(e, yrs), money = x => wr.fdMoney(x);
     const titled = svg.length === 3 && svg.every(g => g.querySelector('title') && g.querySelector('desc') && /year 1/.test(g.querySelector('desc').textContent) && g.querySelectorAll('polyline').length >= 2);
     const tbl = el.querySelector('table.fd-pt'), cells = tbl ? tbl.querySelectorAll('tbody tr').length : 0;
-    const buys = E.rows.release.infl > 0 ? t.indexOf('a month of the median wage buys what ' + money(P.wageR[n]) + ' bought at the start') > 0 && t.indexOf('with no programme ' + money(B.wageR[n])) > 0 : true;
+    const buys = E.rows.release.infl > 0 ? t.indexOf('a month of the median wage buys what ' + money(P.wageR[n]) + ' bought at the start') > 0 && t.indexOf('with no program ' + money(B.wageR[n])) > 0 : true;
     if (!(titled && cells === 7 && buys)) pathBad.push(e + ' ' + yrs + 'y (charts ' + svg.length + ', titled ' + titled + ', table rows ' + cells + ', purchasing power ' + buys + ')'); }));
   wr.relYears(20); wr.relSet('ref');
   check('v5.2 step 8: year-by-year charts (cost-of-living poverty, savings, what a month buys) beside no programme in every view, each described in text with a table of the numbers, and the Prices sentence says what a month of the wage and of the BU still buys' + (PATH ? '' : ' (the embedded panels predate the path: no charts shown)'),

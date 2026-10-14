@@ -4,8 +4,8 @@
  *   CSC.xy(el, spec)    lines over x (years, or a share), with optional bands (10th-90th percentile), whiskers (95% intervals), extra marks and a zero line;
  *   CSC.rows(el, spec)  one row per item with dots (with / without / a reading), intervals, reference lines and shaded target strips (dumbbells, range charts);
  *                       with spec.bars, bars from zero with a 95% interval line and the value at the end (the study page's sensitivity chart).
- * Colours come from CSS custom properties in site/findings.css (validated for colour-blind readers in light and dark, dataviz skill validator);
- * identity is never colour alone: series also differ by line style or marker shape and carry a legend and direct labels. Every chart has a text
+ * Colors come from CSS custom properties in site/findings.css (validated for color-blind readers in light and dark, dataviz skill validator);
+ * identity is never color alone: series also differ by line style or marker shape and carry a legend and direct labels. Every chart has a text
  * summary (aria-label) and its numbers in a table beside it (site/findings.js). Tooltips enhance, never gate.
  * Numbers a chart prints from the release data carry data-src / data-f, so the figure check can compare them with the data file. */
 (function (root) {
