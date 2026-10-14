@@ -157,6 +157,8 @@
   var MEAS = {pov: ['Too little wealth', 'pov', 'dPov'], f0: ['Below the cost of living', 'fgt0PY', 'dF0'], bO: ['Below 30 days of basic living', 'bOAPy', 'dBO'],
     kid: ['Children below the cost of living', 'hhCostKidPY', 'd53.hhCostKidPY']};  /* [label, key, change key (a path inside the row)] */
   function hasKids(R) { return has(R, 'panels.20.envs.ref.rows.release.d53.hhCostKidPY'); }
+  /* The public costs avoided, all readings together, are under a tenth of the program's cost (one test for every page that says so; r: a panel row) */
+  function avoidSmall(r) { return (r.avoidHi + r.avoidW) < 0.1*r.cost; }
   var pct = function (v) { return fmt(v, 'p1'); }, pts = function (v) { return fmt(v, 's1') + ' points'; };
   var CHARTS = {};
   CHARTS.dumbbell = function (R, host, st) {
@@ -344,5 +346,5 @@
 
   root.CSF = {fmt: fmt, get: get, has: has, num: num, text: text, esc: esc, cellHTML: cellHTML, tableHTML: tableHTML, tableById: tableById, csvOf: csvOf, jsonOf: jsonOf, download: download, tableTools: tableTools,
     cardsHTML: cardsHTML, MEANINGS: MEANINGS, MEANINGS53: MEANINGS53, meaningOf: meaningOf, fillPlain: fillPlain, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
-    readingsRows: readingsRows, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, SHORT53: SHORT53, GROUPS: GROUPS, hasKids: hasKids, HHM: HHM, WKM: WKM, AT: AT};
+    readingsRows: readingsRows, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, SHORT53: SHORT53, GROUPS: GROUPS, hasKids: hasKids, avoidSmall: avoidSmall, HHM: HHM, WKM: WKM, AT: AT};
 })(typeof window !== 'undefined' ? window : this);

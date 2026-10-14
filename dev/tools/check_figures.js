@@ -182,7 +182,8 @@ async function run(opts) {
    * (explore.suite: data/releases/v<version>/suite-YEARS.json); every number is a path into the release file with the suite files under R.suite[years]. */
   { const ent = M.releases.filter(r => r.status === 'latest')[0] || cur[0], RS = ent && REL[ent.version], sp3 = [], sf = [];
     const S = {}; if (RS && RS.explore && RS.explore.suite) Object.entries(RS.explore.suite).forEach(([y, f]) => { S[y] = rj(path.join('data/releases', f)); }); else sf.push('the newest release lists no suite series');
-    const RW = Object.assign({}, RS, { suite: S });
+    const Z = {}; if (RS && RS.explore && RS.explore.study) Object.entries(RS.explore.study).forEach(([y, f]) => { Z[y] = rj(path.join('data/releases', f)); });  /* session 12: the measures study, when the release carries it */
+    const RW = Object.assign({}, RS, { suite: S, study: Z });
     /* the series agree with the release: the share under 30 days is the published path (to its rounding), the tiers of all adults add up to the whole, and a group with no adults is null */
     Object.entries(S).forEach(([y, X]) => ['ref', 'adv', 'st'].forEach(e => ['base', 'release', 'h1', 'mid'].forEach(row => { const Z = X.envs[e] && X.envs[e][row]; if (!Z) { sf.push(y + 'y ' + e + ' ' + row + ' missing'); return; }
       const pub = row === 'base' ? RS.panels[y].envs[e].base.path.bO : RS.panels[y].envs[e].rows[row].path.bO;
@@ -201,10 +202,21 @@ async function run(opts) {
       for (const g of ['all', 'part', 'non']) { const gb = [...w.document.querySelectorAll('#tiers button')].filter(b => b.dataset.value === g)[0]; if (gb) { gb.click(); await settle(w); }
         w.document.querySelectorAll('#suite details').forEach(d => { d.open = true; });
         const x = spanProbs(w.document, RW, 'suite ' + e + ' ' + y + 'y ' + rd2 + ' ' + g); n3 += x.n; sp3.push(...x.bad);
-        if (w.document.querySelectorAll('.su-sec').length !== 8 || w.document.querySelectorAll('.su-sec svg.fx-svg').length !== 11) sp3.push('suite ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
+        if (w.document.querySelectorAll('.su-sec').length !== 9 || w.document.querySelectorAll('.su-sec svg.fx-svg').length !== 11) sp3.push('suite ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
         scan.push(...unmarked(w.document.getElementById('content'), 'suite ' + e + ' ' + y + 'y')); } }
     add('session 11: on the visual suite page every number (texts, cards and all tables) equals the newest release\'s data and suite series, in four views of environment, horizon and backing reading and all three groups of adults', sp3.length === 0 && n3 > 2000,
       sp3.length ? sp3.slice(0, 4).join('; ') : n3 + ' numbers checked in 12 views');
+    /* session 12: the measures study's cards and tables, on a two-seed test fixture (not a result) when the release has no study yet, so the paths are checked before the data arrives */
+    { const fx = Object.keys(Z).length ? null : JSON.parse(rd('dev/tools/fixtures/study-fixture-20.json')), RF = fx ? Object.assign({}, RW, { study: { 20: fx } }) : RW;
+      const d2 = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html?env=ref&years=20' }), w2 = d2.window; w2.scrollTo = () => {}; serve(w2);
+      if (fx) { const f0 = w2.fetch; w2.fetch = url => f0(url).then(r => /data\/releases\/v[\d.]+\.json$/.test(String(url).split('?')[0]) ? { ok: true, status: 200, json: () => r.json().then(j => Object.assign(j, { explore: Object.assign({}, j.explore, { study: { 20: '../../dev/tools/fixtures/study-fixture-20.json' } }) })) } : r); }
+      w2.eval(chartsSrc); w2.eval(findingsSrc); w2.eval([...w2.document.querySelectorAll('script')].filter(x => !x.src && !x.type)[0].textContent); await settle(w2); await settle(w2);
+      let n4 = 0; const sp4 = [];
+      for (const rd2 of ['release', 'mid', 'h1']) { const b = [...w2.document.querySelectorAll('#controls button')].filter(x => x.dataset.value === rd2)[0]; if (b) { b.click(); await settle(w2); }
+        w2.document.querySelectorAll('#suite details').forEach(x => { x.open = true; }); const x = spanProbs(w2.document, RF, 'suite study ' + rd2); n4 += x.n; sp4.push(...x.bad);
+        if (w2.document.querySelectorAll('#moves table').length !== 6) sp4.push('suite study ' + rd2 + ': the movement section drew ' + w2.document.querySelectorAll('#moves table').length + ' tables');
+        scan.push(...unmarked(w2.document.getElementById('content'), 'suite study ' + rd2)); }
+      add('session 12: on the visual suite page the measures study\'s numbers (cards and the six movement tables) equal the study data' + (fx ? ' (a two-seed test fixture: the release has no study yet)' : ''), sp4.length === 0 && n4 > 300, sp4.length ? sp4.slice(0, 4).join('; ') : n4 + ' numbers checked in 3 views'); }
     const un3 = scan.filter(s => s.startsWith('suite'));
     add('session 11: no percentage, dollar figure or price level is typed into the visual suite page', un3.length === 0, un3.length ? [...new Set(un3)].slice(0, 5).join('; ') : 'the whole page in 12 views'); }
   return out;
@@ -212,7 +224,7 @@ async function run(opts) {
 
 function unmarked(root, tag) {  /* text with a %, a $ amount or a times sign outside a numbered span, outside chart drawings and outside the page's own results text (checked by Phases 11-13) */
   const bad = []; if (!root) return bad;
-  const skip = el => el.closest('[data-src], [data-rel-text], svg, script, style, #rel-out, #rel-tg-out, #rel-path-out, #rel-more, #rel-src, #rel-live, #fd-old, .fd-ctl, .fd-dl, #rel-env-note, .fx-tip, select, option, #glossary');  /* d204: the shared glossary's definitions state design parameters, as on the front page (site/glossary.json; glossary.py --check) */
+  const skip = el => el.closest('[data-src], [data-paper], [data-rel-text], svg, script, style, #rel-out, #rel-tg-out, #rel-path-out, #rel-more, #rel-src, #rel-live, #fd-old, .fd-ctl, .fd-dl, #rel-env-note, .fx-tip, select, option, #glossary');  /* d204: the shared glossary's definitions state design parameters, as on the front page (site/glossary.json; glossary.py --check) */
   const walk = root.ownerDocument.createTreeWalker(root, 4); let n;
   while ((n = walk.nextNode())) { const t = n.nodeValue.replace(/95% (confidence )?interval/g, 'interval'); if (!/\d/.test(t)) continue; if (skip(n.parentElement)) continue;
     const m = t.match(/\d[\d,.]*\s?%|\$\s?\d|\d\s?×/); if (m) bad.push(tag + ': "' + t.trim().slice(0, 60) + '"'); }

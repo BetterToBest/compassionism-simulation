@@ -73,3 +73,11 @@ README.md	130	-1
 README.md	139	+1
 CONTRIBUTING.md	130	-1
 CONTRIBUTING.md	139	+1
+# session 12 (Oct 14, 2026): domtest gains three checks (the measure cards, the study view); the docs quote the count
+CONTRIBUTING.md	139	-1
+CONTRIBUTING.md	142	+1
+README.md	139	-1
+README.md	142	+1
+# session 12: the test 'public costs avoided under a tenth of the cost' moves from site/simpage.js into site/findings.js (F.avoidSmall), so the suite page shares it
+site/findings.js	0.1	+1
+site/simpage.js	0.1	-1
