@@ -1,0 +1,457 @@
+{
+ "_meta": {
+  "what": "the history check (ledger s146): the v5.4 no-programme run at Reference, without and with today's safety net, through a scripted 2008-2012 recession and 2020-2021, each seed paired with the same run without a recession; figures are shock minus no shock, percentage points of adults below the cost-of-living basket",
+  "seeds": 500,
+  "command": "node dev/tools/history_check.js --seeds=500 --engine=/w/engine --series=/w/sim/sources/history/history_series.json --out=/w/res/s165-5bf5bcc/history-check.json.tmp",
+  "series": "sources/history/history_series.json",
+  "engine": "/w/engine",
+  "manifest": {
+   "commit": "5bf5bcc0e31d10e8fab8443f4d3972988e4bdf3b",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "bed37dfc44ebea534098903eeaba8332c9c9837be1043eec615da7679449eedb",
+   "engineBlockSha256": "973e7ce472d159cdcd17fe2cb38d0fc9b4c604bc1db641e3298ef513155136da",
+   "indexSha256": "4e82ae901a797eacdfce32b9e889161aae155a2d06cb3ad1ef995e8ab09f8b64",
+   "engineSha256": "85425e6400d1fa08ad019584d65c22b9097c659e59a3de27442f926e1691ac2f"
+  },
+  "rule": "income multiplier = real median household income / base year; recession flag where below 1",
+  "seconds": 197
+ },
+ "episodes": {
+  "rec": {
+   "years": [
+    2007,
+    2008,
+    2009,
+    2010,
+    2011,
+    2012
+   ],
+   "script": [
+    {
+     "active": false,
+     "incomeMultiplier": 1
+    },
+    {
+     "active": true,
+     "incomeMultiplier": 0.9659136479080337
+    },
+    {
+     "active": true,
+     "incomeMultiplier": 0.9596310653655928
+    },
+    {
+     "active": true,
+     "incomeMultiplier": 0.9371741745755915
+    },
+    {
+     "active": true,
+     "incomeMultiplier": 0.9232722898008288
+    },
+    {
+     "active": true,
+     "incomeMultiplier": 0.9232722898008288
+    }
+   ],
+   "model": {
+    "noSN": {
+     "basket": [
+      {
+       "mean": 0,
+       "p5": 0,
+       "p95": 0
+      },
+      {
+       "mean": 1.531,
+       "p5": 0.2,
+       "p95": 3
+      },
+      {
+       "mean": 2.904,
+       "p5": 1.2,
+       "p95": 4.8
+      },
+      {
+       "mean": 4.922,
+       "p5": 2.8,
+       "p95": 7.2
+      },
+      {
+       "mean": 6.479,
+       "p5": 4.2,
+       "p95": 9
+      },
+      {
+       "mean": 6.897,
+       "p5": 4.6,
+       "p95": 9.4
+      }
+     ],
+     "wealth": [
+      {
+       "mean": 0,
+       "p5": 0,
+       "p95": 0
+      },
+      {
+       "mean": 0.094,
+       "p5": -0.2,
+       "p95": 0.4
+      },
+      {
+       "mean": 0.21,
+       "p5": -0.2,
+       "p95": 0.8
+      },
+      {
+       "mean": 0.479,
+       "p5": 0,
+       "p95": 1.4
+      },
+      {
+       "mean": 0.767,
+       "p5": 0,
+       "p95": 1.6
+      },
+      {
+       "mean": 1.041,
+       "p5": 0.2,
+       "p95": 2.2
+      }
+     ],
+     "basketLevelCalm": [
+      57.72,
+      57.18,
+      56.09,
+      55.2,
+      54.29,
+      53.28
+     ]
+    },
+    "SN": {
+     "basket": [
+      {
+       "mean": 0,
+       "p5": 0,
+       "p95": 0
+      },
+      {
+       "mean": 1.529,
+       "p5": 0.2,
+       "p95": 3
+      },
+      {
+       "mean": 2.894,
+       "p5": 1.2,
+       "p95": 4.8
+      },
+      {
+       "mean": 4.896,
+       "p5": 2.8,
+       "p95": 7.2
+      },
+      {
+       "mean": 6.432,
+       "p5": 4.2,
+       "p95": 8.8
+      },
+      {
+       "mean": 6.864,
+       "p5": 4.4,
+       "p95": 9.4
+      }
+     ],
+     "wealth": [
+      {
+       "mean": 0,
+       "p5": 0,
+       "p95": 0
+      },
+      {
+       "mean": 0.101,
+       "p5": 0,
+       "p95": 0.4
+      },
+      {
+       "mean": 0.198,
+       "p5": -0.2,
+       "p95": 0.8
+      },
+      {
+       "mean": 0.471,
+       "p5": 0,
+       "p95": 1.2
+      },
+      {
+       "mean": 0.75,
+       "p5": 0,
+       "p95": 1.6
+      },
+      {
+       "mean": 1.036,
+       "p5": 0.2,
+       "p95": 2.2
+      }
+     ],
+     "basketLevelCalm": [
+      57.72,
+      57.18,
+      56.2,
+      55.26,
+      54.38,
+      53.35
+     ]
+    }
+   },
+   "data": {
+    "2007": {
+     "official": 0,
+     "spmColumbia": 0,
+     "beforeTransfers": 0,
+     "spmCensus": null,
+     "unemployment": 4.6,
+     "incomeMultiplier": 1
+    },
+    "2008": {
+     "official": 0.7,
+     "spmColumbia": 0.34,
+     "beforeTransfers": 1.3,
+     "spmCensus": null,
+     "unemployment": 5.8,
+     "incomeMultiplier": 0.966
+    },
+    "2009": {
+     "official": 1.8,
+     "spmColumbia": 0.73,
+     "beforeTransfers": 5.03,
+     "spmCensus": null,
+     "unemployment": 9.3,
+     "incomeMultiplier": 0.96
+    },
+    "2010": {
+     "official": 2.6,
+     "spmColumbia": 1.52,
+     "beforeTransfers": 5.67,
+     "spmCensus": null,
+     "unemployment": 9.6,
+     "incomeMultiplier": 0.937
+    },
+    "2011": {
+     "official": 2.5,
+     "spmColumbia": 1.64,
+     "beforeTransfers": 5.67,
+     "spmCensus": null,
+     "unemployment": 8.9,
+     "incomeMultiplier": 0.923
+    },
+    "2012": {
+     "official": 2.5,
+     "spmColumbia": 1.56,
+     "beforeTransfers": 5.77,
+     "spmCensus": null,
+     "unemployment": 8.1,
+     "incomeMultiplier": 0.923
+    }
+   }
+  },
+  "c20": {
+   "years": [
+    2019,
+    2020,
+    2021
+   ],
+   "script": [
+    {
+     "active": false,
+     "incomeMultiplier": 1
+    },
+    {
+     "active": true,
+     "incomeMultiplier": 0.9797233942803563
+    },
+    {
+     "active": true,
+     "incomeMultiplier": 0.9759728082512893
+    }
+   ],
+   "model": {
+    "noSN": {
+     "basket": [
+      {
+       "mean": 0,
+       "p5": 0,
+       "p95": 0
+      },
+      {
+       "mean": 1.531,
+       "p5": 0.2,
+       "p95": 3
+      },
+      {
+       "mean": 2.904,
+       "p5": 1.2,
+       "p95": 4.8
+      }
+     ],
+     "wealth": [
+      {
+       "mean": 0,
+       "p5": 0,
+       "p95": 0
+      },
+      {
+       "mean": 0.094,
+       "p5": -0.2,
+       "p95": 0.4
+      },
+      {
+       "mean": 0.21,
+       "p5": -0.2,
+       "p95": 0.8
+      }
+     ],
+     "basketLevelCalm": [
+      57.72,
+      57.18,
+      56.09
+     ]
+    },
+    "SN": {
+     "basket": [
+      {
+       "mean": 0,
+       "p5": 0,
+       "p95": 0
+      },
+      {
+       "mean": 1.529,
+       "p5": 0.2,
+       "p95": 3
+      },
+      {
+       "mean": 2.894,
+       "p5": 1.2,
+       "p95": 4.8
+      }
+     ],
+     "wealth": [
+      {
+       "mean": 0,
+       "p5": 0,
+       "p95": 0
+      },
+      {
+       "mean": 0.101,
+       "p5": 0,
+       "p95": 0.4
+      },
+      {
+       "mean": 0.198,
+       "p5": -0.2,
+       "p95": 0.8
+      }
+     ],
+     "basketLevelCalm": [
+      57.72,
+      57.18,
+      56.2
+     ]
+    }
+   },
+   "data": {
+    "2019": {
+     "official": 0,
+     "spmColumbia": null,
+     "beforeTransfers": null,
+     "spmCensus": 0,
+     "unemployment": 3.7,
+     "incomeMultiplier": 1
+    },
+    "2020": {
+     "official": 1,
+     "spmColumbia": null,
+     "beforeTransfers": null,
+     "spmCensus": -2.6,
+     "unemployment": 8.1,
+     "incomeMultiplier": 0.98
+    },
+    "2021": {
+     "official": 1.1,
+     "spmColumbia": null,
+     "beforeTransfers": null,
+     "spmCensus": -4,
+     "unemployment": 5.3,
+     "incomeMultiplier": 0.976
+    }
+   }
+  }
+ },
+ "comparisons": [
+  {
+   "n": 1,
+   "what": "Direction, recession: basket poverty with the safety net higher in 2009 and 2010 than in 2007",
+   "model": [
+    2.89,
+    4.9
+   ],
+   "data": [
+    1.8,
+    2.6
+   ],
+   "verdict": "matches"
+  },
+  {
+   "n": 2,
+   "what": "Size, recession: the rise at the model's peak between half and double the official rise at its 2010 peak (1.3 to 5.2 points)",
+   "model": 6.86,
+   "modelYear": 2012,
+   "data": 2.6,
+   "verdict": "same direction, different size"
+  },
+  {
+   "n": 3,
+   "what": "Timing: the model's peak within one year of 2010",
+   "model": 2012,
+   "data": 2010,
+   "verdict": "does not match"
+  },
+  {
+   "n": 4,
+   "what": "Recovery, two years after the peak: share of the rise gone (reported, no verdict)",
+   "model": null,
+   "modelNote": "the model's peak is less than two years before the end of the window (2012)",
+   "data": 3.85,
+   "verdict": "reported"
+  },
+  {
+   "n": 5,
+   "what": "How much the safety net absorbs, 2007 to 2012: (rise without - rise with) / rise without, %; band: within 20 points of the data",
+   "model": 0.48,
+   "modelRises": [
+    6.9,
+    6.86
+   ],
+   "data": 72.96,
+   "dataRises": [
+    5.77,
+    1.56
+   ],
+   "verdict": "same direction, different size",
+   "note": "the model's transfers are SNAP, EITC and the refundable CTC (unemployment insurance is in both arms); Columbia's \"before transfers\" also removes unemployment insurance, Social Security, housing aid and the tax system"
+  },
+  {
+   "n": 6,
+   "what": "2020, official-style measure (as amended before any run: basket poverty without SNAP and tax credits, which the official measure leaves out): higher in 2020 than in 2019",
+   "model": 1.53,
+   "data": 1,
+   "verdict": "matches"
+  },
+  {
+   "n": 7,
+   "what": "2020, supplemental measure (reported, no verdict: the data fell because of payments the engine does not have)",
+   "model": 1.53,
+   "data": -2.6,
+   "verdict": "reported"
+  }
+ ]
+}
