@@ -314,7 +314,7 @@ footer p{margin:0 0 6px}
     if (!R.suite[st.years]) st.years = Object.keys(R.suite)[0];
     var host = $('suite'), y = window.scrollY; host.innerHTML = '';
     var env = R.meta.envs[st.env];
-    host.appendChild(para('<strong>' + esc(env.name) + '</strong>: ' + esc(env.about) + '. ' + st.years + ' years; Compassionism in ' + esc(READ_LONG[st.read]) + '.', 'fx-note su-sub'));
+    var note = para('<strong>' + esc(env.name) + '</strong>: ' + esc(env.about) + '. ' + st.years + ' years; Compassionism in ' + esc(READ_LONG[st.read]) + '.', 'fx-note su-sub'); note.setAttribute('data-rel-text', '1'); host.appendChild(note);  /* the release file's own words */
     [indices, tiers, floor, parts, who, measures, spread, limits].forEach(function (fn) { host.appendChild(fn()); });
     window.scrollTo(0, y);
   }

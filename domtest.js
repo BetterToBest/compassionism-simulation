@@ -1221,6 +1221,50 @@ function phase14(done) {
     const sc = require(path.join(path.dirname(FILE), 'dev', 'tools', 'check_stale_claims.js')).run();
     check('v5.2.2 (audit A2): no retired claim reappears on a public page (dev/tools/check_stale_claims.js; the replication page\'s version history and the notes headed as describing the v4.22 engine are history and skipped)', sc.pass,
       sc.pass ? sc.claims + ' retired claims, ' + sc.files + ' files' : sc.hits.slice(0, 4).join('; '));
-    done(); })
-    .catch(e => { check('v5.2.1: the figure check runs', false, String(e && e.stack || e).slice(0, 300)); done(); });
+    phase15(done); })
+    .catch(e => { check('v5.2.1: the figure check runs', false, String(e && e.stack || e).slice(0, 300)); phase15(done); });
+}
+
+/* ── Phase 15 (session 11, ledger s161): the visual suite page (suite.html), a stand-alone page that reads the newest release through data/manifest.json and that
+ * release's suite series. Phase 14 (dev/tools/check_figures.js) checks every number on it against the data; this phase checks how it behaves: the page opens the
+ * newest release, the address carries the view (environment, years, backing reading, group of adults) both ways, every section, chart and table draws, the tier
+ * charts have one column a year, the charts answer the keyboard, every table has its downloads, no other page links to it, and a release without the suite
+ * series gets a plain note instead of a broken page. */
+function phase15(done) {
+  console.log('\n--- Phase 15: the visual suite page (session 11) ---');
+  const ROOT = path.dirname(FILE), rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  function open(query, tweak) {
+    const w = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html' + (query || '') }).window, errs = [];
+    w.scrollTo = () => {}; w.addEventListener('error', e => errs.push(String(e.message)));
+    w.fetch = url => { const u = String(url).split('?')[0].replace(/^\.?\//, ''), p = path.join(ROOT, u);
+      if (!fs.existsSync(p)) return Promise.resolve({ ok: false, status: 404, json: () => Promise.reject(new Error('404')) });
+      let j = JSON.parse(fs.readFileSync(p, 'utf8')); if (tweak) j = tweak(u, j) || j; return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(j) }); };
+    w.eval(rd('site/charts.js')); w.eval(rd('site/findings.js'));
+    try { w.eval([...w.document.querySelectorAll('script')].filter(x => !x.src && !x.type)[0].textContent); } catch (e) { errs.push(String(e.message)); }
+    return { w, errs };
+  }
+  const later = ms => new Promise(r => setTimeout(r, ms));
+  (async () => {
+    const M = JSON.parse(rd('data/manifest.json')), newest = M.releases.filter(r => r.status === 'latest')[0] || M.releases.filter(r => r.status === 'current')[0];
+    const a = open('?env=adv&years=40&read=h1&grp=non'); await later(400); const d = a.w.document, S = a.w.suiteState();
+    const pressed = [...d.querySelectorAll('button[aria-pressed="true"]')].map(b => b.dataset.value).sort().join(',');
+    check('session 11: the suite page opens the newest release in the manifest (v' + newest.version + ') and reads the view from the address (environment, years, backing reading, group of adults)',
+      S.R && S.R.version === (newest.figuresFrom || newest.version) && pressed === '40,adv,h1,non' && a.errs.length === 0, 'release v' + (S.R && S.R.version) + '; pressed ' + pressed + (a.errs.length ? '; errors: ' + a.errs.join('; ') : ''));
+    const secs = d.querySelectorAll('.su-sec').length, svgs = d.querySelectorAll('.su-sec svg.fx-svg').length, tierCols = [...d.querySelectorAll('#tiers svg')].map(s => s.querySelectorAll('.fx-col').length);
+    const tables = d.querySelectorAll('#suite table').length, dl = d.querySelectorAll('#suite .fx-tools button').length;
+    check('session 11: every section, chart and table draws; each ladder chart has one column a year; every table has CSV and JSON downloads',
+      secs === 8 && svgs === 11 && tierCols.join() === '40,40' && tables === 7 && dl === 2*tables, secs + ' sections, ' + svgs + ' charts, ladder columns ' + tierCols.join(' and ') + ', ' + tables + ' tables, ' + dl + ' download buttons');
+    [...d.querySelectorAll('#controls button')].filter(b => b.dataset.value === 'ref' || b.dataset.value === '20' || b.dataset.value === 'release').forEach(b => b.click());
+    [...d.querySelectorAll('#tiers button')].filter(b => b.dataset.value === 'part')[0].click(); await later(100);
+    const q = new URLSearchParams(a.w.location.search), cols20 = [...d.querySelectorAll('#tiers svg')].map(s => s.querySelectorAll('.fx-col').length).join();
+    check('session 11: changing the view writes it to the address, so any view can be shared', q.get('env') === 'ref' && q.get('years') === '20' && q.get('read') === 'release' && q.get('grp') === 'part' && cols20 === '20,20', a.w.location.search + '; ladder columns ' + cols20);
+    const host = d.querySelector('#tiers .fx-chart'); host.onkeydown({ key: 'ArrowRight', preventDefault() {} }); const tip = d.querySelector('.fx-tip.on');
+    check('session 11: the charts answer the keyboard (an arrow key on a ladder chart shows Year 1 with its six steps)', !!tip && /Year 1/.test(tip.textContent) && tip.querySelectorAll('.fx-tip-r').length === 6, tip ? tip.textContent.slice(0, 80) : 'no tooltip');
+    const linked = ['index.html', 'findings.html', 'study.html', 'replication.html', 'earlier-engine.html'].filter(f => /href="(\.\/)?suite\.html/.test(rd(f)));
+    check('session 11: the suite page stands alone: no other page links to it yet', linked.length === 0, linked.length ? 'linked from ' + linked.join(', ') : 'no links');
+    const b = open('', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) { j = Object.assign({}, j, { explore: Object.assign({}, j.explore) }); delete j.explore.suite; return j; } }); await later(300);
+    const ban = b.w.document.querySelector('#suite .fx-banner');
+    check('session 11: a release without the suite series shows a plain note, not a broken page', !!ban && /no suite series/.test(ban.textContent) && b.errs.length === 0, ban ? ban.textContent.slice(0, 90) : 'no note');
+    done();
+  })().catch(e => { check('session 11: the suite page checks run', false, String(e && e.stack || e).slice(0, 300)); done(); });
 }
