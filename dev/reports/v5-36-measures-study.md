@@ -8,6 +8,31 @@ Oct 14, 2026. Plain-words report for Duke. The plans behind this work are `dev/p
 2. **The visual suite page has a second pass** (not yet linked from anywhere, as before). Each of the paper's six measures now has its own card: the question in plain words, the answer for no program and Compassionism, how it is computed here, how that differs from your paper, what it does not show, and a status badge: *Measured*, *Measured differently from the paper*, *Partly modelled* or *Not modelled*. A new section, "Who gains, and how people move", fills in when the study's data is added. Until then, the cards that need the study say so.
 3. **IPBI now shows what the model does have:** the public costs avoided (prisons, hospital and psychiatric stays, homelessness), the same figures as the main page's cost section, beside the program's cost. In the Stress Test the homelessness figure is negative (more people unhoused), and the card says so in words.
 
+## First results (20 years; the 40-year results follow)
+
+All figures are for Year 20, as means over 500 paired runs, in today's prices. "Main reading" means the Source's payout is mostly new money; "every dollar backed" means new output backs all of it, so prices do not rise.
+
+| | Reference | Adverse | Stress Test |
+|---|---|---|---|
+| EPPM, participants (main reading) | 1.45 | 1.69 | 1.56 |
+| EPPM, participants in the poorest fifth | 2.10 | 2.55 | 2.26 |
+| EPPM, adults who do not take part (main reading) | 0.91 | 0.93 | 0.95 |
+| EPPM, adults who do not take part (every dollar backed) | 1.08 | 1.11 | 1.05 |
+| Median monthly surplus above basic living, no program → Compassionism | $280 → $1,751 | $0 → $264 | $0 → $0 |
+| Adults with no surplus at all, no program → Compassionism | 46% → 19% | 74% → 43% | 74% → 64% |
+| Years in Crisis per adult (of 20), no program → Compassionism | 4.1 → 0.8 | 5.4 → 1.3 | 5.4 → 4.2 |
+| Of adults starting in Crisis, still there every year | 88% → 56% | 100% → 65% | 100% → 91% |
+
+What this says in plain words:
+
+- **For the people taking part, money goes about one and a half times as far**, and about twice as far for the poorest fifth. Most of the gain is the allowance itself (about 27 to 43 points of the gain for participants) and the community price cuts (about 20 to 28 points). Cash income, after the program's price rise is taken out, is about the same as without the program.
+- **People who do not take part pay for it through prices in the main reading.** Their money goes about 5% to 9% less far than without the program. When every dollar is backed by new output, they gain instead (5% to 11%). This is the clearest picture so far of why the backing assumption matters.
+- **Crisis stops being a trap at Reference and Adverse.** Without the program, most adults who start in Crisis are still there every year for 20 years. With it, about a third to almost half leave. In the Stress Test the change is small.
+- **The ladder and Acre Equity.** In the main reading at Reference, 3.4% of adults have two years or more of basic living on the ladder; adding Acre Equity, 7.8% (no program: 48.0%). The top of the ladder falls because savings lose their worth as prices rise. With every dollar backed, 76.9% reach two years with equity, against 48.0% with no program. Community-housing members' median Acre Equity is about 150 days of basic living.
+- **The wealth Gini misses drain.** Net of a year's rent and interest, wealth is more unequal than the ordinary Gini shows (Reference, main reading: 0.566 instead of 0.491; no program: 0.759 instead of 0.754). The program narrows both.
+- **A warning the page now shows: in the Stress Test's main reading, the program leaves the poorest fifth slightly worse on the 30-day line** (75.1% under 30 days, against 69.2% with no program), and the richest fifth much worse (20.3% against 7.2%), because the price rise outruns the support. This is a model result reported as it is, not hidden.
+- **Interest on debt is zero in this configuration** (the model's saving rule charges no interest on debt), so the drain is rent only and EPPM's interest part is zero.
+
 ## Things to check against your vision
 
 These are flagged, not asked: you delegated the math, but each touches a claim in your BLEI paper. Please say if any misrepresents what you meant.
@@ -33,4 +58,4 @@ These are flagged, not asked: you delegated the math, but each touches a claim i
 
 ## What happens next
 
-When the pod finishes, its six files are copied into the release data, the page fills in, and this report gains the results. Linking the page from the findings explorer waits for your approval, in a separate pull request.
+The 20-year files are in the release data and the page fills in at 20 years; the 40-year files are added when the pod finishes. Linking the page from the findings explorer waits for your approval, in a separate pull request.
