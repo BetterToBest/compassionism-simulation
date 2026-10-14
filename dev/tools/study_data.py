@@ -6,6 +6,10 @@ Usage: python3 dev/tools/study_data.py           writes data/studies/s137.json
 The page (study.html) holds no figure. Every number it shows is a path into the file written here, printed through site/findings.js, and
 dev/tools/check_figures.js compares each one with the data. The figures are the study's own (dev/reports/v5-30-s137-results.md), copied, not recomputed;
 the only arithmetic here is a sign change (a fall shown as a positive number of points), recorded under "drv".
+
+Session 13 (Oct 2026): the page also carries "Tested against history: 2008 and 2020". Its figures are the 500-seed history check's own, copied from
+dev/runs/history/history-check.json (report dev/reports/v5-34-history-check.md) under "hist"; the only arithmetic is a count of the seven verdicts, recorded
+under hist.count. The words of the verdicts are the file's.
 """
 import json, os, re, sys
 
@@ -37,6 +41,24 @@ def engine_constants():
     g = lambda pat: float(re.search(pat, h).group(1))
     return {'ccoRelief': round(100*g(r'CCO_RELIEF_AT_REF:([0-9.]+)'), 6), 'ccoCap': round(100*g(r'CCO_RELIEF_CAP:([0-9.]+)'), 6),  # percent, as the p0 format reads them
             'ptfDamp': g(r'inflRate\*=\(1-ptfAdoptFrac\*([0-9.]+)\)'), 'pthDamp': g(r'inflRate\*=\(1-pthMemberFrac\*([0-9.]+)\)')}
+
+
+HIST = 'dev/runs/history/history-check.json'
+
+
+def hist():
+    """the history check's seven comparisons, copied from the 500-seed file (never retyped); the verdict words are the file's own"""
+    H = rj(HIST)
+    if H['_meta']['seeds'] != 500:
+        sys.exit('study_data: %s was not run on 500 seeds' % HIST)
+    C = {'c%d' % c['n']: c for c in H['comparisons']}
+    if sorted(C) != ['c%d' % i for i in range(1, 8)]:
+        sys.exit('study_data: the history check does not have its seven comparisons')
+    band = int(re.search(r'within (\d+) points', C['c5']['what']).group(1))  # the pass band fixed in advance, read from the comparison's own words
+    tally = lambda v: sum(1 for c in C.values() if c['verdict'] == v)  # a count of the file's verdicts
+    return {'seeds': H['_meta']['seeds'], 'commit': H['_meta']['manifest']['commit'], 'command': H['_meta']['command'], 'band': band,
+            'count': {'matches': tally('matches'), 'diff': tally('same direction, different size'), 'no': tally('does not match'), 'rep': tally('reported')},
+            'c': C}
 
 
 def pick(row):
@@ -73,8 +95,9 @@ def build():
          'summary': 'The 500-seed study of three health systems with and without Compassionism, the price channel, and which inputs explain the spread.',
          'meta': {'seeds': 500, 'agents': 500, 'years': 20, 'envs': {e: ENVN[e] for e in ENVS}, 'prov': prov,
                   'sobolSeeds': so['seeds'], 'sobolBase': so['N'], 'morrisPaths': mo['R'], 'morrisSeeds': mo['seeds'],
-                  'report': 'dev/reports/v5-30-s137-results.md', 'runs': 'dev/runs/s137/ and dev/runs/s137b/'},
-         'v': V, 'flat': FL, 'thx': TX, 'sobol': sobol, 'morris': morris, 'drv': drv, 'unsourced': engine_constants(),
+                  'report': 'dev/reports/v5-30-s137-results.md', 'runs': 'dev/runs/s137/ and dev/runs/s137b/',
+                  'history': {'report': 'dev/reports/v5-34-history-check.md', 'file': HIST}},
+         'v': V, 'flat': FL, 'thx': TX, 'hist': hist(), 'sobol': sobol, 'morris': morris, 'drv': drv, 'unsourced': engine_constants(),
          'chart': {'inputs': SOB_IN, 'inputNames': SOB_NAME, 'outcomes': SOB_OUT, 'outcomeNames': OUT_NAME}}
     R.update(content(R))
     return R
@@ -243,6 +266,29 @@ def content(R):
                              {'p': ['PTF ', N('unsourced.ptfDamp', 'n1'), ', PTH ', N('unsourced.pthDamp', 'n1'), ' (times the share of people who joined)']},
                              txt('None found. The decision log records the search; no source gives its size.'),
                              txt('Only in one optional row, off by default and labeled "the two former stand-ins on"; no main row. Raising both changed that row and no other.')]]})
+
+    # Table 10. the history check (session 13): each comparison fixed in advance, as changes (points), with the file's verdict
+    h = lambda k, p: 'hist.c.c%d.%s' % (k, p)
+    HV = lambda k, extra='': txt(R['hist']['c']['c%d' % k]['verdict'] + extra)
+    rows = [
+        [txt('Poverty is higher in 2009 and 2010 than in 2007'),
+         cell(N(h(1, 'model.0'), 's2'), ' and ', N(h(1, 'model.1'), 's2')), cell(N(h(1, 'data.0'), 's1'), ' and ', N(h(1, 'data.1'), 's1'), ' (official rate)'), HV(1)],
+        [txt('The rise at the model\'s peak is between half and double the official rise at its peak'),
+         cell(N(h(2, 'model'), 's2'), ' (peak in ', N(h(2, 'modelYear'), 'n0'), ')'), cell(N(h(2, 'data'), 's1'), ' (peak in ', N(h(3, 'data'), 'n0'), ')'), HV(2)],
+        [txt('The model\'s peak falls within one year of the official rate\'s peak'), cell(N(h(3, 'model'), 'n0')), cell(N(h(3, 'data'), 'n0')), HV(3)],
+        [txt('Share of the rise gone two years after the peak (no verdict was set)'),
+         txt('not available: the model\'s peak is the last year of the window') if R['hist']['c']['c4']['model'] is None else cell(N(h(4, 'model'), 'p2')),
+         cell(N(h(4, 'data'), 'p2')), HV(4)],
+        [cell('Share of the rise in poverty that the safety net absorbs, 2007 to 2012 (to be within ', N('hist.band', 'n0'), ' points of the data)'),
+         cell(N(h(5, 'model'), 'p2'), s=['rise ', N(h(5, 'modelRises.0'), 's2'), ' without the safety net, ', N(h(5, 'modelRises.1'), 's2'), ' with it']),
+         cell(N(h(5, 'data'), 'p2'), s=['rise ', N(h(5, 'dataRises.0'), 's2'), ' before taxes and transfers, ', N(h(5, 'dataRises.1'), 's2'), ' after']), HV(5, '; in substance a miss (below)')],
+        [txt('2020: poverty is higher than in 2019, on the official-style measure (the model without SNAP and tax credits, which the official measure leaves out)'),
+         cell(N(h(6, 'model'), 's2')), cell(N(h(6, 'data'), 's1'), ' (official rate)'), HV(6)],
+        [txt('2020, supplemental measure (no verdict was set: the data fell because of payments the model does not have)'),
+         cell(N(h(7, 'model'), 's2')), cell(N(h(7, 'data'), 's1'), ' (Census supplemental rate)'), HV(7)],
+    ]
+    tables.append({'id': 'history', 'title': 'Tested against history: the seven comparisons fixed in advance, as changes in points',
+                   'columns': ['Comparison', 'Model: change in basket poverty', 'Data: change in the poverty rate', 'Verdict (as the file gives it)'], 'rows': rows})
     T['tables'] = tables
 
     X = {}
@@ -287,6 +333,22 @@ def content(R):
                    'The price response drives the "too little wealth" result and is not calibrated to outside evidence. The cost-of-living line is the unweighted state average. '
                    'The work rules of SNAP (food stamps) and a separate Child Tax Credit take-up are not modeled. The community businesses\' (PTF) health-sector cut under single payer is an upper reading. '
                    'The model has not yet been reviewed by an independent economist.')
+    X['history'] = ('A separate check, run on the same model: it was put through a scripted 2008 to 2012 recession and through 2020 and 2021, and compared with what happened. '
+                    'The seven comparisons below, and what would count as a match, were fixed before the model was run, and no constant was adjusted to fit the past. '
+                    '<strong>The check reads changes, not levels.</strong> The model\'s adults are built from 2022 data, so it asks how a population like today\'s would respond to a shock like 2008 or 2020, not whether it reproduces those years. '
+                    'The model\'s figure is the rise in basket poverty (adults below the cost of living) with today\'s safety net, the shock run minus the same run with no recession, over {{hist.seeds|int}} paired seeds; the data\'s is the change from the year before the shock. '
+                    'In short: the direction is right (poverty rises in both shocks, as in the data), the size is too big (a rise of {{hist.c.c2.model|s2}} points at the model\'s peak against {{hist.c.c2.data|s1}} in the official rate) and the peak comes too late. '
+                    'Verdicts: matches {{hist.count.matches|int}}; same direction, different size {{hist.count.diff|int}}; does not match {{hist.count.no|int}}; reported with no verdict {{hist.count.rep|int}}.')
+    X['cap.history'] = ('<strong>The clearest miss is the safety net.</strong> In the data the safety net absorbed about {{hist.c.c5.data|p0}} of the recession\'s rise in poverty (a rise of {{hist.c.c5.dataRises.0|s2}} points before taxes and transfers, {{hist.c.c5.dataRises.1|s2}} after). '
+                        'In the model it absorbs about {{hist.c.c5.model|p1}} (a rise of {{hist.c.c5.modelRises.0|s2}} points without the safety net, {{hist.c.c5.modelRises.1|s2}} with it). '
+                        'The file\'s label is "same direction, different size", because the model\'s share is just above zero and the rule fixed in advance gives that label to any positive share; the gap is far outside the band of {{hist.band|n0}} points, so in substance it is a miss. '
+                        'Three reasons, all in the model\'s design: (a) SNAP and the tax credits are paid on last year\'s income, so they arrive a year late; '
+                        '(b) the model\'s cost-of-living line is high, and benefits of a few thousand dollars seldom lift someone over it (they shrink the gap instead); '
+                        '(c) the data\'s "before transfers" removes far more than the model\'s three programs (SNAP, the Earned Income Tax Credit and the refundable Child Tax Credit): it also removes unemployment insurance, Social Security, housing aid and the tax system, while in the model unemployment insurance is in both runs and the others do not respond to the shock. '
+                        'So in a downturn the model\'s baseline safety net is weaker than the real one, and a comparison of Compassionism against today\'s safety net in a recession should be read with that in mind. '
+                        'The model has no stimulus payments or weekly unemployment top-up, which is why the 2020 supplemental rate (reported, no verdict) fell in the data and rose in the model. '
+                        'The data are outside figures, not verified against Census, BLS or the Federal Reserve by this repository. '
+                        'Plain-words report: <a href="dev/reports/v5-34-history-check.md">dev/reports/v5-34-history-check.md</a>; data: <a href="dev/runs/history/history-check.json">dev/runs/history/history-check.json</a>.')
     X['asof'] = 'Study run on a rented server on {{meta.seeds|int}} paired seeds; the follow-up Sobol ran in Stress only.'
     T['text'] = X
     T['sections'] = [
@@ -297,6 +359,7 @@ def content(R):
         {'id': 'prices', 'title': 'The price channel', 'lead': 'price', 'tables': ['price-channel'], 'note': 'cap.price'},
         {'id': 'depends', 'title': 'What the results depend on', 'lead': 'sens', 'chart': 'chart', 'tables': ['morris', 'sobol'], 'note': 'cap.sobol'},
         {'id': 'true', 'title': 'What would have to be true (Claude\'s reading)', 'lead': 'true', 'tables': ['wwtbt', 'unsourced'], 'note': 'cap.true'},
+        {'id': 'history', 'title': 'Tested against history: 2008 and 2020', 'lead': 'history', 'tables': ['history'], 'note': 'cap.history'},
         {'id': 'limits', 'title': 'Limits and what is still open', 'lead': 'limits', 'tables': [], 'note': None},
     ]
     return T

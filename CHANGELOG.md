@@ -6,6 +6,18 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## Unreleased (after v5.6.0; the version stays 5.6.0 until Duke assigns one)
+
+Pages and data only. No engine line and no figure of any release changes (`no_figure_change.py` shows only added numbers, each allowed; the guard test is untouched).
+- **Navigation.** The top navigation of the findings, suite and replication pages says "Health Study" (the file is still `study.html`); the study page's navigation lists Findings, Health Study and Replication like the others; the simulation page's header gains Findings and Health Study beside Replication and Wiki.
+- **Findings page: "Reading the measures".** A collapsible section under the headline numbers carries the two reading notes from the simulation page: how to read "too little wealth", and what happens if savings kept up with prices. The second paragraph is filled from the release data, for the chosen environment and horizon, and reads word for word as the simulation page does. The release file (`data/releases/v5.6.json`) gains the savings-indexed run's thirty catalogue figures (with and without the program, the change and its interval, the interest and the part above inflation, in three environments at 20 and 40 years) and the real yield (`inputs.savRealYield`, read from the page's own constant); `check_figures.js` checks each against its panel and checks the two pages' words against each other.
+- **Suite page defaults.** `suite.html` opens at 40 years on the "Every dollar backed" reading, with one plain sentence saying this is the optimistic end and that the headline figures elsewhere stay at the cautious end. The Main and Middle readings and the 20-year view are one click away; the page still carries `noindex` and nothing links to it.
+- **Health Study page: "Tested against history: 2008 and 2020".** The 500-seed history check (`dev/reports/v5-34-history-check.md`) is now public: the seven comparisons fixed in advance, read as changes and not levels, with the verdicts as the file gives them, and the safety-net miss stated plainly with its three reasons. Every figure comes from `dev/runs/history/history-check.json` through `data/studies/s137.json` (`dev/tools/study_data.py`); `check_figures.js` checks the seven comparisons against the file. The replication page links to it.
+- **Tools.** `no_figure_change.py` now tells a number that moved from a number that was added to a data file: it keeps one hash per chunk of each data file, fails if an old chunk changed, and lists added chunks, which pass only when named in `no_figure_change_allow.txt`. domtest gains Phase 16 (links, reading notes, history section, pinned runners) and two suite-default checks; `check_figures.js` gains three.
+- **CI.** `apply-upload.yml` is pinned to ubuntu-24.04, like `checks.yml` and `release.yml`, ahead of the Oct 19 `ubuntu-latest` change.
+
+---
+
 ## v5.5.0 Release Notes
 
 **Released as v5.5.0 (Oct 2026): the 500-seed health and sensitivity study on its own page.** A new page, `study.html`, shows the results of the paid 500-seed study (three health systems, three economies, with and without Compassionism) and its sensitivity analysis. No engine line changes and no figure of the v5.4 release changes; the simulation page and findings explorer show the same figures. Plain-words report for Duke: `dev/reports/v5-30-s137-results.md`.

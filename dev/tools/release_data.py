@@ -143,6 +143,8 @@ EXTRA = [  # key, label, panel key in rows.release, unit, format, what it means
     ('hrs', 'Change in hours worked', 'hrs', '%', 's1', 'How much less (or more) people work, by the rate measured in the largest US study of unconditional cash.'),
     ('med', 'Median savings at the last year', 'medWealth', 'dollars, today’s prices', 'usd', 'The savings of the adult in the middle, with the program.')]
 
+SAV_MEANING = 'At the end of the run, the share of adults with too little net wealth when every adult\u2019s savings earn the year\u2019s price rise plus the real yield on inflation-protected US Treasury bonds, in both runs.'
+
 def catalogue(R, Y):
     out = []
     P = R['panels'][Y]
@@ -170,6 +172,16 @@ def catalogue(R, Y):
             if has(E['rows']['release'], 'd53.' + pk):
                 out.append({'id': '%s.%s.%s.change' % (e, Y, k), 'label': lbl + ', change against no program', 'src': base + '.rows.release.d53.' + pk + '.0', 'unit': 'percentage points', 'f': 's1', 'env': e, 'years': int(Y), 'basis': 'derived',
                             'ci': [base + '.rows.release.d53.' + pk + '.1', base + '.rows.release.d53.' + pk + '.2'], 'meaning': 'The paired difference over the same 500 runs; the 95% interval is beside it. Negative means fewer people below the line.'})
+        if 'sav' in E['rows'] and 'sv' in E.get('bases', {}):  # session 13: the savings-indexed reading (savings earn the year's price rise plus the real yield), with and without the program, and its interest
+            sp, sb = 'panels.%s.envs.%s.rows.sav' % (Y, e), 'panels.%s.envs.%s.bases.sv' % (Y, e)
+            out.append({'id': '%s.%s.sav.with' % (e, Y), 'label': 'Too little wealth if savings kept up with prices, with Compassionism', 'src': sp + '.pov', 'unit': '% of adults at the last year', 'f': 'p1', 'env': e, 'years': int(Y), 'basis': 'simulated', 'meaning': SAV_MEANING})
+            out.append({'id': '%s.%s.sav.without' % (e, Y), 'label': 'Too little wealth if savings kept up with prices, no program', 'src': sb + '.pov', 'unit': '% of adults at the last year', 'f': 'p1', 'env': e, 'years': int(Y), 'basis': 'simulated', 'meaning': SAV_MEANING})
+            out.append({'id': '%s.%s.sav.change' % (e, Y), 'label': 'Too little wealth if savings kept up with prices, change against no program', 'src': sp + '.dPov.0', 'unit': 'percentage points', 'f': 's1', 'env': e, 'years': int(Y), 'basis': 'derived',
+                        'ci': [sp + '.dPov.1', sp + '.dPov.2'], 'meaning': 'The paired difference over the same 500 runs, both runs with savings that earn the year\u2019s price rise plus the real yield; the 95% interval is beside it.'})
+            out.append({'id': '%s.%s.sav.int' % (e, Y), 'label': 'Interest on savings in the savings-indexed reading', 'src': sp + '.svInt', 'unit': 'dollars a year per adult, today\u2019s prices', 'f': 'usd', 'env': e, 'years': int(Y), 'basis': 'simulated',
+                        'meaning': 'What the interest would come to for an adult in a year, the year\u2019s price rise plus the real yield; the model does not say who would pay it.'})
+            out.append({'id': '%s.%s.sav.intR' % (e, Y), 'label': 'Interest on savings above the price rise in the savings-indexed reading', 'src': sp + '.svIntR', 'unit': 'dollars a year per adult, today\u2019s prices', 'f': 'usd', 'env': e, 'years': int(Y), 'basis': 'simulated',
+                        'meaning': 'The part of that interest above the price rise: the real yield alone.'})
         if 'h1' in E['rows']:
             out.append({'id': '%s.%s.h1pov' % (e, Y), 'label': 'Too little wealth if every Source dollar were backed (H1)', 'src': 'panels.%s.envs.%s.rows.h1.pov' % (Y, e), 'unit': '% of adults at the last year', 'f': 'p1', 'env': e, 'years': int(Y), 'basis': 'simulated',
                         'meaning': 'The optimistic end: if new output backed every dollar the Source pays, prices would not rise from the program.'})
@@ -737,6 +749,15 @@ def constants(src=None):
         if got.get(k) is None: got[k] = cur.get(k); print('release_data: %s has no CFG.%s; using the current value %s' % (src, k, got[k]), file=sys.stderr)
     return got
 
+def save_yield(src=None):
+    """the real yield of the savings-indexed reading in percent: SAVE_DEFAULTS = {r:0.0097 ...} in the page (index.html) of the tag, or of the working tree"""
+    if src is None: t = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
+    else:
+        try: t = subprocess.check_output(['git', 'show', '%s:index.html' % src], cwd=ROOT, stderr=subprocess.DEVNULL).decode('utf-8')
+        except subprocess.CalledProcessError: return None
+    m = re.search(r'SAVE_DEFAULTS\s*=\s*\{\s*r:\s*([0-9.]+)', t)
+    return round(float(m.group(1)) * 100, 6) if m else None
+
 def build(info, src=None):
     p20 = load_json(src, 'dev/runs/release-panel.json'); p40 = load_json(src, 'dev/runs/release-panel-40.json')
     if p20 is None: sys.exit('release_data: no 20-year panel')
@@ -750,6 +771,8 @@ def build(info, src=None):
     R['inputs'] = {'wealthLine': K['POVERTY_LINE'], 'povertyLine2025': K['POVERTY_THRESHOLD_ONE'], 'bleiDays': K['BLEI_PRECARIOUS_MAX'], 'hubPovertyTarget': 2, 'hubGini': [0.25, 0.30], 'hubGiniStart': 0.48,
                    'sources': {'wealthLine': 'the model’s wealth line (CFG.POVERTY_LINE), moved with prices', 'povertyLine2025': 'US official poverty threshold for one person under 65, 2025 (Census, quoted by CRS IN12737)',
                                'hub': 'Research Hub, Integrated Implementation Roadmap (Success Metrics by Year 7; Appendix I); BLEI paper'}}
+    sy = save_yield(src)  # session 13: the real yield of the savings-indexed reading, read from the page's own SAVE_DEFAULTS (percent), so the words on the findings page never type it
+    if sy is not None and 'sav' in p20['envs']['ref']['rows']: R['inputs']['savRealYield'] = sy
     R['panels'] = {'20': p20}
     if p40: R['panels']['40'] = p40
     bk = load_json(src, 'dev/runs/backing-share.json')
