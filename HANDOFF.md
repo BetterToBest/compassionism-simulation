@@ -1,52 +1,29 @@
-# Handoff (Oct 14, 2026, early morning): clarity answers in pull request 27; SNAP's work rule, the visual-suite export and the study job merged in pull request 28
+# Handoff (Oct 14, 2026, UTC): outside history data staged; history check ready to build; study launch next
 
 ## What shipped
-**Pull request 27** (wording only, no figure; branch `claude/wonderful-fermat-ukn1ph`). Ledger step s160 and issue i20. One commit per decision:
-- **d201 with d213:** the study page's damping row and the economist checklist now say "applied to the overall inflation rate". Duke's d201 pick said PTH "holds rents down"; the engine has no rent mechanism behind that constant. Explained in `dev/reports/v5-32-clarity-answers.md`, section 1.
-- **d202:** the second BLEI reading is now the "same-rules reading", defined where each page first shows it, with "earlier called design-neutral".
-- **d204:** the findings page has the front page's glossary, from one source (`site/glossary.json`, `dev/tools/glossary.py --check` in CI).
-- **d206:** the old open-items table and progress boxes are marked as historical records.
-- **d207:** the "What would have to be true" panel is labelled Claude's reading, and the economist checklist has a row 13 for it.
-- **i20:** CI is pinned to ubuntu-24.04, Node 22.22.0 and Python 3.13.
-- **d203 (last):** US spelling.
-- **d205:** no change, as decided.
-- **Tools:** `no_figure_change.py` now fingerprints the engine exactly as harness.js runs it, and counts the numbers in the page code.
+- **Pull request 29 (draft; data and plan only, no engine, page or figure change):** `sources/history/` (two outside data packs, a read-first README, `CROSSCHECK.csv`, and `history_series.json`, 22 KB), `dev/tools/history_data.py` (build, check, crosscheck), `dev/plans/s146-history-check.md` (the plan, with seven comparisons and pass bands fixed before any run), and Session 8 entries in `dev/DECISIONS.md`. Ledger steps s156 and s168 done.
+- **The two packs agree on 166 of 217 shared cells.** 44 of the 51 differences have a reason (a threshold label, a first-published value, the other row of a split table); 7 supplemental-rate cells are disputed. All the data are unverified against Census, BLS and the Federal Reserve (this machine cannot reach them).
+- **Pull requests 27 and 28 are merged** (main head 0282579 before pull request 29).
 
-**Pull request 28, merged into main Oct 14 01:50 UTC** (no figure, no page change; branch `claude/wonderful-fermat-ukn1ph-snap`, head b14efc3). Pull request 27 has main merged in (one conflict, dev/DECISIONS.md, both sections kept). Ledger steps s166 and s164:
-- **SNAP's work rule** behind `SNET.abawd`, off by default. Each element was checked against 7 U.S.C. 2015(o) as amended by Public Law 119-21 sec. 10102 and USDA's Oct 2025 memos (`sources/snap_work_rule.md`). No random draw is added. Report: `dev/reports/v5-33-snap-work-rule.md`.
-- **The explore export** for the visual suite: `explore_export.js --suite [--sn|--snab] [--panel=] [--out=]`. Two-seed smoke tests only.
-- **The study job:** `dev/tools/s165_jobs.sh`, with `STUDY=s165` in `dev/batch/runpod.sh` and the engine pinned at c88c1e0. Estimate: about 37 core-hours, about 2.6 hours on a 16-vCPU pod (`--estimate`). A full dry run with 2 seeds passed.
-- **New harness flags:** `testbed release|backing --sn/--snab`. `snap_rule_check.js --out/--years`.
-
-## Checks (final commits)
-- **Pull request 27:** `no_figure_change.py compare` against main at the merge of #26 passes (21 moved number counts, all listed in `no_figure_change_allow.txt`). `harness.js validate` passes. `check_figures.js` passes 16 of 16. The release_data, study_data, review_rows and glossary checks pass. `domtest.js` passes 130 of 130. CI on the pinned runner is green (checks and guard).
-- **Pull request 28:** `guard_test.js` is identical (25 rows × 20 seeds × 483 outputs, three environments). `snap_rule_check.js` is identical with the rule off (the safety-net rows, which the guard test lacks; reference made before the edit). `harness.js unit` passes all 222 (the new SNAP test by hand included). The engine_lineage proof, validate, domtest, check_figures and no_figure_change results are in pull request 28's description.
-
-## Decisions taken this session (all in dev/DECISIONS.md, Session 7)
-- **The no-figure test's engine check.** Now the engine harness.js runs, plus a count of every number in the page code. Reason: so wording in page code can change while the engine stays byte-checked.
-- **d201 wording follows d213.** Reason: the code damps overall inflation; no rent mechanism uses the constant.
-- **SNAP rule modelling choices** (report v5-33, section 2): the yearly clock; unemployment insurance weeks exempt; under half of full time counts as not meeting the test; retirees exempt (the cautious choice); State exemptions as an expected 8%; no area waivers (the model's unemployment rate stays under 10%).
-- **The study measures the rule's own effect beside the full panel.** Reason: see the open item below.
-
-## Open: for Duke
-1. **Read** `dev/reports/v5-32-clarity-answers.md` (section 1, d213), **then merge pull request 27** if it reads right.
-2. **New finding (report v5-33, section 5): the published main results have no today's safety net (SNAP, EITC, CTC) in either arm.** d209's note assumed they did. A v5.6 "with the SNAP rule" therefore also adds the safety net, which moves figures on its own. On 20 seeds, basket poverty with Compassionism moves +0.11 (Reference), −0.20 (Adverse) and +0.54 (Stress); the no-program run moves +0.03 to +0.04. The safety net slightly *raising* basket poverty needs explaining before any release; the likely cause is its own work response. It belongs to issue i23.
-3. **Pull request 28 is merged.** Read `dev/reports/v5-33-snap-work-rule.md` before deciding issues i23 and i24.
+## Branch and pull request state
+- Branch `claude/history-data-s156`, head 8737c3b, draft pull request 29 into `main`. It touches no code the checks run, so CI is expected green (checks and guard run on every push). If it is still unmerged, branch from it; if merged, restart from `main`.
 
 ## Long jobs in flight
-- None. No 500-seed job was started.
+- None. The study (ledger s165) is not launched. The results token expires 2026-10-17 04:16 UTC.
 
 ## Next 3 actions
-1. **Wednesday evening, s165:** launch the Runpod study with `STUDY=s165`, using as the runner commit main's head (it holds pull request 28; b14efc3 or any later main commit works, since the engine is pinned at c88c1e0). Check once that it started, then end the session.
-2. **Thursday, s167:** read the results; write the v5.6 release report setting the safety-net effect, the rule's own effect and v5.5 side by side. Duke decides i23.
-3. **Thursday, s161:** build the visual suite on the s165 export, or on the v5.5 export if the study is late.
+1. **Explain issue i24-1 (20 seeds):** why today's safety net slightly raises basket poverty (`dev/reports/v5-33-snap-work-rule.md`, section 5, names the likely cause: people working a little less as benefits phase out). Show it with hours and income traced in the safety-net arm (`dev/tools/sn_trace.js`). A bug would change the engine, so this comes before the launch. If it is behaviour, write two plain lines for the report; add a row to the study job only if it is cheap.
+2. **Build the history check (ledger s146)** exactly as `dev/plans/s146-history-check.md` says. Commit the plan with any change, and its reason, before the first 500-seed run. Smoke test on 20 seeds locally. Fix the hook at the end of `dev/tools/s165_jobs.sh` (it looks for the tool inside the pinned engine worktree, where it cannot exist). Do not change the engine pin c88c1e0.
+3. **Launch the study (s165) once, then stop:** runner = the commit that holds the history check (merged `main`, or the branch head); `STUDY=s165 MAX_HOURS=5`; before launch run `SEEDS=2 bash dev/tools/s165_jobs.sh ...` end to end and `--estimate` (it should now include the history check). After launch check once that `s165-c88c1e0/status.txt` and `run.txt` appear in BetterToBest/compassionism-sim-results; write the pod id here; end the session. Do not wait.
 
 ## Files to touch
-- **s165:** `dev/batch/runpod.sh` (pod start command in its header), `dev/tools/s165_jobs.sh`. Results go to BetterToBest/compassionism-sim-results, folder `s165-c88c1e0/`.
-- **s167:** `dev/tools/merge_panel.py`, `dev/tools/release_data.py`, `dev/tools/set_version.py`. The export file is named `explore-suite-ENV-YRS-snab.json`; release_data reads `explore-ENV-YRS.json`, so map the name. The suite file holds the bands, deciles and lives too.
+- Action 1: `dev/tools/snap_rule_check.js`, `dev/tools/sn_trace.js` (trace tools); engine code in `index.html` only via a switch (grep `SNET.abawd`).
+- Action 2: new `dev/tools/history_check.js`; `dev/tools/s165_jobs.sh` (grep `history check`); `dev/reports/v5-34-history-check.md` (new); data in `sources/history/history_series.json`.
+- Action 3: `dev/batch/runpod.sh` (start command in its header), `dev/tools/s165_jobs.sh`.
 
 ## Pitfalls
-- **Wording passes:** `python3 dev/tools/no_figure_change.py snapshot before.json` before the first edit, then `snapshot after.json` and `compare`. Wording in index.html's script is allowed; the engine and the embedded data are not. Any edit to index.html's main script needs `python3 dev/tools/sync_earlier.py`, or domtest fails ("same script").
-- **Running explore_export.js without `--suite` or `--out`** overwrites the published `dev/runs/explore-ENV-YRS.json`.
-- **Runtimes:** `node harness.js unit` and `domtest.js` take minutes; run them with the shell's background option, not with `&` (a plain `&` job dies with the shell). GitHub GraphQL is blocked: use the pull request tools.
-- **The results token expires 2026-10-17 04:16 UTC.** Pro ends Oct 15.
+- **Compare changes, not levels:** the start population is built from 2022 data. Say so first in the report.
+- **No retuning to fit history** (guardrail 5), and no model or assistant names in any pushed file (the packs are "pack A" and "pack B").
+- **Do not read the CSVs in `sources/history/` whole** (330 KB); read `history_series.json` and the README.
+- **Claude Code cannot launch another pod after the Pro plan ends (Thursday):** anything that could change the engine or the job is settled before this launch.
+- Wording passes need `no_figure_change.py` snapshots; `explore_export.js` without `--suite` or `--out` overwrites published data; `unit` and `domtest.js` take minutes: use the shell's background option. GitHub GraphQL is blocked (use the REST API).
