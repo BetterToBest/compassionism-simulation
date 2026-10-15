@@ -4072,6 +4072,10 @@ if (require.main === module) {
      * flag nothing changes. The adults do not age (the model has no ages), so a longer run follows the same working-age adults for longer. */
     var YRS = +((process.argv.filter(function(a){ return /^--years=\d+$/.test(a); })[0] || '--years=0').split('=')[1]);
     if (YRS > 0) Object.keys(ENVT).forEach(function(k){ ENVT[k][1] = Object.assign({}, ENVT[k][1], {years:YRS}); });
+    /* Session 15 (Oct 15, 2026; study s171): --snab [--slope] on the match section puts today's safety net (and SNAP's work rule) in every arm of the six-design comparison,
+     * as the release section does; reporting only (a config that already has sn keeps it). Without the flag nothing changes. */
+    if (secT === 'match' && process.argv.indexOf('--snab') >= 0){ var SNM = {abawd:true}; if (process.argv.indexOf('--slope') >= 0) SNM.slope = true; var tbStudy0 = tbStudy;
+      tbStudy = function(cfgs){ cfgs.forEach(function(c){ if (!c.sn) c.sn = Object.assign({}, SNM); }); return tbStudy0.apply(this, arguments); }; }
     var MLBL = {engine:'Compassionism: shipped (engine model)', framework:'Compassionism: hub spec (framework model)'};
     var t0T = Date.now(), svT = applyNR6(), svG = tbSetG(TB_PROFILE_G);  /* session 10 (d40): N7_BLEI on in the testbed profile */
     /* Session 23 (s34; d86): projcore, esp and match print the N1 rows with the PTF/PTH inflation damping off by default (n1Row);
@@ -4778,6 +4782,7 @@ if (require.main === module) {
       if (V52) RJ._meta.v52 = {report:Object.assign({}, SO52), thresholdOne2025:CFG.POVERTY_THRESHOLD_ONE};
       if (V53){ RJ._meta.v53 = {households:HH_V53, buScope:'hub', spendGrade:CFG.CE_SPEND_ELAST, corrections:ACCT_V53}; RJ._meta.command += V54 ? ' --v54' : ' --v53'; }
       if (V54) RJ._meta.v54 = {parts:V54_MAIN, empl:EMPL_DEFAULTS, pthb:PTHB_DEFAULTS, ptfs:PTFS_DEFAULTS, dis:DIS_DEFAULTS};
+      var HRS_ON = process.argv.indexOf('--hours') >= 0;
       var SNALL = process.argv.indexOf('--snab') >= 0 ? {abawd:true} : process.argv.indexOf('--sn') >= 0 ? {} : null;  /* session 7 (s165): every run with today's safety net, and with --snab SNAP's work rule */
       if (SNALL && process.argv.indexOf('--slope') >= 0) SNALL.slope = true;  /* session 9 (i24-1): the safety net's marginal rate without SNAP's gross income cliff (SNET.slope) */
       if (SNALL){ RJ._meta.sn = Object.assign({}, SNET_DEFAULTS, SNALL); RJ._meta.command += (SNALL.abawd ? ' --snab' : ' --sn') + (SNALL.slope ? ' --slope' : ''); }
@@ -4811,6 +4816,7 @@ if (require.main === module) {
           unhousedAvoided:+(av(r)*1000).toFixed(2), avoidLo:Math.round(av(r)*AVOID_HOMELESS.low), avoidHi:Math.round(av(r)*AVOID_HOMELESS.high), avoidW:Math.round(aw(r).main), avoidWHi:Math.round(aw(r).high), avoidJail:Math.round(aw(r).jail), avoidHealth:Math.round(aw(r).health), srcPay:Math.round(r.srcPay), srcTax:Math.round(r.srcTax), srcM:Math.round(r.srcM), part19:+r.jnP19.toFixed(1), medWealth:Math.round(r.medWealthReal)};
           if (V53) Object.assign(out.rows[rw.j], rel53Keys(r, r._Bk || B), {kind:rw.k}, rw.j === 'release' ? {paired:pairedShares(r, B)} : {});
           if (V54) Object.assign(out.rows[rw.j], rel54Keys(r, r._Bk || B));
+          if (HRS_ON) Object.assign(out.rows[rw.j], {pjHrs:+r.pjHrs.toFixed(2), pjWork:+r.pjWork.toFixed(2), pjDisp:+r.pjDisp.toFixed(2), pjHrsD:d3(r, 'pjHrs'), pjWorkD:d3(r, 'pjWork'), pjDispD:d3(r, 'pjDisp')});  /* study s171: --hours adds the community-project hours (per participant-year; share of participants who took project work, %; hours taken from paid work) */
           if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
         if (V53){ Object.assign(out.base, rel53Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel53Keys(BX[b.j], null)); }); }
         if (V54){ Object.assign(out.base, rel54Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel54Keys(BX[b.j], null)); }); }

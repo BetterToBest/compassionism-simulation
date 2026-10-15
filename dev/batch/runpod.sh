@@ -6,7 +6,7 @@
 #   bash -c 'git clone -q https://github.com/BetterToBest/compassionism-simulation /w/sim && cd /w/sim && git checkout -q RUNNER && bash dev/batch/runpod.sh'
 # Pod env: GH_TOKEN = {{ RUNPOD_SECRET_github_results_token }}; MAX_HOURS (default 10); MODE=smoke for the smoke test
 # (token expiry, one small file pushed, then terminate); STUDY=s137 for ledger step s137 (dev/tools/s137_jobs.sh), s137b for its follow-up Sobol
-# (dev/tools/s137b_jobs.sh), s165 for the v5.6 study (dev/tools/s165_jobs.sh; about 2.7 hours on 16 vCPU, --estimate), study12 for session 12's measures study (dev/tools/study12_jobs.sh,
+# (dev/tools/s137b_jobs.sh), s171 for the hours / comparison / Python-reference study (dev/tools/s171_jobs.sh; --estimate; about 7-9 hours on 16 vCPU, set MAX_HOURS=14), s165 for the v5.6 study (dev/tools/s165_jobs.sh; about 2.7 hours on 16 vCPU, --estimate), study12 for session 12's measures study (dev/tools/study12_jobs.sh,
 # about 1 hour on 6 or more vCPU); default v54, the v5.4 batch.
 # The token is never printed or written to disk. The engine commit is pinned below; the batch refuses to start if its worktree is not clean,
 # and run.txt records the engine, runner, Node version and command; SHA256SUMS (s137) records every output's hash.
@@ -16,6 +16,7 @@ case $STUDY in
   s137) ENGINE=a3582e2ad2489619151b295d037cf99cb272fdd8; JOBSH=dev/tools/s137_jobs.sh;;                     # the outside-audit fixes' commit (engine unchanged since 57e00367e58f)
   s137b) ENGINE=41f236124d27ac282e4241acc0b916c24d036c49; JOBSH=dev/tools/s137b_jobs.sh;;                  # s137's follow-up Sobol (gsa.js sobjoin; engine unchanged since 57e00367e58f)
   s165) ENGINE=5bf5bcc0e31d10e8fab8443f4d3972988e4bdf3b; JOBSH=dev/tools/s165_jobs.sh;;                   # ledger s165: the panel with today's safety net (SNET.slope, session 9) and SNAP's work rule, the rule's own effect, the visual-suite export, the history check, the safety-net trace (s166, s164, s146, i24-1); re-pinned from c88c1e0
+  s171) ENGINE=cfc33228015b7b1f016e9181486588c1d6867aa7; JOBSH=dev/tools/s171_jobs.sh;;                   # Oct 15, 2026: project hours in the release rows, the six-design comparison with today's safety net, the 500-seed Python reference (README: dev/tools/s171_README.md)
   study12) ENGINE=65abdc6b7575c30ef0b1218f62069219e49d410b; JOBSH=dev/tools/study12_jobs.sh;;                # session 12: the measures study for the visual suite (explore_export.js --study; engine block unchanged since 5bf5bcc)
   *) echo "unknown STUDY $STUDY"; exit 1;;
 esac
@@ -60,6 +61,6 @@ RUNNER=$(git -C $W/sim rev-parse HEAD); mkdir -p $W/res/$D
 echo "study $STUDY; engine $ENGINE; runner $RUNNER; node $(node -v); $(nproc) vCPU; pod $RUNPOD_POD_ID; start $(date -u +%FT%TZ); command: ON_DONE=... $JOBSH $W/engine $W/res/$D --max-hours=${MAX_HOURS:-10}" >> $W/res/$D/run.txt
 STUDY=$STUDY ON_DONE="bash $W/sim/dev/batch/runpod.sh push" bash $W/sim/$JOBSH $W/engine $W/res/$D --max-hours=${MAX_HOURS:-10}; ok=$?
 cd $W/res; [ $ok = 0 ] && { tail -1 $D/status.txt > $D/DONE; git add $D/DONE; }
-git add $D/status.txt $D/run.txt $D/*.log $D/*.json $D/SHA256SUMS 2> /dev/null; git commit -qm "$STUDY batch: $([ $ok = 0 ] && echo DONE || echo 'stopped before the end')"
+git add $D/status.txt $D/run.txt $D/*.log $D/*.json $D/*.txt $D/*.md $D/SHA256SUMS 2> /dev/null; git commit -qm "$STUDY batch: $([ $ok = 0 ] && echo DONE || echo 'stopped before the end')"
 for t in 1 2 3 4 5; do git push -q origin HEAD:main && break; sleep $((t * 10)); git pull -q --rebase origin main; done
 bye "batch $([ $ok = 0 ] && echo finished || echo 'stopped at max-hours')"

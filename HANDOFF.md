@@ -1,31 +1,29 @@
-# Handoff (Oct 15, 2026): flourishing measures, compare page, chat packets
+# Handoff (Oct 15, 2026): study s171 built, not yet launched
 
 ## What shipped
-- **Simulation page:** a "Beyond money: time and taking part" paragraph under Work (hours worked change; enrolment by year 20), from figures already in the release. `earlier-engine.html` re-synced.
-- **`compare.html`** (noindex, linked from the findings header and footer): saved six-design comparison (engine 4.22, `data/studies/compare-v422.json`), Compassionism Core versus the version with its untested mechanisms, and today's-safety-net rows from the Health Study (engine 5.5/5.6). Points to the Normative Evaluation site. No new study.
-- **Chat packets** in `dev/packets/` (README there): second Python implementation (`s118-...zip`, reference outputs match the seed-42 regression table), four outside audits (`s148-...zip`), CoMSES text and fact sheet (`s119-...zip`). Open ledger items copied to `dev/background/ledger-open-items-oct15.md`.
-- `dev/plans/s117-community-hours-study.md`; decisions in `dev/DECISIONS.md` (Session 14). Engine unchanged; version 5.6.0.
-- Ledger step s195 was not found in the ledger or the repository; nothing was built under that name.
+- **Study s171** (one Runpod study for the open work): `dev/tools/s171_jobs.sh`, `dev/tools/s171_README.md` (what each result file is, and the next steps for a chat without code), `s171` entry in `dev/batch/runpod.sh` pinned to engine commit cfc33228015b7b1f016e9181486588c1d6867aa7.
+- Pieces: (A) release panel with project-hours columns (`--hours`: hours a year per participant, share who took project work, hours taken from paid work) in 3 environments, 20 and 40 years; (B) the six-design comparison with today's safety net in every arm (`--snab --slope` now works on the `match` section), under both financing rules; (C) engine reference output for the Python check, seeds 1-500.
+- `harness.js` changes are reporting only; the engine in `index.html` is unchanged. A two-seed dry run of all 38 pieces finished.
+- The three project-hours keys were already in the engine's key list; the plan note is corrected.
 
 ## Branch and pull request state
-- Branch `claude/vigilant-pasteur-1ve1rw`; draft pull request 37 into main (https://github.com/BetterToBest/compassionism-simulation/pull/37). CI not yet reported at writing.
-- Local: validate, unit 222, glossary, check_figures 23, check_versions pass. domtest 154 had one failure (earlier-engine script out of step), fixed by `sync_earlier.py`; a full rerun was started and its result is not recorded here. The guard test was not run locally (no engine change; CI runs it).
+- Branch `claude/festive-feynman-64homk`, restarted from main after pull request 37 merged. Draft pull request into main is open. CI not yet read. The guard test and domtest were not run locally (CI runs them).
 
 ## Long jobs in flight
-- None.
+- None launched. This session has no tool that creates a pod.
 
 ## Next 3 actions
-1. **Pull request 37:** read CI; if domtest or guard is red, fix and push (merge main in, never rebase). Duke reads the compare page and the new paragraph, then merges.
-2. **Community-project hours (third flourishing measure):** follow `dev/plans/s117-community-hours-study.md` (add keys to the written-out list, 500-seed Runpod run via `dev/tools/s165_jobs.sh`, show on the page).
-3. **Chat packets:** give the zips in `dev/packets/` to free-plan chats; paste replies back. A like-for-like re-run of all six designs on the current engine (compare page, Part 1) also needs a Runpod study.
+1. **Launch the study** on a Runpod pod with 16 or more vCPU: start command from the header of `dev/batch/runpod.sh` with RUNNER = the head of this branch, env `STUDY=s171`, `MAX_HOURS=14`, `GH_TOKEN` = the results secret. Results land in BetterToBest/compassionism-sim-results under `s171-cfc3322/`; a `DONE` file there means all pieces are in; the pod terminates itself. `bash dev/tools/s171_jobs.sh X Y --estimate` prints the time (the comparison pieces are a guess; the 2-seed run uses fixed 60-seed pilots).
+2. **Read CI on the pull request**; fix if red (merge main in, never rebase). Duke merges when the report reads right.
+3. **When results are in:** a chat follows `dev/tools/s171_README.md` (hours paragraph, compare page Part 1b, Python check); Claude Code then updates `index.html` (grep `rel-flourish`), `compare.html`, runs `python3 dev/tools/sync_earlier.py`, `node domtest.js --write-counts`, `node dev/tools/check_figures.js`.
 
 ## Files to touch
-- `index.html` (grep `rel-flourish`), `compare.html`, `dev/plans/s117-community-hours-study.md`, `dev/packets/`.
+- `dev/tools/s171_jobs.sh`, `dev/batch/runpod.sh`, `harness.js` (grep `--hours`, `SNM`), `compare.html`, `index.html`.
 
 ## Pitfalls
-- Any edit to `index.html` script needs `python3 dev/tools/sync_earlier.py` or domtest fails.
-- The results token expires 2026-10-17 04:16 UTC. No model or assistant names in pushed files.
-- Do not edit files while domtest runs (about 8 minutes).
+- The results token expires 2026-10-17 04:16 UTC: a run that ends after that cannot push. Launch today and keep it under that.
+- Any edit to `index.html` script needs `python3 dev/tools/sync_earlier.py`. No model names in pushed files.
+- If `pjDisp` comes back 0 everywhere, report it as is (project hours add to paid work in this model).
 
 ## Ledger updates for Duke
-(Applied to `projects/sim` in the same session if the write succeeded; otherwise apply: s117 doing, s118 doing (packet built), s171 doing (draft pull request 37), s135 doing (packets built); `next`: Duke reviews pull request 37.)
+(Ledger write not attempted: little limit left.) s117 doing (study built), s95/s171 doing (study built), s118 doing (500-seed reference in the study); `next`: launch study s171 on Runpod.
