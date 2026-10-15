@@ -1,32 +1,31 @@
-# Handoff (Oct 14, 2026): suite page go-live (Part B)
+# Handoff (Oct 15, 2026): flourishing measures, compare page, chat packets
 
 ## What shipped
-- Pull request 35 (links, reading notes, suite defaults, history check) was merged by Duke before this session; its CI was green.
-- **Part B:** `findings.html` links to `suite.html` in the header and footer ("Visual suite"); `suite.html` no longer says `noindex`, and gains a canonical link and the og tags.
-- **domtest** Phase 15: the "stands alone" check now asserts findings links to the suite page and index, study, replication and earlier-engine do not; a second check covers indexable plus canonical; the Phase 16 noindex check now expects indexable. Comment above Phase 15 updated. Count 154 (README and CONTRIBUTING rewritten).
-- **Checks:** validate, unit 222, domtest 154, check_figures 23, glossary, check_versions, no_figure_change (0 moved numbers). Engine unchanged; version stays 5.6.0.
+- **Simulation page:** a "Beyond money: time and taking part" paragraph under Work (hours worked change; enrolment by year 20), from figures already in the release. `earlier-engine.html` re-synced.
+- **`compare.html`** (noindex, linked from the findings header and footer): saved six-design comparison (engine 4.22, `data/studies/compare-v422.json`), Compassionism Core versus the version with its untested mechanisms, and today's-safety-net rows from the Health Study (engine 5.5/5.6). Points to the Normative Evaluation site. No new study.
+- **Chat packets** in `dev/packets/` (README there): second Python implementation (`s118-...zip`, reference outputs match the seed-42 regression table), four outside audits (`s148-...zip`), CoMSES text and fact sheet (`s119-...zip`). Open ledger items copied to `dev/background/ledger-open-items-oct15.md`.
+- `dev/plans/s117-community-hours-study.md`; decisions in `dev/DECISIONS.md` (Session 14). Engine unchanged; version 5.6.0.
+- Ledger step s195 was not found in the ledger or the repository; nothing was built under that name.
 
 ## Branch and pull request state
-- Branch `claude/confident-newton-6vpmyf`, started from main after the merge. Pushed with a draft pull request into main (link in the session chat); CI not yet reported at writing.
+- Branch `claude/vigilant-pasteur-1ve1rw`; draft pull request 37 into main (https://github.com/BetterToBest/compassionism-simulation/pull/37). CI not yet reported at writing.
+- Local: validate, unit 222, glossary, check_figures 23, check_versions pass. domtest 154 had one failure (earlier-engine script out of step), fixed by `sync_earlier.py`; a full rerun was started and its result is not recorded here. The guard test was not run locally (no engine change; CI runs it).
 
 ## Long jobs in flight
 - None.
 
 ## Next 3 actions
-1. **This pull request:** fix any red CI or conflict (merge main in, never rebase). Duke merges it.
-2. **Main-page treatment of the suite page** is still open (plan section 8: index, study and replication do not link to it yet). Ask Duke only if he raises it.
-3. **Then:** the CoMSES package and fact sheet (ledger step s119), or Tier B packet B2 (`dev/plans/tier-b-packets.md`).
+1. **Pull request 37:** read CI; if domtest or guard is red, fix and push (merge main in, never rebase). Duke reads the compare page and the new paragraph, then merges.
+2. **Community-project hours (third flourishing measure):** follow `dev/plans/s117-community-hours-study.md` (add keys to the written-out list, 500-seed Runpod run via `dev/tools/s165_jobs.sh`, show on the page).
+3. **Chat packets:** give the zips in `dev/packets/` to free-plan chats; paste replies back. A like-for-like re-run of all six designs on the current engine (compare page, Part 1) also needs a Runpod study.
 
 ## Files to touch
-- `dev/plans/suite-v2-plan.md` (section 8), `domtest.js` (grep `suite go-live`), `dev/plans/tier-b-packets.md`.
+- `index.html` (grep `rel-flourish`), `compare.html`, `dev/plans/s117-community-hours-study.md`, `dev/packets/`.
 
 ## Pitfalls
-- Items outside this repo: no `sitemap.xml` or `robots.txt` here; if the root-domain repository keeps them, the suite URL needs adding there.
-- The domtest count (154) must follow every new check (`node domtest.js --write-counts`, about 8 minutes). Do not edit files while it runs.
+- Any edit to `index.html` script needs `python3 dev/tools/sync_earlier.py` or domtest fails.
 - The results token expires 2026-10-17 04:16 UTC. No model or assistant names in pushed files.
+- Do not edit files while domtest runs (about 8 minutes).
 
 ## Ledger updates for Duke
-(No ledger tool was loaded; please apply in one write to `projects/sim`.)
-- Steps done: suite page go-live (linked from findings, indexable, canonical).
-- `next`: "Duke merges the go-live pull request; then CoMSES package (s119) or Tier B packet B2."
-- Log: "Oct 14: draft PR: suite page linked from findings, noindex dropped, canonical added."
+(Applied to `projects/sim` in the same session if the write succeeded; otherwise apply: s117 doing, s118 doing (packet built), s171 doing (draft pull request 37), s135 doing (packets built); `next`: Duke reviews pull request 37.)
