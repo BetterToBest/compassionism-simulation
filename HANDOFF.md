@@ -10,10 +10,10 @@
 - Branch `claude/festive-feynman-64homk`, restarted from main after pull request 37 merged. Draft pull request into main is open. CI not yet read. The guard test and domtest were not run locally (CI runs them).
 
 ## Long jobs in flight
-- None launched. This session has no tool that creates a pod.
+- LAUNCHED Oct 15, 2026 22:32 UTC: Runpod pod 7yzaxvjm0tbraq (32 vCPU cpu3c, $0.96/h, EUR-IS-1), STUDY=s171, MAX_HOURS=14, runner commit ab49ab428a6c. Expected about 4-6 hours; it terminates itself. Done when `s171-cfc3322/DONE` exists in BetterToBest/compassionism-sim-results. If the pod is gone with no DONE, relaunch the same way (resumes). A duplicate pod was terminated.
 
 ## Next 3 actions
-1. **Launch the study** on a Runpod pod with 16 or more vCPU: start command from the header of `dev/batch/runpod.sh` with RUNNER = the head of this branch, env `STUDY=s171`, `MAX_HOURS=14`, `GH_TOKEN` = the results secret. Results land in BetterToBest/compassionism-sim-results under `s171-cfc3322/`; a `DONE` file there means all pieces are in; the pod terminates itself. `bash dev/tools/s171_jobs.sh X Y --estimate` prints the time (the comparison pieces are a guess; the 2-seed run uses fixed 60-seed pilots).
+1. (Done: launched, see above.) **Launch the study** on a Runpod pod with 16 or more vCPU: start command from the header of `dev/batch/runpod.sh` with RUNNER = the head of this branch, env `STUDY=s171`, `MAX_HOURS=14`, `GH_TOKEN` = the results secret. Results land in BetterToBest/compassionism-sim-results under `s171-cfc3322/`; a `DONE` file there means all pieces are in; the pod terminates itself. `bash dev/tools/s171_jobs.sh X Y --estimate` prints the time (the comparison pieces are a guess; the 2-seed run uses fixed 60-seed pilots).
 2. **Read CI on the pull request**; fix if red (merge main in, never rebase). Duke merges when the report reads right.
 3. **When results are in:** a chat follows `dev/tools/s171_README.md` (hours paragraph, compare page Part 1b, Python check); Claude Code then updates `index.html` (grep `rel-flourish`), `compare.html`, runs `python3 dev/tools/sync_earlier.py`, `node domtest.js --write-counts`, `node dev/tools/check_figures.js`.
 
