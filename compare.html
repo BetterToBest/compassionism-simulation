@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compassionism beside other designs | Compassionism Framework Simulation v5.6.0</title>
+<meta name="description" content="Compassionism run beside a basic income, a negative income tax, an asset endowment, public groceries and X-Cents on the same simulated adults, and against today's US safety net. Every number is read from saved data and labelled with its engine version.">
+<meta name="author" content="Duke Johnson, Claude (Anthropic)">
+<meta name="robots" content="noindex, nofollow">
+<meta name="sim-version" content="5.6.0">
+<meta name="theme-color" content="#1D9E75">
+<link rel="icon" type="image/svg+xml" href="https://bettertobest.github.io/research-hub/assets/favicon.svg">
+<link rel="stylesheet" href="site/findings.css?v=5.6.0">
+<style>
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--fx-canvas);color:var(--fx-ink);font:16px/1.6 var(--fx-sans)}
+a{color:var(--fx-accent);text-underline-offset:2px}
+.top{background:var(--fx-surface);border-bottom:1px solid var(--fx-rule)}
+.top-in,.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.2;text-decoration:none;color:var(--fx-ink);padding:6px 0}
+.brand b{font-size:15px;font-weight:600}.brand span{font-size:11.5px;color:var(--fx-ink-3)}
+.links{display:flex;gap:6px;flex-wrap:wrap}
+.links a{font-size:12.5px;text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid var(--fx-rule);color:var(--fx-ink-2)}
+h1{font-size:28px;line-height:1.25;margin:28px 0 8px}
+h2{font-size:21px;margin:36px 0 6px}
+.lede{max-width:70ch;color:var(--fx-ink-2)}
+.note{max-width:75ch;font-size:14.5px;color:var(--fx-ink-2)}
+.box{border:1px solid var(--fx-rule);background:var(--fx-surface);border-radius:12px;padding:12px 16px;margin:16px 0;max-width:75ch;font-size:14.5px}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:12px 0;font-size:14px}
+.ctl button{font:inherit;font-size:13.5px;padding:6px 12px;border-radius:8px;border:1px solid var(--fx-rule);background:var(--fx-surface);color:var(--fx-ink);cursor:pointer}
+.ctl button[aria-pressed="true"]{background:var(--fx-accent);color:#fff;border-color:var(--fx-accent)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}
+th,td{text-align:left;vertical-align:top;padding:7px 10px;border-bottom:1px solid var(--fx-rule)}
+th{font-weight:600;font-size:13px;color:var(--fx-ink-2)}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.base td{color:var(--fx-ink-3)}
+tr.cco td:first-child{font-weight:600}
+.ci{display:block;font-size:12px;color:var(--fx-ink-3)}
+.tag{display:inline-block;font-size:11.5px;border:1px solid var(--fx-rule);border-radius:999px;padding:0 8px;color:var(--fx-ink-2);white-space:nowrap}
+footer{margin:44px 0 28px;font-size:13px;color:var(--fx-ink-3)}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="brand" href="./"><b>Compassionism Simulation</b><span>Comparing designs</span></a>
+  <nav class="links" aria-label="Site"><a href="./">Simulation</a><a href="findings.html">Findings</a><a href="study.html">Health Study</a><a href="suite.html">Visual suite</a><a href="replication.html">Replication</a></nav>
+</div></header>
+<main class="wrap" id="top">
+  <h1>Compassionism beside other designs</h1>
+  <p class="lede">What happens to poverty, cost and work when the same 500 simulated adults live under Compassionism, under five other ways of helping people, and under today's US safety net. This page reads saved results; it runs nothing, and it says which engine version each figure comes from.</p>
+
+  <div class="box" role="note"><strong>Read this first.</strong> This is an exploratory model, not a forecast, and it has not been reviewed by an independent economist. The figures below come from two different versions of the engine and are never combined: Part 1 is from engine v4.22 (the last version that ran all six designs beside each other), Part 3 is from engine v5.5 and v5.6 (the Health Study and release data, which put today's safety net in every run). The model measures poverty, cost and work. It does not measure the cultural and creative effects Compassionism aspires to, so a design can look better or worse here than it would in the world.</div>
+
+  <p class="note"><strong>How Compassionism compares with other whole systems.</strong> This page compares anti-poverty designs inside one simulation. For how Compassionism compares with other comprehensive systems (for example, systems of economics, governance and social organisation) on a wider set of values, see the <a href="https://bettertobest.github.io/NormativeEvaluation/" target="_blank" rel="noopener">Normative Evaluation</a>.</p>
+
+  <h2 id="six">Part 1. Six designs on the same simulated adults (engine v4.22)</h2>
+  <p class="note">Each design is paid for by the same flat contribution on wages, set each year to cover its cost, and adults adjust how much they work by the same rules under every design (earnings fall by 16 cents per unconditional dollar, the rate measured in the largest US study of unconditional cash). Poverty here is measured against a living-wage basket and the deepest shortfalls are weighted most (FGT2). Negative is less poverty. Brackets are 95% intervals across paired seeds. Today's safety net is <strong>not</strong> in these runs; Part 3 adds it.</p>
+  <div class="ctl" role="group" aria-label="Environment"><span>Environment</span>
+    <button type="button" data-env="ref" aria-pressed="true">Reference</button><button type="button" data-env="adv" aria-pressed="false">Adverse</button><button type="button" data-env="st" aria-pressed="false">Stress Test</button></div>
+  <div class="ctl" role="group" aria-label="Size of the other designs"><span>Compare at</span>
+    <button type="button" data-v="rows" aria-pressed="true">equal cost</button><button type="button" data-v="prop" aria-pressed="false">proposed size</button></div>
+  <div class="ctl" role="group" aria-label="How Compassionism is modelled"><span>Compassionism as</span>
+    <button type="button" data-m="engine" aria-pressed="true">coded in the engine</button><button type="button" data-m="framework" aria-pressed="false">specified on the Hub</button></div>
+  <p class="note" id="cap"></p>
+  <div class="tw"><table id="t6"><thead><tr><th scope="col">Design</th><th scope="col">Cost per adult per year</th><th scope="col">Poverty severity, 20-year average: change vs no program</th><th scope="col">Share in poverty, 20-year average</th><th scope="col">Hours worked</th></tr></thead><tbody id="b6"></tbody></table></div>
+  <p class="note" id="src6"></p>
+
+  <h2 id="core">Part 2. Compassionism Core and Compassionism with its untested mechanisms</h2>
+  <p class="note">The like-for-like row, <strong>Compassionism Core</strong>, is the engine's Compassionism with the two untested mechanisms switched off: the wage raise for each octave held, and slower inflation in proportion to PTF and PTH membership. It can be set beside the other designs without giving Compassionism extras the others do not get. The row above it in the table, <strong>Compassionism, as coded</strong>, has both mechanisms on, which is closer to the Hub's picture of the design but rests on two assumptions that are still theoretical; they carry most of Compassionism's edge in these runs. The button <em>specified on the Hub</em> switches to the Hub's written conversion design (businesses convert the BU they accept, and expired BU go to projects that participants convert), which costs about two and a half to three times as much per adult. The model measures none of the cultural effects the framework holds make that cost worthwhile. Compassionism as designed differs from the Core in exactly these ways, so read the Core row for the like-for-like comparison and the others as the design's aim</p>
+
+  <h2 id="net">Part 3. Compassionism against today's US safety net (engine v5.5 and v5.6)</h2>
+  <p class="note">Here the "no program" run already contains SNAP (with its work rule), the earned income tax credit and the refundable Child Tax Credit, and so does the Compassionism run; Compassionism is added to them, as on the Hub. Source: the Health Study's rows for today's safety net (500 paired seeds, 20 years, today's health system).</p>
+  <div class="tw"><table id="tnet"><thead><tr><th scope="col">Environment</th><th scope="col">Below the cost of living, adult-years: today's safety net to with Compassionism</th><th scope="col">Below 30 days of basic living: same</th><th scope="col">Too little wealth at year 20: same</th></tr></thead><tbody id="bnet"></tbody></table></div>
+  <p class="note" id="srcnet"></p>
+  <p class="note"><strong>Every gain should hold on all three measures.</strong> A design that lowers the first two while the third rises is not a confirmed gain. In the three rows above, poverty below the cost of living and below 30 days of basic living falls in every environment (except 30-days poverty in the Stress Test, where it rises), but too little wealth at year 20 rises in all three, so none of them is a confirmed gain on every measure. In the model that rise comes from prices rising while savings are not protected from inflation.</p>
+
+  <h2 id="limits">Limits</h2>
+  <ul class="note">
+    <li>Part 1 predates the household, children, health and labour-market mechanisms and the safety net; it has not been re-run on the current engine. A like-for-like re-run of all six designs on engine v5.6, with the safety net in every arm, needs a new 500-run study on a Runpod pod and is the next step.</li>
+    <li>The comparison designs are simplified versions of real proposals; each is described, with sources, on the earlier-engine page.</li>
+    <li>Public costs of poverty (crime, homelessness services, emergency health care) are credited in the current release but were not in Part 1, so no design in Part 1 is credited with the savings from poverty it removes.</li>
+    <li>This page is kept out of search results until Duke approves it.</li>
+  </ul>
+  <footer>The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson's book <em>Better To Best</em> and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.<br><a href="./">Simulation</a> &middot; <a href="findings.html">Findings</a> &middot; <a href="replication.html">Replication framework</a> &middot; <a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a></footer>
+</main>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var st = {env: 'ref', v: 'rows', m: 'engine'}, D6 = null, SN = null;
+  var ENV = {ref: 'Reference', adv: 'Adverse', st: 'Stress Test'};
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); }
+  function plain(s) { var d = document.createElement('div'); d.innerHTML = String(s || ''); return d.textContent; }
+  function sg(x, d) { d = d === undefined ? 2 : d; return (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toFixed(d); }
+  function money(x) { return (x < 0 ? '−$' : '$') + Math.round(Math.abs(x)).toLocaleString('en-US'); }
+  function get(url) { return fetch(url).then(function (r) { if (!r.ok) throw new Error(url + ' ' + r.status); return r.json(); }); }
+
+  function render6() {
+    var E = D6.envs[st.env], V = (st.v === 'prop' && E.prop) ? E.prop : E.rows, rows = V[st.m] || [], h = '';
+    rows.forEach(function (r) {
+      if (r.sens) return;
+      var cls = r.k === 'base' ? 'base' : (r.k === 'cco' ? 'cco' : '');
+      var dp = r.dp ? sg(r.dp[0]) + '<span class="ci">[' + sg(r.dp[1]) + ', ' + sg(r.dp[2]) + ']</span>' : '<span class="ci">level ' + r.fgt2PY.toFixed(2) + '</span>';
+      h += '<tr class="' + cls + '"><td>' + esc(r.label) + (r.k === 'corr' ? ' <span class="tag">Compassionism Core</span>' : '') + (r.k === 'cco' ? ' <span class="tag">mechanisms on</span>' : '') + (r.note ? '<span class="ci">' + esc(plain(r.note)) + '</span>' : '') + '</td>' +
+        '<td class="n">' + (r.cost > 0 ? money(r.cost) + '<span class="ci">wage contribution ' + r.tau.toFixed(1) + '%</span>' : '—') + '</td>' +
+        '<td class="n">' + dp + '</td><td class="n">' + r.f0.toFixed(1) + '%</td><td class="n">' + (r.k === 'base' ? '—' : sg(r.hrs, 1) + '%') + '</td></tr>';
+    });
+    $('b6').innerHTML = h;
+    $('cap').textContent = E.name + '. ' + (st.v === 'prop' ? 'Proposed size: each comparator is set where its proponents set it, so costs differ; compare the change per $1,000 under each cost.' : 'Equal cost: the basic income, negative income tax and endowment cost what the Compassionism row costs.');
+    $('src6').innerHTML = 'Figures from the open testbed: engine v' + esc(D6.meta.engine) + ', ' + esc(E.seeds) + ' paired seeds, ' + esc(D6.meta.agents) + ' agents, written ' + esc(D6.meta.written) + '. Saved in <a href="data/studies/compare-v422.json">data/studies/compare-v422.json</a>. Reproduce on the v4.22 engine: <code>' + esc(E.cmd) + '</code>.';
+  }
+  function renderNet() {
+    var h = '';
+    ['ref', 'adv', 'st'].forEach(function (e) {
+      var s = SN.v[e].SN, b = s.base, p = s.prog, d = s.d;
+      function cell(k) { return b[k].toFixed(1) + '% to ' + p[k].toFixed(1) + '%<span class="ci">effect ' + sg(d[k][0], 1) + ' points (' + sg(d[k][1], 1) + ' to ' + sg(d[k][2], 1) + ')</span>'; }
+      h += '<tr><td>' + ENV[e] + '</td><td class="n">' + cell('fgt0PY') + '</td><td class="n">' + cell('bOAPy') + '</td><td class="n">' + cell('pov') + '</td></tr>';
+    });
+    $('bnet').innerHTML = h;
+    $('srcnet').innerHTML = 'Figures from the Health Study (' + esc(SN.id) + ', engine v' + esc(SN.version) + ', ' + esc(SN.meta.seeds) + ' paired seeds, ' + esc(SN.date) + '), the "today’s safety net" row of today’s health system. Saved in <a href="data/studies/s137.json">data/studies/s137.json</a>; the full study is on the <a href="study.html">Health Study page</a>.';
+  }
+  function press(sel, key, val) { Array.prototype.forEach.call(document.querySelectorAll(sel), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-' + key) === val ? 'true' : 'false'); }); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button[data-env],button[data-v],button[data-m]'); if (!b || !D6) return;
+    if (b.hasAttribute('data-env')) { st.env = b.getAttribute('data-env'); press('button[data-env]', 'env', st.env); }
+    if (b.hasAttribute('data-v')) { st.v = b.getAttribute('data-v'); press('button[data-v]', 'v', st.v); }
+    if (b.hasAttribute('data-m')) { st.m = b.getAttribute('data-m'); press('button[data-m]', 'm', st.m); }
+    render6();
+  });
+  get('data/studies/compare-v422.json').then(function (d) { D6 = d; render6(); }).catch(function (e) { $('b6').innerHTML = '<tr><td colspan="5">The comparison data could not be loaded (' + esc(e.message) + '). If you opened this page as a file, open it through a web server or on the live site.</td></tr>'; });
+  get('data/studies/s137.json').then(function (d) { SN = d; renderNet(); }).catch(function (e) { $('bnet').innerHTML = '<tr><td colspan="4">The study data could not be loaded (' + esc(e.message) + ').</td></tr>'; });
+  window.compareState = function () { return {st: st, D6: D6, SN: SN}; };
+})();
+</script>
+</body>
+</html>
