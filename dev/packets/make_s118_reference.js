@@ -8,6 +8,6 @@ const out = {about: 'Real engine (index.html read by harness.js), runScenario(pr
 for (const [name, p] of Object.entries(presets)) {
   const q = Object.assign({}, p, {nAgents: 500});
   out.presets[name] = {params: q, seeds: {}};
-  for (const s of Array.from({length: 30}, (_, i) => i + 1).concat([42])) out.presets[name].seeds[s] = H.runScenario(q, s);
+  for (const s of (process.env.S118_SEEDS ? Array.from({length: +process.env.S118_SEEDS}, (_, i) => i + 1) : Array.from({length: 30}, (_, i) => i + 1).concat([42]))) out.presets[name].seeds[s] = H.runScenario(q, s);
 }
 console.log(JSON.stringify(out));
