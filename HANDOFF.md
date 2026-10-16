@@ -1,83 +1,26 @@
-# Handoff (Oct 16, 2026, night): compare page clarity polish; CI red runs explained
+# Handoff (Oct 16, 2026, night): compare page now shows 40-year figures
 
 ## What shipped
-- `compare.html`: key-points box and jump links at the top (every figure in them is copied from the tables below); the long Part 1 paragraph split into short bullets; a plain-words guide to the table columns; clearer column headings (Part 1 and Part 2); table headers shaded, row hover, section dividers; Basic Units, Public Trust Foundations and Public Trust Housing spelled out where first used; a missing full stop fixed.
-- The page was already styled on the live site (the stylesheet link and the page's own styles load, the saved data loads). Opened from a file on disk, its two data tables show "could not be loaded"; that is the browser blocking file reads, and it works on the live site and over a local web server.
-- The red "checks" runs the user flagged (runs 498-505) were the page-behaviour check failing on the study page's table count after the history section was removed. That was fixed by pull request 41, and the latest run on main (506) is green.
+- `compare.html` Part 1: a "Years simulated: 20 years / 40 years" switch (same button style as the other pages). All 12 tables (3 environments x 2 lengths, for each of the 2 financing rules) are in the page; the switch hides the length not chosen. Without JavaScript both lengths show.
+- Part 1 tables are now generated from the s171 result files by `dev/tools/compare_tables.py` (run with the results folder; `--check` reports a mismatch). The 20-year tables it builds equal the old hand-written ones cell for cell (61 rows checked).
+- Text: new 40-year key point; the wage-contribution paragraph now says the Stress Test result differs by length (20 years both small; 40 years Compassionism level, UBI and negative income tax raise severity); wealth poverty is read at the end of the run; note that equal cost is set per length and rule and that the dollar amount in a name can differ from the measured cost; Parts 2 and 3 say they are 20 years only; Part 3's note wrongly said "Part 3 adds it" (safety net), now "Part 2".
+- Checks: `check_versions`, `check_figures` (22 passed) pass; page checked in a browser (switch works, no errors); `domtest` started, see CI.
 
 ## Branch and pull request state
-- Branch `claude/nifty-cerf-huz25e`, started from main (2cea0f6). Draft pull request into main (see below). Locally: `check_versions`, `check_figures` (22 passed) and `domtest` (153 passed) all pass. The guard test was not run (page text only; CI runs it).
+- Branch `claude/compare-page-40-year-6528wq` from main (596d2f7). Draft pull request into main, see below. Guard test not run (page text and a page script only).
 
 ## Long jobs in flight
 - None.
 
 ## Next 3 actions
 1. Read CI on the draft pull request; fix if red (merge main in, never rebase). Duke merges when it reads right.
-2. s118: write `dev/reports/s118-independent-implementation/s118_loop.py` from `dev/packets/s118-second-implementation.zip` (ODD.md first, then MODEL_SPEC.md) and compare with `python-reference-500.json` (results repo, folder s171-cfc3322) per `dev/packets/s118-brief.md`. Long job; fresh session, preset 1 first.
-3. Copy the four ledger lines (s117, s95, s171 done; s118 blocked) from `dev/background/ledger-open-items-oct15.md` into the claude.ai ledger.
+2. Part 2 (today's safety net) and Part 3 (earlier engine) have no 40-year version. A 40-year Part 2 needs a new Runpod run of the Health Study (`dev/tools/health_check.js`, see `data/studies/s137.json` meta for the command); ask Duke if wanted.
+3. Open question: Part 1's no-program Reference figure below the cost of living is 55.2% but Part 2's is 49.3%, both described as "today's safety net alone". The page now says the parts are separate studies; find the reason (SNAP work rule, test settings) and state it.
 
 ## Files to touch
-- `compare.html` (Part 1 tables are hand-written HTML, lines about 70-100; Parts 2 and 3 fill from `data/studies/s137.json` and `compare-v422.json`).
+- `compare.html` (Part 1 tables sit between the PART1-TABLES markers: regenerate, do not hand-edit), `dev/tools/compare_tables.py`.
 
 ## Pitfalls
-- `compare.html` is not covered by any automated check; check it by eye over a local web server (`python3 -m http.server`), not from a file.
-- The ledger was not written this session (no step changed).
-- Don't `pkill -f` a pattern that also appears in your own command line.
-
----
-Older handoff:
-# Handoff (Oct 16, 2026, evening): ledger updated; s118 Python program does not exist yet
-
-- The claude.ai ledger (simulation project) now has s95, s117, s171 marked done and s118 marked blocked, with the notes from `dev/background/ledger-open-items-oct15.md`.
-- s118: `s118_loop.py` was never written or saved. Nothing in this repository, its history or the packet zip contains it; the earlier chat only had the brief. So there is nothing to "save". It must be written from `dev/packets/s118-second-implementation.zip` (ODD.md first, then MODEL_SPEC.md; core-loop.js only to settle gaps), then saved as `dev/reports/s118-independent-implementation/s118_loop.py` and compared with `python-reference-500.json` (results repo, folder s171-cfc3322) per `dev/packets/s118-brief.md`. This is a long job: start it in a fresh session with plenty of limit, preset 1 (Traditional Welfare Baseline, 3% inflation) first.
-- Weekly limit nearly spent; nothing else was run. CI on the open draft pull request not read.
-
----
-Older handoff:
-# Handoff (Oct 16, 2026, later): compare page restyled and reordered; history section removed from study page
-
-- compare.html: body now has class `fx` (the shared stylesheet's colours were missing, which is why it looked unstyled); hero and footer match the other pages; Part 1 = current-engine six designs (latest data), Part 2 = today's safety net, Part 3 = earlier engine v4.22 (with the Core note); table row names rewritten in plain words (the duplicate "main row" in Adverse/Stress was the price-damping variant, now named).
-- study.html: "Tested against history: 2008 and 2020" section removed (generator `dev/tools/study_data.py`, `data/studies/s137.json` regenerated, `domtest.js` and `check_figures.js` checks replaced, replication.html link now points to the findings page).
-- Ledger copy `dev/background/ledger-open-items-oct15.md` updated for s117, s95, s171 (done) and s118 (blocked). The claude.ai ledger artifact itself was not edited: copy those four lines in.
-- s118 NOT done: `python-reference-500.json` is in the results repo (s171-cfc3322) but there is no Python program in this repository. Next chat: save the chat's `s118_loop.py` under `dev/reports/s118-independent-implementation/`, run seeds 1-500 for the five presets, compare per the brief.
-- Not read: `node domtest.js` and `node dev/tools/check_figures.js` were started; CI runs them. Duke merges when the pull request reads right.
-
----
-Older handoff:
-# Handoff (Oct 16, 2026): study s171 finished; page updated
-
-- Study s171 DONE (results: BetterToBest/compassionism-sim-results, folder s171-cfc3322). `index.html` hours paragraph (rel-flourish) and `compare.html` Part 1b written from it; `sync_earlier.py` and `check_figures.js` (154 pass) run. `node domtest.js` was started but not read: CI runs it; if counts differ run `node domtest.js --write-counts`.
-- Hours result: project hours 15.0 / 11.7 / 1.9 a year (Reference / Adverse / Stress, 20 years); hours taken from paid work 0 everywhere.
-- Still to do: s118 Python check against `python-reference-500.json` (rule in `dev/packets/s118-brief.md`); read CI; Duke merges. 40-year match tables are not on the page (linked only). Ledger not updated.
-
----
-Older handoff:
-# Handoff (Oct 15, 2026): study s171 built, not yet launched
-
-## What shipped
-- **Study s171** (one Runpod study for the open work): `dev/tools/s171_jobs.sh`, `dev/tools/s171_README.md` (what each result file is, and the next steps for a chat without code), `s171` entry in `dev/batch/runpod.sh` pinned to engine commit cfc33228015b7b1f016e9181486588c1d6867aa7.
-- Pieces: (A) release panel with project-hours columns (`--hours`: hours a year per participant, share who took project work, hours taken from paid work) in 3 environments, 20 and 40 years; (B) the six-design comparison with today's safety net in every arm (`--snab --slope` now works on the `match` section), under both financing rules; (C) engine reference output for the Python check, seeds 1-500.
-- `harness.js` changes are reporting only; the engine in `index.html` is unchanged. A two-seed dry run of all 38 pieces finished.
-- The three project-hours keys were already in the engine's key list; the plan note is corrected.
-
-## Branch and pull request state
-- Branch `claude/festive-feynman-64homk`, restarted from main after pull request 37 merged. Draft pull request into main is open. CI not yet read. The guard test and domtest were not run locally (CI runs them).
-
-## Long jobs in flight
-- LAUNCHED Oct 15, 2026 22:32 UTC: Runpod pod 7yzaxvjm0tbraq (32 vCPU cpu3c, $0.96/h, EUR-IS-1), STUDY=s171, MAX_HOURS=14, runner commit ab49ab428a6c. Expected about 4-6 hours; it terminates itself. Done when `s171-cfc3322/DONE` exists in BetterToBest/compassionism-sim-results. If the pod is gone with no DONE, relaunch the same way (resumes). A duplicate pod was terminated.
-
-## Next 3 actions
-1. (Done: launched, see above.) **Launch the study** on a Runpod pod with 16 or more vCPU: start command from the header of `dev/batch/runpod.sh` with RUNNER = the head of this branch, env `STUDY=s171`, `MAX_HOURS=14`, `GH_TOKEN` = the results secret. Results land in BetterToBest/compassionism-sim-results under `s171-cfc3322/`; a `DONE` file there means all pieces are in; the pod terminates itself. `bash dev/tools/s171_jobs.sh X Y --estimate` prints the time (the comparison pieces are a guess; the 2-seed run uses fixed 60-seed pilots).
-2. **Read CI on the pull request**; fix if red (merge main in, never rebase). Duke merges when the report reads right.
-3. **When results are in:** a chat follows `dev/tools/s171_README.md` (hours paragraph, compare page Part 1b, Python check); Claude Code then updates `index.html` (grep `rel-flourish`), `compare.html`, runs `python3 dev/tools/sync_earlier.py`, `node domtest.js --write-counts`, `node dev/tools/check_figures.js`.
-
-## Files to touch
-- `dev/tools/s171_jobs.sh`, `dev/batch/runpod.sh`, `harness.js` (grep `--hours`, `SNM`), `compare.html`, `index.html`.
-
-## Pitfalls
-- The results token expires 2026-10-17 04:16 UTC: a run that ends after that cannot push. Launch today and keep it under that.
-- Any edit to `index.html` script needs `python3 dev/tools/sync_earlier.py`. No model names in pushed files.
-- If `pjDisp` comes back 0 everywhere, report it as is (project hours add to paid work in this model).
-
-## Ledger updates for Duke
-(Ledger write not attempted: little limit left.) s117 doing (study built), s95/s171 doing (study built), s118 doing (500-seed reference in the study); `next`: launch study s171 on Runpod.
+- Results are in BetterToBest/compassionism-sim-results, folder s171-cfc3322 (public; `git clone --depth 1`).
+- `compare.html` is not covered by `domtest`; check by eye over `python3 -m http.server`, not from a file.
+- Ledger not written (no tool this session): nothing changed in ledger steps.
