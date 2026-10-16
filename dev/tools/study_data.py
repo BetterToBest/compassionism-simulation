@@ -287,8 +287,6 @@ def content(R):
         [txt('2020, supplemental measure (no verdict was set: the data fell because of payments the model does not have)'),
          cell(N(h(7, 'model'), 's2')), cell(N(h(7, 'data'), 's1'), ' (Census supplemental rate)'), HV(7)],
     ]
-    tables.append({'id': 'history', 'title': 'Tested against history: the seven comparisons fixed in advance, as changes in points',
-                   'columns': ['Comparison', 'Model: change in basket poverty', 'Data: change in the poverty rate', 'Verdict (as the file gives it)'], 'rows': rows})
     T['tables'] = tables
 
     X = {}
