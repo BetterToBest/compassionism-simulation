@@ -1,3 +1,31 @@
+# Handoff (Oct 16, 2026, night): compare page clarity polish; CI red runs explained
+
+## What shipped
+- `compare.html`: key-points box and jump links at the top (every figure in them is copied from the tables below); the long Part 1 paragraph split into short bullets; a plain-words guide to the table columns; clearer column headings (Part 1 and Part 2); table headers shaded, row hover, section dividers; Basic Units, Public Trust Foundations and Public Trust Housing spelled out where first used; a missing full stop fixed.
+- The page was already styled on the live site (the stylesheet link and the page's own styles load, the saved data loads). Opened from a file on disk, its two data tables show "could not be loaded"; that is the browser blocking file reads, and it works on the live site and over a local web server.
+- The red "checks" runs the user flagged (runs 498-505) were the page-behaviour check failing on the study page's table count after the history section was removed. That was fixed by pull request 41, and the latest run on main (506) is green.
+
+## Branch and pull request state
+- Branch `claude/nifty-cerf-huz25e`, started from main (2cea0f6). Draft pull request into main (see below). Locally: `check_versions`, `check_figures` (22 passed) and `domtest` (153 passed) all pass. The guard test was not run (page text only; CI runs it).
+
+## Long jobs in flight
+- None.
+
+## Next 3 actions
+1. Read CI on the draft pull request; fix if red (merge main in, never rebase). Duke merges when it reads right.
+2. s118: write `dev/reports/s118-independent-implementation/s118_loop.py` from `dev/packets/s118-second-implementation.zip` (ODD.md first, then MODEL_SPEC.md) and compare with `python-reference-500.json` (results repo, folder s171-cfc3322) per `dev/packets/s118-brief.md`. Long job; fresh session, preset 1 first.
+3. Copy the four ledger lines (s117, s95, s171 done; s118 blocked) from `dev/background/ledger-open-items-oct15.md` into the claude.ai ledger.
+
+## Files to touch
+- `compare.html` (Part 1 tables are hand-written HTML, lines about 70-100; Parts 2 and 3 fill from `data/studies/s137.json` and `compare-v422.json`).
+
+## Pitfalls
+- `compare.html` is not covered by any automated check; check it by eye over a local web server (`python3 -m http.server`), not from a file.
+- The ledger was not written this session (no step changed).
+- Don't `pkill -f` a pattern that also appears in your own command line.
+
+---
+Older handoff:
 # Handoff (Oct 16, 2026, evening): ledger updated; s118 Python program does not exist yet
 
 - The claude.ai ledger (simulation project) now has s95, s117, s171 marked done and s118 marked blocked, with the notes from `dev/background/ledger-open-items-oct15.md`.
