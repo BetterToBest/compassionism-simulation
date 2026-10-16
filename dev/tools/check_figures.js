@@ -191,17 +191,6 @@ async function run(opts) {
     if (uns.length !== 4) sp2.push('the two constants with no source should show four numbers, not ' + uns.length);
     if (w.document.querySelectorAll('#true table').length !== 2) sp2.push('"What would have to be true" needs its two tables');
     add('v5.5: on the study page every number (the texts and all tables) equals the study file\'s data, the sensitivity chart draws, and the two constants with no source are named', sp2.length === 0 && r.n > 300, sp2.length ? sp2.slice(0, 4).join('; ') : r.n + ' numbers checked');
-    { /* session 13: "Tested against history: 2008 and 2020". The seven comparisons are the 500-seed history check's own (dev/runs/history/history-check.json), the table shows each file verdict, and the safety-net miss is on the page with its figures */
-      const H = rj('dev/runs/history/history-check.json'), hp = [], sec = w.document.getElementById('history'), tr = sec ? [...sec.querySelectorAll('tbody tr')] : [];
-      if (H._meta.seeds !== 500) hp.push('the history file is not the 500-seed run');
-      if (H.comparisons.length !== 7 || !H.comparisons.every((c, i) => c.n === i + 1)) hp.push('the history file does not have its seven comparisons');
-      H.comparisons.forEach(c => { const k = S.hist && S.hist.c['c' + c.n]; if (!k || JSON.stringify(k) !== JSON.stringify(c)) hp.push('comparison ' + c.n + ' in the study file differs from the history file'); });
-      if (tr.length !== 7) hp.push('the history table has ' + tr.length + ' rows, not 7'); else H.comparisons.forEach((c, i) => { const v = tr[i].lastElementChild.textContent; if (!v.startsWith(c.verdict)) hp.push('row ' + c.n + ' verdict "' + v + '" is not the file\'s "' + c.verdict + '"'); });
-      const c5 = H.comparisons[4], need = [['hist.c.c5.model', c5.model], ['hist.c.c5.data', c5.data], ['hist.c.c5.modelRises.0', c5.modelRises[0]], ['hist.c.c5.modelRises.1', c5.modelRises[1]], ['hist.c.c5.dataRises.0', c5.dataRises[0]], ['hist.c.c5.dataRises.1', c5.dataRises[1]]];
-      need.forEach(([p, v]) => { const n = sec && [...sec.querySelectorAll('.num[data-src="' + p + '"]')]; if (!n || n.length < 2 || resolve(S, p) !== v) hp.push(p + ' is not shown in the table and in the words (or differs from the file)'); });
-      if (!sec || !/safety net/i.test(sec.textContent) || !/\(a\).*\(b\).*\(c\)/s.test(sec.textContent)) hp.push('the safety-net miss and its three reasons are not on the page');
-      if (S.hist.count.matches + S.hist.count.diff + S.hist.count.no + S.hist.count.rep !== 7) hp.push('the verdict tally does not add to seven');
-      add('session 13: the study page\'s "Tested against history: 2008 and 2020" section carries the 500-seed history check\'s seven comparisons as the file gives them (changes, with each verdict), and the safety-net miss and its three reasons, every figure shown from the file', hp.length === 0, hp.length ? hp.slice(0, 5).join('; ') : '7 comparisons, 500 seeds, commit ' + H._meta.manifest.commit.slice(0, 7)); }
     const un = unmarked(w.document.getElementById('content'), 'study');
     add('v5.5: no percentage, dollar figure or price level is typed into the study page', un.length === 0, un.length ? un.slice(0, 5).join('; ') : 'the whole study page');
     let g2 = { status: 1, stdout: '' }; try { g2 = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'study_data.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g2 = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }

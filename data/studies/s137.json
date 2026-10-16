@@ -11014,15 +11014,6 @@
    "note": "cap.true"
   },
   {
-   "id": "history",
-   "title": "Tested against history: 2008 and 2020",
-   "lead": "history",
-   "tables": [
-    "history"
-   ],
-   "note": "cap.history"
-  },
-  {
    "id": "limits",
    "title": "Limits and what is still open",
    "lead": "limits",

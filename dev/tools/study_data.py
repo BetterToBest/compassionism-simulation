@@ -7,7 +7,7 @@ The page (study.html) holds no figure. Every number it shows is a path into the 
 dev/tools/check_figures.js compares each one with the data. The figures are the study's own (dev/reports/v5-30-s137-results.md), copied, not recomputed;
 the only arithmetic here is a sign change (a fall shown as a positive number of points), recorded under "drv".
 
-Session 13 (Oct 2026): the page also carries "Tested against history: 2008 and 2020". Its figures are the 500-seed history check's own, copied from
+Session 13 (Oct 2026): the file carries the history check's figures (the page no longer shows them as a section; they are on the findings page). Its figures are the 500-seed history check's own, copied from
 dev/runs/history/history-check.json (report dev/reports/v5-34-history-check.md) under "hist"; the only arithmetic is a count of the seven verdicts, recorded
 under hist.count. The words of the verdicts are the file's.
 """
@@ -359,7 +359,6 @@ def content(R):
         {'id': 'prices', 'title': 'The price channel', 'lead': 'price', 'tables': ['price-channel'], 'note': 'cap.price'},
         {'id': 'depends', 'title': 'What the results depend on', 'lead': 'sens', 'chart': 'chart', 'tables': ['morris', 'sobol'], 'note': 'cap.sobol'},
         {'id': 'true', 'title': 'What would have to be true (Claude\'s reading)', 'lead': 'true', 'tables': ['wwtbt', 'unsourced'], 'note': 'cap.true'},
-        {'id': 'history', 'title': 'Tested against history: 2008 and 2020', 'lead': 'history', 'tables': ['history'], 'note': 'cap.history'},
         {'id': 'limits', 'title': 'Limits and what is still open', 'lead': 'limits', 'tables': [], 'note': None},
     ]
     return T
