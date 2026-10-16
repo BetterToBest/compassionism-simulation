@@ -52,7 +52,7 @@ main .wrap{padding-bottom:60px}
 .st-btn{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid var(--fx-rule);background:var(--fx-surface);color:var(--fx-ink-2);cursor:pointer;min-height:36px}
 .st-btn[aria-pressed="true"]{background:var(--fx-accent-wash);color:var(--fx-ink);border-color:var(--fx-accent);font-weight:600}
 .st-btn:focus-visible{outline:2px solid var(--fx-accent);outline-offset:2px}
-.st-chart{margin:4px 0 10px}
+.st-chart{margin:4px 0 10px;padding:14px 16px 10px}
 .layer-h{font-size:13px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--fx-ink-3);margin:30px 0 4px}
 footer{border-top:1px solid var(--fx-rule);background:var(--fx-surface);font-size:13px;color:var(--fx-ink-2)}
 footer .wrap{padding:22px 20px 30px}
@@ -99,7 +99,7 @@ footer p{margin:0 0 6px}
   function sensitivity(R, textKey) {
     var wrap = document.createElement('div'); wrap.className = 'st-sens';
     var C = R.chart, cur = C.outcomes[0];
-    wrap.innerHTML = '<p class="fx-note st-cap">' + F.text(R, textKey) + '</p><div class="st-pick" role="group" aria-label="Outcome shown in the chart"></div><div class="st-chart"></div>';
+    wrap.innerHTML = '<p class="fx-note st-cap">' + F.text(R, textKey) + '</p><div class="st-pick" role="group" aria-label="Outcome shown in the chart"></div><div class="fx-figure st-chart"></div>';
     var pick = wrap.querySelector('.st-pick'), host = wrap.querySelector('.st-chart');
     function draw() {
       var rows = C.inputs.map(function (i) { var d = R.sobol[cur][i]; return {label: C.inputNames[i], marks: [{v: d.ST, lo: Math.max(0, d.ciST[0]), hi: d.ciST[1], name: 'total index', cls: 's-alt'}]}; })

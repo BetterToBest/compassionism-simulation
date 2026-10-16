@@ -290,8 +290,8 @@ def content(R):
     T['tables'] = tables
 
     X = {}
-    X['intro'] = ('The 500-seed study, run on a rented server, ran the same 500 simulated populations (500 adults each, 20 years) with and without Compassionism under three health systems and three economies, '
-                  'and then asked which inputs the answer depends on. Every comparison is paired: the same people and the same luck in both runs. Figures are the study\'s, copied from its results report.')
+    X['intro'] = ('This page reports the 500-seed study. It runs the same 500 simulated populations (500 adults each, followed for 20 years) with and without Compassionism under three health systems and three economies, '
+                  'and then asks which inputs the answer depends on. Every comparison is paired: the same people and the same luck in both runs. Figures are the study\'s, copied from its results report.')
     X['basket'] = ('Compassionism lowers basket poverty in every combination of health system and economy. In Reference under today\'s health system it falls by {{drv.fall.ref|n1}} points '
                    '(Adverse {{drv.fall.adv|n1}}, Stress {{drv.fall.st|n1}}). Single payer lowers poverty before Compassionism starts, so Compassionism\'s own drop is '
                    '{{drv.ptsLess.ref|n1}} points smaller under it in Reference, and the level reached with both is the lowest of the three settings.')
@@ -299,7 +299,9 @@ def content(R):
                        'which is not peer reviewed; their range is in the table on single payer. "With Compassionism" is the v5.4 release row. Today\'s safety net is on in both runs of rows A, B and C. Intervals are 95% intervals.')
     X['cap.other'] = ('Poverty depth (FGT2) weighs each person\'s shortfall by its square, so the deepest poverty counts most. "Too little wealth" rises with Compassionism in every combination of health system and economy, as in the v5.4 release: '
                       'people in the program hold less cash once their basket is covered. The price-channel table shows this rise comes from the model\'s price response, not from health financing. '
-                      'In Stress, BLEI poverty (the days-of-basic-living measure) also rises slightly.')
+                      'In Stress, BLEI poverty (the days-of-basic-living measure) also rises slightly. '
+                      'This study covers 20 years only. In the <a href="compare.html#six">compare page\'s</a> 40-year runs (a different set of runs, without the health systems) the gap in "too little wealth" between Compassionism and no program narrows between year 20 and year 40, '
+                      'so part of this rise may be the early stage of an effect that matures with time. A 40-year repeat of this study would test that; until then it is a reading, not a result.')
     X['cap.costs'] = ('The safety net\'s outlays are today\'s programs, paid in both runs; they are not program cost. The model does not reconcile tax revenue with these outlays: it reports them, '
                       'it does not show that they are financed. Under A the household health bill is premiums and out-of-pocket costs. Under B and C it is the health tax less the employer\'s former premium share. '
                       'Government\'s share of the plan is held at its level in the matching run (same seed) without the program.')
@@ -315,7 +317,7 @@ def content(R):
                       '"As released" carries the program inflation the v5.4 release reports. In Adverse and Stress the flat runs keep the environments\' background inflation.')
     X['sens'] = ('Two methods ask which inputs the answer depends on. Screening (the Morris method, 1991) ranks how far each input moves an outcome over its range, on {{meta.morrisPaths|int}} random paths of {{meta.morrisSeeds|int}} paired runs (seeds) each. '
                  'The follow-up Sobol run (the Sobol method, Saltelli et al. 2010) splits the spread of each outcome among the inputs, with {{meta.sobolBase|int}} base points and {{meta.sobolSeeds|int}} paired runs (seeds) per point, in Stress. '
-                 'Participation and the amount of BU paid explain most of the spread in poverty, BLEI poverty, cost and inflation. These are design choices about the program\'s size, not uncertain facts about the world. '
+                 'Participation and the amount of BU (Basic Units, the community currency) paid explain most of the spread in poverty, BLEI poverty (the share of adult-years below 30 days of basic living, by the Basic Living Economic Index), cost and inflation. These are design choices about the program\'s size, not uncertain facts about the world. '
                  'For basket poverty, the income effect on earnings is the one uncertain behavioral constant that matters. "Too little wealth" depends most on the share of extra cash people spend.')
     X['cap.morris'] = ('A noise check was set before the run: an input\'s effect counts as measured only if the two seed blocks agree to within a quarter of it. The leaders hardly differ between environments (Reference and Adverse are in the data files).')
     X['cap.sobol'] = ('The total index counts an input alone and together with others; the first-order index counts it alone. Where the totals add to more than the first-order indices the inputs act together. '
