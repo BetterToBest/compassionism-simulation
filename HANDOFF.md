@@ -1,3 +1,13 @@
+# Handoff (Oct 16, 2026, later): compare page restyled and reordered; history section removed from study page
+
+- compare.html: body now has class `fx` (the shared stylesheet's colours were missing, which is why it looked unstyled); hero and footer match the other pages; Part 1 = current-engine six designs (latest data), Part 2 = today's safety net, Part 3 = earlier engine v4.22 (with the Core note); table row names rewritten in plain words (the duplicate "main row" in Adverse/Stress was the price-damping variant, now named).
+- study.html: "Tested against history: 2008 and 2020" section removed (generator `dev/tools/study_data.py`, `data/studies/s137.json` regenerated, `domtest.js` and `check_figures.js` checks replaced, replication.html link now points to the findings page).
+- Ledger copy `dev/background/ledger-open-items-oct15.md` updated for s117, s95, s171 (done) and s118 (blocked). The claude.ai ledger artifact itself was not edited: copy those four lines in.
+- s118 NOT done: `python-reference-500.json` is in the results repo (s171-cfc3322) but there is no Python program in this repository. Next chat: save the chat's `s118_loop.py` under `dev/reports/s118-independent-implementation/`, run seeds 1-500 for the five presets, compare per the brief.
+- Not read: `node domtest.js` and `node dev/tools/check_figures.js` were started; CI runs them. Duke merges when the pull request reads right.
+
+---
+Older handoff:
 # Handoff (Oct 16, 2026): study s171 finished; page updated
 
 - Study s171 DONE (results: BetterToBest/compassionism-sim-results, folder s171-cfc3322). `index.html` hours paragraph (rel-flourish) and `compare.html` Part 1b written from it; `sync_earlier.py` and `check_figures.js` (154 pass) run. `node domtest.js` was started but not read: CI runs it; if counts differ run `node domtest.js --write-counts`.

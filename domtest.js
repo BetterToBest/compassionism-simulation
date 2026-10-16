@@ -1320,9 +1320,9 @@ function phase16(done) {
     const sw = new JSDOM(rd('study.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/study.html' }).window, serrs = [];
     sw.scrollTo = () => {}; sw.addEventListener('error', e => serrs.push(String(e.message))); serve(sw); sw.eval(rd('site/charts.js')); sw.eval(rd('site/findings.js'));
     try { sw.eval([...sw.document.querySelectorAll('script')].filter(x => !x.src && !x.type)[0].textContent); } catch (e) { serrs.push(String(e.message)); } await later(500);
-    const hs = sw.document.getElementById('history'), links = /href="study\.html#history"/.test(rd('replication.html'));
-    check('session 13: study.html has "Tested against history: 2008 and 2020" (seven comparisons with verdicts, and the safety-net miss with its three reasons), and the replication page links to it',
-      !!hs && /Tested against history: 2008 and 2020/.test(hs.querySelector('h2').textContent) && hs.querySelectorAll('tbody tr').length === 7 && /\(a\).*\(b\).*\(c\)/s.test(hs.textContent) && links && serrs.length === 0, 'rows ' + (hs ? hs.querySelectorAll('tbody tr').length : 0) + '; replication link ' + links + (serrs.length ? '; errors ' + serrs.join('; ') : ''));
+    const hs = sw.document.getElementById('history');
+    check('session 13: study.html no longer carries the "Tested against history" section (it is on the findings page), and the replication page does not link to it',
+      !hs && !/study\.html#history/.test(rd('replication.html')) && serrs.length === 0, 'section present ' + !!hs + (serrs.length ? '; errors ' + serrs.join('; ') : ''));
     const wf3 = fs.readdirSync(path.join(ROOT, '.github', 'workflows')).filter(x => /\.ya?ml$/.test(x)), latest = wf3.filter(x => /runs-on:\s*ubuntu-latest/.test(fs.readFileSync(path.join(ROOT, '.github', 'workflows', x), 'utf8')));
     check('session 13: every workflow runs on ubuntu-24.04 (none on ubuntu-latest), so the Oct 19 runner change cannot alter a run', latest.length === 0, latest.length ? 'ubuntu-latest in ' + latest.join(', ') : wf3.length + ' workflows pinned');
     done();
