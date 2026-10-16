@@ -1,3 +1,11 @@
+# Handoff (Oct 16, 2026): study s171 finished; page updated
+
+- Study s171 DONE (results: BetterToBest/compassionism-sim-results, folder s171-cfc3322). `index.html` hours paragraph (rel-flourish) and `compare.html` Part 1b written from it; `sync_earlier.py` and `check_figures.js` (154 pass) run. `node domtest.js` was started but not read: CI runs it; if counts differ run `node domtest.js --write-counts`.
+- Hours result: project hours 15.0 / 11.7 / 1.9 a year (Reference / Adverse / Stress, 20 years); hours taken from paid work 0 everywhere.
+- Still to do: s118 Python check against `python-reference-500.json` (rule in `dev/packets/s118-brief.md`); read CI; Duke merges. 40-year match tables are not on the page (linked only). Ledger not updated.
+
+---
+Older handoff:
 # Handoff (Oct 15, 2026): study s171 built, not yet launched
 
 ## What shipped
