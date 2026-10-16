@@ -1,26 +1,28 @@
-# Handoff (Oct 16, 2026, night): compare page now shows 40-year figures
+# Handoff (Oct 16, 2026, night): maturing-effect note, Health Study chart fix
 
 ## What shipped
-- `compare.html` Part 1: a "Years simulated: 20 years / 40 years" switch (same button style as the other pages). All 12 tables (3 environments x 2 lengths, for each of the 2 financing rules) are in the page; the switch hides the length not chosen. Without JavaScript both lengths show.
-- Part 1 tables are now generated from the s171 result files by `dev/tools/compare_tables.py` (run with the results folder; `--check` reports a mismatch). The 20-year tables it builds equal the old hand-written ones cell for cell (61 rows checked).
-- Text: new 40-year key point; the wage-contribution paragraph now says the Stress Test result differs by length (20 years both small; 40 years Compassionism level, UBI and negative income tax raise severity); wealth poverty is read at the end of the run; note that equal cost is set per length and rule and that the dollar amount in a name can differ from the measured cost; Parts 2 and 3 say they are 20 years only; Part 3's note wrongly said "Part 3 adds it" (safety net), now "Part 2".
-- Checks: `check_versions`, `check_figures` (22 passed) pass; page checked in a browser (switch works, no errors); `domtest` started, see CI.
+- `study.html`: the "What the results depend on" chart now sits in the same white card as the charts on the other pages (its row labels have a white outline that showed against the grey page, so they looked unstyled).
+- `dev/tools/study_data.py` (regenerated `data/studies/s137.json`): clearer opening sentence; Basic Unit (BU) and BLEI spelled out where first used; a note that the study covers 20 years and that the compare page's 40-year runs suggest the "too little wealth" rise may be an early stage of a maturing effect.
+- `compare.html`: a key point and a note (labelled Claude's reading of the results) that the wealth effect takes time to show: the wealth-poverty gap narrows between year 20 and year 40 in all 11 Source-pays Compassionism rows, and in Reference and Adverse under the wage contribution, not in the Stress Test. The cost-of-living advantage is slightly smaller at 40 years; the page says so.
+- Correction, `compare.html` Part 2: the Health Study's safety net has no SNAP work rule and no slope fix (Part 1's has both). That explains 49.3% against 55.2% for no program; the page now says so.
+- Checks: `check_figures` (22), `check_versions`, `study_data.py --check` pass; `domtest` was running at the end, CI runs it.
 
 ## Branch and pull request state
-- Branch `claude/compare-page-40-year-6528wq` from main (596d2f7). Draft pull request into main, see below. Guard test not run (page text and a page script only).
+- Branch `claude/compare-page-40-year-6528wq`, restarted from main after pull request 45 merged. Draft pull request into main, see below.
 
 ## Long jobs in flight
 - None.
 
 ## Next 3 actions
 1. Read CI on the draft pull request; fix if red (merge main in, never rebase). Duke merges when it reads right.
-2. Part 2 (today's safety net) and Part 3 (earlier engine) have no 40-year version. A 40-year Part 2 needs a new Runpod run of the Health Study (`dev/tools/health_check.js`, see `data/studies/s137.json` meta for the command); ask Duke if wanted.
-3. Open question: Part 1's no-program Reference figure below the cost of living is 55.2% but Part 2's is 49.3%, both described as "today's safety net alone". The page now says the parts are separate studies; find the reason (SNAP work rule, test settings) and state it.
+2. If Duke wants it: a 40-year Health Study, and a 40-year Part 2 with today's safety net including the work rule, on Runpod. That would test the maturing reading directly. Part 3 (earlier engine) has 20 years only.
+3. The maturing claim is checked only inside the current engine (three environments, two financing rules).
 
 ## Files to touch
-- `compare.html` (Part 1 tables sit between the PART1-TABLES markers: regenerate, do not hand-edit), `dev/tools/compare_tables.py`.
+- `dev/tools/study_data.py` (text keys `intro`, `sens`, `cap.other`), then `python3 dev/tools/study_data.py`; `compare.html` (Part 1 tables between the PART1-TABLES markers: regenerate with `dev/tools/compare_tables.py`).
 
 ## Pitfalls
-- Results are in BetterToBest/compassionism-sim-results, folder s171-cfc3322 (public; `git clone --depth 1`).
-- `compare.html` is not covered by `domtest`; check by eye over `python3 -m http.server`, not from a file.
-- Ledger not written (no tool this session): nothing changed in ledger steps.
+- Results are in BetterToBest/compassionism-sim-results, folder s171-cfc3322.
+- `compare.html` is not covered by `domtest`; check by eye over `python3 -m http.server`.
+- Don't `pkill -f` a pattern that also appears in your own command line (it killed the shell this session).
+- Ledger not written (no tool this session).
