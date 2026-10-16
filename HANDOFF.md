@@ -1,3 +1,11 @@
+# Handoff (Oct 16, 2026, evening): ledger updated; s118 Python program does not exist yet
+
+- The claude.ai ledger (simulation project) now has s95, s117, s171 marked done and s118 marked blocked, with the notes from `dev/background/ledger-open-items-oct15.md`.
+- s118: `s118_loop.py` was never written or saved. Nothing in this repository, its history or the packet zip contains it; the earlier chat only had the brief. So there is nothing to "save". It must be written from `dev/packets/s118-second-implementation.zip` (ODD.md first, then MODEL_SPEC.md; core-loop.js only to settle gaps), then saved as `dev/reports/s118-independent-implementation/s118_loop.py` and compared with `python-reference-500.json` (results repo, folder s171-cfc3322) per `dev/packets/s118-brief.md`. This is a long job: start it in a fresh session with plenty of limit, preset 1 (Traditional Welfare Baseline, 3% inflation) first.
+- Weekly limit nearly spent; nothing else was run. CI on the open draft pull request not read.
+
+---
+Older handoff:
 # Handoff (Oct 16, 2026, later): compare page restyled and reordered; history section removed from study page
 
 - compare.html: body now has class `fx` (the shared stylesheet's colours were missing, which is why it looked unstyled); hero and footer match the other pages; Part 1 = current-engine six designs (latest data), Part 2 = today's safety net, Part 3 = earlier engine v4.22 (with the Core note); table row names rewritten in plain words (the duplicate "main row" in Adverse/Stress was the price-damping variant, now named).
