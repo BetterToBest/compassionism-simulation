@@ -12,7 +12,7 @@ Do these four things, in order, then stop. Do not start new work.
    - **Pitfalls** (what went wrong or nearly did; tokens, expiry dates, environment limits).
    Commit it with a clear message and push the session branch.
 
-2. **Update the ledger in one write.** The ledger is the claude.ai artifact KMdxWQ5KAefQVFxQA236pV, database document `projects/sim` (about 275 KB: never read it whole; read only `next`, `phase`, the open issues and the steps whose status is not done). In a single `ArtifactData` update: mark the steps finished this session as done, set `next`, and add one log line (date, what shipped). If no ledger tool is available, put the exact changes under a heading `Ledger updates for Duke` at the end of `HANDOFF.md` instead (this may take it past 40 lines).
+2. **Update the ledger in one write.** The ledger is the claude.ai artifact F1hceP6XEfPQ1pf6Sw1Ki8, database collection `projects`, document `hub` (never read it whole; read only `next`, `phase`, the open issues and the steps whose status is not done). If the session started in BetterToBest/research-update (`/start-session`), prefer that repository's `/end-session` (`.claude/skills/end-session/SKILL.md`) over this command. In a single `ArtifactData` update: mark the steps finished this session as done, set `next`, and add one log line (date, what shipped). If no ledger tool is available, put the exact changes under a heading `Ledger updates for Duke` at the end of `HANDOFF.md` instead (this may take it past 40 lines).
 
 3. **Print a kickoff prompt** for the next session, under 120 words, in a fenced block. Its first line must read:
    `Suggested model and effort: <model>, <effort> (<reason in a few words>)`

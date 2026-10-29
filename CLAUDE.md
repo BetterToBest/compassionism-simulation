@@ -17,12 +17,12 @@ The Compassionism Simulation: an open, in-browser agent-based model of the Compa
 
 - **You decide** every math, code, modelling and calibration question; do not stop to ask Duke. Record each in `dev/DECISIONS.md` (question, choice, alternatives, why, in plain words).
 - **Concept questions:** read the Hub papers first, write your reading in `dev/reports/` as a short plain-words note, proceed on it, label it "Claude's reading of the design" on the page. Never invent claims for the framework; where his writing is silent, choose the most cautious option and label it a modelling assumption.
-- **Duke's only jobs:** read the plain-words report after each mechanism, say if anything misrepresents his vision, and merge the pull request when its report reads right (the merge is the release).
+- **Landing (Duke's instruction, Oct 28, 2026):** open a pull request from a `claude/<step>-<topic>` branch and, once its checks pass, merge it yourself; Duke is not asked to review or merge. Duke reads the plain-words reports at leisure, says if anything misrepresents his vision, and answers ledger decisions (what only he can decide goes to the ledger as a decision). If checks fail and you cannot fix them this session, leave the pull request open and say so in `HANDOFF.md`. The merge is the release.
 - Reports must make sense on their own: no bare labels like s40 or d101 (labels may follow in parentheses).
 
 ## Branches and releases
 
-- Work on the session branch the session names; deliver each piece as a draft pull request into `main`. Never push to `main`. Separate releases go in separate pull requests.
+- Work on the session branch the session names; deliver each piece as a pull request into `main`, and merge it yourself once checks pass (see Landing above). Never push to `main` directly, force-push or rewrite history. Separate releases go in separate pull requests.
 - If the branch's last pull request has merged, restart it from `main` (`git fetch origin main && git checkout -B <branch> origin/main`); never stack on merged history.
 - Never move, delete or re-create a tag. A new version: `python3 dev/tools/set_version.py <version>`, then `node dev/tools/check_versions.js`; `.github/workflows/release.yml` tags it on merge.
 - Commit and push after every completed sub-step. Do not use the `apply-upload` zip route (its workflow is broken; see `dev/PROGRESS.md`, session 34).
