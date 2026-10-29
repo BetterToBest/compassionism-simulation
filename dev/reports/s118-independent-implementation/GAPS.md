@@ -1,0 +1,59 @@
+# Gaps in the written description (s118 independent implementation)
+
+Written Oct 29, 2026, while writing `s118_loop.py` from the s118 packet (`dev/packets/s118-second-implementation.zip`). The protocol: read the written description (`ODD.md`, then `MODEL_SPEC.md`) first, write the program from it, and open the packet's code excerpt (`core-loop.js`) only for questions the description leaves open. Each entry below is one such question: what the description says, what the code said, and the line of `core-loop.js` (as it is in the packet) that settled it.
+
+Entries 1 to 4 are the largest. Entries marked **contradiction** are places where the description says one thing and the code that produced the reference results does another.
+
+## A. Which model the reference results come from
+
+1. **The description is of a different model from the one that produced the reference results (contradiction).** `ODD.md` and `MODEL_SPEC.md` describe the *release model*: households, BU that buy essentials all year, project hiring, ESP payroll and the surplus split, open enrolment, the price module, the spending rule. The reference results (`reference-outputs.json`, and the 500-seed `python-reference-500.json`) come from `runScenario`, the engine's validation path, in which every one of those mechanisms is switched off. What runs instead is the older "engine" branch of the yearly loop, which the description never describes as a whole. Settled by `core-loop.js` lines 1-2 (header), 4-63 (`runScenario`), 990-1525 (`runYear`) and `later-modules.md`. Most of the entries below follow from this one.
+
+2. **The samplers for the lognormal, Beta and gamma distributions are in neither the description nor the code excerpt.** `MODEL_SPEC.md` section 4 says only "wealth (2), wage (2), octave shape Beta(2,5) (a variable number of draws: the gamma sampler's rejection loop)". `core-loop.js` calls `lognormal()` and `beta()` (lines 584-585, 498) but does not define them or `gamma()`. Because the Beta draw takes a variable number of random numbers, every later adult's draws depend on exactly how it is done. **This alone makes the exact (seed 42) match impossible from the packet.** I used the standard Marsaglia and Tsang (2000) gamma sampler with the packet's normal generator, and Beta = G(a) / (G(a) + G(b)). I also tried, without changing anything else, eight other standard samplers (Marsaglia and Tsang with six normal generators and both draw orders, Cheng 1977, Best 1978, Knuth's algorithm A, the Numerical Recipes tangent method, jStat's). None reproduced the engine's year-0 figures for any seed, so the engine uses something else. The distributions themselves agree (entry 31).
+
+3. **No spending rule in the validation path (contradiction).** `MODEL_SPEC.md` 6.4 and `ODD.md` say each adult consumes 59.3% of the year's cash surplus. In `runScenario` the share is 0 (`SURPLUS_CONSUMPTION_SHARE`, listed as off in `later-modules.md`; the branch is line 1500): every dollar of surplus is saved. This is why median wealth reaches $400,000 to $530,000 in the programme presets.
+
+4. **Wages are not indexed to prices in the validation path (contradiction).** `MODEL_SPEC.md` 6.1 adds the general inflation rate to wage growth. In `runScenario` there is no price module, and the indexation term (line 1267) never runs, so wages grow 1-2% a year in nominal terms while the cost of living rises with the preset's inflation rate. This is why the 3% baseline ends with 70% of adults below the wealth line and the median at the debt floor.
+
+## B. Starting population
+
+5. **The random generator.** The description names `mulberry32` but does not print it. Settled by line 309 (checked: my Python port gives the same numbers as the packet's JavaScript).
+6. **The normal generator.** The description says two draws per normal. The formula (one minus the first draw, floored at 10^-14, and the cosine branch) is line 548.
+7. **Quality.** The description's formula agrees with the code. The code adds that quality is floored at 0 and capped at `maxMult`, and that the CIP factor (1 − 0.5 × CIP) applies only when CIP is on (line 605).
+8. **Automation risk.** The description says "two draws, exact inverse CDF". Which draw picks the group (first) and the two formulas, U^(1/6) and 1 − (1 − U)^(1/6), are lines 571-578.
+
+## C. The yearly loop
+
+9. **The range of the BU spending draw.** The description lists the eight yearly draws but gives the range only for the income swing (0.90 to 1.10). The BU spending share is uniform on 0.60 to 0.90 (line 1241); the other six are plain uniforms.
+10. **How a participant's BU work in this path.** The description says a participant can spend up to 12 months of BU a year on essentials, and unspent BU go to a project pool. In the validation path a participant is credited the monthly BU once a year (`BU_ALLOCATIONS_PER_YEAR`; its value, 1, is not in the packet, only the comment "index.html: 1" at line 1426). They spend a random 60-90% of it and convert what they spend at their own rate. The BU reach their living costs only through a cost relief (entry 11). Settled by lines 1426-1438.
+11. **The cost of living and the price cuts.** The description says PTF members' basket, excluding taxes, is cut by 12% + 4% × SZH coherence; PTH members' housing by 35%; and BU buy essentials. In the validation path, cost = basket × cf, where cf multiplies three factors on the *whole* basket. The PTF factor is 1 − (0.12 + 0.04 × coherence), or 0.88 without SZH. The PTH factor is 0.65. The CCO relief is 1 − min(0.5, 0.20 × BU / ($1,200 × price level)). Settled by lines 1275-1281 and 1118. The relief is not in the description at all.
+12. **Inflation in the validation path, and PTF and PTH damping (contradiction).** The description's price level comes from the price module. Here the cost of living rises at the preset's rate, reduced each year by the current PTF share (× (1 − 0.5 × share)) and PTH share (× (1 − 0.10 × share)), and raised to the power of the year (lines 1023-1027, 1292). `MODEL_SPEC.md` section 10 says this damping is off in the release row. A side effect, noted here as an observation: because the year's reduced rate is applied to all past years at once, a rise in the PTF share lowers the whole accumulated price level, not only this year's rise.
+13. **The octave wage raise is on (contradiction).** `MODEL_SPEC.md` 6.1 says it is off. In the validation path every adult's wage growth gains 0.3% per octave, participant or not (line 1264). In the baseline every octave is 0.
+14. **The CIP wage bonus applies to everyone**, not only participants (line 1265); the description does not say.
+15. **The BLEI test for the wage bonus.** The description reads it the design-neutral way. In the validation path it uses the scenario's own BLEI: participants have γ = 0.20, BU food, and the lower daily cost if in PTH (line 1256). The BU food term is a fixed 990/1200 of the monthly BU (line 417), not "one month of the BU spent on essentials" (`MODEL_SPEC.md` 6.2).
+16. **"Basic monthly cost" in octave advancement.** `MODEL_SPEC.md` 6.8 does not define it. It is the BLEI daily cost × 365 × the year's price index × the adult's cost factor (after every cut, including the CCO relief), divided by 12 (lines 1447-1449). The wage is this year's, after growth. The PTH residual (0.025) applies to any PTH member.
+17. **The SZH threshold reads the coherence setting, not the realised PTF density (contradiction).** `MODEL_SPEC.md` 6.10 says θ reads the realised PTF density. In the validation path it reads the SZH coherence setting (line 996; the density reading is the off switch `THETA_GATE`). This affects the PTF conversion bonus, SZH induction and BLEI.
+18. **SZH induction applies only to participants.** The description lists it among the ways into PTF without saying who. It sits inside the participant branch (line 1455).
+19. **PTH equity and appreciation.** The description agrees on the 25% routing, the 3% + 2% × draw + 1% × coherence appreciation and the liquid share. The code adds that it applies to every PTH member, participant or not. The saving is measured on the whole basket at the BLEI daily cost, after the PTF cut and CCO relief (line 1477). The whole appreciation also stays in the equity while its liquid share is paid to wealth, so that share is counted twice (line 1485; `PTH_APPR_CONSERVE` off). `MODEL_SPEC.md` 6.10 says v5.3 corrected this double count. The validation path still has it (**contradiction**).
+20. **PTF adoption timing.** "Current PTF share" is the share at the start of the year, and adoption starts in year 1 (line 1497). The BLEI test is the scenario BLEI read before wage growth.
+21. **No capacity limits.** There is no octave capacity on conversion (the description's 12 × 1,000 × 2^octave BU a year) and no PTF capacity in this path.
+22. **Recessions.** The description agrees with the code. The code adds that no recession can start in year 0 or in the year one ends (lines 496-520).
+23. **Automation drag.** The description agrees. An observation: the 10-point cap is reached in year 13, so the description's "2.2 points a year from year 15" never acts.
+
+## D. Reported measures
+
+24. **The function that computes wealth poverty, the Gini, the median and the 10th and 90th percentiles (`calcMetrics`) is not in the packet** (called at lines 12, 25 and 30). `MODEL_SPEC.md` section 9 defines these for the release model, with the wealth line and median in year-0 dollars. I read them in nominal dollars, because the engine's own median in the 3% baseline is exactly the nominal debt floor (−$10,000) in every seed, which a deflated median could not be. The percentiles are the 51st and 451st of 500 sorted values (my choice).
+25. **The Gini.** The description says: wealth with debts counted as zero, times n/(n − 1). Neither that nor the same without the factor reproduces the engine. My Gini is 0.005 to 0.010 lower in every preset (see the report). The engine's definition is not in the packet.
+26. **The official poverty line.** `ODD.md` and `MODEL_SPEC.md` give $16,749 (2025). The packet's constants give $15,960 (2026; `CFG.FED_POVERTY_LINE_1P`) (**contradiction**). The income-poverty keys are not reproduced here: their function is not in the packet.
+27. **Keys whose functions are not in the packet**, and so are not compared: structural stability (`stab`), income and basket poverty (`incPov`, `incPovExt`, `basketPov`, `basketPovGross`), housing distress and the unhoused overlay (`distress`, `epTotal`, `epEcon`, `epSmi`, `epVol`, `wz`, `distressPart`, `distressNonPart`).
+28. **BLEI tiers.** The description gives only the 7- and 30-day lines. The flourishing share needs the other tiers (120, 365 and 730 days; lines 67-69, 361).
+29. **Reported rounding** (one decimal for percentages, three for the Gini, whole dollars and days) is lines 39-62.
+
+## E. Settled by the reference outputs, not by the code
+
+30. **The wealth floor is −$10,000**, as the description says. The script that made the reference sets it explicitly (`dev/packets/make_s118_reference.js`).
+31. **The starting population's distributions.** With entry 2 unresolved, the check that my adults are drawn from the same distributions as the engine's is the year-0 figures over 500 seeds: wealth poverty 37.78% against the engine's 37.80%, and BLEI poverty 10.34% against 10.32%. The theoretical value for wealth poverty is 37.8%.
+
+## What would make the packet complete
+
+- Add `lognormal`, `beta` and `gamma` (about ten lines) and `calcMetrics` (about twenty lines) to `core-loop.js`. With those, the exact seed-42 test becomes possible.
+- Either describe the validation path in the written description, or make the reference results from the release model the description describes. Today the description and the reference are of two different models.

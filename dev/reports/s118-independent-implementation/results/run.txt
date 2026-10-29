@@ -1,0 +1,7 @@
+s118 independent implementation, phase 1 (written from the packet only). Oct 29, 2026.
+Program: dev/reports/s118-independent-implementation/s118_loop.py (this commit); Python 3.13.17, standard library only.
+Packet: dev/packets/s118-second-implementation.zip, sha256 a649032e15ea39c56bec90f3f9e2a5ea649b2eba427fc66f2f256a1879982d77 (its reference-outputs.json: d962be9a02fdcf89496cc01ec4671dd04380936e6ba98038d727fd805ef284f6).
+Engine reference, 500 seeds: BetterToBest/compassionism-sim-results s171-cfc3322/python-reference-500.json (engine cfc33228015b7b1f016e9181486588c1d6867aa7), sha256 a012359a7a852a4d0846f570d9eee578243a631ffbc7c3c0e9931864e50297a0. Its seeds 1-30 and 42 are identical to the packet's reference-outputs.json.
+Commands (from dev/reports/s118-independent-implementation/; unzip the packet into packet/ first):
+  python3 -I s118_loop.py --compare packet/reference-outputs.json --seeds 1-30,42 > results/phase1-seeds-1-30-and-42.txt
+  python3 -I s118_loop.py --compare500 python-reference-500.json --seeds 1-500 --workers 4 --out results/phase1-mine-500.json > results/phase1-500-seeds.md
