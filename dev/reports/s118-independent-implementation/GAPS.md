@@ -53,6 +53,13 @@ Entries 1 to 4 are the largest. Entries marked **contradiction** are places wher
 30. **The wealth floor is −$10,000**, as the description says. The script that made the reference sets it explicitly (`dev/packets/make_s118_reference.js`).
 31. **The starting population's distributions.** With entry 2 unresolved, the check that my adults are drawn from the same distributions as the engine's is the year-0 figures over 500 seeds: wealth poverty 37.78% against the engine's 37.80%, and BLEI poverty 10.34% against 10.32%. The theoretical value for wealth poverty is 37.8%.
 
+## F. What the engine does where the packet was silent (read after phase 1)
+
+Added on the same day, after the phase-1 program and its results were committed. These are the engine's own functions (`index.html`), read only to explain the differences. With them added (`--engine-fills`), the Python program reproduces the engine exactly on all 2,500 runs.
+
+- **Entry 2 (samplers).** `lognormal` is the packet's normal draw, exponentiated (`index.html` line 7873). `beta(a, b)` is G(a) / (G(a) + G(b)) with G(a) drawn first (line 7874). `gamma` (line 7888) is the tangent rejection method (Knuth's algorithm A, after Ahrens), which draws *both* uniforms on every try, gives up after 5,000 tries and returns the shape, and has exact special cases for shape 1 and below. My phase-1 trial of this method drew the second uniform only when the first passed, which is why it did not match. The engine's method and mine both give the exact Beta(2,5) distribution (checked on a million draws each); they differ only in which adults they pick.
+- **Entries 24 and 25 (wealth measures).** `calcMetrics` (line 6378): wealth poverty is wealth below $25,000 in nominal dollars, and the median is the nominal median, as I had read them. The percentiles are linearly interpolated (line 6402), not the 51st and 451st values. The Gini is the one real surprise. At year 0 it is the Gini of wealth with debts as zero. Every later call passes the scenario's switches, and then the Gini is of each adult's wealth **less one year of the extractive-debt-cost proxy times their annual wage** (EDC × monthly wage × 12), floored at zero. The description never mentions this. There is no n/(n − 1) factor.
+
 ## What would make the packet complete
 
 - Add `lognormal`, `beta` and `gamma` (about ten lines) and `calcMetrics` (about twenty lines) to `core-loop.js`. With those, the exact seed-42 test becomes possible.

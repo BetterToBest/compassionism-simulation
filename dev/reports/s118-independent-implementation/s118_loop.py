@@ -20,7 +20,9 @@ Usage:
   python3 -I s118_loop.py --preset baseline --seed 42
   python3 -I s118_loop.py --preset full_integration --seed 42 --json
   python3 -I s118_loop.py --compare reference-outputs.json [--seeds 1-30,42]
-  python3 -I s118_loop.py --compare500 python-reference-500.json [--workers 8]
+  python3 -I s118_loop.py --compare500 python-reference-500.json --seeds 1-500 [--workers 4] [--out mine.json]
+  add --engine-fills to any of these for phase 2: the three engine functions the
+  packet leaves out, read after the independent (phase 1) result was recorded.
 
 The math and code of this simulation were engineered by Claude, an AI model made by
 Anthropic, from the concepts in Duke Johnson's book Better To Best and his related
@@ -61,7 +63,13 @@ WAGE_TO_USD = 100.52
 LIVING_WAGE_ANNUAL = 49370.0
 CCO_RELIEF_AT_REF, CCO_RELIEF_REF_BU, CCO_RELIEF_CAP = 0.20, 1200.0, 0.50
 AUTO_HIGH_SHARE, AUTO_HIGH_A, AUTO_LOW_B = 0.63, 6, 6
-BU_ALLOCATIONS_PER_YEAR = 1   # the page's value (core-loop.js line 1431); see GAPS.md
+BU_ALLOCATIONS_PER_YEAR = 1   # the page's value (core-loop.js line 1426); see GAPS.md
+
+# Phase 2 (--engine-fills): the three functions the packet leaves out, read from the
+# engine's index.html AFTER the phase-1 comparison was recorded, to explain the
+# disagreements (GAPS.md entries 2, 24 and 25; REPORT.md). Off by default: the
+# program as written from the packet alone is the independent implementation.
+ENGINE_FILLS = False
 
 PRESETS = {
     'full_integration': dict(bu=1200, maxOct=6, expiry=1, tax=0.12, maxMult=9, nAgents=500, partRate=0.78,
@@ -118,6 +126,8 @@ class Draws:
         return math.exp(mu + sigma * self.standard_normal())
 
     def gamma(self, k):  # not in the packet: Marsaglia and Tsang (2000); GAPS.md
+        if ENGINE_FILLS:
+            return self.gamma_engine(k)
         if k < 1:
             return self.gamma(1 + k) * self.rng() ** (1 / k)
         d = k - 1 / 3
@@ -134,6 +144,20 @@ class Draws:
                 return d * v
             if math.log(u) < 0.5 * x * x + d * (1 - v + math.log(v)):
                 return d * v
+
+    def gamma_engine(self, a):  # phase 2: index.html line 7888 (tangent rejection, Knuth's algorithm A)
+        if a == 1:
+            return -math.log(max(1e-14, self.rng()))
+        if a < 1:
+            return self.gamma_engine(1 + a) * max(1e-14, self.rng()) ** (1 / a)
+        for _ in range(5000):
+            u = self.rng()
+            v = self.rng()
+            y = math.tan(math.pi * u)
+            x = math.sqrt(2 * a - 1) * y + a - 1
+            if x > 0 and v <= (1 + y * y) * math.exp((a - 1) * math.log(x / (a - 1)) - math.sqrt(2 * a - 1) * y):
+                return x
+        return a
 
     def beta(self, a, b):  # not in the packet; GAPS.md
         x = self.gamma(a)
@@ -299,13 +323,51 @@ def gini_nonneg(xs):
     return cum / (n * s)
 
 
-def wealth_metrics(agents):
+def wealth_metrics(agents, net=None):
     w = sorted(a.wealth for a in agents)
     n = len(w)
     pov = sum(1 for x in w if x < POVERTY_LINE) / n
     g = gini_nonneg(w)
+    if ENGINE_FILLS:
+        return engine_metrics(agents, w, pov, g, net)
     return dict(pov=pov, gini=g * n / (n - 1), giniPlain=g, med=median_sorted(w), p10=w[int(n * 0.10)],
                 p90=w[int(n * 0.90)])
+
+
+def _engine_gini(sorted_vals):  # index.html lines 6383-6395
+    n = len(sorted_vals)
+    tot = 0.0
+    for x in sorted_vals:
+        tot += x
+    if tot <= 0:
+        return 0.0
+    num = 0.0
+    for i, x in enumerate(sorted_vals):
+        num += (i + 1) * x
+    return (2 * num / (n * tot)) - (n + 1) / n
+
+
+def _interp_p(sorted_vals, q):  # index.html line 6402
+    n = len(sorted_vals)
+    pos = q * (n - 1)
+    lo, hi = math.floor(pos), math.ceil(pos)
+    return sorted_vals[lo] if lo == hi else sorted_vals[lo] + (pos - lo) * (sorted_vals[hi] - sorted_vals[lo])
+
+
+def engine_metrics(agents, w, pov, g_plain, net):
+    """Phase 2: the engine's calcMetrics (index.html line 6378). When it is given the
+    scenario's switches (every call after year 0), its Gini is of wealth less one year
+    of the extractive-debt-cost proxy (EDC x annual wage), floored at zero."""
+    n = len(w)
+    if net is not None:
+        cco_on, pth_on = net
+        vals = sorted(max(0.0, a.wealth - agent_edc(a, cco_on, pth_on) * max(a.wage, 0) * WAGE_TO_USD * 12)
+                      for a in agents)
+    else:
+        vals = [max(0.0, x) for x in w]
+    gini = max(0.0, min(1.0, _engine_gini(vals)))
+    return dict(pov=max(0.0, min(1.0, pov)), gini=gini, giniPlain=g_plain, med=median_sorted(w),
+                p10=_interp_p(w, 0.10), p90=_interp_p(w, 0.90))
 
 
 # ---------------------------------------------------------------------------
@@ -458,7 +520,7 @@ def run_scenario(p, seed):
     dr = Draws(mulberry32(seed))
     for yr in range(p['years']):
         run_year(agents, yr, p, rec[yr] if rec else (False, 1.0), dr)
-    fm = wealth_metrics(agents)
+    fm = wealth_metrics(agents, net=(p['ccoOn'], p['pth']))
     bm = blei_metrics(agents, p['bu'], p['ccoOn'], p['pth'], p['szh'], p['szhCoh'], p['ptf'])
     at_floor = sum(1 for a in agents if a.wealth <= WEALTH_FLOOR + 1e-6)
     return dict(
@@ -601,8 +663,9 @@ def table500(ref, mine):
         seeds = sorted(mine[name], key=int)
         n = len(seeds)
         lines.append(f'\n## {name} (seeds {seeds[0]}-{seeds[-1]}, n = {n})')
-        lines.append(f'| key | engine mean | my mean | difference | brief: 2 SE | brief | two-sample z | two-sample |')
-        lines.append('|---|---|---|---|---|---|---|---|')
+        lines.append(f'| key | engine mean | my mean | difference | brief: 2 SE | brief | two-sample z | two-sample '
+                     f'| seeds identical |')
+        lines.append('|---|---|---|---|---|---|---|---|---|')
         for k in KEYS500:
             rk = 'gini' if k == 'giniPlain' else k
             rv = [float(get_key(ref['presets'][name]['seeds'][s], rk)) for s in seeds]
@@ -615,9 +678,10 @@ def table500(ref, mine):
             z = d / se2 if se2 > 0 else (0.0 if abs(d) < 1e-12 else float('inf'))
             ok1 = abs(d) <= 2 * se + 1e-12
             ok2 = abs(z) <= 2
-            label = 'gini (without n/(n-1))' if k == 'giniPlain' else k
+            same = sum(1 for a, b in zip(rv, mv) if a == b)
+            label = ('gini, wealth only' if ENGINE_FILLS else 'gini (without n/(n-1))') if k == 'giniPlain' else k
             lines.append(f'| {label} | {rm:.4f} | {mm:.4f} | {d:+.4f} | {2 * se:.4f} | {"yes" if ok1 else "no"} | '
-                         f'{z:+.2f} | {"yes" if ok2 else "no"} |')
+                         f'{z:+.2f} | {"yes" if ok2 else "no"} | {same}/{n} |')
     return '\n'.join(lines)
 
 
@@ -632,7 +696,12 @@ def main(argv=None):
     ap.add_argument('--workers', type=int, default=1)
     ap.add_argument('--mine', help='reuse a saved --compare500 run instead of running again')
     ap.add_argument('--out')
+    ap.add_argument('--engine-fills', action='store_true',
+                    help='phase 2: use the three engine functions the packet leaves out (see ENGINE_FILLS)')
     args = ap.parse_args(argv)
+    if args.engine_fills:
+        global ENGINE_FILLS
+        ENGINE_FILLS = True
     if args.compare:
         rep = compare(args.compare, parse_seeds(args.seeds))
         print_report(rep)
@@ -641,6 +710,8 @@ def main(argv=None):
         return
     if args.compare500:
         ref = json.load(open(args.compare500))
+        if 'presets' not in ref:  # a saved run of this program (phase 2 = the engine) as the reference
+            ref = {'presets': {k: {'seeds': v} for k, v in ref['mine'].items()}}
         if args.mine:
             mine = json.load(open(args.mine))['mine']
         else:
