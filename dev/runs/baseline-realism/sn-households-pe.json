@@ -1,0 +1,302 @@
+{
+ "_meta": {
+  "what": "S34 Q5: engine against PolicyEngine-US, six households",
+  "policyengine_us": "2.80.0",
+  "policyengine_core": "3.33.13",
+  "command": "python dev/tools/pe_households.py /tmp/claude-0/-home-user/418aede7-34be-5c6b-9691-aab54fa5b0fa/scratchpad/out/sn-households-engine.json /tmp/claude-0/-home-user/418aede7-34be-5c6b-9691-aab54fa5b0fa/scratchpad/out/sn-households-pe.json",
+  "gapRule": "a difference above the larger of $100 a year and 5% (prereg)",
+  "engineMeta": {
+   "what": "S34 Q5: the engine's safety-net amounts for six households",
+   "sn": {
+    "gross": 2,
+    "snapTake": 0.88,
+    "taxTake": 0.808,
+    "snap": true,
+    "eitc": true,
+    "ctc": true,
+    "abawd": true,
+    "abawdEx": 0.08,
+    "slope": true
+   },
+   "manifest": {
+    "commit": "e8f8a77b1e6062b84183f67e1510b50d013a4480",
+    "dirty": false,
+    "node": "v22.22.0",
+    "harnessSha256": "cf04ccd5db8eb33fb5a0b498ec3d0edaff3caeb195d572753388223bc2d9334b",
+    "engineBlockSha256": "bc0422920f8c3c370350e5836fffe18b0ef9bae34aa7e13c13ca1af49268dabb",
+    "indexSha256": "ebb9ee55309256394823b047f618c7bd5b88f728a794d7ffb01206a61f38056f",
+    "engineSha256": "62598d8dbb88de4f902697edf10ee1e814f3f95cc13af50a25f33def91025e94"
+   },
+   "command": "node dev/tools/sn_households.js",
+   "dollars": "year-0 (2025) dollars; SNAP at FY2026 allotments as the engine holds them"
+  }
+ },
+ "households": [
+  {
+   "id": 1,
+   "label": "Single adult, earning $15,000",
+   "nA": 1,
+   "kids": [],
+   "earn": 15000,
+   "rent": 13631.057,
+   "childcare": 0,
+   "povertyRatio": 0.9584664536741214,
+   "engine": {
+    "snap": 3393.9171,
+    "eitc": 313.9434229137199,
+    "ctc": 0
+   },
+   "policyengine": {
+    "snap": 3384.0,
+    "snap2025": 3240.0,
+    "eitc": 313.92999267578125,
+    "ctc": 0.0,
+    "filingStatus": "0",
+    "snapSteps": {
+     "snap_gross_income": 15000.0,
+     "snap_earned_income_deduction": 3000.0,
+     "snap_standard_deduction": 2508.0,
+     "snap_dependent_care_deduction": 0.0,
+     "snap_excess_shelter_expense_deduction": 8885.056640625,
+     "snap_net_income": 612.0,
+     "snap_max_allotment": 3576.0,
+     "meets_snap_gross_income_test": 1.0,
+     "is_snap_eligible": 1.0
+    }
+   },
+   "diff": {
+    "snap": 9.917100000000119,
+    "eitc": 0.013430237938678147,
+    "ctc": 0.0
+   },
+   "gap": {
+    "snap": false,
+    "eitc": false,
+    "ctc": false
+   }
+  },
+  {
+   "id": 2,
+   "label": "Single adult, earning $30,000",
+   "nA": 1,
+   "kids": [],
+   "earn": 30000,
+   "rent": 13631.057,
+   "childcare": 0,
+   "povertyRatio": 1.9169329073482428,
+   "engine": {
+    "snap": 288,
+    "eitc": 0,
+    "ctc": 0
+   },
+   "policyengine": {
+    "snap": 288.0,
+    "snap2025": 279.0,
+    "eitc": 0.0,
+    "ctc": 0.0,
+    "filingStatus": "0",
+    "snapSteps": {
+     "snap_gross_income": 30000.0,
+     "snap_earned_income_deduction": 6000.0,
+     "snap_standard_deduction": 2508.0,
+     "snap_dependent_care_deduction": 0.0,
+     "snap_excess_shelter_expense_deduction": 2885.056640625,
+     "snap_net_income": 18612.0,
+     "snap_max_allotment": 3576.0,
+     "meets_snap_gross_income_test": 0.0,
+     "is_snap_eligible": 1.0
+    }
+   },
+   "diff": {
+    "snap": 0.0,
+    "eitc": 0.0,
+    "ctc": 0.0
+   },
+   "gap": {
+    "snap": false,
+    "eitc": false,
+    "ctc": false
+   }
+  },
+  {
+   "id": 3,
+   "label": "Single parent, one child aged 3, earning $22,000",
+   "nA": 1,
+   "kids": [
+    3
+   ],
+   "earn": 22000,
+   "rent": 18501.992539437,
+   "childcare": 12913.68,
+   "povertyRatio": 1.0401891252955082,
+   "engine": {
+    "snap": 6552,
+    "eitc": 4328,
+    "ctc": 1700
+   },
+   "policyengine": {
+    "snap": 6552.0,
+    "snap2025": 6462.0,
+    "eitc": 4328.0,
+    "ctc": 1700.0,
+    "filingStatus": "3",
+    "snapSteps": {
+     "snap_gross_income": 22000.00048828125,
+     "snap_earned_income_deduction": 4400.000244140625,
+     "snap_standard_deduction": 2508.0,
+     "snap_dependent_care_deduction": 12913.68017578125,
+     "snap_excess_shelter_expense_deduction": 8928.0,
+     "snap_net_income": 0.0,
+     "snap_max_allotment": 6552.0,
+     "meets_snap_gross_income_test": 1.0,
+     "is_snap_eligible": 1.0
+    }
+   },
+   "diff": {
+    "snap": 0.0,
+    "eitc": 0.0,
+    "ctc": 0.0
+   },
+   "gap": {
+    "snap": false,
+    "eitc": false,
+    "ctc": false
+   }
+  },
+  {
+   "id": 4,
+   "label": "Single parent, children aged 4 and 9, earning $35,000",
+   "nA": 1,
+   "kids": [
+    4,
+    9
+   ],
+   "earn": 35000,
+   "rent": 18501.992539437,
+   "childcare": 24551.33,
+   "povertyRatio": 1.3133208255159474,
+   "engine": {
+    "snap": 9420,
+    "eitc": 4698.501766784452,
+    "ctc": 3262.5
+   },
+   "policyengine": {
+    "snap": 9420.0,
+    "snap2025": 9267.0,
+    "eitc": 4698.509765625,
+    "ctc": 3400.0,
+    "filingStatus": "3",
+    "snapSteps": {
+     "snap_gross_income": 35000.0009765625,
+     "snap_earned_income_deduction": 7000.00048828125,
+     "snap_standard_deduction": 2508.0,
+     "snap_dependent_care_deduction": 24551.33056640625,
+     "snap_excess_shelter_expense_deduction": 8928.0,
+     "snap_net_income": 0.0,
+     "snap_max_allotment": 9420.0,
+     "meets_snap_gross_income_test": 0.0,
+     "is_snap_eligible": 1.0
+    }
+   },
+   "diff": {
+    "snap": 0.0,
+    "eitc": -0.00799884054777067,
+    "ctc": -137.5
+   },
+   "gap": {
+    "snap": false,
+    "eitc": false,
+    "ctc": false
+   }
+  },
+  {
+   "id": 5,
+   "label": "Couple, children aged 7 and 12, one earner at $40,000",
+   "nA": 2,
+   "kids": [
+    7,
+    12
+   ],
+   "earn": 40000,
+   "rent": 18501.992539437,
+   "childcare": 24551.33,
+   "povertyRatio": 1.244167962674961,
+   "engine": {
+    "snap": 11928,
+    "eitc": 5144.975265017668,
+    "ctc": 3400
+   },
+   "policyengine": {
+    "snap": 11928.0,
+    "snap2025": 11757.0,
+    "eitc": 5144.98193359375,
+    "ctc": 3400.0,
+    "filingStatus": "1",
+    "snapSteps": {
+     "snap_gross_income": 39999.9990234375,
+     "snap_earned_income_deduction": 8000.000244140625,
+     "snap_standard_deduction": 2676.0,
+     "snap_dependent_care_deduction": 24551.33056640625,
+     "snap_excess_shelter_expense_deduction": 8928.0,
+     "snap_net_income": 0.0,
+     "snap_max_allotment": 11928.0,
+     "meets_snap_gross_income_test": 1.0,
+     "is_snap_eligible": 1.0
+    }
+   },
+   "diff": {
+    "snap": 0.0,
+    "eitc": -0.006668576082120126,
+    "ctc": 0.0
+   },
+   "gap": {
+    "snap": false,
+    "eitc": false,
+    "ctc": false
+   }
+  },
+  {
+   "id": 6,
+   "label": "Couple without children, earning $25,000 together",
+   "nA": 2,
+   "kids": [],
+   "earn": 25000,
+   "rent": 15006.907738295,
+   "childcare": 0,
+   "povertyRatio": 1.1820330969267139,
+   "engine": {
+    "snap": 3182.6723214885,
+    "eitc": 92.86727958510141,
+    "ctc": 0
+   },
+   "policyengine": {
+    "snap": 3180.0,
+    "snap2025": 3072.0,
+    "eitc": 92.84503173828125,
+    "ctc": 0.0,
+    "filingStatus": "1",
+    "snapSteps": {
+     "snap_gross_income": 24999.9990234375,
+     "snap_earned_income_deduction": 4999.9998779296875,
+     "snap_standard_deduction": 2508.0,
+     "snap_dependent_care_deduction": 0.0,
+     "snap_excess_shelter_expense_deduction": 6260.908447265625,
+     "snap_net_income": 11232.0,
+     "snap_max_allotment": 6552.0,
+     "meets_snap_gross_income_test": 1.0,
+     "is_snap_eligible": 1.0
+    }
+   },
+   "diff": {
+    "snap": 2.6723214885000743,
+    "eitc": 0.02224784682016434,
+    "ctc": 0.0
+   },
+   "gap": {
+    "snap": false,
+    "eitc": false,
+    "ctc": false
+   }
+  }
+ ]
+}

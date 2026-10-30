@@ -2634,6 +2634,7 @@ function healthUnitSuite(){
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
 Object.assign(module.exports, { tbCashIncome, SN_KEYS, SN_AB_KEYS, SNET_DEFAULTS, snBen, snAbClock, snAbCut, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
+module.exports.snBenAt = function(o, h, earn){ var sv = SNET; SNET = Object.assign({}, SNET_DEFAULTS, o || {}); try { return snBen(h, earn); } finally { SNET = sv; } };  /* S34: one household's benefits under the safety-net settings o, from outside (dev/tools/sn_households.js); reporting only */
 Object.assign(module.exports, { PREV_CASES, PREV_DEFAULTS, pvFood });  /* session 2c: the prevention link */
 function v52UnitSuite(){
   var out = [];

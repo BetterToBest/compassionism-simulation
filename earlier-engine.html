@@ -3719,6 +3719,11 @@ CFG.SCF_WAGE_WEALTH_RHO = 0.3585;
 CFG.SCF_WAGE_SIGMA = 0.8617;
 CFG.SCF_WAGE_MEDIAN = 54698;  /* v5.2 step 5: the comparison group's median wage income, 2025 dollars (the model's year-0 median is 35 x 12 x 100.52 = $39,945 at log mean 3.5) */
 CFG.FO_RISK_WAGE_RHO = -0.5313;
+/* S34 (Oct 30, 2026; dev/reports/baseline-realism.md): the earnings of US adults aged 25-64, Census CPS ASEC 2026 (income year 2025; sources/baseline_realism_us.py),
+ * for the LATENT wage readings lt.s and lt.m set to 'all' (adults with earnings) or 'ft' (full-time, year-round workers) in place of the SCF's (lt.s, lt.m = 1).
+ * median: the weighted median of earnings (PEARNVAL); sigma: the spread of log earnings read from the quartiles, (ln p75 - ln p25)/(2 x 0.6745).
+ * The model's own wage scale (WAGE_TO_USD) was set from the median personal income of everyone aged 15 and over, earners or not. Labelled readings, off by default. */
+CFG.CPS_EARN = {all:{median:60000, sigma:0.7370}, ft:{median:70000, sigma:0.6258}};
 /* v5.2 round, step 6 (Oct 5, 2026; ledger s85; decision B): the middle backing reading and normal-times slack (dev/DECISIONS.md, Session 35, step 6).
  *  KENYA_ABSORB_PEAK     0.16: cash transfers equal to about 16% of a year's local GDP in the peak 12 months of disbursement were met by local output with
  *                        prices up 0.1% on average (under 1% even where transfers were largest) and a local multiplier of 2.5: Egger, Haushofer, Miguel,
@@ -6449,7 +6454,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var hl0 = HEALTH; if (c.hl) HEALTH = Object.assign({}, HEALTH_DEFAULTS, c.hl === true ? {} : c.hl);  /* session 2a: the health setting for this row (no programme rows too) */
       var sn0 = SNET; if (c.sn) SNET = Object.assign({}, SNET_DEFAULTS, c.sn === true ? {} : c.sn);  /* session 2b: today's safety net for this row */
       var pv0 = PREV; if (c.pv) PREV = Object.assign({}, PREV_DEFAULTS, c.pv === true ? {} : c.pv);  /* session 2c: the prevention link for this row */
-      var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? CFG.SCF_WAGE_SIGMA : 0, wmed:c.lt.m ? CFG.SCF_WAGE_MEDIAN : 0};  /* v5.2 step 5: {w, r, s, m} flags */
+      var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? (CFG.CPS_EARN[c.lt.s] ? CFG.CPS_EARN[c.lt.s].sigma : CFG.SCF_WAGE_SIGMA) : 0, wmed:c.lt.m ? (CFG.CPS_EARN[c.lt.m] ? CFG.CPS_EARN[c.lt.m].median : CFG.SCF_WAGE_MEDIAN) : 0};  /* v5.2 step 5: {w, r, s, m} flags; S34: s, m 'all' or 'ft' read the CPS's earnings (CFG.CPS_EARN) */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS || SPEND_GRADE ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */

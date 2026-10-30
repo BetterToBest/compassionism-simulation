@@ -1,0 +1,270 @@
+{
+ "_meta": {
+  "script": "sources/baseline_realism_us.py",
+  "sources": "S34 (Oct 30, 2026; preregistration research-update prereg/s34-baseline-realism.md): the outside figures the no-programme run is compared with.\n\nSources (all public; dollars are 2025 dollars unless stated):\n- Census Bureau, Current Population Survey, 2026 Annual Social and Economic Supplement (CPS ASEC), public-use CSV (asecpub26csv.zip:\n  https://www2.census.gov/programs-surveys/cps/datasets/2026/march/), income year 2025. Person file pppub26.csv, weight MARSUPWT (the ASEC weight;\n  two implied decimals, which cancel in shares). PEARNVAL: earnings; PERLIS 1: below the official poverty level (POV_UNIV 1: in the poverty universe);\n  SPM_RESOURCES < SPM_POVTHRESHOLD: below the Supplemental Poverty Measure (SPM_WEIGHT); SPM_SNAPSUB, SPM_EITC, SPM_ACTC: the unit's SNAP, EITC, refundable CTC; WORKYN 1: worked at some time in 2025; PEMLR 1-2 employed,\n  3-4 unemployed, 5-7 not in the labour force (March 2026). Household file hhpub26.csv: HTOTVAL (household money income), weight HSUP_WGT, for\n  households whose reference person (PERRP 40 or 41) is aged 25 to 64.\n- Federal Reserve, 2025 and 2022 Survey of Consumer Finances, summary extract public data (scfp2025s.zip, scfp2022s.zip:\n  https://www.federalreserve.gov/econres/files/), five implicates pooled with WGT. Families whose head is aged 25 to 64 (the model's adults), with wage\n  income (WAGEINC > 0) and, beside them, all families of that age. Types as sources/scf_households.py: MARRIED 1 (married or living with a partner) or 2,\n  KIDS > 0 or 0. 2022 dollars moved to 2025 with CPI-U annual averages 292.655 and 321.943 (BLS); 2025 figures as published (2025 dollars).\n- Bureau of Labor Statistics, CPS (via FRED, fredgraph.csv): LNS12300060 employment-population ratio 25-54, LNS11300060 labour force participation\n  rate 25-54, LNS14000060 unemployment rate 25-54; the mean of the 2025 monthly values published (October 2025 was not collected)."
+ },
+ "cps": {
+  "persons": 134729,
+  "official": {
+   "all": 10.204657897751733,
+   "age25to64": 8.518290856592117,
+   "under18": 13.406405690757506,
+   "age18to64": 9.20441663973428,
+   "age25to64Earners": 3.723125926039492,
+   "age25to64AndUnder18": 9.963915586764504
+  },
+  "spm": {
+   "all": 13.10243449518824,
+   "age25to64": 11.219467565828046,
+   "under18": 13.353924733271535
+  },
+  "earnings25to64": {
+   "shareWithEarnings": 80.92589053982198,
+   "workedLastYear": 80.58070830007671,
+   "p10": 20000.0,
+   "p25": 37000.0,
+   "median": 60000.0,
+   "p75": 100000.0,
+   "p90": 155000.0,
+   "mean": 84455.82672501479,
+   "gini": 0.4498088154049368,
+   "sigmaLogIQR": 0.737040258684318
+  },
+  "march2026_25to64": {
+   "employed": 77.18401321205988,
+   "unemployedOfLabourForce": 3.5687129016636456,
+   "inLabourForce": 80.0404262294571
+  },
+  "earnings25to64FTYR": {
+   "shareOfEarners": 78.55024555720578,
+   "p10": 31000.0,
+   "p25": 46000.0,
+   "median": 70000.0,
+   "p75": 107000.0,
+   "p90": 170000.0,
+   "gini": 0.4092676185801889,
+   "sigmaLogIQR": 0.6257970379780476,
+   "sigmaLog1090": 0.6639651624503902
+  },
+  "safetyNet25to64": {
+   "snap": 8.703110209129234,
+   "eitc": 15.303485209135498,
+   "actc": 10.32179554230395
+  },
+  "householdIncome25to64": {
+   "households": 34963,
+   "median": 105000.0,
+   "gini": 0.46721501270328614
+  },
+  "householdIncomeAll": {
+   "median": 87284.95518668517,
+   "gini": 0.49026088081057106
+  }
+ },
+ "scf2025": {
+  "withWages": {
+   "all": {
+    "records": 12655,
+    "familyShare": 100.0,
+    "median": 185646.6376696536,
+    "p25": 30090.0,
+    "p75": 641000.0,
+    "neg": 9.254607605143965,
+    "below25k": 23.474806702489335
+   },
+   "ck": {
+    "records": 5440,
+    "familyShare": 39.20741773390257,
+    "median": 318500.0,
+    "p25": 96444.22703973469,
+    "p75": 1119132.6796646565,
+    "neg": 4.062989423566131,
+    "below25k": 12.632331744014527
+   },
+   "cn": {
+    "records": 2925,
+    "familyShare": 23.684876455402264,
+    "median": 268281.02338542754,
+    "p25": 79543.47222685977,
+    "p75": 940238.4408115721,
+    "neg": 5.867012793591542,
+    "below25k": 15.223664681978056
+   },
+   "sp": {
+    "records": 1680,
+    "familyShare": 13.131994630544838,
+    "median": 49013.83626426168,
+    "p25": 2084.3854265569867,
+    "p75": 188759.3597354775,
+    "neg": 19.23839633001736,
+    "below25k": 43.247018596071946
+   },
+   "sg": {
+    "records": 2610,
+    "familyShare": 23.975711180150313,
+    "median": 62744.86296856269,
+    "p25": 4510.0,
+    "p75": 233250.32715725704,
+    "neg": 15.622620894839342,
+    "below25k": 38.526879243984794
+   }
+  },
+  "all": {
+   "all": {
+    "records": 14990,
+    "familyShare": 100.0,
+    "median": 172263.1965316293,
+    "p25": 21050.0,
+    "p75": 629969.2407336616,
+    "neg": 9.612977868108004,
+    "below25k": 26.28376930997777
+   },
+   "ck": {
+    "records": 6090,
+    "familyShare": 37.20966338334699,
+    "median": 322999.98768328014,
+    "p25": 91893.2025463455,
+    "p75": 1141020.0,
+    "neg": 4.357494131928511,
+    "below25k": 13.089465091923449
+   },
+   "cn": {
+    "records": 3380,
+    "familyShare": 22.056071585971818,
+    "median": 291311.72929279687,
+    "p25": 86205.25696659379,
+    "p75": 1016207.6346920668,
+    "neg": 5.598340135567727,
+    "below25k": 14.97934815953027
+   },
+   "sp": {
+    "records": 2125,
+    "familyShare": 14.121204966562582,
+    "median": 36608.13699362007,
+    "p25": 1053.186680036791,
+    "p75": 173200.0,
+    "neg": 18.173648422038806,
+    "below25k": 46.68528696967933
+   },
+   "sg": {
+    "records": 3395,
+    "familyShare": 26.61306006411862,
+    "median": 50429.81350204008,
+    "p25": 1583.768356889602,
+    "p75": 223501.86038747264,
+    "neg": 15.745866533448986,
+    "below25k": 43.275153505273785
+   }
+  }
+ },
+ "scf2022": {
+  "withWages": {
+   "all": {
+    "records": 12905,
+    "familyShare": 100.0,
+    "median": 208635.940868707,
+    "p25": 38222.42620060683,
+    "p75": 692892.5085950658,
+    "neg": 7.910408551927459,
+    "below25k": 21.141724209297905
+   },
+   "ck": {
+    "records": 5710,
+    "familyShare": 43.71831750922486,
+    "median": 297012.3862274902,
+    "p25": 96638.0256441387,
+    "p75": 935635.2808132314,
+    "neg": 4.909164527432405,
+    "below25k": 13.230367454528436
+   },
+   "cn": {
+    "records": 3190,
+    "familyShare": 23.564437087900387,
+    "median": 359977.711260169,
+    "p25": 101729.68815584635,
+    "p75": 1048115.6960201749,
+    "neg": 4.631085363802915,
+    "below25k": 12.693688420483118
+   },
+   "sp": {
+    "records": 1460,
+    "familyShare": 11.675950232032028,
+    "median": 49318.819171751355,
+    "p25": 5921.991277111233,
+    "p75": 237329.73925137005,
+    "neg": 16.6967172853204,
+    "below25k": 40.4031459191217
+   },
+   "sg": {
+    "records": 2545,
+    "familyShare": 21.04129517084271,
+    "median": 77764.43952164067,
+    "p25": 10442.640760173774,
+    "p75": 305733.94681874383,
+    "neg": 12.943190031813279,
+    "below25k": 36.35224288293132
+   }
+  },
+  "all": {
+   "all": {
+    "records": 15555,
+    "familyShare": 100.0,
+    "median": 194796.09958825004,
+    "p25": 31277.332624172,
+    "p75": 668960.541930986,
+    "neg": 8.406835692798492,
+    "below25k": 23.24335234845619
+   },
+   "ck": {
+    "records": 6310,
+    "familyShare": 39.73203635958344,
+    "median": 297443.17830354674,
+    "p25": 95557.63368729188,
+    "p75": 954629.0460507217,
+    "neg": 4.853189476671839,
+    "below25k": 13.291665434170383
+   },
+   "cn": {
+    "records": 3840,
+    "familyShare": 23.399519169737548,
+    "median": 357300.2931313182,
+    "p25": 92945.1687097066,
+    "p75": 1048883.4668831879,
+    "neg": 4.761170572924454,
+    "below25k": 13.351981889285211
+   },
+   "sp": {
+    "records": 1850,
+    "familyShare": 12.320617060573548,
+    "median": 46929.26681302869,
+    "p25": 4751.901441764652,
+    "p75": 242318.90958896853,
+    "neg": 17.487333556469704,
+    "below25k": 42.49896913370485
+   },
+   "sg": {
+    "records": 3555,
+    "familyShare": 24.547827410105473,
+    "median": 65732.96232793653,
+    "p25": 5655.402026243985,
+    "p75": 303984.8532564831,
+    "neg": 13.076213259887828,
+    "below25k": 39.11494097447654
+   }
+  }
+ },
+ "bls": {
+  "epop25to54": {
+   "mean2025": 80.60000000000001,
+   "months": 11
+  },
+  "lfpr25to54": {
+   "mean2025": 83.56363636363636,
+   "months": 11
+  },
+  "urate25to54": {
+   "mean2025": 3.5727272727272723,
+   "months": 11
+  }
+ }
+}
