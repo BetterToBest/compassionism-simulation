@@ -1,0 +1,127 @@
+{
+ "_meta": {
+  "what": "S34 Q5: the engine's safety-net amounts for six households",
+  "sn": {
+   "gross": 2,
+   "snapTake": 0.88,
+   "taxTake": 0.808,
+   "snap": true,
+   "eitc": true,
+   "ctc": true,
+   "abawd": true,
+   "abawdEx": 0.08,
+   "slope": true
+  },
+  "manifest": {
+   "commit": "e8f8a77b1e6062b84183f67e1510b50d013a4480",
+   "dirty": false,
+   "node": "v22.22.0",
+   "harnessSha256": "cf04ccd5db8eb33fb5a0b498ec3d0edaff3caeb195d572753388223bc2d9334b",
+   "engineBlockSha256": "bc0422920f8c3c370350e5836fffe18b0ef9bae34aa7e13c13ca1af49268dabb",
+   "indexSha256": "ebb9ee55309256394823b047f618c7bd5b88f728a794d7ffb01206a61f38056f",
+   "engineSha256": "62598d8dbb88de4f902697edf10ee1e814f3f95cc13af50a25f33def91025e94"
+  },
+  "command": "node dev/tools/sn_households.js",
+  "dollars": "year-0 (2025) dollars; SNAP at FY2026 allotments as the engine holds them"
+ },
+ "households": [
+  {
+   "id": 1,
+   "label": "Single adult, earning $15,000",
+   "nA": 1,
+   "kids": [],
+   "earn": 15000,
+   "rent": 13631.057,
+   "childcare": 0,
+   "povertyRatio": 0.9584664536741214,
+   "engine": {
+    "snap": 3393.9171,
+    "eitc": 313.9434229137199,
+    "ctc": 0
+   }
+  },
+  {
+   "id": 2,
+   "label": "Single adult, earning $30,000",
+   "nA": 1,
+   "kids": [],
+   "earn": 30000,
+   "rent": 13631.057,
+   "childcare": 0,
+   "povertyRatio": 1.9169329073482428,
+   "engine": {
+    "snap": 288,
+    "eitc": 0,
+    "ctc": 0
+   }
+  },
+  {
+   "id": 3,
+   "label": "Single parent, one child aged 3, earning $22,000",
+   "nA": 1,
+   "kids": [
+    3
+   ],
+   "earn": 22000,
+   "rent": 18501.992539437,
+   "childcare": 12913.68,
+   "povertyRatio": 1.0401891252955082,
+   "engine": {
+    "snap": 6552,
+    "eitc": 4328,
+    "ctc": 1700
+   }
+  },
+  {
+   "id": 4,
+   "label": "Single parent, children aged 4 and 9, earning $35,000",
+   "nA": 1,
+   "kids": [
+    4,
+    9
+   ],
+   "earn": 35000,
+   "rent": 18501.992539437,
+   "childcare": 24551.33,
+   "povertyRatio": 1.3133208255159474,
+   "engine": {
+    "snap": 9420,
+    "eitc": 4698.501766784452,
+    "ctc": 3262.5
+   }
+  },
+  {
+   "id": 5,
+   "label": "Couple, children aged 7 and 12, one earner at $40,000",
+   "nA": 2,
+   "kids": [
+    7,
+    12
+   ],
+   "earn": 40000,
+   "rent": 18501.992539437,
+   "childcare": 24551.33,
+   "povertyRatio": 1.244167962674961,
+   "engine": {
+    "snap": 11928,
+    "eitc": 5144.975265017668,
+    "ctc": 3400
+   }
+  },
+  {
+   "id": 6,
+   "label": "Couple without children, earning $25,000 together",
+   "nA": 2,
+   "kids": [],
+   "earn": 25000,
+   "rent": 15006.907738295,
+   "childcare": 0,
+   "povertyRatio": 1.1820330969267139,
+   "engine": {
+    "snap": 3182.6723214885,
+    "eitc": 92.86727958510141,
+    "ctc": 0
+   }
+  }
+ ]
+}
