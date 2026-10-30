@@ -350,6 +350,22 @@
    },
    "equal": true,
    "seconds": 202
+  },
+  {
+   "from": "973e7ce472d159cdcd17fe2cb38d0fc9b4c604bc1db641e3298ef513155136da",
+   "to": "bc0422920f8c3c370350e5836fffe18b0ef9bae34aa7e13c13ca1af49268dabb",
+   "date": "2026-10-30",
+   "change": "S34: CFG.CPS_EARN and the LATENT wage readings lt.s / lt.m = 'all' or 'ft' (CPS ASEC 2026 earnings of adults 25-64), off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 181
   }
  ]
 }
