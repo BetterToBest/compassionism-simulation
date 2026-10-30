@@ -1,0 +1,175 @@
+
+## baseline_3pct
+seed 42, key: mine / engine
+  pov                                68.8         68.8  same
+  wealth                           -10000       -10000  same
+  bleiMed                               8            8  same
+  gini                              0.824        0.824  same
+  bleiPovPct                         67.6         67.6  same
+  p10                              -10000       -10000  same
+  p90                              671043       671043  same
+  pctFlourishing                     22.8         22.8  same
+  avgEDC                             45.5         45.5  same
+  fracAtFloor                        0.67         0.67  same
+  medianPinned                       True         True  same
+  recessionYears                        0            0  same
+  yearZero.pov                       35.2         35.2  same
+  yearZero.bleiPovNeutral            10.6         10.6  same
+  yearZero.bleiPovScenario           10.6         10.6  same
+exact agreement, seeds compared: pov 31/31, wealth 31/31, bleiMed 31/31, gini 31/31, bleiPovPct 31/31, p10 31/31, p90 31/31, pctFlourishing 31/31, avgEDC 31/31, fracAtFloor 31/31, medianPinned 31/31, recessionYears 31/31, yearZero.pov 31/31, yearZero.bleiPovNeutral 31/31, yearZero.bleiPovScenario 31/31
+seeds 1-30: key, engine mean, my mean, 2 SE, match
+  pov                               71.8333        71.8333     0.7343  yes
+  wealth                        -10000.0000    -10000.0000     0.0000  yes
+  bleiMed                            7.4000         7.4000     0.1819  yes
+  gini                               0.8595         0.8595     0.0049  yes
+  bleiPovPct                        70.9200        70.9200     0.7442  yes
+  p10                           -10000.0000    -10000.0000     0.0000  yes
+  p90                           542282.0000    542282.0000 22482.5057  yes
+  pctFlourishing                    18.4200        18.4200     0.6519  yes
+  avgEDC                            46.4533        46.4533     0.1891  yes
+  fracAtFloor                        0.6999         0.6999     0.0075  yes
+  medianPinned                       1.0000         1.0000     0.0000  yes
+  recessionYears                     0.0000         0.0000     0.0000  yes
+  yearZero.pov                      37.8333        37.8333     0.8677  yes
+  yearZero.bleiPovNeutral           10.2333        10.2333     0.5582  yes
+  yearZero.bleiPovScenario          10.2333        10.2333     0.5582  yes
+
+## cco_only
+seed 42, key: mine / engine
+  pov                                24.8         24.8  same
+  wealth                           427239       427239  same
+  bleiMed                            1283         1283  same
+  gini                              0.575        0.575  same
+  bleiPovPct                         21.0           21  same
+  p10                              -10000       -10000  same
+  p90                             1560776      1560776  same
+  pctFlourishing                     61.0           61  same
+  avgEDC                             28.7         28.7  same
+  fracAtFloor                       0.164        0.164  same
+  medianPinned                      False        False  same
+  recessionYears                        0            0  same
+  yearZero.pov                       35.2         35.2  same
+  yearZero.bleiPovNeutral            10.6         10.6  same
+  yearZero.bleiPovScenario            3.6          3.6  same
+exact agreement, seeds compared: pov 31/31, wealth 31/31, bleiMed 31/31, gini 31/31, bleiPovPct 31/31, p10 31/31, p90 31/31, pctFlourishing 31/31, avgEDC 31/31, fracAtFloor 31/31, medianPinned 31/31, recessionYears 31/31, yearZero.pov 31/31, yearZero.bleiPovNeutral 31/31, yearZero.bleiPovScenario 31/31
+seeds 1-30: key, engine mean, my mean, 2 SE, match
+  pov                               24.6800        24.6800     0.4617  yes
+  wealth                        383581.8333    383581.8333  9855.3391  yes
+  bleiMed                         1150.3667      1150.3667    28.8269  yes
+  gini                               0.5792         0.5792     0.0041  yes
+  bleiPovPct                        21.5533        21.5533     0.4669  yes
+  p10                           -10000.0000    -10000.0000     0.0000  yes
+  p90                          1351051.9333   1351051.9333 27924.6517  yes
+  pctFlourishing                    60.1667        60.1667     0.6407  yes
+  avgEDC                            28.8700        28.8700     0.1498  yes
+  fracAtFloor                        0.1695         0.1695     0.0050  yes
+  medianPinned                       0.0000         0.0000     0.0000  yes
+  recessionYears                     0.0000         0.0000     0.0000  yes
+  yearZero.pov                      37.8333        37.8333     0.8677  yes
+  yearZero.bleiPovNeutral           10.2333        10.2333     0.5582  yes
+  yearZero.bleiPovScenario           3.1267         3.1267     0.3502  yes
+
+## full_integration
+seed 42, key: mine / engine
+  pov                                15.8         15.8  same
+  wealth                           570661       570661  same
+  bleiMed                            1975         1975  same
+  gini                              0.518        0.518  same
+  bleiPovPct                         13.2         13.2  same
+  p10                               -6371        -6371  same
+  p90                             1708234      1708234  same
+  pctFlourishing                     71.0           71  same
+  avgEDC                             24.2         24.2  same
+  fracAtFloor                       0.088        0.088  same
+  medianPinned                      False        False  same
+  recessionYears                        0            0  same
+  yearZero.pov                       35.2         35.2  same
+  yearZero.bleiPovNeutral            10.6         10.6  same
+  yearZero.bleiPovScenario            2.2          2.2  same
+exact agreement, seeds compared: pov 31/31, wealth 31/31, bleiMed 31/31, gini 31/31, bleiPovPct 31/31, p10 31/31, p90 31/31, pctFlourishing 31/31, avgEDC 31/31, fracAtFloor 31/31, medianPinned 31/31, recessionYears 31/31, yearZero.pov 31/31, yearZero.bleiPovNeutral 31/31, yearZero.bleiPovScenario 31/31
+seeds 1-30: key, engine mean, my mean, 2 SE, match
+  pov                               15.6667        15.6667     0.5540  yes
+  wealth                        516640.5667    516640.5667 10301.6140  yes
+  bleiMed                         1776.8667      1776.8667    40.4717  yes
+  gini                               0.5210         0.5210     0.0044  yes
+  bleiPovPct                        12.7400        12.7400     0.5862  yes
+  p10                            -6762.7667     -6762.7667  1322.6690  yes
+  p90                          1515437.4667   1515437.4667 28634.9656  yes
+  pctFlourishing                    71.0400        71.0400     0.6368  yes
+  avgEDC                            24.9500        24.9500     0.1962  yes
+  fracAtFloor                        0.0935         0.0935     0.0047  yes
+  medianPinned                       0.0000         0.0000     0.0000  yes
+  recessionYears                     0.0000         0.0000     0.0000  yes
+  yearZero.pov                      37.8333        37.8333     0.8677  yes
+  yearZero.bleiPovNeutral           10.2333        10.2333     0.5582  yes
+  yearZero.bleiPovScenario           2.4667         2.4667     0.2781  yes
+
+## adverse
+seed 42, key: mine / engine
+  pov                                36.8         36.8  same
+  wealth                           205005       205005  same
+  bleiMed                             723          723  same
+  gini                              0.658        0.658  same
+  bleiPovPct                         32.4         32.4  same
+  p10                              -10000       -10000  same
+  p90                             1136600      1136600  same
+  pctFlourishing                     49.8         49.8  same
+  avgEDC                             32.3         32.3  same
+  fracAtFloor                       0.328        0.328  same
+  medianPinned                      False        False  same
+  recessionYears                        1            1  same
+  yearZero.pov                       35.2         35.2  same
+  yearZero.bleiPovNeutral            10.6         10.6  same
+  yearZero.bleiPovScenario            2.2          2.2  same
+exact agreement, seeds compared: pov 31/31, wealth 31/31, bleiMed 31/31, gini 31/31, bleiPovPct 31/31, p10 31/31, p90 31/31, pctFlourishing 31/31, avgEDC 31/31, fracAtFloor 31/31, medianPinned 31/31, recessionYears 31/31, yearZero.pov 31/31, yearZero.bleiPovNeutral 31/31, yearZero.bleiPovScenario 31/31
+seeds 1-30: key, engine mean, my mean, 2 SE, match
+  pov                               41.3467        41.3467     0.7109  yes
+  wealth                        132087.1333    132087.1333 10109.4654  yes
+  bleiMed                          477.6000       477.6000    36.8637  yes
+  gini                               0.6843         0.6843     0.0051  yes
+  bleiPovPct                        37.5800        37.5800     0.7404  yes
+  p10                           -10000.0000    -10000.0000     0.0000  yes
+  p90                           990584.4333    990584.4333 28550.2702  yes
+  pctFlourishing                    44.3800        44.3800     0.7651  yes
+  avgEDC                            33.1367        33.1367     0.1948  yes
+  fracAtFloor                        0.3749         0.3749     0.0067  yes
+  medianPinned                       0.0000         0.0000     0.0000  yes
+  recessionYears                     3.2667         3.2667     0.6283  yes
+  yearZero.pov                      37.8333        37.8333     0.8677  yes
+  yearZero.bleiPovNeutral           10.2333        10.2333     0.5582  yes
+  yearZero.bleiPovScenario           2.4667         2.4667     0.2781  yes
+
+## stress
+seed 42, key: mine / engine
+  pov                                59.8         59.8  same
+  wealth                           -10000       -10000  same
+  bleiMed                              16           16  same
+  gini                              0.785        0.785  same
+  bleiPovPct                         57.2         57.2  same
+  p10                              -10000       -10000  same
+  p90                              807015       807015  same
+  pctFlourishing                     28.0           28  same
+  avgEDC                             45.0           45  same
+  fracAtFloor                       0.574        0.574  same
+  medianPinned                       True         True  same
+  recessionYears                        1            1  same
+  yearZero.pov                       35.2         35.2  same
+  yearZero.bleiPovNeutral            10.6         10.6  same
+  yearZero.bleiPovScenario            6.6          6.6  same
+exact agreement, seeds compared: pov 31/31, wealth 31/31, bleiMed 31/31, gini 31/31, bleiPovPct 31/31, p10 31/31, p90 31/31, pctFlourishing 31/31, avgEDC 31/31, fracAtFloor 31/31, medianPinned 31/31, recessionYears 31/31, yearZero.pov 31/31, yearZero.bleiPovNeutral 31/31, yearZero.bleiPovScenario 31/31
+seeds 1-30: key, engine mean, my mean, 2 SE, match
+  pov                               62.6000        62.6000     0.8213  yes
+  wealth                        -10000.0000    -10000.0000     0.0000  yes
+  bleiMed                           16.4000        16.4000     0.2057  yes
+  gini                               0.8054         0.8054     0.0045  yes
+  bleiPovPct                        60.4667        60.4667     0.7588  yes
+  p10                           -10000.0000    -10000.0000     0.0000  yes
+  p90                           651920.0333    651920.0333 26782.0567  yes
+  pctFlourishing                    24.8800        24.8800     0.6258  yes
+  avgEDC                            44.5467        44.5467     0.1936  yes
+  fracAtFloor                        0.6000         0.6000     0.0076  yes
+  medianPinned                       1.0000         1.0000     0.0000  yes
+  recessionYears                     3.2667         3.2667     0.6283  yes
+  yearZero.pov                      37.8333        37.8333     0.8677  yes
+  yearZero.bleiPovNeutral           10.2333        10.2333     0.5582  yes
+  yearZero.bleiPovScenario           6.3267         6.3267     0.4354  yes
