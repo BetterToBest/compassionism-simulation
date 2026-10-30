@@ -366,6 +366,22 @@
    },
    "equal": true,
    "seconds": 181
+  },
+  {
+   "from": "bc0422920f8c3c370350e5836fffe18b0ef9bae34aa7e13c13ca1af49268dabb",
+   "to": "6f35bc221fb7a70df4ab93a794fd52d9c53bcad2eb52d193bf7e31704770210e",
+   "date": "2026-10-30",
+   "change": "S35: reporting keys plv_0..plv_39, hhDebt20, hhDebt40 (no draw); the debt reading DEBT_READ (per row c.dr; off = bit-identical)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 208
   }
  ]
 }
