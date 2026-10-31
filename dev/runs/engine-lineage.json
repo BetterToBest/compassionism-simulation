@@ -398,6 +398,22 @@
    },
    "equal": true,
    "seconds": 178
+  },
+  {
+   "from": "ca5b99d83ff2542506010200c2c641d2c35df1ab43477dac93d983283252a11d",
+   "to": "ceee382f088f653a0e2bf41513e830a54220402f441253ecf09cf742d39e1ce1",
+   "date": "2026-10-31",
+   "change": "S6: the coverage and adequacy switch C22 (row option c22: the Act's status rule, automatic distribution, the BU indexed to the C2.2 needs, coverage reporting), off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 196
   }
  ]
 }
