@@ -94,7 +94,7 @@ The same holds, less starkly, for adults who choose not to take part in the opt-
 | The C2.2 design with the status rule | better in 12 | 6.0 to 48.4 | 3.1 to 42.6 | 21,840 to 36,940 |
 | The C2.2 design, child allowance half | better in 12 | 7.4 to 55.9 | 8.0 to 59.1 | 30,020 to 44,110 |
 
-Automatic distribution on its own is not a clear gain. More people receive the BU and fewer are below the cost of living. But prices rise faster, and in the Adverse and Stress Test environments more adults end with too little wealth. Raising the BU's level is a gain in every cell. In this model, a larger BU lets more of it go to essentials before it expires.
+Automatic distribution on its own is not a clear gain. More people receive the BU and fewer are below the cost of living. But prices rise faster, and in the Adverse and Stress Test environments more adults end with too little wealth. Raising the BU's level is a gain in every cell, on both measures. This pilot does not break down why; the full report (S48) will.
 
 **Headline cell, against no programme:**
 
@@ -105,7 +105,7 @@ Automatic distribution on its own is not a clear gain. More people receive the B
 | The C2.2 design | 25.4 | 19.8 | $61,278 | 38.6 |
 | The C2.2 design, child allowance half | 26.0 | 20.2 | $68,213 | 41.5 |
 
-**Cost and prices.** The C2.2 design costs about $28,700 more per adult-year than the release row in the headline cell, close to doubling the programme's cost. The model's price level rises far faster with every programme row: by year 20 it is about 200 times its starting level with the release row, and about 440 times with the C2.2 design (headline cell; `plv_19`). The model's high inflation is a known result of the Source's financing (`dev/reports/pilot-studies.md`). Everything above is net of it, because all figures are in real terms.
+**Cost and prices.** The C2.2 design costs about $28,700 more per adult-year than the release row in the headline cell, close to doubling the programme's cost. The model's price level rises far faster with every programme row: by year 20 it is about 200 times its starting level with the release row, and about 440 times with the C2.2 design (headline cell; `plv_19`). The released model already has prices rising 23-51% a year under the Source's financing (`dev/reports/04-joining.md`). The shares below a line, and the costs in year-0 dollars, already take the price level into account.
 
 ## What this means for C2.2 (Claude's reading; the design choice is Duke's)
 1. **As written, the design does not meet C2.2.** Its BU covers about two-thirds of a single adult's basic needs, and it is limited by status (and, in one paper, by opting in). NEEC's 0.5 reading is supported by the model.
