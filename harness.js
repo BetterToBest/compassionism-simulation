@@ -2514,6 +2514,22 @@ function v54UnitSuite(){
       var Sg = tbStudy([sg], 2, P, so)[0]; if (!(Sg.c22PY === 100 && Sg.buPY === 100)) d.push('needs level, adults alone: ' + Sg.c22PY + ' ' + Sg.buPY); }
     finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
     return {pass:d.length === 0 && C22 === null && C22S === null, detail:d.slice(0, 6).join('; ') || 'ok'}; });
+  t('cost-of-living line (S14): a row at another line moves only that row; the line, basket, household ratios, childcare and project pay come back exactly; the needs level follows the line', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60}), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), d = [];
+    var snap = function(){ return JSON.stringify([CFG.LIVING_WAGE_ANNUAL, CFG.BASKET, CFG.HH_RATIO, CFG.HH_CHILDCARE, PROJ_DEFAULTS.pay]); }, s0 = snap(), bR = CFG.BASKET, rR = CFG.HH_RATIO, cR = CFG.HH_CHILDCARE;
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), M = relMainCfgs(tbPresets(P)).map(function(c){ return Object.assign(c, {sc:SPEND_SOURCED}); });
+      var cp = function(c, x){ return Object.assign(JSON.parse(JSON.stringify(c)), x); };
+      var A = tbStudy([M[0], M[1]], 2, P, so), R = tbStudy([cp(M[1], {lw:'ext'}), M[0], M[1], cp(M[0], {lw:'bea'})], 2, P, so);
+      [[0, 1, 'none'], [1, 2, 'main']].forEach(function(q){ TB_KEYS.forEach(function(k){ if (A[q[0]][k] !== R[q[1]][k] && !(isNaN(A[q[0]][k]) && isNaN(R[q[1]][k]))) d.push(q[2] + ' after a row at another line: ' + k); }); });
+      if (!(R[0].cost !== A[1].cost && R[3].fgt0PY !== A[0].fgt0PY)) d.push('the line moved nothing');
+      if (snap() !== s0 || CFG.BASKET !== bR || CFG.HH_RATIO !== rR || CFG.HH_CHILDCARE !== cR || LW !== null) d.push('not restored');
+      var sv = lwSet('ext'), L = CFG.LW_SETS.ext, n = c22NeedsBU(); lwReset(sv);
+      if (Math.abs(n - L.L*(L.basket.food + L.basket.housing + L.basket.medical)/12) > 1e-9) d.push('needs level at the line: ' + n);
+      var bs = 0; Object.keys(CFG.LW_SETS).forEach(function(k){ var b = CFG.LW_SETS[k].basket; bs = Math.max(bs, Math.abs(CFG.BASKET_KEYS.reduce(function(a, j){ return a + b[j]; }, 0) - 1)); });
+      if (bs > 1e-9) d.push('a line set\'s shares do not sum to 1: ' + bs);
+      var th = false; try { lwSet('none'); } catch (e){ th = true; } if (!th) d.push('an unknown line was accepted'); }
+    finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:d.length === 0 && LW === null && snap() === s0, detail:d.slice(0, 6).join('; ') || 'ok'}; });
   return out;
 }
 /* Session 2a (Oct 13, 2026; dev/reports/v5-25-health-today.md): the health setting's tests. */
@@ -2659,6 +2675,7 @@ function healthUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { C22_KEYS, C22_DEFAULTS, c22NeedsBU, c22Share });  /* S6 */
+Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
 Object.assign(module.exports, { tbCashIncome, SN_KEYS, SN_AB_KEYS, SNET_DEFAULTS, snBen, snAbClock, snAbCut, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
