@@ -1,8 +1,9 @@
-# Handoff (Oct 31, 2026): S37, the community and zone layer
+# Handoff (Oct 31, 2026): S6, C2.2 coverage and adequacy
 
 The project is now coordinated from BetterToBest/research-update (its HANDOFF.md and PLAN.md come first); this file records this repository's state.
 
 ## What shipped
+- Pull request 53 (S6): the coverage and adequacy switch `C22` (study row option `c22`: `u` the Act's status rule, `auto` automatic distribution, `idx: 'needs'` the BU indexed to the price of food, housing and medical care), `c22NeedsBU()` ($1,788.43 a month), and reporting keys `c22PY`, `c22R`, `buPY`, `elN`, `elF0`, `elW`, `elRes`. Off by default; guard test identical; lineage linked. Pull request 54: rounding tolerance in the coverage tally (preregistration amendment 1). Pull request 55: the pilot report `dev/reports/c22-coverage-adequacy.md`, tables in `dev/runs/c22-pilot/` (`dev/tools/c22_pilot.py`, from compassionism-sim-results `pilot-k-395dd5b`).
 - Pull request 52 (S37): the community and zone layer, switch `COMM` (study row option `cl`), off by default (guard test identical; engine lineage link to ca5b99d83ff2). It reads the three PTF density tests (food price cut at 40%, θ at 55-90%, the imitation term) per community, and with SZH places the starting PTF members together in zones. Reading and limits: `dev/reports/community-layer.md`; choices: `dev/DECISIONS.md` (S37). No study row with the layer has run; the preregistration addendum is research-update `prereg/2026-11-community-layer.md` (studies G, G10, H, I, J; headline at 10,000 adults).
 - Pull request 50 (S35, part 1): reporting keys `plv_0`..`plv_39`, `hhDebt20`/`hhDebt40`, and the debt reading `c.dr` (off by default). Engine commit `70d23be`, used by every pilot.
 - S35, part 2 (`claude/s35-pilot-studies`): `dev/reports/pilot-studies.md` (labelled pilot throughout), its tables and estimates in `dev/runs/pilot-studies/`, written by `dev/tools/pilot_studies.py` from BetterToBest/compassionism-sim-results `pilot-*-70d23be`. No engine change.
@@ -14,6 +15,7 @@ The project is now coordinated from BetterToBest/research-update (its HANDOFF.md
 - Full batch: about 230 runner-hours on Actions, 2 processes per runner. Report section 9 lists what S47 must add (nulls for keys past the run, design-neutral BLEI at year 20 in 40-year runs, a yearly-rate inflation reading, lower participation levels).
 
 ## Pitfalls
+- `c22` on a no-programme row only marks who is left out by status (identical outputs; unit test), so the same adults can be paired. Status is drawn per household on stream seed + 600067.
 - Study row option `cm` is the conversion model; the community layer is `cl`. With the layer on, rows without PTF are identical to the layer off, and one community (k at least the population) equals off exactly: keep it so (unit test in `v54UnitSuite`).
 - `earlier-engine.html` must be resynced after any engine edit: `python3 dev/tools/sync_earlier.py` (domtest fails otherwise).
 - A node_modules symlink in a worktree makes the run's manifest "dirty"; run studies from a clean worktree without it.

@@ -57,6 +57,61 @@ So the texts disagree on one point: the Act says distribution is automatic, whil
 - Under ageing (off in these rows), adults who enter later are all eligible.
 - Temporary visa holders are not modelled separately from the status share.
 
-## What comes next
+## What the pilot shows (PILOT: 100 seeds, 500 adults; not headline figures)
 
-The preregistered pilot (100 seeds, all three environments) gives the figures beside each design option. Those figures are added here and go to Duke as a ledger decision. The full rows join the S48 batch after the S47 design freeze.
+The figures come from compassionism-sim-results `pilot-k-395dd5b` (engine 395dd5b), analysed by `dev/tools/c22_pilot.py`. All tables, with 95% intervals for every cell, are in `dev/runs/c22-pilot/tables.md` and `estimates.csv`. There are twelve cells: three environments, 20 and 40 years, and two wage yardsticks. Below, "headline" means Reference, 20 years, CPS earnings. Every interval quoted excludes zero unless it says otherwise.
+
+An earlier run (`pilot-k-3e79adb`) stays published. A rounding error understated one measure in the five needs-level rows (preregistration amendment 1; engine pull request 54). Every other measure is identical, seed by seed, between the two runs.
+
+### 1. Coverage: who receives the BU
+
+| Design | Adult-years receiving the BU | Adult-years in which the BU covers housing, food and medical care | Mean share of those needs covered |
+|---|---|---|---|
+| As released (opt-in, everyone eligible, $1,200) | 83% (Stress Test: 43%) | **0%** | 65% (Stress Test: 26%) |
+| The Act as written (automatic; citizens and legal residents) | 96% | **0%** | 75% (Stress Test: 56%) |
+| Automatic, all residents, BU at the needs level and indexed to them (the "C2.2 design") | **100%** | **95%** | 99% |
+| The same, with a child allowance of half the adult BU | 100% | 97% | 100% |
+
+- **Coverage closes (rule 1)** only when distribution is automatic and nobody is excluded by status.
+- **Adequacy does not close in any row (rule 2).** Even the C2.2 design leaves 5% of adult-years uncovered (3% with the larger child allowance). These are all single parents: one seed's check found every single adult covered, every two-adult household covered, and single parents at 77% to 85% of their needs. A child allowance of a quarter of the adult BU is less than a child's share of housing, food and medical care.
+
+### 2. The adults the Act's status rule leaves out are made worse off by the programme (rule 3)
+Under every status row, in all 12 cells, the adults left out end with too little wealth far more often than the same adults with no programme: **8 to 53 points more**. Their real resources are $500 to $5,200 a year lower. Their share of years below the cost of living is about the same (headline: −0.0 points, interval −0.4 to 0.4) or higher, by up to 8 points (in Adverse and Stress, and under the released yardstick). The reason is that they bear the programme's price rises and receive none of the BU.
+
+The same holds, less starkly, for adults who choose not to take part in the opt-in design. In the headline cell, 25% of non-participants end with too little wealth, and 17% of their years are below the cost of living.
+
+### 3. Each option against the release row (rule 4; better = fewer adults below the cost of living AND fewer with too little wealth)
+
+| Option | Label in the 12 cells | Fewer adult-years below the cost of living (points) | Fewer adults with too little wealth (points) | Extra cost ($ per adult-year) |
+|---|---|---|---|---|
+| Status rule 4.1% (5.6%) | worse in 12 | −0.3 to −1.3 (−0.4 to −1.8) | −0.5 to +0.6 | −390 to −1,140 |
+| Automatic, all residents | better 5, mixed 1, worse 6 | 2.2 to 16.0 | −8.8 to +2.1 | 3,760 to 12,780 |
+| The Act as written | better 5, mixed 2, worse 5 | 1.5 to 14.9 | −8.5 to +1.7 | 2,770 to 11,890 |
+| BU $1,500 | better in 12 | 2.6 to 12.7 | 1.3 to 9.4 | 6,620 to 8,970 |
+| BU at the needs level, indexed as released | better in 12 | 3.9 to 21.6 | 6.7 to 27.4 | 10,750 to 19,350 |
+| BU at the needs level, needs-indexed | better in 12 | 4.4 to 23.5 | 7.3 to 33.6 | 10,900 to 21,970 |
+| **The C2.2 design** | **better in 12** | **7.0 to 51.1** | **2.9 to 44.7** | **23,660 to 38,720** |
+| The C2.2 design with the status rule | better in 12 | 6.0 to 48.4 | 3.1 to 42.6 | 21,840 to 36,940 |
+| The C2.2 design, child allowance half | better in 12 | 7.4 to 55.9 | 8.0 to 59.1 | 30,020 to 44,110 |
+
+Automatic distribution on its own is not a clear gain. More people receive the BU and fewer are below the cost of living. But prices rise faster, and in the Adverse and Stress Test environments more adults end with too little wealth. Raising the BU's level is a gain in every cell, on both measures. This pilot does not break down why; the full report (S48) will.
+
+**Headline cell, against no programme:**
+
+| | Fewer adult-years below the cost of living | Fewer adults with too little wealth | Programme cost per adult-year | Children: fewer child-years below the cost of living |
+|---|---|---|---|---|
+| As released | 17.1 points | 3.8 | $32,583 | 27.2 |
+| The Act as written | 18.8 | 5.3 | $36,286 | 26.8 |
+| The C2.2 design | 25.4 | 19.8 | $61,278 | 38.6 |
+| The C2.2 design, child allowance half | 26.0 | 20.2 | $68,213 | 41.5 |
+
+**Cost and prices.** The C2.2 design costs about $28,700 more per adult-year than the release row in the headline cell, close to doubling the programme's cost. The model's price level rises far faster with every programme row: by year 20 it is about 200 times its starting level with the release row, and about 440 times with the C2.2 design (headline cell; `plv_19`). The released model already has prices rising 23-51% a year under the Source's financing (`dev/reports/04-joining.md`). The shares below a line, and the costs in year-0 dollars, already take the price level into account.
+
+## What this means for C2.2 (Claude's reading; the design choice is Duke's)
+1. **As written, the design does not meet C2.2.** Its BU covers about two-thirds of a single adult's basic needs, and it is limited by status (and, in one paper, by opting in). NEEC's 0.5 reading is supported by the model.
+2. **Covering everyone is not enough on its own.** Automatic distribution to all residents reaches everyone, but the BU still covers the needs in no adult-year at $1,200.
+3. **A BU set at the needs level, indexed to them, and paid automatically to all residents comes close:** 95% of adult-years. It is better than the release row in every cell, at roughly twice the cost.
+4. **Single parents remain the gap.** Closing it needs a child allowance at a child's share of the needs. That row is not in this study and would be a new preregistered row.
+5. **Leaving people out of a programme that raises prices harms them.** This holds for the status rule and for opting out. It bears on C2.2's "for all residents" and on NEEC's harm criteria.
+
+Which option the design adopts goes to Duke as a ledger decision. The full 500-seed rows join the S48 batch after the S47 design freeze.
