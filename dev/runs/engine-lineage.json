@@ -382,6 +382,22 @@
    },
    "equal": true,
    "seconds": 208
+  },
+  {
+   "from": "6f35bc221fb7a70df4ab93a794fd52d9c53bcad2eb52d193bf7e31704770210e",
+   "to": "ca5b99d83ff2542506010200c2c641d2c35df1ab43477dac93d983283252a11d",
+   "date": "2026-10-31",
+   "change": "S37: the community and zone layer (COMM, row option cl), off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 178
   }
  ]
 }
