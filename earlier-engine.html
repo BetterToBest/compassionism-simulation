@@ -5909,7 +5909,7 @@ function runYear(agentSet,yr,p,recSt){
     var mainLoopCostUSD=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);
     if(PRICE)mainLoopCostUSD*=PRICE.bIdx;  // session 2: endogenous basket index
     if(HHA)mainLoopCostUSD*=a._hhF;  // v5.3 B3: this adult's share of the household's needs at the household's own prices
-    if(C22S&&tbY){var c2N=mainLoopCostUSD*(HHA?a._hhC22:c22Cur),c2B=(p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief)?12*buA:0;C22S.n++;if(c2B>0)C22S.b++;if(c2B>=c2N)C22S.k++;C22S.r+=c2N>0?Math.min(1,c2B/c2N):1;}  // S6: C2.2 coverage (reporting only)
+    if(C22S&&tbY){var c2N=mainLoopCostUSD*(HHA?a._hhC22:c22Cur),c2B=(p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief)?12*buA:0;C22S.n++;if(c2B>0)C22S.b++;if(c2B>=c2N*(1-1e-9))C22S.k++;C22S.r+=c2N>0?Math.min(1,c2B/c2N):1;}  // S6: C2.2 coverage (reporting only); amendment 1: covered within a relative 1e-9, so a BU equal to the needs is not lost to rounding
     if(hcOn)HCS.h+=mainLoopCostUSD*(hSA+hcX);  // v5.2 step 7: the rent bill of the adults the mark-up falls on
     if(EDCS){a._edcR=(p.pth&&a.inPTH)?0:mainLoopCostUSD*(hSA+hcX);a._edcInt=a._edcIntP||0;a._edcIntP=0;}  // v5.3 B6: rent to a landlord (housing with utilities, MIT; PTH payments are not extractive: the glossary's EDC = 0) and interest on debt
     if(FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // session 2, N3/N4: BU buy essentials at the agent's own prices, up to 12 x BU a year
