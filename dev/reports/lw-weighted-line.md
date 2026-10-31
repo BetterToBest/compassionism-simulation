@@ -129,7 +129,9 @@ Outside the headline cell, the release row's effect is *changed by the line* in 
 
 ### The released line (decision rule 3)
 
-ext and bea differ by 1.2% ($51,201 and $51,838), more than the 1% the rule requires, and neither is MIT's own figure. So no weighted line is adopted: the release keeps $49,370, labelled the unweighted mean of MIT's state figures, and study L's rows are published beside it. This would change only if MIT licenses its 51 state figures (ledger decision D9) or S47 records a different reason.
+ext and bea differ by 1.2% ($51,201 and $51,838), more than the 1% the rule requires, and neither is MIT's own figure. So no weighted line is adopted: the release keeps $49,370, labelled the unweighted mean of MIT's state figures, and study L's rows are published beside it. This would change only if the 51 state figures become available (MIT's licence, or the table behind ext) or S47 records a different reason.
+
+**Where the 51 state figures are (Oct 31).** Duke's answer to decision D9 was to look in the project's own repositories first. They were searched on Oct 31: the Simulation (every file and its whole history), NEEC (every file, and file names across its history) and the Research Hub. None holds the 51 state figures. Each holds only the two summary means from the outside review in v4.11: $23.7355 an hour unweighted (the current line) and $24.6160 weighted (ext). The 51 figures were in that review's reply and were never committed. If that reply can be found, ext can be recomputed exactly and checked state by state (ledger decision D10).
 
 ### What this means
 
