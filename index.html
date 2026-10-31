@@ -4820,6 +4820,25 @@ function c22Init(agents, seed){
 function c22Res(out, g, n){ var S = C22S;
   out.c22PY = S && S.n ? S.k/S.n*100 : 0; out.c22R = S && S.n ? S.r/S.n*100 : 0; out.buPY = S && S.n ? S.b/S.n*100 : 0;
   out.elN = g.k/Math.max(1, n)*100; out.elF0 = g.f0; out.elW = g.wp; out.elRes = g.res; return out; }
+/* S14 (Oct 31, 2026; research-update prereg/2026-11-lw-weighted-line.md; dev/reports/lw-weighted-line.md): the cost-of-living line at another level.
+ * CFG.LIVING_WAGE_ANNUAL ($49,370) is the unweighted mean of MIT's 51 state one-adult living wages. Three sets of constants are fitted at that level
+ * from the eight MIT state pages (sources/households.py): the basket shares CFG.BASKET, the household ratios CFG.HH_RATIO and the childcare dollars
+ * CFG.HH_CHILDCARE; project pay (PROJ_DEFAULTS.pay) is the line over 2,080 hours. Every other dollar that follows the line reads it when it runs.
+ * Study row option lw: a key of CFG.LW_SETS (sources/lw_line.py prints them): the line and the three sets refitted at it, by the same method. For that
+ * row only, lwSet writes them in place (the objects keep their identity) and lwReset puts the values back; the no-programme reference path is keyed
+ * by the line. Off by default (LW null): nothing changes and every figure is unchanged. No draw is added.
+ *  ext: $51,201.28, a population-weighted mean of MIT's 51 states computed outside the project (v4.11; not re-derived: MIT licenses data for more
+ *       than ten locations). bea: $51,837.76, the line x the population-weighted over unweighted ratio of a fit on BEA's price parities (sources/lw_bea.py). */
+CFG.LW_SETS = {"ext":{"L":51201.28,"basket":{"food":0.0884,"housing":0.2881,"medical":0.0653,"transport":0.1892,"civic":0.0657,"internet":0.0302,"other":0.0903,"taxes":0.1828},"ratio":{"1a0k":{"food":1.0,"housing":1.0,"medical":1.0,"transport":1.0,"civic":1.0,"internet":1.0,"other":1.0,"taxes":1.0},"1a1k":{"food":1.466864,"housing":1.361395,"medical":2.867701,"transport":1.157298,"civic":1.688056,"internet":1.0,"other":1.818302,"taxes":1.551209},"1a2k":{"food":2.197915,"housing":1.361395,"medical":2.916119,"transport":1.457795,"civic":2.226143,"internet":1.0,"other":1.987649,"taxes":2.270729},"1a3k":{"food":2.925249,"housing":1.776497,"medical":2.969052,"transport":1.677398,"civic":2.535163,"internet":1.0,"other":2.164198,"taxes":3.179257},"2a0k":{"food":1.833269,"housing":1.098858,"medical":2.169752,"transport":1.157298,"civic":1.688056,"internet":1.379819,"other":1.818302,"taxes":1.091745},"2a1k":{"food":2.275222,"housing":1.361395,"medical":3.171906,"transport":1.457795,"civic":2.226143,"internet":1.379819,"other":2.03575,"taxes":1.652083},"2a2k":{"food":2.926572,"housing":1.361395,"medical":3.270417,"transport":1.677398,"civic":2.535163,"internet":1.379819,"other":2.164198,"taxes":2.101813},"2a3k":{"food":3.570596,"housing":1.776497,"medical":3.380697,"transport":1.877953,"civic":2.838346,"internet":1.379819,"other":2.423008,"taxes":2.811523}},"care":[13341.57,12099.58,7936.27]},"bea":{"L":51837.76,"basket":{"food":0.0878,"housing":0.292,"medical":0.0643,"transport":0.1871,"civic":0.0655,"internet":0.0298,"other":0.0896,"taxes":0.1839},"ratio":{"1a0k":{"food":1.0,"housing":1.0,"medical":1.0,"transport":1.0,"civic":1.0,"internet":1.0,"other":1.0,"taxes":1.0},"1a1k":{"food":1.466869,"housing":1.362664,"medical":2.87653,"transport":1.157296,"civic":1.688058,"internet":1.0,"other":1.818302,"taxes":1.56048},"1a2k":{"food":2.197922,"housing":1.362664,"medical":2.925173,"transport":1.457792,"civic":2.226154,"internet":1.0,"other":1.987654,"taxes":2.292716},"1a3k":{"food":2.925258,"housing":1.779812,"medical":2.978362,"transport":1.677396,"civic":2.535178,"internet":1.0,"other":2.164201,"taxes":3.210037},"2a0k":{"food":1.833277,"housing":1.098208,"medical":2.177526,"transport":1.157296,"civic":1.688058,"internet":1.381231,"other":1.818302,"taxes":1.088714},"2a1k":{"food":2.275228,"housing":1.362664,"medical":3.182172,"transport":1.457792,"civic":2.226154,"internet":1.381231,"other":2.035754,"taxes":1.652747},"2a2k":{"food":2.926579,"housing":1.362664,"medical":3.281151,"transport":1.677396,"civic":2.535178,"internet":1.381231,"other":2.164201,"taxes":2.111923},"2a3k":{"food":3.570608,"housing":1.779812,"medical":3.391953,"transport":1.877951,"civic":2.838361,"internet":1.381231,"other":2.423011,"taxes":2.837382}},"care":[13490.28,12260.11,7975.38]}};
+var LW = null;
+function lwSet(id){
+  if (!id) return null; var L = CFG.LW_SETS[id]; if (!L) throw new Error('lw: no line ' + id);
+  var sv = {lw:LW, L:CFG.LIVING_WAGE_ANNUAL, b:Object.assign({}, CFG.BASKET), r:JSON.parse(JSON.stringify(CFG.HH_RATIO)), c:CFG.HH_CHILDCARE.slice(), pay:PROJ_DEFAULTS.pay};
+  CFG.LIVING_WAGE_ANNUAL = L.L; Object.assign(CFG.BASKET, L.basket); Object.keys(L.ratio).forEach(function(t){ Object.assign(CFG.HH_RATIO[t], L.ratio[t]); });
+  L.care.forEach(function(x, i){ CFG.HH_CHILDCARE[i] = x; }); PROJ_DEFAULTS.pay = L.L/2080; LW = id; return sv; }
+function lwReset(sv){
+  if (!sv) return; CFG.LIVING_WAGE_ANNUAL = sv.L; Object.assign(CFG.BASKET, sv.b); Object.keys(sv.r).forEach(function(t){ Object.assign(CFG.HH_RATIO[t], sv.r[t]); });
+  sv.c.forEach(function(x, i){ CFG.HH_CHILDCARE[i] = x; }); PROJ_DEFAULTS.pay = sv.pay; LW = sv.lw; }
 function clInit(agents, seed, p){
   var r = mulberry32(seed + 600059), n = agents.length, U = [], seen = {}, C = Math.max(1, Math.round(n/COMM.k)), s = n/C, cm = [], rest, M = 0;
   agents.forEach(function(a, j){ var H = a._hh; if (H){ if (seen[H.id]) return; seen[H.id] = 1; U.push({a:H.a.slice(), j:j}); } else U.push({a:[a], j:j}); });
@@ -6028,7 +6047,7 @@ var S3_CACHE = {};
 function s3BaseS(p, seed){
   var bp = baselineFor(p, true);
   if (p.years > bp.years) bp.years = p.years;  /* session 33: the supply path covers runs longer than the Baseline's 20 years (unchanged for 20) */
-  var k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed + '|' + JSON.stringify(HOUSEHOLDS) + '|' + JSON.stringify(SPEND_GRADE) + (DEBT_READ ? '|dr' + JSON.stringify(DEBT_READ) : '');  /* S35: + the debt reading (key unchanged when off). v5.3 B3: + households (the reference path of an economy of households); B7: + income-graded spending */
+  var k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed + '|' + JSON.stringify(HOUSEHOLDS) + '|' + JSON.stringify(SPEND_GRADE) + (DEBT_READ ? '|dr' + JSON.stringify(DEBT_READ) : '') + (LW ? '|lw' + LW : '');  /* S14: + the line (key unchanged when off) */  /* S35: + the debt reading (key unchanged when off). v5.3 B3: + households (the reference path of an economy of households); B7: + income-graded spending */
   if (!S3_CACHE[k]) S3_CACHE[k] = priceRun(bp, seed, {}, null).D;
   return S3_CACHE[k];
 }
@@ -6266,7 +6285,8 @@ function tbStudy(cfgs, N, envP, o0, lo){
   var out = cfgs.map(function(){ var r = {_s:{}}; TB_KEYS.forEach(function(k){ r[k] = 0; r._s[k] = new Float64Array(M); }); return r; });
   for (var sd = lo; sd <= N; sd++){
     var S = s3BaseS(envP, sd); HL_GOVREF = {};  /* session 2c (d194): each seed's no-programme health runs record government's share for its programme runs */
-    cfgs.forEach(function(c, i){ var cm0 = CONVERSION_MODEL, pw0 = Object.assign({}, PATHWAY_OFF); if (c.cm) CONVERSION_MODEL = c.cm;
+    cfgs.forEach(function(c, i){ var lw0 = lwSet(c.lw);  /* S14: the cost-of-living line for this row (first, so project pay follows it) */
+      var cm0 = CONVERSION_MODEL, pw0 = Object.assign({}, PATHWAY_OFF); if (c.cm) CONVERSION_MODEL = c.cm;
       if (c.pw) Object.assign(PATHWAY_OFF, c.pw);  /* d19: e.g. {octaveWage:true}, the octave wage bonus off for this row only */
       var g0 = tbSetG(c.g);  /* session 7: per-row engine-question switches (i3), restored below */
       var pj0 = PROJ; if (c.pj) PROJ = Object.assign({}, PROJ_DEFAULTS, c.pj === true ? {} : c.pj);  /* N1 (session 15): project hiring for this row only */
@@ -6296,7 +6316,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var sn0 = SNET; if (c.sn) SNET = Object.assign({}, SNET_DEFAULTS, c.sn === true ? {} : c.sn);  /* session 2b: today's safety net for this row */
       var pv0 = PREV; if (c.pv) PREV = Object.assign({}, PREV_DEFAULTS, c.pv === true ? {} : c.pv);  /* session 2c: the prevention link for this row */
       var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? (CFG.CPS_EARN[c.lt.s] ? CFG.CPS_EARN[c.lt.s].sigma : CFG.SCF_WAGE_SIGMA) : 0, wmed:c.lt.m ? (CFG.CPS_EARN[c.lt.m] ? CFG.CPS_EARN[c.lt.m].median : CFG.SCF_WAGE_MEDIAN) : 0};  /* v5.2 step 5: {w, r, s, m} flags; S34: s, m 'all' or 'ft' read the CPS's earnings (CFG.CPS_EARN) */
-      try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS || SPEND_GRADE ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
+      try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS || SPEND_GRADE || LW ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
         if (r.dsHit !== undefined) DIS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 5 */
@@ -6311,7 +6331,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.rkEv !== undefined) RISK_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 1 */
         if (r.edcM !== undefined) EDC_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B6 */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; COMM = cl0; CMS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; } });
+      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; COMM = cl0; CMS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;
