@@ -9,8 +9,8 @@ A different line moves all three, so a run at another line needs them refitted, 
   python3 sources/lw_line.py 51201.28     one line
 
 The lines (dev/reports/lw-weighted-line.md):
-  ext  $51,201.28 = $24.6160 an hour x 2,080: a population-weighted mean of MIT's 51 state figures computed outside the project (an outside AI review,
-       v4.11), with Census Vintage 2025 weights; five state figures and the population total were checked against MIT, the mean was not re-derived.
+  ext  $51,201.28 = $24.6160 an hour x 2,080: the population-weighted mean of MIT's 51 state figures (first reported by an outside AI review,
+       v4.11), Census Vintage 2025 weights; re-derived Oct 31, 2026 to the cent by sources/lw_check_ext.py.
   bea  $51,838: the current line x 1.0500, the ratio of the population-weighted to the unweighted mean of a fit of MIT's one-adult pre-tax total on
        BEA's all-items Regional Price Parity (2024) across the eight states, applied to all 51 (Census Vintage 2025 populations). sources/lw_bea.py.
 MIT's terms allow web use of at most ten locations; more needs a licence, so the 51 state figures are not pulled here.

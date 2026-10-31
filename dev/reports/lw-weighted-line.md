@@ -19,12 +19,22 @@ An earlier decision (dev/DECISIONS.md, the cost-of-living line, "fix later") kep
 | Line | Dollars a year | Over the current line | Basis |
 |---|---|---|---|
 | base (current) | $49,370 | | MIT, unweighted mean of the 51 state figures |
-| ext | $51,201 | +3.7% | Population-weighted mean of the 51 MIT figures ($24.6160 an hour), computed outside the project in v4.11 (an AI review, Census Vintage 2025 weights). Five states and the population total were checked; the mean itself was not re-derived. |
+| ext | $51,201 | +3.7% | Population-weighted mean of the 51 MIT figures ($24.6160 an hour), first reported by an outside AI review in v4.11 (Census Vintage 2025 weights). **Re-derived Oct 31** (`sources/lw_check_ext.py`, below): $51,201.27, one cent from the figure used. |
 | bea | $51,838 | +5.0% | This step's own estimate (`sources/lw_bea.py`), described below. Leaving out one state at a time gives $51,708 to $51,995. |
 
 **How the bea estimate works.** The eight MIT state pages already held give each state's one-adult budget before tax. Across those eight states, the budget tracks BEA's Regional Price Parity (the federal government's index of each state's price level, all items, 2024) closely: a straight line fits with R² = 0.964. Applying that line to all 51 states' price parities gives a predicted budget for every state. The ratio of the population-weighted mean of those predictions (Census Vintage 2025 populations) to their plain mean is 1.0500. The current line × 1.0500 = $51,838. Only the ratio is used, not the predicted level, so the eight states' own bias largely cancels. Both sources are US federal data in the public domain. Using other BEA series instead of all items gives ratios from 1.019 (utilities, R² 0.79) to 1.048 (housing, R² 0.88). All items fits best.
 
-**Reading.** The two estimates agree that weighting raises the line by about 4 to 5%, which is $1,800 to $2,500 a year. They differ by about $640, and neither is MIT's own weighted mean. The study runs both beside the current line. The model does not adopt either one (see 4).
+**Reading.** The two estimates agree that weighting raises the line by about 4 to 5%, which is $1,800 to $2,500 a year. They differ by about $640. The study runs both beside the current line. The model does not adopt either one (see 4).
+
+### ext re-derived from MIT's 51 figures (Oct 31)
+
+After the study ran, the outside review's source was found: a Money Talks News article ("How much is really a living wage in every state") that republishes MIT's "Required annual income before taxes" for one adult with no children, for the 50 states. Duke copied the table from the page (the site refuses automated access). DC is not in it; its figure is MIT's $26.72 an hour, read directly from MIT's site in v4.11. `sources/lw_check_ext.py` runs the check. The 51 figures are not committed, because of MIT's ten-location limit. The input file is identified by its SHA-256.
+
+- The eight states held in `sources/mit_household_types.json` equal the article's figures exactly, to the dollar (Alabama, California, Connecticut, Hawaii, Idaho, Indiana, Maine, West Virginia).
+- Plain mean of the 51 hourly living wages (annual ÷ 2,080, to the cent): $23.7357, which is $49,370.23 a year. The line is $49,369.82, $0.41 away; the third-party table the line came from must differ by a cent or two in one place.
+- Population-weighted mean (Census Vintage 2025, total 341,784,857, the same total the review used): $24.6160, which is **$51,201.27 a year**. ext is $51,201.28. Moving DC's figure by 5 cents either way moves this by under $0.25.
+- So ext is the population-weighted mean of MIT's own February 2026 figures. The weighting ratio is 1.0371. bea's ratio (1.0500) overstates it by 1.2%: BEA's price levels spread wider across states, weighted by population, than MIT's budgets do.
+
 
 ## 2. What else is fitted at the line
 
@@ -129,9 +139,11 @@ Outside the headline cell, the release row's effect is *changed by the line* in 
 
 ### The released line (decision rule 3)
 
-ext and bea differ by 1.2% ($51,201 and $51,838), more than the 1% the rule requires, and neither is MIT's own figure. So no weighted line is adopted: the release keeps $49,370, labelled the unweighted mean of MIT's state figures, and study L's rows are published beside it. This would change only if the 51 state figures become available (MIT's licence, or the table behind ext) or S47 records a different reason.
+ext and bea differ by 1.2% ($51,201 and $51,838), more than the 1% the rule allows. Rule 3's other route is a weighted figure that is MIT's own, from licensed data. Since Oct 31, ext is known to be the weighted mean of MIT's own figures (section 1), but they come from a published third-party table, not a licence. The current line, $49,370, comes from the same kind of table. The rule leaves the choice to S47 (design freeze), so this study adopts nothing: the release keeps $49,370 for now, and study L's rows are published beside it.
 
-**Where the 51 state figures are (Oct 31).** Duke's answer to decision D9 was to look in the project's own repositories first. They were searched on Oct 31: the Simulation (every file and its whole history), NEEC (every file, and file names across its history) and the Research Hub. None holds the 51 state figures. Each holds only the two summary means from the outside review in v4.11: $23.7355 an hour unweighted (the current line) and $24.6160 weighted (ext). The 51 figures were in that review's reply and were never committed. If that reply can be found, ext can be recomputed exactly and checked state by state (ledger decision D10).
+**Claude's recommendation to S47:** adopt ext ($51,201) as the line, with the $49,370 rows kept beside it. It uses MIT's data the same way the current line does, as one national mean of the 51 state figures, so it needs a licence no more than the current line does. It is the consistent comparison for wages drawn from a national survey. And the release row's findings do not change between the two lines in the headline cell (above). If S47 adopts it, the fitted sets are those `sources/lw_line.py` prints for ext, and the release keeps the base rows as a sensitivity.
+
+**Where the 51 state figures are (Oct 31).** Duke's answer to decision D9 was to look in the project's own repositories first. They were searched on Oct 31: the Simulation (every file and its whole history), NEEC (every file, and file names across its history) and the Research Hub. None holds the 51 state figures. Each holds only the two summary means from the outside review in v4.11: $23.7355 an hour unweighted (the current line) and $24.6160 weighted (ext). The 51 figures were in that review's reply and were never committed. Duke then found the review's source page (decision D10), and ext was re-derived from it (section 1).
 
 ### What this means
 
@@ -142,7 +154,7 @@ ext and bea differ by 1.2% ($51,201 and $51,838), more than the 1% the rule requ
 
 ## Limits
 
-- Neither weighted figure is MIT's own. ext was computed outside the project and was only partly checked. bea assumes MIT's budget varies across states the way BEA's price level does.
+- ext is MIT's own weighted mean (re-derived Oct 31 from a third-party copy of MIT's table, checked against the eight MIT pages held), but not from licensed data. bea assumes MIT's budget varies across states the way BEA's price level does, and overstates the weighting by 1.2%.
 - The shares are fitted on eight states. At a line further from the middle of those eight, the fit relies more on the straight-line assumption: the eight totals run from $40,627 to $64,504, so $51,838 is well inside.
 - One national line for everyone. The model has no regions, so a weighted line is still one figure for the whole country.
 - MIT's data are 2026 prices (the engine reads them as 2025 dollars, as before). BEA's price parities are for 2024, and Census populations for July 2025. The ratio barely moves from year to year, but the dates differ.
