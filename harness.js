@@ -2509,7 +2509,9 @@ function v54UnitSuite(){
       if (!(R[5].elN === 100 && R[5].buPY === 0 && R[5].c22PY === 0 && R[5].jnP19 === 0)) d.push('u 1: ' + R[5].elN + ' ' + R[5].buPY);
       if (!(R[6].buPY === 100 && R[6].buPY > R[3].buPY)) d.push('auto: ' + R[6].buPY + ' against ' + R[3].buPY);
       if (!(Math.abs(R[7].buPY + R[7].elN - 100) < 1e-9)) d.push('auto with u: ' + R[7].buPY + ' + ' + R[7].elN);
-      if (Math.abs(c22NeedsBU() - CFG.LIVING_WAGE_ANNUAL*(CFG.BASKET.food + CFG.BASKET.housing + CFG.BASKET.medical)/12) > 1e-9) d.push('needs level'); }
+      if (Math.abs(c22NeedsBU() - CFG.LIVING_WAGE_ANNUAL*(CFG.BASKET.food + CFG.BASKET.housing + CFG.BASKET.medical)/12) > 1e-9) d.push('needs level');
+      var sg = cp(M[1], {c22:{auto:true, idx:'needs'}}); delete sg.hh; sg.p = Object.assign({}, sg.p, {bu:c22NeedsBU()});  /* amendment 1: adults alone, BU at the needs level and indexed to them: every adult-year covered (no loss to rounding) */
+      var Sg = tbStudy([sg], 2, P, so)[0]; if (!(Sg.c22PY === 100 && Sg.buPY === 100)) d.push('needs level, adults alone: ' + Sg.c22PY + ' ' + Sg.buPY); }
     finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
     return {pass:d.length === 0 && C22 === null && C22S === null, detail:d.slice(0, 6).join('; ') || 'ok'}; });
   return out;

@@ -414,6 +414,22 @@
    },
    "equal": true,
    "seconds": 196
+  },
+  {
+   "from": "ceee382f088f653a0e2bf41513e830a54220402f441253ecf09cf742d39e1ce1",
+   "to": "088ff0f55a3d91dd95aeaa8e85b3aab5184499a0e10d4738686b11ea6799a1b0",
+   "date": "2026-10-31",
+   "change": "S6 amendment 1: the C2.2 coverage tally counts a BU equal to the needs as covering them (relative tolerance 1e-9; reporting only)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 193
   }
  ]
 }
