@@ -2487,6 +2487,17 @@ function v54UnitSuite(){
       if (!(X[1].emUrate > 0) || !(X[1].pbV > 0) || !(X[1].pfCut > 0)) d.push('parts not on'); }
     finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
     return {pass:bad.length === 0 && d.length === 0, detail:R.length + ' rows, ' + B.length + ' no-programme pairs; problems: ' + (bad.concat(d).slice(0, 8).join('; ') || 'none')}; });
+  t('community layer (S37): one community equals the layer off; without PTF it changes nothing; with zones it places members together', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60}), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000; var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), d = [];
+    try { var so = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), M = relMainCfgs(tbPresets(P)).map(function(c){ return Object.assign(c, {sc:SPEND_SOURCED}); });
+      var noF = JSON.parse(JSON.stringify(M[1])); noF.p.ptf = false;
+      var R = tbStudy([M[0], M[1], noF, Object.assign({}, M[0], {cl:{}}), Object.assign({}, M[1], {cl:{}}), Object.assign(JSON.parse(JSON.stringify(noF)), {cl:{k:10}})], 2, P, so);
+      [[0, 3, 'none'], [1, 4, 'one community'], [2, 5, 'no PTF']].forEach(function(q){ TB_KEYS.concat(PTFS_KEYS).forEach(function(k){ if (R[q[0]][k] !== R[q[1]][k] && !(isNaN(R[q[0]][k]) && isNaN(R[q[1]][k]))) d.push(q[2] + ' ' + k); }); });
+      if (R[4].clN !== 1 || R[0].clN !== undefined) d.push('keys: ' + R[4].clN + ' ' + R[0].clN);
+      var P4 = Object.assign({}, FULL_INTEGRATION, {nAgents:400}), M4 = relMainCfgs(tbPresets(P4)), Z = tbStudy([Object.assign(M4[1], {cl:{}})], 1, P4, so)[0];
+      if (!(Z.clN === 4 && Z.clZ >= 1 && Z.clHi > 0)) d.push('zones: ' + Z.clN + ' ' + Z.clZ + ' ' + Z.clHi); }
+    finally { resetNR6(svN); tbSetG(svG); CFG.WEALTH_FLOOR = wf0; }
+    return {pass:d.length === 0 && COMM === null && CMS === null, detail:d.slice(0, 6).join('; ') || 'ok'}; });
   return out;
 }
 /* Session 2a (Oct 13, 2026; dev/reports/v5-25-health-today.md): the health setting's tests. */
@@ -2631,7 +2642,7 @@ function healthUnitSuite(){
     return {pass:cnt[0] === 8*60*7 && cnt[1] === 2*cnt[0] && d.length === 0, detail:'main-stream draws ' + cnt.join(' / ') + ' (off / two rows on; expected ' + 8*60*7 + ' per row); chronic share, high case, A / B ' + (Y ? Y[0].hlChron.toFixed(1) + ' / ' + Y[1].hlChron.toFixed(1) : '') + '; problems: ' + (d.slice(0, 6).join('; ') || 'none')}; });
   return out;
 }
-Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
+Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
 Object.assign(module.exports, { tbCashIncome, SN_KEYS, SN_AB_KEYS, SNET_DEFAULTS, snBen, snAbClock, snAbCut, snIncTax, avoidWide, avoidHomelessHl });  /* session 2b: today's safety net */
 module.exports.snBenAt = function(o, h, earn){ var sv = SNET; SNET = Object.assign({}, SNET_DEFAULTS, o || {}); try { return snBen(h, earn); } finally { SNET = sv; } };  /* S34: one household's benefits under the safety-net settings o, from outside (dev/tools/sn_households.js); reporting only */
