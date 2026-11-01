@@ -7,6 +7,7 @@ Usage: python3 dev/packets/build_s50_packet.py <reference dir> <coverage dir> <c
 import hashlib, json, os, sys, zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ref, cov, cfg, out = sys.argv[1:5]
+note = sys.argv[5] if len(sys.argv) > 5 else ''  # optional free-text note for run.txt
 files = {  # packet path -> bytes
     '00-START-HERE.md': open(os.path.join(ROOT, 'dev/packets/s50-brief.md'), 'rb').read(),
     '01-PROMPT-to-paste.md': open(os.path.join(ROOT, 'dev/packets/s50-prompt.md'), 'rb').read(),
@@ -42,6 +43,9 @@ run = ['S50 packet: how it was made', '',
        'Reference runs:']
 for e in ('ref', 'adv', 'st'):
     m = man[e]; run.append('  %s: commit %s, dirty %s, %.0f s' % (e, m['commit'], m['dirty'], m['seconds']))
+run.append('')
+run.append('"dirty" means a tracked file was being edited while that run went; the engine hashes are asserted equal for all three reference files and the config, so no engine file differed.')
+if note: run += ['', note]
 run.append('')
 files['run.txt'] = ('\n'.join(run) + '\n').encode()
 files['SHA256SUMS'] = ''.join('%s  %s\n' % (sha(files[k]), k) for k in sorted(files)).encode()
