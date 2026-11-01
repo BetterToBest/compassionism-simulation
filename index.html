@@ -4041,6 +4041,19 @@ var SPEND_GRADE = null;
  * floor still applies to job loss, shocks and every other flow. No random draw. Per row: c.dr ({} or true = {lim:0}). */
 var DEBT_READ = null;
 function drExtra(inc, cost, cut, w0){ var ex = cost - cut - Math.max(0, inc), ok = Math.max(0, w0 + DEBT_READ.lim); return ex > ok ? ex - ok : 0; }  /* S35: the further cut (0 when the excess is covered) */
+/* S13 (Oct 31, 2026; outside audit of the engine, dev/reports/s13-engine-audit.md): corrections found by the audit, each its own part, all off by default
+ * (null = off, as released; every released figure is unchanged). Per row: c.au (true = the three corrections {gate, sg, fbs}; or an object naming parts).
+ *  gate  the BLEI gate on the wage bonus (and the PTF adoption term that reads the same BLEI) in year-0 prices, divided by the year's price level, as
+ *        every reported BLEI figure is (audit E3). As released the gate compares this year's dollars with the fixed $68.33 a day.
+ *  sg    income-graded spending on all of the year's cash income: as released it reads wages, Social Security, cash grants, unemployment insurance
+ *        and the safety net, and leaves out conversion income (projects, business payouts, the ESP premium) and the testbed's transfers less its
+ *        contribution, which are added later in the year (audit E4).
+ *  fbs   the financial-stability score that drives octave advancement (framework conversion) in year-0 dollars, divided by the year's price level,
+ *        since its lambda is set in year-0 dollars (audit E7).
+ *  wOut  a reading, not a correction (not in c.au === true): wages also follow the environment's outside inflation (inflRate, 2% a year in Adverse
+ *        and Stress), added to wage growth as the programme's own price rise is (audit E5). As released wages follow only the programme's price level.
+ * No random draw in any part. */
+var AUD = null;
 /* v5.3 B7 (Oct 7, 2026; plan item B7, "FBS lambda -> FBS50"; dev/DECISIONS.md Session 39, "B7"): FBS50, the advancement rule in interpretable units. The
  * chance of advancing an octave in a year is 1 - exp(-lambda x FBS) (BLEI paper, Index IV); FBS50 = ln 2 / lambda is the monthly free bandwidth surplus at
  * which that chance is even ($524 to $4,191 a month over the model's lambda range, CFG.FBS_HALF_SAT_LO/HI). null (the default) leaves the rule as it is.
@@ -5610,17 +5623,17 @@ function runYear(agentSet,yr,p,recSt){
       a._fwBUm=Math.min(12*buA,gCost*gEss)/12;
     }
     var bleiCheck=agentBLEI(a,buA,p.ccoOn,p.pth,p.szh,p.szhCoh,p.ptf);
-    var tbNB=tbY?tbGate(a,p,buA,tbY):0,wg=CFG.WAGE_BASE_GROWTH,bleiGate=(tbY&&TB.neutralGate)?tbNB:bleiCheck;  // session 6 (d28): design-neutral gate for the wage bonus (testbed only)
+    var tbNB=tbY?tbGate(a,p,buA,tbY):0,wg=CFG.WAGE_BASE_GROWTH,bleiGate=(tbY&&TB.neutralGate)?tbNB:bleiCheck;if(AUD&&AUD.gate)bleiGate/=priceIdx;  // S13 gate: year-0 prices  // session 6 (d28): design-neutral gate for the wage bonus (testbed only)
     var bleiProg=0;a._bleiR=0;a._bleiP=0;  // session 9 (i3-2): harness-only attribution of the BLEI raise (no RNG)
     if(bleiGate>CFG.BLEI_PRECARIOUS_MAX&&!PATHWAY_OFF.bleiWage){  // v4.21: harness-only pathway switch
       var drFactor=1/(1+0.5*Math.max(0,a.wage/CFG.WAGE_MEDIAN_SIU-1));
       wg+=CFG.WAGE_BLEI_BONUS*Math.max(0.1,drFactor);
-      a._bleiR=1;if(!(agentBLEI(a,0,false,false,false,0,false)>CFG.BLEI_PRECARIOUS_MAX)){a._bleiP=1;if(N7_BLEI)bleiProg=CFG.WAGE_BLEI_BONUS*Math.max(0.1,drFactor);}
+      a._bleiR=1;if(!(agentBLEI(a,0,false,false,false,0,false)/(AUD&&AUD.gate?priceIdx:1)>CFG.BLEI_PRECARIOUS_MAX)){a._bleiP=1;if(N7_BLEI)bleiProg=CFG.WAGE_BLEI_BONUS*Math.max(0.1,drFactor);}
     }
     if(!PATHWAY_OFF.octaveWage)wg+=a.octave*CFG.WAGE_OCTAVE_BONUS;  // v4.21: harness-only pathway switch
     if(p.cip)wg+=p.cipDemo*0.005;
     if(LABOR&&a._lwNB===undefined)a._lwNB=a.wage;  // session 4 (A3): the wage without program-induced raises
-    if(PRICE){if(a._wNB===undefined)a._wNB=a.wage;if(PRICE.wIdx)wg+=PRICE.wIdx*PRICE.piG;}  // session 2: wage indexation to P_G (price module; 0 = nominal drift)
+    if(PRICE){if(a._wNB===undefined)a._wNB=a.wage;if(PRICE.wIdx)wg+=PRICE.wIdx*PRICE.piG;}if(AUD&&AUD.wOut)wg+=inflRate;  // S13 wOut (a reading)  // session 2: wage indexation to P_G (price module; 0 = nominal drift)
     if(!(EMPL&&EMPL.auto==='jobs'))wg-=popAIDisp*((typeof a.automationRisk==='number'&&!isNaN(a.automationRisk))?a.automationRisk:0.5);  /* v4.17 parity: `||0.5` read a draw of exactly 0 as 0.5 */
     a.wage=Math.max(a.wage*0.80,a.wage*(1+wg));
     if(isNaN(a.wage))a.wage=1;
@@ -5704,7 +5717,7 @@ function runYear(agentSet,yr,p,recSt){
     var costUSD=mainLoopCostUSD*cf;
     if(HEALTH&&HLS&&a._hlD)costUSD+=a._hlD*HLS.mIdx;  // session 2a: the household's medical bill above (or below) its basket line, in cash, at medical prices
     a.wealth+=annualWageUSD-costUSD;
-    if(SPEND_GRADE){var grA=annualWageUSD+(a._ret?a._ssY:0)+(p.ubi>0?p.ubi:0)+(emQ?emQ.ui:0);if(SNET&&SNS&&a._snB)grA+=a._snB;a._grCut=0;if(HHP){a._grA=grA;a._grC=costUSD;}else if(costUSD>0&&grA<costUSD){a._grCut=costUSD-costUSD*Math.pow(Math.max(0,grA)/costUSD,SPEND_GRADE.eps);if(DEBT_READ)a._grCut+=drExtra(grA,costUSD,a._grCut,a.yrWealthStartUSD);a.wealth+=a._grCut;if(ACCT)a._acGr=a._grCut;}}  // v5.3 B7: less income, less spending (off by default)
+    if(SPEND_GRADE&&!(AUD&&AUD.sg)){var grA=annualWageUSD+(a._ret?a._ssY:0)+(p.ubi>0?p.ubi:0)+(emQ?emQ.ui:0);if(SNET&&SNS&&a._snB)grA+=a._snB;a._grCut=0;if(HHP){a._grA=grA;a._grC=costUSD;}else if(costUSD>0&&grA<costUSD){a._grCut=costUSD-costUSD*Math.pow(Math.max(0,grA)/costUSD,SPEND_GRADE.eps);if(DEBT_READ)a._grCut+=drExtra(grA,costUSD,a._grCut,a.yrWealthStartUSD);a.wealth+=a._grCut;if(ACCT)a._acGr=a._grCut;}}  // v5.3 B7: less income, less spending (off by default)
     a.yrSSUSD=a._ret?a._ssY:0;if(a._ret){a.wealth+=a._ssY;if(LEDGER)ledAdd(yr,'ssBenefit',a._ssY);}  // v5.2 step 4: the Social Security benefit (money income)
     if(SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='wage'&&!HHP)a.wealth-=SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD);  // v4.21: harness-only (saving mode)
     if(ACCT&&SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='wage'&&!HHP)a._acSc+=SURPLUS_CONSUMPTION_SHARE*Math.max(0,annualWageUSD-costUSD);  // v5.3 B2
@@ -5761,7 +5774,7 @@ function runYear(agentSet,yr,p,recSt){
       a._fwPW=capBU*Math.max(0,a.quality);FWS.next.pwSum+=a._fwPW;
       if(a.octave<p.maxOct){  // as in the engine branch, except that the monthly basic cost is read before the BU purchase, since BU is added as income here
         var YusdF=a.wage*CFG.WAGE_TO_USD,cBasicF=(dcA*cfPreCCO)/12,edcF=(p.pth&&a.inPTH)?CFG.FBS_EDC_RESIDUAL_PTH:CFG.FBS_EDC_RESIDUAL_BASE;
-        var fbsF=Math.max(0,YusdF+buA-cBasicF-edcF*YusdF),lamF=(typeof a.lambda==='number'&&!isNaN(a.lambda))?a.lambda:(CFG.FBS_LAMBDA_LO+CFG.FBS_LAMBDA_HI)/2;
+        var fbsF=Math.max(0,YusdF+buA-cBasicF-edcF*YusdF)/(AUD&&AUD.fbs?priceIdx:1),lamF=(typeof a.lambda==='number'&&!isNaN(a.lambda))?a.lambda:(CFG.FBS_LAMBDA_LO+CFG.FBS_LAMBDA_HI)/2;
         if(p.cip)lamF*=(1+p.cipDemo*CFG.FBS_CIP_LAMBDA_BOOST);
         if(FBS50){if(FBS50.dist!=='lambda'||(FBS50.scale||1)!==1){lamF=Math.LN2/fbs50Of(a.lambda);if(p.cip)lamF*=(1+p.cipDemo*CFG.FBS_CIP_LAMBDA_BOOST);}if(FBSS&&tbY){var fbK=!!(a._hh&&a._hh.kids.length);FBSS.n++;if(lamF*fbsF>=Math.LN2)FBSS.a++;if(fbK){FBSS.nK++;if(lamF*fbsF>=Math.LN2)FBSS.aK++;}if(yr===0)FBSS.f.push(Math.LN2/lamF);}}  // v5.3 B7: FBS50 (off by default)
         if(uAdvance<1-Math.exp(-lamF*fbsF)&&!PATHWAY_OFF.octave&&!(OCT&&yr-(a._ocY||0)<OCT.gap)){a.octave++;if(OCT)a._ocY=yr;}  // plan step 6: OCT gap (sensitivity)
@@ -5851,8 +5864,10 @@ function runYear(agentSet,yr,p,recSt){
     } else if(a.pthTenure){
       a.pthTenure=0;
     }
-    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&!(HHA&&!a._hhHead)&&ptfCapAllows()){var ap=0.005+CFG.PTF_BASS_Q*(CMS&&COMM.bass!=='pop'?CMS.sh[a._cm]:ptfAdoptFrac);if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap){a.inPTF=true;if(p.ptfCap)ptfLiveCount++;if(PDON)pdLive++;}}
-    else if(PDON&&PROD.speed==='oneyear'&&p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&!(HHA&&!a._hhHead)&&(!p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare)){var apB=0.005+CFG.PTF_BASS_Q*(CMS&&COMM.bass!=='pop'?CMS.sh[a._cm]:ptfAdoptFrac);if(bleiCheck<CFG.BLEI_PRECARIOUS_MAX)apB+=0.015;if(uPtfAdopt<apB)PDS.blk++;}  // plan step 15: turned away for lack of PTF capacity
+    if(p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&!(HHA&&!a._hhHead)&&ptfCapAllows()){var ap=0.005+CFG.PTF_BASS_Q*(CMS&&COMM.bass!=='pop'?CMS.sh[a._cm]:ptfAdoptFrac);if(bleiCheck/(AUD&&AUD.gate?priceIdx:1)<CFG.BLEI_PRECARIOUS_MAX)ap+=0.015;if(uPtfAdopt<ap){a.inPTF=true;if(p.ptfCap)ptfLiveCount++;if(PDON)pdLive++;}}
+    else if(PDON&&PROD.speed==='oneyear'&&p.ptf&&!a.inPTF&&p.ptfShare>0&&yr>0&&!(HHA&&!a._hhHead)&&(!p.ptfCap||ptfLiveCount<ptfLiveTotal*p.ptfShare)){var apB=0.005+CFG.PTF_BASS_Q*(CMS&&COMM.bass!=='pop'?CMS.sh[a._cm]:ptfAdoptFrac);if(bleiCheck/(AUD&&AUD.gate?priceIdx:1)<CFG.BLEI_PRECARIOUS_MAX)apB+=0.015;if(uPtfAdopt<apB)PDS.blk++;}  // plan step 15: turned away for lack of PTF capacity
+    if(SPEND_GRADE&&AUD&&AUD.sg){var grS=annualWageUSD+(a._ret?a._ssY:0)+(p.ubi>0?p.ubi:0)+(emQ?emQ.ui:0)+(tbY?(a.yrTbCash||0)-(a.yrTax||0):(SNET&&SNS&&a._snB?a._snB:0))+(a.yrConvUSD||0);a._grCut=0;  // S13 sg: all of the year's cash income
+      if(HHP){a._grA=grS;a._grC=costUSD;}else if(costUSD>0&&grS<costUSD){a._grCut=costUSD-costUSD*Math.pow(Math.max(0,grS)/costUSD,SPEND_GRADE.eps);if(DEBT_READ)a._grCut+=drExtra(grS,costUSD,a._grCut,a.yrWealthStartUSD);a.wealth+=a._grCut;if(ACCT)a._acGr=a._grCut;}}
     if(HHP)a._hhCS=yrCashSurplus;  // v5.3 B3: pooled in hhPool
     if(SURPLUS_CONSUMPTION_SHARE>0&&SURPLUS_CONSUMPTION_BASE==='cash'&&!HHP){var scC=SURPLUS_CONSUMPTION_SHARE*Math.max(0,yrCashSurplus);a.wealth-=scC;if(ACCT)a._acSc+=scC;if(LEDGER)ledAdd(yr,'surplusConsumed',scC);}  // session 1: harness-only
     if(PRICE){  // session 2 (D1/N5): a write-off at the floor is basket consumption that did not happen (unmet need), not spending
@@ -6047,7 +6062,7 @@ var S3_CACHE = {};
 function s3BaseS(p, seed){
   var bp = baselineFor(p, true);
   if (p.years > bp.years) bp.years = p.years;  /* session 33: the supply path covers runs longer than the Baseline's 20 years (unchanged for 20) */
-  var k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed + '|' + JSON.stringify(HOUSEHOLDS) + '|' + JSON.stringify(SPEND_GRADE) + (DEBT_READ ? '|dr' + JSON.stringify(DEBT_READ) : '') + (LW ? '|lw' + LW : '');  /* S14: + the line (key unchanged when off) */  /* S35: + the debt reading (key unchanged when off). v5.3 B3: + households (the reference path of an economy of households); B7: + income-graded spending */
+  var k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed + '|' + JSON.stringify(HOUSEHOLDS) + '|' + JSON.stringify(SPEND_GRADE) + (DEBT_READ ? '|dr' + JSON.stringify(DEBT_READ) : '') + (LW ? '|lw' + LW : '') + (AUD ? '|au' + JSON.stringify(AUD) : '');  /* S14: + the line (key unchanged when off) */  /* S35: + the debt reading (key unchanged when off). v5.3 B3: + households (the reference path of an economy of households); B7: + income-graded spending */
   if (!S3_CACHE[k]) S3_CACHE[k] = priceRun(bp, seed, {}, null).D;
   return S3_CACHE[k];
 }
@@ -6305,6 +6320,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var rv0 = REVIEW; if (c.rv) REVIEW = Object.assign({q:CFG.REVIEW_AUDIT}, c.rv);  /* v5.2 step 7: review errors and collusion for this row */
       var bs0 = BU_SCOPE; if (c.bs) BU_SCOPE = c.bs;  /* v5.3 B3f: what BU can buy, for this row ('core' | 'hub') */
       var em0 = EDC_MEASURE; if (c.em) EDC_MEASURE = true;  /* v5.3 B6: the measured EDC for this row (reporting only) */
+      var au0 = AUD; if (c.au) AUD = c.au === true ? {gate:true, sg:true, fbs:true} : Object.assign({}, c.au);  /* S13: the audit's corrections for this row (no programme rows too) */
       var dr0 = DEBT_READ; if (c.dr) DEBT_READ = Object.assign({lim:0}, c.dr === true ? {} : c.dr);  /* S35: the debt reading for this row (no programme rows too) */
       var cl0 = COMM; if (c.cl) COMM = Object.assign({}, COMM_DEFAULTS, c.cl === true ? {} : c.cl);  /* S37: the community layer for this row */
       var c220 = C22; if (c.c22) C22 = Object.assign({}, C22_DEFAULTS, c.c22 === true ? {} : c.c22);  /* S6: coverage and adequacy for this row */
@@ -6331,7 +6347,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.rkEv !== undefined) RISK_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 1 */
         if (r.edcM !== undefined) EDC_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B6 */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; COMM = cl0; CMS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; AUD = au0; COMM = cl0; CMS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;

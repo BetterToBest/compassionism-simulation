@@ -233,21 +233,21 @@ def content(R):
     st = lambda o, i: N('sobol.%s.%s.ST' % (o, i), 'n2')
     wt = [
         [txt('Basket poverty falls with Compassionism, in every economy.'),
-         txt('Enough adults take part, and the BU amount is as designed: both are choices about the program\'s size, and they move the answer most. The income effect on earnings (how far people cut paid work when given money) is inside its sourced range and no larger.'),
+         txt('Enough adults take part, and the BU amount is as designed: both are choices about the program\'s size, and they move the answer most. The income effect on earnings (how far people cut paid work when given money) is inside its sourced range and no larger. And wages keep up in full, within the year, with the program\'s own price rise: this study did not vary that, and the outside audit (S13) found the fall shrinks quickly when wages keep up only in part and turns into a rise when they keep up with three quarters of it. Without the program\'s inflation (every dollar backed) the condition hardly matters.'),
          {'p': ['Over its range, participation moves it ', mo('fgt0PY', 'Participation'), ' points, the BU amount ', mo('fgt0PY', 'BU amount'), ' and the income effect on earnings ', mo('fgt0PY', 'Income effect on earnings'),
                 '. Share of the spread explained: participation ', st('fgt0PY', 'part'), ', BU amount ', st('fgt0PY', 'bu'), ', income effect ', st('fgt0PY', 'rho'), '.']}],
         [txt('"Too little wealth" rises with Compassionism.'),
-         txt('Program spending raises prices the way the model\'s price rule says, and people spend about the share of extra cash the model assumes. If prices did not respond, the result would reverse.'),
+         txt('Program spending raises prices the way the model\'s price rule says, savings earn no interest while prices rise, and people spend about the share of extra cash the model assumes. If prices did not respond, the result would reverse; it also reverses, in every economy, in the published reading where savings keep up with prices (findings page, "savings that keep up with prices").'),
          {'p': ['With no price response it falls instead (', N('drv.flatPovFall.ref', 'n1'), ' points lower in Reference). The share of extra cash spent explains ', st('pov', 'spend'), ' of the spread, the income effect ', st('pov', 'rho'),
                 ', participation ', st('pov', 'part'), ', the pay cut after job loss ', st('pov', 'payCut'), '.']}],
-        [txt('BLEI poverty (the 30-days-of-basic-living measure) falls.'),
-         txt('Take-up is high enough: almost all of the spread in this result is how many adults take part.'),
+        [txt('BLEI poverty (the 30-days-of-basic-living measure) falls in Reference and Adverse. In Stress it rises (see Other measures).'),
+         txt('Take-up is high enough: almost all of the spread in this result is how many adults take part. And the design\'s own BLEI is the right yardstick: it credits participants with a month of BU and counts a larger share of their wages. On the same-rules reading (the same rules for everyone) the fall is smaller.'),
          {'p': ['Share of the spread explained: participation ', st('bOAPy', 'part'), ', BU amount ', st('bOAPy', 'bu'), '. Over its range participation moves it ', mo('bOAPy', 'Participation'), ' points.']}],
         [txt('The program costs what the study reports.'),
-         txt('Take-up and the BU amount stay in the ranges swept. Cost is mostly their product; the conversion tax and the top conversion rate matter much less.'),
+         txt('Take-up and the BU amount stay in the ranges swept; of the inputs this study varied, they matter most. About half of the cost is conversion pay, which also depends on the business conversion rate (three times face value, a placeholder) and on how fast people climb the octaves; this study varied neither.'),
          {'p': ['Over its range participation moves yearly cost by ', mo('cost', 'Participation'), ' and the BU amount by ', mo('cost', 'BU amount'), '. Share of the spread explained: participation ', st('cost', 'part'), ', BU amount ', st('cost', 'bu'), '.']}],
         [txt('Program inflation is as reported.'),
-         txt('The model\'s price rule, which links the program\'s spending to the price level, is right in kind. It is not calibrated to outside evidence on benefit-funded demand.'),
+         txt('The model\'s price rule, which links the program\'s spending to the price level, is right in kind and in size: none of the Source\'s payout is backed by new output beyond what the model matches, and the spending passes fully into prices. This study varied neither; in the published reading where every dollar the Source pays is backed by new output, program inflation almost vanishes (findings page). The rule is not calibrated to outside evidence on benefit-funded demand.'),
          {'p': ['Participation moves it ', mo('endoAnn', 'Participation'), ' points a year over its range and explains ', st('endoAnn', 'part'), ' of the spread; the BU amount explains ', st('endoAnn', 'bu'), '.']}],
         [txt('Single payer lowers poverty.'),
          txt('The Yale preprint\'s savings (not peer reviewed) are roughly right, or the financing rule alone does the work.'),
@@ -256,13 +256,13 @@ def content(R):
     tables.append({'id': 'wwtbt', 'title': 'What would have to be true for each headline result', 'columns': ['The result', 'What would have to be true', 'What the study found when it varied the inputs (Stress)'], 'rows': wt})
 
     # Table 9. the two constants with no source
-    tables.append({'id': 'unsourced', 'title': 'Two constants with no source',
+    tables.append({'id': 'unsourced', 'title': 'Two constants with no source, which the released figures do not use',
                    'columns': ['Constant', 'Value', 'Source', 'Do the released figures use it?'],
                    'rows': [[txt('CCO (Creative Currency Octaves) cost relief: how far CCO members\' cost of living is cut at the reference BU, and the ceiling on that cut'),
                              {'p': [N('unsourced.ccoRelief', 'p0'), ' of the basket (ceiling ', N('unsourced.ccoCap', 'p0'), ')']},
                              txt('None found. The decision log records the search; the value is a placeholder.'),
                              txt('No. Raising it left every released row unchanged when tested. It belongs to the earlier engine.')],
-                            [txt('Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH): how much of outside inflation they absorb, applied to the overall inflation rate'),
+                            [txt('Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH): how much of outside inflation they absorb, applied to the outside inflation rate (the economy\'s own inflation in Adverse and Stress), not to the program\'s'),
                              {'p': ['PTF ', N('unsourced.ptfDamp', 'n1'), ', PTH ', N('unsourced.pthDamp', 'n1'), ' (times the share of people who joined)']},
                              txt('None found. The decision log records the search; no source gives its size.'),
                              txt('Only in one optional row, off by default and labeled "the two former stand-ins on"; no main row. Raising both changed that row and no other.')]]})
@@ -326,9 +326,10 @@ def content(R):
     X['chart'] = ('Each bar is the share of the spread in one outcome that an input explains, alone and together with the others (the Sobol total index, Stress). A longer bar means the answer depends more on that input. '
                    'The line on each bar is its 95% interval. Pick an outcome to redraw the chart; every number is in the table below it.')
     X['true'] = ('Claude\'s reading of the results, not yet checked by an outside reader; it is a named item for the outside audits. A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. '
-                 'It does not say they are true. It says where an economist should look first. Two constants have no source at all; they are named after the table.')
+                 'It does not say they are true. It says where an economist should look first. Two constants that the released figures do not use have no source at all; they are named after the table. '
+                 'Many constants the released figures do use are design choices or placeholders rather than sourced values; the ODD protocol (ODD.md, section 6) labels each one. An outside-style audit of this panel (S13, dev/reports/s13-engine-audit.md) added the conditions on savings, wage indexation, the yardstick for BLEI, conversion pay and backing.')
     X['cap.true'] = ('The two constants with no source do not enter the released figures: the study could not vary them, because they are not in the model that produced those figures. They are listed so a reviewer can check the claim, '
-                     'and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt.')
+                     'and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt. It was a small check (4 seeds, 8 years, Adverse only); the code agrees with it: neither constant is read on the path that produces the released figures.')
     X['limits'] = ('All single-payer results rest on the Yale preprint\'s savings. The model does not reconcile tax revenue with today\'s safety-net outlays or with government\'s share of the plan. '
                    'The price response drives the "too little wealth" result and is not calibrated to outside evidence. The cost-of-living line is the unweighted state average. '
                    'The work rules of SNAP (food stamps) and a separate Child Tax Credit take-up are not modeled. The community businesses\' (PTF) health-sector cut under single payer is an upper reading. '
