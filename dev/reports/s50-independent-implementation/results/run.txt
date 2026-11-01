@@ -1,0 +1,36 @@
+S50 second, independent implementation of the release row: how the results here were made
+
+Phase 1 (independent): written from the S50 packet alone, without opening the engine (index.html, harness.js,
+earlier-engine.html), the rest of the repository's dev/ folder, or the results repository.
+
+Packet:   dev/packets/s50-release-row.zip
+          sha256 143bb2f70156257504a80c073cb84c951e8a3f5098c508744c6d3598e88d9a8d
+          its reference outputs come from engine commit 7d13d948f7298f4dcdd1a1a3f6d399e8d46fd044
+          (engine files unchanged since 168d287; see the packet's run.txt)
+Repository commit the work started from: d6d14a21abc205311d70922a6651ffcc191adb81
+Program:  dev/reports/s50-independent-implementation/s50_release.py (Python standard library only)
+Python 3.13.18, Linux x86_64, 4 cores. Settings are read from the packet's release-config.json at run time.
+
+Commands (from dev/reports/s50-independent-implementation/):
+  python3 -I s50_release.py --env ref --batch 1 500 --jobs 4      -> results/s50-py-ref-1-500.json.gz
+  python3 -I s50_release.py --env adv --batch 1 500 --jobs 4      -> results/s50-py-adv-1-500.json.gz
+  python3 -I s50_release.py --env st  --batch 1 500 --jobs 4      -> results/s50-py-st-1-500.json.gz
+  python3 -I s50_release.py --compare                             -> results/COMPARISON.md
+
+One run (one seed, one row): python3 -I s50_release.py --env ref --row release --seed 1
+Each results file holds, like the packet's reference files, rows[0] (no programme) and rows[1] (the release row),
+seeds[key] = 500 values for seeds 1-500, unrounded (gzip-compressed JSON).
+Run time: about 400 s per environment on 4 cores (about 1.5-2 s per run).
+The phase-1 results were made by the program as committed in 50a6ffd (phase 1); later commits add only the
+--js-math switch (default off: phase 1 reproduced key by key) and the comparison's bit-identical count.
+
+Phase 2 (after phase 1 was pushed): the same runs with Node's Math for log, exp, pow, cos and tan
+(jsmath.js, Node v22.23.4; no engine code):
+  python3 -I s50_release.py --env st  --batch 1 500 --jobs 4 --js-math   -> results/s50-py-js-st-1-500.json.gz
+  python3 -I s50_release.py --env adv --batch 1 500 --jobs 4 --js-math   -> results/s50-py-js-adv-1-500.json.gz
+  python3 -I s50_release.py --env ref --batch 1 500 --jobs 4 --js-math   -> results/s50-py-js-ref-1-500.json.gz
+  python3 -I s50_release.py --compare results/s50-py-js-ref-1-500.json.gz results/s50-py-js-adv-1-500.json.gz results/s50-py-js-st-1-500.json.gz
+                                                                         -> results/COMPARISON-phase2.md
+  Run time: about 13 minutes per environment on 4 cores.
+Result: phase 1, 630 of 631 keys exact on every seed in all six runs; phase 2, all 631 keys identical in every
+binary digit on every seed in all six runs.
