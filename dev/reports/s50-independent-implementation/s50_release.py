@@ -3437,7 +3437,7 @@ def compare(env, mine_path, packet, outdir):
     lines = []
     summ = {}
     for label, get in (('no programme', lambda R, k: R[0][k]), ('release row', lambda R, k: R[1][k]), ('effect', lambda R, k: [b - a for a, b in zip(R[0][k], R[1][k])])):
-        n_exact = n_exact_rel = n_stat = n_fail = n_const = 0
+        n_exact = n_exact_rel = n_stat = n_fail = n_const = n_bits = 0
         fails = []
         inexact = []
         for k in keys:
@@ -3462,6 +3462,8 @@ def compare(env, mine_path, packet, outdir):
                 worst = max(worst, rel if dd >= EXACT_ABS else 0)
             if bad_rel == 0:
                 n_exact_rel += 1
+            if all(x == y for x, y in zip(r, m)):
+                n_bits += 1
             mr, sr = _stats(r)
             mm, sm = _stats(m)
             nn = len(r)
@@ -3483,7 +3485,7 @@ def compare(env, mine_path, packet, outdir):
                 lines.append((label, k, mr, mm, dmean, 2 * se, ok_stat, bad_seeds, worst))
             if label == 'effect' and k in HEADLINE:
                 lines.append((label, k, mr, mm, dmean, 2 * se, ok_stat, bad_seeds, worst))
-        summ[label] = dict(keys=len(keys), exact=n_exact, exact_rel=n_exact_rel, stat=n_stat, fail=n_fail, fails=fails, inexact=inexact, const=n_const)
+        summ[label] = dict(keys=len(keys), exact=n_exact, exact_rel=n_exact_rel, stat=n_stat, fail=n_fail, fails=fails, inexact=inexact, const=n_const, bits=n_bits)
     return summ, lines
 
 
@@ -3498,11 +3500,11 @@ def compare_report(envs, files, packet, outdir):
     for env, fn in zip(envs, files):
         summ, lines = compare(env, fn, packet, outdir)
         out.append('\n## %s\n' % {'ref': 'Reference', 'adv': 'Adverse', 'st': 'Stress'}[env])
-        out.append('| Run | Keys | Exact on every seed | Exact (relative test only) | Pass the 2-SE test | Fail the 2-SE test |')
-        out.append('|---|---|---|---|---|---|')
+        out.append('| Run | Keys | Identical in every binary digit, every seed | Exact on every seed | Exact (relative test only) | Pass the 2-SE test | Fail the 2-SE test |')
+        out.append('|---|---|---|---|---|---|---|')
         for lab in ('no programme', 'release row', 'effect'):
             s = summ[lab]
-            out.append('| %s | %d | %d | %d | %d | %d |' % (lab, s['keys'], s['exact'], s['exact_rel'], s['stat'], s['fail']))
+            out.append('| %s | %d | %d | %d | %d | %d | %d |' % (lab, s['keys'], s['bits'], s['exact'], s['exact_rel'], s['stat'], s['fail']))
         for lab in ('no programme', 'release row', 'effect'):
             s = summ[lab]
             if s['inexact']:

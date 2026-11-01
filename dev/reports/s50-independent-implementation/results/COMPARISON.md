@@ -7,11 +7,11 @@ Exact test, per seed and key: relative difference under 1e-9, or (for a rounding
 
 ## Reference
 
-| Run | Keys | Exact on every seed | Exact (relative test only) | Pass the 2-SE test | Fail the 2-SE test |
-|---|---|---|---|---|---|
-| no programme | 631 | 630 | 630 | 631 | 0 |
-| release row | 631 | 630 | 629 | 631 | 0 |
-| effect | 631 | 630 | 629 | 631 | 0 |
+| Run | Keys | Identical in every binary digit, every seed | Exact on every seed | Exact (relative test only) | Pass the 2-SE test | Fail the 2-SE test |
+|---|---|---|---|---|---|---|
+| no programme | 631 | 508 | 630 | 630 | 631 | 0 |
+| release row | 631 | 426 | 630 | 629 | 631 | 0 |
+| effect | 631 | 429 | 630 | 629 | 631 | 0 |
 
 Not exact on every seed (no programme): `snAbN` (36 seeds, worst relative 0.019)
 
@@ -96,11 +96,11 @@ Not exact on every seed (effect): `snAbN` (59 seeds, worst relative inf)
 
 ## Adverse
 
-| Run | Keys | Exact on every seed | Exact (relative test only) | Pass the 2-SE test | Fail the 2-SE test |
-|---|---|---|---|---|---|
-| no programme | 631 | 630 | 630 | 631 | 0 |
-| release row | 631 | 630 | 629 | 631 | 0 |
-| effect | 631 | 630 | 629 | 631 | 0 |
+| Run | Keys | Identical in every binary digit, every seed | Exact on every seed | Exact (relative test only) | Pass the 2-SE test | Fail the 2-SE test |
+|---|---|---|---|---|---|---|
+| no programme | 631 | 525 | 630 | 630 | 631 | 0 |
+| release row | 631 | 426 | 630 | 629 | 631 | 0 |
+| effect | 631 | 429 | 630 | 629 | 631 | 0 |
 
 Not exact on every seed (no programme): `snAbN` (102 seeds, worst relative 0.017)
 
@@ -185,11 +185,11 @@ Not exact on every seed (effect): `snAbN` (211 seeds, worst relative inf)
 
 ## Stress
 
-| Run | Keys | Exact on every seed | Exact (relative test only) | Pass the 2-SE test | Fail the 2-SE test |
-|---|---|---|---|---|---|
-| no programme | 631 | 630 | 630 | 631 | 0 |
-| release row | 631 | 630 | 629 | 631 | 0 |
-| effect | 631 | 630 | 629 | 631 | 0 |
+| Run | Keys | Identical in every binary digit, every seed | Exact on every seed | Exact (relative test only) | Pass the 2-SE test | Fail the 2-SE test |
+|---|---|---|---|---|---|---|
+| no programme | 631 | 525 | 630 | 630 | 631 | 0 |
+| release row | 631 | 427 | 630 | 629 | 631 | 0 |
+| effect | 631 | 430 | 630 | 629 | 631 | 0 |
 
 Not exact on every seed (no programme): `snAbN` (102 seeds, worst relative 0.017)
 
