@@ -5,6 +5,7 @@ Each zip is one task for a plain chat (no repository access). Open the zip, read
 | Zip | Task | Builder |
 |---|---|---|
 | `s118-second-implementation.zip` | A second, independent Python implementation of the core yearly loop, checked against the engine's results | `build_s118_packet.py` (reference outputs: `make_s118_reference.js`) |
+| `s50-release-row.zip` | A second, independent Python implementation of the release row and its no-programme run (research-update step S50), checked against the engine's per-seed results for seeds 1-500 in three environments | `build_s50_packet.py` (reference outputs, switches and code: `make_s50_reference.js`) |
 | `s148-outside-audits.zip` | Four outside audits (arithmetic, assumptions, health claims, press-readiness) and the sorting chat | `build_chat_packets.py` |
 | `s119-comses-and-fact-sheet.zip` | The CoMSES model-library text and the wide-audience fact sheet | `build_chat_packets.py` (figures: `make_release_summary.py`) |
 
