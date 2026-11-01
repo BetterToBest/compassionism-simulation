@@ -10387,7 +10387,7 @@
      },
      {
       "p": [
-       "Enough adults take part, and the BU amount is as designed: both are choices about the program's size, and they move the answer most. The income effect on earnings (how far people cut paid work when given money) is inside its sourced range and no larger."
+       "Enough adults take part, and the BU amount is as designed: both are choices about the program's size, and they move the answer most. The income effect on earnings (how far people cut paid work when given money) is inside its sourced range and no larger. And wages keep up in full, within the year, with the program's own price rise: this study did not vary that, and the outside audit (S13) found the fall shrinks quickly when wages keep up only in part and turns into a rise when they keep up with three quarters of it. Without the program's inflation (every dollar backed) the condition hardly matters."
       ]
      },
      {
@@ -10434,7 +10434,7 @@
      },
      {
       "p": [
-       "Program spending raises prices the way the model's price rule says, and people spend about the share of extra cash the model assumes. If prices did not respond, the result would reverse."
+       "Program spending raises prices the way the model's price rule says, savings earn no interest while prices rise, and people spend about the share of extra cash the model assumes. If prices did not respond, the result would reverse; it also reverses, in every economy, in the published reading where savings keep up with prices (findings page, \"savings that keep up with prices\")."
       ]
      },
      {
@@ -10471,12 +10471,12 @@
     [
      {
       "p": [
-       "BLEI poverty (the 30-days-of-basic-living measure) falls."
+       "BLEI poverty (the 30-days-of-basic-living measure) falls in Reference and Adverse. In Stress it rises (see Other measures)."
       ]
      },
      {
       "p": [
-       "Take-up is high enough: almost all of the spread in this result is how many adults take part."
+       "Take-up is high enough: almost all of the spread in this result is how many adults take part. And the design's own BLEI is the right yardstick: it credits participants with a month of BU and counts a larger share of their wages. On the same-rules reading (the same rules for everyone) the fall is smaller."
       ]
      },
      {
@@ -10508,7 +10508,7 @@
      },
      {
       "p": [
-       "Take-up and the BU amount stay in the ranges swept. Cost is mostly their product; the conversion tax and the top conversion rate matter much less."
+       "Take-up and the BU amount stay in the ranges swept; of the inputs this study varied, they matter most. About half of the cost is conversion pay, which also depends on the business conversion rate (three times face value, a placeholder) and on how fast people climb the octaves; this study varied neither."
       ]
      },
      {
@@ -10545,7 +10545,7 @@
      },
      {
       "p": [
-       "The model's price rule, which links the program's spending to the price level, is right in kind. It is not calibrated to outside evidence on benefit-funded demand."
+       "The model's price rule, which links the program's spending to the price level, is right in kind and in size: none of the Source's payout is backed by new output beyond what the model matches, and the spending passes fully into prices. This study varied neither; in the published reading where every dollar the Source pays is backed by new output, program inflation almost vanishes (findings page). The rule is not calibrated to outside evidence on benefit-funded demand."
       ]
      },
      {
@@ -10590,7 +10590,7 @@
   },
   {
    "id": "unsourced",
-   "title": "Two constants with no source",
+   "title": "Two constants with no source, which the released figures do not use",
    "columns": [
     "Constant",
     "Value",
@@ -10632,7 +10632,7 @@
     [
      {
       "p": [
-       "Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH): how much of outside inflation they absorb, applied to the overall inflation rate"
+       "Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH): how much of outside inflation they absorb, applied to the outside inflation rate (the economy's own inflation in Adverse and Stress), not to the program's"
       ]
      },
      {
@@ -10678,8 +10678,8 @@
   "cap.morris": "A noise check was set before the run: an input's effect counts as measured only if the two seed blocks agree to within a quarter of it. The leaders hardly differ between environments (Reference and Adverse are in the data files).",
   "cap.sobol": "The total index counts an input alone and together with others; the first-order index counts it alone. Where the totals add to more than the first-order indices the inputs act together. The first Sobol run was too noisy for its first-order figures (several fell outside their range), so only this follow-up's are shown. Inputs with a total index of 0.01 or less on every outcome are left out: wage elasticity, uptake of community housing (PTH), top conversion rate and the community-business (PTF) cut outside food and housing.",
   "chart": "Each bar is the share of the spread in one outcome that an input explains, alone and together with the others (the Sobol total index, Stress). A longer bar means the answer depends more on that input. The line on each bar is its 95% interval. Pick an outcome to redraw the chart; every number is in the table below it.",
-  "true": "Claude's reading of the results, not yet checked by an outside reader; it is a named item for the outside audits. A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. It does not say they are true. It says where an economist should look first. Two constants have no source at all; they are named after the table.",
-  "cap.true": "The two constants with no source do not enter the released figures: the study could not vary them, because they are not in the model that produced those figures. They are listed so a reviewer can check the claim, and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt.",
+  "true": "Claude's reading of the results, not yet checked by an outside reader; it is a named item for the outside audits. A result holds only if some things are true. For each headline result this panel says what would have to be true, and what the study found when those inputs were varied. It does not say they are true. It says where an economist should look first. Two constants that the released figures do not use have no source at all; they are named after the table. Many constants the released figures do use are design choices or placeholders rather than sourced values; the ODD protocol (ODD.md, section 6) labels each one. An outside-style audit of this panel (S13, dev/reports/s13-engine-audit.md) added the conditions on savings, wage indexation, the yardstick for BLEI, conversion pay and backing.",
+  "cap.true": "The two constants with no source do not enter the released figures: the study could not vary them, because they are not in the model that produced those figures. They are listed so a reviewer can check the claim, and so that anyone who wants them to count knows a source is needed first. The check that raised each constant and compared every released row is dev/tools/unsourced_check.py, with its result in dev/runs/unsourced-constants-check.txt. It was a small check (4 seeds, 8 years, Adverse only); the code agrees with it: neither constant is read on the path that produces the released figures.",
   "limits": "All single-payer results rest on the Yale preprint's savings. The model does not reconcile tax revenue with today's safety-net outlays or with government's share of the plan. The price response drives the \"too little wealth\" result and is not calibrated to outside evidence. The cost-of-living line is the unweighted state average. The work rules of SNAP (food stamps) and a separate Child Tax Credit take-up are not modeled. The community businesses' (PTF) health-sector cut under single payer is an upper reading. The model has not yet been reviewed by an independent economist.",
   "history": "A separate check, run on the same model: it was put through a scripted 2008 to 2012 recession and through 2020 and 2021, and compared with what happened. The seven comparisons below, and what would count as a match, were fixed before the model was run, and no constant was adjusted to fit the past. <strong>The check reads changes, not levels.</strong> The model's adults are built from 2022 data, so it asks how a population like today's would respond to a shock like 2008 or 2020, not whether it reproduces those years. The model's figure is the rise in basket poverty (adults below the cost of living) with today's safety net, the shock run minus the same run with no recession, over {{hist.seeds|int}} paired seeds; the data's is the change from the year before the shock. In short: the direction is right (poverty rises in both shocks, as in the data), the size is too big (a rise of {{hist.c.c2.model|s2}} points at the model's peak against {{hist.c.c2.data|s1}} in the official rate) and the peak comes too late. Verdicts: matches {{hist.count.matches|int}}; same direction, different size {{hist.count.diff|int}}; does not match {{hist.count.no|int}}; reported with no verdict {{hist.count.rep|int}}.",
   "cap.history": "<strong>The clearest miss is the safety net.</strong> In the data the safety net absorbed about {{hist.c.c5.data|p0}} of the recession's rise in poverty (a rise of {{hist.c.c5.dataRises.0|s2}} points before taxes and transfers, {{hist.c.c5.dataRises.1|s2}} after). In the model it absorbs about {{hist.c.c5.model|p1}} (a rise of {{hist.c.c5.modelRises.0|s2}} points without the safety net, {{hist.c.c5.modelRises.1|s2}} with it). The file's label is \"same direction, different size\", because the model's share is just above zero and the rule fixed in advance gives that label to any positive share; the gap is far outside the band of {{hist.band|n0}} points, so in substance it is a miss. Three reasons, all in the model's design: (a) SNAP and the tax credits are paid on last year's income, so they arrive a year late; (b) the model's cost-of-living line is high, and benefits of a few thousand dollars seldom lift someone over it (they shrink the gap instead); (c) the data's \"before transfers\" removes far more than the model's three programs (SNAP, the Earned Income Tax Credit and the refundable Child Tax Credit): it also removes unemployment insurance, Social Security, housing aid and the tax system, while in the model unemployment insurance is in both runs and the others do not respond to the shock. So in a downturn the model's baseline safety net is weaker than the real one, and a comparison of Compassionism against today's safety net in a recession should be read with that in mind. The model has no stimulus payments or weekly unemployment top-up, which is why the 2020 supplemental rate (reported, no verdict) fell in the data and rose in the model. The data are outside figures, not verified against Census, BLS or the Federal Reserve by this repository. Plain-words report: <a href=\"dev/reports/v5-34-history-check.md\">dev/reports/v5-34-history-check.md</a>; data: <a href=\"dev/runs/history/history-check.json\">dev/runs/history/history-check.json</a>.",

@@ -47,6 +47,7 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `EDC_MEASURE` (the measured EDC; row option `em`) | false / true | Reporting only (v5.3 B6): adds `EDC_KEYS`; changes no result | DECISIONS Session 39 (B6) |
 | `HOUSEHOLDS` (households and children; row option `hh`) | null / {pool 'household' / 'individual', childBU 0.25 (0 to 0.5), estate 'heirs' / 'leave', shock 0 / 'shore' / a correlation in [-1, 1], wealth 'model' / 'scf'} | Main result from v5.3: {pool 'household', childBU 0.25, shock 'shore', wealth 'scf'} (`REL_V53.hh`; d167, d168, d170, d172, the rule recorded before the restudy), in the no-programme run too. Readings: adults alone (rows `adults`, `v52`), 'individual' (`indiv`), childBU 0 and 0.5 (`cb0`, `cb50`), wealth 'model' (`wmodel`), shock 0.5 (`shock50`). With ageing (row option `ag`): children's lives and estates (B4, B5; d169; rows `age`, `ageleave`, ...); `estate` is read only then | DECISIONS Session 39 (B3, B4, B10) |
 | `ACCT` (the accounting check) | null / `acctNew()` | Checking only: no draw, nothing any rule reads; results are bit-identical with it on (`acctUnitSuite`). See MODEL_SPEC.md, section 11 | v5.3 B2 |
+| `AUD` (the S13 audit's corrections; row option `au`) | null / {gate, sg, fbs, wOut} (`au: true` = gate, sg, fbs) | Off as released (every figure unchanged). Recommended for the frozen batch's main rows; `wOut` is a labelled reading | S13 (dev/reports/s13-engine-audit.md) |
 
 ## 2. Testbed options (per study or per row)
 

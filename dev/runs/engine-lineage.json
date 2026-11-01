@@ -446,6 +446,22 @@
    },
    "equal": true,
    "seconds": 210
+  },
+  {
+   "from": "4e571cf213390672d88b30bef28e84243667b7c11dc397b52a5e9b7aa879e316",
+   "to": "bb9214669939bcf8a50e3e244e878502a29988d3bcf123647f64066b72e6d0b3",
+   "date": "2026-11-01",
+   "change": "S13: the outside audit's corrections behind a switch, AUD (row option au: gate, sg, fbs; and the reading wOut), off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 233
   }
  ]
 }
