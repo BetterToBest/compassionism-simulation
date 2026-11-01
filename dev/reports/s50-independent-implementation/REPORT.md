@@ -57,27 +57,35 @@ The one key that is not equal on every seed counts adults who lose SNAP months u
 
 The exception is the SNAP work-rule count. An adult whose whole spell out of work was insured should count 0 lost months. The engine computes that 0 as "weeks out minus insured weeks", and the result can come out as a tiny remainder (about 10⁻¹⁶ of a month). The count then records that adult as losing a month. Which adults get a remainder depends on that last binary digit, so the two programs record slightly different counts. The dollars involved are nil, and no other result is affected.
 
+**Phase 2 confirms it.** Once phase 1 was published, the program got a switch (`--js-math`) that computes those five functions with Node's own maths (not the engine) instead of Python's. With it, PHASE2_RESULT
+
 ## What else it found: places where the description and the code disagree
 
-Writing a program from a description exposes every place where the description is silent or wrong. `GAPS.md` lists 38, each with the line of code that settled it. Eight are contradictions, places where the description says one thing and the code does another. In plain words:
+Writing a program from a description exposes every place where the description is silent or wrong. `GAPS.md` lists 38, each with the line of code that settled it. Eight are contradictions, places where the description says one thing and the code does another. Phase 2 read the engine's own comments to decide, for each, whether the description or the engine should change. In plain words:
 
-1. **Partners and PTH's books.** The engine opens each community home's books before it forms households. Forming households then moves partners into or out of PTH to match their household. As a result, about a quarter of PTH members have no books: their equity grows by the older 3-5% rule instead of the price rise + 2%, and they never leave the network. And about two dozen homes have books but no member, and are never filled. This looks like an ordering mistake in the engine. It should be corrected in the design freeze (step S47), where it can be measured.
-2. **The no-programme run's prices drift.** The capacity that essentials prices are measured against comes from a separate simplified run (no job loss, no safety net, no labour response, wages not indexed), not from the published no-programme run. So the no-programme run's price level drifts a little (in Reference, seed 1, to 0.993 after 20 years) although no programme exists. The description says capacity comes from the no-programme run itself.
-3. **The flat contribution does not pay for the surplus split's price cuts.** The description says it does. In the code the Source pays them, as part of the conversion premium.
-4. **Octave advancement and PTH's home prices use the BLEI paper's daily cost ($24,940 a year for one adult in today's dollars), not the cost of living ($49,370).** The description says the cost of living (for octaves) and the market housing cost (for homes).
-5. **A recession can start in the last year.** The description says it cannot.
-6. **Zone induction into community businesses is for participants only.** The description implies everyone.
-7. The SNAP work-rule count described above.
+**The engine should change (questions for the design freeze, step S47, where each change can be measured):**
 
-None of these changes the agreement: the second program does what the code does, so its results match. They are corrections the description needs, and items 1 and 2 are questions for the design freeze: what the model should do, not only how it is described.
+1. **Partners and PTH's books.** The engine opens each community home's books before it forms households. Forming households then moves partners into or out of PTH to match their household. As a result, about a quarter of PTH members have no books: their equity grows by the older 3-5% rule instead of the price rise + 2%, and they never leave the network. And about two dozen homes a seed have books but no member, and are never filled. The engine's own comment says every PTH home has books beside its member and that the household head's draw decides, so this is an ordering mistake.
+2. **The no-programme run's prices drift a little.** The capacity that essentials prices are measured against comes from a separate simplified run, not from the published no-programme run. When it was set up in September, the two were the same economy. Job loss, the safety net and the labour response were later added to the published run but not to the simplified one. In Reference the no-programme price level ends 0.5% lower after 20 years, although no programme exists; in Adverse and Stress it does not drift.
+3. **PTH's home prices are set at half the market housing cost.** The engine's comment says a home costs 18.23 years of "the housing share of their basket, at market prices". The code uses the BLEI paper's daily cost ($24,940 a year for one adult in today's dollars), about half the basket ($49,370). Either the code or the comment should change.
+4. **The SNAP work-rule count** described above should treat a remainder of a billionth of a month as zero.
+
+**The description should change (the engine does what it was meant to do):**
+
+5. **The flat contribution does not pay for the surplus split's price cuts.** The description says it does. In the engine the Source pays every conversion, and those cuts come out of the conversion premium.
+6. **Octave advancement measures living costs at the BLEI paper's daily cost, not the cost of living.** The engine's comment says this is deliberate.
+7. **A recession can start in the last year.** The description says it cannot.
+8. **Zone induction into community businesses is for participants only,** in the published row as in the older one. The description implies everyone.
+
+None of these changes the agreement: the second program does what the code does, so its results match. Items 1-4 would change results and go to the design freeze. Items 1 and 3 touch PTH members only; item 2 is 0.5% on prices in Reference; item 4 changes nothing beyond the count itself. Items 5-8 are corrections to `MODEL_SPEC.md`, along with the 30 gaps.
 
 ## What it means
 
-- **The published figures are what the engine computes.** A program written separately, from the description and the settings, reproduces every published key of the release row and its no-programme run, in all three environments, seed by seed. No mechanism behind the published figures is computed differently from what the code says.
-- **The packet holds everything the published runs execute.** Nothing was missing; the earlier check had to add three missing functions.
-- **The description is not yet enough on its own.** Someone with only the description could reproduce the model's broad behaviour, but not its numbers. `GAPS.md` lists what to add to it, and items 1-8 are corrections. This is the main work this check hands to the design freeze.
-- This check shows that the code and its description agree; it cannot show that the model is right about the world. That remains the job of the outside comparisons (the no-programme baseline against US data, and the outside engine cross-check) and of an outside economist.
+- **The published figures are what the engine's code computes, and the code is complete.** A program written separately, from the packet, reproduces every key of the release row and its no-programme run, in all three environments, seed by seed. The packet held everything the published runs execute; the earlier check had to add three missing functions.
+- **The description is not yet enough on its own.** Someone with only the description could reproduce the model's broad behaviour, but not its numbers. `GAPS.md` lists what to add, and four contradictions are corrections to the description itself. This is the main work this check hands to the design freeze.
+- **Three things in the engine are not what its authors meant.** They are the PTH books' order, the stale supply run, and the home-price base. Apart from the 0.5% price drift, this check did not measure what they change in the headline figures; each should be fixed and measured in the freeze.
+- This check shows that the code computes what it says and what the description, once corrected, will say. It cannot show that the model is right about the world. That remains the job of the outside comparisons (the no-programme baseline against US data, and the outside engine cross-check) and of an outside economist.
 
 ## Runs not reached
 
-None. All six runs were compared on all 500 seeds.
+None. All six runs were compared on all 500 seeds, in phase 1 and in phase 2.
