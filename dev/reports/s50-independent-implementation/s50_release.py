@@ -76,6 +76,45 @@ class Packet:
 
 
 # ---------------------------------------------------------------------------------------------
+# The transcendental functions (phase 2: --js-math swaps in Node's Math; see REPORT.md)
+# ---------------------------------------------------------------------------------------------
+M_log, M_exp, M_pow, M_cos, M_tan = math.log, math.exp, math.pow, math.cos, math.tan
+
+
+def _jsnum(x):
+    if x != x:
+        return 'NaN'
+    if x == INF:
+        return 'Infinity'
+    if x == -INF:
+        return '-Infinity'
+    return repr(float(x))
+
+
+def use_js_math():
+    """Phase 2 switch: compute log, exp, pow, cos and tan with Node's Math (jsmath.js), so that the
+    last binary digit of each result is the one the engine gets. Python's own math stays the default."""
+    import subprocess
+    global M_log, M_exp, M_pow, M_cos, M_tan
+    pr = subprocess.Popen(['node', os.path.join(HERE, 'jsmath.js')], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
+    w = pr.stdin.write
+    rd = pr.stdout.readline
+
+    def one(op):
+        def f(x):
+            w(op + ' ' + _jsnum(x) + '\n')
+            pr.stdin.flush()
+            return float(rd())
+        return f
+
+    def pw(x, y):
+        w('p ' + _jsnum(x) + ' ' + _jsnum(y) + '\n')
+        pr.stdin.flush()
+        return float(rd())
+    M_log, M_exp, M_cos, M_tan, M_pow = one('l'), one('e'), one('c'), one('t'), pw
+
+
+# ---------------------------------------------------------------------------------------------
 # Random numbers and samplers (MODEL_SPEC 4.1)
 # ---------------------------------------------------------------------------------------------
 def imul(a, b):
@@ -95,20 +134,20 @@ def mulberry32(seed):
 
 
 def jlog(x):
-    return math.log(x) if x > 0 else (-INF if x == 0 else float('nan'))
+    return M_log(x) if x > 0 else (-INF if x == 0 else float('nan'))
 
 
 def gamma_s(a, R):
     if a == 1:
-        return -math.log(max(1e-14, R()))
+        return -M_log(max(1e-14, R()))
     if a < 1:
-        return gamma_s(1 + a, R) * math.pow(max(1e-14, R()), 1 / a)
+        return gamma_s(1 + a, R) * M_pow(max(1e-14, R()), 1 / a)
     for _ in range(5000):
         u = R()
         v = R()
-        y = math.tan(math.pi * u)
+        y = M_tan(math.pi * u)
         x = math.sqrt(2 * a - 1) * y + a - 1
-        if x > 0 and v <= (1 + y * y) * math.exp((a - 1) * math.log(x / (a - 1)) - math.sqrt(2 * a - 1) * y):
+        if x > 0 and v <= (1 + y * y) * M_exp((a - 1) * M_log(x / (a - 1)) - math.sqrt(2 * a - 1) * y):
             return x
     return a
 
@@ -121,19 +160,19 @@ def beta_s(a, b, R):
 def lognormal(mu, sigma, R):
     u = max(1e-14, 1 - R())
     v = R()
-    return math.exp(mu + sigma * math.sqrt(-2 * math.log(u)) * math.cos(2 * math.pi * v))
+    return M_exp(mu + sigma * math.sqrt(-2 * M_log(u)) * M_cos(2 * math.pi * v))
 
 
 def std_normal(R):
     u = max(1e-14, 1 - R())
     v = R()
-    return math.sqrt(-2 * math.log(u)) * math.cos(2 * math.pi * v)
+    return math.sqrt(-2 * M_log(u)) * M_cos(2 * math.pi * v)
 
 
 def norm_cdf(z):  # GAPS: the approximation the code uses (an erfc series), not stated in the description
     x = abs(z) / math.sqrt(2)
     t = 1 / (1 + 0.5 * x)
-    r = t * math.exp(-x * x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))))
+    r = t * M_exp(-x * x - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))))
     return 1 - r / 2 if z >= 0 else r / 2
 
 
@@ -147,10 +186,10 @@ def norm_inv(p):  # GAPS: Acklam's rational approximation, clamped to [1e-12, 1 
     a, b, c, d = _NA, _NB, _NC, _ND
     p = min(1 - 1e-12, max(1e-12, p))
     if p < 0.02425:
-        q = math.sqrt(-2 * math.log(p))
+        q = math.sqrt(-2 * M_log(p))
         return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
     if p > 1 - 0.02425:
-        q = math.sqrt(-2 * math.log(1 - p))
+        q = math.sqrt(-2 * M_log(1 - p))
         return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1)
     q = p - 0.5
     r = q * q
@@ -402,7 +441,7 @@ class Engine:
             L.qualityZ = std_normal(R)
             c = R()
             v = R()
-            L.automationRisk = math.pow(v, 1 / C['AUTO_HIGH_A']) if c < C['AUTO_HIGH_SHARE'] else 1 - math.pow(1 - v, 1 / C['AUTO_LOW_B'])
+            L.automationRisk = M_pow(v, 1 / C['AUTO_HIGH_A']) if c < C['AUTO_HIGH_SHARE'] else 1 - M_pow(1 - v, 1 / C['AUTO_LOW_B'])
             L.lam = C['FBS_LAMBDA_LO'] + R() * (C['FBS_LAMBDA_HI'] - C['FBS_LAMBDA_LO'])
             pop.append(L)
         return pop
@@ -417,7 +456,7 @@ class Engine:
         a.wage = L.wage
         a.initialWage = L.wage
         a.octave = math.floor(L.octaveShape * maxOct)
-        a.quality = min(maxMult, max(0, math.exp(math.log(maxMult * 0.5) + 0.4 * L.qualityZ) * qN))
+        a.quality = min(maxMult, max(0, M_exp(M_log(maxMult * 0.5) + 0.4 * L.qualityZ) * qN))
         a.automationRisk = L.automationRisk
         a.lam = L.lam
         a.uCCO = L.uCCO
@@ -654,7 +693,7 @@ class Engine:
                 for a in H.a:
                     gA += a._grA
                     gC += a._grC
-                gc = gC - gC * math.pow(max(0, gA) / gC, self.SPEND_GRADE['eps']) if (gC > 0 and gA < gC) else 0
+                gc = gC - gC * M_pow(max(0, gA) / gC, self.SPEND_GRADE['eps']) if (gC > 0 and gA < gC) else 0
                 for a in H.a:
                     a._grCut = gc / n
                     a.wealth += gc / n
@@ -695,7 +734,7 @@ class Engine:
         n = len(agents)
         if not n:
             return 0
-        lw = [math.log(max(1e-9, a.wage)) for a in agents]
+        lw = [M_log(max(1e-9, a.wage)) for a in agents]
         m = 0
         for x in lw:
             m = m + x
@@ -737,9 +776,9 @@ class Engine:
         if u >= 1:
             return 2.5
         if u >= S1:
-            return 2.5 + 7 * jlog(u) / math.log(S1)
+            return 2.5 + 7 * jlog(u) / M_log(S1)
         if u >= S2:
-            return 9.5 + 11 * (jlog(u) - math.log(S1)) / (math.log(S2) - math.log(S1))
+            return 9.5 + 11 * (jlog(u) - M_log(S1)) / (M_log(S2) - M_log(S1))
         return 20.5 + s[2] * jlog(S2 / u) if u > 0 else INF
 
     def empl_year(self, a, rec, aiH, u, wkPay):
@@ -1012,7 +1051,7 @@ class Engine:
         C = self.CFG
         S = self.SNS
         ac = S.acc
-        gIdx = math.pow(1 + inflRate, yr) * (self.PRICE.bIdx if self.PRICE else 1)
+        gIdx = M_pow(1 + inflRate, yr) * (self.PRICE.bIdx if self.PRICE else 1)
         units = [(H.a, H.kids, H) for H in self.HHS.list if len(H.a) > 0] if HHON else [([a], [], None) for a in agents]
         SN = self.SNET
         for (ua, ukids, uH) in units:
@@ -1126,10 +1165,10 @@ class Engine:
         if y.tb == 'prog' or y.tb == 'land':
             raise SystemExit('tax bases other than the flat contribution are not modelled')
         elif tx:
-            F *= math.pow(1 - y.tau, ex)
+            F *= M_pow(1 - y.tau, ex)
             V += y.tau * y.X
         if self.SNET and self.SNS:
-            F *= math.pow(1 - a._snM, ex)
+            F *= M_pow(1 - a._snM, ex)
             V += a._snB + a._snM * E0
         if self.TB.inkindRho:
             V += cutUSD + (a._tbPthPrev or 0)
@@ -1287,7 +1326,7 @@ class Engine:
             inflRate *= (1 - ptfAdoptFrac * 0.5)
         if p['pth'] and inflRate > 0 and not (PRICE and PRICE.noDamp):
             inflRate *= (1 - pthMemberFrac * 0.10)
-        powI = math.pow(1 + inflRate, yr)
+        powI = M_pow(1 + inflRate, yr)
         dollarCost = C['BASE_DAILY_COST'] * 365 * powI
         if PRICE:
             dollarCost *= PRICE.bIdx
@@ -1465,7 +1504,7 @@ class Engine:
                     if not a.inCCO:
                         continue
                     r = self.pj_own_rate(a, p, ptfConvBonus)
-                    cap = 12 * FW['octaveCapBase'] * math.pow(2, a.octave)
+                    cap = 12 * FW['octaveCapBase'] * M_pow(2, a.octave)
                     w = cap * max(0, a.quality)
                     a._pjR = r
                     a._pjCap = cap
@@ -1588,7 +1627,7 @@ class Engine:
                     esA.retPar += bu / esIdx
                     continue
                 have = bu
-                cap = INF if ESP['cap'] == 'none' else max(0, 12 * FW['octaveCapBase'] * math.pow(2, a.octave) - (((a._pjBU or 0) + (a._pjSaved or 0)) if PJON else 0))
+                cap = INF if ESP['cap'] == 'none' else max(0, 12 * FW['octaveCapBase'] * M_pow(2, a.octave) - (((a._pjBU or 0) + (a._pjSaved or 0)) if PJON else 0))
                 c = min(have, cap)
                 a._esK = cap
                 if have > c + 1e-9:
@@ -2050,7 +2089,7 @@ class Engine:
                     lbBiz = max(0, FWS.prev.bizNet) / ESS.wW if (a._esWk and ESS.wW > 0 and FWS.prev) else 0
                 if SPON:
                     lbBiz = (spProfW if a._spWk else 0) + spRestW
-                lbRaise = math.pow(max(1, a.wage / a._lwNB) * (1 + lbBiz) * ((1 + a._esX) if ESON else 1), LABOR['eps'] - LABOR['rho'])
+                lbRaise = M_pow(max(1, a.wage / a._lwNB) * (1 + lbBiz) * ((1 + a._esX) if ESON else 1), LABOR['eps'] - LABOR['rho'])
                 tbQ = self.tb_lab(a, tbY, lbE0, tbPT + tbG + (a._spCutY if SPON else 0)) if tbY else None
                 if tbQ:
                     lbRaise *= tbQ[0]
@@ -2113,7 +2152,7 @@ class Engine:
                     a._grA = grA
                     a._grC = costUSD
                 elif costUSD > 0 and grA < costUSD:
-                    a._grCut = costUSD - costUSD * math.pow(max(0, grA) / costUSD, SG['eps'])
+                    a._grCut = costUSD - costUSD * M_pow(max(0, grA) / costUSD, SG['eps'])
                     a.wealth += a._grCut
             a.yrSSUSD = 0
             if SCS > 0 and self.SCB == 'wage' and not HHP:
@@ -2186,7 +2225,7 @@ class Engine:
             if p['ccoOn'] and a.inCCO and FWON:  # 6.8: octaves; quality; SZH induction
                 if p['cip'] and uCipQuality < p['cipDemo'] * 0.15:
                     a.quality = min(p['maxMult'], a.quality + 0.1)
-                capBU = 12 * FW['octaveCapBase'] * math.pow(2, a.octave)
+                capBU = 12 * FW['octaveCapBase'] * M_pow(2, a.octave)
                 if FWS.prev and FWS.prev.pwSum > 0 and not PJON:
                     raise SystemExit('the framework allocation without project hiring is not modelled')
                 a._fwPW = capBU * max(0, a.quality)
@@ -2203,15 +2242,15 @@ class Engine:
                         F = self.FBSS
                         fbK = bool(a._hh is not None and a._hh.kids)
                         F.n += 1
-                        if lamF * fbsF >= math.log(2):
+                        if lamF * fbsF >= M_log(2):
                             F.a += 1
                         if fbK:
                             F.nK += 1
-                            if lamF * fbsF >= math.log(2):
+                            if lamF * fbsF >= M_log(2):
                                 F.aK += 1
                         if yr == 0:
-                            F.f.append(math.log(2) / lamF)
-                    if uAdvance < 1 - math.exp(-lamF * fbsF) and not PO['octave']:
+                            F.f.append(M_log(2) / lamF)
+                    if uAdvance < 1 - M_exp(-lamF * fbsF) and not PO['octave']:
                         a.octave += 1
                 if uSzhInduce < szhPartBoost and not a.inPTF and p['ptf'] and not (HHA and not a._hhHead) and ((not PDON) or pdLive < ptfLiveTotal * pdCap):
                     a.inPTF = uSzhPtfShare < p['ptfShare']
@@ -3085,7 +3124,7 @@ class Engine:
                     if not S or o['essMatched']:
                         PE[k] = 1
                         continue
-                    sRef = S[yr] if o['supply'] == 'baseline' else S[0] * math.pow(1 + o['gS'], yr)
+                    sRef = S[yr] if o['supply'] == 'baseline' else S[0] * M_pow(1 + o['gS'], yr)
                     dEff = d if o['supply'] == 'baseline' else sRef + max(0, d - sRef) - max(0, S[yr] - sRef)
                     PE[k] = self.ess_level(dEff, sRef, capShare * cut, theta[k])
                 path.append(O(bIdx=self.PRICE.bIdx, PG=PG, U=U, Y=A.Y, tau=tauUsed, colaLevel=self.PRICE.colaLevel, full=Cc.idx))
@@ -3209,7 +3248,7 @@ class Engine:
         for q in path:
             tauS += q.tau
         r = {
-            'endoAnn': math.pow(bI, 1 / (T - 1)) - 1, 'endoMax': mx, 'pov': pov / n * 100, 'bleiPov': bpov / n * 100, 'nbleiPov': nbpov / n * 100, 'tgt': L.tgt / L.pd if L.pd > 0 else 0,
+            'endoAnn': M_pow(bI, 1 / (T - 1)) - 1, 'endoMax': mx, 'pov': pov / n * 100, 'bleiPov': bpov / n * 100, 'nbleiPov': nbpov / n * 100, 'tgt': L.tgt / L.pd if L.pd > 0 else 0,
             'medWealthReal': median_of([a.wealth for a in agents]) / full,
             'fgt0': g0 / n * 100, 'fgt1': g1 / n * 100, 'fgt2': g2 / n * 100, 'fgt0PY': L.f0 / L.n * 100, 'fgt1PY': L.f1 / L.n * 100, 'fgt2PY': L.f2 / L.n * 100,
             'cost': L.cost / NY, 'cCash': L.cash / NY, 'cEndow': L.endow / NY, 'cBU': L.bu / NY, 'cConv': L.conv / NY, 'cCut': (L.cutPT + L.cutG) / NY, 'cCap': L.cap / NY, 'cPth': L.pth / NY,
@@ -3317,7 +3356,9 @@ def run_one(env, row, seed, pk=None, S=None):
 
 
 def _batch_worker(args):
-    env, lo, hi, packet = args
+    env, lo, hi, packet, js = args
+    if js:
+        use_js_math()
     pk = get_packet(packet)
     out = {'base': {}, 'release': {}}
     for sd in range(lo, hi + 1):
@@ -3329,14 +3370,14 @@ def _batch_worker(args):
     return lo, out
 
 
-def batch(env, lo, hi, jobs, packet, outdir):
+def batch(env, lo, hi, jobs, packet, outdir, js=False):
     import multiprocessing as mp
     t0 = time.time()
     chunks = []
     step = max(1, (hi - lo + 1 + jobs * 4 - 1) // (jobs * 4))
     s = lo
     while s <= hi:
-        chunks.append((env, s, min(hi, s + step - 1), packet))
+        chunks.append((env, s, min(hi, s + step - 1), packet, js))
         s += step
     res = {}
     with mp.Pool(jobs) as pool:
@@ -3350,10 +3391,10 @@ def batch(env, lo, hi, jobs, packet, outdir):
             for k, v in res[lo_][row].items():
                 seeds.setdefault(k, []).extend(v)
         rows.append({'row': row, 'label': label, 'seeds': seeds})
-    doc = {'about': 's50 independent Python implementation, phase 1: per-seed outputs, env %s, seeds %d-%d' % (env, lo, hi), 'env': env, 'lo': lo, 'hi': hi,
+    doc = {'about': 's50 independent Python implementation, %s: per-seed outputs, env %s, seeds %d-%d' % ('phase 2 (--js-math: Node\'s Math for log, exp, pow, cos, tan)' if js else 'phase 1', env, lo, hi), 'env': env, 'lo': lo, 'hi': hi,
            'seconds': round(time.time() - t0, 1), 'python': sys.version.split()[0], 'rows': rows}
     os.makedirs(outdir, exist_ok=True)
-    fn = os.path.join(outdir, 's50-py-%s-%d-%d.json.gz' % (env, lo, hi))
+    fn = os.path.join(outdir, 's50-py%s-%s-%d-%d.json.gz' % ('-js' if js else '', env, lo, hi))
     with gzip.open(fn, 'wt', compresslevel=9) as f:
         json.dump(doc, f)
     print(fn)
@@ -3473,7 +3514,10 @@ def compare_report(envs, files, packet, outdir):
         for (lab, k, mr, mm, dmean, se2, ok, bad, worst) in lines:
             out.append('| %s | `%s` | %.6g | %.6g | %.3g | %.3g | %s | %d |' % (lab, k, mr, mm, dmean, se2, 'yes' if ok else '**no**', bad))
             allrows.append((env, lab, k, mr, mm, dmean, se2, ok, bad, worst))
-    fn = os.path.join(outdir, 'COMPARISON.md')
+    js = any('-js-' in os.path.basename(x) for x in files)
+    if js:
+        out[0] = '# S50 phase 2: comparison with the engine\'s reference outputs, with Node\'s Math (--js-math)\n'
+    fn = os.path.join(outdir, 'COMPARISON-phase2.md' if js else 'COMPARISON.md')
     with open(fn, 'w') as f:
         f.write('\n'.join(out) + '\n')
     print(fn)
@@ -3489,17 +3533,20 @@ def main():
     ap.add_argument('--batch', type=int, nargs=2, metavar=('LO', 'HI'))
     ap.add_argument('--jobs', type=int, default=os.cpu_count() or 1)
     ap.add_argument('--out', default=os.path.join(HERE, 'results'))
+    ap.add_argument('--js-math', action='store_true', help='phase 2: compute log, exp, pow, cos and tan with Node\'s Math (needs node)')
     ap.add_argument('--compare', nargs='*', metavar='FILE', help='compare per-seed results (default: results/s50-py-ENV-1-500.json.gz for ref, adv, st)')
     a = ap.parse_args()
     if a.compare is not None:
         files = a.compare or [os.path.join(a.out, 's50-py-%s-1-500.json.gz' % e) for e in ('ref', 'adv', 'st')]
-        envs = [os.path.basename(f).split('-')[2] for f in files]
+        envs = [os.path.basename(f).split('-')[-3] for f in files]
         compare_report(envs, files, a.packet, a.out)
         return
     pk = get_packet(a.packet)
     if a.batch:
-        batch(a.env, a.batch[0], a.batch[1], a.jobs, a.packet, a.out)
+        batch(a.env, a.batch[0], a.batch[1], a.jobs, a.packet, a.out, a.js_math)
         return
+    if a.js_math:
+        use_js_math()
     r = run_one(a.env, a.row, a.seed, pk)
     json.dump(r, sys.stdout, indent=0, sort_keys=True)
     print()

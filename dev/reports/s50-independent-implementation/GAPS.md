@@ -82,3 +82,18 @@ Phase 1 (this list) was written without opening the engine itself (`index.html`,
 36. The PTH housing cut is 35% of the housing share times the member's PTF factor, so the two cuts compound (line 2655).
 37. θ_SZH reads the PTF density before the year's leavers (line 2361); the leavers come later (line 2375). The food test reads the density after them (section 12.3).
 38. `tauMean` averages all 20 years' rates, year 0's pre-pass rate included (line 3240).
+
+## Phase 2: what the engine says about each contradiction
+
+Read after phase 1 was committed and pushed (commit 50a6ffd), with grep and line ranges in `index.html`. The packet's code is the engine's code; what phase 2 adds is the engine's own comments, which say what each piece was meant to do.
+
+| # | Where the fix belongs | What the engine says |
+|---|---|---|
+| 1 | The description; whether a recession may start in the final year is a small design question | `buildRecessionPath` (index.html line 2835) carries no rule against a start in the last year. Section 4, item 3 states one, and it does not hold. |
+| 2 | The engine (for the design freeze) | The comment above `s3BaseS` (index.html lines 6047-6060, September) reasons that the matched baseline "has no conversion, no PTH and no floor money under the adopted rules, so its prices never move". Job loss, the safety net and the labour response were later added to the reported no-programme run but not to this price-only run. The cache key follows households and income-graded spending, but not those three. Size: the no-programme price level ends at 0.995 on average in Reference (−0.5% over 20 years); there is no drift in Adverse and Stress. |
+| 3 | The description | The need's formula carries the note "the Source pays every conversion (BU face value included)" (index.html line 6161). The split's price cuts are paid out of the conversion premium, so the Source pays them, not the contribution. Section 12.5 should list only the PTF and PTH cuts (less the part funded by forgone profit) and the cash part of PTH appreciation. |
+| 4 | The description | Deliberate. The comment at index.html lines 2046-2052 says FBS's cost side uses the BLEI paper's daily cost (about $2,078 a month), "not leftover staleness". Section 6.8 should say so. |
+| 5 | The description | Induction into PTF has always been a participant's draw in the engine; the release row keeps it. Appendix B's contrast should be removed. |
+| 6 | The engine (for the design freeze) | The PTH books' header (index.html lines 4712-4733) says every PTH home has the trust's books beside its member's Acre Equity, and that in a household the head's draw decides. The set-up order (`pthbInit` at line 6114, `hhInit` at line 6117) breaks both: about 28% of members have no books, and about 25 homes a seed have books but no member. Opening the books after households are formed (or opening them for the household, on the head's draw) would match the header. It changes the release row's PTH results, so it belongs in the freeze, measured. |
+| 7 | The engine or its comment (for the design freeze) | The header calls `hSA × dcA` "the housing share of their basket, at market prices". In fact `dcA` is the BLEI daily cost (about half the MIT basket), so homes are priced, and the trust's rent counted, at about half the market housing cost the header describes. Either the base or the comment should change. |
+| 8 | The engine (a small measurement fix) | The work rule's countable months (index.html line 5715) can be a remainder of about 10⁻¹⁶ when a spell was wholly insured. Treating a count under, say, 10⁻⁹ of a month as zero would make `snAbN` independent of rounding; no other key is affected. |
