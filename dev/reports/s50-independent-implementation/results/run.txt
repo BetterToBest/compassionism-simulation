@@ -21,3 +21,16 @@ One run (one seed, one row): python3 -I s50_release.py --env ref --row release -
 Each results file holds, like the packet's reference files, rows[0] (no programme) and rows[1] (the release row),
 seeds[key] = 500 values for seeds 1-500, unrounded (gzip-compressed JSON).
 Run time: about 400 s per environment on 4 cores (about 1.5-2 s per run).
+The phase-1 results were made by the program as committed in 50a6ffd (phase 1); later commits add only the
+--js-math switch (default off: phase 1 reproduced key by key) and the comparison's bit-identical count.
+
+Phase 2 (after phase 1 was pushed): the same runs with Node's Math for log, exp, pow, cos and tan
+(jsmath.js, Node v22.23.4; no engine code):
+  python3 -I s50_release.py --env st  --batch 1 500 --jobs 4 --js-math   -> results/s50-py-js-st-1-500.json.gz
+  python3 -I s50_release.py --env adv --batch 1 500 --jobs 4 --js-math   -> results/s50-py-js-adv-1-500.json.gz
+  python3 -I s50_release.py --env ref --batch 1 500 --jobs 4 --js-math   -> results/s50-py-js-ref-1-500.json.gz
+  python3 -I s50_release.py --compare results/s50-py-js-ref-1-500.json.gz results/s50-py-js-adv-1-500.json.gz results/s50-py-js-st-1-500.json.gz
+                                                                         -> results/COMPARISON-phase2.md
+  Run time: about 13 minutes per environment on 4 cores.
+Result: phase 1, 630 of 631 keys exact on every seed in all six runs; phase 2, all 631 keys identical in every
+binary digit on every seed in all six runs.

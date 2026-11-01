@@ -57,7 +57,7 @@ The one key that is not equal on every seed counts adults who lose SNAP months u
 
 The exception is the SNAP work-rule count. An adult whose whole spell out of work was insured should count 0 lost months. The engine computes that 0 as "weeks out minus insured weeks", and the result can come out as a tiny remainder (about 10⁻¹⁶ of a month). The count then records that adult as losing a month. Which adults get a remainder depends on that last binary digit, so the two programs record slightly different counts. The dollars involved are nil, and no other result is affected.
 
-**Phase 2 confirms it.** Once phase 1 was published, the program got a switch (`--js-math`) that computes those five functions with Node's own maths (not the engine) instead of Python's. With it, PHASE2_RESULT
+**Phase 2 confirms it.** Once phase 1 was published, the program got a switch (`--js-math`) that computes those five functions with Node's own maths (not the engine) instead of Python's. With it, every key of every seed in all six runs is identical to the engine's in every binary digit: 631 keys × 500 seeds × 6 runs, 1,893,000 numbers, and not one differs. That includes the SNAP work-rule count. So the second program and the engine compute the same model, step for step and draw for draw; the only thing that ever differed was the last digit of five maths functions (`results/COMPARISON-phase2.md`).
 
 ## What else it found: places where the description and the code disagree
 
