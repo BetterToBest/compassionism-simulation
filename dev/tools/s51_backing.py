@@ -105,7 +105,7 @@ def main():
 
     # Q12: mechanism
     p(''); p('## Arm B: the mechanism (realised backed share and its effect)')
-    p(''); p('Reading g: only added output backs new money (main); r: the projects\' proceeds retire the money (sensitivity). f: share of the payout funding supply-adding projects; rho: output a year per dollar; cap: ceiling on added output (share of earned income; x = none). Reaches break-even (wages 90%): the row\'s own difference in basket poverty is below zero with its interval (decision rule 2).')
+    p(''); p('Reading g: only added output backs new money (main); r: the projects\' proceeds retire the money (sensitivity). f: share of the payout funding supply-adding projects; rho: output a year per dollar; cap: ceiling on added output (share of earned income; x = none). Reaches break-even (wages 90%): the row\'s own differences in basket poverty and in wealth poverty are both below zero with their intervals (decision rule 2).')
     for des in DES:
         p(''); p('### %s' % DESL[des]); p('')
         p('| Environment | Setting | Backed share (%) | Output in year 19 (% of earned income) | Inflation a year, wages 100% | Basket poverty, wages 100% | Basket poverty, wages 90% | Wealth poverty, wages 90% | At wages 90% |')
@@ -121,7 +121,7 @@ def main():
                 if sens: b90 = w90 = None; verdict = '(sensitivity, wages 100% only)'
                 else:
                     b90 = ci(lambda idx: dif(env, des, 90, nm, 'fgt0PY', idx)); w90 = ci(lambda idx: dif(env, des, 90, nm, 'pov', idx))
-                    verdict = 'reaches' if b90[2] < 0 else 'does not reach' if b90[1] > 0 else 'unclear'
+                    verdict = ('reaches' if w90[2] < 0 else 'basket only (wealth poverty does not fall)') if b90[2] < 0 else 'does not reach' if b90[1] > 0 else 'unclear'
                 lab = nm.replace('bk.', '').replace('.', ' ')
                 p('| %s | %s | %.1f (%.1f to %.1f) | %.1f | %.1f%% | %s | %s | %s | %s |' % (ENVL[env], lab, bk[0], bk[1], bk[2], mean(x['bkmO19']), mean(x['endoAnn'])*100,
                   fmt(*b100), fmt(*b90) if b90 else '-', fmt(*w90) if w90 else '-', verdict))
