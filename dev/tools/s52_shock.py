@@ -92,7 +92,8 @@ def main():
                 for (S, Z) in [(Sn, Zn), (Sp, Zp)]:
                     if sum(S['sxMD' + g]) == 0: c.append('no adults'); continue
                     v, ci = R(S, Z, g); c.append(P(v) + ' ' + I(ci))
-                va, ca = R(Sp, Zp, g, 'A'); w('| %s | %s | %s | %s |' % (gl, c[0], c[1], P(va) + ' ' + I(ca)))
+                ca_ = 'no adults' if sum(Sp['sxMA' + g]) == 0 else (lambda r: P(r[0]) + ' ' + I(r[1]))(R(Sp, Zp, g, 'A'))
+                w('| %s | %s | %s | %s |' % (gl, c[0], c[1], ca_))
             w(''); w('### Q15: PTF members (F) by markup share and local sourcing, during the main shock (local supply half as exposed; no pooling)')
             w(''); w('| Markup share | no local sourcing | 25% local | 50% local | all local |'); w('|---|---|---|---|---|')
             for m in [0, 25, 50]:
@@ -109,7 +110,9 @@ def main():
             w('')
             S0 = rows['%s.%s.main.%s' % (e, d, NOPTF)]
             v, ci = Rdiff(S0, Sp, Zp, 'F', 'F'); w('- PTF (markup removal, main reading): PTF members\' share without markup removal less with it: %s %s (rule 1: protects if the interval is above zero).' % (P(v), I(ci)))
-            v, ci = Rdiff(Sp, Sp, Zp, 'N', 'P'); w('- BU: adults in none of the three less other CCO participants: %s %s.' % (P(v), I(ci)))
+            if sum(Sp['sxMDN']) > 0:
+                v, ci = Rdiff(Sp, Sp, Zp, 'N', 'P'); w('- BU: adults in none of the three less other CCO participants: %s %s.' % (P(v), I(ci)))
+            else: w('- BU: no adult is outside all three in this design (automatic distribution), so the BU\'s share cannot be read from the groups.')
             if sum(Sp['sxMDH']) > 0:
                 v, ci = Rdiff(Sp, Sp, Zp, 'P', 'H'); w('- PTH: other CCO participants less PTH members (not PTF): %s %s (rule 3: protects if the interval is above zero; the groups differ in who they are).' % (P(v), I(ci)))
             w(''); w('### Q16: basket poverty and volatility, main shock, main reading: shocked less unshocked (points), and for the programme against no programme')
@@ -117,9 +120,19 @@ def main():
             for k, kl in [('sxPDA', 'basket poverty during the shock, all'), ('sxPAA', 'basket poverty after the shock, all'), ('sxPDX', 'basket poverty during, chose not to take part (no harm, rule 4)'),
                           ('sxPAX', 'basket poverty after, chose not to take part'), ('sxPDF', 'basket poverty during, PTF members'), ('fgt0PY', 'basket poverty over the run'),
                           ('pov', 'too little wealth at year 20'), ('sxVA', 'volatility of costs, all (points of yearly change)'), ('sxVX', 'volatility, chose not to take part'),
-                          ('cBU', 'BU cost a person-year ($)'), ('endoAnn', 'programme inflation a year')]:
+                          ('gPartW', 'too little wealth at year 20, participants'), ('gNonW', 'too little wealth at year 20, non-participants'),
+                          ('medWealthReal', 'median real wealth at year 20 ($)'), ('jnP19', 'participation in year 19 (%)'),
+                          ('cBU', 'BU cost a person-year ($)'), ('endoAnn', 'programme inflation a year (points)'), ('pLev20', 'price level at year 20 (% of the unshocked level)')]:
                 if sum(Sp[k]) == 0 and sum(Sn[k]) == 0 and k.endswith('F'): continue
+                if k == 'pLev20':  # ratio of seed means less 1, in %, paired bootstrap
+                    def RL(S, Z, idx): return (sum(S[k][i] for i in idx)/sum(Z[k][i] for i in idx) - 1)*100
+                    def RLc(S, Z): bs = [RL(S, Z, b) for b in BS]; return RL(S, Z, range(n)), (pct(bs, 0.025), pct(bs, 0.975))
+                    a0, c0 = RLc(Sn, Zn); a1, c1 = RLc(Sp, Zp)
+                    bs = [RL(Sp, Zp, b) - RL(Sn, Zn, b) for b in BS]; a2, c2 = a1 - a0, (pct(bs, 0.025), pct(bs, 0.975))
+                    w('| %s | %s | %s | %s |' % (kl, Pp(a0, c0), Pp(a1, c1), Pp(a2, c2))); continue
+                sc = 100 if k == 'endoAnn' else 1
                 a0, c0 = D(Sn, Zn, k); a1, c1 = D(Sp, Zp, k); a2, c2 = DD(Sp, Zp, Sn, Zn, k)
+                a0, a1, a2 = a0*sc, a1*sc, a2*sc; c0, c1, c2 = [(x[0]*sc, x[1]*sc) for x in (c0, c1, c2)]
                 w('| %s | %s | %s | %s |' % (kl, Pp(a0, c0), Pp(a1, c1), Pp(a2, c2)))
             w(''); w('### Other shock paths (programme rows: main reading and 50% local sourcing)')
             w(''); w('| Path | No programme, all adults | Programme, all | PTF members, main reading | PTF members, 50% local | basket poverty during, programme less no programme (points) |'); w('|---|---|---|---|---|---|')
