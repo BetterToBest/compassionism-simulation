@@ -1236,6 +1236,38 @@ function sxUnitSuite(){
     return {pass:bad.length === 0 && Math.abs(r - 1) < 0.005 && S[0].sxMDA > Z[0].sxMDA, detail:(bad.length ? 'moved: ' + bad.slice(0, 6).join(', ') + '; ' : '') + 'reach ' + r.toFixed(4)}; });
   return out;
 }
+/* S53 (Nov 2, 2026): security outcomes beyond wealth and the S19 series (index.html SEC_DEFAULTS, secNew, secAcc, secYear, secRes; study option o.sec). */
+function secUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); TB = null; LABOR = null; PRICE = null; SECS = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500});
+  function run(on){ var c = relMainCfgs(tbPresets(P)).map(function(x){ return Object.assign(x, {sc:SPEND_SOURCED, sn:{abawd:true, slope:true}}); });
+    return tbStudy(c, 1, P, on ? Object.assign({sec:true}, SO) : SO, 1); }
+  var A = null, B = null; function both(){ if (!A){ A = run(false); B = run(true); } }
+  t('S53: the security measures are reporting only: with o.sec on, no testbed output of the release row or its no-programme run moves (seed 1, Reference, raw numbers), and off adds no key', function(){
+    both(); var bad = []; [0, 1].forEach(function(i){ TB_KEYS.forEach(function(k){ if (A[i]._s[k][0] !== B[i]._s[k][0]) bad.push(i + ':' + k); }); });
+    return {pass:bad.length === 0 && A[1].secU25A === undefined && B[1].secU25A !== undefined && SEC_KEYS.concat(S19_KEYS).every(function(k){ return isFinite(B[1][k]); }), detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
+  t('S53: the S19 series add up to the run\'s person-year figures (adult-weighted basket poverty = fgt0PY, FGT1 = fgt1PY) and are 0 past the run', function(){
+    both(); var d = 0, z = true; [0, 1].forEach(function(i){ var R = B[i], f0 = 0, f1 = 0, n = 0; for (var y = 0; y < 20; y++){ var m = R['s19n_' + y]; n += m; f0 += R['s19f0_' + y]*m; f1 += R['s19f1_' + y]*m; }
+      d = Math.max(d, Math.abs(f0/n - R.fgt0PY), Math.abs(f1/n - R.fgt1PY)); for (var u = 20; u < S19_N; u++) S19_M.forEach(function(k){ if (R['s19' + k + '_' + u] !== 0) z = false; }); });
+    return {pass:d < 1e-9 && z, detail:'largest difference ' + d.toExponential(2)}; });
+  t('S53: by construction: with no programme every essential is paid in money at market prices (Xe = 100) and no PTH tenancy ends; in both runs U50 <= U25 <= D25, M1 <= M3, M3 on all savings <= M3 on liquid savings, hours with conversion <= hours without', function(){
+    both(); var N = B[0], ok = Math.abs(N.secXeA - 100) < 1e-6 && N.secPxA === 0, bad = [];
+    [0, 1].forEach(function(i){ SEC_GRPS.forEach(function(g){ var R = B[i]; if (!(R['secU50' + g] <= R['secU25' + g] && R['secU25' + g] <= R['secD25' + g] && R['secM1' + g] <= R['secM3' + g] && R['secM3w' + g] <= R['secM3' + g] && R['secHrc' + g] <= R['secHr' + g] + 1e-12)) bad.push(i + g); }); });
+    return {pass:ok && bad.length === 0, detail:'Xe ' + N.secXeA.toFixed(6) + ', Px ' + N.secPxA + (bad.length ? '; order fails: ' + bad.join(', ') : '')}; });
+  t('S53: one adult by hand (two years): a 33% fall in resources with 20% of savings below the fall is an uncovered drop; 0.5 months of need covered; 47.7 hours a week at its wage; the exposure shares', function(){
+    PRICE = {comp:{}}; CFG.BASKET_KEYS.forEach(function(k){ PRICE.comp[k] = 1; }); SECS = secNew(true, 2);
+    var a = {_tbPart:true, yrWealthStartUSD:10000, wealth:6000, yrUbiUSD:0, yrSSUSD:0, yrTbCash:1200, yrConvUSD:0, wage:20, _ret:false};
+    SECS.y = 0; secAcc(a, 40000, 50000, 30000, 1, 0); SECS.y = 1; secAcc(a, 20000, 50000, 30000, 1, 0);
+    var r = secRes({}), wh = 20*12*CFG.WAGE_TO_USD/2080, h = 28800/(wh*52), eS = buEss().reduce(function(x, k){ return x + CFG.BASKET[k]; }, 0), oe = 30000 - 50000*(1 - eS);
+    var ok = r.secD25A === 100 && r.secU25A === 100 && r.secU50A === 0 && r.secM1A === 100 && Math.abs(r.secMdA - 0.5) < 1e-12 && Math.abs(r.secHrA - h) < 1e-9 && r.secH40A === 100
+      && Math.abs(r.secXbA - oe/50000*100) < 1e-9 && Math.abs(r.secXeA - oe/(50000*eS)*100) < 1e-9 && r.secD25X === 0 && r.secD25P === 100;
+    return {pass:ok, detail:'hours ' + r.secHrA.toFixed(3) + ' (by hand ' + h.toFixed(3) + '), Xb ' + r.secXbA.toFixed(3) + ', months ' + r.secMdA}; });
+  return out;
+}
 function prodUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, nr:applyNR6()};
@@ -2740,6 +2772,7 @@ function healthUnitSuite(){
 }
 Object.assign(module.exports, { C22_KEYS, C22_DEFAULTS, c22NeedsBU, c22Share });  /* S6 */
 Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, sxEnergy, sxFac, sxYear, sxWin, sxPtf, sxUnitSuite, TB_PLV_KEYS });  /* S52 */
+Object.assign(module.exports, { SEC_DEFAULTS, SEC_KEYS, SEC_GRPS, SEC_M, S19_KEYS, S19_M, S19_N, secUnitSuite });  /* S53 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
@@ -3152,7 +3185,11 @@ if (require.main === module) {
     console.log('\n=== sxUnitSuite(): S52, the outside supply shock (harness-only) ===');
     SXU.forEach(function(x){ if (!x.pass) sxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + SXU.length + ' run, ' + sxf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || sxf) process.exitCode = 1;
+    var SEU = secUnitSuite(), sef = 0;
+    console.log('\n=== secUnitSuite(): S53, security outcomes and the S19 series (harness-only) ===');
+    SEU.forEach(function(x){ if (!x.pass) sef++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + SEU.length + ' run, ' + sef + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || sxf || sef) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
