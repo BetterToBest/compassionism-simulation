@@ -110,6 +110,32 @@ def main():
                 m, lo, hi = diff(rows[pr][k], rows[no][k], idx)
                 L.append('| %s (guardrail 6) | E | %.2f | %s |' % (lbl, sum(rows[no][k])/nseed, fmt(m, lo, hi) + ' | |'))
             L.append('')
+    # Q19 and decision rule 3: (design minus no programme, with savings that keep up with prices) minus (the same without them), release row, no shock;
+    # then, descriptively, the same difference for the main supply shock against no shock (both designs). Paired over seeds, the same resample.
+    DID = [('Savings that keep up with prices against plain savings (release row, no outside shock; Q19, decision rule 3)',
+            lambda e: ('%s.rel.off.prog.sv' % e, '%s.rel.off.none.sv' % e, '%s.rel.off.prog' % e, '%s.rel.off.none' % e))] + \
+          [('Main supply shock against no shock (%s; descriptive: how much the change moves under the shock)' % ('release row' if d == 'rel' else 'C2.2 design'),
+            (lambda d: lambda e: ('%s.%s.main.prog' % (e, d), '%s.%s.main.none' % (e, d), '%s.%s.off.prog' % (e, d), '%s.%s.off.none' % (e, d)))(d)) for d in ('rel', 'c22')]
+    for title, rw in DID:
+        L += ['## Difference in differences: ' + title, '',
+              'Each cell: the change with the programme in the first reading minus the change in the second, on the same seeds, with its 95% paired bootstrap interval; '
+              'an interval that excludes zero means the reading moves the result.', '',
+              '| Environment | Measure | Basis | ' + ' | '.join(gl for _, gl in GRPS) + ' |', '|---|---|---|' + '---|'*len(GRPS)]
+        for e in ENVS:
+            a1, b1, a0, b0 = rw(e)
+            if not all(x in rows for x in (a1, b1, a0, b0)): continue
+            for k, lbl, sgn, bas in MEAS:
+                if bas == 'C' and k not in ('Hr', 'Xb'): continue
+                cells = []
+                for g, _ in GRPS:
+                    K = 'sec' + k + g
+                    dd = [(p1 - n1) - (p0 - n0) for p1, n1, p0, n0 in zip(rows[a1][K], rows[b1][K], rows[a0][K], rows[b0][K])]
+                    cells.append(fmt(*diff(dd, [0.0]*len(dd), idx)))
+                L.append('| %s | %s | %s | %s |' % (ENVL[e], lbl, bas, ' | '.join(cells)))
+            for k, lbl in CONF:
+                dd = [(p1 - n1) - (p0 - n0) for p1, n1, p0, n0 in zip(rows[a1][k], rows[b1][k], rows[a0][k], rows[b0][k])]
+                L.append('| %s | %s | E | %s | | |' % (ENVL[e], lbl, fmt(*diff(dd, [0.0]*len(dd), idx))))
+        L.append('')
     out = '\n'.join(L) + '\n'
     if '--out' in a: open(a[a.index('--out') + 1], 'w').write(out)
     else: sys.stdout.write(out)
