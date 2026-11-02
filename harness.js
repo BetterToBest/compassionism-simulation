@@ -1172,6 +1172,38 @@ function s34UnitSuite(){
 Object.assign(module.exports, { espUnitSuite, ESP_DEFAULTS, setEsp:function(x){ ESP = x; }, getESS:function(){ return ESS; } });
 /* Plan step 2 (Oct 1, 2026): tests for the production side (PROD). Harness-only; run by `unit`. Bit-identity of every earlier output with PROD
  * null was checked by diffing full outputs of testbed projcore, esp, match and a5 (3 seeds, three environments) and validate. */
+/* S51 (Nov 2, 2026): backing as a mechanism (index.html bkmStep, the row option o.bkm). */
+function bkmUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); TB = null; LABOR = null; PRICE = null; } }
+  function rows(P, extra){ var PR = tbPresets(P), c = relMainCfgs(PR).map(function(x){ return Object.assign(x, {sc:SPEND_SOURCED, sn:{abawd:true, slope:true}}); });
+    return extra.map(function(f){ var m = JSON.parse(JSON.stringify(c[1])); m.p = c[1].p; m.o = Object.assign({}, c[1].o); f(m.o); return m; }); }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500});
+  t('S51: the mechanism with nothing funded (f = 0) changes no figure of the release row (every testbed output, seed 1, Reference, compared as raw numbers)', function(){
+    var R = tbStudy(rows(P, [function(){}, function(o){ o.bkm = {f:0, rho:0.2, lag:2, dep:0.05, acct:'growth'}; }]), 1, P, SO, 1), bad = TB_KEYS.filter(function(k){ return R[0]._s[k][0] !== R[1]._s[k][0]; });
+    return {pass:bad.length === 0, detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
+  t('S51: bkmStep by hand (growth): funding 100 a year at rho 0.1, lag 1, no wear, prices flat: added output 10 a year backs 10 of each year from year 1; output beyond the new money carries to the next year', function(){
+    var L = {}, BM = {f:1, rho:0.1, lag:1, dep:0, acct:'growth'}, u = [], ok = true;
+    for (var y = 0; y < 4; y++) u.push(bkmStep(L, BM, 100, y === 2 ? 4 : 50, 1, y, 1000));
+    /* year 0: no output; year 1: +10 backs 10 of 50; year 2: +10 backs the 4 owed, 6 carried; year 3: +10 and 6 carried back 16 of 50 */
+    ok = u[0] === 50 && u[1] === 40 && u[2] === 0 && Math.abs(u[3] - 34) < 1e-12 && Math.abs(L.bkm.O - 30) < 1e-12;
+    return {pass:ok, detail:'unbacked by year: ' + u.join(', ')}; });
+  t('S51: bkmStep by hand (retire, ceiling): the whole output backs the year\'s new money, never more than it, and output stops at the ceiling (cap x earned income); with wear the output falls', function(){
+    var L = {}, BM = {f:1, rho:0.5, lag:1, dep:0, acct:'retire', cap:0.08}, u = [];
+    for (var y = 0; y < 3; y++) u.push(bkmStep(L, BM, 100, 100, 2, y, 1000));
+    /* real funding 50 a year; output in year 1 is 25 real, capped at 0.08 x 1000 / 2 = 40 real; in year 2, 50 real, capped at 40: backs 80 of 100 nominal */
+    var L2 = {}, BM2 = {f:1, rho:0.1, lag:1, dep:0.5, acct:'growth'}, v = [bkmStep(L2, BM2, 100, 100, 1, 0, 1e6), bkmStep(L2, BM2, 0, 100, 1, 1, 1e6), bkmStep(L2, BM2, 0, 100, 1, 2, 1e6)];
+    var ok = u[0] === 100 && u[1] === 50 && u[2] === 20 && v[1] === 90 && Math.abs(v[2] - 105) < 1e-12;
+    return {pass:ok, detail:'retire: ' + u.join(', ') + '; growth with wear: ' + v.join(', ')}; });
+  t('S51: with the mechanism on and no backing assumed (a = 0), the backed share the run reports (bkA) is the mechanism\'s (bkmA), between 0 and 100, and more funding backs more (seed 1, Reference)', function(){
+    var R = tbStudy(rows(P, [function(o){ o.bkm = {f:0.25, rho:0.2, lag:2, dep:0.05, acct:'retire'}; }, function(o){ o.bkm = {f:1, rho:0.2, lag:2, dep:0.05, acct:'retire'}; }]), 1, P, SO, 1);
+    var a = R[0]._s.bkA[0], b = R[0]._s.bkmA[0], c = R[1]._s.bkmA[0];
+    return {pass:Math.abs(a - b) < 1e-9 && b > 0 && c > b && c <= 100, detail:'bkA ' + a.toFixed(3) + ', bkmA ' + b.toFixed(3) + ' (f 0.25), ' + c.toFixed(3) + ' (f 1)'}; });
+  return out;
+}
 function prodUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, nr:applyNR6()};
@@ -3079,7 +3111,11 @@ if (require.main === module) {
     console.log('\n=== healthUnitSuite(): health coverage and today\'s safety net (sessions 2a-2b; harness-only) ===');
     HLU.forEach(function(x){ if (!x.pass) hlf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + HLU.length + ' run, ' + hlf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf) process.exitCode = 1;
+    var BKU = bkmUnitSuite(), bkf = 0;
+    console.log('\n=== bkmUnitSuite(): S51, backing as a mechanism (harness-only) ===');
+    BKU.forEach(function(x){ if (!x.pass) bkf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + BKU.length + ' run, ' + bkf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
