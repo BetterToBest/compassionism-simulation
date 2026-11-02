@@ -478,6 +478,22 @@
    },
    "equal": true,
    "seconds": 229
+  },
+  {
+   "from": "2f45c0c93a8e7ac7f1cffb98aa2aa2549210a6add3e2f823b53cb0e213aaaf0f",
+   "to": "2a0609a5b0955ed660bf5e824dbfdcfdf92cd6bbf0876ce11e8532cfc87ec54d",
+   "date": "2026-11-02",
+   "change": "S52: the outside supply shock (preset key sx, off by default): energy price path, pass-through, PTF markup and local sourcing, PTH cut on housing before the shock, reporting keys sx*",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 257
   }
  ]
 }

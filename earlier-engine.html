@@ -5053,7 +5053,7 @@ function ptfsShares(a, HHA){  /* the member's basket shares: food, housing, tran
   if (HHA && a._hhS) return a._hhS; var c = function(k){ return PRICE ? PRICE.comp[k]/PRICE.bIdx : 1; };
   return {f:CFG.BASKET.food*c('food'), h:CFG.BASKET.housing*c('housing'), t:CFG.BASKET.transport*c('transport'), m:CFG.BASKET.medical*c('medical'), k:0}; }
 function ptfsCut(a, HHA, p, quiet){ var s = ptfsShares(a, HHA), eF = PFS && (CMS && a._cm !== undefined ? CMS.sh[a._cm] : PFS.dens) < CFG.PTFS_LOW_DENS ? CFG.PTFS_EPS_FOOD_LOW : CFG.PTFS_EPS_FOOD, o = PTFS.other;
-  var c = s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/CFG.PTFS_EPS_UTIL) + (s.t + (HLS && HLS.planOn ? 0 : s.m) + s.k)*o;  /* session 2b (DECISIONS, 'Nothing counted twice', item 7): under single payer (B, C) the health-sector cut lowers the plan's costs (hlSingle), not the household's */ if (p.szh) c *= (0.12 + p.szhCoh*0.04)/0.12;
+  var c = (PRICE && PRICE.sxF ? sxPtf(s.f, s.h, eF) : s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/CFG.PTFS_EPS_UTIL)) + (s.t + (HLS && HLS.planOn ? 0 : s.m) + s.k)*o;  /* session 2b (DECISIONS, 'Nothing counted twice', item 7): under single payer (B, C) the health-sector cut lowers the plan's costs (hlSingle), not the household's */ if (p.szh) c *= (0.12 + p.szhCoh*0.04)/0.12;
   if (PFS && !quiet){ PFS.cut += c; PFS.cn++; } return Math.min(0.95, c); }
 function ptfsYear(agentSet, yr){  /* before the year's adults: leavers, then the share of adults who are members (the food epsilon's density test) */
   var u = agentSet.map(function(){ return PFS.r(); }), m = 0;
@@ -5626,6 +5626,7 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
 function tbPov(a, C, idx, inc, mlc, costUSD, disp){
   var g = Math.max(0, costUSD - inc)/mlc;
   C.f0 += g > 0 ? 1 : 0; C.f1 += g; C.f2 += g*g;
+  if (SXS) sxAcc(a, SXS.p, costUSD, mlc, g > 0);  /* S52 (reporting only) */
   a._tbGap = g; a._tbF0 = (a._tbF0 || 0) + (g > 0 ? 1 : 0); a._tbF2 = (a._tbF2 || 0) + g*g;  /* session 21 (s41): FGT2 by group */
   a._tbRes = (a._tbRes || 0) + (inc + mlc - costUSD)/idx; a._tbYrs = (a._tbYrs || 0) + 1;
   if (g > 0){ if (!a._tbInSp) a._tbSp = (a._tbSp || 0) + 1; a._tbInSp = true; } else a._tbInSp = false;
@@ -5744,7 +5745,7 @@ function runYear(agentSet,yr,p,recSt){
       var jnF=CFG.BASKET.food*(PRICE?PRICE.comp.food/PRICE.bIdx:1),jnH=CFG.BASKET.housing*(PRICE?PRICE.comp.housing/PRICE.bIdx:1),jnRs=PTH_MODE!=='basket'||DISC_BASE!=='basket';
       agentSet.forEach(function(a){var jHH=HHON&&a._hh&&!a._hh.single,ef=jHH?a._hhE:jnE,u=1,jF=jHH?a._hhFd:jnF,jH=jHH?a._hhH:jnH,jM=jHH?jnM*a._hhF:jnM,jB=jHH?buEff*a._hhBU:buEff;if(a._inel){a.inCCO=false;return;}if(a._ret&&AGE&&AGE.ret==='none'){a.inCCO=false;return;}/* S6: not eligible (C22.u) */ /* v5.2 step 4: under 'none' a retiree is outside the programme */  /* v5.3 B3: a household member's share of the household's essentials and BU */
         if(p.ptf&&a.inPTF){if(PTFS){var jnC=1-ptfsCut(a,jHH,p,true);ef=ef*jnC;if(jnRs)u=jnC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(jnRs)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*jF;}
-        if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*jH*u;else ef*=0.65;}
+        if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*sxH(jH)*u;else ef*=0.65;}
         var use=Math.min(12*jB,jM*ef),cost=(JOIN.cost==='none'||(C22&&C22.auto))?0:12*p.bu*(typeof a.uCCO==='number'?a.uCCO:1)/Math.max(1e-9,p.partRate)*(JOIN.cost==='nominal'?1:jnIdx),want=p.bu>0&&use>=cost;
         if(a.inCCO&&!want&&yr-a._jnY>=JOIN.stay){a.inCCO=false;a._jnY=yr;jnL++;}
         else if(!a.inCCO&&want){a.inCCO=true;a._jnY=yr;jnJ++;}});if(HHON)hhSync('cco');}  // v5.3 B3: partners follow the first adult
@@ -5858,7 +5859,7 @@ function runYear(agentSet,yr,p,recSt){
       var sHH=HHON&&a._hh&&!a._hh.single,sE=sHH?a._hhE:eShareCur,sF=sHH?a._hhFd:fShareCur,sH=sHH?a._hhH:hShareCur,sM=sHH?spMlc*a._hhF:spMlc;  // v5.3 B3: a household member's share of the household's essentials
       if(isC){var ef=sE,u=1;
         if(p.ptf&&a.inPTF){if(PTFS){var spC=1-ptfsCut(a,sHH,p,true);ef=ef*spC;if(rsAlt)u=spC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(rsAlt)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*sF;}
-        if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*sH*u;else ef*=0.65;}
+        if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*sxH(sH)*u;else ef*=0.65;}
         if(SURP_CUT_MARKUP&&bp&&HCAP&&HCS&&hcM>0&&!(p.pth&&a.inPTH))ef+=hcM*sH;  // v5.3 B2: the bill the cut is applied to (the agent loop adds hcX to a BU customer's essentials)
         e=sM*ef;if(SURP.bu==='cash'&&bp)e=Math.max(0,e-Math.min(12*(sHH?buEff*a._hhBU:buEff),e));}
       if(spVOn){var vBu=(bp&&!(p.ptf&&a.inPTF))?Math.max(0,a._spBU||0):0,vE=0;if(vBu>0){vE=sE;if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')vE-=PTH_HOUSING_CUT*sH;else vE*=0.65;}vE*=sM;}a._spVw=vBu;a._spVE=vE;spVSum+=vBu;}
@@ -5898,7 +5899,7 @@ function runYear(agentSet,yr,p,recSt){
     if(GATE_CURRENT&&FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // audit V5-02: the framework BLEI gate reads THIS year's BU spend, not last year's (same expression as fwB0 below)
       var gEss=eSA;
       if(p.ptf&&a.inPTF)gEss=PTFS?gEss*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?gEss*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):gEss-PTF_FOOD_CUT[PTF_MODE]*fSA;
-      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')gEss-=PTH_HOUSING_CUT*hSA*(rsAlt&&p.ptf&&a.inPTF&&(PTFS||PTF_MODE==='shipped')?(PTFS?1-ptfsCut(a,HHA,p,true):1-(p.szh?0.12+p.szhCoh*0.04:0.12)):1);else gEss*=0.65;}
+      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')gEss-=PTH_HOUSING_CUT*sxH(hSA)*(rsAlt&&p.ptf&&a.inPTF&&(PTFS||PTF_MODE==='shipped')?(PTFS?1-ptfsCut(a,HHA,p,true):1-(p.szh?0.12+p.szhCoh*0.04:0.12)):1);else gEss*=0.65;}
       var gCost=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);if(PRICE)gCost*=PRICE.bIdx;if(HHA)gCost*=a._hhF;
       a._fwBUm=Math.min(12*buA,gCost*gEss)/12;
     }
@@ -5932,7 +5933,7 @@ function runYear(agentSet,yr,p,recSt){
     } else {  // session 5 (d4/d5): the same chain with PTH_MODE and DISC_BASE (harness-only)
     if(p.ptf&&a.inPTF){if(PTFS){rsPtfU=1-ptfsCut(a,HHA,p);cf=discMul(cf,rsPtfU);}else if(PTF_MODE==='shipped'){rsPtfU=1-(p.szh?0.12+p.szhCoh*0.04:0.12);cf=discMul(cf,rsPtfU);}else cf-=PTF_FOOD_CUT[PTF_MODE]*fSA;}
     var cfPTF=cf;
-    if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')cf-=PTH_HOUSING_CUT*hSA*rsPtfU;else cf=discMul(cf,0.65);}
+    if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')cf-=PTH_HOUSING_CUT*sxH(hSA)*rsPtfU;else cf=discMul(cf,0.65);}
     var cfPreCCO=cf;
     if(p.ccoOn&&a.inCCO&&p.bu>0){if(!PATHWAY_OFF.relief&&!FWON){cf=discMul(cf,ccoReliefF);rsRel=ccoReliefF;}}
     else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&!a._inel&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf=discMul(cf,ccoReliefF);rsRel=ccoReliefF;emergN++;}
@@ -5947,7 +5948,7 @@ function runYear(agentSet,yr,p,recSt){
     if(FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // session 2, N3/N4: BU buy essentials at the agent's own prices, up to 12 x BU a year
       var essF=eSA;
       if(p.ptf&&a.inPTF)essF=PTFS?essF*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fSA;
-      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')essF-=PTH_HOUSING_CUT*hSA*rsPtfU;else essF*=0.65;}  // session 5 (d4)
+      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')essF-=PTH_HOUSING_CUT*sxH(hSA)*rsPtfU;else essF*=0.65;}  // session 5 (d4)
       if(hcX>0)essF+=hcX;  // v5.2 step 7: BU pay the marked-up rent
       var fwBudget=12*buA,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),spC=0,fwB0=fwB;if(tbY)TB.cur.buIss+=fwBudget;if(EDCS)a._edcBU=fwBudget;if(HEALTH)a._hlBU=fwBudget;  // plan step 3: BU the Source issues (reporting)
       if(SPON&&a._spE>0&&spDelta>0){var spE=mainLoopCostUSD*essF;  // plan step 1 (d99): the cut lowers essentials; BU buy the discounted essentials first
@@ -6227,7 +6228,7 @@ var ADVERSE_REFERENCE = Object.assign({}, FULL_INTEGRATION, {shock:true, automat
 function ccoOnlyFor(p){ return Object.assign({}, p, {ptfShare:0, pthUptake:0, szhCoh:0, cipDemo:0, ptf:false, pth:false, szh:false, cip:false}); }
 /* The Baseline as simulate() builds it for a given scenario's comparison: shocks and
  * automation follow the scenario, inflation stays at BASELINE_CPI_RATE unless matched. */
-function baselineFor(p, matchInfl){ return Object.assign({}, BASELINE, {shock:!!p.shock, automation:!!p.automation, inflRate: matchInfl ? p.inflRate : CFG.BASELINE_CPI_RATE}); }
+function baselineFor(p, matchInfl){ var b = Object.assign({}, BASELINE, {shock:!!p.shock, automation:!!p.automation, inflRate: matchInfl ? p.inflRate : CFG.BASELINE_CPI_RATE}); if (p.sx) b.sx = p.sx; return b; }  /* S52: the outside supply shock is the environment's, so the Baseline sees it too */
 
 /* ─── Session 2: the next round's default rule (D1) and the A2 issuance and price module ───────────────
  * NEXT_ROUND: D1, adopted Sep 26 (session-1-handoff.md): consume 0.9 of ALL cash surplus; basket consumption is financed
@@ -6286,6 +6287,7 @@ function priceRun(p, seed, o, S){
   RNG = mulberry32(seed);
   var comp = {}; CFG.BASKET_KEYS.forEach(function(k){ comp[k] = 1; });
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
+  var SXp = p.sx ? sxOpts(p.sx) : null;  /* S52 */
   var PG = 1, D = [], path = [], tot = newPMAcc(), wbPrev = 0, labAcc = null;
   THETA_DENS = null;
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }  /* session 5: the joint price and labor run */
@@ -6308,6 +6310,7 @@ function priceRun(p, seed, o, S){
       path.push({bIdx:PRICE.bIdx, PG:PG, PEh:PRICE.comp.housing/(o.pgOnE ? PG : 1), d:d, U:U, Y:A.Y, conv:A.conv, unmet:A.unmet, basketOwn:A.basketOwn, unmetN:A.unmetN/A.n, colaLevel:PRICE.colaLevel});
       PRICE.piG = PGn/PG - 1; PG = PGn;
       CFG.BASKET_KEYS.forEach(function(k){ comp[k] = CFG.ESSENTIALS.indexOf(k) >= 0 ? PE[k]*(o.pgOnE ? PG : 1) : PG; });
+      if (SXp) sxApply(comp, SXp, yr + 1);  /* S52: the outside supply shock's factors for next year (only with p.sx) */
       PRICE.bIdx = pmBasketIdx(comp);
     }
   } finally { PRICE = null; if (labAcc) LABOR = null; }
@@ -6409,6 +6412,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   RNG = mulberry32(seed);
   var comp = {}; CFG.BASKET_KEYS.forEach(function(k){ comp[k] = 1; });
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
+  var SXp = p.sx ? sxOpts(p.sx) : null; SXS = SXp ? sxNew(SXp, p.years) : null; if (SXS) SXS.p = p;  /* S52 (reporting state only with p.sx) */
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null, tb:o.taxBase, tauMax:o.tauMax};  /* v5.2 step 7: taxBase 'prog' | 'land' (undefined = the flat contribution) */
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
   var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0,
@@ -6421,7 +6425,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
     for (var yr = 0; yr < yMax; yr++){
-      PRICE.acc = newPMAcc();
+      PRICE.acc = newPMAcc(); if (SXS) SXS.y = yr;
       runYear(agents, yr, p, recPath ? recPath[yr] : CALM0);
       tbBleiYear(BG, agents, p, o, yr === T - 1);
       if (!o.noEP){ var epY = extremePovertyOf(housingDistressOf(agents), epD0, p); epSum += epY ? epY.total/100 : 0; }  /* plan step 9 */  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
@@ -6474,6 +6478,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       path.push({bIdx:PRICE.bIdx, PG:PG, U:U, Y:A.Y, tau:tauUsed, colaLevel:PRICE.colaLevel, full:C.idx});  /* session 8: full price level (exogenous x endogenous) */
       PRICE.piG = PGn/PG - 1; PG = PGn;
       CFG.BASKET_KEYS.forEach(function(k){ comp[k] = CFG.ESSENTIALS.indexOf(k) >= 0 ? PE[k]*(o.pgOnE ? PG : 1) : PG; });
+      if (SXp) sxApply(comp, SXp, yr + 1);  /* S52: the outside supply shock's factors for next year (only with p.sx) */
       PRICE.bIdx = pmBasketIdx(comp);
     }
   } finally { PRICE = null; TB = null; if (labAcc) LABOR = null; }
@@ -6512,6 +6517,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (SNET && SNS) emR = snRes(emR || {});  /* session 2b */
   if (DIS) emR = disRes(emR || {});  /* v5.4 item 5 */
   if (o.bkm && L.bkm) emR = bkmRes(emR || {}, L.bkm, T);  /* S51 (only with o.bkm) */
+  if (SXS) emR = sxRes(emR || {}, T);  /* S52 (only with p.sx) */
   var plv = {}; TB_PLV_KEYS.forEach(function(k, t){ plv[k] = t < path.length ? path[t].full : 0; });  /* S35 (reporting only) */  /* v5.4 item 3 (zeros in the no-programme run) */
   return {path:path, res:Object.assign(fbsRes(FBSS, edcRes(EDCS, hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
     endoAnn:Math.pow(bI, 1/(T - 1)) - 1, endoMax:mx, pov:pov/n*100, bleiPov:bpov/n*100, nbleiPov:nbpov/n*100, tgt:L.pd > 0 ? L.tgt/L.pd : 0, medWealthReal:medianOf(agents.map(function(a){ return a.wealth; }))/full,
@@ -6592,6 +6598,66 @@ function bkmStep(L, BM, bkP, bkU, idx, yr, Yw){
 var BKM_KEYS = ['bkmA', 'bkm5', 'bkm10', 'bkm19', 'bkmO19', 'bkmF'];
 function bkmRes(r, S, T){ var q = function(t){ t = Math.min(t, T - 1); return S.y[t] || 0; };
   r.bkmA = S.P > 0 ? S.B/S.P*100 : 0; r.bkm5 = q(5); r.bkm10 = q(10); r.bkm19 = q(T - 1); r.bkmO19 = S.oy[T - 1] || 0; r.bkmF = S.P > 0 ? S.F/S.P*100 : 0; return r; }
+/* S52 (Nov 2, 2026; research-update PLAN.md S52; dev/reports/s52-supply-shock-reading.md): AN OUTSIDE SUPPLY SHOCK, behind the preset key p.sx (undefined =
+ * off: nothing here runs and every figure is unchanged). An energy price spike from outside the economy (war, weather or a cartel: the model represents no
+ * motive) raises the market prices of food, transport and housing's utilities and heating. Claude's reading of the design (the note above): PTF removes the
+ * markup part of the rise and pays the real-cost part, except the part it sources locally; PTH removes the landlord's markup on rent, which this shock does
+ * not move, so a PTH household pays its utilities' rise unless it is also a PTF member.
+ *  The energy price path, a rise over its level before the shock (sources/s52_energy_shock.py: US CPI energy over core, 1967-2024; the three largest
+ *  episodes, 1972-74, 1978-80 and 2020-22, are the calibration, not targets):
+ *   E      the rise at the peak (main 0.328, the median episode; swept 0.246, 0.373 and 0.655, twice the median and beyond history)
+ *   t0     the first year of the shock (5: the programme has matured; a design parameter); the rise reaches E in ramp years (2, as in every episode)
+ *   fall   years from the peak to the level the shock keeps (2); keep, the share of the rise still there then and after (main 0.88; swept 0.51 and 1)
+ *  Pass-through, the elasticity of each category's price relative to core to the real energy price (two-year changes, OLS; the same script):
+ *   beta.food 0.101, beta.transport 0.390, beta.util 0.488 (household energy); housing's is the utilities' share of housing (CFG.PTFS_UTIL) times
+ *   beta.util; shelter (0.021) and medical care (-0.050) are not different from zero and have no cost channel: 0. Other categories: 0 (core is the reference).
+ *   Each category's factor is (1 + e)^beta. The rise is relative: wages, which follow the general level P_G, do not follow it.
+ *  The markup part (design parameter; the sourced range is 0 to about one half: markups grew 3.4% in 2021 against 5.8% PCE inflation, "more than half",
+ *  and fell in the second half of 2021 as energy prices rose, Glover, Mustre-del-Rio and von Ende-Becker, Kansas City Fed Economic Review 108(1), 2023;
+ *  "available data do not point to a widespread increase in markups", Hansen, Toscani and Zhou, IMF WP/23/131, 2023, both opened Nov 2, 2026):
+ *   m      the share of the market's price rise that is wider margins, not higher real cost (main 0.25; swept 0 and 0.5)
+ *  PTF (design parameters; the Hub describes none of them):
+ *   s      PTF's local-sourcing share (main 0; swept 0.25, 0.5, 1); kap, the outside shock's reach into local supply (main 0.5: local farms and generators
+ *          still buy fuel and fertiliser; swept 0). A PTF member pays (1 - m) x (1 - s x (1 - kap)) of each dollar the market's food and utilities rise.
+ *          Local supply's normal-times price is not modelled (no premium): the sweep is an upper bound on what local sourcing buys.
+ *   pool   years over which PTF spreads each year's cost rise (main 1: the Hub describes no price reserve; swept 3: a reserve that is repaid, so members
+ *          pay the same in total, later and more evenly).
+ * Prices: at the end of each year the factors for the next year multiply the essentials' and the general level's components (sxApply); the engine's own price
+ * rules are unchanged. A member's PTF cut is computed on the prices before the shock and the member then pays its share of the rise (ptfsCut); PTH's housing
+ * cut is computed on housing before the shock (sxH). Before t0 every factor is 1 and no formula changes. No draw is added. */
+var SX_DEFAULTS = {E:0.328, t0:5, ramp:2, fall:2, keep:0.88, beta:{food:0.101, transport:0.390, util:0.488}, m:0.25, s:0, kap:0.5, pool:1};
+var SXS = null;
+function sxOpts(sx){ var r = Object.assign({}, SX_DEFAULTS, sx === true ? {} : sx); r.beta = Object.assign({}, SX_DEFAULTS.beta, (sx && sx.beta) || {}); r.t0 = Math.max(1, r.t0 | 0); return r; }
+function sxEnergy(X, y){ var t = y - X.t0; if (t < 0) return 0; if (t < X.ramp) return X.E*(t + 1)/X.ramp;
+  var u = t - X.ramp + 1; return u < X.fall ? X.E*(1 - (1 - X.keep)*u/X.fall) : X.E*X.keep; }
+function sxWin(X, y){ return y < X.t0 ? 0 : y < X.t0 + X.ramp + X.fall ? 1 : 2; }  /* 0 before the shock, 1 during it (the rise and the fall), 2 after */
+function sxFac(X, y){ var e = sxEnergy(X, y), f = Math.pow(1 + e, X.beta.food), u = Math.pow(1 + e, X.beta.util);
+  return {e:e, f:f, u:u, h:1 + CFG.PTFS_UTIL*(u - 1), t:Math.pow(1 + e, X.beta.transport)}; }
+/* The factors for year y (null while nothing has moved and nothing is pooled), with PTF's pooled factors and the member's share of the real-cost rise. */
+function sxYear(X, y){ var F = sxFac(X, y), P = Math.max(1, X.pool | 0), pf = 0, pu = 0, any = F.e > 0;
+  for (var j = 0; j < P; j++){ var G = j === 0 ? F : sxFac(X, y - j); pf += G.f; pu += G.u; if (G.e > 0) any = true; }
+  if (!any) return null; F.pf = pf/P; F.pu = pu/P; F.k = (1 - X.m)*(1 - X.s*(1 - X.kap)); return F; }
+function sxApply(comp, X, y){ var F = sxYear(X, y); PRICE.sxF = F; if (!F) return; comp.food *= F.f; comp.housing *= F.h; comp.transport *= F.t; }
+function sxH(h){ return PRICE && PRICE.sxF ? h/PRICE.sxF.h : h; }  /* the housing share before the shock (PTH's cut) */
+function sxPtf(sf, sh, eF){ var F = PRICE.sxF, b = sf/F.f, u0 = sh/F.h*CFG.PTFS_UTIL;  /* PTF's food and utilities cut with the shock: on the prices before it, less the member's share of the rise */
+  return b*(1 - 1/eF) + b*((F.f - 1) - (F.pf - 1)*F.k) + u0*(1 - 1/CFG.PTFS_EPS_UTIL) + u0*((F.u - 1) - (F.pu - 1)*F.k); }
+/* Measures (reporting only, no draw). Groups this year: F PTF members; H PTH members not in PTF; P CCO participants in neither; N adults in none of the
+ * three; X adults who chose not to take part (a._tbPart false: the same adults in every design and in the no-programme run); A all. Own cost is what the
+ * adult pays in money: BU spent on essentials is not in it, so the BU's part of the insulation shows in P (and in F and H, whose members mostly hold BU too). Windows: B before the shock, D during it, After. For each group
+ * and window: own cost (sxC, dollars a year, the adult's basket at its own prices), market basket (sxM, the same basket at market prices) and basket
+ * poverty (sxP, % of adult-years below the own cost). The share of the shock reaching a group is read by pairing a shocked row with its unshocked twin
+ * (the same seed): the rise in own cost over the rise in the market basket. sxV: the volatility of the group's essential costs, the standard deviation of
+ * the year-on-year change in its mean own cost, years 1 to the end (%). */
+var SX_GRPS = ['A', 'F', 'H', 'P', 'N', 'X'], SX_WINS = ['B', 'D', 'A'];
+var SX_KEYS = [].concat.apply([], SX_GRPS.map(function(g){ return [].concat.apply([], SX_WINS.map(function(w){ return ['sxC' + w + g, 'sxM' + w + g, 'sxP' + w + g]; })).concat(['sxV' + g]); }));
+function sxNew(X, T){ var a = function(){ return new Float64Array(18); }; return {X:X, y:0, n:a(), c:a(), m:a(), q:a(), yc:Array.from({length:T}, function(){ return new Float64Array(6); }), yn:Array.from({length:T}, function(){ return new Float64Array(6); })}; }
+function sxAcc(a, p, costUSD, mlc, poor){ var S = SXS, w = sxWin(S.X, S.y), g = p.ptf && a.inPTF ? 1 : p.pth && a.inPTH ? 2 : p.ccoOn && a.inCCO ? 3 : 4;
+  [0, g].concat(a._tbPart ? [] : [5]).forEach(function(k){ var j = w*6 + k; S.n[j]++; S.c[j] += costUSD; S.m[j] += mlc; if (poor) S.q[j]++; if (S.yc[S.y]){ S.yc[S.y][k] += costUSD; S.yn[S.y][k]++; } }); }
+function sxRes(r, T){ var S = SXS;
+  SX_GRPS.forEach(function(g, k){ SX_WINS.forEach(function(w, wi){ var j = wi*6 + k, n = S.n[j]; r['sxC' + w + g] = n ? S.c[j]/n : 0; r['sxM' + w + g] = n ? S.m[j]/n : 0; r['sxP' + w + g] = n ? S.q[j]/n*100 : 0; });
+    var ch = []; for (var t = 1; t < T; t++){ var a0 = S.yn[t-1][k] ? S.yc[t-1][k]/S.yn[t-1][k] : 0, a1 = S.yn[t][k] ? S.yc[t][k]/S.yn[t][k] : 0; if (a0 > 0 && a1 > 0) ch.push((a1/a0 - 1)*100); }
+    var mu = ch.reduce(function(x, v){ return x + v; }, 0)/Math.max(1, ch.length); r['sxV' + g] = ch.length > 1 ? Math.sqrt(ch.reduce(function(x, v){ return x + (v - mu)*(v - mu); }, 0)/(ch.length - 1)) : 0; });
+  return r; }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
   var tau0 = ((o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source') && p.tb) ? tbRunCore(p, seed, o, S, 0, 1).tau0 : 0;
@@ -6651,6 +6717,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS || SPEND_GRADE || LW ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
+        if (r.sxCBA !== undefined) SX_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S52 */
         if (r.bkmA !== undefined) BKM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S51 */
         if (r.dsHit !== undefined) DIS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 5 */
         if (r.pfCut !== undefined) PTFS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 4 */

@@ -1204,6 +1204,38 @@ function bkmUnitSuite(){
     return {pass:Math.abs(a - b) < 1e-9 && b > 0 && c > b && c <= 100, detail:'bkA ' + a.toFixed(3) + ', bkmA ' + b.toFixed(3) + ' (f 0.25), ' + c.toFixed(3) + ' (f 1)'}; });
   return out;
 }
+/* S52 (Nov 2, 2026): the outside supply shock (index.html sxOpts, sxEnergy, sxYear, sxPtf, the preset key p.sx). */
+function sxUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); TB = null; LABOR = null; PRICE = null; SXS = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY);
+  function run(sx){ var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500}); if (sx) P.sx = sx;
+    var c = relMainCfgs(tbPresets(P)).map(function(x){ Object.assign(x, {sc:SPEND_SOURCED, sn:{abawd:true, slope:true}}); if (sx) x.p = Object.assign({}, x.p, {sx:sx}); return x; });
+    return tbStudy(c, 1, P, SO, 1); }
+  t('S52: a shock of size 0 changes no figure of the release row or its no-programme run (every testbed output, seed 1, Reference, raw numbers)', function(){
+    var A = run(null), B = run({E:0}), bad = [];
+    [0, 1].forEach(function(i){ TB_KEYS.forEach(function(k){ if (A[i]._s[k][0] !== B[i]._s[k][0]) bad.push(i + ':' + k); }); });
+    return {pass:bad.length === 0, detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
+  t('S52: the energy path by hand (rise 0.328 from year 5, peak in year 6, 88% kept from year 8) and the factors (1 + e)^beta', function(){
+    var X = sxOpts({}), v = [4, 5, 6, 7, 8, 15].map(function(y){ return sxEnergy(X, y); }), F = sxFac(X, 6);
+    var ok = v[0] === 0 && Math.abs(v[1] - 0.164) < 1e-12 && Math.abs(v[2] - 0.328) < 1e-12 && Math.abs(v[3] - 0.328*0.94) < 1e-12 && Math.abs(v[4] - 0.328*0.88) < 1e-12 && v[5] === v[4]
+      && Math.abs(F.f - Math.pow(1.328, 0.101)) < 1e-12 && Math.abs(F.h - (1 + CFG.PTFS_UTIL*(Math.pow(1.328, 0.488) - 1))) < 1e-12 && sxYear(X, 4) === null && [0, 1, 1, 1, 2].join() === [4, 5, 8, 8, 9].map(function(y){ return sxWin(X, y); }).join();
+    return {pass:ok, detail:v.map(function(x){ return x.toFixed(4); }).join(', ')}; });
+  t('S52: PTF\'s cut by hand: with no markup and no local sourcing a member pays the whole dollar rise of food and utilities (the cut is the cut on the prices before the shock); with every rise markup, none of it; pooling over 3 years spreads the rise and keeps its total', function(){
+    var X = sxOpts({m:0}), F = sxYear(X, 6), sf = 0.0901*F.f, sh = 0.2761*F.h, b0 = 0.0901*(1 - 1/2.64) + 0.2761*CFG.PTFS_UTIL*(1 - 1/CFG.PTFS_EPS_UTIL);
+    PRICE = {sxF:F}; var c0 = sxPtf(sf, sh, 2.64); F.k = 0; var c1 = sxPtf(sf, sh, 2.64), rise = 0.0901*(F.f - 1) + 0.2761*CFG.PTFS_UTIL*(F.u - 1); PRICE = null;
+    var Y = sxOpts({keep:0, pool:3}), a = 0, q = 0; for (var y = 0; y < 30; y++){ var G = sxYear(Y, y); if (G){ a += G.f - 1; q += G.pf - 1; } }
+    var ok = Math.abs(c0 - b0) < 1e-12 && Math.abs(c1 - b0 - rise) < 1e-12 && Math.abs(a - q) < 1e-12 && a > 0;
+    return {pass:ok, detail:'cut ' + c0.toFixed(6) + ' vs ' + b0.toFixed(6) + '; all markup ' + c1.toFixed(6) + '; pooled total ' + q.toFixed(6) + ' vs ' + a.toFixed(6)}; });
+  t('S52: before the shock nothing moves (seed 1: every own cost and market basket of the window before it equals the unshocked run\'s); in the no-programme run the whole shock reaches everyone (rise in own cost over rise in the market basket, during the shock, within 0.5%)', function(){
+    var Z = run({E:0}), S = run({}), bad = SX_KEYS.filter(function(k){ return /^sx[CMP]B/.test(k) && Z[1]._s[k][0] !== S[1]._s[k][0]; });
+    var r = (S[0].sxCDA - Z[0].sxCDA)/(S[0].sxMDA - Z[0].sxMDA);
+    return {pass:bad.length === 0 && Math.abs(r - 1) < 0.005 && S[0].sxMDA > Z[0].sxMDA, detail:(bad.length ? 'moved: ' + bad.slice(0, 6).join(', ') + '; ' : '') + 'reach ' + r.toFixed(4)}; });
+  return out;
+}
 function prodUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, nr:applyNR6()};
@@ -2707,6 +2739,7 @@ function healthUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { C22_KEYS, C22_DEFAULTS, c22NeedsBU, c22Share });  /* S6 */
+Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, sxEnergy, sxFac, sxYear, sxWin, sxPtf, sxUnitSuite, TB_PLV_KEYS });  /* S52 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
@@ -3115,7 +3148,11 @@ if (require.main === module) {
     console.log('\n=== bkmUnitSuite(): S51, backing as a mechanism (harness-only) ===');
     BKU.forEach(function(x){ if (!x.pass) bkf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + BKU.length + ' run, ' + bkf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf) process.exitCode = 1;
+    var SXU = sxUnitSuite(), sxf = 0;
+    console.log('\n=== sxUnitSuite(): S52, the outside supply shock (harness-only) ===');
+    SXU.forEach(function(x){ if (!x.pass) sxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + SXU.length + ' run, ' + sxf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || sxf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
