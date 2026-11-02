@@ -6166,6 +6166,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       else if (o.fin === 'tax') U = extra + (o.taxBase ? Math.max(0, need - C.tax) : 0);  /* v5.2 step 7: the progressive and land taxes pay what they can (marginal rates capped at tauMax); the Source pays the rest as new money */
       else if (o.fin === 'source'){ var cvS = gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv, bkP = (o.faceM ? 0 : C.bu) + cvS - C.convM, bkU = (1 - o.a)*bkP;  /* v5.2 step 7: with the gift over the run, the Source's new money for the launch gift is spread over the run (d66's 'run', as for the contribution) */  /* plan step 3 (S1-S6): the Source's net payout is new money, less output that backs it; faceM: essentials bought with BU count as backed */
         if (o.aK) bkU = Math.max(0, bkU - o.aK*A.Yw);  /* v5.2 step 6 (decision B): the middle reading; output backs the payout up to aK of the year's earned income (CFG.KENYA_ABSORB_*) */
+        if (o.bkm) bkU = bkmStep(L, o.bkm, bkP, bkU, C.idx, yr, A.Yw);  /* S51: backing as a mechanism (off unless the row sets o.bkm): the funded projects' output backs the payout */
         U = bkU + extra; L.bkP += bkP/C.idx; L.bkU += bkU/C.idx; L.bkY += A.Yw/C.idx;
         if (ACCT && !gRun){ var srcB = bkP - bkU + C.convM + (o.faceM ? C.bu : 0); acctChk('source', yr, C.bu + C.conv - bkU - srcB, Math.abs(C.bu) + Math.abs(C.conv) + Math.abs(bkU) + Math.abs(srcB), null); } }  /* v5.3 B2: what the Source pays (BU face value and conversion) = new money + the output that backs it */
       else if (o.fin === 'hybrid') U = (1 - o.a)*(C.conv - C.convM) + extra;  /* plan step 2: matched output (0 unless PROD) */  /* session 7 (d26 option c): transfers taxed, conversion rewards created at a */
@@ -6230,6 +6231,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (HEALTH && HLS) emR = hlRes(emR || {});  /* session 2a */
   if (SNET && SNS) emR = snRes(emR || {});  /* session 2b */
   if (DIS) emR = disRes(emR || {});  /* v5.4 item 5 */
+  if (o.bkm && L.bkm) emR = bkmRes(emR || {}, L.bkm, T);  /* S51 (only with o.bkm) */
   var plv = {}; TB_PLV_KEYS.forEach(function(k, t){ plv[k] = t < path.length ? path[t].full : 0; });  /* S35 (reporting only) */  /* v5.4 item 3 (zeros in the no-programme run) */
   return {path:path, res:Object.assign(fbsRes(FBSS, edcRes(EDCS, hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
     endoAnn:Math.pow(bI, 1/(T - 1)) - 1, endoMax:mx, pov:pov/n*100, bleiPov:bpov/n*100, nbleiPov:nbpov/n*100, tgt:L.pd > 0 ? L.tgt/L.pd : 0, medWealthReal:medianOf(agents.map(function(a){ return a.wealth; }))/full,
@@ -6276,6 +6278,40 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     hhDebt20:dbt20, hhDebt40:dbt40,  /* S35 */
     octMean:agents.reduce(function(m, a){ return m + (a.inCCO ? a.octave : 0); }, 0)/Math.max(1, agents.filter(function(a){ return a.inCCO; }).length)}))))), emR || {}, plv)};  /* plan step 6: mean octave of participants at year 20 */  /* plan step 5: PTF discount funded by forgone profit, year-0 $ per adult-year */
 }
+/* S51 (Nov 2, 2026; research-update PLAN.md S51, ledger D11; dev/reports/s51-backing-mechanism.md): BACKING AS A MECHANISM, behind the row option o.bkm
+ * (undefined = off: nothing here runs and every figure is unchanged). Claude's reading of the design (dev/reports/s51-backing-reading.md): conversions are
+ * backed by output the community chooses to fund. Each year a share f of the Source's net payout (bkP: the new money before any backing) pays for work on
+ * projects that add supply; a dollar of it (year-0 prices) adds rho dollars of output a year from lag years later, wearing out at dep a year. The backed
+ * share is then an outcome (bkA), not an input. Every constant is a design parameter, swept by the study (prereg/2026-11-backing-addendum.md):
+ *  f     share of the net payout that funds supply-adding projects (the rest pays for work whose output the model does not count as supply: care, art, culture)
+ *  rho   output a year per dollar funded, year-0 prices. The sweep's top value, 0.32, is US output per dollar of fixed capital (GDP 2024, $29,381 billion, over the
+ *        current-cost net stock of fixed assets at the end of 2024, $91,549 billion; BEA, via FRED series GDPA and K1TTOTL1ES000, opened Nov 2, 2026): an upper
+ *        end, since it credits capital with all of output, labour's part too.
+ *  lag   years before a project's output starts (whole years, at least 1)
+ *  dep   the share of a project's output lost each year (wear)
+ *  cap   (optional) the most output the projects can add, as a share of the year's earned income: added output needs people and materials, and the
+ *        sourced bounds are the engine's: the US's underused labour (CFG.US_UNDERUSE, 8%) and Kenya's peak absorption (CFG.KENYA_ABSORB_PEAK, 16%). None = no ceiling.
+ *  acct  how output backs new money. 'growth' (the main reading): the price rule is the quantity theory's (prices rise with new money as a share of income), so
+ *        only the year's ADDED output (this year's level less last year's) absorbs new money; output already there absorbed earlier money. Added output beyond the
+ *        year's new money is carried to later years; output that falls adds to the new money. 'retire': each year's whole output is sold and the proceeds return
+ *        to the Source, retiring that much new money (the convention of matched output and of the every-dollar-backed reading; no carry; at most the payout).
+ * State lives in the run's ledger L (L.bkm); real amounts are in year-0 prices (divided by the year's price level idx). Returns the year's unbacked new money. */
+function bkmStep(L, BM, bkP, bkU, idx, yr, Yw){
+  var S = L.bkm || (L.bkm = {I:[], O:0, K:0, P:0, B:0, F:0, y:[], oy:[]}), lag = Math.max(1, BM.lag | 0), dep = +BM.dep || 0, rho = +BM.rho || 0;
+  S.I[yr] = (+BM.f || 0)*Math.max(0, bkP)/idx; S.F += S.I[yr];
+  var O = 0; for (var s = 0; s + lag <= yr; s++) O += rho*(S.I[s] || 0)*Math.pow(1 - dep, yr - s - lag);
+  if (BM.cap != null) O = Math.min(O, +BM.cap*Math.max(0, Yw)/idx);
+  var u = bkU, b = 0;
+  if (BM.acct === 'retire'){ b = Math.min(u, O*idx); u -= b; }
+  else { var net = O - S.O + S.K; if (net >= 0){ b = Math.min(u, net*idx); u -= b; S.K = net - b/idx; } else { u += -net*idx; S.K = 0; } }
+  S.O = O; S.P += bkP/idx; S.B += b/idx; S.y[yr] = bkP > 0 ? b/bkP*100 : 0; S.oy[yr] = Yw > 0 ? O*idx/Yw*100 : 0;
+  return u; }
+/* S51: the mechanism's measures (only with o.bkm). bkmA: share of the net payout backed by the funded output over the run (%; bkA counts every backing);
+ * bkm5, bkm10, bkm19: that share in years 5, 10 and 19 (%); bkmO19: the output a year in year 19 as a share of that year's earned income (%);
+ * bkmF: the dollars funded as a share of the net payout (%; equals f unless a year's payout is negative). */
+var BKM_KEYS = ['bkmA', 'bkm5', 'bkm10', 'bkm19', 'bkmO19', 'bkmF'];
+function bkmRes(r, S, T){ var q = function(t){ t = Math.min(t, T - 1); return S.y[t] || 0; };
+  r.bkmA = S.P > 0 ? S.B/S.P*100 : 0; r.bkm5 = q(5); r.bkm10 = q(10); r.bkm19 = q(T - 1); r.bkmO19 = S.oy[T - 1] || 0; r.bkmF = S.P > 0 ? S.F/S.P*100 : 0; return r; }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
   var tau0 = ((o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source') && p.tb) ? tbRunCore(p, seed, o, S, 0, 1).tau0 : 0;
@@ -6335,6 +6371,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS || SPEND_GRADE || LW ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
+        if (r.bkmA !== undefined) BKM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S51 */
         if (r.dsHit !== undefined) DIS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 5 */
         if (r.pfCut !== undefined) PTFS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 4 */
         if (r.c22PY !== undefined) C22_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S6 */
