@@ -4334,6 +4334,17 @@ function drExtra(inc, cost, cut, w0){ var ex = cost - cut - Math.max(0, inc), ok
  *        and Stress), added to wage growth as the programme's own price rise is (audit E5). As released wages follow only the programme's price level.
  * No random draw in any part. */
 var AUD = null;
+/* S47 (Nov 5, 2026; the design freeze): fixes found by the second, independent implementation of the release row (dev/reports/s50-independent-implementation/
+ * GAPS.md, phase 2), each its own part, all off by default (null = off, as released; every released figure is unchanged). Per row: c.fx (true = every part below;
+ * or an object naming parts). Each makes the engine do what its own comments say it does. No part makes a random draw.
+ *  pthb  PTH's books are opened after households are formed (GAPS item 6). As released pthbInit runs before hhInit, so household members who take the head's
+ *        PTH decision have no books (about 28% of members) and about 25 homes a seed have books but no member; the books' header says every PTH home has them.
+ *  hb    the PTH home's price and the trust's market rent at the member's market housing cost, the housing share of the basket the run prices the adult's
+ *        cost of living at (mainLoopCostUSD), as the books' header says (GAPS item 7). As released they use the BLEI daily cost (about half the basket).
+ *  ab    SNAP's work rule counts a month only if it is at least 1e-9 of a month (GAPS item 8): a wholly insured spell leaves a rounding remainder of about
+ *        1e-16 that was counted. Reporting only (snAbN).
+ * The fourth fix (the supply path from a run with job loss, the safety net and the labour response, GAPS item 2) is added as part sp before the freeze. */
+var FX = null;
 /* v5.3 B7 (Oct 7, 2026; plan item B7, "FBS lambda -> FBS50"; dev/DECISIONS.md Session 39, "B7"): FBS50, the advancement rule in interpretable units. The
  * chance of advancing an octave in a year is 1 - exp(-lambda x FBS) (BLEI paper, Index IV); FBS50 = ln 2 / lambda is the monthly free bandwidth surplus at
  * which that chance is even ($524 to $4,191 a month over the model's lambda range, CFG.FBS_HALF_SAT_LO/HI). null (the default) leaves the rule as it is.
@@ -5996,7 +6007,7 @@ function runYear(agentSet,yr,p,recSt){
     if(PJON){a._pjHW=0;if(a._pjBU>0){var pjH=a._pjBU/pjPay,pjHw=a.wage*12*CFG.WAGE_TO_USD*incomeShock/PROJ.hrsYr,pjD=pjH*pjHw;  // N1 (session 15): project hours
       if(PROJ.hours==='displace'){pjD=Math.min(pjD,Math.max(0,annualWageUSD));annualWageUSD-=pjD;if(LABOR&&LABOR.acc)LABOR.acc.E-=pjD;}
       a._pjHW=pjD;PJS.acc.hrs+=pjH;PJS.acc.disp+=(PROJ.hours==='displace'?pjD:0)/pjIdx;}}
-    if(SNET&&SNET.abawd){var abW=emQ?emQ.out*52:0,abUi=emQ&&emWk>0?Math.min(abW,emQ.ui/(CFG.EMPL_UI_REPL*emWk)):0,abB=LABOR?(a._lbE0||0):annualWageUSD,abR=abB>0?(LABOR?annualWageUSD/abB:1):0;a._snAbC=a._ret?0:12*Math.max(0,(abR<0.5?52:abW)-abUi)/52;}  // session 7: SNAP's work rule, this year's months not meeting it (read next year)
+    if(SNET&&SNET.abawd){var abW=emQ?emQ.out*52:0,abUi=emQ&&emWk>0?Math.min(abW,emQ.ui/(CFG.EMPL_UI_REPL*emWk)):0,abB=LABOR?(a._lbE0||0):annualWageUSD,abR=abB>0?(LABOR?annualWageUSD/abB:1):0;a._snAbC=a._ret?0:12*Math.max(0,(abR<0.5?52:abW)-abUi)/52;if(FX&&FX.ab&&a._snAbC<1e-9)a._snAbC=0;}  // session 7: SNAP's work rule, this year's months not meeting it (read next year)
     if(tbG)cf-=tbG/mainLoopCostUSD;  // session 6: public grocery (applied after the labor block reads the CCO relief)
     var costUSD=mainLoopCostUSD*cf;
     if(HEALTH&&HLS&&a._hlD)costUSD+=a._hlD*HLS.mIdx;  // session 2a: the household's medical bill above (or below) its basket line, in cash, at medical prices
@@ -6133,14 +6144,14 @@ function runYear(agentSet,yr,p,recSt){
       if(rsAlt)pthSaving=Math.max(0,dcA*(cfPTF-cfPreCCO)*rsRel);  // session 5 (d4/d5): PTH's own cut on the post-relief basket
       var equityContrib=pthSaving*CFG.PTH_EQUITY_CONTRIB_SHARE;
       a.acreEquity+=equityContrib;a.wealth-=equityContrib;yrCashSurplus-=equityContrib;  // session 1: equity routing is not discretionary cash
-      var ar=0.030+uPthAppr*0.020+pthApprBonus;var pbS=PTHB&&PBS?a._pbS:null,pbV0=0,pbVn=0;if(pbS){if(!pbS.V){pbS.V=CFG.PTHB_PR*hSA*dcA;pbS.D=pbS.V-(a.acreEquity-equityContrib);}pbV0=pbS.V;pbVn=pbV0*(1+PBS.pi)*(1+CFG.PTHB_G);if(PTHB.cap==='hub')ar=Math.min(pbVn/pbV0-1,PBS.pi+0.02);}  // v5.4 item 3: Acre Equity grows with the home, at most at the price rise + 2%
+      var ar=0.030+uPthAppr*0.020+pthApprBonus;var pbS=PTHB&&PBS?a._pbS:null,pbV0=0,pbVn=0;if(pbS){if(!pbS.V){pbS.V=CFG.PTHB_PR*hSA*(FX&&FX.hb?mainLoopCostUSD:dcA);pbS.D=pbS.V-(a.acreEquity-equityContrib);}pbV0=pbS.V;pbVn=pbV0*(1+PBS.pi)*(1+CFG.PTHB_G);if(PTHB.cap==='hub')ar=Math.min(pbVn/pbV0-1,PBS.pi+0.02);}  // v5.4 item 3: Acre Equity grows with the home, at most at the price rise + 2%
       var appr=a.acreEquity*ar,lqs=pthLiquidShare(a.pthTenure);
       if(pbS)lqs*=appr>0?Math.max(0,appr-PBS.pi*a.acreEquity)/appr:0;  // v5.4 item 3: only the gain above the price rise is paid out in cash; what keeps up with prices stays as equity
       a.acreEquity+=PTH_APPR_CONSERVE?appr*(1-lqs):appr;a.wealth+=appr*lqs;yrCashSurplus+=appr*lqs;  /* v4.16: PTH_APPR_CONSERVE=false is bit-identical to index.html */
       if(tbY)a._tbPthNow=appr*lqs;  // session 6
       if(LEDGER){ledAdd(yr,'pthEquityContrib',equityContrib);ledAdd(yr,'pthAppr',appr);ledAdd(yr,'pthApprLiquid',appr*lqs);}  // A1 ledger
       if(ACCT){a._acPc=equityContrib;a._acPa=appr;a._acPl=appr*lqs;}  // v5.3 B2
-      if(pbS){var pbR=hSA*dcA,pbI=((1+CFG.PTHB_RREAL)*(1+PBS.pi)-1)*pbS.D,pbU=CFG.PTHB_UPK*(1-CFG.PTHB_LAND)*pbV0,pbT=CFG.PTHB_TAX*pbV0,pbL=appr*lqs;  // v5.4 item 3: the trust's books for this home
+      if(pbS){var pbR=hSA*(FX&&FX.hb?mainLoopCostUSD:dcA),pbI=((1+CFG.PTHB_RREAL)*(1+PBS.pi)-1)*pbS.D,pbU=CFG.PTHB_UPK*(1-CFG.PTHB_LAND)*pbV0,pbT=CFG.PTHB_TAX*pbV0,pbL=appr*lqs;  // v5.4 item 3: the trust's books for this home
         pbS.D-=pbR+equityContrib-pbI-pbU-pbT-pbL;pbS.CE+=(pbVn-pbV0)+pbR-pbI-pbU-pbT-appr;pbS.V=pbVn;
         PBS.n++;if(pbR+equityContrib>=pbI-PBS.pi*(pbS.D+pbR+equityContrib-pbI-pbU-pbT-pbL)+pbU+pbT+pbL)PBS.cover++;PBS.aP+=pbV0*PBS.pi/PBS.P;PBS.aR+=pbV0*(1+PBS.pi)*CFG.PTHB_G/PBS.P;PBS.aC+=(pbVn-pbV0-appr)/PBS.P;
         if(ACCT)acctChk('pth-books',yr,(pbS.V-pbS.D)-a.acreEquity-pbS.CE,pbS.V,a._id!==undefined?a._id:null);}
@@ -6397,10 +6408,11 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (EMPL) emplInit(agents, seed); else EMS = null;
   if (HEALTH){ hlInit(agents, seed); HLS.noProg = !p.ccoOn && !Object.keys(spec).length; HLS.govKey = (seed | 0) + '|' + JSON.stringify(HEALTH) + '|' + JSON.stringify(SNET) + '|' + JSON.stringify(PREV); if (HLS.noProg && HL_GOVREF && HEALTH.gov === 'fixed') HL_GOVREF[HLS.govKey] = []; } else HLS = null;  /* session 2a: health coverage (no draw on any stream); session 2c: the no-programme run records government's share (d194) */
   if (SNET) snInit(agents, seed); else SNS = null;  /* session 2b: today's safety net (no draw on any stream) */
-  if (PTHB && p.pth) pthbInit(agents, latent, seed); else PBS = null;
+  if (PTHB && p.pth && !(FX && FX.pthb)) pthbInit(agents, latent, seed); else PBS = null;  /* S47 fx.pthb: opened after households instead (below) */
   if (DIS) DSS = {r:mulberry32(seed + 600053), hit:0, n:0, list:[], ctl:[]}; else DSS = null;  /* v5.4 item 5 */
   if (PTFS && p.ptf) PFS = {r:mulberry32(seed + 600047), cut:0, cn:0, leave:0, mem:0, yrs:0, dens:1}; else PFS = null;  /* v5.4 item 4 */  /* v5.4 item 3: the PTH trust's books */  /* v5.4 item 2: job loss, on its own stream */
   if (HOUSEHOLDS) hhInit(agents, seed); else HHS = null;  /* v5.3 B3: households drawn once, on their own stream (no draw on the main or construction streams) */
+  if (PTHB && p.pth && FX && FX.pthb) pthbInit(agents, latent, seed);  /* S47 fx.pthb: the books follow the household's PTH decision (no draw at set-up) */
   if (COMM && p.ptf) clInit(agents, seed, p); else CMS = null;
   if (C22) c22Init(agents, seed); else C22S = null;  /* S6: eligibility and automatic distribution (own stream); coverage tallies */  /* S37: the community layer (its own stream; nothing to do without PTF) */
   if (HOUSEHOLDS && HOUSEHOLDS.wealth === 'scf' && spec.endow) agents.forEach(function(a){ a._tbEl = a.wealth < spec.endow.thresh; });  /* v5.3 B7: an endowment's test reads the household's starting wealth */
@@ -6846,6 +6858,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var bs0 = BU_SCOPE; if (c.bs) BU_SCOPE = c.bs;  /* v5.3 B3f: what BU can buy, for this row ('core' | 'hub') */
       var em0 = EDC_MEASURE; if (c.em) EDC_MEASURE = true;  /* v5.3 B6: the measured EDC for this row (reporting only) */
       var au0 = AUD; if (c.au) AUD = c.au === true ? {gate:true, sg:true, fbs:true} : Object.assign({}, c.au);  /* S13: the audit's corrections for this row (no programme rows too) */
+      var fx0 = FX; if (c.fx) FX = c.fx === true ? {pthb:true, hb:true, ab:true} : Object.assign({}, c.fx);  /* S47: the second implementation's fixes for this row (no programme rows too) */
       var dr0 = DEBT_READ; if (c.dr) DEBT_READ = Object.assign({lim:0}, c.dr === true ? {} : c.dr);  /* S35: the debt reading for this row (no programme rows too) */
       var cl0 = COMM; if (c.cl) COMM = Object.assign({}, COMM_DEFAULTS, c.cl === true ? {} : c.cl);  /* S37: the community layer for this row */
       var c220 = C22; if (c.c22) C22 = Object.assign({}, C22_DEFAULTS, c.c22 === true ? {} : c.c22);  /* S6: coverage and adequacy for this row */
@@ -6876,7 +6889,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.rkEv !== undefined) RISK_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 1 */
         if (r.edcM !== undefined) EDC_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B6 */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; AUD = au0; COMM = cl0; CMS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; AUD = au0; FX = fx0; COMM = cl0; CMS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;
