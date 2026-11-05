@@ -1268,6 +1268,34 @@ function secUnitSuite(){
     return {pass:ok, detail:'hours ' + r.secHrA.toFixed(3) + ' (by hand ' + h.toFixed(3) + '), Xb ' + r.secXbA.toFixed(3) + ', months ' + r.secMdA}; });
   return out;
 }
+function lvUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); TB = null; LABOR = null; PRICE = null; LVS = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500});
+  function row(f){ var c = relMainCfgs(tbPresets(P)).map(function(x){ return Object.assign(x, {sc:SPEND_SOURCED, sn:{abawd:true, slope:true}}); })[1]; c.o = Object.assign({}, c.o || {}); if (f) f(c); return c; }
+  function lv(o, f){ return row(function(c){ c.o.lv = Object.assign({tref:0.12}, o); if (f) f(c); }); }
+  var R = null; function all(){ if (R) return R;
+    R = tbStudy([row(), lv({}), lv({jn:'conv'}), lv({jn:'conv'}, function(c){ c.p = Object.assign({}, c.p, {tax:0}); }), lv({jn:'conv'}, function(c){ c.p = Object.assign({}, c.p, {tax:0.40}); }),
+      lv({br:1}), lv({bt:0.75}), lv({keep:0.5}), lv({cap:0.04}), lv({ph:10}), lv({sv:true, svc:10000}, function(c){ c.sv = true; }), lv({rc:true}), lv({oc:0.25})], 1, P, SO, 1); return R; }
+  t('S54: the policy levers are behind a switch: o.lv = {} (every lever at the design\'s value) moves no testbed output of the release row (seed 1, Reference, raw numbers); off adds no key', function(){
+    var A = all(), bad = TB_KEYS.filter(function(k){ return A[0]._s[k][0] !== A[1]._s[k][0]; });
+    return {pass:bad.length === 0 && A[0].lvU === undefined && LV_KEYS.every(function(k){ return isFinite(A[1][k]); }), detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : 'new money ' + A[1].lvU.toFixed(2) + '% of earned income'}; });
+  t('S54: joining that sees what joining pays: year 1 as today (no project pool yet); mean participation falls as the tax rises (0% >= 12% >= 40%)', function(){
+    var A = all(), j0 = A[3].lvJm, j12 = A[2].lvJm, j40 = A[4].lvJm;
+    return {pass:A[2].lvJ1 === A[1].lvJ1 && j0 >= j12 && j12 >= j40 && j0 > j40, detail:'participation ' + j0.toFixed(2) + ' / ' + j12.toFixed(2) + ' / ' + j40.toFixed(2)}; });
+  t('S54: the money levers act in the expected direction: a 1x business rate, a 75% business tax, a 40% tax, keeping half the project sales and a 4% cap each lower the new money; the cap and the phase-in ration (factor < 1); the capped protected account pays interest', function(){
+    var A = all(), b = A[1].lvU, ok = A[5].lvU < b && A[6].lvU < b && A[4].lvU < A[2].lvU && A[7].lvU < b && A[7].lvKp > 0 && A[8].lvU < b && A[8].lvQ < 1 && A[9].lvQ < 1 && A[10].lvSv > 0 && A[11].lvU !== b && A[12].pov !== A[1].pov;
+    return {pass:ok, detail:'new money: base ' + b.toFixed(1) + ', br1 ' + A[5].lvU.toFixed(1) + ', bt75 ' + A[6].lvU.toFixed(1) + ', keep50 ' + A[7].lvU.toFixed(1) + ', cap4 ' + A[8].lvU.toFixed(1) + ' (q ' + A[8].lvQ.toFixed(2) + '), sv ' + A[10].lvSv.toFixed(2)}; });
+  t('S54: by hand: progression 8 points above 3x capped at 50% (rate 5: 28%; rate 9: 50%); a 30% business base rate; the phase-in factor (0.2 in year 0 of 5, 1 from year 4); a rate of 9 at half premium is 5', function(){
+    LVS = lvNew({pr:0.08, pc:0.5, bt:0.3, ph:5}, {tax:0.12}); var p = {tax:0.12, cip:false, maxOct:6, maxMult:9, phi:false, ptf:false}, a = {octave:6, quality:9, inPTF:false};
+    var t5 = pjTax(p, 5), t9 = pjTax(p, 9), bb = lvBizBase(p, 0.12), f0 = lvPhase(LVS, 0), f4 = lvPhase(LVS, 4); LVS.m = 0.5; var r = pjOwnRate(a, p, 1);
+    lvEnd(); LVS = null; var r1 = pjOwnRate(a, p, 1);
+    return {pass:Math.abs(t5 - 0.28) < 1e-12 && t9 === 0.5 && bb === 0.3 && Math.abs(f0 - 0.2) < 1e-12 && f4 === 1 && r === 5 && r1 === 9, detail:'taxes ' + t5 + ', ' + t9 + '; rate ' + r + ' (off ' + r1 + ')'}; });
+  return out;
+}
 function prodUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, nr:applyNR6()};
@@ -2773,6 +2801,7 @@ function healthUnitSuite(){
 Object.assign(module.exports, { C22_KEYS, C22_DEFAULTS, c22NeedsBU, c22Share });  /* S6 */
 Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, sxEnergy, sxFac, sxYear, sxWin, sxPtf, sxUnitSuite, TB_PLV_KEYS });  /* S52 */
 Object.assign(module.exports, { SEC_DEFAULTS, SEC_KEYS, SEC_GRPS, SEC_M, S19_KEYS, S19_M, S19_N, secUnitSuite });  /* S53 */
+Object.assign(module.exports, { LV_KEYS, lvUnitSuite });  /* S54 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
 Object.assign(module.exports, { healthUnitSuite, HL_KEYS, HEALTH_DEFAULTS, incomeTest, medicaidEligible, hlU, hlOop, hlPct, hlK, hlNeedOf, hlMu });  /* session 2a: health coverage */
@@ -3189,7 +3218,11 @@ if (require.main === module) {
     console.log('\n=== secUnitSuite(): S53, security outcomes and the S19 series (harness-only) ===');
     SEU.forEach(function(x){ if (!x.pass) sef++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + SEU.length + ' run, ' + sef + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || sxf || sef) process.exitCode = 1;
+    var LVU = lvUnitSuite(), lvf = 0;
+    console.log('\n=== lvUnitSuite(): S54, the policy levers (harness-only) ===');
+    LVU.forEach(function(x){ if (!x.pass) lvf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + LVU.length + ' run, ' + lvf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || sxf || sef || lvf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
