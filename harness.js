@@ -1204,6 +1204,29 @@ function bkmUnitSuite(){
     return {pass:Math.abs(a - b) < 1e-9 && b > 0 && c > b && c <= 100, detail:'bkA ' + a.toFixed(3) + ', bkmA ' + b.toFixed(3) + ' (f 0.25), ' + c.toFixed(3) + ' (f 1)'}; });
   return out;
 }
+/* S47 (Nov 5, 2026): the second implementation's fixes (index.html FX, row option fx). */
+function fxUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); TB = null; LABOR = null; PRICE = null; FX = null; } }
+  function rows(P, i, extra){ var PR = tbPresets(P), c = relMainCfgs(PR).map(function(x){ return Object.assign(x, {sc:SPEND_SOURCED, sn:{abawd:true, slope:true}}); });
+    return extra.map(function(f){ var m = JSON.parse(JSON.stringify(c[i])); m.p = c[i].p; m.o = Object.assign({}, c[i].o); f(m); return m; }); }
+  function moved(R){ return TB_KEYS.filter(function(k){ return R[0]._s[k][0] !== R[1]._s[k][0]; }); }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500});
+  t('S47: fx with no part on ({}) changes no figure of the release row (every testbed output, seed 1, Reference, raw numbers)', function(){
+    var b = moved(tbStudy(rows(P, 1, [function(){}, function(m){ m.fx = {}; }]), 1, P, SO, 1));
+    return {pass:b.length === 0, detail:b.length ? 'moved: ' + b.slice(0, 8).join(', ') : ''}; });
+  t('S47: fx.pthb and fx.hb change no figure of the no-programme row (it has no PTH), and do change the release row', function(){
+    var b0 = moved(tbStudy(rows(P, 0, [function(){}, function(m){ m.fx = {pthb:true, hb:true}; }]), 1, P, SO, 1)),
+        b1 = moved(tbStudy(rows(P, 1, [function(){}, function(m){ m.fx = {pthb:true, hb:true}; }]), 1, P, SO, 1));
+    return {pass:b0.length === 0 && b1.length > 0, detail:'no programme moved: ' + (b0.join(', ') || 'none') + '; release row moved ' + b1.length + ' keys'}; });
+  t('S47: fx.ab is reporting only: at most snAbN moves (release row and no-programme row, seed 1, Reference)', function(){
+    var b = moved(tbStudy(rows(P, 1, [function(){}, function(m){ m.fx = {ab:true}; }]), 1, P, SO, 1)).concat(moved(tbStudy(rows(P, 0, [function(){}, function(m){ m.fx = {ab:true}; }]), 1, P, SO, 1)));
+    return {pass:b.every(function(k){ return k === 'snAbN'; }), detail:'moved: ' + (b.join(', ') || 'none')}; });
+  return out;
+}
 /* S52 (Nov 2, 2026): the outside supply shock (index.html sxOpts, sxEnergy, sxYear, sxPtf, the preset key p.sx). */
 function sxUnitSuite(){
   var out = [];
@@ -2799,7 +2822,7 @@ function healthUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { C22_KEYS, C22_DEFAULTS, c22NeedsBU, c22Share });  /* S6 */
-Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, sxEnergy, sxFac, sxYear, sxWin, sxPtf, sxUnitSuite, TB_PLV_KEYS });  /* S52 */
+Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, sxEnergy, sxFac, sxYear, sxWin, sxPtf, sxUnitSuite, fxUnitSuite, TB_PLV_KEYS });  /* S52 */
 Object.assign(module.exports, { SEC_DEFAULTS, SEC_KEYS, SEC_GRPS, SEC_M, S19_KEYS, S19_M, S19_N, secUnitSuite });  /* S53 */
 Object.assign(module.exports, { LV_KEYS, lvUnitSuite });  /* S54 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
@@ -3210,6 +3233,10 @@ if (require.main === module) {
     console.log('\n=== bkmUnitSuite(): S51, backing as a mechanism (harness-only) ===');
     BKU.forEach(function(x){ if (!x.pass) bkf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + BKU.length + ' run, ' + bkf + ' failed');
+    var FXU = fxUnitSuite(), fxf = 0;
+    console.log('\n=== fxUnitSuite(): S47, the second implementation\'s fixes (harness-only) ===');
+    FXU.forEach(function(x){ if (!x.pass) fxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + FXU.length + ' run, ' + fxf + ' failed');
     var SXU = sxUnitSuite(), sxf = 0;
     console.log('\n=== sxUnitSuite(): S52, the outside supply shock (harness-only) ===');
     SXU.forEach(function(x){ if (!x.pass) sxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
@@ -3222,7 +3249,7 @@ if (require.main === module) {
     console.log('\n=== lvUnitSuite(): S54, the policy levers (harness-only) ===');
     LVU.forEach(function(x){ if (!x.pass) lvf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + LVU.length + ' run, ' + lvf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || sxf || sef || lvf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
