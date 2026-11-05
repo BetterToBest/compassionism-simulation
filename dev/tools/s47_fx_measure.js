@@ -8,7 +8,8 @@
  * Every row carries the runner's reference settings (relMainCfgs, sc SPEND_SOURCED, today's safety net with the work rule and slope).
  *
  *   node dev/tools/s47_fx_measure.js --env=ref|adv|st --seeds=1-50 --out=FILE.json
- *   node dev/tools/s47_fx_measure.js --table FILE_ref.json FILE_adv.json FILE_st.json   (prints the markdown tables)
+ *   node dev/tools/s47_fx_measure.js --table FILE_ref.json FILE_adv.json FILE_st.json   (prints the markdown tables; .json.gz read too)
+ * Results of Nov 5, 2026 (engine of pull request 74): dev/runs/s47-fx/*.json.gz; tables dev/reports/s47-fx-tables.md; report dev/reports/s47-fx.md.
  *
  * Measurement only: no figure here is a target and nothing is tuned to it. */
 'use strict';
@@ -60,7 +61,7 @@ function f(v, k) { const a = Math.abs(v*sc(k)); return (v*sc(k)).toFixed(k === '
 function table(files) {
   const L = [];
   files.forEach(file => {
-    const D = JSON.parse(fs.readFileSync(file, 'utf8')), R = D.rows, n = D.seeds[1] - D.seeds[0] + 1;
+    const raw = fs.readFileSync(file), D = JSON.parse((/\.gz$/.test(file) ? require('zlib').gunzipSync(raw) : raw).toString('utf8')), R = D.rows, n = D.seeds[1] - D.seeds[0] + 1;
     L.push('### ' + ENVL[D.env] + ' (seeds ' + D.seeds[0] + '-' + D.seeds[1] + ', ' + n + ' paired; ' + D.seconds.toFixed(0) + ' s on one process)', '');
     L.push('Levels on the published engine, and the change each setting makes against the audit-corrected engine (au); the last column is the frozen engine against the published one. Mean change, with its 95% interval, over the paired seeds.', '');
     DES.forEach(d => {
