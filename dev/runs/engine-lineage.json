@@ -510,6 +510,22 @@
    },
    "equal": true,
    "seconds": 198
+  },
+  {
+   "from": "b3215a5991fce887889bf14f71268985ea8ce5fb8622e2265b90aea9c1e6bcbb",
+   "to": "fb7566d95993f003d22b869bd1a2ea91333cca016cc9312facfd53c4080bad0e",
+   "date": "2026-11-05",
+   "change": "S54: the policy levers behind row option lv (off by default; with lv off every figure is identical)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 215
   }
  ]
 }
