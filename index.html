@@ -3701,8 +3701,8 @@ var PROJ_DEFAULTS = {share:1, gift:1000, giftMode:'forward', giftFin:'payg', pay
 var PJS = null;
 function pjOwnRate(a, p, pcb){ var oc = 1 + (a.octave/Math.max(1, p.maxOct))*(Math.max(1, p.maxMult) - 1), qf = Math.min(1, a.quality/Math.max(1, p.maxMult));
   var ph = (p.phi && a.quality > p.maxMult*CFG.PHI_QUALITY_THRESH) ? CFG.PHI_RATIO : 1.0, pb = (p.ptf && a.inPTF) ? pcb : 1.0;
-  return Math.min((1 + qf*(oc - 1))*ph*pb, p.maxMult*(p.phi ? CFG.PHI_RATIO : 1.0)); }
-function pjTax(p, r){ var bT = p.cip ? p.tax*(1 - p.cipDemo*0.18) : p.tax; return Math.min(CFG.PROG_TAX_MAX, bT + Math.max(0, (r - CFG.PROG_PIVOT)*CFG.PROG_RATE)); }
+  var r = Math.min((1 + qf*(oc - 1))*ph*pb, p.maxMult*(p.phi ? CFG.PHI_RATIO : 1.0)); return LVS && LVS.m !== 1 ? 1 + LVS.m*(r - 1) : r; }  /* S54: o.lv's phase-in and issuance cap (LVS.m) */
+function pjTax(p, r){ var bT = p.cip ? p.tax*(1 - p.cipDemo*0.18) : p.tax; return LVS ? Math.min(LVS.pc, bT + Math.max(0, (r - CFG.PROG_PIVOT)*LVS.pr)) : Math.min(CFG.PROG_TAX_MAX, bT + Math.max(0, (r - CFG.PROG_PIVOT)*CFG.PROG_RATE)); }  /* S54: o.lv's progression (pr) and cap (pc) */
 function pjNewAcc(){ return {pool:0, gift:0, exp:0, alloc:0, carry:0, conv:0, giftConv:0, gross:0, net:0, giftNet:0, hrs:0, disp:0, work:0, partY:0, rc:0, rcN:0, overCap:0, unwilling:0}; }
 /* N1, session 19 (s38; decisions d70-d76; N1-design-esp-payroll.md): ESP PAYROLL IN EXPIRED BU AT WORKERS' OWN RATES, the design's
  * mechanism (Duke's R7, Sep 29) for the wage part of the Hub-spec model's business conversion (N1 above). Framework model only: the
@@ -5314,7 +5314,7 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   if (yr === 0 && a._tbEl) C.endow += y.W;
   var spCut = a._spCutY || 0, buR = Math.max(0, mlc*(cfPreCCO - cf) - tbG - spCut);  /* plan step 1 (d105): the split's price cut is conversion premium, not BU relief */
   if (a._csFree){ C.cutFree += a._csFree; a._csFree = 0; }  /* plan step 5 */
-  C.bu += buR; C.conv += conv + spCut; if (a._pdM){ C.convM += a._pdM; a._pdM = 0; }  /* plan step 2: matched project output */ C.pjg += a.yrPjGift || 0; a.yrPjGift = 0; C.cutPT += tbPT; C.cutG += tbG; C.pthLiq += a._tbPthNow || 0;
+  C.bu += buR; C.conv += conv + spCut; if (a._pdM){ C.convM += a._pdM; if (LVS) LVS.pjM += a._pdM; a._pdM = 0; }  /* plan step 2: matched project output */ C.pjg += a.yrPjGift || 0; a.yrPjGift = 0; C.cutPT += tbPT; C.cutG += tbG; C.pthLiq += a._tbPthNow || 0;
   /* Session 7 (A5 targeting share): program dollars this agent received this year (cash, the endowment's annuity value, BU relief,
    * conversion, price-cut dollars, PTH liquid appreciation; not capital), and the part that closes the agent's shortfall before
    * transfers: the gross basket less wage earnings. Reporting only. */
@@ -5467,7 +5467,7 @@ function runYear(agentSet,yr,p,recSt){
       agentSet.forEach(function(a){var jHH=HHON&&a._hh&&!a._hh.single,ef=jHH?a._hhE:jnE,u=1,jF=jHH?a._hhFd:jnF,jH=jHH?a._hhH:jnH,jM=jHH?jnM*a._hhF:jnM,jB=jHH?buEff*a._hhBU:buEff;if(a._inel){a.inCCO=false;return;}if(a._ret&&AGE&&AGE.ret==='none'){a.inCCO=false;return;}/* S6: not eligible (C22.u) */ /* v5.2 step 4: under 'none' a retiree is outside the programme */  /* v5.3 B3: a household member's share of the household's essentials and BU */
         if(p.ptf&&a.inPTF){if(PTFS){var jnC=1-ptfsCut(a,jHH,p,true);ef=ef*jnC;if(jnRs)u=jnC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(jnRs)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*jF;}
         if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*sxH(jH)*u;else ef*=0.65;}
-        var use=Math.min(12*jB,jM*ef),cost=(JOIN.cost==='none'||(C22&&C22.auto))?0:12*p.bu*(typeof a.uCCO==='number'?a.uCCO:1)/Math.max(1e-9,p.partRate)*(JOIN.cost==='nominal'?1:jnIdx),want=p.bu>0&&use>=cost;
+        var use=Math.min(12*jB,jM*ef),cost=(JOIN.cost==='none'||(C22&&C22.auto))?0:12*p.bu*(typeof a.uCCO==='number'?a.uCCO:1)/Math.max(1e-9,p.partRate)*(JOIN.cost==='nominal'?1:jnIdx),want=p.bu>0&&use>=cost;if(LVS&&LVS.jn==='conv'&&p.bu>0&&cost>0){var lvX=lvConvX(a,p,jnIdx,clPCB(a)),lvK=cost/(12*p.bu*(JOIN.cost==='nominal'?1:jnIdx));want=use+lvX[0]>=cost+lvX[1]*lvK;}  /* S54: joining sees the expected conversion income after tax (o.lv.jn 'conv') */
         if(a.inCCO&&!want&&yr-a._jnY>=JOIN.stay){a.inCCO=false;a._jnY=yr;jnL++;}
         else if(!a.inCCO&&want){a.inCCO=true;a._jnY=yr;jnJ++;}});if(HHON)hhSync('cco');}  // v5.3 B3: partners follow the first adult
     agentSet.forEach(function(a){if(a.inCCO)jnN++;});JNS.join+=jnJ;JNS.leave+=jnL;JNS.y[yr]={part:jnN/Math.max(1,agentSet.length),join:jnJ,leave:jnL};
@@ -5501,6 +5501,7 @@ function runYear(agentSet,yr,p,recSt){
     var pjRc=pjWt>0?pjWR/pjWt:1,pjSet=[];PJS.acc.rc+=pjRc;PJS.acc.rcN++;
     pjP.forEach(function(a){var ru=PROJ.rate==='max'?Math.max(a._pjR,pjRc):a._pjR,v=pjPay*ru*(1-pjTax(p,ru))*pjCipB,h=a.wage*12*CFG.WAGE_TO_USD/PROJ.hrsYr;
       a._pjRu=ru;a._pjWill=v>(a._ret?0:h);/* v5.2 step 4: a retiree gives up no wage for project hours */if(PROJ.alloc==='capqAll'||a._pjWill)pjSet.push(a);});
+    if(LVS){var lvW=0;pjSet.forEach(function(a){lvW+=a._pjW;});LVS.ppw=lvW>0?pjIn/pjIdx/lvW:0;LVS.prc=pjRc;}  // S54: this year's project BU per unit of weight (year-0 dollars), read by next year's joining
     if(pjIn>0&&pjSet.length){
       if(PROJ.alloc==='low'){pjSet.sort(function(x,y){return x.wage-y.wage;});var pjL=pjIn;for(var pjI=0;pjI<pjSet.length&&pjL>0;pjI++){var pjT=Math.min(pjL,pjSet[pjI]._pjCap);pjSet[pjI]._pjBU=pjT;pjL-=pjT;}pjCarry=pjL;}
       else if(PROJ.alloc==='equal'){pjSet.forEach(function(a){a._pjBU=pjIn/pjSet.length;});}
@@ -5544,8 +5545,8 @@ function runYear(agentSet,yr,p,recSt){
     esY.ret=esRet;esY.sv=esSv;esA.ret+=esRet/esIdx;esA.sv=esSv/esIdx;
     agentSet.forEach(function(a){esY.conv+=a._esC;});
     if(esRet>0&&FWS.prev){  // d73-d75: the BU returned to the ESP convert at FW.bizRate this year, paid with the rest of last year's premium
-      var esBT=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax,esTR=Math.min(CFG.PROG_TAX_MAX,esBT+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*CFG.PROG_RATE)),esTP=Math.min(CFG.PROG_TAX_MAX,esBT);
-      var esRG=esRet*(FW.bizCap*FW.bizRate+(1-FW.bizCap)),esRT=esRet*(FW.bizCap*FW.bizRate*esTR+(1-FW.bizCap)*esTP),esRN=PATHWAY_OFF.conversion?0:esRG-esRT-esRet;
+      var esBT=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax,esTR=Math.min(CFG.PROG_TAX_MAX,esBT+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*CFG.PROG_RATE)),esTP=Math.min(CFG.PROG_TAX_MAX,esBT);if(LVS){esBT=lvBizBase(p,esBT);esTR=Math.min(LVS.pc,esBT+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*LVS.pr));esTP=Math.min(LVS.pc,esBT);}  // S54: o.lv's business rate, progression and cap
+      var esRG=esRet*(FW.bizCap*FW.bizRate+(1-FW.bizCap)),esRT=esRet*(FW.bizCap*FW.bizRate*esTR+(1-FW.bizCap)*esTP),esRN=PATHWAY_OFF.conversion?0:esRG-esRT-esRet;if(LVS&&esRN<0){esRT+=esRN;esRN=0;}  /* S54: never below face value */
       FWS.prev.bizNet+=esRN;esA.retNet+=esRN/esIdx;if(tbY)TB.cur.ctax+=esRT;if(ACCT)ACCT.cur.esRet+=esRet;
       if(LEDGER){ledAdd(yr,'espRetGross',esRG);ledAdd(yr,'espRetTax',esRT);ledAdd(yr,'espRetPremium',esRN);}
     }
@@ -5604,7 +5605,7 @@ function runYear(agentSet,yr,p,recSt){
     if(isNaN(a.wealth))a.wealth=0;if(isNaN(a.wage)||a.wage<=0)a.wage=1;
     var HHA=HHON&&a._hh&&!a._hh.single,eSA=HHA?a._hhE:eShareCur,fSA=HHA?a._hhFd:fShareCur,hSA=HHA?a._hhH:hShareCur,buA=HHA?buEff*a._hhBU:buEff,dcA=HHA?dollarCost*a._hhD:dollarCost,HHP=HHPOOL&&HHA&&a._hh.a.length>1;tShA=HHA?a._hhT:tShareCur;if(HHON)a._hhPool=HHP;  // v5.3 B3: a household member's shares, BU and BLEI cost; HHP: a pooled couple (finished in hhPool)
     var dsOn=!!(DIS&&DSS&&yr===DIS.yr&&a._disHit);if(dsOn&&p.ccoOn&&a.inCCO&&p.bu>0)buA*=1+DIS.emerg;  // v5.4 item 5: the emergency distribution
-    if(svF!==0&&(a.wealth>0||(a.wealth<0&&SAVE.debt==='same'))){var svI=a.wealth*svF;a.wealth+=svI;if(ACCT)a._acI=svI;if(EDCS&&svI<0)a._edcIntP=-svI;SVS.intR+=svI/svP;SVS.realR+=a.wealth/(1+svF)*SAVE.r/svPp;if(LEDGER)ledAdd(yr,'saveInterest',svI);}  // v5.2 step 3
+    if(svF!==0&&(a.wealth>0||(a.wealth<0&&SAVE.debt==='same'))){var svI=(LVS&&LVS.svc>0?Math.min(a.wealth,LVS.svc*svP):a.wealth)*svF;a.wealth+=svI;if(LVS&&LVS.sv)LVS.svY+=svI;/* S54: o.lv.svc protects savings up to svc year-0 dollars */if(ACCT)a._acI=svI;if(EDCS&&svI<0)a._edcIntP=-svI;SVS.intR+=svI/svP;SVS.realR+=a.wealth/(1+svF)*SAVE.r/svPp;if(LEDGER)ledAdd(yr,'saveInterest',svI);}  // v5.2 step 3
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
     var agentVar=0.90+RNG()*0.20,incomeShock=popShock*agentVar;
     if(HHON&&HOUSEHOLDS.shock&&a._hh&&a._hh.a.length>1){var hsR=HOUSEHOLDS.shock==='shore'?CFG.HH_SHOCK_CORR[recSt.active?1:0]:+HOUSEHOLDS.shock,hsA=Math.min(1,Math.abs(hsR)),hsS=hsR<0&&a._hh.a[1]===a?-1:1;agentVar=1+Math.sqrt(hsA)*hsS*(a._hh.hv-1)+Math.sqrt(1-hsA)*(agentVar-1);incomeShock=popShock*agentVar;a._shkV=agentVar;a._shkR=!!recSt.active;}  // v5.3 B6: a couple's swings share a household part (off by default)
@@ -5659,7 +5660,8 @@ function runYear(agentSet,yr,p,recSt){
     if(p.ccoOn&&a.inCCO&&p.bu>0){if(!PATHWAY_OFF.relief&&!FWON){cf=discMul(cf,ccoReliefF);rsRel=ccoReliefF;}}
     else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&!a._inel&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf=discMul(cf,ccoReliefF);rsRel=ccoReliefF;emergN++;}
     }
-    var hcOn=!!(HCAP&&HCS&&!(p.pth&&a.inPTH)&&(HCAP.all||(FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief))),hcX=hcOn&&hcM>0?hcM*hSA:0,hcDone=false;  // v5.2 step 7: whose rent is marked up, and by how much (a share of the basket)
+    var lvRcT=!!(LVS&&LVS.rc&&FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!(p.pth&&a.inPTH)),lvRc=lvRcT&&PRICE&&PRICE.comp.housing>PRICE.comp.other?hSA*(1-PRICE.comp.other/PRICE.comp.housing):0;if(lvRc>0){cf-=lvRc;cfPreCCO-=lvRc;}  // S54: a BU tenant's rent rises no faster than the general price level (o.lv.rc; landlords bear it, not programme cost)
+    var hcOn=!lvRcT&&!!(HCAP&&HCS&&!(p.pth&&a.inPTH)&&(HCAP.all||(FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief))),hcX=hcOn&&hcM>0?hcM*hSA:0,hcDone=false;  // v5.2 step 7: whose rent is marked up, and by how much (a share of the basket)
     var mainLoopCostUSD=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);
     if(PRICE)mainLoopCostUSD*=PRICE.bIdx;  // session 2: endogenous basket index
     if(HHA)mainLoopCostUSD*=a._hhF;  // v5.3 B3: this adult's share of the household's needs at the household's own prices
@@ -5670,7 +5672,7 @@ function runYear(agentSet,yr,p,recSt){
       var essF=eSA;
       if(p.ptf&&a.inPTF)essF=PTFS?essF*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fSA;
       if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')essF-=PTH_HOUSING_CUT*sxH(hSA)*rsPtfU;else essF*=0.65;}  // session 5 (d4)
-      if(hcX>0)essF+=hcX;  // v5.2 step 7: BU pay the marked-up rent
+      if(hcX>0)essF+=hcX;if(lvRc>0)essF-=lvRc;  // v5.2 step 7: BU pay the marked-up rent
       var fwBudget=12*buA,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),spC=0,fwB0=fwB;if(tbY)TB.cur.buIss+=fwBudget;if(EDCS)a._edcBU=fwBudget;if(HEALTH)a._hlBU=fwBudget;  // plan step 3: BU the Source issues (reporting)
       if(SPON&&a._spE>0&&spDelta>0){var spE=mainLoopCostUSD*essF;  // plan step 1 (d99): the cut lowers essentials; BU buy the discounted essentials first
         if(SURP.bu==='cash')spC=spDelta*Math.max(0,spE-fwB);else{spC=spDelta*spE;fwB=Math.min(fwBudget,spE-spC);}
@@ -5694,7 +5696,7 @@ function runYear(agentSet,yr,p,recSt){
     if(HEALTH)a._hlOut=emQ?emQ.out:0;  // session 2a: a year mostly out of work loses employer coverage next year
     if(dsOn)annualWageUSD*=1-Math.min(52,DIS.weeks)/52;  // v5.4 item 5: weeks of work lost to the disaster  // v5.2 step 4: a retiree earns no wage  // v5.2 step 6: mlNT = 0 unless the spending layer fills normal-times slack
     var tbG=0,tbPT=0;if(tbY&&COST&&p.ptf&&a.inPTF){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
-    if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fSA+(p.tb.groc.housing?hSA:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
+    if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(lvRc>0)tbPT-=mainLoopCostUSD*lvRc;if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fSA+(p.tb.groc.housing?hSA:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
     if(LABOR){  // session 4 (A3): the labor-supply response replaces this year's wage earnings (no RNG)
       var lbE0=annualWageUSD,lbBU=0,lbR=0,lbC=a._labC||0,lbU=p.ubi||0;
       if(p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){if(FWON){lbBU=fwB;lbR=fwLeft;}else lbBU=mainLoopCostUSD*(cfPreCCO-cf);}
@@ -5702,7 +5704,7 @@ function runYear(agentSet,yr,p,recSt){
       if(ESON&&ESP.rest==='esp')lbBiz=(a._esWk&&ESS.wW>0&&FWS.prev)?Math.max(0,FWS.prev.bizNet)/ESS.wW:0;  // d75 alternative: the ESP's premium reaches its own workers only
       if(SPON)lbBiz=(a._spWk?spProfW:0)+spRestW;  // plan step 1 (d104): the profit share is a raise for ESP workers only; a remainder paid as today stays a raise for all
       var lbRaise=Math.pow(Math.max(1,a.wage/a._lwNB)*(1+lbBiz)*(ESON?1+a._esX:1),LABOR.eps-LABOR.rho);  // uncompensated: Slutsky e_u = e_c + eta, eta = -rho. Session 19: x the ESP payroll raise (earned: one elasticity, no income effect)
-      var tbQ=tbY?tbLab(a,tbY,lbE0,tbPT+tbG+(SPON?a._spCutY:0)):null;if(tbQ)lbRaise*=tbQ.F;  // session 6: phase-out and contribution rates (one elasticity), extra unconditional dollars (one income effect)
+      var tbQ=tbY?tbLab(a,tbY,lbE0,lvRc>0?tbPT+tbG+(SPON?a._spCutY:0)+mainLoopCostUSD*lvRc:tbPT+tbG+(SPON?a._spCutY:0)):null;if(tbQ)lbRaise*=tbQ.F;  // session 6: phase-out and contribution rates (one elasticity), extra unconditional dollars (one income effect)
       var lbInc=LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC+(tbQ?LABOR.rho*tbQ.V:0),lbDisp=LABOR.delta*lbC+(tbQ?tbQ.D:0);
       if(SPON&&a._spOwn>0){lbInc+=LABOR.rho*a._spOwn;if(LABOR.acc)LABOR.acc.cash+=LABOR.rho*a._spOwn;}  // plan step 1: owners' dollars are unconditional (one income effect)
       if(emQ){lbInc*=1-emQ.out;lbDisp*=1-emQ.out;}  // v5.4 item 2: the hours response applies to the part of the year at work
@@ -5887,10 +5889,10 @@ function runYear(agentSet,yr,p,recSt){
   if(HHON){if(HHPOOL)hhPool(yr,!!tbY);hhSync('ptf');}  // v5.3 B3: couples' end of year (pooling), then partners follow the first adult's PTF decision
   if(FWON){  // session 2, N1: businesses convert this year's accepted BU; the premium over a cash sale is paid out next year
     var nx=FWS.next,bTaxB=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax;
-    var taxR=Math.min(CFG.PROG_TAX_MAX,bTaxB+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*CFG.PROG_RATE)),taxP=Math.min(CFG.PROG_TAX_MAX,bTaxB);
+    var taxR=Math.min(CFG.PROG_TAX_MAX,bTaxB+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*CFG.PROG_RATE)),taxP=Math.min(CFG.PROG_TAX_MAX,bTaxB);if(LVS){bTaxB=lvBizBase(p,bTaxB);taxR=Math.min(LVS.pc,bTaxB+Math.max(0,(FW.bizRate-CFG.PROG_PIVOT)*LVS.pr));taxP=Math.min(LVS.pc,bTaxB);}  // S54: o.lv's business rate, progression and cap
     var bzB=ESON?nx.bizBU*(1-ESP.lam):nx.bizBU;if(ACCT)ACCT.cur.bz=bzB;  // session 19 (d71): with ESP payroll the ESP converts the share it keeps; lam of what it accepted is next year's payroll
     nx.bizGross=bzB*(FW.bizCap*FW.bizRate+(1-FW.bizCap));nx.bizTax=bzB*(FW.bizCap*FW.bizRate*taxR+(1-FW.bizCap)*taxP);
-    nx.bizNet=PATHWAY_OFF.conversion?0:nx.bizGross-nx.bizTax-bzB;if(tbY)TB.cur.ctax+=nx.bizTax;  // plan step 3: conversion tax kept by the Source (reporting)  // session 7: the conversion switch also covers business-side conversion (harness-only)
+    nx.bizNet=PATHWAY_OFF.conversion?0:nx.bizGross-nx.bizTax-bzB;if(LVS&&nx.bizNet<0){nx.bizTax+=nx.bizNet;nx.bizNet=0;}  /* S54: a business is never paid less than face value */if(tbY)TB.cur.ctax+=nx.bizTax;  // plan step 3: conversion tax kept by the Source (reporting)  // session 7: the conversion switch also covers business-side conversion (harness-only)
     if(LEDGER){ledAdd(yr,'fwBizGross',nx.bizGross);ledAdd(yr,'fwBizTax',nx.bizTax);ledAdd(yr,'fwBizPremium',nx.bizNet);}
     if(ESON){ESS.next={pool:nx.bizBU*ESP.lam};ESS.acc.accBU+=nx.bizBU/esIdx;ESS.acc.ownBU+=bzB/esIdx;ESS.y[yr].acc=nx.bizBU;ESS.y[yr].own=bzB;ESS.y[yr].poolNext=ESS.next.pool;
       if(LEDGER){ledAdd(yr,'espOwnBU',bzB);ledAdd(yr,'espPoolNext',ESS.next.pool);}}
@@ -6135,6 +6137,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
   var SXp = p.sx ? sxOpts(p.sx) : null; SXS = SXp ? sxNew(SXp, p.years) : null; if (SXS) SXS.p = p;  /* S52 (reporting state only with p.sx) */
   SECS = o.sec ? secNew(o.sec, p.years) : null;  /* S53 (reporting state only with o.sec) */
+  LVS = o.lv ? lvNew(o.lv, p) : null;  /* S54 (only with o.lv) */
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null, tb:o.taxBase, tauMax:o.tauMax};  /* v5.2 step 7: taxBase 'prog' | 'land' (undefined = the flat contribution) */
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
   var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0,
@@ -6147,7 +6150,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
     for (var yr = 0; yr < yMax; yr++){
-      PRICE.acc = newPMAcc(); if (SXS) SXS.y = yr; if (SECS) SECS.y = yr;
+      PRICE.acc = newPMAcc(); if (SXS) SXS.y = yr; if (SECS) SECS.y = yr; if (LVS) lvYear(yr);
       runYear(agents, yr, p, recPath ? recPath[yr] : CALM0);
       tbBleiYear(BG, agents, p, o, yr === T - 1);
       if (!o.noEP){ var epY = extremePovertyOf(housingDistressOf(agents), epD0, p); epSum += epY ? epY.total/100 : 0; }  /* plan step 9 */  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
@@ -6174,10 +6177,12 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       else if (o.fin === 'source'){ var cvS = gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv, bkP = (o.faceM ? 0 : C.bu) + cvS - C.convM, bkU = (1 - o.a)*bkP;  /* v5.2 step 7: with the gift over the run, the Source's new money for the launch gift is spread over the run (d66's 'run', as for the contribution) */  /* plan step 3 (S1-S6): the Source's net payout is new money, less output that backs it; faceM: essentials bought with BU count as backed */
         if (o.aK) bkU = Math.max(0, bkU - o.aK*A.Yw);  /* v5.2 step 6 (decision B): the middle reading; output backs the payout up to aK of the year's earned income (CFG.KENYA_ABSORB_*) */
         if (o.bkm) bkU = bkmStep(L, o.bkm, bkP, bkU, C.idx, yr, A.Yw);  /* S51: backing as a mechanism (off unless the row sets o.bkm): the funded projects' output backs the payout */
+        if (LVS) bkU = lvStep(L, o, C, bkP, bkU, A.Yw, yr);  /* S54: the Source keeps project proceeds, pays the protected account's interest, sets next year's rationing */
         U = bkU + extra; L.bkP += bkP/C.idx; L.bkU += bkU/C.idx; L.bkY += A.Yw/C.idx;
         if (ACCT && !gRun){ var srcB = bkP - bkU + C.convM + (o.faceM ? C.bu : 0); acctChk('source', yr, C.bu + C.conv - bkU - srcB, Math.abs(C.bu) + Math.abs(C.conv) + Math.abs(bkU) + Math.abs(srcB), null); } }  /* v5.3 B2: what the Source pays (BU face value and conversion) = new money + the output that backs it */
       else if (o.fin === 'hybrid') U = (1 - o.a)*(C.conv - C.convM) + extra;  /* plan step 2: matched output (0 unless PROD) */  /* session 7 (d26 option c): transfers taxed, conversion rewards created at a */
       else U = (1 - o.a)*A.conv + (o.pthUnmatched ? A.pthLiq : 0) + extra;  /* 'none': the session 2-5 rule (transfers and price cuts unfinanced) */
+      if (LVS) lvAcc(U, A.Yw, C.idx);  /* S54 */
       if (yr === 0){ L.need0 = need; L.base0 = C.base; if (C.Es){ L.Es0 = C.Es; L.xi0 = 1; } }  /* v5.2 step 7: year 0's earnings for the progressive schedule (its brackets are in year-0 terms) */
       if (MULT && MLS && MLS.y[yr] && MLS.y[yr].ntR) L.ntR += MLS.y[yr].ntR/C.idx;  /* v5.2 step 6: wages added by filling normal-times slack (year-0 $) */
       if (MULT && MLS) MLS.push = o.fin === 'source' ? Math.max(0, C.bu + C.conv - C.ctax) : 0;  /* plan step 16: next year's push, the net Source payout */
@@ -6204,7 +6209,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       if (SXp) sxApply(comp, SXp, yr + 1);  /* S52: the outside supply shock's factors for next year (only with p.sx) */
       PRICE.bIdx = pmBasketIdx(comp);
     }
-  } finally { PRICE = null; TB = null; if (labAcc) LABOR = null; }
+  } finally { PRICE = null; TB = null; if (labAcc) LABOR = null; var lvK = LVS; if (LVS){ lvEnd(); LVS = null; } }
   if (yMax < T) return {tau0: L.base0 > 0 ? (o.taxBase === 'prog' ? progLam(L.Es0, L.xi0, o.tauMax, L.need0, LABOR ? LABOR.eps - LABOR.rho : 0) : Math.min(o.tauMax, L.need0/L.base0)) : 0};
   var n = agents.length, NY = n*T, full = agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1), lineF = o.lines === 'nominal' ? 1 : full, pov = 0, bpov = 0, g0 = 0, g1 = 0, g2 = 0;
   var nbpov = 0;  /* session 7 (d28): design-neutral BLEI, Baseline rules plus one month of the design's regular support (the d28 gate's measure) */
@@ -6242,6 +6247,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (o.bkm && L.bkm) emR = bkmRes(emR || {}, L.bkm, T);  /* S51 (only with o.bkm) */
   if (SXS) emR = sxRes(emR || {}, T);  /* S52 (only with p.sx) */
   if (SECS){ emR = secRes(emR || {}); SECS = null; }  /* S53 (only with o.sec) */
+  if (lvK) emR = lvRes(emR || {}, lvK, T, !!(JOIN && JNS && CONVERSION_MODEL === 'framework' && p.ccoOn));  /* S54 (only with o.lv) */
   var plv = {}; TB_PLV_KEYS.forEach(function(k, t){ plv[k] = t < path.length ? path[t].full : 0; });  /* S35 (reporting only) */  /* v5.4 item 3 (zeros in the no-programme run) */
   return {path:path, res:Object.assign(fbsRes(FBSS, edcRes(EDCS, hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
     endoAnn:Math.pow(bI, 1/(T - 1)) - 1, endoMax:mx, pov:pov/n*100, bleiPov:bpov/n*100, nbleiPov:nbpov/n*100, tgt:L.pd > 0 ? L.tgt/L.pd : 0, medWealthReal:medianOf(agents.map(function(a){ return a.wealth; }))/full,
@@ -6448,6 +6454,73 @@ function secRes(r){ var S = SECS, pc = function(x, n){ return n > 0 ? x/n*100 : 
   S19_M.forEach(function(m, j){ for (var t = 0; t < S19_N; t++){ var n = S.s[7][t], v = S.s[j][t];
     r['s19' + m + '_' + t] = m === 'n' || m === 'hd' || m === 'ep' ? v : m === 'f0X' ? (S.xn && S.xn[t] > 0 ? v/S.xn[t]*100 : 0) : n > 0 ? (m === 'gD' || m === 'gDc' ? v/n : v/n*100) : 0; } });
   return r; }
+/* S54 (Nov 5, 2026; research-update PLAN.md S54, ledger D12 and D13; dev/reports/s54-levers-reading.md): THE POLICY LEVERS, behind the row option o.lv
+ * (undefined = off: nothing here runs and every figure is unchanged; o.lv = {} sets every lever at the design's own value and moves no figure either, unit test).
+ * Each field is one lever a government running the programme could set; each is a design parameter swept by study N (research-update
+ * prereg/2026-11-levers-addendum.md). Levers that are already row settings are set there, not here: the base conversion tax (p.tax), the BU (p.bu), the top
+ * multiplier (p.maxMult), the number of octaves (p.maxOct), the Phi tier (p.phi), expired BU recycled to projects (row option pj.share; the rest is retired),
+ * outside finance (o.fin 'tax' with o.taxBase), BU indexation (p.colaThresh -1: every year; c22.idx 'needs'), savings that keep up with prices (row option sv),
+ * the rent risk (row option hc).
+ *  jn    'conv': joining sees what joining pays. An adult joins when the BU they would use plus their expected conversion income after the row's tax is at least
+ *        (12 x BU + the same income after the released tax) x their latent cost share (the revealed cost's uCCO / partRate). Expected conversion income: last
+ *        year's project BU per unit of allocation weight (year-0 dollars, at this year's prices) x the adult's weight (octave capacity x quality) x their rate
+ *        (PROJ.rate 'max' against last year's pool rate) after tax x the CIP bonus, and only if project work would pay more than an hour of their wage (the
+ *        hiring rule). At the released tax with the BU fully used this is exactly year 0's rule (uCCO < partRate). tref: the released base rate (default p.tax).
+ *  pr, pc  the conversion tax's progression (points per rate point above 3x; CFG.PROG_RATE 0.04) and its cap (CFG.PROG_TAX_MAX 0.75)
+ *  bt    a separate base rate on business (ESP) conversions (the year-close conversion and the ESP's returned payroll), with the base rate's CIP adjustment
+ *  keep  the share of the projects' sales the Source keeps and retires: the projects' output is counted at what the work was paid (matched project output, as
+ *        the release row already counts it); the retired dollars are at most the year's new money
+ *  br    the business conversion rate (FW.bizRate; 3 as released)
+ *  oc    octave capacity enforced on project work: PROJ.cap on, at oc x 12 x FW.octaveCapBase x 2^octave BU a year (the ESP payroll cap moves with it)
+ *  ph    a phase-in over ph years: in year t every conversion rate's premium above par is scaled by min(1, (t + 1)/ph)
+ *  cap   the issuance cap: the Source's net new money at most cap x the year's earned income. Each year the Source sets next year's factor q from this year's
+ *        figures: (cap x earned income - the new money that is not conversion premium) / (what the premiums would pay at q = 1 and next year's phase),
+ *        between 0 and 1; every conversion rate's premium above par is then scaled by q (with the phase-in, by q x phase). BU face value is always honoured,
+ *        so when the BU spent alone exceed the cap it cannot be met (lvCap reports the share of years it is met).
+ *  sv    true: the Source pays the interest that savings that keep up with prices credit (row option sv must be on), as new money and programme cost
+ *  svc   protect savings only up to svc dollars a person (year-0 dollars; 0 = all): above it savings earn nothing, as without the account
+ *  rc    true: a BU tenant outside PTH pays rent that rises no faster than the general price level: the housing price above the general level is taken off
+ *        their costs (landlords bear it: not programme cost; counted once as unconditional dollars, rule 7), and landlords may not mark up their rent (HCAP)
+ * Under o.lv a business is never paid less than the face value of the BU it accepted (modelling assumption: it would stop accepting them). No random draw.
+ * LVS: per-run state. FW.bizRate, FW.octaveCapBase and PROJ.cap are set for the run and restored by lvEnd. Keys (LV_KEYS): participation at years 1, 7, 19
+ * and its mean over years 1 to the last (lvJ*); the Source's net new money and its payout before backing as % of earned income over the run (lvU, lvP); the
+ * share of the payout backed or retired (lvBk); project sales kept and protected-account interest as % of earned income (lvKp, lvSv); the mean conversion
+ * premium factor (lvQ; 1 = full rates); the % of years the issuance cap was met (lvCap; 0 without a cap). */
+var LV_KEYS = ['lvJ1', 'lvJ7', 'lvJ19', 'lvJm', 'lvU', 'lvP', 'lvBk', 'lvKp', 'lvSv', 'lvQ', 'lvCap'], LVS = null;
+function lvNew(o, p){
+  var S = {jn:o.jn, tref:o.tref != null ? +o.tref : p.tax, pr:o.pr != null ? +o.pr : CFG.PROG_RATE, pc:o.pc != null ? +o.pc : CFG.PROG_TAX_MAX, bt:o.bt != null ? +o.bt : null,
+    keep:+o.keep || 0, svc:+o.svc || 0, ph:Math.max(1, +o.ph || 1), cap:o.cap != null ? +o.cap : null, sv:!!o.sv, rc:!!o.rc, q:1, m:1, mPrev:1, pF:0, ppw:0, prc:1, pjM:0, svY:0,
+    sum:{P:0, U:0, Y:0, kp:0, sv:0, m:0, n:0, ok:0, nc:0}, old:{br:FW.bizRate, ob:FW.octaveCapBase, pj:PROJ, pc:PROJ ? PROJ.cap : null}};
+  S.br = o.br != null ? +o.br : FW.bizRate;
+  if (o.oc != null && PROJ){ PROJ.cap = true; FW.octaveCapBase = S.old.ob*(+o.oc); }
+  return S; }
+function lvEnd(){ var S = LVS; FW.bizRate = S.old.br; FW.octaveCapBase = S.old.ob; if (S.old.pj) S.old.pj.cap = S.old.pc; }
+function lvPhase(S, t){ return S.ph > 1 ? Math.min(1, (t + 1)/S.ph) : 1; }
+function lvYear(yr){ var S = LVS; S.mPrev = S.m; S.m = lvPhase(S, yr)*S.q; S.pjM = 0; S.svY = 0; FW.bizRate = S.m === 1 ? S.br : 1 + S.m*(S.br - 1); }
+function lvBizBase(p, b0){ return LVS.bt != null ? (p.cip ? LVS.bt*(1 - p.cipDemo*0.18) : LVS.bt) : b0; }
+/* The adult's expected conversion income after the row's tax and after the released tax (S54's joining reading). */
+function lvConvX(a, p, idx, pcb){ var S = LVS; if (!PROJ || !(S.ppw > 0) || (a._ret && AGE && AGE.ret === 'noconv')) return [0, 0];
+  var r = pjOwnRate(a, p, pcb), ru = PROJ.rate === 'max' ? Math.max(r, S.prc) : r, cb = p.cip ? (1 + p.cipDemo*0.12) : 1;
+  var bu = S.ppw*idx*12*FW.octaveCapBase*Math.pow(2, a.octave)*Math.max(0, a.quality), h = a._ret ? 0 : a.wage*12*CFG.WAGE_TO_USD/PROJ.hrsYr, pay = PROJ.pay*idx;
+  var tx = pjTax(p, ru), b0 = p.cip ? S.tref*(1 - p.cipDemo*0.18) : S.tref, tr = Math.min(CFG.PROG_TAX_MAX, b0 + Math.max(0, (ru - CFG.PROG_PIVOT)*CFG.PROG_RATE));
+  return [pay*ru*(1 - tx)*cb > h ? bu*ru*(1 - tx)*cb : 0, pay*ru*(1 - tr)*cb > h ? bu*ru*(1 - tr)*cb : 0]; }
+/* The Source's year (fin 'source' only): it keeps a share of the projects' sales, pays the protected account's interest, and sets next year's premium factor. */
+function lvStep(L, o, C, bkP, bkU, Yw, yr){
+  var S = LVS, idx = C.idx, kp = 0, sv = S.sv ? S.svY : 0;
+  if (S.keep > 0 && S.pjM > 0 && bkU > 0){ kp = Math.min(bkU, S.keep*S.pjM); bkU -= kp; }
+  if (sv !== 0){ bkU += sv; L.cost += sv/idx; }
+  var prem = Math.max(0, (1 - o.a)*(C.conv - C.convM)), mE = (S.m + S.mPrev)/2;
+  if (mE >= 0.05) S.pF = prem/mE;
+  if (S.cap != null){ var ph1 = lvPhase(S, yr + 1), room = S.cap*Yw - Math.max(0, bkU - prem); S.q = S.pF > 0 ? Math.max(0, Math.min(1, room/(ph1*S.pF))) : 1; }
+  S.sum.P += (bkP + sv)/idx; S.sum.kp += kp/idx; S.sum.sv += sv/idx;
+  return bkU; }
+/* Every financing: the year's new money and earned income, the premium factor, and whether the cap was met. */
+function lvAcc(U, Yw, idx){ var S = LVS; S.sum.U += U/idx; S.sum.Y += Yw/idx; S.sum.m += S.m; S.sum.n++; if (S.cap != null){ S.sum.nc++; if (U <= S.cap*Yw*(1 + 1e-9)) S.sum.ok++; } }
+function lvRes(r, S, T, jnOn){ var J = function(t){ t = Math.min(t, T - 1); return jnOn && JNS.y[t] ? JNS.y[t].part*100 : 0; }, jm = 0;
+  for (var t = 1; t < T; t++) jm += J(t);
+  r.lvJ1 = J(1); r.lvJ7 = J(7); r.lvJ19 = J(19); r.lvJm = T > 1 ? jm/(T - 1) : 0;
+  var Y = S.sum.Y; r.lvU = Y > 0 ? S.sum.U/Y*100 : 0; r.lvP = Y > 0 ? S.sum.P/Y*100 : 0; r.lvBk = S.sum.P > 0 ? (1 - S.sum.U/S.sum.P)*100 : 0;
+  r.lvKp = Y > 0 ? S.sum.kp/Y*100 : 0; r.lvSv = Y > 0 ? S.sum.sv/Y*100 : 0; r.lvQ = S.sum.n ? S.sum.m/S.sum.n : 1; r.lvCap = S.sum.nc ? S.sum.ok/S.sum.nc*100 : 0; return r; }
 function tbRun(p, seed, o, S){
   o = tbOpts(o);
   var tau0 = ((o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source') && p.tb) ? tbRunCore(p, seed, o, S, 0, 1).tau0 : 0;
@@ -6509,6 +6582,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
         if (r.sxCBA !== undefined) SX_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S52 */
         if (r.secU25A !== undefined) SEC_KEYS.concat(S19_KEYS).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S53 */
+        if (r.lvU !== undefined) LV_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S54 */
         if (r.bkmA !== undefined) BKM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S51 */
         if (r.dsHit !== undefined) DIS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 5 */
         if (r.pfCut !== undefined) PTFS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 4 */
