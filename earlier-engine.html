@@ -4343,7 +4343,10 @@ var AUD = null;
  *        cost of living at (mainLoopCostUSD), as the books' header says (GAPS item 7). As released they use the BLEI daily cost (about half the basket).
  *  ab    SNAP's work rule counts a month only if it is at least 1e-9 of a month (GAPS item 8): a wholly insured spell leaves a rounding remainder of about
  *        1e-16 that was counted. Reporting only (snAbN).
- * The fourth fix (the supply path from a run with job loss, the safety net and the labour response, GAPS item 2) is added as part sp before the freeze. */
+ *  sp    the essentials' supply path (each year's capacity) from the reported no-programme testbed run of the same seed, environment, population and
+ *        rules (GAPS item 2), instead of the separate price-only run (s3BaseS: no job loss, safety net, labour response or wage indexation, and always
+ *        500 adults). See tbBaseS. It is a study-level reading in effect: every row that sets it gets the path of the same no-programme run.
+ * fx: true is all four parts. */
 var FX = null;
 /* v5.3 B7 (Oct 7, 2026; plan item B7, "FBS lambda -> FBS50"; dev/DECISIONS.md Session 39, "B7"): FBS50, the advancement rule in interpretable units. The
  * chance of advancing an octave in a year is 1 - exp(-lambda x FBS) (BLEI paper, Index IV); FBS50 = ln 2 / lambda is the monthly free bandwidth surplus at
@@ -6363,6 +6366,34 @@ function s3BaseS(p, seed){
   if (!S3_CACHE[k]) S3_CACHE[k] = priceRun(bp, seed, {}, null).D;
   return S3_CACHE[k];
 }
+/* S47 fx.sp (Nov 5, 2026; research-update prereg/run-manifest.md section 6 item 1; Simulation GAPS.md item 2): THE SUPPLY PATH FROM THE REPORTED
+ * NO-PROGRAMME RUN. The demand path (each year's mean share of the basket consumed) of the study's own no-programme row, tbComp(envP, {}), run as
+ * a testbed run (job loss, the safety net, the labour response, wage indexation, households, the population and horizon of envP) with essentials
+ * prices held at 1 (S null). A no-programme row given this path reproduces it exactly, so its essentials prices never move (fixed point: in every
+ * year its demand equals the path, and pmEssLevel(d, d, 0, theta) = 1).
+ *   The run takes the row's economy-wide switches (households, spending rule, debt reading, the line, audit and fx parts, health, safety net,
+ * prevention, wage reading, savings, ageing, the v5.4 round, the restudy and G profiles) and the row's options other than those that only act on
+ * a programme. The programme's own switches (projects, ESP, surplus split, production, spending layer, octaves, cost and joining, coverage,
+ * community layer, FBS50, housing capture, review, BU scope, conversion model, current-year gate, measured EDC) are set to their defaults for
+ * the run, as on the no-programme row, so every row of a seed gets the same path whatever the order of rows. No draw is added to any run;
+ * health's no-programme record (HL_GOVREF) is left as the study's own rows write it, and a reporting hook (REP_HOOK) does not see the run. Cached per seed and context. */
+var SPD = null, SP_PROG_OPTS = ['fin', 'a', 'aT', 'eP', 'X', 'tauMax', 'taxBase', 'lv', 'bkm', 'sec', 'rep52', 'giniNN1'];
+function tbBaseS(envP, seed, o){
+  var bp = tbComp(envP, {}), oS = {};
+  Object.keys(o || {}).forEach(function(k){ if (SP_PROG_OPTS.indexOf(k) < 0) oS[k] = o[k]; });
+  var k = 'sp|' + seed + '|' + JSON.stringify(bp) + '|' + JSON.stringify(oS) + '|' + JSON.stringify([SURPLUS_CONSUMPTION_SHARE, SURPLUS_CONSUMPTION_BASE, HOUSEHOLDS, SPEND_GRADE,
+    DEBT_READ, LW, AUD, FX, HEALTH, SNET, PREV, LATENT, SAVE, AGE, RISK_MEASURE, EMPL, PTHB, PTFS, DIS, THETA_GATE, PTH_MODE, DISC_BASE, PTF_MODE, PATHWAY_OFF,
+    FBS_BU_ONCE, PTH_APPR_CONSERVE, N7_BLEI, SURP_CUT_MARKUP, REC_SCRIPT]);
+  if (S3_CACHE[k]) return S3_CACHE[k];
+  var sv = {pj:PROJ, es:ESP, sp:SURP, pd:PROD, ml:MULT, oc:OCT, cs:COST, jn:JOIN, c22:C22, cl:COMM, fb:FBS50, hc:HCAP, rv:REVIEW, bs:BU_SCOPE, cm:CONVERSION_MODEL,
+    gc:GATE_CURRENT, em:EDC_MEASURE, hg:HL_GOVREF, rh:REP_HOOK};
+  PROJ = null; ESP = null; SURP = null; PROD = null; MULT = null; OCT = null; COST = null; JOIN = null; C22 = null; COMM = null; FBS50 = null; HCAP = null; REVIEW = null;
+  BU_SCOPE = 'core'; CONVERSION_MODEL = 'engine'; GATE_CURRENT = false; EDC_MEASURE = false; HL_GOVREF = null; REP_HOOK = null; SPD = [];
+  try { tbRun(bp, seed, Object.assign({grp:{part:envP.partRate, pth:envP.pthUptake}}, oS), null); S3_CACHE[k] = SPD; }
+  finally { SPD = null; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; PROD = sv.pd; MULT = sv.ml; OCT = sv.oc; COST = sv.cs; JOIN = sv.jn; C22 = sv.c22; COMM = sv.cl; FBS50 = sv.fb;
+    HCAP = sv.hc; REVIEW = sv.rv; BU_SCOPE = sv.bs; CONVERSION_MODEL = sv.cm; GATE_CURRENT = sv.gc; EDC_MEASURE = sv.em; HL_GOVREF = sv.hg; REP_HOOK = sv.rh; }
+  return S3_CACHE[k];
+}
 /* ─── Session 4 (Sep 27 2026; Duke assigns the version): A3 labor supply ─────────────────────────────────────────────
  * laborRun   one run with LABOR set to L (null = off). Draws exactly as runScenario() does, so runs are CRN-paired
  *            across every L and preset. Returns end-of-run poverty (wealth, BLEI, basket) and, per agent-year, the
@@ -6451,7 +6482,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       if (RHH) hhRepYear(RHH, agents, p, o, yr, T);  /* v5.3 B3 */
       if (yr === 19) dbt20 = tbDebtShare(agents); else if (yr === 39) dbt40 = tbDebtShare(agents);  /* S35 (reporting only) */
       if (EDCS) edcYear(EDCS, agents, p);  /* v5.3 B6 */
-      var A = PRICE.acc, C = TB.cur || tbNewAcc(), d = A.n ? A.essD/A.n : 1, tauUsed = TB.tau;
+      var A = PRICE.acc, C = TB.cur || tbNewAcc(), d = A.n ? A.essD/A.n : 1, tauUsed = TB.tau;  if (SPD && yMax >= T) SPD.push(d);  /* S47 fx.sp: tbBaseS records the no-programme run's demand path (off: SPD null) */
       var wbInc = A.wageBonusNS - wbPrev; wbPrev = A.wageBonusNS;
       var extra = (o.floorUnmatched ? A.unmet : 0) + (1 - o.aw)*(o.awLevel ? A.wageBonus : wbInc);
       if (yr === 0) L.endowTot = C.endow;
@@ -6858,7 +6889,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var bs0 = BU_SCOPE; if (c.bs) BU_SCOPE = c.bs;  /* v5.3 B3f: what BU can buy, for this row ('core' | 'hub') */
       var em0 = EDC_MEASURE; if (c.em) EDC_MEASURE = true;  /* v5.3 B6: the measured EDC for this row (reporting only) */
       var au0 = AUD; if (c.au) AUD = c.au === true ? {gate:true, sg:true, fbs:true} : Object.assign({}, c.au);  /* S13: the audit's corrections for this row (no programme rows too) */
-      var fx0 = FX; if (c.fx) FX = c.fx === true ? {pthb:true, hb:true, ab:true} : Object.assign({}, c.fx);  /* S47: the second implementation's fixes for this row (no programme rows too) */
+      var fx0 = FX; if (c.fx) FX = c.fx === true ? {pthb:true, hb:true, ab:true, sp:true} : Object.assign({}, c.fx);  /* S47: the second implementation's fixes for this row (no programme rows too) */
       var dr0 = DEBT_READ; if (c.dr) DEBT_READ = Object.assign({lim:0}, c.dr === true ? {} : c.dr);  /* S35: the debt reading for this row (no programme rows too) */
       var cl0 = COMM; if (c.cl) COMM = Object.assign({}, COMM_DEFAULTS, c.cl === true ? {} : c.cl);  /* S37: the community layer for this row */
       var c220 = C22; if (c.c22) C22 = Object.assign({}, C22_DEFAULTS, c.c22 === true ? {} : c.c22);  /* S6: coverage and adequacy for this row */
@@ -6870,7 +6901,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var sn0 = SNET; if (c.sn) SNET = Object.assign({}, SNET_DEFAULTS, c.sn === true ? {} : c.sn);  /* session 2b: today's safety net for this row */
       var pv0 = PREV; if (c.pv) PREV = Object.assign({}, PREV_DEFAULTS, c.pv === true ? {} : c.pv);  /* session 2c: the prevention link for this row */
       var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? (CFG.CPS_EARN[c.lt.s] ? CFG.CPS_EARN[c.lt.s].sigma : CFG.SCF_WAGE_SIGMA) : 0, wmed:c.lt.m ? (CFG.CPS_EARN[c.lt.m] ? CFG.CPS_EARN[c.lt.m].median : CFG.SCF_WAGE_MEDIAN) : 0};  /* v5.2 step 5: {w, r, s, m} flags; S34: s, m 'all' or 'ft' read the CPS's earnings (CFG.CPS_EARN) */
-      try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), HOUSEHOLDS || SPEND_GRADE || LW ? s3BaseS(envP, sd) : S).res;  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
+      try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), FX && FX.sp ? tbBaseS(envP, sd, Object.assign({}, o0 || {}, c.o || {})) : HOUSEHOLDS || SPEND_GRADE || LW ? s3BaseS(envP, sd) : S).res;  /* S47 fx.sp: the supply path from the reported no-programme run */  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
         if (r.sxCBA !== undefined) SX_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S52 */

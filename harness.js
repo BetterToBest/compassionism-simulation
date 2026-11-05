@@ -533,7 +533,7 @@ function s3StabArms(){
     {id:'nk', lbl:'Shock-neutral scaled: +2.8% BU per 1% income loss', preset:{stab:true, stabSev:true, stabK:CFG.STAB_NEUTRAL_K, stabThresh:CFG.STAB_HUB_THRESH, stabSusp:false, emerg:false}},
     {id:'pkg', lbl:'Scaled + expiry suspended + emergency enrollment (50%)', preset:{stab:true, stabSev:true, stabK:CFG.STAB_NEUTRAL_K, stabThresh:CFG.STAB_HUB_THRESH, stabSusp:true, emerg:true, emergTakeup:CFG.STAB_EMERG_TAKEUP}}];
 }
-Object.assign(module.exports, { s3BaseS, s3Point, s3Breakeven, s3Config, S3_ROWS, s3StabArms });
+Object.assign(module.exports, { s3BaseS, tbBaseS, s3Point, s3Breakeven, s3Config, S3_ROWS, s3StabArms });
 
 /* ─── Session 5 (Sep 27 2026; Duke assigns the version): the price-neutral point (d18) and the large-N restudy ──────────
  * Harness-only; nothing here changes a run at its defaults.
@@ -1225,6 +1225,17 @@ function fxUnitSuite(){
   t('S47: fx.ab is reporting only: at most snAbN moves (release row and no-programme row, seed 1, Reference)', function(){
     var b = moved(tbStudy(rows(P, 1, [function(){}, function(m){ m.fx = {ab:true}; }]), 1, P, SO, 1)).concat(moved(tbStudy(rows(P, 0, [function(){}, function(m){ m.fx = {ab:true}; }]), 1, P, SO, 1)));
     return {pass:b.every(function(k){ return k === 'snAbN'; }), detail:'moved: ' + (b.join(', ') || 'none')}; });
+  t('S47: fx.sp holds the no-programme row\'s essentials prices still (endoAnn and endoMax exactly 0, seed 1, all three environments); without it Reference drifts', function(){
+    var bad = [], drift = 0;
+    [FULL_INTEGRATION, ADVERSE_REFERENCE, STRESS_TEST].forEach(function(E, e){ var Q = Object.assign({}, E, {years:20, nAgents:500});
+      var R = tbStudy(rows(Q, 0, [function(){}, function(m){ m.fx = {sp:true}; }]), 1, Q, SO, 1);
+      if (R[1]._s.endoAnn[0] !== 0 || R[1]._s.endoMax[0] !== 0) bad.push(e + ': ' + R[1]._s.endoAnn[0]); if (e === 0) drift = R[0]._s.endoAnn[0]; });
+    return {pass:!bad.length && drift !== 0, detail:(bad.length ? 'moved: ' + bad.join('; ') + '; ' : '') + 'Reference without sp: endoAnn ' + drift.toExponential(3)}; });
+  t('S47: fx.sp gives a row the same supply path whatever the order of rows and the row\'s programme options (release row, seed 1, Reference)', function(){
+    var c = rows(P, 0, [function(m){ m.fx = {sp:true}; }]).concat(rows(P, 1, [function(m){ m.fx = {sp:true}; }]));
+    var A = tbStudy([c[0], c[1]], 1, P, SO, 1), B = tbStudy([c[1], c[0]], 1, P, SO, 1), d = TB_KEYS.filter(function(k){ return A[1]._s[k][0] !== B[0]._s[k][0]; });
+    FX = {sp:true}; var s1 = tbBaseS(P, 1, SO), s2 = tbBaseS(P, 1, Object.assign({}, SO, {fin:'source', lv:{}, sec:true})); FX = null;
+    return {pass:d.length === 0 && s1 === s2 && s1.length === P.years, detail:(d.length ? 'moved with order: ' + d.slice(0, 8).join(', ') : '') + (s1 === s2 ? '' : ' path differs with programme options')}; });
   return out;
 }
 /* S52 (Nov 2, 2026): the outside supply shock (index.html sxOpts, sxEnergy, sxYear, sxPtf, the preset key p.sx). */
