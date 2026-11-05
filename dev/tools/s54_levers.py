@@ -531,6 +531,7 @@ def main():
     if S3[0] is not None:
         rows, meta = S3; n = meta['seeds'][1] - meta['seeds'][0] + 1; W = weights(n, reps)
         L += confirm(rows, meta, W, json.load(open(opt('--list'))))
+        if opt('--csv'): os.makedirs(opt('--csv'), exist_ok=True); write_csv(effects(rows, meta, W, 3), os.path.join(opt('--csv'), 'stage3-effects.csv'), 3)  # added Nov 5 after stage 3 landed: output only, as the docstring promised
     out = '\n'.join(L) + '\n'
     if opt('--out'): open(opt('--out'), 'w').write(out)
     else: sys.stdout.write(out)

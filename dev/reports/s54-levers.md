@@ -1,13 +1,13 @@
-# Policy levers: what a government running the programme could set, and what each does (pilot, stages 1-2)
+# Policy levers: what a government running the programme could set, and what each does (pilot, stages 1-3)
 
 Nov 5, 2026 · research-update plan step S54 · study N · Claude
 
-**PILOT.** Seeds 1-50 on GitHub Actions. These numbers decide only what the full study (seeds 1-500 to choose, 501-1000 to confirm, after the design freeze) must contain. They are not figures of the model and should not be quoted as findings. Stage 3 (the confirmation on fresh seeds 51-100) is running; its results will be added below.
+**PILOT.** Seeds 1-50 on GitHub Actions. These numbers decide only what the full study (seeds 1-500 to choose, 501-1000 to confirm, after the design freeze) must contain. They are not figures of the model and should not be quoted as findings. Stage 3 (the confirmation on fresh seeds 51-100) is reported below; it is labelled pilot too.
 
 - Preregistration: research-update `prereg/2026-11-levers-addendum.md` (written before any run). Its Amendment 1 (Nov 5, after stages 1-2) lists stage 3's rows and how the analysis reads what the addendum leaves open.
 - What each lever is, who would set it, its range and the expected direction, written before any run: `dev/reports/s54-levers-reading.md`.
-- Every table: `dev/reports/s54-levers-tables.md`, written by `dev/tools/s54_levers.py` (committed before the results were read). The script uses a paired bootstrap over seeds: 2,000 replicates, resampler seed 54. Every cell, as CSV: `dev/runs/s54-levers/stage1-effects.csv.gz` and `stage2-effects.csv.gz`.
-- Per-seed results: compassionism-sim-results `s54-levers1-e6da050/` (stage 1, 520 rows per environment) and `s54-levers2-e6da050/` (stage 2, 1,164 rows per environment). Both were made by engine e6da050; every checksum, row and key was verified by `s54_levers.py --check`.
+- Every table: `dev/reports/s54-levers-tables.md`, written by `dev/tools/s54_levers.py` (committed before the results were read). The script uses a paired bootstrap over seeds: 2,000 replicates, resampler seed 54. Every cell, as CSV: `dev/runs/s54-levers/stage1-effects.csv.gz`, `stage2-effects.csv.gz` and `stage3-effects.csv.gz`.
+- Per-seed results: compassionism-sim-results `s54-levers1-e6da050/` (stage 1, 520 rows per environment) `s54-levers2-e6da050/` (stage 2, 1,164 rows per environment) and `s54-levers3-e6da050/` (stage 3, 250 rows per environment). All three were made by engine e6da050; every checksum, row and key was verified by `s54_levers.py --check`.
 
 ## The question
 
@@ -36,7 +36,7 @@ Reading notes for the numbers below:
 
 ## In short
 
-1. **No setting tested meets Duke's rule, in either design, at either wage.** Of 435 candidates per design (255 at 90% wages), none passed both the no-harm test and the inflation test on the choosing seeds. Rule 4 therefore chose no setting. Stage 3 is now testing every point of the trade-off front on fresh seeds, for the record.
+1. **No setting tested meets Duke's rule, in either design, at either wage.** Of 435 candidates per design (255 at 90% wages), none passed both the no-harm test and the inflation test on the choosing seeds. Rule 4 therefore chose no setting. On fresh seeds (stage 3), no point of the trade-off front passes the poverty, no-harm and inflation tests together either (item 8).
 2. **Inflation is the barrier, and the levers inside the design cannot remove it.** Every lever that keeps the programme paying in new money leaves inflation above about 21% a year in at least one environment. Among the C2.2 settings that pass the no-harm test (175 of them, at 100% wages), the lowest is 45% a year.
    - The reason is the one the reading note gave before any run: the BU are spent at face value, and that face value is new money. The levers can only trim the premium paid on top of it.
    - At 2%, 4% and 8% the issuance cap gives identical results. The BU's face value alone is about 32% of earned income, so every cap removes the whole premium, and inflation is still about 32% a year.
@@ -56,6 +56,7 @@ Reading notes for the numbers below:
    - Retiring expired BU, the protected account paid with new money, enforced octave capacity, a smaller top multiplier and the rent risk all harm.
 6. **The protected savings account runs away when the Source pays for it with new money.** Protecting all savings gives about 1,100-1,400% inflation a year (release row, full wages). Rule 8 says to report this as it is, not drop it. A capped account (the first $10,000) cuts wealth poverty by 18 points but adds 10 points of inflation a year.
 7. **In combination (Morris screening), two factors dominate:** the protected account and the BU amount. The structural levers (octaves, Phi tier, progression, recycling) barely matter once the others are set.
+8. **Stage 3, on seeds never used to choose (51-100), confirms the picture.** Of 246 points of the front, three pass the poverty and no-harm tests in every environment, all in the C2.2 design: the Source keeping half of project sales (wages 100%), and the capped protected account (wages 100% and 90%). All three run at 29-82% inflation a year, so they are confirmed points of the trade-off front, not a best setting. No release-row point passes. The flat wage contribution (C2.2) is again the only point under 5% inflation everywhere, and it fails again on big income falls, by the same amount as on the choosing seeds.
 
 ## What was run
 
@@ -178,9 +179,44 @@ Self-funding cannot be reached because the BU are spent at face value, and that 
 
 Rule 4 says that when no setting meets the rule, none is reported as a finding. Stage 3 reruns every point of the front on seeds 51-100 (research-update addendum Amendment 1), so the front itself is confirmed or not on seeds that played no part in choosing it.
 
-## Stage 3: confirmation on fresh seeds (running)
+## Stage 3: confirmation on fresh seeds
 
-Study `s54-levers3`: seeds 51-100, 250 rows per environment, run 42112585864 on GitHub Actions. Results land in compassionism-sim-results `s54-levers3-e6da050/`. The analysis is `s54_levers.py --s3 ... --list runner/jobs/levers-stage3.json`. This section will report which points of the front are confirmed: basket poverty falls, and every no-harm measure's upper end is at most +0.5 points, in every environment.
+**What ran.** Every point of the trade-off front (246 settings) and each design's no-programme row, on seeds 51-100, which played no part in choosing them. That is 250 rows per environment, in Reference, Adverse and Stress (study `s54-levers3`, engine e6da050, compassionism-sim-results run 42112585864, 25 shards; folder `s54-levers3-e6da050/`; checksums and `--check` pass). The settings file matches the one listed in research-update addendum Amendment 1 (SHA-256 `6b906101...`). Every cell is in the tables' stage 3 section and in `dev/runs/s54-levers/stage3-effects.csv.gz`.
+
+**The test** (decision rule 5), in every environment:
+- basket poverty falls (the interval of the change against no programme lies below zero);
+- each no-harm measure (non-participants' basket poverty, wealth poverty, big income falls with no buffer, and under three months of basics covered; and wealth poverty overall) has its interval's upper end at or below +0.5 points;
+- programme inflation's upper end is under 5 points a year. For points of the front this is reported, not required.
+
+Rule 4 chose no setting, so stage 3 cannot confirm a best setting. A point that passes is a confirmed point of the trade-off front, reported with its inflation.
+
+| Design | Wages | Points tested | Pass poverty and no harm | Of those, inflation under 5 points everywhere | Under 5 points everywhere, any |
+|---|---|---|---|---|---|
+| release row | 100% | 162 | 0 | 0 | flat wage contribution only (fails no harm) |
+| release row | 90% | 74 | 0 | 0 | flat wage contribution only (fails no harm) |
+| C2.2 design | 100% | 5 | 2 | 0 | flat wage contribution only (fails no harm) |
+| C2.2 design | 90% | 5 | 1 | 0 | flat wage contribution only (fails no harm) |
+
+**The three confirmed points** (change against no programme on seeds 51-100, Reference / Adverse / Stress):
+
+| Point | Basket poverty | Wealth poverty | Non-participants' big income falls, per 100 adult-years | Programme inflation, points a year |
+|---|---|---|---|---|
+| C2.2, wages 100%, the Source keeps half of project sales | -25.4 / -36.2 / -35.4 | -20.2 / -28.6 / -21.1 | +0.20 (+0.10, +0.30) / -0.33 / -0.71 | 28.7 / 33.4 / 37.1 |
+| C2.2, wages 100%, capped protected account (first $10,000) | -25.2 / -35.7 / -34.6 | -20.2 / -29.0 / -27.2 | +0.09 (+0.00, +0.18) / -0.40 / -0.62 | 41.4 / 50.6 / 53.8 |
+| C2.2, wages 90%, capped protected account | -23.9 / -31.4 / -26.9 | -19.6 / -25.8 / -19.8 | +0.12 (+0.02, +0.22) / -0.39 / -0.71 | 54.4 / 71.9 / 82.2 |
+
+Each cuts basket poverty by 24-36 points and wealth poverty by 20-29 points, and harms no one beyond the margin. But prices rise by 29-82% a year. That inflation is why none of them is a best setting under Duke's rule.
+
+These three failed rule 4's no-harm test on the choosing seeds, and pass rule 5 here. That is how the two rules were written, before any run: rule 4 asks for no harm at all (the seed mean at or below zero), while rule 5 asks that the interval rule out harm larger than half a point (a non-inferiority margin). Their one shortfall, in Reference only, is a small rise in non-participants' big income falls (+0.1 to +0.3 per 100 adult-years), inside that margin.
+
+**What is not confirmed, and why:**
+- *C2.2, no conversion tax; the land-value tax; the flat wage contribution:* non-participants' big income falls with no buffer rise beyond the margin in every environment (no tax +0.9 to +4.1 per 100 adult-years; land-value tax +1.0 to +4.3; flat contribution +1.4 to +5.2). The flat contribution keeps inflation at 0.1-0.2 points a year and cuts basket poverty by 18-29 points, the pilot's near-miss again.
+- *C2.2 at wages 90%, no tax and half of project sales kept:* wealth poverty, overall and among non-participants, also rises in Stress, by 12 and 21 points (as on the choosing seeds).
+- *Release row, every point:* most fail four no-harm tests at once: non-participants' wealth poverty, their months of cover, their big income falls, and wealth poverty overall (131 of 162 points at wages 100%). At wages 90%, every point also raises non-participants' basket poverty beyond the margin, in every environment. The nearest are three settings with the uncapped protected account: they fail only on non-participants' basket poverty in Stress (about +4 points), but at 1,100-1,400% inflation a year. The flat contribution leaves everyone worse off than no programme (basket poverty +6 to +19 points).
+
+**The fresh seeds agree with the choosing seeds.** Across the 246 points, the estimates on seeds 51-100 differ from those on seeds 1-50 by a median of 0.1-0.4 points, depending on the outcome. The largest gaps on the poverty and no-harm measures are 2.3 points (C2.2) and 1.8 points (release row). For example, the flat contribution's rise in big income falls was +5.24, +3.70 and +1.43 then, and is +5.17, +3.68 and +1.43 now. The front's shape is not an artefact of the seeds that chose it.
+
+**One identity explained.** Under the flat wage contribution, the two wage readings (wages keeping up 100% or 90%) give identical rows, in both designs and every environment. The model indexes wages to its general price level, which moves only with new money. A payout fully paid by tax creates none, so the wage reading has nothing to act on. The 0.1-0.2 points of inflation shown are in the prices of essentials, which the wage rule does not follow.
 
 ## What this means for the design (Duke's decision)
 
@@ -188,11 +224,12 @@ Inside the design as it stands, the model finds no lever setting that meets Duke
 
 The only route under 5% is to pay for the BU from outside, with a tax. That is a change to the design itself, not to the model of it, so it is Duke's call (decision rule 6; ledger decision).
 
-The pilot's one near-miss is that route: the C2.2 design paid for by a flat contribution on wages. It cuts basket and wealth poverty by 18-30 points in every environment, with no inflation. Its one failure is more frequent big income falls, the cause of which is not yet traced. If Duke wants it tested, it becomes a new row and a dated amendment before the freeze. The release row stays as released either way.
+The pilot's one near-miss is that route: the C2.2 design paid for by a flat contribution on wages. It cuts basket and wealth poverty by 18-30 points in every environment, with no inflation. Its one failure is more frequent big income falls, the cause of which is not yet traced. Stage 3 found the same failure, of the same size, on fresh seeds. If Duke wants it tested, it becomes a new row and a dated amendment before the freeze. The release row stays as released either way.
 
 ## Limits
 
-- **Pilot:** 50 seeds; the front is chosen and confirmed on different seeds only after stage 3.
+- **Pilot:** 50 seeds to choose (1-50) and 50 to confirm (51-100); the full study uses 500 of each.
+- **Two no-harm tests.** Choosing (rule 4) asks for no harm at all; confirming (rule 5) allows half a point. A point can therefore be confirmed that rule 4 would not choose, as three were here. Both are preregistered.
 - **The model's price rule** is the quantity theory's: prices rise with new money relative to output. The model has no interest rates, exchange rate or asset market through which inflation could play out differently. All of this study's inflation figures rest on it.
 - **The protected account** is paid by the Source with new money, the only means it has in the model. A real government could pay it from taxes; that row was not tested.
 - **Outside finance rows** set the tax to fund the payout. The model has no tax avoidance or migration response beyond its labour response.
@@ -202,10 +239,11 @@ The pilot's one near-miss is that route: the C2.2 design paid for by a flat cont
 ## What S47 carries
 
 1. **Stages 1-3 as preregistered:** choose on seeds 1-500, confirm on 501-1000. Stage 2 may run at fewer seeds (at least 100) by amendment, since stage 3 confirms.
-   - Runtime at 50 seeds was about 37 processor-hours for stages 1-2 together (11 and 26). Stage 3 takes about 112 seconds per seed per environment on one process for 250 rows.
+   - Runtime at 50 seeds was about 37 processor-hours for stages 1-2 together (11 and 26). Stage 3 took 5.9 processor-hours (142 seconds per seed per environment on one process, for 250 rows), so about 59 processor-hours at 500 seeds if the full study's front is the same size.
    - Unless Duke changes the design (above), the full study will most likely confirm that no setting meets the rule. Its value is then the intervals on each lever's effect and on the front.
 2. **Output size:** 45 MB (stage 1) and 65 MB (stage 2) at 50 seeds, so about 1.1 GB at 500 seeds. Trim the keys or compress before the batch.
 3. **The issuance-cap rows** (2%, 4%, 8%) are identical, because each cap removes the whole premium. Keep one, or, if Duke wants a cap on the face value itself, that is a new lever and a dated amendment.
 4. **Big income falls under outside finance.** Run S53's descriptive measure of money-income falls by cause on the outside-finance rows, so the full study can say why the C2.2 flat-contribution row has more of them.
-5. **On S52's main shock path:** whatever stage 3 confirms (S52 addendum).
+5. **On S52's main shock path:** whatever the full study's stage 3 confirms (S52 addendum). In the pilot, that is the three C2.2 points above.
 6. **Already carried:** S53's security measures (`secU25`, `secM3`) on both savings readings in every lever row.
+7. **The flat contribution's 90% wage row** is identical to its 100% row (no new money, so nothing for wage indexation to act on). Keep it as a check or drop it; nothing depends on it.
