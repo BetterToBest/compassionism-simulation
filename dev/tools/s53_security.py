@@ -8,8 +8,9 @@ policy-lever analysis, S47's dry run) call to read the security keys from any jo
 
 For each environment, design and path: the programme row minus its no-programme row, per measure and group, as seed means of the paired
 differences. Intervals: paired bootstrap over seeds (2,000 replicates, resampler seed 53, the same resample for every cell). --check only
-confirms every preregistered key and row is present and finite (the consumer check the plan asks for) and exits. Standard library only."""
-import json, os, sys, glob, random, math
+confirms every preregistered key and row is present and finite (the consumer check the plan asks for) and exits; on a batch file
+without study P's rows (study R) it checks every row that records the security keys, each to its own horizon (S47). Standard library only."""
+import json, os, re, sys, glob, random, math
 
 ENVS = ['ref', 'adv', 'st']; ENVL = {'ref': 'Reference', 'adv': 'Adverse', 'st': 'Stress'}
 GRPS = [('A', 'all adults'), ('P', 'took part'), ('X', 'chose not to take part')]
@@ -64,15 +65,27 @@ def diff(a, b, idx):
     return m, pct(bs, 0.025), pct(bs, 0.975)
 
 
+def row_years(r, meta):
+    """A row's horizon: the `.yNN.` segment of a batch row name (study R runs 20- and 40-year rows in one file), else the run's years."""
+    m = re.search(r'\.y(\d+)\.', r)
+    if m: return int(m.group(1))
+    y = meta.get('years', 20)
+    return y if isinstance(y, int) else max(y)
+
+
 def check(rows, meta):
-    keys = ['sec' + m + g for m, *_ in MEAS for g, _ in GRPS] + [k for k, _ in CONF] + ['s19%s_%d' % (m, t) for m in S19_M for t in range(meta.get('years', 20))]
+    keys = lambda r: ['sec' + m + g for m, *_ in MEAS for g, _ in GRPS] + [k for k, _ in CONF] + ['s19%s_%d' % (m, t) for m in S19_M for t in range(row_years(r, meta))]
     want = [e + '.' + d + '.' + p + '.' + r + sv for e in ENVS for d, p, sv, _ in DESIGNS for r in ('none', 'prog')]
     want = [w for w in want if w.split('.')[0] in {r.split('.')[0] for r in rows}]
+    if not any(w in rows for w in want):
+        # S47: a batch job other than study P (study R, the release panel and bridge): every row that records the security keys
+        want = [r for r in rows if 'secU25A' in rows[r]]
     miss = [w for w in want if w not in rows]
-    bad = [(w, k) for w in want if w in rows for k in keys if k not in rows[w] or not all(math.isfinite(x) for x in rows[w][k])]
+    bad = [(w, k) for w in want if w in rows for k in keys(w) if k not in rows[w] or not all(x is not None and math.isfinite(x) for x in rows[w][k])]
     n = {len(v) for w in want if w in rows for v in rows[w].values()}
-    ok = not miss and not bad and len(n) == 1
-    print(('PASS' if ok else 'FAIL') + '  s53_security.py: %d rows, %d keys each, %s seeds%s%s' % (len(want) - len(miss), len(keys), '/'.join(map(str, sorted(n))),
+    nk = sorted({len(keys(w)) for w in want if w in rows})
+    ok = bool(want) and not miss and not bad and len(n) == 1
+    print(('PASS' if ok else 'FAIL') + '  s53_security.py: %d rows, %s keys each, %s seeds%s%s' % (len(want) - len(miss), '/'.join(map(str, nk)), '/'.join(map(str, sorted(n))),
           ('; missing rows: ' + ', '.join(miss[:5])) if miss else '', ('; missing or not finite: ' + ', '.join('%s %s' % x for x in bad[:5])) if bad else ''))
     return ok
 

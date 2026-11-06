@@ -7,12 +7,18 @@ would have written it.
 
 Usage: python3 dev/tools/merge_parts.py IN_DIR ENV YEARS K OUT
        (reads IN_DIR/release-panel[-40]-ENV.partI.json for I = 0..K-1; YEARS 20 or 40; writes OUT)
+       Pieces written by compassionism-sim-results runner/jobs/panel.js (the batch's R-panel job) are read as they are (S47).
 """
 import json, sys
 
 def main(d, env, years, k, out):
     suf = '-40' if years == '40' else ''
     P = [json.load(open('%s/release-panel%s-%s.part%d.json' % (d, suf, env, i))) for i in range(k)]
+    for p in P:
+        # S47: a piece written by compassionism-sim-results runner/jobs/panel.js carries the workflow's shard index in _meta.seeds and the
+        # panel's own seed count in _meta.panelSeeds; restore the testbed's meaning (seed count) and drop the per-shard fields
+        m = p['_meta']
+        if 'panelSeeds' in m: m['seeds'] = m.pop('panelSeeds'); m.pop('shard', None); m.pop('jobCommand', None)
     m0 = P[0]['_meta']
     for i, p in enumerate(P):
         m = p['_meta']
