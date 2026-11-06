@@ -2851,6 +2851,15 @@ function healthUnitSuite(){
 Object.assign(module.exports, { C22_KEYS, C22_DEFAULTS, c22NeedsBU, c22Share });  /* S6 */
 Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, sxEnergy, sxFac, sxYear, sxWin, sxPtf, sxUnitSuite, fxUnitSuite, TB_PLV_KEYS });  /* S52 */
 Object.assign(module.exports, { SEC_DEFAULTS, SEC_KEYS, SEC_GRPS, SEC_M, S19_KEYS, S19_M, S19_N, secUnitSuite });  /* S53 */
+/* S47 (Nov 6, 2026; research-update prereg/run-manifest.md section 1): the frozen model, as one place for the testbed, explore_export.js and the batch's job
+ * scripts to build it from. frozenRow(c): a study row on the frozen engine, the outside audit's corrections (au: gate, sg, fbs) and the second implementation's
+ * four fixes (fx: pthb, hb, ab, sp), on every row a study runs, its no-programme rows included. c22Design(c): a programme row (relMainCfgs' second) turned into the
+ * headline C2.2 design (study programme Amendment 4): automatic distribution, the BU at the cost of food, housing with utilities and medical care for one adult
+ * (c22NeedsBU()) and indexed to those prices; the child allowance stays a quarter of the adult BU (the households setting). Both return the row they change. */
+var FROZEN = {au:true, fx:true};
+function frozenRow(c){ c.au = FROZEN.au; c.fx = FROZEN.fx; return c; }
+function c22Design(c){ c.c22 = {auto:true, idx:'needs'}; c.p = Object.assign({}, c.p, {bu:c22NeedsBU()}); return c; }
+Object.assign(module.exports, { FROZEN, frozenRow, c22Design });  /* S47 */
 Object.assign(module.exports, { LV_KEYS, lvUnitSuite });  /* S54 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
@@ -4900,8 +4909,9 @@ if (require.main === module) {
       var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, cm = 'framework', idx = {};
       rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
       var cfg = [Object.assign({p:PR.baseline()}, base || {})], lbl = ['No program (Baseline)' + (base && typeof base.sc === 'number' ? ', spending share ' + base.sc : '')];
-      rows.forEach(function(r){ var c = r.base ? Object.assign({p:PR.baseline()}, r.v) : n1Row(PR, cm, r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); cfg.push(c); lbl.push(r.l); });
+      rows.forEach(function(r){ var c = r.base ? Object.assign({p:PR.baseline()}, r.v) : n1Row(PR, cm, r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); if (r.c22d) c22Design(c); cfg.push(c); lbl.push(r.l); });  /* S47: r.c22d, the C2.2 design */
       if (base && base.snAll){ delete cfg[0].snAll; cfg.forEach(function(c){ c.sn = Object.assign({}, base.snAll); }); }  /* session 7 (s165): --sn / --snab, today's safety net (and SNAP's work rule) in every run of the panel */
+      if (base && base.frz){ delete cfg[0].frz; cfg.forEach(frozenRow); }  /* S47: --frozen, every run of the panel on the frozen engine (the no-programme runs too) */
       function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
       var t0 = Date.now(), R = tbStudy(cfg, nT, P, Object.assign({}, o, base && base.so || {}, base && typeof base.sc === 'number' ? {sc:base.sc} : {})), B = R[0], TD = R[idx.today];  /* v5.2: base.so = extra study-level options (the v5.2 reporting) */
       function ci(d, n){ return sg(d.m, n) + ' [' + sg(d.lo, n) + ', ' + sg(d.hi, n) + ']'; }
@@ -5029,12 +5039,19 @@ if (require.main === module) {
       var SNALL = process.argv.indexOf('--snab') >= 0 ? {abawd:true} : process.argv.indexOf('--sn') >= 0 ? {} : null;  /* session 7 (s165): every run with today's safety net, and with --snab SNAP's work rule */
       if (SNALL && process.argv.indexOf('--slope') >= 0) SNALL.slope = true;  /* session 9 (i24-1): the safety net's marginal rate without SNAP's gross income cliff (SNET.slope) */
       if (SNALL){ RJ._meta.sn = Object.assign({}, SNET_DEFAULTS, SNALL); RJ._meta.command += (SNALL.abawd ? ' --snab' : ' --sn') + (SNALL.slope ? ' --slope' : ''); }
+      /* S47 (research-update prereg/run-manifest.md, job R-panel): --frozen runs every row of the panel on the frozen engine (frozenRow: au and fx, the
+       * no-programme runs included, so each row's supply path comes from its own no-programme testbed run, fx.sp) and adds the headline C2.2 design (c22Design)
+       * as row 'c22', right after the release row, paired with the same no-programme run. Off, nothing here changes. */
+      var FRZ = process.argv.indexOf('--frozen') >= 0;
+      if (FRZ){ RJ._meta.frozen = {au:FROZEN.au, fx:FROZEN.fx, c22:{c22:{auto:true, idx:'needs'}, bu:c22NeedsBU()}}; RJ._meta.command += ' --frozen'; }
       envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
         function av(r){ return ((r._Bk || r._B).epPY - r.epPY)/100; }  /* v5.2: against the row's own no-programme pair where it has one */
         function aw(r){ var b = r._Bk || r._B; return avoidWide((b.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (b.fgt0PY - r.fgt0PY)/100); }
         var rows = V54 ? releaseRowsV54(SC).filter(function(r){ return r.k !== 'a'; }) : V53 ? releaseRowsV53(SC).filter(function(r){ return r.k !== 'a'; }) : releaseRows(SC, !V52),  /* v5.3: the parts-removed rows run in dev/tools/attrib_check.js (paired against the main row), not in the panel */ bases = V54 ? releaseBasesV54(SC) : V53 ? releaseBasesV53(SC) : V52 ? releaseBases(SC) : [], nRel = rows.length;
+        if (FRZ){ var rI = -1; rows.forEach(function(r, i){ if (r.j === 'release') rI = i; }); if (rI < 0) throw new Error('--frozen: no release row');
+          var rR = rows[rI]; rows.splice(rI + 1, 0, {l:'C2.2 DESIGN (frozen engine): the BU at the cost of food, housing and medical care, indexed to those prices, paid automatically to every resident', v:rR.v, k:'c22', vs:rR.vs, j:'c22', bk:rR.bk, c22d:true}); }  /* S47 */
         if (PART){ RJ._meta.part = {i:PART[0], k:PART[1], rows:rows.map(function(r){ return r.j; }), bases:bases.map(function(b){ return b.j; })};  /* v5.4 step 9: a resumable part of the panel */
           rows = rows.filter(function(r, i){ return r.k === 'today' || r.k === 'main' || i % PART[1] === PART[0]; });
           var need = {}; rows.forEach(function(r){ if (r.bk) need[r.bk] = 1; }); bases = bases.filter(function(b){ return need[b.j]; }); }
@@ -5045,7 +5062,7 @@ if (require.main === module) {
            ['Prisons, hospitals and psychiatric care avoided per adult-year: main (prisons + health) / high', function(r){ var w = aw(r); return $(w.main) + ' (' + $(w.jail) + ' + ' + $(w.health) + ') / ' + $(w.high); }],
            ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
-           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}, V54 ? {v54:V54_MAIN} : {}, SNALL ? {snAll:SNALL} : {}));
+           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}, V54 ? {v54:V54_MAIN} : {}, SNALL ? {snAll:SNALL} : {}, FRZ ? {frz:true} : {}));
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
         if (V52){ rep52Print(R, ['No programme'].concat(rows.map(function(rw){ return rw.l.trim(); })), E[0], YRS > 0 ? YRS : 20); out.base.rep = rep52Keys(B, null); out.base.path = path52(B, YRS > 0 ? YRS : 20); }
         var BX = {}; rows.forEach(function(rw, i){ if (rw.base) BX[rw.j] = R[i + 1]; });  /* v5.2: the paired no-programme rows */
@@ -5060,7 +5077,7 @@ if (require.main === module) {
           if (V53) Object.assign(out.rows[rw.j], rel53Keys(r, r._Bk || B), {kind:rw.k}, rw.j === 'release' ? {paired:pairedShares(r, B)} : {});
           if (V54) Object.assign(out.rows[rw.j], rel54Keys(r, r._Bk || B));
           if (HRS_ON) Object.assign(out.rows[rw.j], {pjHrs:+r.pjHrs.toFixed(2), pjWork:+r.pjWork.toFixed(2), pjDisp:+r.pjDisp.toFixed(2), pjHrsD:d3(r, 'pjHrs'), pjWorkD:d3(r, 'pjWork'), pjDispD:d3(r, 'pjDisp')});  /* study s171: --hours adds the community-project hours (per participant-year; share of participants who took project work, %; hours taken from paid work) */
-          if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
+          if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid' || rw.j === 'c22')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
         if (V53){ Object.assign(out.base, rel53Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel53Keys(BX[b.j], null)); }); }
         if (V54){ Object.assign(out.base, rel54Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel54Keys(BX[b.j], null)); }); }
         RJ.envs[e] = out; });
