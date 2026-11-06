@@ -2853,13 +2853,19 @@ Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, 
 Object.assign(module.exports, { SEC_DEFAULTS, SEC_KEYS, SEC_GRPS, SEC_M, S19_KEYS, S19_M, S19_N, secUnitSuite });  /* S53 */
 /* S47 (Nov 6, 2026; research-update prereg/run-manifest.md section 1): the frozen model, as one place for the testbed, explore_export.js and the batch's job
  * scripts to build it from. frozenRow(c): a study row on the frozen engine, the outside audit's corrections (au: gate, sg, fbs) and the second implementation's
- * four fixes (fx: pthb, hb, ab, sp), on every row a study runs, its no-programme rows included. c22Design(c): a programme row (relMainCfgs' second) turned into the
+ * four fixes (fx: pthb, hb, ab, sp) and the frozen spending share (SPEND_FROZEN), on every row a study runs, its no-programme rows included. c22Design(c): a programme row (relMainCfgs' second) turned into the
  * headline C2.2 design (study programme Amendment 4): automatic distribution, the BU at the cost of food, housing with utilities and medical care for one adult
  * (c22NeedsBU()) and indexed to those prices; the child allowance stays a quarter of the adult BU (the households setting). Both return the row they change. */
-var FROZEN = {au:true, fx:true};
-function frozenRow(c){ c.au = FROZEN.au; c.fx = FROZEN.fx; return c; }
+/* The frozen model's spending share (S47, Nov 6; research-update prereg/run-manifest.md Amendment 3; dev/DECISIONS.md S47; dev/reports/s47-spend.md): the share
+ * of cash surplus consumed re-derived by SPEND_SOURCED's own method on the frozen no-programme run (dev/tools/s47_spend.js, dev/runs/s47-spend/rederive.json):
+ * the share at which the run's saving over disposable income, counted on the row's own years, equals the 2025 US personal saving rate, 5.4% (BEA NIPA Table
+ * 2.1, line 35), Reference, seeds 1-100. 0.877; the method's formula over wages alone gives 0.862. SPEND_SOURCED (0.593) stays the published engine's. frozenRow
+ * sets it on the row (c.sc); under fx.sp the row's supply path is its own no-programme run at the same share, so no study-level share is needed. */
+var SPEND_FROZEN = 0.877;
+var FROZEN = {au:true, fx:true, sc:SPEND_FROZEN};
+function frozenRow(c){ c.au = FROZEN.au; c.fx = FROZEN.fx; c.sc = FROZEN.sc; return c; }
 function c22Design(c){ c.c22 = {auto:true, idx:'needs'}; c.p = Object.assign({}, c.p, {bu:c22NeedsBU()}); return c; }
-Object.assign(module.exports, { FROZEN, frozenRow, c22Design });  /* S47 */
+Object.assign(module.exports, { FROZEN, SPEND_FROZEN, frozenRow, c22Design });  /* S47 */
 Object.assign(module.exports, { LV_KEYS, lvUnitSuite });  /* S54 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
@@ -5043,7 +5049,7 @@ if (require.main === module) {
        * no-programme runs included, so each row's supply path comes from its own no-programme testbed run, fx.sp) and adds the headline C2.2 design (c22Design)
        * as row 'c22', right after the release row, paired with the same no-programme run. Off, nothing here changes. */
       var FRZ = process.argv.indexOf('--frozen') >= 0;
-      if (FRZ){ RJ._meta.frozen = {au:FROZEN.au, fx:FROZEN.fx, c22:{c22:{auto:true, idx:'needs'}, bu:c22NeedsBU()}}; RJ._meta.command += ' --frozen'; }
+      if (FRZ){ RJ._meta.frozen = {au:FROZEN.au, fx:FROZEN.fx, sc:FROZEN.sc, c22:{c22:{auto:true, idx:'needs'}, bu:c22NeedsBU()}}; RJ._meta.command += ' --frozen'; }
       envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */

@@ -27,7 +27,7 @@ function run(env, lo, hi, shares, file) {
     const P = Object.assign({}, H[ENVN[env]], {years: 20, nAgents: 500});
     shares.forEach(s => {
       const R0 = DES.map(d => { const c = H.relMainCfgs(H.tbPresets(P)).map(x => Object.assign(x, {sc: s, sn: {abawd: true, slope: true}}))[d === 'none' ? 0 : 1];
-        c.lt = {s: 'all', m: 'all'}; if (d === 'c22') H.c22Design(c); H.frozenRow(c); return [s + '.' + d, c]; });
+        c.lt = {s: 'all', m: 'all'}; if (d === 'c22') H.c22Design(c); H.frozenRow(c); c.sc = s; return [s + '.' + d, c]; });  /* the share under test replaces the frozen one */
       const so = Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: s}, H.REL_V52_STUDY), R = H.tbStudy(R0.map(r => r[1]), hi, P, so, lo);
       R0.forEach((r, i) => { out.rows[r[0]] = {}; KEYS.forEach(k => { out.rows[r[0]][k] = Array.from(R[i]._s[k]); }); });
     });
