@@ -25,7 +25,7 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `THETA_GATE` | 'szh' / 'density' | Main result: 'density' (NR6 profile) | d12 (session 5) |
 | `PTH_MODE` | 'basket' / 'housing' | Main result: 'housing' | d4 (session 5) |
 | `DISC_BASE` | 'basket' / 'pretax' | Main result: 'pretax' | d5 (session 5) |
-| `SURPLUS_CONSUMPTION_SHARE`, `_BASE` | 0, 'wage' / 0.9 'cash' (NR6) / 0.593 'cash' (sourced) | Main result: 0.593 of cash surplus | plan step 7 (`SPEND_SOURCED`, BEA 2025) |
+| `SURPLUS_CONSUMPTION_SHARE`, `_BASE` (row option `sc`) | 0, 'wage' / 0.9 'cash' (NR6) / 0.593 'cash' (sourced) / 0.877 'cash' (frozen) | Main result as released: 0.593 of cash surplus. Frozen model: 0.877 (`SPEND_FROZEN`, re-derived by the same method on the frozen no-programme run, MODEL_SPEC.md 13.3); 0.593 kept as a reading in study R | plan step 7 (`SPEND_SOURCED`, BEA 2025); S47 (dev/reports/s47-spend.md; run manifest Amendment 3) |
 | `N7_BLEI` | false / true | Main result: true (testbed profile) | d40 |
 | `PTF_MODE` | 'shipped' / 'food30' / 'food62' | Main result: 'shipped'. Others: sensitivity | D4 (session 2) |
 | `PATHWAY_OFF` | flags relief, conversion, octave, octaveWage, bleiWage, pthCost, pthEquity | Main result: octaveWage off (the octave wage raise is replaced by project hiring). Others: attribution and sensitivity | d19, d46 |
@@ -47,7 +47,9 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `EDC_MEASURE` (the measured EDC; row option `em`) | false / true | Reporting only (v5.3 B6): adds `EDC_KEYS`; changes no result | DECISIONS Session 39 (B6) |
 | `HOUSEHOLDS` (households and children; row option `hh`) | null / {pool 'household' / 'individual', childBU 0.25 (0 to 0.5), estate 'heirs' / 'leave', shock 0 / 'shore' / a correlation in [-1, 1], wealth 'model' / 'scf'} | Main result from v5.3: {pool 'household', childBU 0.25, shock 'shore', wealth 'scf'} (`REL_V53.hh`; d167, d168, d170, d172, the rule recorded before the restudy), in the no-programme run too. Readings: adults alone (rows `adults`, `v52`), 'individual' (`indiv`), childBU 0 and 0.5 (`cb0`, `cb50`), wealth 'model' (`wmodel`), shock 0.5 (`shock50`). With ageing (row option `ag`): children's lives and estates (B4, B5; d169; rows `age`, `ageleave`, ...); `estate` is read only then | DECISIONS Session 39 (B3, B4, B10) |
 | `ACCT` (the accounting check) | null / `acctNew()` | Checking only: no draw, nothing any rule reads; results are bit-identical with it on (`acctUnitSuite`). See MODEL_SPEC.md, section 11 | v5.3 B2 |
-| `AUD` (the S13 audit's corrections; row option `au`) | null / {gate, sg, fbs, wOut} (`au: true` = gate, sg, fbs) | Off as released (every figure unchanged). Recommended for the frozen batch's main rows; `wOut` is a labelled reading | S13 (dev/reports/s13-engine-audit.md) |
+| `AUD` (the S13 audit's corrections; row option `au`) | null / {gate, sg, fbs, wOut} (`au: true` = gate, sg, fbs) | Off as released (every figure unchanged). Frozen model: on (`au: true`) in every row of the batch (MODEL_SPEC.md 13.1); `wOut` is a labelled reading in study R | S13 (dev/reports/s13-engine-audit.md) |
+| `FX` (the second implementation's fixes; row option `fx`) | null / {pthb, hb, ab, sp} (`fx: true` = all four) | Off as released. Frozen model: on in every row of the batch (MODEL_SPEC.md 13.2) | S47 (dev/reports/s47-fx.md; run manifest Amendment 2) |
+| `C22` (coverage and adequacy; row option `c22`) | null / {u 0, auto, idx false / 'needs'} | Off as released. The batch's headline design: `c22Design` = {auto, idx 'needs'} with the BU at `c22NeedsBU()` (MODEL_SPEC.md 13.4); `u` swept in study K | S6 (dev/reports/c22-coverage-adequacy.md); ledger D8 |
 | `LVS` (the policy levers; row option `lv`) | null / {jn 'conv', tref, pr, pc, bt, keep, br, oc, ph, cap, sv, svc, rc} | Off as released (`lv: {}` moves no figure). The levers study (S54, research-update `prereg/2026-11-levers-addendum.md`) sweeps them; keys `LV_KEYS` | S54 (dev/reports/s54-levers-reading.md) |
 
 ## 2. Testbed options (per study or per row)
@@ -92,3 +94,20 @@ No reading has joined the main result (v5.2 step 9: each new mechanism first app
 ## 5. Random streams
 
 Every reading that needs random numbers has its own stream (MODEL_SPEC.md, section 8); `matrixUnitSuite` checks that the main stream's 8 draws per adult-year are untouched, that only ageing rows use the ageing stream and only review rows the review stream, and that no switch leaks from one row into the next.
+
+## 6. The frozen engine and the full study batch (S47)
+
+The batch (research-update `prereg/run-manifest.md`) runs every row with `harness.js` `frozenRow(c)`: `au: true` (gate, sg, fbs), `fx: true` (pthb, hb, ab, sp) and `sc: 0.877`, the no-programme rows included (MODEL_SPEC.md, section 13). The headline programme row is the C2.2 design (`c22Design(c)`); the release design ($1,200, opt-in) runs beside it. What each job switches beyond that:
+
+| Job | Switches beyond the frozen engine | Status |
+|---|---|---|
+| R (release panel and bridge) | the published engine (no `au`, `fx`, `sc` 0.593) and `au` alone, for none, the release design and the C2.2 design; on the frozen engine the middle backing (`aK`), every dollar backed (`a: 1`), FBS50 (`fb: {dist: 'fbs50'}`), wages following outside inflation (`au.wOut`) and the spending share at 0.593; study option `sec` | The bridge to the published figures; labelled readings |
+| A, B, B10, C, D, D10, F | the preregistered rows of the study programme (scale, the 32-cell factorial with the CCO raise, ageing `ag`, participation `partRate`, the debt reading `dr`), on both designs (D and D10: the release design only) | Main study rows |
+| G, G10, H, I, J | the community and zone layer (`cl`, COMM) | Reading (S37) |
+| K | coverage and adequacy (`c22.u`, the status rule) | S6's rows |
+| L | the cost-of-living line (`LW`: ext, bea) | S14's rows |
+| M | the backing mechanism (`o.bkm`), wage indexation (`wIdx`), savings that keep up with prices (`sv`), the BU raised every year (`ci`) | S51's rows |
+| N1, N2, N3, N3x | the policy levers (`o.lv`); N3x adds the outside supply shock's main path (`o.sx`) | S54's rows |
+| O | the outside supply shock (`o.sx`) | S52's rows |
+| P | the security outputs (`o.sec`, reporting only), `sv` | S53's rows |
+| X | none (the per-year series of no programme, the C2.2 design and the release design) | Reporting |
