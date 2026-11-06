@@ -1081,6 +1081,9 @@ function bleiUnitSuite(){
   var CASES = [[FI, 1], [FI, 2], [AD, 1]], RES = [];
   CASES.forEach(function(c){ ROWS.forEach(function(r){ RES.push({c:c, r:r, x:run(c[0], c[1], r)}); }); });
   function tag(q){ return (q.c[0] === FI ? 'FI' : 'Adverse') + ' seed ' + q.c[1] + ', ' + q.r.l; }
+  t('S47: in a 20-year run the year-20 keys equal the last year\'s (bNAy20 = bNA20, bOAy20 = bOA20, exactly; 4 designs x FI seeds 1-2, Adverse seed 1)', function(){
+    var bad = RES.filter(function(q){ return q.x.bNAy20 !== q.x.bNA20 || q.x.bOAy20 !== q.x.bOA20; });
+    return {pass:bad.length === 0, detail:bad.length ? bad.map(tag).join('; ') : RES.length + ' runs equal'}; });
   t('year 20, all adults: the design-neutral (N) and own (O) readings equal the testbed\'s nbleiPov and bleiPov exactly (4 designs x FI seeds 1-2, Adverse seed 1)', function(){
     var bad = RES.filter(function(q){ return q.x.bNA20 !== q.x.nbleiPov || q.x.bOA20 !== q.x.bleiPov; });
     return {pass:bad.length === 0, detail:bad.length ? bad.map(tag).join('; ') : RES.length + ' runs; e.g. FI seed 1 Baseline N ' + RES[0].x.bNA20.toFixed(1) + '%, O ' + RES[0].x.bOA20.toFixed(1) + '%'};
@@ -1268,6 +1271,12 @@ function sxUnitSuite(){
     var Z = run({E:0}), S = run({}), bad = SX_KEYS.filter(function(k){ return /^sx[CMP]B/.test(k) && Z[1]._s[k][0] !== S[1]._s[k][0]; });
     var r = (S[0].sxCDA - Z[0].sxCDA)/(S[0].sxMDA - Z[0].sxMDA);
     return {pass:bad.length === 0 && Math.abs(r - 1) < 0.005 && S[0].sxMDA > Z[0].sxMDA, detail:(bad.length ? 'moved: ' + bad.slice(0, 6).join(', ') + '; ' : '') + 'reach ' + r.toFixed(4)}; });
+  t('S47: S52\'s added outputs (seed 1, the main shock): the five payers add up to the essentials at market prices in every group and window; with no programme no BU, PTF or PTH dollar is paid and the Source pays nothing; the release row\'s Source pays every year, its backed and unbacked parts add up to the year-0 totals of BU issued and the payout (srcIss, bkA)', function(){
+    var S = run({}), d = 0, z = true; [0, 1].forEach(function(i){ SX_GRPS.forEach(function(g){ SX_WINS.forEach(function(w){ var R = S[i]; d = Math.max(d, Math.abs(R['sxEb' + w + g] + R['sxEf' + w + g] + R['sxEh' + w + g] + R['sxEm' + w + g] + R['sxEo' + w + g] - R['sxE' + w + g])); }); }); });
+    var N = S[0], P = S[1]; SX_WINS.forEach(function(w){ if (N['sxEb' + w + 'A'] !== 0 || N['sxEf' + w + 'A'] !== 0 || N['sxEh' + w + 'A'] !== 0) z = false; });
+    var qi = 0, qb = 0, qu = 0, n0 = 0; for (var t = 0; t < 20; t++){ if (N['sxQi_' + t] !== 0 || N['sxQu_' + t] !== 0) z = false; qi += P['sxQi_' + t]; qb += P['sxQb_' + t]; qu += P['sxQu_' + t]; if (P['sxQu_' + t] > 0) n0++; }
+    var bk = qb + qu > 0 ? qb/(qb + qu)*100 : 0, e1 = Math.abs(qi/20 - P.srcIss)/Math.max(1, P.srcIss), e2 = Math.abs(bk - P.bkA);
+    return {pass:d < 1e-6 && z && n0 >= 19 && e1 < 0.02 && e2 < 0.5 && isFinite(P.sxVdA) && P.sxVdA > 0, detail:'largest gap ' + d.toExponential(2) + '; BU issued ' + (qi/20).toFixed(1) + ' vs srcIss ' + P.srcIss.toFixed(1) + '; backed ' + bk.toFixed(2) + '% vs bkA ' + P.bkA.toFixed(2) + '%; sxVd ' + P.sxVdA.toFixed(3)}; });
   return out;
 }
 /* S53 (Nov 2, 2026): security outcomes beyond wealth and the S19 series (index.html SEC_DEFAULTS, secNew, secAcc, secYear, secRes; study option o.sec). */
@@ -1300,6 +1309,13 @@ function secUnitSuite(){
     var ok = r.secD25A === 100 && r.secU25A === 100 && r.secU50A === 0 && r.secM1A === 100 && Math.abs(r.secMdA - 0.5) < 1e-12 && Math.abs(r.secHrA - h) < 1e-9 && r.secH40A === 100
       && Math.abs(r.secXbA - oe/50000*100) < 1e-9 && Math.abs(r.secXeA - oe/(50000*eS)*100) < 1e-9 && r.secD25X === 0 && r.secD25P === 100;
     return {pass:ok, detail:'hours ' + r.secHrA.toFixed(3) + ' (by hand ' + h.toFixed(3) + '), Xb ' + r.secXbA.toFixed(3) + ', months ' + r.secMdA}; });
+  t('S47: the two descriptive measures: the three causes add up to every 25% fall in money income, the uncovered money falls are among them, and the uncovered falls below own cost are among the uncovered falls (release row and its no-programme run, every group); by hand: a wage that halves is a fall caused by wages', function(){
+    both(); var bad = []; [0, 1].forEach(function(i){ SEC_GRPS.forEach(function(g){ var R = B[i]; if (!(Math.abs(R['secF25w' + g] + R['secF25c' + g] + R['secF25o' + g] - R['secF25' + g]) < 1e-9 && R['secU25m' + g] <= R['secF25' + g] + 1e-12 && R['secU25b' + g] <= R['secU25' + g] + 1e-12)) bad.push(i + g); }); });
+    PRICE = {comp:{}}; CFG.BASKET_KEYS.forEach(function(k){ PRICE.comp[k] = 1; }); SECS = secNew(true, 2);
+    var a = {_tbPart:false, yrWealthStartUSD:0, wealth:0, yrUbiUSD:0, yrSSUSD:0, yrTbCash:2000, yrConvUSD:0, wage:20, _ret:false};
+    a._seE = 40000; a._seC = 0; SECS.y = 0; secAcc(a, 42000, 50000, 30000, 1, 0); a._seE = 20000; SECS.y = 1; secAcc(a, 22000, 50000, 30000, 1, 0.1);
+    var r = secRes({}), ok = r.secF25A === 100 && r.secF25wA === 100 && r.secF25oA === 0 && r.secU25bA === 100 && r.secF25X === 100 && r.secF25P === 0;
+    return {pass:bad.length === 0 && ok && B[1].secF25A > 0, detail:(bad.length ? 'fails: ' + bad.join(', ') + '; ' : '') + 'release F25 ' + B[1].secF25A.toFixed(3) + ' (wages ' + B[1].secF25wA.toFixed(3) + ', conversion ' + B[1].secF25cA.toFixed(3) + ', other ' + B[1].secF25oA.toFixed(3) + '), U25b ' + B[1].secU25bA.toFixed(3) + ' of U25 ' + B[1].secU25A.toFixed(3)}; });
   return out;
 }
 function lvUnitSuite(){

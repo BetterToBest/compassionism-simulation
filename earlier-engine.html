@@ -4510,6 +4510,7 @@ function hhPool(yr, tbOn){  /* pool 'household': the end-of-year step for couple
     if (PRICE && PRICE.acc){ var A = PRICE.acc; H.a.forEach(function(a){ var pmW = a.wealth < CFG.WEALTH_FLOOR ? CFG.WEALTH_FLOOR - a.wealth : 0, pmU = a._hhPmB > 0 ? Math.min(1, (SPEND_GRADE ? pmW + a._grCut : pmW)/a._hhPmB) : 0;
       A.essD -= pmU; A.unmet += pmW; if (pmW > 0) A.unmetN++; }); }  /* the price module's unmet need, after pooling (the year loop counted none for these adults) */
     if (tbOn){ var inc = 0, mlc = 0, cost = 0, disp = 0; H.a.forEach(function(a){ inc += a._hhInc; mlc += a._hhMlc; cost += a._hhCost; disp += a._hhDisp; });
+      if (SECS){ var sE = 0, sC = 0; H.a.forEach(function(a){ sE += a._seE || 0; sC += a._seC || 0; }); H.a.forEach(function(a){ a._seE = sE/n; a._seC = sC/n; }); }  /* S47: the household's parts per adult, as its income */
       H.a.forEach(function(a){ tbPov(a, TB.cur, a._hhIdx, inc/n, mlc/n, cost/n, disp/n); }); }
     H.a.forEach(function(a){ if (a.wealth < CFG.WEALTH_FLOOR){ if (ACCT) a._acFl = CFG.WEALTH_FLOOR - a.wealth;
       if (LEDGER){ var lf = CFG.WEALTH_FLOOR - a.wealth; ledAdd(yr, 'floor', lf); ledAdd(yr, 'floorHits', 1); a._ledFloor = (a._ledFloor || 0) + lf; } a.wealth = CFG.WEALTH_FLOOR; } });
@@ -4816,10 +4817,10 @@ function tbCashFlow(a, y, E, yr){
  * values of N and O equal the testbed's nbleiPov and bleiPov (checked by tbBleiUnitSuite). */
 var TB_BLEI_DEFS = ['N', 'O', 'X'], TB_BLEI_GRPS = ['A', 'P', 'N'], TB_BLEI_NET = {wealth:0, wage:1};
 /* Accumulators, flat for speed: index d*3 + g (d: N, O, X; g: all, participants, non-participants). */
-function tbBleiAcc(){ var r = {py:new Float64Array(9), pov:new Float64Array(9), cri:new Float64Array(9), pov20:new Float64Array(9), n20:new Float64Array(9), v20:[]};
+function tbBleiAcc(){ var r = {py:new Float64Array(9), pov:new Float64Array(9), cri:new Float64Array(9), pov20:new Float64Array(9), n20:new Float64Array(9), v20:[], y20:new Float64Array(3)};  /* y20: S47 */
   for (var i = 0; i < 9; i++) r.v20.push([]); return r; }
 function tbBleiNet(a){ var q = TB_BLEI_NET; q.wealth = a.wealth; q._hhD = a._hhD;  /* v5.3 B3 */ q.wage = Math.max(0, (+a.yrWageUSD || 0) - (+a.yrTax || 0))/12/CFG.WAGE_TO_USD; return q; }
-function tbBleiYear(BG, agents, p, o, last){
+function tbBleiYear(BG, agents, p, o, last, y20){
   var lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1), L30 = CFG.BLEI_PRECARIOUS_MAX, L7 = CFG.BLEI_CRISIS_MAX, v = [0, 0, 0];
   for (var i = 0; i < agents.length; i++){ var a = agents[i], m = (a._tbM || 0)/CFG.BASE_DAILY_COST, g2 = a._tbPart ? 1 : 2;
     v[0] = (agentBLEI(a, 0, false, false, false, 0, false) + m)/lf; v[1] = agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf)/lf;
@@ -4827,11 +4828,13 @@ function tbBleiYear(BG, agents, p, o, last){
     for (var d = 0; d < 3; d++){ var x = v[d], j0 = d*3, j1 = j0 + g2;
       BG.py[j0]++; BG.py[j1]++; if (x < L30){ BG.pov[j0]++; BG.pov[j1]++; } if (x < L7){ BG.cri[j0]++; BG.cri[j1]++; }
       if (last){ BG.n20[j0]++; BG.n20[j1]++; if (x < L30){ BG.pov20[j0]++; BG.pov20[j1]++; } BG.v20[j0].push(x); BG.v20[j1].push(x); } }
+    if (y20){ BG.y20[2]++; if (v[0] < L30) BG.y20[0]++; if (v[1] < L30) BG.y20[1]++; }  /* S47: all adults at year 20 (index 19), whatever the run's length */
   }
 }
 function tbBleiRes(BG, R){
   TB_BLEI_DEFS.forEach(function(d, di){ TB_BLEI_GRPS.forEach(function(g, gi){ var j = di*3 + gi, k = 'b' + d + g;
     R[k + 'Py'] = BG.py[j] ? BG.pov[j]/BG.py[j]*100 : 0; R[k + 'Cr'] = BG.py[j] ? BG.cri[j]/BG.py[j]*100 : 0; R[k + '20'] = BG.n20[j] ? BG.pov20[j]/BG.n20[j]*100 : 0; R[k + 'Md'] = medianOf(BG.v20[j]); }); });
+  R.bNAy20 = BG.y20[2] ? BG.y20[0]/BG.y20[2]*100 : 0; R.bOAy20 = BG.y20[2] ? BG.y20[1]/BG.y20[2]*100 : 0;  /* S47 */
   return R;
 }
 /* v5.2 round, step 2 (Oct 3, 2026; Duke's answers d148 and d149; dev/DECISIONS.md, Session 35). Reporting only: no random draw and no state any rule reads. With the testbed
@@ -4865,7 +4868,10 @@ var TB_PATH_M = ['f0', 'pov', 'bO', 'medW', 'buR', 'wageR'], TB_PATH_N = 40;
  * of families with net worth below zero at year 20 and year 40 (hhDebt20, hhDebt40; 0 if the run is shorter): a family is a household where households are
  * on, an adult otherwise; its net worth is its adults' wealth together. */
 var TB_PLV_KEYS = Array.from({length:40}, function(_, t){ return 'plv_' + t; });
-var TB_PROG_KEYS = TB_PLV_KEYS.concat(['hhDebt20', 'hhDebt40']);
+var TB_PROG_KEYS = TB_PLV_KEYS.concat(['hhDebt20', 'hhDebt40', 'bNAy20', 'bOAy20']);
+/* S47 (Nov 6, 2026; research-update prereg/2026-11-study-program.md, Amendment 9 / S35 report item 3; reporting only, no draw): bNAy20 and bOAy20, the share of
+ * all adults below 30 days of basic living at year 20 (year index 19) on the design-neutral (N) and the design's own (O) BLEI, in a run of any length (0 if it is
+ * shorter than 20 years). In a 20-year run they equal bNA20 and bOA20; in a 40-year run they give the year-20 reading bNA20 cannot (it is the last year's). */
 function tbDebtShare(agents){ var n = 0, k = 0;
   if (HHS && HHS.list) HHS.list.forEach(function(H){ if (!H.a.length) return; var w = 0; H.a.forEach(function(a){ w += a.wealth; }); n++; if (w < 0) k++; });
   else agents.forEach(function(a){ n++; if (a.wealth < 0) k++; });
@@ -5625,6 +5631,7 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
    * Disposable income, OECD definition (the Hub's C30): wage earnings + conversion proceeds + cash transfers - the contribution;
    * no in-kind benefits, no capital transfer (the endowment), no capital gains (PTH appreciation). Extended income adds the in-kind
    * cuts to the agent's basket (BU relief and PTF, PTH and grocery price cuts). */
+  if (SECS){ a._seE = E; a._seC = conv; }  /* S47: money income's wage and conversion parts, for the security measures' cause split (reporting only) */
   if (a._hh){ a._hhInc = inc; a._hhDisp = disp; a._hhMlc = mlc; a._hhCost = costUSD; a._hhIdx = idx; }  /* v5.3 B3: kept for the household's measures (hhRepYear) and a pooled couple's status */
   if (!a._hhPool) tbPov(a, C, idx, inc, mlc, costUSD, disp);  /* v5.3 B3: a pooled couple's status is set at the end of the year (hhPool) */
   C.emp += E > 0 ? 1 : 0; C.hrs += a._lbE0 > 0 ? (a._pjHW ? E + a._pjHW : E)/a._lbE0 : 1;  /* N1 (session 15): + project hours at the worker's own wage */
@@ -5959,6 +5966,7 @@ function runYear(agentSet,yr,p,recSt){
     var mainLoopCostUSD=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);
     if(PRICE)mainLoopCostUSD*=PRICE.bIdx;  // session 2: endogenous basket index
     if(HHA)mainLoopCostUSD*=a._hhF;  // v5.3 B3: this adult's share of the household's needs at the household's own prices
+    if(SXS){a._sxPf=mainLoopCostUSD*(1-cfPTF);a._sxPh=mainLoopCostUSD*(cfPTF-cfPreCCO);a._sxBU=0;}  // S47: S52's payer breakdown (reporting only): PTF's and PTH's cuts in dollars (PTH's includes S54's rent cap, which landlords bear); BU spent below
     if(C22S&&tbY){var c2N=mainLoopCostUSD*(HHA?a._hhC22:c22Cur),c2B=(p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief)?12*buA:0;C22S.n++;if(c2B>0)C22S.b++;if(c2B>=c2N*(1-1e-9))C22S.k++;C22S.r+=c2N>0?Math.min(1,c2B/c2N):1;}  // S6: C2.2 coverage (reporting only); amendment 1: covered within a relative 1e-9, so a BU equal to the needs is not lost to rounding
     if(hcOn)HCS.h+=mainLoopCostUSD*(hSA+hcX);  // v5.2 step 7: the rent bill of the adults the mark-up falls on
     if(EDCS){a._edcR=(p.pth&&a.inPTH)?0:mainLoopCostUSD*(hSA+hcX);a._edcInt=a._edcIntP||0;a._edcIntP=0;}  // v5.3 B6: rent to a landlord (housing with utilities, MIT; PTH payments are not extractive: the glossary's EDC = 0) and interest on debt
@@ -5975,7 +5983,7 @@ function runYear(agentSet,yr,p,recSt){
         if(vC>0){spC+=vC;fwB=Math.min(fwBudget,vSpE-spC);a._spCutY=spC;var vY=SPS.y[yr];vY.cut+=vC;vY.cutV+=vC;vY.freed+=vB-fwB;SPS.acc.cut+=vC/spIdx;SPS.acc.cutP+=vC/spIdx;SPS.acc.cutV=(SPS.acc.cutV||0)+vC/spIdx;SPS.acc.freed+=(vB-fwB)/spIdx;SPS.acc.cash+=(vC-(vB-fwB))/spIdx;}}
       var fwLeft=fwBudget-fwB;
       if(HCAP&&HCS&&!(p.pth&&a.inPTH)&&fwB>0)HCS.hb+=fwB*Math.min(1,(hSA+hcX)/Math.max(1e-9,essF));  // v5.2 step 7: BU spent on rent outside PTH (at shares of the essentials they buy)
-      cf=cfPreCCO+hcX-fwB/mainLoopCostUSD;hcDone=true;if(spC)cf-=spC/mainLoopCostUSD;a._fwBUm=fwB0/12;  // the neutral BLEI gate counts the BU that would be spent without the cut (no price cut enters it)
+      cf=cfPreCCO+hcX-fwB/mainLoopCostUSD;hcDone=true;if(spC)cf-=spC/mainLoopCostUSD;a._fwBUm=fwB0/12;if(SXS)a._sxBU=fwB;  // S47: BU spent (reporting only)  // the neutral BLEI gate counts the BU that would be spent without the cut (no price cut enters it)
       if(SPON){a._spBU=fwB;if(p.ptf&&a.inPTF)FWS.next.bizBUptf=(FWS.next.bizBUptf||0)+fwB;}  // plan step 1: BU accepted by PTFs (PTF members' purchases)
       if(SPON&&PJON)SPS.y[yr].pjFreed+=(fwB0-fwB)*PROJ.share;
       FWS.next.bizBU+=fwB;FWS.next.expiredBU+=fwLeft;FWS.next.projBU+=fwLeft*FW.directedShare;FWS.next.destroyedBU+=fwLeft*(1-FW.directedShare);
@@ -6475,7 +6483,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
     for (var yr = 0; yr < yMax; yr++){
       PRICE.acc = newPMAcc(); if (SXS) SXS.y = yr; if (SECS) SECS.y = yr; if (LVS) lvYear(yr);
       runYear(agents, yr, p, recPath ? recPath[yr] : CALM0);
-      tbBleiYear(BG, agents, p, o, yr === T - 1);
+      tbBleiYear(BG, agents, p, o, yr === T - 1, yr === 19);
       if (!o.noEP){ var epY = extremePovertyOf(housingDistressOf(agents), epD0, p); epSum += epY ? epY.total/100 : 0; }  /* plan step 9 */  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
       if (R52) tbRepYear(R52, agents, p, o, yr, T, (!o.noEP && epY) ? epY.total : 0);  /* v5.2 step 2 */
       if (SECS) secYear(agents, p, yr, (!o.noEP && epY) ? epY.total : 0);  /* S53 */
@@ -6514,6 +6522,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       L.pd += C.pd/C.idx; L.tgt += C.tgt/C.idx; L.tax += C.tax/C.idx; L.need += need/C.idx; L.treas += (C.tax - need)/C.idx; L.f0 += C.f0; L.f1 += C.f1; L.f2 += C.f2; L.n += C.n;
       L.emp += C.emp; L.hrs += C.hrs; L.Er += C.E/C.idx; L.bR += C.bR; L.bP += C.bP;  /* session 8 (A5): employment, hours, real wage earnings */
       L.convM += C.convM/C.idx; L.buIss += C.buIss/C.idx; L.ctax += C.ctax/C.idx;  /* plan steps 2-3 */
+      if (SXS) sxSrcYear(yr, C, o.fin === 'source' ? bkP : 0, o.fin === 'source' ? bkU : 0);  /* S47: S52's payout series (reporting only) */
       L.bz += C.bz/C.idx; L.es += C.es/C.idx; L.pyP += C.pyP/C.idx; L.pyN += C.pyN/C.idx; L.esWP += C.esWP/C.idx; L.n1 += C.n1; L.nP1 += C.nP1; L.nN1 += C.nN1; L.nWP1 += C.nWP1;  /* session 19 */
       if (o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source'){
         if (o.taxBase === 'prog' && C.Es && L.Es0){ var pm = function(v){ return v.reduce(function(x, e){ return x + e[0]; }, 0)/Math.max(1, v.length); }; TB.pxi = pm(L.Es0) > 0 ? pm(C.Es)/pm(L.Es0) : 1; }  /* v5.2 step 7: the brackets move with mean earnings (as the Social Security wage base does), not with prices */
@@ -6703,13 +6712,41 @@ function sxPtf(sf, sh, eF){ var F = PRICE.sxF, b = sf/F.f, u0 = sh/F.h*CFG.PTFS_
  * the year-on-year change in its mean own cost, years 1 to the end (%). */
 var SX_GRPS = ['A', 'F', 'H', 'P', 'N', 'X'], SX_WINS = ['B', 'D', 'A'];
 var SX_KEYS = [].concat.apply([], SX_GRPS.map(function(g){ return [].concat.apply([], SX_WINS.map(function(w){ return ['sxC' + w + g, 'sxM' + w + g, 'sxP' + w + g]; })).concat(['sxV' + g]); }));
-function sxNew(X, T){ var a = function(){ return new Float64Array(18); }; return {X:X, y:0, n:a(), c:a(), m:a(), q:a(), yc:Array.from({length:T}, function(){ return new Float64Array(6); }), yn:Array.from({length:T}, function(){ return new Float64Array(6); })}; }
+/* S47 (Nov 6, 2026; research-update prereg/2026-11-supply-shock-addendum.md, Amendment 1 item 2; reporting only, no draw, nothing any rule reads; only with p.sx).
+ * 1. Essential costs by payer, per group and window (dollars a year per adult-year, the adult's own figures: a pooled couple's member is read on its own basket
+ *    and cost, not the household's average): sxE the essentials (what BU can buy, buEss()) at market prices; who pays them: sxEb BU spent (face value), sxEf
+ *    PTF's cut, sxEh PTH's cut, sxEm money (own cost less the non-essentials at market prices, as secXb), sxEo the rest (other price cuts: public grocery, an
+ *    ESP's, the S54 rent cap's part; a medical bill above the basket line counts negative), so sxEb + sxEf + sxEh + sxEm + sxEo = sxE. And by category, at
+ *    market prices: sxKf food, sxKh housing with utilities, sxKm medical, sxKt transport. The model does not record which essential a BU or a cut buys (PTF's
+ *    cut is on food and utilities, PTH's on housing, the BU on any essential), so payer and category are given as two margins, not crossed.
+ * 2. The Source's payout by year (year-0 dollars per adult; 0 past the run and on rows not paid by the Source): sxQb_t backed by output, sxQu_t unbacked (the
+ *    new money), sxQi_t BU issued at face value (the BU's cost to the Source, spent or not).
+ * 3. sxVd: a dollar-based volatility, the standard deviation of the year-on-year change in the group's mean own cost over its mean market basket the year
+ *    before (%), years 1 to the end (sxV's change is over the group's own cost). */
+var SX_PAY = ['E', 'Eb', 'Ef', 'Eh', 'Em', 'Eo', 'Kf', 'Kh', 'Km', 'Kt'], SX_KCAT = ['food', 'housing', 'medical', 'transport'], SX_QN = 40;
+var SX_KEYS2 = [].concat.apply([], SX_GRPS.map(function(g){ return [].concat.apply([], SX_WINS.map(function(w){ return SX_PAY.map(function(m){ return 'sx' + m + w + g; }); })).concat(['sxVd' + g]); }))
+  .concat([].concat.apply([], ['b', 'u', 'i'].map(function(m){ var r = []; for (var t = 0; t < SX_QN; t++) r.push('sxQ' + m + '_' + t); return r; })));
+SX_KEYS = SX_KEYS.concat(SX_KEYS2);
+function sxNew(X, T){ var a = function(){ return new Float64Array(18); }; return {X:X, y:0, n:a(), c:a(), m:a(), q:a(), yc:Array.from({length:T}, function(){ return new Float64Array(6); }), yn:Array.from({length:T}, function(){ return new Float64Array(6); }),
+  ym:Array.from({length:T}, function(){ return new Float64Array(6); }), pay:SX_PAY.map(function(){ return new Float64Array(18); }), pn:a(), qb:new Float64Array(SX_QN), qu:new Float64Array(SX_QN), qi:new Float64Array(SX_QN)}; }  /* ym, pay, pn, q*: S47 */
+/* S47: the Source's payout this year (reporting only; called once a year with the year's totals in current dollars). */
+function sxSrcYear(yr, C, bkP, bkU){ var S = SXS; if (yr >= SX_QN || !(C.n > 0)) return; var d = C.idx*C.n; S.qb[yr] = (bkP - bkU)/d; S.qu[yr] = bkU/d; S.qi[yr] = C.buIss/d; }
 function sxAcc(a, p, costUSD, mlc, poor){ var S = SXS, w = sxWin(S.X, S.y), g = p.ptf && a.inPTF ? 1 : p.pth && a.inPTH ? 2 : p.ccoOn && a.inCCO ? 3 : 4;
-  [0, g].concat(a._tbPart ? [] : [5]).forEach(function(k){ var j = w*6 + k; S.n[j]++; S.c[j] += costUSD; S.m[j] += mlc; if (poor) S.q[j]++; if (S.yc[S.y]){ S.yc[S.y][k] += costUSD; S.yn[S.y][k]++; } }); }
+  var cI = a._hhPool ? +a._hhCost || 0 : costUSD, mI = a._hhPool ? +a._hhMlc || 0 : mlc, E = buEss(), bs = 0, be = 0, kc = [0, 0, 0, 0];  /* S47: the payer breakdown */
+  CFG.BASKET_KEYS.forEach(function(k){ var v = CFG.BASKET[k]*(PRICE && PRICE.comp ? PRICE.comp[k] : 1), ci = SX_KCAT.indexOf(k); bs += v; if (E.indexOf(k) >= 0) be += v; if (ci >= 0) kc[ci] = v; });
+  var mE = bs > 0 ? mI*be/bs : 0, eB = +a._sxBU || 0, eF = +a._sxPf || 0, eH = +a._sxPh || 0, eM = cI - (bs > 0 ? mI*(1 - be/bs) : 0), V = [mE, eB, eF, eH, eM, mE - eB - eF - eH - eM];
+  kc.forEach(function(v){ V.push(bs > 0 ? mI*v/bs : 0); });
+  [0, g].concat(a._tbPart ? [] : [5]).forEach(function(k){ var j = w*6 + k; S.n[j]++; S.c[j] += costUSD; S.m[j] += mlc; if (poor) S.q[j]++; if (S.yc[S.y]){ S.yc[S.y][k] += costUSD; S.yn[S.y][k]++; S.ym[S.y][k] += mlc; }
+    S.pn[j]++; for (var i = 0; i < V.length; i++) S.pay[i][j] += V[i]; }); }
 function sxRes(r, T){ var S = SXS;
   SX_GRPS.forEach(function(g, k){ SX_WINS.forEach(function(w, wi){ var j = wi*6 + k, n = S.n[j]; r['sxC' + w + g] = n ? S.c[j]/n : 0; r['sxM' + w + g] = n ? S.m[j]/n : 0; r['sxP' + w + g] = n ? S.q[j]/n*100 : 0; });
     var ch = []; for (var t = 1; t < T; t++){ var a0 = S.yn[t-1][k] ? S.yc[t-1][k]/S.yn[t-1][k] : 0, a1 = S.yn[t][k] ? S.yc[t][k]/S.yn[t][k] : 0; if (a0 > 0 && a1 > 0) ch.push((a1/a0 - 1)*100); }
-    var mu = ch.reduce(function(x, v){ return x + v; }, 0)/Math.max(1, ch.length); r['sxV' + g] = ch.length > 1 ? Math.sqrt(ch.reduce(function(x, v){ return x + (v - mu)*(v - mu); }, 0)/(ch.length - 1)) : 0; });
+    var mu = ch.reduce(function(x, v){ return x + v; }, 0)/Math.max(1, ch.length); r['sxV' + g] = ch.length > 1 ? Math.sqrt(ch.reduce(function(x, v){ return x + (v - mu)*(v - mu); }, 0)/(ch.length - 1)) : 0;
+    /* S47: the payer breakdown and the dollar-based volatility */
+    SX_WINS.forEach(function(w, wi){ var j = wi*6 + k, n = S.pn[j]; SX_PAY.forEach(function(m, i){ r['sx' + m + w + g] = n ? S.pay[i][j]/n : 0; }); });
+    var cd = []; for (var u = 1; u < T; u++){ var n0 = S.yn[u-1][k], n1 = S.yn[u][k]; if (n0 > 0 && n1 > 0 && S.ym[u-1][k] > 0) cd.push((S.yc[u][k]/n1 - S.yc[u-1][k]/n0)/(S.ym[u-1][k]/n0)*100); }
+    var md = cd.reduce(function(x, v){ return x + v; }, 0)/Math.max(1, cd.length); r['sxVd' + g] = cd.length > 1 ? Math.sqrt(cd.reduce(function(x, v){ return x + (v - md)*(v - md); }, 0)/(cd.length - 1)) : 0; });
+  ['b', 'u', 'i'].forEach(function(m){ var q = S['q' + m]; for (var t = 0; t < SX_QN; t++) r['sxQ' + m + '_' + t] = q[t]; });  /* S47 */
   return r; }
 /* S53 (Nov 2, 2026; research-update PLAN.md S53, prereg/2026-11-security-addendum.md; reading dev/reports/s53-security-reading.md): SECURITY OUTCOMES BEYOND
  * WEALTH, and the per-year poverty series the public-costs step (S19) needs. Reporting only: no draw, nothing any rule reads. Off unless the study options set
@@ -6740,26 +6777,36 @@ function sxRes(r, T){ var S = SXS;
  * (own cost not met by half or more, %), hd housing distress (%), ep the engine's extreme-poverty estimate (%; extremePovertyOf, 0 with o.noEP), n adults,
  * f0X basket poverty of X (%). */
 var SEC = null, SEC_DEFAULTS = {liq:0.20, cap:120, hrsYr:2080, gapCap:10000}, SECS = null;
-var SEC_GRPS = ['A', 'P', 'X'], SEC_M = ['D25', 'U25', 'U50', 'U25m', 'M1', 'M3', 'M3w', 'Md', 'Hr', 'H40', 'Hrc', 'Xb', 'Xe', 'Px', 'Ds'];
+var SEC_GRPS = ['A', 'P', 'X'], SEC_M = ['D25', 'U25', 'U50', 'U25m', 'M1', 'M3', 'M3w', 'Md', 'Hr', 'H40', 'Hrc', 'Xb', 'Xe', 'Px', 'Ds', 'F25', 'F25w', 'F25c', 'F25o', 'U25b'];
+/* S47 (Nov 6, 2026; research-update prereg/2026-11-security-addendum.md, Amendment 1 item 3; reporting only, no draw, nothing any rule reads; only with o.sec):
+ *   secF25g           any fall of 25% or more in real money income (inc / price level, as U25m) from the year before, covered or not, per 100 adult-years with a
+ *                     year before; split by its main cause, the part whose real amount fell most: secF25wg wage earnings, secF25cg conversion proceeds,
+ *                     secF25og everything else in money income (cash transfers, the UBI comparator, Social Security, the endowment's yearly part, less the
+ *                     contribution). Ties go to wages, then conversion. F25w + F25c + F25o = F25.
+ *   secU25bg          the uncovered 25% falls in resources (U25) that leave the adult below their own cost of living that year (gap > 0), per 100 adult-years
+ *                     with a year before; U25b <= U25. A pooled couple's members are read on the household's totals per adult, as every other measure here. */
 var SEC_KEYS = [].concat.apply([], SEC_GRPS.map(function(g){ return SEC_M.map(function(m){ return 'sec' + m + g; }); }));
 var S19_M = ['f0', 'f1', 'gD', 'gDc', 'dp', 'hd', 'ep', 'n', 'f0X'], S19_N = 40;
 var S19_KEYS = [].concat.apply([], S19_M.map(function(m){ var r = []; for (var t = 0; t < S19_N; t++) r.push('s19' + m + '_' + t); return r; }));
-function secNew(o, T){ var X = Object.assign({}, SEC_DEFAULTS, o === true ? {} : o), g = function(){ return {n:0, n1:0, d25:0, u25:0, u50:0, u25m:0, m1:0, m3:0, m3w:0, md:[], hr:[], hrc:[], h40:0, oe:0, me:0, ml:0, py:0, px:0, ds:0, dn:0}; };
+function secNew(o, T){ var X = Object.assign({}, SEC_DEFAULTS, o === true ? {} : o), g = function(){ return {n:0, n1:0, d25:0, u25:0, u50:0, u25m:0, m1:0, m3:0, m3w:0, md:[], hr:[], hrc:[], h40:0, oe:0, me:0, ml:0, py:0, px:0, ds:0, dn:0, f25:0, f25k:[0, 0, 0], u25b:0}; };
   return {X:X, y:0, T:T, g:[g(), g(), g()], s:S19_M.map(function(){ return new Float64Array(S19_N); })}; }
 function secAcc(a, inc, mlc, costUSD, idx, gap){ var S = SECS, X = S.X, y = S.y, ks = [0, a._tbPart ? 1 : 2];
   var r = (inc + mlc - costUSD)/idx, m = inc/idx, lq0 = X.liq*Math.max(0, +a.yrWealthStartUSD || 0)/idx, w = Math.max(0, +a.wealth || 0);
   var nw = (+a.yrUbiUSD || 0) + (+a.yrSSUSD || 0) + (+a.yrTbCash || 0), need = Math.max(0, costUSD - nw), needC = Math.max(0, need - (+a.yrConvUSD || 0));
   var prev = a._seY === y - 1, mo = need > 0 ? Math.min(X.cap, 12*X.liq*w/need) : X.cap, mw = need > 0 ? 12*w/need : X.cap;
+  var mW = (+a._seE || 0)/idx, mC = (+a._seC || 0)/idx, fc = -1;  /* S47: the money-income fall's main cause (0 wages, 1 conversion, 2 other) */
+  if (prev && a._seM > 0 && m <= 0.75*a._seM){ var dW = (a._seMW || 0) - mW, dC = (a._seMC || 0) - mC, dO = (a._seM - (a._seMW || 0) - (a._seMC || 0)) - (m - mW - mC); fc = dW >= dC && dW >= dO ? 0 : dC >= dO ? 1 : 2; }
   var wh = !a._ret && a.wage > 0 ? a.wage*12*CFG.WAGE_TO_USD/X.hrsYr : 0;
   var E = buEss(), bs = 0, be = 0; CFG.BASKET_KEYS.forEach(function(k){ var v = CFG.BASKET[k]*(PRICE && PRICE.comp ? PRICE.comp[k] : 1); bs += v; if (E.indexOf(k) >= 0) be += v; });
   var eS = bs > 0 ? be/bs : 0, oe = Math.max(0, costUSD - mlc*(1 - eS));
   ks.forEach(function(k){ var G = S.g[k]; G.n++;
-    if (prev){ G.n1++; if (a._seR > 0 && r <= 0.75*a._seR){ G.d25++; if (lq0 < a._seR - r) G.u25++; } if (a._seR > 0 && r <= 0.5*a._seR && lq0 < a._seR - r) G.u50++;
+    if (prev){ G.n1++; if (a._seR > 0 && r <= 0.75*a._seR){ G.d25++; if (lq0 < a._seR - r){ G.u25++; if (gap > 0) G.u25b++; } } if (a._seR > 0 && r <= 0.5*a._seR && lq0 < a._seR - r) G.u50++;
+      if (fc >= 0){ G.f25++; G.f25k[fc]++; }  /* S47 */
       if (a._seM > 0 && m <= 0.75*a._seM && lq0 < a._seM - m) G.u25m++; }
     if (mo < 1) G.m1++; if (mo < 3) G.m3++; if (mw < 3) G.m3w++; G.md.push(mo);
     if (wh > 0){ var h = need/(wh*52); G.hr.push(h); G.hrc.push(needC/(wh*52)); if (h > 40) G.h40++; }
     G.oe += oe; G.me += mlc*eS; G.ml += mlc; });
-  a._seR = r; a._seM = m; a._seY = y;
+  a._seR = r; a._seM = m; a._seY = y; a._seMW = mW; a._seMC = mC;
   if (y < S19_N){ var s = S.s, d = gap*mlc/idx; s[0][y] += gap > 0 ? 1 : 0; s[1][y] += gap; s[2][y] += d; s[3][y] += Math.min(d, X.gapCap); s[4][y] += gap >= 0.5 ? 1 : 0; s[7][y]++; if (!a._tbPart){ s[8][y] += gap > 0 ? 1 : 0; S.xn = S.xn || new Float64Array(S19_N); S.xn[y]++; } } }
 /* The year's pass (after runYear): PTH tenancies ended and displacement by price (housingDistressOf's test, adult by adult), and the S19 year totals. */
 function secYear(agents, p, yr, ep){ var S = SECS, hdN = 0;
@@ -6773,7 +6820,8 @@ function secRes(r){ var S = SECS, pc = function(x, n){ return n > 0 ? x/n*100 : 
     r['secD25' + g] = pc(G.d25, G.n1); r['secU25' + g] = pc(G.u25, G.n1); r['secU50' + g] = pc(G.u50, G.n1); r['secU25m' + g] = pc(G.u25m, G.n1);
     r['secM1' + g] = pc(G.m1, G.n); r['secM3' + g] = pc(G.m3, G.n); r['secM3w' + g] = pc(G.m3w, G.n); r['secMd' + g] = med(G.md);
     r['secHr' + g] = med(G.hr); r['secH40' + g] = pc(G.h40, G.hr.length); r['secHrc' + g] = med(G.hrc);
-    r['secXb' + g] = G.ml > 0 ? G.oe/G.ml*100 : 0; r['secXe' + g] = G.me > 0 ? G.oe/G.me*100 : 0; r['secPx' + g] = pc(G.px, G.py); r['secDs' + g] = pc(G.ds, G.dn); });
+    r['secXb' + g] = G.ml > 0 ? G.oe/G.ml*100 : 0; r['secXe' + g] = G.me > 0 ? G.oe/G.me*100 : 0; r['secPx' + g] = pc(G.px, G.py); r['secDs' + g] = pc(G.ds, G.dn);
+    r['secF25' + g] = pc(G.f25, G.n1); r['secF25w' + g] = pc(G.f25k[0], G.n1); r['secF25c' + g] = pc(G.f25k[1], G.n1); r['secF25o' + g] = pc(G.f25k[2], G.n1); r['secU25b' + g] = pc(G.u25b, G.n1); });  /* S47 */
   S19_M.forEach(function(m, j){ for (var t = 0; t < S19_N; t++){ var n = S.s[7][t], v = S.s[j][t];
     r['s19' + m + '_' + t] = m === 'n' || m === 'hd' || m === 'ep' ? v : m === 'f0X' ? (S.xn && S.xn[t] > 0 ? v/S.xn[t]*100 : 0) : n > 0 ? (m === 'gD' || m === 'gDc' ? v/n : v/n*100) : 0; } });
   return r; }
