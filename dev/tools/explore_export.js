@@ -38,7 +38,12 @@
  * and lives. It runs every row with the measured EDC (row option em) and the accounting check (ACCT) on; both are reporting only, and the bands'
  * self-check against the published panel proves the figures unchanged. Extra self-checks: no accounting identity fails; the per-adult below-30-days
  * count equals the engine's bO; the ordinary wealth Gini equals the engine's at Year 7 and the last year; every adult of a programme run has a twin;
- * EPPM's parts add up (study_fields.js throws otherwise). */
+ * EPPM's parts add up (study_fields.js throws otherwise).
+ * S47 (Nov 6, 2026; research-update prereg/run-manifest.md, job X): --frozen runs the frozen model (harness.js frozenRow: the audit's corrections and the second
+ * implementation's fixes on every row, the no-programme run included, so each row's supply path is its own no-programme testbed run) on three rows: no programme
+ * ('base'), the headline C2.2 design ('c22', harness.js c22Design) and the release design ('release'). Self-check (1) then needs a panel made the same way
+ * (harness.js testbed N release ENV ... --frozen, merged) given with --panel=FILE; without one the bands are not compared, and the file says so. With --suite it
+ * writes the visual suite's series (BLEI tiers, the median BLEI and its parts, relative income poverty, extreme poverty) for the three rows. */
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), V54 = process.argv.indexOf('--v54') >= 0, V53 = V54 || process.argv.indexOf('--v53') >= 0;
@@ -50,15 +55,17 @@ const ROOT = path.join(__dirname, '..', '..'), PANEL = PANEL_ARG ? path.resolve(
 const C = H.CFG, SC = H.SPEND_SOURCED, M = ['f0', 'pov', 'bO', 'medW'], Q = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
 const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it */
 const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
-const ROWS = ['base', 'release', 'h1', 'mid'];
+const FRZ = process.argv.indexOf('--frozen') >= 0;  /* S47 */
+const ROWS = FRZ ? ['base', 'c22', 'release'] : ['base', 'release', 'h1', 'mid'];
 const out = {_meta: {what: 'year-by-year spread across seeds, savings deciles and one seed\'s adults, for the pages\' explore sections (presentation only)', env, years: YRS, seeds: N, lifeSeed: LS,
-  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V54 ? ' --v54' : V53 ? ' --v53' : '') + (SUITE ? ' --suite' : '') + (STUDY ? ' --study' : '') + (SNAB ? ' --snab' : SN ? ' --sn' : '') + (SLOPE ? ' --slope' : '') + (PANEL_ARG ? ' --panel=' + PANEL_ARG : ''),
+  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V54 ? ' --v54' : V53 ? ' --v53' : '') + (SUITE ? ' --suite' : '') + (STUDY ? ' --study' : '') + (SNAB ? ' --snab' : SN ? ' --sn' : '') + (SLOPE ? ' --slope' : '') + (FRZ ? ' --frozen' : '') + (PANEL_ARG ? ' --panel=' + PANEL_ARG : ''),
   flags: {1: 'below 30 days of basic living (BLEI paper)', 2: 'below the cost of living', 4: 'too little wealth', 8: 'taking part in the programme'}}, bands: {}, deciles: {}, lives: {}};
 let segs = [], cur = null;
 try {
   const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P), rel = V54 ? H.releaseRowsV54(SC) : V53 ? H.releaseRowsV53(SC) : H.releaseRows(SC), byJ = {};
   rel.forEach(r => { byJ[r.j] = r; });
-  const cfg = [Object.assign({p: PR.baseline(), sc: SC}, V53 ? {hh: H.REL_V53.hh, sg: H.REL_V53.sg, g: H.REL_V53.g} : {}, V54 ? H.REL_V54 : {})].concat(['release', 'h1', 'mid'].map(j => { const r = byJ[j], c = H.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return c; }));
+  const cfg = [Object.assign({p: PR.baseline(), sc: SC}, V53 ? {hh: H.REL_V53.hh, sg: H.REL_V53.sg, g: H.REL_V53.g} : {}, V54 ? H.REL_V54 : {})].concat(ROWS.slice(1).map(j => { const r = byJ[j === 'c22' ? 'release' : j], c = H.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return j === 'c22' ? H.c22Design(c) : c; }));
+  if (FRZ) cfg.forEach(H.frozenRow);  /* S47: the frozen model, every row */
   if (STUDY) cfg.forEach(c => { c.em = true; });  /* session 12: the measured EDC's rent and interest (reporting only) */
   if (SN) cfg.forEach(c => { c.sn = Object.assign(SNAB ? {abawd: true} : {}, SLOPE ? {slope: true} : {}); });  /* session 7: today's safety net, and SNAP's work rule; session 9: --slope, SNET.slope (i24-1) */
   const T = YRS, L30 = C.BLEI_PRECARIOUS_MAX, TB = [C.BLEI_CRISIS_MAX, C.BLEI_PRECARIOUS_MAX, C.BLEI_THRESHOLD_MAX, C.BLEI_STABLE_MAX, C.BLEI_SECURE_MAX];
@@ -100,9 +107,9 @@ try {
   let R; try { R = H.tbStudy(cfg, N, P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: SC}, H.REL_V52_STUDY)); close(); } finally { H.setRepHook(null); }
   const ACC = STUDY ? H.getAcct() : null; if (STUDY) H.setAcct(null);
   if (segs.length !== N*cfg.length) throw new Error('expected ' + N*cfg.length + ' runs from the hook, saw ' + segs.length);
-  const PJ = JSON.parse(fs.readFileSync(PANEL, 'utf8')), panel = PJ.envs[env], full = N === PJ._meta.seeds, bad = [];  /* check (1) needs the panel's own seeds */
+  const PJ = FRZ && !PANEL_ARG ? null : JSON.parse(fs.readFileSync(PANEL, 'utf8')), panel = PJ ? PJ.envs[env] : null, full = !!PJ && N === PJ._meta.seeds, bad = [];  /* check (1) needs the panel's own seeds; S47: under --frozen, a frozen panel */
   ROWS.forEach((j, i) => {
-    const r = R[i], pub = j === 'base' ? panel.base.path : panel.rows[j].path, b = out.bands[j] = {};
+    const r = R[i], pub = !full ? null : j === 'base' ? panel.base.path : panel.rows[j].path, b = out.bands[j] = {};
     M.forEach(m => { const d = m === 'medW' ? 0 : 1; b[m] = {p10: [], p50: [], p90: [], mean: []};
       for (let t = 0; t < T; t++) { const s = r._s['p' + m + '_' + t]; b[m].p10.push(+H.quantileOf(s, 0.1).toFixed(d)); b[m].p50.push(+H.quantileOf(s, 0.5).toFixed(d)); b[m].p90.push(+H.quantileOf(s, 0.9).toFixed(d));
         const mean = +(+r['p' + m + '_' + t]).toFixed(d); b[m].mean.push(mean); if (full && mean !== pub[m][t]) bad.push(j + ' ' + m + ' year ' + (t + 1) + ': ' + mean + ' vs published ' + pub[m][t]); } });
@@ -138,7 +145,7 @@ try {
         if (Math.abs(x - e[sd]) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' ' + g + ': ' + x + ' vs ' + e[sd]); } }); });
     delete out.bands; delete out.deciles; delete out.lives; }
   if (bad.length) { console.error('SELF-CHECK FAILED (' + bad.length + '):\n  ' + bad.slice(0, 20).join('\n  ')); process.exit(1); }
-  out._meta.selfCheck = (full ? '' : 'NOT COMPARED WITH THE PANEL (seeds differ); ') + 'yearly means equal the published path (' + PANEL.replace(ROOT + path.sep, '') + '); seed ' + LS + '\'s adults add up to the engine\'s yearly shares' + (STUDY ? '; study: no accounting identity failed, the adults\' below-30-days count equals the engine\'s bO, the wealth Gini equals the engine\'s at Year 7 and the last year, every adult has a twin, EPPM\'s parts add up' : '');
+  out._meta.selfCheck = (full ? '' : PJ ? 'NOT COMPARED WITH THE PANEL (seeds differ); ' : 'NOT COMPARED WITH A PANEL (--frozen without --panel); ') + 'yearly means equal the published path (' + PANEL.replace(ROOT + path.sep, '') + '); seed ' + LS + '\'s adults add up to the engine\'s yearly shares' + (STUDY ? '; study: no accounting identity failed, the adults\' below-30-days count equals the engine\'s bO, the wealth Gini equals the engine\'s at Year 7 and the last year, every adult has a twin, EPPM\'s parts add up' : '');
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const OUTF = (process.argv.find(a => a.startsWith('--out=')) || '').slice(6);  /* session 7: --out=FILE writes there (the s165 job keeps its worktree clean) */

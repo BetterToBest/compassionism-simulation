@@ -558,6 +558,22 @@
    },
    "equal": true,
    "seconds": 298
+  },
+  {
+   "from": "c82e9f745f14167c48c2d2f11d4ccc46b4c7b9d6ad8595d26fab1df29cdbb8a5",
+   "to": "34f91a85b94a10ed6f8f70fd42fbc35ed82612448299e02d1ee7e58cded84347",
+   "date": "2026-11-06",
+   "change": "S47 reporting keys: bNAy20/bOAy20; security falls by cause and uncovered falls below own cost (o.sec); supply-shock payer breakdown, Source payout series and dollar volatility (p.sx). Reporting only.",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 154
   }
  ]
 }

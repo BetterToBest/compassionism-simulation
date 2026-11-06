@@ -1081,6 +1081,9 @@ function bleiUnitSuite(){
   var CASES = [[FI, 1], [FI, 2], [AD, 1]], RES = [];
   CASES.forEach(function(c){ ROWS.forEach(function(r){ RES.push({c:c, r:r, x:run(c[0], c[1], r)}); }); });
   function tag(q){ return (q.c[0] === FI ? 'FI' : 'Adverse') + ' seed ' + q.c[1] + ', ' + q.r.l; }
+  t('S47: in a 20-year run the year-20 keys equal the last year\'s (bNAy20 = bNA20, bOAy20 = bOA20, exactly; 4 designs x FI seeds 1-2, Adverse seed 1)', function(){
+    var bad = RES.filter(function(q){ return q.x.bNAy20 !== q.x.bNA20 || q.x.bOAy20 !== q.x.bOA20; });
+    return {pass:bad.length === 0, detail:bad.length ? bad.map(tag).join('; ') : RES.length + ' runs equal'}; });
   t('year 20, all adults: the design-neutral (N) and own (O) readings equal the testbed\'s nbleiPov and bleiPov exactly (4 designs x FI seeds 1-2, Adverse seed 1)', function(){
     var bad = RES.filter(function(q){ return q.x.bNA20 !== q.x.nbleiPov || q.x.bOA20 !== q.x.bleiPov; });
     return {pass:bad.length === 0, detail:bad.length ? bad.map(tag).join('; ') : RES.length + ' runs; e.g. FI seed 1 Baseline N ' + RES[0].x.bNA20.toFixed(1) + '%, O ' + RES[0].x.bOA20.toFixed(1) + '%'};
@@ -1268,6 +1271,12 @@ function sxUnitSuite(){
     var Z = run({E:0}), S = run({}), bad = SX_KEYS.filter(function(k){ return /^sx[CMP]B/.test(k) && Z[1]._s[k][0] !== S[1]._s[k][0]; });
     var r = (S[0].sxCDA - Z[0].sxCDA)/(S[0].sxMDA - Z[0].sxMDA);
     return {pass:bad.length === 0 && Math.abs(r - 1) < 0.005 && S[0].sxMDA > Z[0].sxMDA, detail:(bad.length ? 'moved: ' + bad.slice(0, 6).join(', ') + '; ' : '') + 'reach ' + r.toFixed(4)}; });
+  t('S47: S52\'s added outputs (seed 1, the main shock): the five payers add up to the essentials at market prices in every group and window; with no programme no BU, PTF or PTH dollar is paid and the Source pays nothing; the release row\'s Source pays every year, its backed and unbacked parts add up to the year-0 totals of BU issued and the payout (srcIss, bkA)', function(){
+    var S = run({}), d = 0, z = true; [0, 1].forEach(function(i){ SX_GRPS.forEach(function(g){ SX_WINS.forEach(function(w){ var R = S[i]; d = Math.max(d, Math.abs(R['sxEb' + w + g] + R['sxEf' + w + g] + R['sxEh' + w + g] + R['sxEm' + w + g] + R['sxEo' + w + g] - R['sxE' + w + g])); }); }); });
+    var N = S[0], P = S[1]; SX_WINS.forEach(function(w){ if (N['sxEb' + w + 'A'] !== 0 || N['sxEf' + w + 'A'] !== 0 || N['sxEh' + w + 'A'] !== 0) z = false; });
+    var qi = 0, qb = 0, qu = 0, n0 = 0; for (var t = 0; t < 20; t++){ if (N['sxQi_' + t] !== 0 || N['sxQu_' + t] !== 0) z = false; qi += P['sxQi_' + t]; qb += P['sxQb_' + t]; qu += P['sxQu_' + t]; if (P['sxQu_' + t] > 0) n0++; }
+    var bk = qb + qu > 0 ? qb/(qb + qu)*100 : 0, e1 = Math.abs(qi/20 - P.srcIss)/Math.max(1, P.srcIss), e2 = Math.abs(bk - P.bkA);
+    return {pass:d < 1e-6 && z && n0 >= 19 && e1 < 0.02 && e2 < 0.5 && isFinite(P.sxVdA) && P.sxVdA > 0, detail:'largest gap ' + d.toExponential(2) + '; BU issued ' + (qi/20).toFixed(1) + ' vs srcIss ' + P.srcIss.toFixed(1) + '; backed ' + bk.toFixed(2) + '% vs bkA ' + P.bkA.toFixed(2) + '%; sxVd ' + P.sxVdA.toFixed(3)}; });
   return out;
 }
 /* S53 (Nov 2, 2026): security outcomes beyond wealth and the S19 series (index.html SEC_DEFAULTS, secNew, secAcc, secYear, secRes; study option o.sec). */
@@ -1300,6 +1309,13 @@ function secUnitSuite(){
     var ok = r.secD25A === 100 && r.secU25A === 100 && r.secU50A === 0 && r.secM1A === 100 && Math.abs(r.secMdA - 0.5) < 1e-12 && Math.abs(r.secHrA - h) < 1e-9 && r.secH40A === 100
       && Math.abs(r.secXbA - oe/50000*100) < 1e-9 && Math.abs(r.secXeA - oe/(50000*eS)*100) < 1e-9 && r.secD25X === 0 && r.secD25P === 100;
     return {pass:ok, detail:'hours ' + r.secHrA.toFixed(3) + ' (by hand ' + h.toFixed(3) + '), Xb ' + r.secXbA.toFixed(3) + ', months ' + r.secMdA}; });
+  t('S47: the two descriptive measures: the three causes add up to every 25% fall in money income, the uncovered money falls are among them, and the uncovered falls below own cost are among the uncovered falls (release row and its no-programme run, every group); by hand: a wage that halves is a fall caused by wages', function(){
+    both(); var bad = []; [0, 1].forEach(function(i){ SEC_GRPS.forEach(function(g){ var R = B[i]; if (!(Math.abs(R['secF25w' + g] + R['secF25c' + g] + R['secF25o' + g] - R['secF25' + g]) < 1e-9 && R['secU25m' + g] <= R['secF25' + g] + 1e-12 && R['secU25b' + g] <= R['secU25' + g] + 1e-12)) bad.push(i + g); }); });
+    PRICE = {comp:{}}; CFG.BASKET_KEYS.forEach(function(k){ PRICE.comp[k] = 1; }); SECS = secNew(true, 2);
+    var a = {_tbPart:false, yrWealthStartUSD:0, wealth:0, yrUbiUSD:0, yrSSUSD:0, yrTbCash:2000, yrConvUSD:0, wage:20, _ret:false};
+    a._seE = 40000; a._seC = 0; SECS.y = 0; secAcc(a, 42000, 50000, 30000, 1, 0); a._seE = 20000; SECS.y = 1; secAcc(a, 22000, 50000, 30000, 1, 0.1);
+    var r = secRes({}), ok = r.secF25A === 100 && r.secF25wA === 100 && r.secF25oA === 0 && r.secU25bA === 100 && r.secF25X === 100 && r.secF25P === 0;
+    return {pass:bad.length === 0 && ok && B[1].secF25A > 0, detail:(bad.length ? 'fails: ' + bad.join(', ') + '; ' : '') + 'release F25 ' + B[1].secF25A.toFixed(3) + ' (wages ' + B[1].secF25wA.toFixed(3) + ', conversion ' + B[1].secF25cA.toFixed(3) + ', other ' + B[1].secF25oA.toFixed(3) + '), U25b ' + B[1].secU25bA.toFixed(3) + ' of U25 ' + B[1].secU25A.toFixed(3)}; });
   return out;
 }
 function lvUnitSuite(){
@@ -2835,6 +2851,21 @@ function healthUnitSuite(){
 Object.assign(module.exports, { C22_KEYS, C22_DEFAULTS, c22NeedsBU, c22Share });  /* S6 */
 Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, sxEnergy, sxFac, sxYear, sxWin, sxPtf, sxUnitSuite, fxUnitSuite, TB_PLV_KEYS });  /* S52 */
 Object.assign(module.exports, { SEC_DEFAULTS, SEC_KEYS, SEC_GRPS, SEC_M, S19_KEYS, S19_M, S19_N, secUnitSuite });  /* S53 */
+/* S47 (Nov 6, 2026; research-update prereg/run-manifest.md section 1): the frozen model, as one place for the testbed, explore_export.js and the batch's job
+ * scripts to build it from. frozenRow(c): a study row on the frozen engine, the outside audit's corrections (au: gate, sg, fbs) and the second implementation's
+ * four fixes (fx: pthb, hb, ab, sp) and the frozen spending share (SPEND_FROZEN), on every row a study runs, its no-programme rows included. c22Design(c): a programme row (relMainCfgs' second) turned into the
+ * headline C2.2 design (study programme Amendment 4): automatic distribution, the BU at the cost of food, housing with utilities and medical care for one adult
+ * (c22NeedsBU()) and indexed to those prices; the child allowance stays a quarter of the adult BU (the households setting). Both return the row they change. */
+/* The frozen model's spending share (S47, Nov 6; research-update prereg/run-manifest.md Amendment 3; dev/DECISIONS.md S47; dev/reports/s47-spend.md): the share
+ * of cash surplus consumed re-derived by SPEND_SOURCED's own method on the frozen no-programme run (dev/tools/s47_spend.js, dev/runs/s47-spend/rederive.json):
+ * the share at which the run's saving over disposable income, counted on the row's own years, equals the 2025 US personal saving rate, 5.4% (BEA NIPA Table
+ * 2.1, line 35), Reference, seeds 1-100. 0.877; the method's formula over wages alone gives 0.862. SPEND_SOURCED (0.593) stays the published engine's. frozenRow
+ * sets it on the row (c.sc); under fx.sp the row's supply path is its own no-programme run at the same share, so no study-level share is needed. */
+var SPEND_FROZEN = 0.877;
+var FROZEN = {au:true, fx:true, sc:SPEND_FROZEN};
+function frozenRow(c){ c.au = FROZEN.au; c.fx = FROZEN.fx; c.sc = FROZEN.sc; return c; }
+function c22Design(c){ c.c22 = {auto:true, idx:'needs'}; c.p = Object.assign({}, c.p, {bu:c22NeedsBU()}); return c; }
+Object.assign(module.exports, { FROZEN, SPEND_FROZEN, frozenRow, c22Design });  /* S47 */
 Object.assign(module.exports, { LV_KEYS, lvUnitSuite });  /* S54 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
@@ -4884,8 +4915,9 @@ if (require.main === module) {
       var E = ENVT[e], P = Object.assign({}, E[1]), PR = tbPresets(P), o = {fin:'tax', aT:0, a:0, X:XT}, cm = 'framework', idx = {};
       rows.forEach(function(r, i){ if (!(r.k in idx)) idx[r.k] = i + 1; });
       var cfg = [Object.assign({p:PR.baseline()}, base || {})], lbl = ['No program (Baseline)' + (base && typeof base.sc === 'number' ? ', spending share ' + base.sc : '')];
-      rows.forEach(function(r){ var c = r.base ? Object.assign({p:PR.baseline()}, r.v) : n1Row(PR, cm, r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); cfg.push(c); lbl.push(r.l); });
+      rows.forEach(function(r){ var c = r.base ? Object.assign({p:PR.baseline()}, r.v) : n1Row(PR, cm, r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); if (r.c22d) c22Design(c); cfg.push(c); lbl.push(r.l); });  /* S47: r.c22d, the C2.2 design */
       if (base && base.snAll){ delete cfg[0].snAll; cfg.forEach(function(c){ c.sn = Object.assign({}, base.snAll); }); }  /* session 7 (s165): --sn / --snab, today's safety net (and SNAP's work rule) in every run of the panel */
+      if (base && base.frz){ delete cfg[0].frz; cfg.forEach(frozenRow); }  /* S47: --frozen, every run of the panel on the frozen engine (the no-programme runs too) */
       function vsI(i){ var r = rows[i - 1]; return i && r.vs && idx[r.vs] !== i ? idx[r.vs] : -1; }
       var t0 = Date.now(), R = tbStudy(cfg, nT, P, Object.assign({}, o, base && base.so || {}, base && typeof base.sc === 'number' ? {sc:base.sc} : {})), B = R[0], TD = R[idx.today];  /* v5.2: base.so = extra study-level options (the v5.2 reporting) */
       function ci(d, n){ return sg(d.m, n) + ' [' + sg(d.lo, n) + ', ' + sg(d.hi, n) + ']'; }
@@ -5013,12 +5045,19 @@ if (require.main === module) {
       var SNALL = process.argv.indexOf('--snab') >= 0 ? {abawd:true} : process.argv.indexOf('--sn') >= 0 ? {} : null;  /* session 7 (s165): every run with today's safety net, and with --snab SNAP's work rule */
       if (SNALL && process.argv.indexOf('--slope') >= 0) SNALL.slope = true;  /* session 9 (i24-1): the safety net's marginal rate without SNAP's gross income cliff (SNET.slope) */
       if (SNALL){ RJ._meta.sn = Object.assign({}, SNET_DEFAULTS, SNALL); RJ._meta.command += (SNALL.abawd ? ' --snab' : ' --sn') + (SNALL.slope ? ' --slope' : ''); }
+      /* S47 (research-update prereg/run-manifest.md, job R-panel): --frozen runs every row of the panel on the frozen engine (frozenRow: au and fx, the
+       * no-programme runs included, so each row's supply path comes from its own no-programme testbed run, fx.sp) and adds the headline C2.2 design (c22Design)
+       * as row 'c22', right after the release row, paired with the same no-programme run. Off, nothing here changes. */
+      var FRZ = process.argv.indexOf('--frozen') >= 0;
+      if (FRZ){ RJ._meta.frozen = {au:FROZEN.au, fx:FROZEN.fx, sc:FROZEN.sc, c22:{c22:{auto:true, idx:'needs'}, bu:c22NeedsBU()}}; RJ._meta.command += ' --frozen'; }
       envT.forEach(function(e){ var SC = SPEND_SOURCED;  /* plan step 18: v5.0 = session 30's release + steps 14-16 (REL_V5); the rows: releaseRows */
         /* v5.1 (audit F3): the exported panel carries the price level at the last year (20 or 40) as the mean over seeds (pLevEnd, once called pLev20 even at 40 years), the median over
          * seeds (pLevEndMed) and the 10th and 90th percentiles (pLevEndP10, pLevEndP90); quantileOf below. The engine's own key stays pLev20 (also the year-10 / year-20 tables). */
         function av(r){ return ((r._Bk || r._B).epPY - r.epPY)/100; }  /* v5.2: against the row's own no-programme pair where it has one */
         function aw(r){ var b = r._Bk || r._B; return avoidWide((b.fgt1PY - r.fgt1PY)/100*CFG.LIVING_WAGE_ANNUAL, (b.fgt0PY - r.fgt0PY)/100); }
         var rows = V54 ? releaseRowsV54(SC).filter(function(r){ return r.k !== 'a'; }) : V53 ? releaseRowsV53(SC).filter(function(r){ return r.k !== 'a'; }) : releaseRows(SC, !V52),  /* v5.3: the parts-removed rows run in dev/tools/attrib_check.js (paired against the main row), not in the panel */ bases = V54 ? releaseBasesV54(SC) : V53 ? releaseBasesV53(SC) : V52 ? releaseBases(SC) : [], nRel = rows.length;
+        if (FRZ){ var rI = -1; rows.forEach(function(r, i){ if (r.j === 'release') rI = i; }); if (rI < 0) throw new Error('--frozen: no release row');
+          var rR = rows[rI]; rows.splice(rI + 1, 0, {l:'C2.2 DESIGN (frozen engine): the BU at the cost of food, housing and medical care, indexed to those prices, paid automatically to every resident', v:rR.v, k:'c22', vs:rR.vs, j:'c22', bk:rR.bk, c22d:true}); }  /* S47 */
         if (PART){ RJ._meta.part = {i:PART[0], k:PART[1], rows:rows.map(function(r){ return r.j; }), bases:bases.map(function(b){ return b.j; })};  /* v5.4 step 9: a resumable part of the panel */
           rows = rows.filter(function(r, i){ return r.k === 'today' || r.k === 'main' || i % PART[1] === PART[0]; });
           var need = {}; rows.forEach(function(r){ if (r.bk) need[r.bk] = 1; }); bases = bases.filter(function(b){ return need[b.j]; }); }
@@ -5029,7 +5068,7 @@ if (require.main === module) {
            ['Prisons, hospitals and psychiatric care avoided per adult-year: main (prisons + health) / high', function(r){ var w = aw(r); return $(w.main) + ' (' + $(w.jail) + ' + ' + $(w.health) + ') / ' + $(w.high); }],
            ['Source: paid / tax kept / backed', function(r){ return $(r.srcPay) + ' / ' + $(r.srcTax) + ' / ' + $(r.srcM); }],
            ['Participation yr 19', function(r){ return r.jnP19 > 0 ? f1(r.jnP19) + '%' : '—'; }],
-           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}, V54 ? {v54:V54_MAIN} : {}, SNALL ? {snAll:SNALL} : {}));
+           ['Median wealth yr 20 (year-0 $)', function(r){ return $(r.medWealthReal); }]], Object.assign({sc:SC, so:SO52}, V53 ? {hh:HH_V53, sg:true, g:ACCT_V53, em:true, fb:true} : {}, V54 ? {v54:V54_MAIN} : {}, SNALL ? {snAll:SNALL} : {}, FRZ ? {frz:true} : {}));
         var B = R[0], E = ENVT[e], out = {name:E[0], base:{fgt2PY:B.fgt2PY, fgt0PY:B.fgt0PY, pov:B.pov, bOAPy:B.bOAPy, bNAPy:B.bNAPy, bOAMd:B.bOAMd, bNAMd:B.bNAMd, epPY:B.epPY, giniD:B.giniD, giniX:B.giniX}, rows:{}};  /* v5.1 (audit E1): + giniD, giniX */
         if (V52){ rep52Print(R, ['No programme'].concat(rows.map(function(rw){ return rw.l.trim(); })), E[0], YRS > 0 ? YRS : 20); out.base.rep = rep52Keys(B, null); out.base.path = path52(B, YRS > 0 ? YRS : 20); }
         var BX = {}; rows.forEach(function(rw, i){ if (rw.base) BX[rw.j] = R[i + 1]; });  /* v5.2: the paired no-programme rows */
@@ -5044,7 +5083,7 @@ if (require.main === module) {
           if (V53) Object.assign(out.rows[rw.j], rel53Keys(r, r._Bk || B), {kind:rw.k}, rw.j === 'release' ? {paired:pairedShares(r, B)} : {});
           if (V54) Object.assign(out.rows[rw.j], rel54Keys(r, r._Bk || B));
           if (HRS_ON) Object.assign(out.rows[rw.j], {pjHrs:+r.pjHrs.toFixed(2), pjWork:+r.pjWork.toFixed(2), pjDisp:+r.pjDisp.toFixed(2), pjHrsD:d3(r, 'pjHrs'), pjWorkD:d3(r, 'pjWork'), pjDispD:d3(r, 'pjDisp')});  /* study s171: --hours adds the community-project hours (per participant-year; share of participants who took project work, %; hours taken from paid work) */
-          if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
+          if (V52) out.rows[rw.j].rep = rep52Keys(r, r._Bk || B); if (V52 && (rw.j === 'release' || rw.j === 'h1' || rw.j === 'mid' || rw.j === 'c22')) out.rows[rw.j].path = path52(r, YRS > 0 ? YRS : 20); });
         if (V53){ Object.assign(out.base, rel53Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel53Keys(BX[b.j], null)); }); }
         if (V54){ Object.assign(out.base, rel54Keys(B, null)); if (out.bases) bases.forEach(function(b){ Object.assign(out.bases[b.j], rel54Keys(BX[b.j], null)); }); }
         RJ.envs[e] = out; });
