@@ -542,6 +542,22 @@
    },
    "equal": true,
    "seconds": 156
+  },
+  {
+   "from": "d5bac96065e9a5c952ce45e1aa4a54b81aaa40d454cd5d09c87efbe12e72b0fe",
+   "to": "c82e9f745f14167c48c2d2f11d4ccc46b4c7b9d6ad8595d26fab1df29cdbb8a5",
+   "date": "2026-11-06",
+   "change": "S47: fx part sp, the supply path from the reported no-programme run, off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 298
   }
  ]
 }
