@@ -43,7 +43,7 @@ What it computes (the addendum's words, then how):
   interval has its upper end at or below +0.5 points, and programme inflation's upper end is under 5% a year (required for the chosen
   setting; reported for Pareto points). The chosen setting's `.sv` twin and today's-rule run are tested and reported the same way.
 Needs numpy."""
-import json, os, sys, glob, random, math, hashlib
+import json, os, sys, glob, random, math, hashlib, gzip
 import numpy as np
 
 ENVS = ['ref', 'adv', 'st']; ENVL = {'ref': 'Reference', 'adv': 'Adverse', 'st': 'Stress'}
@@ -125,16 +125,17 @@ def desc(name, design):
 
 # ---------- loading ----------
 def load(path, check_sums=True):
-    files = [path] if path.endswith('.json') else sorted(f for f in glob.glob(os.path.join(path, 'shard-*.json')) if not f.endswith('.timing.json'))
+    # S47: the batch's levers shards are gzip-compressed by the run-study workflow (levers.js --gzip): shard-NNNN.json.gz
+    files = [path] if path.endswith(('.json', '.json.gz')) else sorted(f for f in glob.glob(os.path.join(path, 'shard-*.json')) + glob.glob(os.path.join(path, 'shard-*.json.gz')) if not f.endswith('.timing.json'))
     if not files: sys.exit('no shard files in ' + path)
     bad = []
-    sums = os.path.join(os.path.dirname(files[0]) if path.endswith('.json') else path, 'SHA256SUMS')
+    sums = os.path.join(os.path.dirname(files[0]) if path.endswith(('.json', '.json.gz')) else path, 'SHA256SUMS')
     if check_sums and os.path.exists(sums):
         for line in open(sums):
             h, f = line.split()
             p = os.path.join(os.path.dirname(sums), f)
             if os.path.exists(p) and hashlib.sha256(open(p, 'rb').read()).hexdigest() != h: bad.append(f)
-    D = [json.load(open(f)) for f in files]
+    D = [json.load(gzip.open(f, 'rt') if f.endswith('.gz') else open(f)) for f in files]
     D.sort(key=lambda d: d['_meta']['seeds'][0])
     gaps = [(a['_meta']['seeds'], b['_meta']['seeds']) for a, b in zip(D, D[1:]) if b['_meta']['seeds'][0] != a['_meta']['seeds'][1] + 1]
     rows = {}
