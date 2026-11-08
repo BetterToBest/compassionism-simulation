@@ -10,7 +10,7 @@ For each environment, design and path: the programme row minus its no-programme 
 differences. Intervals: paired bootstrap over seeds (2,000 replicates, resampler seed 53, the same resample for every cell). --check only
 confirms every preregistered key and row is present and finite (the consumer check the plan asks for) and exits; on a batch file
 without study P's rows (study R) it checks every row that records the security keys, each to its own horizon (S47). Standard library only."""
-import json, os, re, sys, glob, random, math
+import json, os, re, sys, glob, random, math, gzip
 
 ENVS = ['ref', 'adv', 'st']; ENVL = {'ref': 'Reference', 'adv': 'Adverse', 'st': 'Stress'}
 GRPS = [('A', 'all adults'), ('P', 'took part'), ('X', 'chose not to take part')]
@@ -39,9 +39,9 @@ S19_M = ['f0', 'f1', 'gD', 'gDc', 'dp', 'hd', 'ep', 'n', 'f0X']
 
 
 def load(path):
-    files = [path] if path.endswith('.json') else sorted(f for f in glob.glob(os.path.join(path, 'shard-*.json')) if not f.endswith('.timing.json'))
+    files = [path] if path.endswith(('.json', '.json.gz')) else sorted(f for f in glob.glob(os.path.join(path, 'shard-*.json')) + glob.glob(os.path.join(path, 'shard-*.json.gz')) if not f.endswith('.timing.json'))  # S48: big shards are gzip-compressed
     if not files: sys.exit('no shard files in ' + path)
-    D = [json.load(open(f)) for f in files]
+    D = [json.load(gzip.open(f, 'rt') if f.endswith('.gz') else open(f)) for f in files]
     D.sort(key=lambda d: d['_meta']['seeds'][0])
     rows = {}
     for d in D:

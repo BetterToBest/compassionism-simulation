@@ -19,7 +19,7 @@ names (`ENV.nN.yY.YARD.ROW...`), so the pilot scripts' tables (pilot_studies.py,
 It prints, per folder, the row counts and the keys that hold nulls (allowed where the job writes them: participation keys on no-programme
 rows, ageing keys without ageing, octMean without CCO, keys a row's switches do not report).
 """
-import glob, json, os, re, sys
+import glob, gzip, json, os, re, sys
 import numpy as np
 
 PRIMARY = ['bNAPy', 'bOAPy', 'fgt0PY', 'cost', 'ppov_19', 'plv_19']
@@ -28,9 +28,10 @@ NAME = re.compile(r'^(ref|adv|st)\.n(\d+)\.y(\d+)\.(.+)$')
 
 
 def load(folder):
-    fs = sorted(f for f in glob.glob(os.path.join(folder, 'shard-*.json')) if not f.endswith('.timing.json'))
+    # S48: shards over 100 MB are stored gzip-compressed (shard-NNNN.json.gz)
+    fs = sorted(f for f in glob.glob(os.path.join(folder, 'shard-*.json')) + glob.glob(os.path.join(folder, 'shard-*.json.gz')) if not f.endswith('.timing.json'))
     if not fs: sys.exit('no shard files in ' + folder)
-    parts = sorted((json.load(open(f)) for f in fs), key=lambda p: p['_meta']['seeds'][0])
+    parts = sorted((json.load(gzip.open(f, 'rt') if f.endswith('.gz') else open(f)) for f in fs), key=lambda p: p['_meta']['seeds'][0])
     prob, seeds = [], []
     for p in parts:
         lo, hi = p['_meta']['seeds']
