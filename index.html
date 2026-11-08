@@ -4809,8 +4809,8 @@ function ptfsRes(out){ var A = PFS; out.pfCut = A && A.cn ? A.cut/A.cn*100 : 0; 
  *  - Zones and their share. Each zone (a community of the S37 layer; without the layer the population is one zone) has a PTF share s of its essential
  *    sales: the share of its food and utilities purchases (and the other sectors', where swept) made at PTF businesses. At the start s is the zone's
  *    share of adults who are members (the same draws; with SZH the same placement as S37), so year 0's tests read what they read under 'members'.
- *    fix holds every zone at fix instead (the fixed-share sweep, D16). Part 1 holds s for the whole run; the growth rule (capacity, operations and
- *    demand, reading 6) is part 2.
+ *    fix holds every zone at fix instead (the fixed-share sweep, D16). Part 1 held s for the whole run; part 2's growth rule (capacity, operations
+ *    and demand, reading 6) is below.
  *  - Customer rules use s. Every adult in a zone, member or not, buys the share s of these sectors at PTF prices and no more (reading 2). So for the
  *    share s of their purchases every adult is what a member was for all of them: the PTF price cut (ptfsCut returns s x the member's cut, wherever
  *    the cut enters: the cost of living, the essentials BU buy, the BLEI gate's BU, the joining reading, PTH's cut on PTF-priced utilities); the ESP
@@ -4823,23 +4823,69 @@ function ptfsRes(out){ var A = PFS; out.pfCut = A && A.cn ? A.cut/A.cn*100 : 0; 
  *    capacity gate on joining, the conversion-rate bonus 1.30 + theta (members only), the ESP workforce option, PTH, and reporting by membership.
  * No draw is added anywhere (CRN holds), and the no-programme run is untouched (PAS needs PTF). Reported (PA_KEYS; rows with 'open' only): paSh the
  * population's PTF share of essential sales (%, mean over years); paLo the share of adult-years in zones below the 40% test (%); paTh the share of
- * adult-years in zones above the 55% test (%). Under 'open' pfCut is the mean cut over every adult (under 'members', over members). */
-var PTF_ACCESS = 'members', PA = null, PA_DEFAULTS = {fix:null}, PAS = null;
-var PA_KEYS = ['paSh', 'paLo', 'paTh'];
+ * adult-years in zones above the 55% test (%). Under 'open' pfCut is the mean cut over every adult (under 'members', over members).
+ *
+ * S55, part 2 (Nov 8, 2026; reading 6 and Duke's answer D16; dev/DECISIONS.md S55 part 2; dev/reports/s55-ptf-growth.md): THE GROWTH RULE. Under 'open'
+ * with fix null and grow true (the defaults), each year from year 1, before any test reads a share, every zone's s grows as far as three limits allow,
+ * whichever binds first; s never falls (limits stop expansion; no rule here closes a PTF):
+ *  - capacity (cap 'own'): the PTFs can supply at most the share c of the population's essential sales, c = min(1, c0 + the ESP capital account per
+ *    adult / K), the production side's capital rule (d101: K = $18,862, BEA net stock of food and beverage stores, food services and utilities per
+ *    adult), with c0 the population's starting s. It reads the capital the PTFs own (reinvestment to the end of last year); the one-year borrowing
+ *    rule (d137) still serves membership as before and is not extended to sales. Where the production side is off, capacity is unlimited, as for
+ *    members. cap 'none': no capacity limit (sensitivity: capital free and at once). With zones, the population's c bounds the population's s;
+ *    where the zones want more than the room left, every growing zone gets the same fraction of its wanted growth (capacity by zone is not modelled).
+ *  - operations (ops): a zone's PTFs expand only where their sales cover their operating costs. 'hub' (main): the BLEI paper (section 3.3) sets
+ *    PTF prices at cost, "direct costs plus minimal cooperative overhead" (epsilon = market price / (variable cost share + cooperative overhead
+ *    share)), so sales cover costs at every share and the limit never binds, by construction. 'outside': running costs from outside data, the
+ *    engine's step 5 figures (BEA net operating surplus less depreciation, Census's grocers' gross margin): a PTF's cost per market dollar is 1 less
+ *    the industry's net margin (COST.food on food, COST.util / PTFS_UTIL on utilities); the zone expands only to shares at which its sales at PTF
+ *    prices (epsilon by the 40% test, raised by SZH as in ptfsCut) cover those costs (paCover >= 1).
+ *  - demand (dem): the largest share of a zone's essential purchases its shoppers make at PTFs at PTF prices. A labelled design parameter (the Hub
+ *    gives no figure; it says PTFs "complement private markets"): main 0.49, the 49.0% of Finland's grocery sales held in 2025 by S Group, a consumer
+ *    cooperative open to every shopper (NielsenIQ Grocery Shop Directory, Finnish Grocery Trade Association); swept. A constant ceiling: no larger
+ *    pull when a zone's price gap widens at the 40% test (the reading with the smaller effect).
+ * grow false holds s at the start (part 1's rows); fix rows never grow. Reported (with 'open'): paCap, paOps, paDem the share of adult-years from
+ * year 1 in zones where that limit stopped growth (%); paCv the PTFs' sales at PTF prices over their running costs at outside margins (%, mean
+ * over adult-years, every reading); paS5, paS10, paS19, paS39 the population's s at that year's index (%); paC5 ... paC39 capacity c then (%). */
+var PTF_ACCESS = 'members', PA = null, PA_DEFAULTS = {fix:null, grow:true, cap:'own', ops:'hub', dem:0.49}, PAS = null;
+var PA_KEYS = ['paSh', 'paLo', 'paTh', 'paCap', 'paOps', 'paDem', 'paCv', 'paS5', 'paS10', 'paS19', 'paS39', 'paC5', 'paC10', 'paC19', 'paC39'];
 function paZ(a){ return CMS && a._cm !== undefined ? a._cm : 0; }
 function paW(a){ return PAS.z[paZ(a)]; }  /* the adult's zone's PTF share of essential sales */
 function paInit(agents){ var C = CMS ? CMS.C : 1, m = new Float64Array(C), t = new Float64Array(C), z = new Float64Array(C), i;
   if (PA.fix !== null && !(PA.fix >= 0 && PA.fix <= 1)) throw new Error('pa: fix must be a share from 0 to 1');
+  if (typeof PA.grow !== 'boolean' || ['own', 'none'].indexOf(PA.cap) < 0 || ['hub', 'outside'].indexOf(PA.ops) < 0 || !(PA.dem > 0 && PA.dem <= 1))
+    throw new Error('pa: grow true or false, cap own or none, ops hub or outside, dem a share above 0 and at most 1');
   agents.forEach(function(a){ var j = paZ(a); t[j]++; if (a.inPTF) m[j]++; });
   for (i = 0; i < C; i++) z[i] = PA.fix !== null ? PA.fix : m[i]/Math.max(1, t[i]);
-  PAS = {z:z, s:0, sh:0, lo:0, th:0, yrs:0}; paPop(agents); }
+  PAS = {z:z, s:0, sh:0, lo:0, th:0, yrs:0, cb:0, ob:0, db:0, yu:0, cv:0, sY:[], cY:[]}; paPop(agents); }
+function paCapNow(yr, p){  /* this year's capacity c for the PTFs' share of sales: the production side's capital rule on the capital the PTFs own (no draw) */
+  if (PA.cap === 'none' || !(PROD && CONVERSION_MODEL === 'framework' && p.ptf && PROD.cap === 'ptf' && PDS)) return 1;
+  var K = SURP ? SURP.K : Infinity, A = yr > 0 && SURP && SPS ? SPS.capPA : 0; return K <= 0 ? 1 : Math.min(1, PDS.c0 + A/K); }
+function paCover(s, p){  /* a zone's PTF sales at PTF prices over their running costs at outside margins, at the zone share s (food and utilities, basket weights) */
+  var g = p.szh ? (0.12 + p.szhCoh*0.04)/0.12 : 1, eF = s < CFG.PTFS_LOW_DENS ? CFG.PTFS_EPS_FOOD_LOW : CFG.PTFS_EPS_FOOD, M = COST || COST_DEFAULTS;
+  var f = CFG.BASKET.food, u = CFG.BASKET.housing*CFG.PTFS_UTIL, pf = Math.max(0, 1 - g*(1 - 1/eF)), pu = Math.max(0, 1 - g*(1 - 1/CFG.PTFS_EPS_UTIL));
+  return (f*pf + u*pu)/(f*(1 - M.food) + u*(1 - M.util/CFG.PTFS_UTIL)); }
+function paOpsMax(s, p){  /* the highest share a zone's PTFs can reach on their operations: 'hub' 1 (priced at cost); 'outside' only shares at which sales cover costs */
+  if (PA.ops === 'hub' || paCover(1, p) >= 1) return 1;
+  return paCover(0, p) >= 1 ? Math.max(s, CFG.PTFS_LOW_DENS*(1 - 1e-12)) : s; }
+function paGrow(agentSet, yr, p){  /* year >= 1: each zone grows toward min(demand, operations), the growth scaled down together where capacity binds (no draw) */
+  var S = PAS, C = S.z.length, n = Math.max(1, agentSet.length), w = new Float64Array(C), o = new Float64Array(C), want = new Float64Array(C), tot = 0, all = 0, i;
+  agentSet.forEach(function(a){ w[paZ(a)]++; });
+  for (i = 0; i < C; i++){ w[i] /= n; tot += w[i]*S.z[i]; o[i] = paOpsMax(S.z[i], p); want[i] = Math.max(0, Math.min(PA.dem, o[i]) - S.z[i]); all += w[i]*want[i]; }
+  var k = all > 0 ? Math.min(1, Math.max(0, S.cY[yr] - tot)/all) : 0;
+  for (i = 0; i < C; i++){ if (want[i] > 0 && k < 1) S.cb += w[i]; else if (PA.dem <= o[i]) S.db += w[i]; else S.ob += w[i]; S.z[i] += k*want[i]; }
+  S.yu++; }
 function paPop(agents){ var C = PAS.z.length, t = new Float64Array(C), n = Math.max(1, agents.length), s = 0, lo = 0, th = 0, i;
   agents.forEach(function(a){ t[paZ(a)]++; });
   for (i = 0; i < C; i++){ s += t[i]/n*PAS.z[i]; if (PAS.z[i] < CFG.PTFS_LOW_DENS) lo += t[i]/n; if (PAS.z[i] > CFG.SZH_THETA_THRESHOLD) th += t[i]/n; }
   PAS.s = s; return [lo, th]; }
-function paYear(agentSet){  /* at the start of the year's PTF steps, before any test reads a share: the population's share and the year's tallies (no draw) */
-  var q = paPop(agentSet); PAS.sh += PAS.s; PAS.lo += q[0]; PAS.th += q[1]; PAS.yrs++; }
-function paRes(out){ var S = PAS; out.paSh = S && S.yrs ? S.sh/S.yrs*100 : 0; out.paLo = S && S.yrs ? S.lo/S.yrs*100 : 0; out.paTh = S && S.yrs ? S.th/S.yrs*100 : 0; return out; }
+function paYear(agentSet, yr, p){  /* at the start of the year's PTF steps, before any test reads a share: growth (part 2), the population's share, the year's tallies (no draw) */
+  if (yr > 0){ PAS.cY[yr] = paCapNow(yr, p); if (PA.grow && PA.fix === null) paGrow(agentSet, yr, p); }
+  var q = paPop(agentSet), C = PAS.z.length, t = new Float64Array(C), n = Math.max(1, agentSet.length), i; PAS.sh += PAS.s; PAS.lo += q[0]; PAS.th += q[1]; PAS.yrs++; PAS.sY[yr] = PAS.s;
+  agentSet.forEach(function(a){ t[paZ(a)]++; }); for (i = 0; i < C; i++) PAS.cv += t[i]/n*paCover(PAS.z[i], p); }
+function paRes(out){ var S = PAS; out.paSh = S && S.yrs ? S.sh/S.yrs*100 : 0; out.paLo = S && S.yrs ? S.lo/S.yrs*100 : 0; out.paTh = S && S.yrs ? S.th/S.yrs*100 : 0;
+  out.paCap = S && S.yu ? S.cb/S.yu*100 : 0; out.paOps = S && S.yu ? S.ob/S.yu*100 : 0; out.paDem = S && S.yu ? S.db/S.yu*100 : 0; out.paCv = S && S.yrs ? S.cv/S.yrs*100 : 0;
+  [5, 10, 19, 39].forEach(function(y){ out['paS' + y] = S && S.sY[y] !== undefined ? S.sY[y]*100 : 0; out['paC' + y] = S && S.cY[y] !== undefined ? S.cY[y]*100 : 0; }); return out; }
 /* S37 (Oct 31, 2026; dev/reports/community-layer.md; dev/DECISIONS.md S37): THE COMMUNITY AND ZONE LAYER. null = off (every earlier run: the tests that
  * read PTF density read the share of all adults who are members). When an object (row option cl), and only in runs with PTF:
  *  - Communities. At the start of the run the households (each adult alone, without households) are dealt into round(n/k) communities of about k adults,
@@ -5420,7 +5466,7 @@ function runYear(agentSet,yr,p,recSt){
   var HHON=!!HOUSEHOLDS&&!!HHS&&(CONVERSION_MODEL==='framework'||!p.ccoOn),HHPOOL=HHON&&HOUSEHOLDS.pool!=='individual';if(HHON)hhYear(agentSet);  // v5.3 B3: households (no RNG)
   var pthApprBonus=p.szh?p.szhCoh*0.01:0;
   var szhThetaVal=p.szh?szhTheta(p.szhCoh):0;
-  if(PAS)paYear(agentSet);  // S55 open access: this year's PTF shares of essential sales, before any test reads them
+  if(PAS)paYear(agentSet,yr,p);  // S55 open access: this year's PTF shares of essential sales (part 2: grown), before any test reads them
   if(THETA_GATE==='density'){var tdN=0;if(p.ptf&&!PAS)agentSet.forEach(function(a){if(a.inPTF)tdN++;});THETA_DENS=PAS?PAS.s:tdN/Math.max(1,agentSet.length);szhThetaVal=p.szh?szhTheta(THETA_DENS):0;}  // session 5 (C08/d12): harness-only  // S55: under open access the 55% test reads the PTF share of sales
   var ptfConvBonus=1.30+((p.szh&&p.ptf)?szhThetaVal:0);
   var szhPartBoost=(p.szh&&p.ccoOn)?szhThetaVal*0.16:0;

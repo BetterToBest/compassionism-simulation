@@ -590,6 +590,22 @@
    },
    "equal": true,
    "seconds": 151
+  },
+  {
+   "from": "8bb948abed0e435c0eb916d47b1e2c24d0c84e6d934af303f85ad22d36b33d1b",
+   "to": "68b5d6170719c8a799c15fe23af492b238a2f58460d654daddfea8e453314d34",
+   "date": "2026-11-08",
+   "change": "S55 part 2: the growth rule for open PTF access (capacity, operations, demand), behind PTF_ACCESS 'open'; off unchanged",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 138
   }
  ]
 }
