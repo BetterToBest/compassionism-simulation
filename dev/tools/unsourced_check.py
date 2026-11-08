@@ -34,7 +34,7 @@ def run(d):
 with tempfile.TemporaryDirectory() as tmp:
     base = run(make(tmp, 'base', []))
     relief = run(make(tmp, 'relief', [(r'CCO_RELIEF_AT_REF:0\.20,', 'CCO_RELIEF_AT_REF:0.35,')]))
-    damp = run(make(tmp, 'damp', [(r'ptfAdoptFrac\*0\.5\)', 'ptfAdoptFrac*0.9)'), (r'pthMemberFrac\*0\.10\)', 'pthMemberFrac*0.5)')]))
+    damp = run(make(tmp, 'damp', [(r'ptfAdoptFrac(\)?)\*0\.5\)', r'ptfAdoptFrac\1*0.9)'), (r'pthMemberFrac\*0\.10\)', 'pthMemberFrac*0.5)')]))
 diff_relief = [l for a, l in zip(base, relief) if a != l]
 diff_damp = [l for a, l in zip(base, damp) if a != l]
 bad_damp = [l for l in diff_damp if OPTIONAL_ROW not in l]
