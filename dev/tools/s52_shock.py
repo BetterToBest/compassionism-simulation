@@ -8,7 +8,7 @@ s52-shock-<engine>/) and writes the tables in Markdown.
 R_g, the share of the shock reaching group g: [sxC(shocked) - sxC(off)] / [sxM(shocked) - sxM(off)], seed means of each difference, then the ratio,
 against the same design's off row (programme rows) or off none row (none rows). Intervals: paired bootstrap over seeds (2,000 replicates, resampler
 seed 52, the same resample for every row). Standard library only."""
-import json, os, sys, glob, random, math
+import json, os, sys, glob, random, math, gzip
 
 ENVS = ['ref', 'adv', 'st']; ENVL = {'ref': 'Reference', 'adv': 'Adverse', 'st': 'Stress'}
 DES = ['rel', 'c22']; DESL = {'rel': 'release row (released wages)', 'c22': 'C2.2 design (CPS yardstick)'}
@@ -21,9 +21,9 @@ MAIN = 'm25.s0.k50.p1'; NOPTF = 'm0.s0.k50.p1'
 
 
 def load(folder):
-    files = sorted(f for f in glob.glob(os.path.join(folder, 'shard-*.json')) if not f.endswith('.timing.json'))
+    files = sorted(f for f in glob.glob(os.path.join(folder, 'shard-*.json')) + glob.glob(os.path.join(folder, 'shard-*.json.gz')) if not f.endswith('.timing.json'))  # S48: big shards are gzip-compressed
     if not files: sys.exit('no shard files in ' + folder)
-    D = [json.load(open(f)) for f in files]
+    D = [json.load(gzip.open(f, 'rt') if f.endswith('.gz') else open(f)) for f in files]
     D.sort(key=lambda d: d['_meta']['seeds'][0])
     rows = {}
     for d in D:

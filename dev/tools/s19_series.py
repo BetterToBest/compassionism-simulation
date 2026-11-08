@@ -12,7 +12,7 @@ Without --years each row is read to its own horizon (S47: study R holds 20- and 
 Measures (per year, all adults unless named): f0 basket poverty %; f1 FGT1 %; gD poverty-gap dollars per adult (year-0 $); gDc the same, each gap
 capped at $10,000; dp deep poverty %; hd housing distress %; ep the engine's extreme-poverty (unhoused) estimate %; n adults; f0X basket poverty
 of the adults who chose not to take part %. Standard library only."""
-import json, os, re, sys, glob, math
+import json, os, re, sys, glob, math, gzip
 
 M = ['f0', 'f1', 'gD', 'gDc', 'dp', 'hd', 'ep', 'n', 'f0X']
 
@@ -28,9 +28,9 @@ def row_years(r, v):
 
 def load(path, years=None):
     """years=None: each row to its own horizon (row_years); a number: that many years for every row."""
-    files = [path] if path.endswith('.json') else sorted(f for f in glob.glob(os.path.join(path, 'shard-*.json')) if not f.endswith('.timing.json'))
+    files = [path] if path.endswith(('.json', '.json.gz')) else sorted(f for f in glob.glob(os.path.join(path, 'shard-*.json')) + glob.glob(os.path.join(path, 'shard-*.json.gz')) if not f.endswith('.timing.json'))  # S48: big shards are gzip-compressed
     if not files: sys.exit('no shard files in ' + path)
-    D = sorted((json.load(open(f)) for f in files), key=lambda d: d['_meta']['seeds'][0])
+    D = sorted((json.load(gzip.open(f, 'rt') if f.endswith('.gz') else open(f)) for f in files), key=lambda d: d['_meta']['seeds'][0])
     out, extra = {}, {}
     for d in D:
         for r, v in d['rows'].items():
