@@ -23,7 +23,7 @@ One rule needed a closer look. Members get a higher conversion rate (1.30 plus Î
 - **Only with the release model's PTF** (PTF by sector). The switch refuses older PTF models rather than open them halfway.
 
 ## What part 1 does not do
-- The share does not grow yet. Part 2 builds the growth rule Duke asked for: the share grows as far as capacity (capital), operations (sales covering operating costs) and demand (how much shoppers buy at PTF prices) allow, whichever binds first, each from sourced figures or labelled and swept design parameters.
+- The share does not grow yet. Part 2 builds the growth rule Duke asked for: the share grows as far as capacity (capital), operations (sales covering operating costs) and demand (how much shoppers buy at PTF prices) allow, whichever binds first, each from sourced figures or labelled and swept design parameters. Part 2 (Nov 8) built it: `dev/reports/s55-ptf-growth.md`.
 - A row can hold every zone's share fixed (`pa: {fix: 0.4}`, for example). That is how the preregistered sweep from 10% to 100% will run, with growth off.
 - No study has run with the switch. Nothing here is a result. The rows are preregistered (research-update `prereg/`) before any run, and the first runs are a pilot on GitHub Actions.
 

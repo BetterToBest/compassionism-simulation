@@ -1382,12 +1382,12 @@ function paUnitSuite(){
       detail:'members: ' + (hi*100).toFixed(3) + '% / ' + (lo*100).toFixed(3) + '%; open: ' + (ca*100).toFixed(3) + '% (member and non-member), ' + (cc*100).toFixed(3) + '%'}; });
   t('S55: starting shares: each zone starts at its share of adults who are members; fix holds every zone at fix; a fix outside 0-1, a pa that is not members, open or {fix}, and open without PTF by sector are refused', function(){
     CMS = {C:2}; var ag = [{_cm:0, inPTF:true}, {_cm:0, inPTF:false}, {_cm:0, inPTF:false}, {_cm:0, inPTF:true}, {_cm:1, inPTF:true}, {_cm:1, inPTF:false}], d = [];
-    PA = {fix:null}; paInit(ag); if (!(PAS.z[0] === 0.5 && PAS.z[1] === 0.5 && PAS.s === 4/6*0.5 + 2/6*0.5)) d.push('start ' + PAS.z[0] + ' ' + PAS.z[1] + ' ' + PAS.s);
-    CMS = {C:2}; ag[5].inPTF = true; PA = {fix:null}; paInit(ag); if (!(PAS.z[1] === 1 && Math.abs(PAS.s - (4/6*0.5 + 2/6)) < 1e-15)) d.push('start 2 ' + PAS.z[1] + ' ' + PAS.s);
-    PA = {fix:0.4}; paInit(ag); if (!(PAS.z[0] === 0.4 && PAS.z[1] === 0.4)) d.push('fix');
-    CMS = null; PA = {fix:null}; paInit(ag); if (!(PAS.z.length === 1 && PAS.z[0] === 4/6 && PAS.s === 4/6)) d.push('one zone ' + PAS.s);
+    PA = Object.assign({}, PA_DEFAULTS); paInit(ag); if (!(PAS.z[0] === 0.5 && PAS.z[1] === 0.5 && PAS.s === 4/6*0.5 + 2/6*0.5)) d.push('start ' + PAS.z[0] + ' ' + PAS.z[1] + ' ' + PAS.s);
+    CMS = {C:2}; ag[5].inPTF = true; PA = Object.assign({}, PA_DEFAULTS); paInit(ag); if (!(PAS.z[1] === 1 && Math.abs(PAS.s - (4/6*0.5 + 2/6)) < 1e-15)) d.push('start 2 ' + PAS.z[1] + ' ' + PAS.s);
+    PA = Object.assign({}, PA_DEFAULTS, {fix:0.4}); paInit(ag); if (!(PAS.z[0] === 0.4 && PAS.z[1] === 0.4)) d.push('fix');
+    CMS = null; PA = Object.assign({}, PA_DEFAULTS); paInit(ag); if (!(PAS.z.length === 1 && PAS.z[0] === 4/6 && PAS.s === 4/6)) d.push('one zone ' + PAS.s);
     var thr = function(f){ try { f(); return false; } catch (e){ return true; } };
-    PA = {fix:1.5}; if (!thr(function(){ paInit(ag); })) d.push('fix 1.5 accepted');
+    PA = Object.assign({}, PA_DEFAULTS, {fix:1.5}); if (!thr(function(){ paInit(ag); })) d.push('fix 1.5 accepted');
     var P = Object.assign({}, FULL_INTEGRATION, {nAgents:40, years:2}), M = cfgs(P);
     if (!thr(function(){ tbStudy([cp(M[1], {pa:'yes'})], 1, P, SO); })) d.push('pa yes accepted');
     if (!thr(function(){ tbStudy([cp(M[1], {pa:'open', v54:{rk:true}})], 1, P, SO); })) d.push('open without ptfs accepted');
@@ -1401,6 +1401,51 @@ function paUnitSuite(){
     if (!(T.r.paTh === 100 && T.r.paLo === 0 && T.r.pfCut > A.r.pfCut)) d.push('fix 60%: ' + T.r.paTh + ' ' + T.r.pfCut);
     if (!(B.r.paLo > 0 && B.r.paSh > 0 && B.r.paSh < 100)) d.push('open, layer: ' + B.r.paSh + ' ' + B.r.paLo);
     return {pass:d.length === 0, detail:d.slice(0, 4).join('; ') || ('adult-years checked ' + (A.n + B.n + Z.n + T.n) + '; mean cut ' + A.r.pfCut.toFixed(2) + '% at 30%, ' + T.r.pfCut.toFixed(2) + '% at 60%; open with the layer: s ' + B.r.paSh.toFixed(1) + '%, ' + B.r.paLo.toFixed(0) + '% of adult-years below 40%')}; });
+  /* S55, part 2: the growth rule, each limit binding alone, and the allocation by hand */
+  t('S55 part 2: capacity binding alone (demand 1, operations at cost): from year 1 the PTFs\' share of sales is the larger of last year\'s and this year\'s capacity, c = c0 + capital per adult / $18,862 read from the capital account, never more; capacity is the only limit that binds (Reference, seed 1, 100 adults, 12 years)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:100, years:12}), M = cfgs(P), d = [], A = {yrs:0, bad:0, prev:null, next:null, capBad:0, y:[]};
+    REP_HOOK = function(agents, yr){ if (!PAS) return; A.yrs++;  /* at each year's end: the capital rule for next year, read independently from the capital account */
+      if (yr > 0 && A.next !== null && Math.abs(PAS.cY[yr] - A.next) > 1e-12) A.capBad++; A.next = Math.min(1, PDS.c0 + SPS.capPA/SURP.K);
+      if (yr > 0 && Math.abs(PAS.s - Math.max(A.prev, Math.min(1, PAS.cY[yr]))) > 1e-12) A.bad++; A.prev = PAS.s; A.y[yr] = PAS.s; };
+    try { A.r = tbStudy([cp(M[1], {pa:{dem:1}})], 1, P, SO)[0]; } finally { REP_HOOK = null; }
+    if (!(A.y.length === 12 && A.bad === 0 && A.capBad === 0)) d.push('years ' + A.y.length + ', share off the rule ' + A.bad + ', capacity off the capital rule ' + A.capBad);
+    if (!(A.r.paCap > 0 && A.r.paOps === 0 && Math.abs(A.r.paCap + A.r.paDem - 100) < 1e-9)) d.push('tallies ' + A.r.paCap + ' ' + A.r.paOps + ' ' + A.r.paDem);
+    if (!(A.y[11] > A.y[1] && A.r.paS5 === A.r.paC5)) d.push('no growth: ' + A.y[1] + ' ' + A.y[11] + ', at year 5 s ' + A.r.paS5 + ' c ' + A.r.paC5);
+    return {pass:d.length === 0, detail:d.join('; ') || ('share ' + (A.y[1]*100).toFixed(1) + '% in year 1, ' + A.r.paS5.toFixed(1) + '% in year 5 (capacity ' + A.r.paC5.toFixed(1) + '%), ' + (A.y[11]*100).toFixed(1) + '% in year 11; capacity binds in ' + A.r.paCap.toFixed(0) + '% of adult-years')}; });
+  t('S55 part 2: demand binding alone (no capacity limit, operations at cost, demand 30%), with the layer: from year 1 every zone below 30% is at 30% and every zone above keeps its start; demand is the only limit that binds (Reference, seed 1, 100 adults, 8 years, communities of 20)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:100, years:8}), M = cfgs(P), d = [], Q = {yrs:0, bad:0, z0:null, zones:0};
+    REP_HOOK = function(agents, yr){ if (!PAS) return; Q.yrs++; if (yr === 0){ Q.z0 = Float64Array.from(PAS.z); Q.zones = PAS.z.length; return; }
+      for (var i = 0; i < PAS.z.length; i++) if (PAS.z[i] !== Math.max(Q.z0[i], 0.3) && Math.abs(PAS.z[i] - Math.max(Q.z0[i], 0.3)) > 1e-15) Q.bad++; };
+    try { Q.r = tbStudy([cp(M[1], {pa:{cap:'none', dem:0.3}, cl:{k:20}})], 1, P, SO)[0]; } finally { REP_HOOK = null; }
+    var lo = 0, hi = 0; for (var i = 0; i < Q.zones; i++){ if (Q.z0[i] < 0.3) lo++; else hi++; }
+    if (!(Q.yrs >= 8 && Q.bad === 0 && Q.zones > 1 && lo > 0)) d.push('years ' + Q.yrs + ', zone-years off the rule ' + Q.bad + ', zones ' + Q.zones + ' (' + lo + ' below 30%)');
+    if (!(Math.abs(Q.r.paDem - 100) < 1e-9 && Q.r.paCap === 0 && Q.r.paOps === 0)) d.push('tallies ' + Q.r.paCap + ' ' + Q.r.paOps + ' ' + Q.r.paDem);
+    return {pass:d.length === 0, detail:d.join('; ') || (Q.zones + ' zones, ' + lo + ' grown to 30% in year 1, ' + hi + ' kept above it; demand binds in 100% of adult-years')}; });
+  t('S55 part 2: operations binding alone (outside running costs, no capacity limit, demand 1): at the Hub\'s prices sales cover less than the running costs at every share, so no zone grows; operations is the only limit that binds; the coverage matches a hand calculation from the BLEI paper\'s epsilons and the step 5 margins (Reference, seed 1, 100 adults, 8 years)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:100, years:8}), M = cfgs(P), d = [], Q = {yrs:0, bad:0, s0:null};
+    REP_HOOK = function(agents, yr){ if (!PAS) return; Q.yrs++; if (yr === 0) Q.s0 = PAS.z[0]; else if (PAS.z[0] !== Q.s0) Q.bad++; };
+    try { Q.r = tbStudy([cp(M[1], {pa:{ops:'outside', cap:'none', dem:1}})], 1, P, SO)[0]; } finally { REP_HOOK = null; }
+    if (!(Q.yrs >= 8 && Q.bad === 0 && Q.s0 > 0)) d.push('years ' + Q.yrs + ', years grown ' + Q.bad);
+    if (!(Math.abs(Q.r.paOps - 100) < 1e-9 && Q.r.paCap === 0 && Q.r.paDem === 0 && Q.r.paCv > 0 && Q.r.paCv < 100)) d.push('tallies ' + Q.r.paCap + ' ' + Q.r.paOps + ' ' + Q.r.paDem + ' cover ' + Q.r.paCv);
+    var f = CFG.BASKET.food, u = CFG.BASKET.housing*CFG.PTFS_UTIL, cost = f*(1 - 0.0494) + u*(1 - 0.0260*(3326.284 + 487.685)/487.685), p = {szh:false};
+    var hiH = (f/2.64 + u/1.80)/cost, loH = (f/1.65 + u/1.80)/cost; PA = {ops:'outside'}; COST = null;
+    if (!(Math.abs(paCover(0.5, p) - hiH) < 1e-12 && Math.abs(paCover(0.2, p) - loH) < 1e-12 && hiH < loH && loH < 1)) d.push('coverage ' + paCover(0.5, p) + ' vs ' + hiH + ', ' + paCover(0.2, p) + ' vs ' + loH);
+    COST = {food:0.5, util:0.0260}; var o1 = paOpsMax(0.2, p), o2 = paOpsMax(0.45, p); PA = {ops:'hub'}; var o3 = paOpsMax(0.2, p); COST = null;  /* by hand: a cost that the low-density price covers and the high-density price does not */
+    if (!(paCover(0.2, {szh:false}) >= 0 && o1 < 0.4 && o1 > 0.4 - 1e-9 && o2 === 0.45 && o3 === 1)) d.push('ceiling by hand ' + o1 + ' ' + o2 + ' ' + o3);
+    return {pass:d.length === 0, detail:d.join('; ') || ('share held at ' + (Q.s0*100).toFixed(1) + '%; sales cover ' + (loH*100).toFixed(1) + '% of running costs below the 40% test and ' + (hiH*100).toFixed(1) + '% above it (' + Q.r.paCv.toFixed(1) + '% in the run)')}; });
+  t('S55 part 2: by hand: where the zones want more than the capacity left, every growing zone gets the same fraction of its wanted growth (zones at 10% and 30%, demand 50%, capacity 35%: both reach 30% and 40%), then demand binds; grow false and fix hold the share; bad growth settings are refused', function(){
+    var d = [], ag = [{_cm:0}, {_cm:1}], p = {szh:false, ptf:true}; CMS = {C:2};
+    PA = Object.assign({}, PA_DEFAULTS, {dem:0.5}); PAS = {z:new Float64Array([0.1, 0.3]), s:0, sh:0, lo:0, th:0, yrs:0, cb:0, ob:0, db:0, yu:0, cv:0, sY:[], cY:[]};
+    PAS.cY[1] = 0.35; paGrow(ag, 1, p); if (!(Math.abs(PAS.z[0] - 0.3) < 1e-15 && Math.abs(PAS.z[1] - 0.4) < 1e-15 && PAS.cb === 1 && PAS.db === 0)) d.push('capacity year ' + PAS.z[0] + ' ' + PAS.z[1] + ' ' + PAS.cb);
+    PAS.cY[2] = 1; paGrow(ag, 2, p); if (!(PAS.z[0] === 0.5 && PAS.z[1] === 0.5 && PAS.db === 1)) d.push('demand year ' + PAS.z[0] + ' ' + PAS.z[1] + ' ' + PAS.db);
+    PAS.cY[3] = 1; paGrow(ag, 3, p); if (!(PAS.z[0] === 0.5 && PAS.db === 2 && PAS.yu === 3)) d.push('held at demand ' + PAS.z[0] + ' ' + PAS.db);
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60, years:6}), M = cfgs(P), Q = {moved:0, s0:null};
+    REP_HOOK = function(agents, yr){ if (!PAS) return; if (yr === 0) Q.s0 = PAS.s; else if (PAS.s !== Q.s0) Q.moved++; };
+    try { var G = tbStudy([cp(M[1], {pa:{grow:false}}), cp(M[1], {pa:{fix:0.3}})], 1, P, SO); } finally { REP_HOOK = null; }
+    if (!(Q.moved === 0 && G[0].paCap === 0 && G[1].paS5 === 30)) d.push('held rows moved ' + Q.moved + ' ' + G[1].paS5);
+    var thr = function(o){ try { tbStudy([cp(M[1], {pa:o})], 1, P, SO); return false; } catch (e){ return true; } };
+    [{grow:'yes'}, {cap:'some'}, {ops:'mine'}, {dem:0}, {dem:1.2}].forEach(function(o){ if (!thr(o)) d.push(JSON.stringify(o) + ' accepted'); });
+    return {pass:d.length === 0, detail:d.join('; ') || 'scaled growth 10%->30%, 30%->40%; then 50% (demand); held rows unchanged; 5 bad settings refused'}; });
   return out;
 }
 function prodUnitSuite(){
