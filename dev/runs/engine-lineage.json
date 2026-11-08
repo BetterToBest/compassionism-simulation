@@ -574,6 +574,22 @@
    },
    "equal": true,
    "seconds": 154
+  },
+  {
+   "from": "34f91a85b94a10ed6f8f70fd42fbc35ed82612448299e02d1ee7e58cded84347",
+   "to": "8bb948abed0e435c0eb916d47b1e2c24d0c84e6d934af303f85ad22d36b33d1b",
+   "date": "2026-11-08",
+   "change": "S55 part 1: open PTF access (PTF_ACCESS, row option pa), off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 151
   }
  ]
 }
