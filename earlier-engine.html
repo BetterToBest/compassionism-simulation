@@ -3031,7 +3031,7 @@ function agentBLEI(a,buAlloc,ccoOn,pthOn,szhOn,szhCoh,ptfOn){
   var mInc=Math.max(isNaN(a.wage)?1:a.wage,0.1)*CFG.WAGE_TO_USD;
   var buFood=(ccoOn&&a.inCCO&&buAlloc>0)?((CONVERSION_MODEL==='framework'&&a._fwBUm!==undefined)?a._fwBUm:buAlloc*(990/1200)):0;  // session 2, N3: framework credits one month of the BU the agent spends on essentials (fwB0 in runYear: the budget capped at essentials, before any price cut; audit V5-02: this year's with GATE_CURRENT)
   var szhD=szhOn?szhCoh*CFG.SZH_ALL_RESIDENTS:0;
-  if(szhOn&&ptfOn&&a.inPTF)szhD+=szhTheta(THETA_GATE==='density'&&THETA_DENS!==null?(CMS&&a._cm!==undefined?CMS.th[a._cm]:THETA_DENS):szhCoh)*0.20;  // session 5 (C08): harness-only gate
+  if(szhOn&&ptfOn&&(a.inPTF||PAS))szhD+=PAS?paW(a)*szhTheta(THETA_GATE==='density'&&THETA_DENS!==null?(CMS&&a._cm!==undefined?CMS.th[a._cm]:THETA_DENS):szhCoh)*0.20:szhTheta(THETA_GATE==='density'&&THETA_DENS!==null?(CMS&&a._cm!==undefined?CMS.th[a._cm]:THETA_DENS):szhCoh)*0.20;  // session 5 (C08): harness-only gate  // S55: under open access every adult, on the zone's PTF share of sales
   var baseCost=(ccoOn&&a.inCCO&&pthOn&&a.inPTH)?CFG.CCO_PTH_DAILY_COST:CFG.BASE_DAILY_COST;
   var dc=Math.max(baseCost*(1-szhD),0.1)*(a._hhD||1);  // v5.3 B3: an adult's share of the household's daily cost of basic living (households only)
   var r=(liquid+gammaV*mInc+buFood)/dc;
@@ -5072,8 +5072,9 @@ var PTFS_KEYS = ['pfCut', 'pfLeave', 'pfMem'];
 function ptfsShares(a, HHA){  /* the member's basket shares: food, housing, transport, medical, childcare */
   if (HHA && a._hhS) return a._hhS; var c = function(k){ return PRICE ? PRICE.comp[k]/PRICE.bIdx : 1; };
   return {f:CFG.BASKET.food*c('food'), h:CFG.BASKET.housing*c('housing'), t:CFG.BASKET.transport*c('transport'), m:CFG.BASKET.medical*c('medical'), k:0}; }
-function ptfsCut(a, HHA, p, quiet){ var s = ptfsShares(a, HHA), eF = PFS && (CMS && a._cm !== undefined ? CMS.sh[a._cm] : PFS.dens) < CFG.PTFS_LOW_DENS ? CFG.PTFS_EPS_FOOD_LOW : CFG.PTFS_EPS_FOOD, o = PTFS.other;
+function ptfsCut(a, HHA, p, quiet, full){ var s = ptfsShares(a, HHA), eF = PFS && (PAS ? paW(a) : CMS && a._cm !== undefined ? CMS.sh[a._cm] : PFS.dens) < CFG.PTFS_LOW_DENS ? CFG.PTFS_EPS_FOOD_LOW : CFG.PTFS_EPS_FOOD, o = PTFS.other;  /* S55: under open access the 40% test reads the zone's PTF share of essential sales */
   var c = (PRICE && PRICE.sxF ? sxPtf(s.f, s.h, eF) : s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/CFG.PTFS_EPS_UTIL)) + (s.t + (HLS && HLS.planOn ? 0 : s.m) + s.k)*o;  /* session 2b (DECISIONS, 'Nothing counted twice', item 7): under single payer (B, C) the health-sector cut lowers the plan's costs (hlSingle), not the household's */ if (p.szh) c *= (0.12 + p.szhCoh*0.04)/0.12;
+  if (PAS && !full) c = paW(a)*Math.min(0.95, c);  /* S55 open access: the adult buys the zone's share of these sectors at PTF prices (full: the cut on what is bought there) */
   if (PFS && !quiet){ PFS.cut += c; PFS.cn++; } return Math.min(0.95, c); }
 function ptfsYear(agentSet, yr){  /* before the year's adults: leavers, then the share of adults who are members (the food epsilon's density test) */
   var u = agentSet.map(function(){ return PFS.r(); }), m = 0;
@@ -5081,6 +5082,44 @@ function ptfsYear(agentSet, yr){  /* before the year's adults: leavers, then the
     if (a._hh && a._hh.a) a._hh.a.forEach(function(b){ b.inPTF = false; }); } });
   agentSet.forEach(function(a){ if (a.inPTF) m++; }); PFS.dens = m/Math.max(1, agentSet.length); PFS.mem += PFS.dens; PFS.yrs++; }
 function ptfsRes(out){ var A = PFS; out.pfCut = A && A.cn ? A.cut/A.cn*100 : 0; out.pfLeave = A && A.yrs ? A.leave/A.yrs : 0; out.pfMem = A && A.yrs ? A.mem/A.yrs*100 : 0; return out; }
+/* S55, part 1 (Nov 8, 2026; research-update audits/2026-11-ptf-access.md, Duke's answers D16; dev/DECISIONS.md S55): OPEN PTF ACCESS. PTF_ACCESS
+ * 'members' is the default (every earlier run; PAS null). 'open' (study row option pa: 'open', or an object {fix}) reads the design as Duke stated it on
+ * Nov 7: anyone may shop at a PTF business, in dollars or BU, at one posted price. Until now the engine read "PTF member" as "PTF customer" everywhere.
+ * 'open' runs only with PTF and v5.4's PTF by sector (PTFS, the release model's); with an earlier PTF model it is refused. Under 'open':
+ *  - Zones and their share. Each zone (a community of the S37 layer; without the layer the population is one zone) has a PTF share s of its essential
+ *    sales: the share of its food and utilities purchases (and the other sectors', where swept) made at PTF businesses. At the start s is the zone's
+ *    share of adults who are members (the same draws; with SZH the same placement as S37), so year 0's tests read what they read under 'members'.
+ *    fix holds every zone at fix instead (the fixed-share sweep, D16). Part 1 holds s for the whole run; the growth rule (capacity, operations and
+ *    demand, reading 6) is part 2.
+ *  - Customer rules use s. Every adult in a zone, member or not, buys the share s of these sectors at PTF prices and no more (reading 2). So for the
+ *    share s of their purchases every adult is what a member was for all of them: the PTF price cut (ptfsCut returns s x the member's cut, wherever
+ *    the cut enters: the cost of living, the essentials BU buy, the BLEI gate's BU, the joining reading, PTH's cut on PTF-priced utilities); the ESP
+ *    split's PTF price pool (every adult a customer on s of their essentials at PTF prices); its sizing (BU spent at PTFs: s x each holder's BU; the
+ *    private ESPs' customers hold the rest); theta's term in the BLEI's cost of basic living (s x theta x 0.20); the discount PTFs fund from forgone
+ *    profit (accounting only); the health-sector cut on the public plan's costs (only where PTFS.other > 0, which no main row sets).
+ *  - The tests read s. The 40% test for epsilon (in ptfsCut) and the 55% test for theta (THETA_DENS and, with the layer, each community's theta) read
+ *    the zone's s instead of its member share (readings 3 and 4), and PTF's damping of the outside inflation rate reads the population's s.
+ *  - Membership keeps the rest (reading 5): joining and leaving (imitation still reads the member share; SZH's induction reads theta, now from s), the
+ *    capacity gate on joining, the conversion-rate bonus 1.30 + theta (members only), the ESP workforce option, PTH, and reporting by membership.
+ * No draw is added anywhere (CRN holds), and the no-programme run is untouched (PAS needs PTF). Reported (PA_KEYS; rows with 'open' only): paSh the
+ * population's PTF share of essential sales (%, mean over years); paLo the share of adult-years in zones below the 40% test (%); paTh the share of
+ * adult-years in zones above the 55% test (%). Under 'open' pfCut is the mean cut over every adult (under 'members', over members). */
+var PTF_ACCESS = 'members', PA = null, PA_DEFAULTS = {fix:null}, PAS = null;
+var PA_KEYS = ['paSh', 'paLo', 'paTh'];
+function paZ(a){ return CMS && a._cm !== undefined ? a._cm : 0; }
+function paW(a){ return PAS.z[paZ(a)]; }  /* the adult's zone's PTF share of essential sales */
+function paInit(agents){ var C = CMS ? CMS.C : 1, m = new Float64Array(C), t = new Float64Array(C), z = new Float64Array(C), i;
+  if (PA.fix !== null && !(PA.fix >= 0 && PA.fix <= 1)) throw new Error('pa: fix must be a share from 0 to 1');
+  agents.forEach(function(a){ var j = paZ(a); t[j]++; if (a.inPTF) m[j]++; });
+  for (i = 0; i < C; i++) z[i] = PA.fix !== null ? PA.fix : m[i]/Math.max(1, t[i]);
+  PAS = {z:z, s:0, sh:0, lo:0, th:0, yrs:0}; paPop(agents); }
+function paPop(agents){ var C = PAS.z.length, t = new Float64Array(C), n = Math.max(1, agents.length), s = 0, lo = 0, th = 0, i;
+  agents.forEach(function(a){ t[paZ(a)]++; });
+  for (i = 0; i < C; i++){ s += t[i]/n*PAS.z[i]; if (PAS.z[i] < CFG.PTFS_LOW_DENS) lo += t[i]/n; if (PAS.z[i] > CFG.SZH_THETA_THRESHOLD) th += t[i]/n; }
+  PAS.s = s; return [lo, th]; }
+function paYear(agentSet){  /* at the start of the year's PTF steps, before any test reads a share: the population's share and the year's tallies (no draw) */
+  var q = paPop(agentSet); PAS.sh += PAS.s; PAS.lo += q[0]; PAS.th += q[1]; PAS.yrs++; }
+function paRes(out){ var S = PAS; out.paSh = S && S.yrs ? S.sh/S.yrs*100 : 0; out.paLo = S && S.yrs ? S.lo/S.yrs*100 : 0; out.paTh = S && S.yrs ? S.th/S.yrs*100 : 0; return out; }
 /* S37 (Oct 31, 2026; dev/reports/community-layer.md; dev/DECISIONS.md S37): THE COMMUNITY AND ZONE LAYER. null = off (every earlier run: the tests that
  * read PTF density read the share of all adults who are members). When an object (row option cl), and only in runs with PTF:
  *  - Communities. At the start of the run the households (each adult alone, without households) are dealt into round(n/k) communities of about k adults,
@@ -5449,9 +5488,9 @@ function hlSingle(agents, yr, plan, E, S, p){
     a._emW = emplWeeks(hlU(S.seed, a._hlId, yr, 21), false); a._emUi = !!EMPL.ui && hlU(S.seed, a._hlId, yr, 22) < CFG.EMPL_UI_RECIP; a._emUiW = 0;
     a._emCut = 2*EMPL.cut*hlU(S.seed, a._hlId, yr, 23); a._emAuto = false; EMS.spells++; if (a._emW > 26) EMS.long++; ac.adm++; });
   if (yr === E.start) ac.admN = agents.length;
-  plan.forEach(function(P){ var k = P.kap, qa = 0, qb = 0, qw = 0, qx = 0, qm = 0, mem = cm > 0 && P.u.a[0].inPTF, prv = isC && hlU(S.seed, P.u.a[0]._hlId, 0, 94) < E.priv;
-    P.people.forEach(function(q){ var x = (q.xn + q.xa)*(q.cov === 'unins' ? 1 + E.induce : 1), w = mem ? 1 - cm : 1; qa += q.xn + q.xa - q.sk; qb += x;
-      if (cm > 0 || isC){ if (mem) qm += x*cm; if (prv && q.cov !== 'mcaid'){ qx += x*w*(fC - 1); w *= fC; ac.priv++; } qw += x*w; } });  /* session 2b: private enrollees (not Medicaid) and PTF members */
+  plan.forEach(function(P){ var k = P.kap, qa = 0, qb = 0, qw = 0, qx = 0, qm = 0, mem = cm > 0 && (P.u.a[0].inPTF || !!PAS), cmW = PAS ? cm*paW(P.u.a[0]) : cm, prv = isC && hlU(S.seed, P.u.a[0]._hlId, 0, 94) < E.priv;
+    P.people.forEach(function(q){ var x = (q.xn + q.xa)*(q.cov === 'unins' ? 1 + E.induce : 1), w = mem ? 1 - cmW : 1; qa += q.xn + q.xa - q.sk; qb += x;
+      if (cm > 0 || isC){ if (mem) qm += x*cmW; if (prv && q.cov !== 'mcaid'){ qx += x*w*(fC - 1); w *= fC; ac.priv++; } qw += x*w; } });  /* session 2b: private enrollees (not Medicaid) and PTF members */
     P.SA = k*(P.prem + P.oop + P.emp + P.gov); P.QA = k*qa; P.QB = k*qb; P.GA = k*P.gov;
     SA += P.SA; QA += P.QA; QB += P.QB; GA += P.GA; Ytot += Math.max(0, P.Y); QW += k*qw; QX += k*qx; QM += k*qm; });
   if (E.gov === 'fixed' && HL_GOVREF){ var pyNow = 0; plan.forEach(function(P){ pyNow += P.people.length; }); var gR = HL_GOVREF[S.govKey];  /* session 2c (d194): government's share held at the no-programme run's level */
@@ -5661,10 +5700,11 @@ function runYear(agentSet,yr,p,recSt){
   var HHON=!!HOUSEHOLDS&&!!HHS&&(CONVERSION_MODEL==='framework'||!p.ccoOn),HHPOOL=HHON&&HOUSEHOLDS.pool!=='individual';if(HHON)hhYear(agentSet);  // v5.3 B3: households (no RNG)
   var pthApprBonus=p.szh?p.szhCoh*0.01:0;
   var szhThetaVal=p.szh?szhTheta(p.szhCoh):0;
-  if(THETA_GATE==='density'){var tdN=0;if(p.ptf)agentSet.forEach(function(a){if(a.inPTF)tdN++;});THETA_DENS=tdN/Math.max(1,agentSet.length);szhThetaVal=p.szh?szhTheta(THETA_DENS):0;}  // session 5 (C08/d12): harness-only
+  if(PAS)paYear(agentSet);  // S55 open access: this year's PTF shares of essential sales, before any test reads them
+  if(THETA_GATE==='density'){var tdN=0;if(p.ptf&&!PAS)agentSet.forEach(function(a){if(a.inPTF)tdN++;});THETA_DENS=PAS?PAS.s:tdN/Math.max(1,agentSet.length);szhThetaVal=p.szh?szhTheta(THETA_DENS):0;}  // session 5 (C08/d12): harness-only  // S55: under open access the 55% test reads the PTF share of sales
   var ptfConvBonus=1.30+((p.szh&&p.ptf)?szhThetaVal:0);
   var szhPartBoost=(p.szh&&p.ccoOn)?szhThetaVal*0.16:0;
-  if(CMS)CMS.th=clShares(agentSet);var clTh=CMS?function(a){return p.szh?szhTheta(THETA_GATE==='density'?CMS.th[a._cm]:p.szhCoh):0;}:null;  // S37: theta by community (CMS null: the population's, as before)
+  if(CMS)CMS.th=PAS?Float64Array.from(PAS.z):clShares(agentSet);var clTh=CMS?function(a){return p.szh?szhTheta(THETA_GATE==='density'?CMS.th[a._cm]:p.szhCoh):0;}:null;  // S37: theta by community (CMS null: the population's, as before)
   function clPCB(a){return clTh?1.30+((p.szh&&p.ptf)?clTh(a):0):ptfConvBonus;}function clPB(a){return clTh?((p.szh&&p.ccoOn)?clTh(a)*0.16:0):szhPartBoost;}
   /* v4.14 parity fix — ported from index.html: PTF's inflation-damping term used to read
    * the static initial-share slider (p.ptfShare) rather than the population's actual
@@ -5690,7 +5730,7 @@ function runYear(agentSet,yr,p,recSt){
   var pthMemberFrac=0;
   if(p.pth){var pthCount0=0;agentSet.forEach(function(a){if(a.inPTH)pthCount0++;});pthMemberFrac=pthCount0/Math.max(1,agentSet.length);}
   var inflRate=p.inflRate||0;
-  if(p.ptf&&inflRate>0&&!(PRICE&&PRICE.noDamp))inflRate*=(1-ptfAdoptFrac*0.5);  // session 2: PRICE.noDamp (price module only)
+  if(p.ptf&&inflRate>0&&!(PRICE&&PRICE.noDamp))inflRate*=(1-(PAS?PAS.s:ptfAdoptFrac)*0.5);  // session 2: PRICE.noDamp (price module only)  // S55: under open access, the PTFs' share of sales
   /* v4.15: (1-pthMemberFrac*0.10) replaces the flat *0.90. The 0.10 coefficient (=1-0.90) is
    * unchanged from the historical value and is now the ceiling reached at 100% membership. */
   if(p.pth&&inflRate>0&&!(PRICE&&PRICE.noDamp))inflRate*=(1-pthMemberFrac*0.10);
@@ -5766,7 +5806,7 @@ function runYear(agentSet,yr,p,recSt){
       buEss().forEach(function(k){jnE+=CFG.BASKET[k]*(PRICE?PRICE.comp[k]:1);});if(PRICE)jnE/=PRICE.bIdx;  // v5.3 B3f: what BU can buy
       var jnF=CFG.BASKET.food*(PRICE?PRICE.comp.food/PRICE.bIdx:1),jnH=CFG.BASKET.housing*(PRICE?PRICE.comp.housing/PRICE.bIdx:1),jnRs=PTH_MODE!=='basket'||DISC_BASE!=='basket';
       agentSet.forEach(function(a){var jHH=HHON&&a._hh&&!a._hh.single,ef=jHH?a._hhE:jnE,u=1,jF=jHH?a._hhFd:jnF,jH=jHH?a._hhH:jnH,jM=jHH?jnM*a._hhF:jnM,jB=jHH?buEff*a._hhBU:buEff;if(a._inel){a.inCCO=false;return;}if(a._ret&&AGE&&AGE.ret==='none'){a.inCCO=false;return;}/* S6: not eligible (C22.u) */ /* v5.2 step 4: under 'none' a retiree is outside the programme */  /* v5.3 B3: a household member's share of the household's essentials and BU */
-        if(p.ptf&&a.inPTF){if(PTFS){var jnC=1-ptfsCut(a,jHH,p,true);ef=ef*jnC;if(jnRs)u=jnC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(jnRs)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*jF;}
+        if(p.ptf&&(a.inPTF||PAS)){if(PTFS){var jnC=1-ptfsCut(a,jHH,p,true);ef=ef*jnC;if(jnRs)u=jnC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(jnRs)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*jF;}
         if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*sxH(jH)*u;else ef*=0.65;}
         var use=Math.min(12*jB,jM*ef),cost=(JOIN.cost==='none'||(C22&&C22.auto))?0:12*p.bu*(typeof a.uCCO==='number'?a.uCCO:1)/Math.max(1e-9,p.partRate)*(JOIN.cost==='nominal'?1:jnIdx),want=p.bu>0&&use>=cost;if(LVS&&LVS.jn==='conv'&&p.bu>0&&cost>0){var lvX=lvConvX(a,p,jnIdx,clPCB(a)),lvK=cost/(12*p.bu*(JOIN.cost==='nominal'?1:jnIdx));want=use+lvX[0]>=cost+lvX[1]*lvK;}  /* S54: joining sees the expected conversion income after tax (o.lv.jn 'conv') */
         if(a.inCCO&&!want&&yr-a._jnY>=JOIN.stay){a.inCCO=false;a._jnY=yr;jnL++;}
@@ -5878,15 +5918,15 @@ function runYear(agentSet,yr,p,recSt){
     var spSum=0,spWW=0,spWO=0;
     if(!ESON)agentSet.forEach(function(a,i){if(a._esU===undefined)a._esU=((i+1)*ESP_GOLD)%1;a._esWk=a._esU<ESP_DEFAULTS.work&&!a._ret;});  // ESP payroll off: the same workforce (d72)
     agentSet.forEach(function(a){  // each customer's essentials at own prices, exactly as the agent loop computes them (start-of-year memberships)
-      var bp=p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief,isC=spCust==='all'||(spCust==='pp'&&((p.ccoOn&&a.inCCO)||(p.ptf&&a.inPTF)))||(spCust==='ptf'&&p.ptf&&a.inPTF)||(spCust==='part'&&p.ccoOn&&a.inCCO),e=0;
+      var bp=p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief,spPw=!!PAS&&(spCust==='ptf'||(spCust==='pp'&&!(p.ccoOn&&a.inCCO))),isC=spCust==='all'||(spCust==='pp'&&((p.ccoOn&&a.inCCO)||(p.ptf&&(a.inPTF||PAS))))||(spCust==='ptf'&&p.ptf&&(a.inPTF||PAS))||(spCust==='part'&&p.ccoOn&&a.inCCO),e=0;  // S55 spPw: under open access a customer through the PTFs only, on the zone's share of the basket
       var sHH=HHON&&a._hh&&!a._hh.single,sE=sHH?a._hhE:eShareCur,sF=sHH?a._hhFd:fShareCur,sH=sHH?a._hhH:hShareCur,sM=sHH?spMlc*a._hhF:spMlc;  // v5.3 B3: a household member's share of the household's essentials
       if(isC){var ef=sE,u=1;
-        if(p.ptf&&a.inPTF){if(PTFS){var spC=1-ptfsCut(a,sHH,p,true);ef=ef*spC;if(rsAlt)u=spC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(rsAlt)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*sF;}
+        if(p.ptf&&(a.inPTF||PAS)){if(PTFS){var spC=1-ptfsCut(a,sHH,p,true,spPw);ef=ef*spC;if(rsAlt)u=spC;}else if(PTF_MODE==='shipped'){ef=ef*(1-(p.szh?0.12+p.szhCoh*0.04:0.12));if(rsAlt)u=1-(p.szh?0.12+p.szhCoh*0.04:0.12);}else ef=ef-PTF_FOOD_CUT[PTF_MODE]*sF;}
         if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')ef-=PTH_HOUSING_CUT*sxH(sH)*u;else ef*=0.65;}
         if(SURP_CUT_MARKUP&&bp&&HCAP&&HCS&&hcM>0&&!(p.pth&&a.inPTH))ef+=hcM*sH;  // v5.3 B2: the bill the cut is applied to (the agent loop adds hcX to a BU customer's essentials)
-        e=sM*ef;if(SURP.bu==='cash'&&bp)e=Math.max(0,e-Math.min(12*(sHH?buEff*a._hhBU:buEff),e));}
-      if(spVOn){var vBu=(bp&&!(p.ptf&&a.inPTF))?Math.max(0,a._spBU||0):0,vE=0;if(vBu>0){vE=sE;if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')vE-=PTH_HOUSING_CUT*sH;else vE*=0.65;}vE*=sM;}a._spVw=vBu;a._spVE=vE;spVSum+=vBu;}
-      a._spE=e;a._spCutY=0;a._spPay=0;a._spOwn=0;a._spBU=0;a._spWk=!!a._esWk&&(SURP.wk!=='espPart'||!!(p.ccoOn&&a.inCCO));
+        e=sM*ef;if(SURP.bu==='cash'&&bp)e=Math.max(0,e-Math.min(12*(sHH?buEff*a._hhBU:buEff),e));if(spPw)e*=paW(a);}  // S55: the share of the essentials bought at PTF prices
+      if(spVOn){var vBu=PAS?(bp?Math.max(0,a._spBU||0)*(1-paW(a)):0):(bp&&!(p.ptf&&a.inPTF))?Math.max(0,a._spBU||0):0,vE=0;if(vBu>0){vE=sE;if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')vE-=PTH_HOUSING_CUT*sH;else vE*=0.65;}vE*=sM;if(PAS)vE*=1-paW(a);}a._spVw=vBu;a._spVE=vE;spVSum+=vBu;}  // S55: under open access, the BU and essentials outside the PTFs
+      a._spE=e;a._spPw=spPw;a._spCutY=0;a._spPay=0;a._spOwn=0;a._spBU=0;a._spWk=!!a._esWk&&(SURP.wk!=='espPart'||!!(p.ccoOn&&a.inCCO));
       spSum+=e;if(a._spWk)spWW+=Math.max(0,a._fwW||0);spWO+=Math.max(0,a.wealth);
     });
     spDelta=spSum>0?Math.min(1,spPP/spSum):0;var spUsed=spDelta*spSum;SPS.carry=spPP-spUsed;  // d98: one uniform cut, capped at 1; the rest carries
@@ -5921,8 +5961,8 @@ function runYear(agentSet,yr,p,recSt){
     if(AGE&&AGS&&a._ret){a._ssY=a._ssB0*agP;a.wage=a._ssY/12/CFG.WAGE_TO_USD;if(AGE.ret==='none')a.inCCO=false;}  // v5.2 step 4: a retiree's benefit, moved with prices; BLEI and the stability score read it as the monthly income
     if(GATE_CURRENT&&FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // audit V5-02: the framework BLEI gate reads THIS year's BU spend, not last year's (same expression as fwB0 below)
       var gEss=eSA;
-      if(p.ptf&&a.inPTF)gEss=PTFS?gEss*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?gEss*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):gEss-PTF_FOOD_CUT[PTF_MODE]*fSA;
-      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')gEss-=PTH_HOUSING_CUT*sxH(hSA)*(rsAlt&&p.ptf&&a.inPTF&&(PTFS||PTF_MODE==='shipped')?(PTFS?1-ptfsCut(a,HHA,p,true):1-(p.szh?0.12+p.szhCoh*0.04:0.12)):1);else gEss*=0.65;}
+      if(p.ptf&&(a.inPTF||PAS))gEss=PTFS?gEss*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?gEss*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):gEss-PTF_FOOD_CUT[PTF_MODE]*fSA;
+      if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')gEss-=PTH_HOUSING_CUT*sxH(hSA)*(rsAlt&&p.ptf&&(a.inPTF||PAS)&&(PTFS||PTF_MODE==='shipped')?(PTFS?1-ptfsCut(a,HHA,p,true):1-(p.szh?0.12+p.szhCoh*0.04:0.12)):1);else gEss*=0.65;}
       var gCost=CFG.LIVING_WAGE_ANNUAL*Math.pow(1+inflRate,yr);if(PRICE)gCost*=PRICE.bIdx;if(HHA)gCost*=a._hhF;
       a._fwBUm=Math.min(12*buA,gCost*gEss)/12;
     }
@@ -5947,14 +5987,14 @@ function runYear(agentSet,yr,p,recSt){
     if(PRICE){var pmProg=(PATHWAY_OFF.octaveWage?0:a.octave*CFG.WAGE_OCTAVE_BONUS)+(p.cip?p.cipDemo*0.005:0)+bleiProg;a._wNB=Math.max(a._wNB*0.80,a._wNB*(1+wg-pmProg));}  // N7: the wage without program-induced raises
     var cf=1.0,rsPtfU=1,rsRel=1;
     if(!rsAlt){
-    if(p.ptf&&a.inPTF){if(PTFS)cf*=1-ptfsCut(a,HHA,p);else if(PTF_MODE==='shipped')cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));else cf*=(1-PTF_FOOD_CUT[PTF_MODE]*fSA);}  // session 2: PTF_MODE (D4); 'shipped' is index.html
+    if(p.ptf&&(a.inPTF||PAS)){if(PTFS)cf*=1-ptfsCut(a,HHA,p);else if(PTF_MODE==='shipped')cf*=(1-(p.szh?0.12+p.szhCoh*0.04:0.12));else cf*=(1-PTF_FOOD_CUT[PTF_MODE]*fSA);}  // session 2: PTF_MODE (D4); 'shipped' is index.html
     var cfPTF=cf;  // A1 ledger (reporting only)
     if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost)cf*=0.65;  // v4.21: harness-only pathway switch
     var cfPreCCO=cf;  // A1 ledger (reporting only)
     if(p.ccoOn&&a.inCCO&&p.bu>0){if(!PATHWAY_OFF.relief&&!FWON)cf*=ccoReliefF;}  // v4.19: was a flat 0.80 (see ccoReliefF). v4.21: pathway switch
     else if(emergLine>=0&&p.ccoOn&&p.bu>0&&!a.inCCO&&!a._inel&&typeof a.uCCO==='number'&&a.uCCO<emergLine){cf*=ccoReliefF;emergN++;}  // v4.19: emergency enrollment
     } else {  // session 5 (d4/d5): the same chain with PTH_MODE and DISC_BASE (harness-only)
-    if(p.ptf&&a.inPTF){if(PTFS){rsPtfU=1-ptfsCut(a,HHA,p);cf=discMul(cf,rsPtfU);}else if(PTF_MODE==='shipped'){rsPtfU=1-(p.szh?0.12+p.szhCoh*0.04:0.12);cf=discMul(cf,rsPtfU);}else cf-=PTF_FOOD_CUT[PTF_MODE]*fSA;}
+    if(p.ptf&&(a.inPTF||PAS)){if(PTFS){rsPtfU=1-ptfsCut(a,HHA,p);cf=discMul(cf,rsPtfU);}else if(PTF_MODE==='shipped'){rsPtfU=1-(p.szh?0.12+p.szhCoh*0.04:0.12);cf=discMul(cf,rsPtfU);}else cf-=PTF_FOOD_CUT[PTF_MODE]*fSA;}
     var cfPTF=cf;
     if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')cf-=PTH_HOUSING_CUT*sxH(hSA)*rsPtfU;else cf=discMul(cf,0.65);}
     var cfPreCCO=cf;
@@ -5972,19 +6012,19 @@ function runYear(agentSet,yr,p,recSt){
     if(EDCS){a._edcR=(p.pth&&a.inPTH)?0:mainLoopCostUSD*(hSA+hcX);a._edcInt=a._edcIntP||0;a._edcIntP=0;}  // v5.3 B6: rent to a landlord (housing with utilities, MIT; PTH payments are not extractive: the glossary's EDC = 0) and interest on debt
     if(FWON&&p.ccoOn&&a.inCCO&&p.bu>0&&!PATHWAY_OFF.relief){  // session 2, N3/N4: BU buy essentials at the agent's own prices, up to 12 x BU a year
       var essF=eSA;
-      if(p.ptf&&a.inPTF)essF=PTFS?essF*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fSA;
+      if(p.ptf&&(a.inPTF||PAS))essF=PTFS?essF*(1-ptfsCut(a,HHA,p,true)):PTF_MODE==='shipped'?essF*(1-(p.szh?0.12+p.szhCoh*0.04:0.12)):essF-PTF_FOOD_CUT[PTF_MODE]*fSA;
       if(p.pth&&a.inPTH&&!PATHWAY_OFF.pthCost){if(PTH_MODE==='housing')essF-=PTH_HOUSING_CUT*sxH(hSA)*rsPtfU;else essF*=0.65;}  // session 5 (d4)
       if(hcX>0)essF+=hcX;if(lvRc>0)essF-=lvRc;  // v5.2 step 7: BU pay the marked-up rent
       var fwBudget=12*buA,fwB=Math.min(fwBudget,mainLoopCostUSD*essF),spC=0,fwB0=fwB;if(tbY)TB.cur.buIss+=fwBudget;if(EDCS)a._edcBU=fwBudget;if(HEALTH)a._hlBU=fwBudget;  // plan step 3: BU the Source issues (reporting)
       if(SPON&&a._spE>0&&spDelta>0){var spE=mainLoopCostUSD*essF;  // plan step 1 (d99): the cut lowers essentials; BU buy the discounted essentials first
-        if(SURP.bu==='cash')spC=spDelta*Math.max(0,spE-fwB);else{spC=spDelta*spE;fwB=Math.min(fwBudget,spE-spC);}
+        if(SURP.bu==='cash')spC=a._spPw?spDelta*a._spE:spDelta*Math.max(0,spE-fwB);else{spC=a._spPw?spDelta*a._spE:spDelta*spE;fwB=Math.min(fwBudget,spE-spC);}  // S55: under open access the cut is on what is bought at PTFs (the split's own figure)
         a._spCutY=spC;var spY=SPS.y[yr];spY.cut+=spC;spY.freed+=fwB0-fwB;SPS.acc.cut+=spC/spIdx;SPS.acc.cutP+=spC/spIdx;SPS.acc.freed+=(fwB0-fwB)/spIdx;SPS.acc.cash+=(spC-(fwB0-fwB))/spIdx;}
       if(SPON&&a._spV>0){var vSpE=mainLoopCostUSD*essF,vC=Math.min(a._spV,Math.max(0,vSpE-spC)),vB=fwB;  // plan step 14 (d140): a private ESP's lower BU price; BU buy the discounted essentials first, the BU it frees expire
         if(vC>0){spC+=vC;fwB=Math.min(fwBudget,vSpE-spC);a._spCutY=spC;var vY=SPS.y[yr];vY.cut+=vC;vY.cutV+=vC;vY.freed+=vB-fwB;SPS.acc.cut+=vC/spIdx;SPS.acc.cutP+=vC/spIdx;SPS.acc.cutV=(SPS.acc.cutV||0)+vC/spIdx;SPS.acc.freed+=(vB-fwB)/spIdx;SPS.acc.cash+=(vC-(vB-fwB))/spIdx;}}
       var fwLeft=fwBudget-fwB;
       if(HCAP&&HCS&&!(p.pth&&a.inPTH)&&fwB>0)HCS.hb+=fwB*Math.min(1,(hSA+hcX)/Math.max(1e-9,essF));  // v5.2 step 7: BU spent on rent outside PTH (at shares of the essentials they buy)
       cf=cfPreCCO+hcX-fwB/mainLoopCostUSD;hcDone=true;if(spC)cf-=spC/mainLoopCostUSD;a._fwBUm=fwB0/12;if(SXS)a._sxBU=fwB;  // S47: BU spent (reporting only)  // the neutral BLEI gate counts the BU that would be spent without the cut (no price cut enters it)
-      if(SPON){a._spBU=fwB;if(p.ptf&&a.inPTF)FWS.next.bizBUptf=(FWS.next.bizBUptf||0)+fwB;}  // plan step 1: BU accepted by PTFs (PTF members' purchases)
+      if(SPON){a._spBU=fwB;if(PAS)FWS.next.bizBUptf=(FWS.next.bizBUptf||0)+fwB*paW(a);else if(p.ptf&&a.inPTF)FWS.next.bizBUptf=(FWS.next.bizBUptf||0)+fwB;}  // S55: under open access, the zone's share of every holder's BU  // plan step 1: BU accepted by PTFs (PTF members' purchases)
       if(SPON&&PJON)SPS.y[yr].pjFreed+=(fwB0-fwB)*PROJ.share;
       FWS.next.bizBU+=fwB;FWS.next.expiredBU+=fwLeft;FWS.next.projBU+=fwLeft*FW.directedShare;FWS.next.destroyedBU+=fwLeft*(1-FW.directedShare);
       if(PJON){PJS.next.pool+=fwLeft*PROJ.share;PJS.acc.exp+=fwLeft/pjIdx;PJS.acc.pool+=fwLeft*PROJ.share/pjIdx;}  // N1 (session 15): the same pool, paid as project hiring
@@ -5997,7 +6037,7 @@ function runYear(agentSet,yr,p,recSt){
     if(emQ)annualWageUSD*=1-emQ.out;
     if(HEALTH)a._hlOut=emQ?emQ.out:0;  // session 2a: a year mostly out of work loses employer coverage next year
     if(dsOn)annualWageUSD*=1-Math.min(52,DIS.weeks)/52;  // v5.4 item 5: weeks of work lost to the disaster  // v5.2 step 4: a retiree earns no wage  // v5.2 step 6: mlNT = 0 unless the spending layer fills normal-times slack
-    var tbG=0,tbPT=0;if(tbY&&COST&&p.ptf&&a.inPTF){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
+    var tbG=0,tbPT=0;if(tbY&&COST&&p.ptf&&(a.inPTF||PAS)){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),PAS?mainLoopCostUSD*(fSA*COST.food+hSA*COST.util)*paW(a):mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // S55: under open access, on the share bought at PTFs  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
     if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(lvRc>0)tbPT-=mainLoopCostUSD*lvRc;if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fSA+(p.tb.groc.housing?hSA:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
     if(LABOR){  // session 4 (A3): the labor-supply response replaces this year's wage earnings (no RNG)
       var lbE0=annualWageUSD,lbBU=0,lbR=0,lbC=a._labC||0,lbU=p.ubi||0;
@@ -6453,6 +6493,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (HOUSEHOLDS) hhInit(agents, seed); else HHS = null;  /* v5.3 B3: households drawn once, on their own stream (no draw on the main or construction streams) */
   if (PTHB && p.pth && FX && FX.pthb) pthbInit(agents, latent, seed);  /* S47 fx.pthb: the books follow the household's PTH decision (no draw at set-up) */
   if (COMM && p.ptf) clInit(agents, seed, p); else CMS = null;
+  if (PTF_ACCESS === 'open' && p.ptf){ if (!PTFS) throw new Error('pa open: needs PTF by sector (v54 ptfs)'); paInit(agents); } else PAS = null;  /* S55: the zones' PTF shares of essential sales (after the layer places members; no draw) */
   if (C22) c22Init(agents, seed); else C22S = null;  /* S6: eligibility and automatic distribution (own stream); coverage tallies */  /* S37: the community layer (its own stream; nothing to do without PTF) */
   if (HOUSEHOLDS && HOUSEHOLDS.wealth === 'scf' && spec.endow) agents.forEach(function(a){ a._tbEl = a.wealth < spec.endow.thresh; });  /* v5.3 B7: an endowment's test reads the household's starting wealth */
   var RHH = HOUSEHOLDS && HHS ? hhRepAcc() : null;  /* v5.3 B3: the household reading's measures (reporting only) */
@@ -6572,6 +6613,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (PTHB) emR = pthbRes(emR || {});
   if (PTFS) emR = ptfsRes(emR || {});  /* v5.4 item 4 */
   if (COMM) emR = clRes(emR || {});  /* S37 */
+  if (PAS) emR = paRes(emR || {});  /* S55 */
   if (C22) emR = c22Res(emR || {}, grpOf(function(a){ return !!a._inel; }), n);  /* S6 */
   if (HEALTH && HLS) emR = hlRes(emR || {});  /* session 2a */
   if (SNET && SNS) emR = snRes(emR || {});  /* session 2b */
@@ -6939,6 +6981,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var au0 = AUD; if (c.au) AUD = c.au === true ? {gate:true, sg:true, fbs:true} : Object.assign({}, c.au);  /* S13: the audit's corrections for this row (no programme rows too) */
       var fx0 = FX; if (c.fx) FX = c.fx === true ? {pthb:true, hb:true, ab:true, sp:true} : Object.assign({}, c.fx);  /* S47: the second implementation's fixes for this row (no programme rows too) */
       var dr0 = DEBT_READ; if (c.dr) DEBT_READ = Object.assign({lim:0}, c.dr === true ? {} : c.dr);  /* S35: the debt reading for this row (no programme rows too) */
+      var pa0 = [PTF_ACCESS, PA]; if (c.pa && c.pa !== 'members'){ if (c.pa !== 'open' && typeof c.pa !== 'object') throw new Error('pa: members, open or {fix}'); PTF_ACCESS = 'open'; PA = Object.assign({}, PA_DEFAULTS, typeof c.pa === 'object' ? c.pa : {}); }  /* S55: open PTF access for this row */
       var cl0 = COMM; if (c.cl) COMM = Object.assign({}, COMM_DEFAULTS, c.cl === true ? {} : c.cl);  /* S37: the community layer for this row */
       var c220 = C22; if (c.c22) C22 = Object.assign({}, C22_DEFAULTS, c.c22 === true ? {} : c.c22);  /* S6: coverage and adequacy for this row */
       var sg0 = SPEND_GRADE; if (c.sg) SPEND_GRADE = {eps:typeof c.sg === 'number' ? c.sg : CFG.CE_SPEND_ELAST};  /* v5.3 B7: income-graded spending for this row (no programme rows too) */
@@ -6960,6 +7003,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.pfCut !== undefined) PTFS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 4 */
         if (r.c22PY !== undefined) C22_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S6 */
         if (r.clN !== undefined) CL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S37 */
+        if (r.paSh !== undefined) PA_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S55 */
         if (r.pbV !== undefined) PTHB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 3 */
         if (r.snAbN !== undefined) SN_AB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* session 7 */
         if (r.snSnap !== undefined) SN_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* session 2b */
@@ -6968,7 +7012,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.rkEv !== undefined) RISK_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 1 */
         if (r.edcM !== undefined) EDC_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B6 */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; AUD = au0; FX = fx0; COMM = cl0; CMS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;

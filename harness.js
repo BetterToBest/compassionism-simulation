@@ -1346,6 +1346,63 @@ function lvUnitSuite(){
     return {pass:Math.abs(t5 - 0.28) < 1e-12 && t9 === 0.5 && bb === 0.3 && Math.abs(f0 - 0.2) < 1e-12 && f4 === 1 && r === 5 && r1 === 9, detail:'taxes ' + t5 + ', ' + t9 + '; rate ' + r + ' (off ' + r1 + ')'}; });
   return out;
 }
+/* S55, part 1 (Nov 8, 2026; dev/DECISIONS.md S55): open PTF access (PTF_ACCESS, row option pa). Off is the engine as it was; under 'open' every adult in a
+ * zone buys the zone's share s of the PTF sectors at PTF prices, the density tests read s, and the no-programme run is untouched. */
+function paUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); CFG.WEALTH_FLOOR = wf0; TB = null; LABOR = null; PRICE = null; REP_HOOK = null; PTF_ACCESS = 'members'; PA = null; PAS = null; PFS = null; CMS = null; PTFS = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0}, REL_V52_STUDY);
+  function cfgs(P){ return relMainCfgs(tbPresets(P)).map(frozenRow); }
+  function cp(c, x){ return Object.assign(JSON.parse(JSON.stringify(c)), x || {}); }
+  function diff(x, y, keys){ return keys.filter(function(k){ var a = x._s[k], b = y._s[k]; if (!a || !b) return !(x[k] === y[k] || (x[k] !== x[k] && y[k] !== y[k]));
+    for (var i = 0; i < a.length; i++) if (!(a[i] === b[i] || (a[i] !== a[i] && b[i] !== b[i]))) return true; return false; }); }
+  function probe(row, P){ var q = {n:0, bad:0, non:0, th:0, thBad:0, bu:0, buBad:0};
+    REP_HOOK = function(agents){ if (!PAS) return; var x = 0;
+      agents.forEach(function(a){ var HH = !!(HOUSEHOLDS && HHS && a._hh && !a._hh.single), w = ptfsCut(a, HH, row.p, true)/ptfsCut(a, HH, row.p, true, true); q.n++; if (!a.inPTF) q.non++;
+        if (Math.abs(w - paW(a)) > 1e-12) q.bad++; x += (a._spBU || 0)*paW(a); });
+      if (THETA_GATE === 'density'){ q.th++; if (THETA_DENS !== PAS.s) q.thBad++; if (CMS) for (var i = 0; i < CMS.C; i++) if (CMS.th[i] !== PAS.z[i]) q.thBad++; }
+      if (FWS && FWS.prev && FWS.prev.bizBU > 0){ q.bu++; if (Math.abs((FWS.prev.bizBUptf || 0) - x) > 1e-9*FWS.prev.bizBU) q.buBad++; } };
+    try { q.r = tbStudy([row], 1, P, SO)[0]; } finally { REP_HOOK = null; } return q; }
+  t('S55: off is the engine as it was: pa \'members\' equals no option on the frozen release row, with and without the community layer; \'open\' changes nothing on the no-programme row or on a row without PTF, and adds no key there (Reference, seeds 1-2, 60 adults, every testbed output per seed, raw numbers)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:60}), M = cfgs(P), noF = cp(M[1]); noF.p.ptf = false;
+    var R = tbStudy([M[0], M[1], cp(M[1], {cl:{k:20}}), noF, cp(M[0], {pa:'open'}), cp(M[1], {pa:'members'}), cp(M[1], {cl:{k:20}, pa:'members'}), cp(noF, {pa:'open'})], 2, P, SO), d = [], K = TB_KEYS.concat(PTFS_KEYS);
+    [[0, 4, 'no programme'], [1, 5, 'release'], [2, 6, 'release with the layer'], [3, 7, 'no PTF']].forEach(function(q){ diff(R[q[0]], R[q[1]], q[0] === 2 ? K.concat(CL_KEYS) : K).forEach(function(k){ d.push(q[2] + ' ' + k); }); });
+    [4, 5, 6, 7].forEach(function(i){ if (R[i].paSh !== undefined) d.push('a PA key on row ' + i); });
+    if (!(R[1].pfCut > 0)) d.push('PTF not on');
+    return {pass:d.length === 0 && PAS === null && PTF_ACCESS === 'members', detail:d.slice(0, 6).join('; ') || 'identical'}; });
+  t('S55: by hand: under \'open\' a member and a non-member in the same zone get the same cut, the zone\'s share s of the cut on what is bought at PTFs; the 40% test reads s, not the member share (a zone 30% PTF by sales but half members gets the low epsilon; one 70% by sales but 10% members the high one)', function(){
+    PTFS = Object.assign({}, PTFS_DEFAULTS); PFS = {cut:0, cn:0, dens:0.5}; CMS = {C:2, sh:new Float64Array([0.5, 0.1])};
+    var p = {szh:false}, a = {_cm:0, inPTF:true}, b = {_cm:0, inPTF:false}, c = {_cm:1, inPTF:false}, hi = ptfsCut(a, false, p, true), lo = ptfsCut(c, false, p, true);  /* 'members': epsilon 2.64 at 50%, 1.65 at 10% */
+    PAS = {z:new Float64Array([0.3, 0.7]), s:0.5};
+    var ca = ptfsCut(a, false, p, true), cb = ptfsCut(b, false, p, true), cc = ptfsCut(c, false, p, true), fa = ptfsCut(a, false, p, true, true), fc = ptfsCut(c, false, p, true, true);
+    return {pass:hi > lo && lo > 0 && ca === cb && fa === lo && fc === hi && ca === 0.3*lo && cc === 0.7*hi,
+      detail:'members: ' + (hi*100).toFixed(3) + '% / ' + (lo*100).toFixed(3) + '%; open: ' + (ca*100).toFixed(3) + '% (member and non-member), ' + (cc*100).toFixed(3) + '%'}; });
+  t('S55: starting shares: each zone starts at its share of adults who are members; fix holds every zone at fix; a fix outside 0-1, a pa that is not members, open or {fix}, and open without PTF by sector are refused', function(){
+    CMS = {C:2}; var ag = [{_cm:0, inPTF:true}, {_cm:0, inPTF:false}, {_cm:0, inPTF:false}, {_cm:0, inPTF:true}, {_cm:1, inPTF:true}, {_cm:1, inPTF:false}], d = [];
+    PA = {fix:null}; paInit(ag); if (!(PAS.z[0] === 0.5 && PAS.z[1] === 0.5 && PAS.s === 4/6*0.5 + 2/6*0.5)) d.push('start ' + PAS.z[0] + ' ' + PAS.z[1] + ' ' + PAS.s);
+    CMS = {C:2}; ag[5].inPTF = true; PA = {fix:null}; paInit(ag); if (!(PAS.z[1] === 1 && Math.abs(PAS.s - (4/6*0.5 + 2/6)) < 1e-15)) d.push('start 2 ' + PAS.z[1] + ' ' + PAS.s);
+    PA = {fix:0.4}; paInit(ag); if (!(PAS.z[0] === 0.4 && PAS.z[1] === 0.4)) d.push('fix');
+    CMS = null; PA = {fix:null}; paInit(ag); if (!(PAS.z.length === 1 && PAS.z[0] === 4/6 && PAS.s === 4/6)) d.push('one zone ' + PAS.s);
+    var thr = function(f){ try { f(); return false; } catch (e){ return true; } };
+    PA = {fix:1.5}; if (!thr(function(){ paInit(ag); })) d.push('fix 1.5 accepted');
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:40, years:2}), M = cfgs(P);
+    if (!thr(function(){ tbStudy([cp(M[1], {pa:'yes'})], 1, P, SO); })) d.push('pa yes accepted');
+    if (!thr(function(){ tbStudy([cp(M[1], {pa:'open', v54:{rk:true}})], 1, P, SO); })) d.push('open without ptfs accepted');
+    return {pass:d.length === 0, detail:d.join('; ') || 'ok'}; });
+  t('S55: in a run under \'open\' every adult, member or not, gets the zone\'s share s of the PTF cut; the 55% test reads s each year (with and without the layer); BU spent at PTFs is s x each holder\'s BU; at a share of 0 no one gets a PTF price; at 60% theta is on (Reference, seed 1, 100 adults)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:100}), M = cfgs(P), d = [];
+    var A = probe(cp(M[1], {pa:{fix:0.3}}), P), B = probe(cp(M[1], {pa:'open', cl:{k:20}}), P), Z = probe(cp(M[1], {pa:{fix:0}}), P), T = probe(cp(M[1], {pa:{fix:0.6}, cl:{k:20}}), P);
+    [['fix 30%', A], ['open, layer', B], ['fix 0', Z], ['fix 60%, layer', T]].forEach(function(x){ var q = x[1]; if (!(q.n > 0 && q.bad === 0 && q.non > 0 && q.th > 0 && q.thBad === 0 && q.bu > 0 && q.buBad === 0)) d.push(x[0] + ': ' + JSON.stringify({n:q.n, bad:q.bad, non:q.non, th:q.th, thBad:q.thBad, bu:q.bu, buBad:q.buBad})); });
+    if (!(Math.abs(A.r.paSh - 30) < 1e-9 && A.r.paLo === 100 && A.r.paTh === 0)) d.push('fix 30% keys ' + A.r.paSh + ' ' + A.r.paLo + ' ' + A.r.paTh);
+    if (!(Z.r.pfCut === 0 && Z.r.paSh === 0)) d.push('fix 0: cut ' + Z.r.pfCut);
+    if (!(T.r.paTh === 100 && T.r.paLo === 0 && T.r.pfCut > A.r.pfCut)) d.push('fix 60%: ' + T.r.paTh + ' ' + T.r.pfCut);
+    if (!(B.r.paLo > 0 && B.r.paSh > 0 && B.r.paSh < 100)) d.push('open, layer: ' + B.r.paSh + ' ' + B.r.paLo);
+    return {pass:d.length === 0, detail:d.slice(0, 4).join('; ') || ('adult-years checked ' + (A.n + B.n + Z.n + T.n) + '; mean cut ' + A.r.pfCut.toFixed(2) + '% at 30%, ' + T.r.pfCut.toFixed(2) + '% at 60%; open with the layer: s ' + B.r.paSh.toFixed(1) + '%, ' + B.r.paLo.toFixed(0) + '% of adult-years below 40%')}; });
+  return out;
+}
 function prodUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = {cm:CONVERSION_MODEL, pj:PROJ, es:ESP, sp:SURP, pd:PROD, nr:applyNR6()};
@@ -2866,6 +2923,7 @@ var FROZEN = {au:true, fx:true, sc:SPEND_FROZEN};
 function frozenRow(c){ c.au = FROZEN.au; c.fx = FROZEN.fx; c.sc = FROZEN.sc; return c; }
 function c22Design(c){ c.c22 = {auto:true, idx:'needs'}; c.p = Object.assign({}, c.p, {bu:c22NeedsBU()}); return c; }
 Object.assign(module.exports, { FROZEN, SPEND_FROZEN, frozenRow, c22Design });  /* S47 */
+Object.assign(module.exports, { PA_KEYS, PA_DEFAULTS, paW, paInit, paUnitSuite });  /* S55 */
 Object.assign(module.exports, { LV_KEYS, lvUnitSuite });  /* S54 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
 Object.assign(module.exports, { DIS_KEYS, PTFS_KEYS, CL_KEYS, COMM_DEFAULTS, PTHB_KEYS, EMPL_KEYS, emplWeeks, EMPL_DEFAULTS, tbSetV54, tbResetV54, RISK_KEYS, tbRiskRes, rkDraw, rkReentry, v54UnitSuite });  /* v5.4 */
@@ -3291,7 +3349,11 @@ if (require.main === module) {
     console.log('\n=== lvUnitSuite(): S54, the policy levers (harness-only) ===');
     LVU.forEach(function(x){ if (!x.pass) lvf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + LVU.length + ' run, ' + lvf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf) process.exitCode = 1;
+    var PAU = paUnitSuite(), paf = 0;
+    console.log('\n=== paUnitSuite(): S55, open PTF access (harness-only) ===');
+    PAU.forEach(function(x){ if (!x.pass) paf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + PAU.length + ' run, ' + paf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));

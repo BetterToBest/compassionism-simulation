@@ -40,7 +40,7 @@ def engine_constants():
     h = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
     g = lambda pat: float(re.search(pat, h).group(1))
     return {'ccoRelief': round(100*g(r'CCO_RELIEF_AT_REF:([0-9.]+)'), 6), 'ccoCap': round(100*g(r'CCO_RELIEF_CAP:([0-9.]+)'), 6),  # percent, as the p0 format reads them
-            'ptfDamp': g(r'inflRate\*=\(1-ptfAdoptFrac\*([0-9.]+)\)'), 'pthDamp': g(r'inflRate\*=\(1-pthMemberFrac\*([0-9.]+)\)')}
+            'ptfDamp': g(r'inflRate\*=\(1-(?:\(PAS\?PAS\.s:ptfAdoptFrac\)|ptfAdoptFrac)\*([0-9.]+)\)'), 'pthDamp': g(r'inflRate\*=\(1-pthMemberFrac\*([0-9.]+)\)')}
 
 
 HIST = 'dev/runs/history/history-check.json'
