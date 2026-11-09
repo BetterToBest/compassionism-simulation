@@ -8,8 +8,8 @@ folder) and writes tables.md, estimates.csv and the findings page's data file.
 Estimates: the programme run minus the no-programme run on the same seed, as the mean of the paired differences (design rel = the release row, c22 = the
 C2.2 design). Intervals: paired bootstrap over seeds, 2,000 replicates, resampler seed 57, the same resample for every cell; 95% percentile interval.
 Ratios are computed per seed first; a ratio that is not reported in either run of a seed (bottom 40% without positive wealth or income) leaves that seed out of
-the cell, and the cell says how many seeds it uses. Each cell's two-sided bootstrap p-value is twice the smaller tail share (floor 1/(reps+1)); Holm is
-applied within the family (all cells in estimates.csv). Intervals shown are not adjusted. Standard library only."""
+the cell, and the cell says how many seeds it uses. Each cell's two-sided p-value for Holm is the normal tail of the mean over its bootstrap standard error (prereg Amendment 1: the
+bootstrap tail share, kept as p_boot, cannot go below 1/(reps+1), which is above Holm's first threshold for hundreds of cells); Holm is applied within the family (all cells in estimates.csv). Intervals shown are not adjusted. Standard library only."""
 import json, os, sys, random, math, csv
 
 REPS = 2000
@@ -62,8 +62,10 @@ def main():
             b.append(mean([x[j] for j in s]) if s else float('nan'))
         b = sorted(t for t in b if t == t)
         lo, hi = pct(b, 0.025), pct(b, 0.975); le = sum(1 for t in b if t <= 0)/len(b); ge = sum(1 for t in b if t >= 0)/len(b)
-        p = max(1/(len(b) + 1), min(1.0, 2*min(le, ge)))
-        return {'m': mean(x), 'lo': lo, 'hi': hi, 'p': p, 'n': m}
+        pb = max(1/(len(b) + 1), min(1.0, 2*min(le, ge)))
+        mb = mean(b); se = math.sqrt(sum((t - mb)**2 for t in b)/(len(b) - 1)); mm = mean(x)
+        pz = math.erfc(abs(mm)/(se*math.sqrt(2))) if se > 0 else (0.0 if mm != 0 else 1.0)  # prereg Amendment 1: the Holm step reads this
+        return {'m': mm, 'lo': lo, 'hi': hi, 'p': pz, 'pb': pb, 'n': m}
     def diff(env, d, k, flag=None):
         P, N = R[env]['rows'][d], R[env]['rows']['np']
         return [(P[k][i] - N[k][i]) if (flag is None or (P[flag][i] == 1 and N[flag][i] == 1)) else None for i in range(n)]
@@ -104,7 +106,7 @@ def main():
                     cells.append((e, d, k, 'gic', r)); data['envs'][e]['gic'].setdefault(k, {})[d] = r; row.append('%+.0f (%.0f to %.0f)' % (r['m'], r['lo'], r['hi']))
                 out.append('| P%d | %.0f | %s | %s |' % (q, mean(N), row[0], row[1]))
             out.append('')
-        out.append('### Mobility between wealth fifths (adults present at Year 0; %% of each starting fifth)\n')
+        out.append('### Mobility between wealth fifths (adults present at Year 0; percent of each starting fifth)\n')
         out.append('| Summary | No programme | Release row minus none | C2.2 design minus none |\n|---|---|---|---|')
         for key, lab in (('stay', 'stay in the same fifth'), ('up', 'move up'), ('down', 'move down'), ('b2t', 'poorest fifth reaching the top two fifths')):
             ms = {d: [mobsum(R[e]['rows'][d], i)[key] for i in range(n)] for d in ('np', 'rel', 'c22')}; row = []
@@ -124,8 +126,8 @@ def main():
     out.append('%d estimates (environments x designs x measures, percentile cells and mobility summaries included). Intervals excluding zero: %d. Surviving Holm within the family at 5%%: %d. The intervals above are not adjusted. "Excludes zero" is not "material".\n' % (m, excl, len(surv)))
     open(os.path.join(D, 'tables.md'), 'w').write('\n'.join(out))
     with open(os.path.join(D, 'estimates.csv'), 'w', newline='') as f:
-        w = csv.writer(f); w.writerow(['env', 'design', 'measure', 'kind', 'mean_diff', 'lo95', 'hi95', 'p_boot', 'seeds', 'holm_survives'])
-        for j, (e, d, k, kind, r) in enumerate(cells): w.writerow([e, d, k, kind, '%.6g' % r['m'], '%.6g' % r['lo'], '%.6g' % r['hi'], '%.4g' % r['p'], r['n'], int(j in surv)])
+        w = csv.writer(f); w.writerow(['env', 'design', 'measure', 'kind', 'mean_diff', 'lo95', 'hi95', 'p_boot', 'p_normal_from_boot_se', 'seeds', 'holm_survives'])
+        for j, (e, d, k, kind, r) in enumerate(cells): w.writerow([e, d, k, kind, '%.6g' % r['m'], '%.6g' % r['lo'], '%.6g' % r['hi'], '%.4g' % r['pb'], '%.4g' % r['p'], r['n'], int(j in surv)])
     data['counts'] = {'estimates': m, 'excludeZero': excl, 'holmSurvive': len(surv)}
     if opt('data'):
         json.dump(data, open(opt('data'), 'w'), indent=1)
