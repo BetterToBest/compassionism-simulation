@@ -17,7 +17,7 @@ payments (VET_VAL), public assistance (PAW_VAL), unemployment and workers' compe
 withdrawals are left out: in the model they are paid out of the adult's wealth, and SNAP and tax credits are the engine's own safety net.
 
 Output (stdout or --json=FILE): shares of adults 25-64 by household type and reason; the same by age band (25-34, 35-49, 50-61, 62-64) for runs with
-ageing; own-income percentiles 0, 5, ..., 100 by reason; official poverty (PERLIS 1, POV_UNIV 1) by reason; checks (share with no earnings, share who did not work, unweighted counts).
+ageing; own-income percentiles 0, 0.5, ..., 100 by reason, and their means beside the survey's (ownIncomeMean); official poverty (PERLIS 1, POV_UNIV 1) by reason; checks (share with no earnings, share who did not work, unweighted counts).
 Usage: python3 sources/lf_scope.py DATA_DIR [--json=FILE]   (needs pandas and numpy)
 """
 import json, sys
@@ -46,7 +46,7 @@ out = {'_meta': {'script': 'sources/lf_scope.py', 'source': __doc__.split('Outpu
 out['shares'] = {t: {r: round(sh(a[a.type == t].r == r, a[a.type == t].MARSUPWT), 5) for r in R.values()} for t in TY}
 out['sharesByAge'] = {'%d-%d' % b: {t: {r: round(sh(x.r == r, x.MARSUPWT), 5) for r in R.values()} for t in TY for x in [a[(a.type == t) & (a.A_AGE >= b[0]) & (a.A_AGE <= b[1])]]} for b in BANDS}
 out['nByAge'] = {'%d-%d' % b: {t: int(((a.type == t) & (a.A_AGE >= b[0]) & (a.A_AGE <= b[1])).sum()) for t in TY} for b in BANDS}
-Q = np.linspace(0, 1, 21)
+Q = np.linspace(0, 1, 201)  # S61 Amendment 2: 0.5-point steps (5-point steps overstated the mean by 9-280% through the top bin)
 out['ownIncome'] = {r: [round(float(v)) for v in wq(a[a.r == r].own, a[a.r == r].MARSUPWT, Q)] for r in R.values()}
 out['ownIncomeMean'] = {r: round(float((a[a.r == r].own*a[a.r == r].MARSUPWT).sum()/a[a.r == r].MARSUPWT.sum())) for r in R.values()}
 out['ownIncomeZero'] = {r: round(sh(a[a.r == r].own <= 0, a[a.r == r].MARSUPWT), 4) for r in R.values()}

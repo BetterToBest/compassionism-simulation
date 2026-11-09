@@ -1386,7 +1386,9 @@ function lfUnitSuite(){
     var C = CFG.HH_COMP, w = {single:C.single !== undefined ? C.single : 1 - C.coupleKids - C.coupleNoKids - C.singleParent, singleParent:C.singleParent, coupleNoKids:C.coupleNoKids, coupleKids:C.coupleKids};
     ['dis', 'ret', 'care', 'sch'].forEach(function(k){ var e = 0; Object.keys(w).forEach(function(t){ e += w[t]*CFG.LF_SHARES[t][k]*100; });
       var m = R['lf' + k.charAt(0).toUpperCase() + k.slice(1)]; if (!(Math.abs(m - e) < 1)) bad.push(k + ' ' + m.toFixed(2) + ' against ' + e.toFixed(2)); });
-    return {pass:!bad.length && R.lfShare > 14 && R.lfShare < 21, detail:'share ' + (R.lfShare || 0).toFixed(2) + '%; ' + bad.join('; ')}; });
+    var mI = 0, m2 = 0, mS = 0; ['dis', 'ret', 'care', 'sch'].forEach(function(k){ var Q = CFG.LF_INCOME[k], v = 0, v2 = 0; for (var i = 0; i < 20000; i++){ var y = lfIncome(Q, (i + 0.5)/20000); v += y/20000; v2 += y*y/20000; } var e = 0; Object.keys(w).forEach(function(t){ e += w[t]*CFG.LF_SHARES[t][k]; }); mI += e*v; m2 += e*v2; mS += e; });
+    var mR = mI/mS, se = Math.sqrt(m2/mS - mR*mR)/Math.sqrt(R.lfShare/100*500*40); if (!(Math.abs(R.lfInc0 - mR) < 4*se)) bad.push('mean own income ' + R.lfInc0.toFixed(0) + ' against the table\'s ' + mR.toFixed(0) + ' (4 SE = ' + (4*se).toFixed(0) + ')');  /* S61 Amendment 2: the table's mean is within 7% of the survey's for every reason (sources/lf_scope.json) */
+    return {pass:!bad.length && R.lfShare > 14 && R.lfShare < 21, detail:'share ' + (R.lfShare || 0).toFixed(2) + '%, mean own income $' + (R.lfInc0 || 0).toFixed(0) + ' (table ' + mR.toFixed(0) + ', SE ' + se.toFixed(0) + '); ' + bad.join('; ')}; });
   t('LF_SCOPE: adults outside the labour force earn no wages in any year; their own income is the drawn year-0 income at the year\'s price level; the others are untouched', function(){
     var P = Object.assign({}, FULL_INTEGRATION, {nAgents:200, years:6}), n = 0, bad = [], seen = 0;
     REP_HOOK = function(agents, yr){ agents.forEach(function(a){ if (!a._lf){ if (a._ret) bad.push('a retiree without ageing'); return; } n++;
