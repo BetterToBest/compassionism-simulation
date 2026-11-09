@@ -1466,6 +1466,62 @@ function lfUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { LF_KEYS, LF_DEFAULTS, lfInit, drExtra: function(){ return drExtra.apply(null, arguments); }, drFloorCut, lfUnitSuite });  /* S61 */
+/* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
+function prUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), r0 = [PRICE_RULE, PR_OPTS];
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); PRICE_RULE = r0[0]; PR_OPTS = r0[1]; PRS = null; TB = null; LABOR = null; PRICE = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), Y = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}};
+  var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:200});
+  function row(prog, x, c22, o){ var M = relMainCfgs(tbPresets(P)), c = frozenRow(Object.assign(M[prog ? 1 : 0], JSON.parse(JSON.stringify(Y)), JSON.parse(JSON.stringify(x || {}))));
+    if (o) c.o = Object.assign({}, c.o || {}, o); return c22 ? c22Design(c) : c; }
+  function same(A, B, keys){ var bad = []; keys.forEach(function(k){ if (A._s[k][0] !== B._s[k][0]) bad.push(k); }); return bad; }
+  /* the rule alone, fed its own inflation: seq of U/Y by year; returns the state */
+  function sim(o, seq, wIdx){ var S = prNew(o, true), PG = 1, B = 1, piG = 0;
+    seq.forEach(function(uy, yr){ var PGn = prStep(S, uy, 1, 1, wIdx === undefined ? 1 : wIdx, piG, B, 0, yr, PG*(1 + uy)); piG = PGn/PG - 1; PG = PGn; B = Math.exp(S.p.gen); });
+    return S; }
+  t('S58: off is today\'s rule: pr absent and pr \'qt\' give every output of the C2.2 design and its no-programme run identically, and add no pr key', function(){
+    var R = tbStudy([row(false), row(false, {pr:'qt'}), row(true, null, true), row(true, {pr:'qt'}, true)], 1, P, SO), bad = same(R[0], R[1], TB_KEYS).concat(same(R[2], R[3], TB_KEYS));
+    return {pass:bad.length === 0 && R[1].prOn === undefined && R[3].prOn === undefined, detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
+  t('S58: no new money: the no-programme run under the capacity rule gives every output of today\'s rule exactly (seed 1, Reference)', function(){
+    var R = tbStudy([row(false), row(false, {pr:true})], 1, P, SO), bad = same(R[0], R[1], TB_KEYS);
+    return {pass:bad.length === 0 && R[1].prOn === 1 && R[1].prX === 0, detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
+  t('S58: nesting: k = 1, r = a = h = 0 is today\'s rule (the rule alone over 30 random years to 1e-12; the C2.2 design\'s year-20 price level to 1e-9)', function(){
+    var rg = mulberry32(58), seq = [], q = 1; for (var i = 0; i < 30; i++){ seq.push(0.5*rg()); q *= 1 + seq[i]; }
+    var S = sim({k:1, r:0, a:0, h:0}, seq), d1 = Math.abs(Math.exp(S.p.gen)/q - 1);
+    var R = tbStudy([row(true, null, true), row(true, {pr:{k:1, r:0, a:0, h:0}}, true)], 1, P, SO), d2 = Math.abs(R[1].pLev20/R[0].pLev20 - 1);
+    return {pass:d1 < 1e-12 && d2 < 1e-9, detail:'rule alone ' + d1.toExponential(2) + '; C2.2 year-20 level ' + d2.toExponential(2)}; });
+  t('S58: slack: new money no larger than the slack moves no price (normal-years slack h, and a recession\'s idle share), and output takes it', function(){
+    var S = prNew({h:0.10, r:0, a:0}, true); prStep(S, 0.05, 1, 1, 0, 0, 1, 0, 0, 1.05);
+    var T = prNew({h:0, r:0, a:0}, true); prStep(T, 0.08, 1, 1, 0, 0, 1, 0.10, 0, 1.08);
+    return {pass:S.p.gen === 0 && T.p.gen === 0 && Math.abs(S.y[0].out - Math.log(1.05)) < 1e-12 && S.y[0].rat === 0, detail:'p ' + S.p.gen + ', ' + T.p.gen + '; output response ' + S.y[0].out.toFixed(4)}; });
+  t('S58: at capacity: with no slack, new money raises prices by k x the log gap (k 0.445); with k = 1 by the full gap', function(){
+    var S = prNew({h:0, r:0, a:0}, true); prStep(S, 0.2, 1, 1, 0, 0, 1, 0, 0, 1.2);
+    var T = prNew({h:0, r:0, a:0, k:1}, true); prStep(T, 0.2, 1, 1, 0, 0, 1, 0, 0, 1.2);
+    return {pass:Math.abs(S.p.gen - 0.445*Math.log(1.2)) < 1e-12 && Math.abs(T.p.gen - Math.log(1.2)) < 1e-12 && ['food', 'housing', 'medical'].every(function(k){ return S.p[k] === S.p.gen; }), detail:'p ' + S.p.gen.toFixed(5) + ' and ' + T.p.gen.toFixed(5)}; });
+  t('S58: more capacity, less pressure: the same 10 years of new money (20% of income) give a lower price level with slack 0.05 than with none; a sector\'s own slack lowers only that sector', function(){
+    var seq = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2], A = sim({h:0}, seq), B = sim({h:0.05}, seq), C = sim({h:{housing:0.05}}, seq);
+    return {pass:B.p.gen < A.p.gen && C.p.housing < C.p.gen && Math.abs(C.p.gen - A.p.gen) < 1e-12, detail:'log level ' + A.p.gen.toFixed(4) + ' against ' + B.p.gen.toFixed(4) + '; housing ' + C.p.housing.toFixed(4) + ' against ' + C.p.gen.toFixed(4)}; });
+  t('S58: a supply shock moves prices with no new money: a capacity loss of 0.1 in year 0 raises the general level by k x 0.1 and, through expectations and wages, keeps raising it for a while', function(){
+    var S = prNew({ks:[0.1]}, true), PG = 1, piG = 0, B = 1, l = [];
+    for (var y = 0; y < 5; y++){ var PGn = prStep(S, 0, 1, 1, 1, piG, B, 0, y, PG); piG = PGn/PG - 1; PG = PGn; B = PG; l.push(S.p.gen); }
+    return {pass:Math.abs(l[0] - 0.445*0.1) < 1e-12 && l[1] > l[0] && S.n === 0, detail:'log levels ' + l.map(function(v){ return v.toFixed(4); }).join(', ')}; });
+  t('S58: tax-financed differs from money-financed: the release row with the flat contribution moves the general level less than with Source financing, under the capacity rule', function(){
+    var R = tbStudy([row(true, {pr:true}), row(true, {pr:true}, false, {fin:'tax'})], 1, P, SO);
+    return {pass:R[1].pLev20 < R[0].pLev20 && R[1].prX < R[0].prX, detail:'year-20 level ' + R[0].pLev20.toFixed(3) + ' (Source) against ' + R[1].pLev20.toFixed(3) + ' (contribution)'}; });
+  t('S58: expectations: after 3 years of new money (30% of income) and 12 without, prices overshoot the money (pass-through above 1) with r and a on, and stop at or below it with both 0; the pull below normal (k2) lowers the overshoot', function(){
+    var seq = [0.3, 0.3, 0.3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], A = sim({}, seq), B = sim({r:0, a:0}, seq), C = sim({k2:0.657}, seq), D = sim({k2:0}, seq);
+    return {pass:A.p.gen/A.n > 1.01 && B.p.gen/B.n <= 1 + 1e-12 && B.p.gen/B.n > 0.99 && C.p.gen < A.p.gen && A.p.gen < D.p.gen, detail:'pass-through ' + (A.p.gen/A.n).toFixed(3) + ' (k2 0 ' + (D.p.gen/D.n).toFixed(3) + ', k2 0.657 ' + (C.p.gen/C.n).toFixed(3) + ') and ' + (B.p.gen/B.n).toFixed(4) + ' with r = a = 0'}; });
+  t('S58: mf is reporting only: no output of the release row or its no-programme run moves with it on; the money-flow identity holds (payout = BU at face + net conversion; U = payout - matched); the tax sits outside U', function(){
+    tbStudy([row(false), row(true)], 1, P, SO);  /* a warm-up: a no-programme row's PTF capacity keys (pd*) read the previous run's PTF state (pre-existing, reporting only), so R and Q must follow the same row */
+    var R = tbStudy([row(false), row(true)], 1, P, SO), Q = tbStudy([row(false), row(true)], 1, P, Object.assign({mf:true}, SO)), bad = same(R[0], Q[0], TB_KEYS).concat(same(R[1], Q[1], TB_KEYS)), m = Q[1];
+    var ok = m.mfChk < 1e-6 && Math.abs(m.mfU - (m.mfPay - m.mfM)) < 1e-6 && m.mfTax > 0 && Math.abs(m.mfCvG - m.mfCvN - m.mfTax) < 1e-6 && Math.abs(m.mfPay - (m.cBU + m.cConv)) < 1e-6 && Q[0].mfU === 0;
+    return {pass:bad.length === 0 && ok && R[1].mfU === undefined && Q[1].prOn === 0, detail:(bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') + '; ' : '') + 'payout ' + m.mfPay.toFixed(0) + ', matched ' + m.mfM.toFixed(0) + ', U ' + m.mfU.toFixed(0) + ', tax ' + m.mfTax.toFixed(0) + ', identity gap ' + m.mfChk.toExponential(2)}; });
+  return out;
+}
+Object.assign(module.exports, { PR_KEYS, MF_KEYS, PR_DEFAULTS, prNew, prStep, prUnitSuite });  /* S58 */
 function paUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000;
@@ -3525,7 +3581,11 @@ if (require.main === module) {
     console.log('\n=== lfUnitSuite(): S61, baseline scope (harness-only) ===');
     LFU.forEach(function(x){ if (!x.pass) lff++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + LFU.length + ' run, ' + lff + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf) process.exitCode = 1;
+    var PRU = prUnitSuite(), prf = 0;
+    console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
+    PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));

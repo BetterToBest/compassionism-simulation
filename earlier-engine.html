@@ -5830,6 +5830,7 @@ function runYear(agentSet,yr,p,recSt){
     else if(MULT.nt&&!recSt.active&&MLS.push>0){var ntW=0;agentSet.forEach(function(a){if(!a._ret&&!isNaN(a.wage)&&a.wage>0)ntW+=a.wage*12*CFG.WAGE_TO_USD;});  // v5.2 step 6: normal-times slack
       if(ntW>0){mlRest=Math.min(MULT.nt.s*ntW,MULT_LS*MULT.nt.m*MLS.push);mlNT=mlRest/ntW;}}
     MLS.y[yr]={fill:mlFill,loss:mlLoss,rest:mlRest,push:MLS.push};if(MULT.nt){MLS.y[yr].nt=mlNT;MLS.y[yr].ntR=mlNT>0?mlRest:0;}}
+  if(PRS&&PRICE&&PRICE.acc)PRICE.acc.slk=recSt.active?Math.max(0,1-popShock):0;  // S58: the share of income the recession left idle after the spending layer (capacity rule and mf only)
   var ptfLiveCount=0,ptfLiveTotal=agentSet.length;
   if(p.ptf&&p.ptfCap){agentSet.forEach(function(a){if(a.inPTF)ptfLiveCount++;});}
   var PDON=!!PROD&&CONVERSION_MODEL==='framework'&&!!p.ptf&&PROD.cap==='ptf',pdCap=1,pdLive=0;  /* plan step 2: PTF capacity (no RNG) */
@@ -6424,6 +6425,79 @@ function pmEssLevel(D, S, cap, theta){ var s = S*(1 + cap); return s > 0 ? Math.
 function pmGenStep(PG, U, Y, lam){ return Y > 0 ? PG*(1 + lam*U/Y) : PG; }
 function pmBasketIdx(comp){ var b = 1; CFG.BASKET_KEYS.forEach(function(k){ b += CFG.BASKET[k]*(comp[k] - 1); }); return b; }  /* 1 + weighted deviations: exactly 1 when no price moved */
 function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, Yw:0, ptfN:0, conv:0, pthLiq:0, wageBonus:0, wageBonusNS:0}; }  /* v5.2 step 6: Yw, earned income (wages and Social Security) */
+/* S58 (Nov 9, 2026; research-update prereg/2026-11-s58-price-rule.md; dev/reports/s58-price-rule.md): THE CAPACITY PRICE RULE, behind PRICE_RULE
+ * ('qt' = the quantity rule above, pmGenStep, unchanged and the default; 'capacity' = this rule), row option pr (true, or {k, k2, r, a, h, um, ks}),
+ * testbed runs only (tbRunCore; priceRun keeps 'qt', a stated limit). State: n, the log of the money-implied demand level; p[s], the log price level
+ * of sector s (gen = the general basket, food, housing, medical); all 0 at the start. Each year, after the year's flows (setting next year's prices,
+ * the same timing as today):
+ *   n += ln(1 + lamG x U/Y);   h[s] = h0[s] + ln(1/(1 - slk)) - ks[s];   x[s] = n - p[s];
+ *   p[s] += a[s] x w + r x piE + k x max(0, x[s] - h[s]) + k2 x min(0, x[s]),
+ * where w = ln(1 + wIdx x piG) is the year's wage indexation to the general level, piE = ln(B_t/B_t-1) the year's endogenous basket inflation
+ * (adaptive expectations) and slk the share of the year's income the recession left idle after the spending layer (PRICE.acc.slk, set in runYear).
+ * Next year: P_G = exp(p.gen); an essential's price = PE x exp(p[s]) (PE: the essentials rule, unchanged); every other item P_G. With k = 1 and
+ * r = a = h = 0 the rule is the quantity rule (p.gen = n) in every year with U >= 0; with no new money and no capacity loss every term is 0.
+ *  k   0.445   price response to excess demand (a year, on the log gap): derived, sources/s58_price_rule.py (OLS of annual CPI-U inflation on last
+ *              year's inflation and last year's CBO output gap split above and below potential, 1960-2024, 65 years: slope above 0.445, s.e. 0.189).
+ *              Swept 0.25 and 1.
+ *  k2  0.051   the pull of demand below normal (x < 0, only after prices overshoot the money): the same regression's slope below potential (s.e.
+ *              0.147; not distinguishable from 0). Swept 0.657 (1960-1983). Research-update prereg Amendment 1: without it nothing slows the price
+ *              level once it overshoots; with it, little does (a stated limit).
+ *  r   0.275   weight of last year's inflation: the same regression's persistence 0.783 (s.e. 0.073) less a x wIdx, the share the wage channel
+ *              already carries. Swept 0 (1984-2024: persistence 0.488, below a) and 0.45 (a + r must stay under 1, or inflation runs on with no money).
+ *  a   MULT_LS cost share of wages (0.5079, compensation of employees over gross domestic income 2025), every sector (no sector shares opened). Reading 0.
+ *  h   0       slack in normal years (log; a number for every sector, or {gen, food, housing, medical}): each sourced sector is at or past its no-pressure
+ *              level (CBO output gap 2025 +1.4%; food manufacturing utilisation 84.9% against its 1972-2025 mean 82.2%; rental vacancy 7.1% against 7.3%).
+ *              Reading {gen: 0.0446}: total-industry utilisation 2025 (75.95%) against its 1972-2025 mean (79.41%).
+ *  um  0.0593  the most output can stretch above its no-pressure level: the largest positive CBO gap since 1949 (1966 Q1, +6.1%). Reporting only.
+ *  ks  0       capacity loss (log; a number, {sector: v}, or an array of either by year): a supply shock with no new money (unit tests; no study row).
+ * Reporting (PR_KEYS, with the rule on, or under 'qt' with study option mf; nothing reported feeds back), on the general basket: prPT3/10/19/39
+ * pass-through ln P_G / n after 3, 10, 19, 39 years (0 before or without new money); means over the run of excess demand at the year's prices prX,
+ * the slack prH, the recession's idle share prSlk, the output response prOut, the rationed share prRat (demand no output can meet, beyond h + um)
+ * and the output loss prLoss (when prices overshoot the money, x < 0), all % of no-pressure output; the last year's prXE, prRatE and shadow ratio
+ * prSh = exp(max(0, x - h - um)), how far the measured level sits below one that would clear demand; prWsh median real wealth at shadow prices;
+ * prPovSh wealth poverty at shadow prices. No RNG. */
+var PRICE_RULE = 'qt', PR_OPTS = null, PRS = null, PR_SECT = ['gen', 'food', 'housing', 'medical'];
+var PR_DEFAULTS = {k:0.445, k2:0.051, r:0.275, a:MULT_LS, h:0, um:0.0593, ks:0};
+var PR_KEYS = ['prOn', 'prPT3', 'prPT10', 'prPT19', 'prPT39', 'prX', 'prH', 'prSlk', 'prOut', 'prRat', 'prLoss', 'prXE', 'prRatE', 'prSh', 'prWsh', 'prPovSh'];
+function prOpts(o){ return Object.assign({}, PR_DEFAULTS, o === true || !o ? {} : o); }
+function prSec(v, s, d){ return typeof v === 'number' ? v : v && typeof v[s] === 'number' ? v[s] : d; }  /* a sector's value: a number for every sector, or {sector: v} */
+function prNew(o, on){ return {on:!!on, o:prOpts(o), n:0, p:{gen:0, food:0, housing:0, medical:0}, bPrev:1, y:[], pt:{}}; }
+/* One year's step. U, Y: the year's unmatched new money and cash income (as pmGenStep); lam: lamG; wIdx, piG: the wage indexation and this year's general
+ * inflation; bIdx: this year's endogenous basket index; slk: the recession's idle share; PGq: the quantity rule's next level (used under 'qt', S.on false,
+ * where the state only records). Returns next year's P_G. */
+function prStep(S, U, Y, lam, wIdx, piG, bIdx, slk, yr, PGq){
+  var o = S.o, dn = Y > 0 ? Math.log(Math.max(1e-12, 1 + lam*U/Y)) : 0, w = Math.log(Math.max(1e-12, 1 + (wIdx || 0)*(piG || 0))), piE = Math.log(bIdx/S.bPrev);
+  var hR = slk > 0 ? -Math.log(1 - Math.min(0.999, slk)) : 0, ks = Array.isArray(o.ks) ? (o.ks[yr] || 0) : o.ks, xG = 0, hG = 0;
+  S.n += dn; S.bPrev = bIdx;
+  PR_SECT.forEach(function(s){ var h = prSec(o.h, s, 0) + hR - prSec(ks, s, 0), x = S.n - S.p[s];
+    if (s === 'gen'){ xG = x; hG = h; }
+    if (S.on) S.p[s] += prSec(o.a, s, MULT_LS)*w + o.r*piE + o.k*Math.max(0, x - h) + o.k2*Math.min(0, x); });
+  if (!S.on) S.p.gen = Math.log(PGq);
+  var cap = hG + o.um, rec = {x:xG, h:hG, slk:hR > 0 ? Math.min(0.999, slk) : 0, out:Math.min(Math.max(0, xG), Math.max(0, cap)), rat:Math.max(0, xG - cap), loss:Math.min(0, xG)};
+  S.y.push(rec); if (S.n > 0) S.pt[yr + 1] = S.p.gen/S.n;
+  return S.on ? Math.exp(S.p.gen) : PGq; }
+/* Next year's essentials under the rule: PE x exp(p[s]) (pgOnE false: PE alone, as today). */
+function prComp(S, comp, PE, pgOnE){ CFG.ESSENTIALS.forEach(function(k){ comp[k] = PE[k]*(pgOnE ? Math.exp(S.p[k]) : 1); }); }
+function prRes(r, S, agents, lineF){ var Y = S.y, T = Y.length, m = function(f){ return T ? Y.reduce(function(a, y){ return a + f(y); }, 0)/T*100 : 0; }, L = T ? Y[T - 1] : {x:0, h:0, rat:0};
+  var pct = function(v){ return Math.exp(v) - 1; }, sh = Math.exp(L.rat || 0), ws = agents.map(function(a){ return a.wealth; }), pv = 0;
+  ws.forEach(function(w){ if (w < CFG.POVERTY_LINE*lineF*sh) pv++; });
+  r.prOn = S.on ? 1 : 0; [3, 10, 19, 39].forEach(function(t){ r['prPT' + t] = S.pt[t] || 0; });
+  r.prX = m(function(y){ return pct(y.x); }); r.prH = m(function(y){ return pct(y.h); }); r.prSlk = m(function(y){ return y.slk; });
+  r.prOut = m(function(y){ return pct(y.out); }); r.prRat = m(function(y){ return 1 - Math.exp(-y.rat); }); r.prLoss = m(function(y){ return 1 - Math.exp(y.loss); });
+  r.prXE = pct(L.x)*100; r.prRatE = (1 - Math.exp(-(L.rat || 0)))*100; r.prSh = sh;
+  r.prWsh = medianOf(ws)/(agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1))/sh; r.prPovSh = agents.length ? pv/agents.length*100 : 0;
+  return r; }
+/* S58 study option mf (reporting only): the consolidated money-flow table, year-0 dollars per adult-year, means over the run (MF_KEYS):
+ * mfIss BU issued; mfBU BU spent at face value; mfCvG conversion gross; mfTax the conversion tax withheld; mfCvN conversion paid, net; mfPay the Source's
+ * payout (BU at face plus net conversion); mfM output matched to it; mfCut price cuts paid (PTF and PTH; outside U under Source financing); mfPth PTH
+ * appreciation credited; mfReSp the tax re-spent (0: no row's Source spends it); mfU new money U; mfY cash income Y; mfUY mean of U/Y (%); mfTaxSh the
+ * tax over gross conversion (%); mfChk the identity |U - (payout - matched)| (0 on a plain Source-financed row). */
+var MF_KEYS = ['mfIss', 'mfBU', 'mfCvG', 'mfTax', 'mfCvN', 'mfPay', 'mfM', 'mfCut', 'mfPth', 'mfReSp', 'mfU', 'mfY', 'mfUY', 'mfTaxSh', 'mfChk'];
+function mfNew(){ return {iss:0, bu:0, tax:0, cv:0, M:0, cut:0, pth:0, U:0, Y:0, uy:0, chk:0, T:0}; }
+function mfYear(F, C, U, Y){ var i = C.idx || 1; F.iss += C.buIss/i; F.bu += C.bu/i; F.tax += C.ctax/i; F.cv += C.conv/i; F.M += C.convM/i; F.cut += (C.cutPT - C.cutFree + C.cutG)/i;
+  F.pth += C.pthLiq/i; F.U += U/i; F.Y += Y/i; F.uy += Y > 0 ? U/Y : 0; F.chk += Math.abs(U - (C.bu + C.conv - C.convM))/i; F.T++; }
+function mfRes(r, F, NY){ r.mfIss = F.iss/NY; r.mfBU = F.bu/NY; r.mfCvG = (F.cv + F.tax)/NY; r.mfTax = F.tax/NY; r.mfCvN = F.cv/NY; r.mfPay = (F.bu + F.cv)/NY; r.mfM = F.M/NY;
+  r.mfCut = F.cut/NY; r.mfPth = F.pth/NY; r.mfReSp = 0; r.mfU = F.U/NY; r.mfY = F.Y/NY; r.mfUY = F.T ? F.uy/F.T*100 : 0; r.mfTaxSh = F.cv + F.tax > 0 ? F.tax/(F.cv + F.tax)*100 : 0; r.mfChk = F.chk/NY; return r; }
 /* One run with the price module. S: the supply path for effective essentials demand (per-agent share of basket consumed,
  * by year), normally the matched Baseline's own path under the same rule; null holds P_E at 1. Draws exactly as
  * runScenario() does. Returns the demand path D (for use as S), the price path, and end-of-run metrics under D2. */
@@ -6598,6 +6672,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var SXp = p.sx ? sxOpts(p.sx) : null; SXS = SXp ? sxNew(SXp, p.years) : null; if (SXS) SXS.p = p;  /* S52 (reporting state only with p.sx) */
   SECS = o.sec ? secNew(o.sec, p.years) : null;  /* S53 (reporting state only with o.sec) */
   DMS = o.dm ? dmNew(o.dm) : null;  /* S57 (reporting state only with o.dm) */
+  PRS = PRICE_RULE === 'capacity' || o.mf ? prNew(PR_OPTS, PRICE_RULE === 'capacity') : null; var MFS = o.mf ? mfNew() : null;  /* S58: the capacity rule (or, under 'qt' with o.mf, its record only); the money-flow table (o.mf) */
   LVS = o.lv ? lvNew(o.lv, p) : null;  /* S54 (only with o.lv) */
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null, tb:o.taxBase, tauMax:o.tauMax};  /* v5.2 step 7: taxBase 'prog' | 'land' (undefined = the flat contribution) */
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
@@ -6645,6 +6720,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       else if (o.fin === 'hybrid') U = (1 - o.a)*(C.conv - C.convM) + extra;  /* plan step 2: matched output (0 unless PROD) */  /* session 7 (d26 option c): transfers taxed, conversion rewards created at a */
       else U = (1 - o.a)*A.conv + (o.pthUnmatched ? A.pthLiq : 0) + extra;  /* 'none': the session 2-5 rule (transfers and price cuts unfinanced) */
       if (LVS) lvAcc(U, A.Yw, C.idx);  /* S54 */
+      if (MFS) mfYear(MFS, C, U, A.Y);  /* S58 (reporting only) */
       if (yr === 0){ L.need0 = need; L.base0 = C.base; if (C.Es){ L.Es0 = C.Es; L.xi0 = 1; } }  /* v5.2 step 7: year 0's earnings for the progressive schedule (its brackets are in year-0 terms) */
       if (MULT && MLS && MLS.y[yr] && MLS.y[yr].ntR) L.ntR += MLS.y[yr].ntR/C.idx;  /* v5.2 step 6: wages added by filling normal-times slack (year-0 $) */
       if (MULT && MLS) MLS.push = o.fin === 'source' ? Math.max(0, C.bu + C.conv - C.ctax) : 0;  /* plan step 16: next year's push, the net Source payout */
@@ -6666,13 +6742,15 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
         var dEff = o.supply === 'baseline' ? d : sRef + Math.max(0, d - sRef) - Math.max(0, S[yr] - sRef);
         PE[k] = pmEssLevel(dEff, sRef, capShare*cut, k === 'medical' && HEALTH && (HEALTH.set === 'B' || HEALTH.set === 'C') && yr + 1 >= HEALTH.start ? 0 : o.theta[k]);  /* session 2a, d-health-price rule a: under single payer the public payer sets rates (a shortage shows as waits); this step sets next year's prices */
       });
+      if (PRS) PGn = prStep(PRS, U, A.Y, o.lamG, PRICE.wIdx, PRICE.piG, PRICE.bIdx, PRICE.acc.slk || 0, yr, PGn);  /* S58: the capacity rule's general level (under 'qt' the record only; PGn unchanged) */
       path.push({bIdx:PRICE.bIdx, PG:PG, U:U, Y:A.Y, tau:tauUsed, colaLevel:PRICE.colaLevel, full:C.idx});  /* session 8: full price level (exogenous x endogenous) */
       PRICE.piG = PGn/PG - 1; PG = PGn;
       CFG.BASKET_KEYS.forEach(function(k){ comp[k] = CFG.ESSENTIALS.indexOf(k) >= 0 ? PE[k]*(o.pgOnE ? PG : 1) : PG; });
+      if (PRS && PRS.on) prComp(PRS, comp, PE, o.pgOnE);  /* S58: each essential at its own sector level under the capacity rule */
       if (SXp) sxApply(comp, SXp, yr + 1);  /* S52: the outside supply shock's factors for next year (only with p.sx) */
       PRICE.bIdx = pmBasketIdx(comp);
     }
-  } finally { PRICE = null; TB = null; if (labAcc) LABOR = null; var lvK = LVS; if (LVS){ lvEnd(); LVS = null; } }
+  } finally { PRICE = null; TB = null; if (labAcc) LABOR = null; var prK = PRS; PRS = null; var lvK = LVS; if (LVS){ lvEnd(); LVS = null; } }
   if (yMax < T) return {tau0: L.base0 > 0 ? (o.taxBase === 'prog' ? progLam(L.Es0, L.xi0, o.tauMax, L.need0, LABOR ? LABOR.eps - LABOR.rho : 0) : Math.min(o.tauMax, L.need0/L.base0)) : 0};
   var n = agents.length, NY = n*T, full = agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1), lineF = o.lines === 'nominal' ? 1 : full, pov = 0, bpov = 0, g0 = 0, g1 = 0, g2 = 0;
   var nbpov = 0;  /* session 7 (d28): design-neutral BLEI, Baseline rules plus one month of the design's regular support (the d28 gate's measure) */
@@ -6712,6 +6790,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (SXS) emR = sxRes(emR || {}, T);  /* S52 (only with p.sx) */
   if (SECS){ emR = secRes(emR || {}); SECS = null; }  /* S53 (only with o.sec) */
   if (DMS){ emR = dmRes(emR || {}); DMS = null; }  /* S57 (only with o.dm) */
+  if (prK) emR = prRes(emR || {}, prK, agents, lineF);  /* S58 (with the capacity rule, or o.mf) */
+  if (MFS) emR = mfRes(emR || {}, MFS, NY);  /* S58 (only with o.mf) */
   if (lvK) emR = lvRes(emR || {}, lvK, T, !!(JOIN && JNS && CONVERSION_MODEL === 'framework' && p.ccoOn));  /* S54 (only with o.lv) */
   var plv = {}; TB_PLV_KEYS.forEach(function(k, t){ plv[k] = t < path.length ? path[t].full : 0; });  /* S35 (reporting only) */  /* v5.4 item 3 (zeros in the no-programme run) */
   return {path:path, res:Object.assign(lfRes(fbsRes(FBSS, edcRes(EDCS, hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
@@ -7138,6 +7218,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var fx0 = FX; if (c.fx) FX = c.fx === true ? {pthb:true, hb:true, ab:true, sp:true} : Object.assign({}, c.fx);  /* S47: the second implementation's fixes for this row (no programme rows too) */
       var dr0 = DEBT_READ; if (c.dr) DEBT_READ = Object.assign({lim:0}, c.dr === true ? {} : c.dr);  /* S35: the debt reading for this row (no programme rows too) */
       var lf0 = LF_SCOPE; if (c.lf) LF_SCOPE = Object.assign({}, LF_DEFAULTS, c.lf === true ? {} : c.lf);  /* S61: adults outside the labour force for this row (no programme rows too) */
+      var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; }  /* S58: the capacity price rule for this row (no programme rows too) */
       var pa0 = [PTF_ACCESS, PA]; if (c.pa && c.pa !== 'members'){ if (c.pa !== 'open' && typeof c.pa !== 'object') throw new Error('pa: members, open or {fix}'); PTF_ACCESS = 'open'; PA = Object.assign({}, PA_DEFAULTS, typeof c.pa === 'object' ? c.pa : {}); }  /* S55: open PTF access for this row */
       var cl0 = COMM; if (c.cl) COMM = Object.assign({}, COMM_DEFAULTS, c.cl === true ? {} : c.cl);  /* S37: the community layer for this row */
       var c220 = C22; if (c.c22) C22 = Object.assign({}, C22_DEFAULTS, c.c22 === true ? {} : c.c22);  /* S6: coverage and adequacy for this row */
@@ -7154,6 +7235,8 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
         if (r.sxCBA !== undefined) SX_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S52 */
         if (r.secU25A !== undefined) SEC_KEYS.concat(S19_KEYS).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S53 */
+        if (r.prOn !== undefined) PR_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S58 */
+        if (r.mfU !== undefined) MF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S58 */
         if (r.dmWt1E !== undefined) DM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S57 */
         if (r.lvU !== undefined) LV_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S54 */
         if (r.bkmA !== undefined) BKM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S51 */
@@ -7172,7 +7255,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.drHit !== undefined) ['drHit', 'drCut'].forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: the debt reading's tally (rows with dr only) */
         if (r.lfShare !== undefined) LF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; LF_SCOPE = lf0; LFS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; LF_SCOPE = lf0; LFS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;

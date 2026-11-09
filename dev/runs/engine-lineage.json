@@ -654,6 +654,22 @@
    },
    "equal": true,
    "seconds": 142
+  },
+  {
+   "from": "c436375345a461445517159023e2054cd8226df926bfd8af951cf569d9f3bc87",
+   "to": "3386beb36da3e3c79736698246253229b80bc7a2116d0a3f5532bb8604f7b700",
+   "date": "2026-11-09",
+   "change": "S58: the capacity price rule behind PRICE_RULE (row option pr; off = today's rule) and the money-flow table (study option mf, reporting only)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 144
   }
  ]
 }
