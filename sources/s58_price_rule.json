@@ -1,0 +1,161 @@
+{
+ "files": {
+  "GDPC1": "1c6c6e9f59e383e20c849dd299175c7a307526c09abdc18f18da9754fc5b3343",
+  "GDPPOT": "4902611191d6df6cf8bffba4025c31d0aedfc878a47acc6e9ed1c7da48112b22",
+  "TCU": "7efe482917ac6a72fb342aaa63278a9975ffaa56120f6dd7743461d828c8b0cc",
+  "CAPUTLG311S": "d36a25a9810f26b1e96a1af6a78933b78507e9beb528e681b216a2c47e5073b7",
+  "RRVRUSQ156N": "cfcdcbfed310097eb98dbf1f807fdbd902c2ee26b2eac69b623108c5890182d1",
+  "CPIAUCSL": "8556b710094027fa4724641d48be620cc37c04abfa15a0c496378cf1146c1549"
+ },
+ "phillips": [
+  {
+   "years": [
+    1960,
+    2024
+   ],
+   "n": 65,
+   "form": "asymmetric",
+   "const": 0.0057,
+   "persistence": 0.783,
+   "persistenceSE": 0.073,
+   "slope": 0.445,
+   "slopeSE": 0.189,
+   "slopeBelow": 0.051,
+   "slopeBelowSE": 0.147
+  },
+  {
+   "years": [
+    1960,
+    2024
+   ],
+   "n": 65,
+   "form": "one-sided",
+   "const": 0.0051,
+   "persistence": 0.782,
+   "persistenceSE": 0.072,
+   "slope": 0.472,
+   "slopeSE": 0.17
+  },
+  {
+   "years": [
+    1960,
+    2024
+   ],
+   "n": 65,
+   "form": "two-sided",
+   "const": 0.0087,
+   "persistence": 0.788,
+   "persistenceSE": 0.073,
+   "slope": 0.213,
+   "slopeSE": 0.089
+  },
+  {
+   "years": [
+    1960,
+    1983
+   ],
+   "n": 24,
+   "form": "asymmetric",
+   "const": 0.0081,
+   "persistence": 0.922,
+   "persistenceSE": 0.101,
+   "slope": 0.282,
+   "slopeSE": 0.238,
+   "slopeBelow": 0.657,
+   "slopeBelowSE": 0.244
+  },
+  {
+   "years": [
+    1960,
+    1983
+   ],
+   "n": 24,
+   "form": "one-sided",
+   "const": 0.0019,
+   "persistence": 0.861,
+   "persistenceSE": 0.112,
+   "slope": 0.545,
+   "slopeSE": 0.247
+  },
+  {
+   "years": [
+    1960,
+    1983
+   ],
+   "n": 24,
+   "form": "two-sided",
+   "const": 0.0045,
+   "persistence": 0.915,
+   "persistenceSE": 0.1,
+   "slope": 0.466,
+   "slopeSE": 0.13
+  },
+  {
+   "years": [
+    1984,
+    2024
+   ],
+   "n": 41,
+   "form": "asymmetric",
+   "const": 0.0098,
+   "persistence": 0.488,
+   "persistenceSE": 0.153,
+   "slope": 0.615,
+   "slopeSE": 0.393,
+   "slopeBelow": -0.206,
+   "slopeBelowSE": 0.176
+  },
+  {
+   "years": [
+    1984,
+    2024
+   ],
+   "n": 41,
+   "form": "one-sided",
+   "const": 0.0141,
+   "persistence": 0.436,
+   "persistenceSE": 0.147,
+   "slope": 0.407,
+   "slopeSE": 0.353
+  },
+  {
+   "years": [
+    1984,
+    2024
+   ],
+   "n": 41,
+   "form": "two-sided",
+   "const": 0.0143,
+   "persistence": 0.49,
+   "persistenceSE": 0.156,
+   "slope": -0.0,
+   "slopeSE": 0.127
+  }
+ ],
+ "k": 0.445,
+ "k2": 0.051,
+ "k2High": 0.657,
+ "persistence": 0.783,
+ "a": 0.5078,
+ "r": 0.275,
+ "rAnchored": 0.0,
+ "rMax": 0.492,
+ "slack": {
+  "cboGap2025": 0.0139,
+  "hGeneral": 0.0,
+  "food2025": 84.92,
+  "foodMean1972_2025": 82.18,
+  "hFood": 0.0,
+  "vacancy2025": 7.1,
+  "vacancyMean1956_2025": 7.27,
+  "hHousing": 0.0,
+  "tcu2025": 75.95,
+  "tcuMean1972_2025": 79.41,
+  "hGeneralIndustryReading": 0.0446
+ },
+ "um": {
+  "maxGapQuarter": "1966-01-01",
+  "maxGap": 0.0611,
+  "um": 0.0593
+ }
+}
