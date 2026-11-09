@@ -1318,6 +1318,60 @@ function secUnitSuite(){
     return {pass:bad.length === 0 && ok && B[1].secF25A > 0, detail:(bad.length ? 'fails: ' + bad.join(', ') + '; ' : '') + 'release F25 ' + B[1].secF25A.toFixed(3) + ' (wages ' + B[1].secF25wA.toFixed(3) + ', conversion ' + B[1].secF25cA.toFixed(3) + ', other ' + B[1].secF25oA.toFixed(3) + '), U25b ' + B[1].secU25bA.toFixed(3) + ' of U25 ' + B[1].secU25A.toFixed(3)}; });
   return out;
 }
+/* S57 (Nov 9, 2026): distribution measures (index.html DM_GRID, dmQuantiles, dmTail, dmMeasure, dmFifths, dmYear, dmRes; study option o.dm). */
+function dmUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), hs = HHS;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); TB = null; LABOR = null; PRICE = null; DMS = null; HHS = hs; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:200});
+  function run(on, years){ var Q = Object.assign({}, P, {years:years || 20}), c = relMainCfgs(tbPresets(Q)).map(function(x){ return Object.assign(x, {sc:SPEND_SOURCED, sn:{abawd:true, slope:true}}); });
+    return tbStudy(c, 1, Q, on ? Object.assign({dm:true}, SO) : SO, 1); }
+  var A = null, B = null; function both(){ if (!A){ A = run(false); B = run(true); } }
+  var rg = mulberry32(57), rnd = function(n){ var v = []; for (var i = 0; i < n; i++) v.push(Math.exp(2*rg())*(rg() < 0.1 ? -1 : 1)); return v; };
+  function fake(w, d, wage, conv, ubi){ return {wealth:w, _tbDisp:d, yrWageUSD:wage || 0, yrConvUSD:conv || 0, yrUbiUSD:ubi || 0, yrBasketUSD:CFG.LIVING_WAGE_ANNUAL, _hhF:1}; }
+  t('S57: the distribution measures are reporting only: with o.dm on, no testbed output of the release row or its no-programme run moves (seed 1, Reference, raw numbers), off adds no key, and every dm key is finite', function(){
+    both(); var bad = []; [0, 1].forEach(function(i){ TB_KEYS.forEach(function(k){ if (A[i]._s[k][0] !== B[i]._s[k][0]) bad.push(i + ':' + k); }); });
+    return {pass:bad.length === 0 && A[1].dmWt1E === undefined && B[1].dmWt1E !== undefined && B[0].dmWt1E !== undefined && DM_KEYS.every(function(k){ return isFinite(B[1][k]) && isFinite(B[0][k]); }), detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
+  t('S57: at weight 1 the weighted percentiles equal the plain ones (quantileOf), and doubling an adult\'s weight equals listing the adult twice', function(){
+    var v = rnd(137), w = v.map(function(){ return 1; }), qs = DM_GRID.map(function(q){ return q/100; }), a = dmQuantiles(v, w, qs), d = 0;
+    qs.forEach(function(q, j){ d = Math.max(d, Math.abs(a[j] - quantileOf(v, q))); });
+    var w2 = w.slice(); w2[5] = 2; var v2 = v.concat([v[5]]), a2 = dmQuantiles(v, w2, qs), a3 = dmQuantiles(v2, v2.map(function(){ return 1; }), qs), d2 = 0;
+    var T1 = dmTail(v, w2, 0.1, true), T2 = dmTail(v2, v2.map(function(){ return 1; }), 0.1, true);
+    return {pass:d < 1e-9 && Math.abs(T1 - T2) < 1e-9, detail:'unit-weight gap ' + d.toExponential(2) + '; duplicated-adult top-10% sum gap ' + Math.abs(T1 - T2).toExponential(2) + '; (percentile gap with a doubled weight ' + (function(){ var m = 0; a2.forEach(function(x, j){ m = Math.max(m, Math.abs(x - a3[j])); }); return m.toExponential(2); })() + ', not required to be zero: the interpolation points differ)'}; });
+  t('S57: shares and ratios: an equal population gives top 1% 1, top 10% 10, bottom 50% 50 and Palma 0.25; top 10% >= top 1%; the bottom 50% and the top 50% add to 100', function(){
+    var e = [], o = {}; for (var i = 0; i < 200; i++) e.push(5); dmMeasure(e, e.map(function(){ return 1; }), o, 'W', 'S');
+    var v = rnd(300).map(Math.abs), w = v.map(function(){ return 1; }), r = {}; dmMeasure(v, w, r, 'Y', 'S');
+    var tot = dmTot(v, w), top50 = dmTail(v, w, 0.5, true)/tot*100;
+    var okE = Math.abs(o.dmWt10S - 10) < 1e-9 && Math.abs(o.dmWt1S - 1) < 1e-9 && Math.abs(o.dmWb50S - 50) < 1e-9 && Math.abs(o.dmWrS - 0.25) < 1e-9 && o.dmWrOkS === 1;
+    return {pass:okE && r.dmYt10S >= r.dmYt1S && Math.abs(r.dmYb50S + top50 - 100) < 1e-9, detail:'equal: ' + [o.dmWt1S, o.dmWt10S, o.dmWb50S, o.dmWrS].join(', ') + '; random top 1/10 ' + r.dmYt1S.toFixed(2) + '/' + r.dmYt10S.toFixed(2)}; });
+  t('S57: the wealth ratio is reported only where the bottom 40% hold positive wealth (flag 0 and ratio 0 otherwise)', function(){
+    var v = []; for (var i = 0; i < 100; i++) v.push(i < 60 ? -10 : 100); var o = {}; dmMeasure(v, v.map(function(){ return 1; }), o, 'W', 'S');
+    return {pass:o.dmWrOkS === 0 && o.dmWrS === 0, detail:'flag ' + o.dmWrOkS + ', ratio ' + o.dmWrS}; });
+  t('S57: mobility: the same wealth gives the identity matrix, each row sums to 100, and a reversed order gives the anti-diagonal; adults not present at Year 0 are not followed', function(){
+    HHS = null; var S = dmNew(true), ag = []; for (var i = 0; i < 100; i++) ag.push(fake(i*10, 100, 50));
+    dmYear(S, ag, {}, {}, 0, 2); dmYear(S, ag, {}, {}, 1, 2); var r = dmRes({}, S), id = true, sums = true;
+    var S3 = dmNew(true), ag3 = ag.slice(); dmYear(S3, ag3, {}, {}, 0, 2); ag3.push(fake(5, 100, 50)); dmYear(S3, ag3, {}, {}, 1, 2); var followed = dmRes({}, S3).dmMobN;
+    for (var a = 0; a < 5; a++){ var s = 0; for (var b = 0; b < 5; b++){ s += r['dmMob' + a + b]; if (Math.abs(r['dmMob' + a + b] - (a === b ? 100 : 0)) > 1e-9) id = false; } if (Math.abs(s - 100) > 1e-9) sums = false; }
+    var S2 = dmNew(true), ag2 = []; for (var j = 0; j < 100; j++) ag2.push(fake(j*10, 100, 50)); dmYear(S2, ag2, {}, {}, 0, 2); ag2.forEach(function(x, j2){ x.wealth = (99 - j2)*10; }); dmYear(S2, ag2, {}, {}, 1, 2);
+    var r2 = dmRes({}, S2), anti = true; for (var a2 = 0; a2 < 5; a2++) for (var b2 = 0; b2 < 5; b2++) if (Math.abs(r2['dmMob' + a2 + b2] - (b2 === 4 - a2 ? 100 : 0)) > 1e-9) anti = false;
+    return {pass:id && sums && anti && r.dmMobN === 100 && followed === 100, detail:'identity ' + id + ', rows ' + sums + ', anti-diagonal ' + anti + ', followed ' + r.dmMobN + ', with one newcomer ' + followed}; });
+  t('S57: labour\'s share: wages 60 and a transfer 40 give 60%; wages plus conversion proceeds 80 of 100 give 80% on the second reading; the run-average ratio is of real sums', function(){
+    HHS = null; var S = dmNew(true), ag = [fake(10, 90, 60, 0, 40), fake(10, 90, 60, 0, 40)]; dmYear(S, ag, {}, {}, 0, 1); var r = dmRes({}, S);
+    var S2 = dmNew(true), a2 = [fake(10, 90, 60, 20, 20)]; dmYear(S2, a2, {}, {}, 0, 1); var r2 = dmRes({}, S2);
+    return {pass:Math.abs(r.dmLsS - 60) < 1e-9 && Math.abs(r.dmLsPY - 60) < 1e-9 && Math.abs(r2.dmLsS - 60) < 1e-9 && Math.abs(r2.dmLcS - 80) < 1e-9, detail:'Ls ' + r.dmLsS + ', ' + r2.dmLsS + ', Lc ' + r2.dmLcS}; });
+  t('S57: debt keys on hand-made families: shares, median debt and debt against income', function(){
+    var a = [fake(-100, 50, 50), fake(30, 50, 50), fake(-300, 100, 100), fake(500, 100, 100), fake(-200, 60, 60)]; HHS = {list:[{a:[a[0], a[1]]}, {a:[a[2]]}, {a:[a[3]]}, {a:[a[4]]}]};
+    var S = dmNew(true); dmYear(S, a, {}, {}, 0, 1); var r = dmRes({}, S);
+    /* families: (-100+30)=-70 debt 70 income 100; -300 debt 300 income 100; +500; -200 debt 200 income 60: 3 of 4 in debt, median debt 200, (70+300+200)/(100+100+60) */
+    return {pass:Math.abs(r.dmFdS - 75) < 1e-9 && Math.abs(r.dmDmS - 200) < 1e-9 && Math.abs(r.dmDiS - 570/260) < 1e-9, detail:r.dmFdS + ', ' + r.dmDmS + ', ' + r.dmDiS}; });
+  t('S57: in a run, families in debt in the last year equal the engine\'s own hhDebt20, shares and ratios are in range, and the no-programme row has a Gini of wealth with debts kept (eGiniWN) beside the one with debts at zero (eGiniW)', function(){
+    both(); var R = B[1], N = B[0], ok = true; [R, N].forEach(function(x){ if (!(x.dmWt10E >= x.dmWt1E && x.dmWt1E > 0 && x.dmLsE >= 0 && x.dmLsE <= x.dmLcE && x.dmLcE <= 100)) ok = false; });
+    var d = Math.max(Math.abs(R.dmFdE - R.hhDebt20), Math.abs(N.dmFdE - N.hhDebt20)), rows = true; for (var i = 0; i < 5; i++){ var s = 0; for (var j = 0; j < 5; j++) s += R['dmMob' + i + j]; if (Math.abs(s - 100) > 1e-6) rows = false; }
+    return {pass:ok && d < 1e-9 && rows && isFinite(N.eGiniWN) && isFinite(N.eGiniW), detail:'debt share gap ' + d.toExponential(2) + '; top 10% wealth share, no programme, last year ' + N.dmWt10E.toFixed(1) + '%'}; });
+  return out;
+}
 function lvUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
@@ -3017,6 +3071,7 @@ function healthUnitSuite(){
 Object.assign(module.exports, { C22_KEYS, C22_DEFAULTS, c22NeedsBU, c22Share });  /* S6 */
 Object.assign(module.exports, { SX_DEFAULTS, SX_KEYS, SX_GRPS, SX_WINS, sxOpts, sxEnergy, sxFac, sxYear, sxWin, sxPtf, sxUnitSuite, fxUnitSuite, TB_PLV_KEYS });  /* S52 */
 Object.assign(module.exports, { SEC_DEFAULTS, SEC_KEYS, SEC_GRPS, SEC_M, S19_KEYS, S19_M, S19_N, secUnitSuite });  /* S53 */
+Object.assign(module.exports, { DM_GRID, DM_KEYS, dmQuantiles, dmTail, dmMeasure, dmFifths, dmUnitSuite });  /* S57 */
 /* S47 (Nov 6, 2026; research-update prereg/run-manifest.md section 1): the frozen model, as one place for the testbed, explore_export.js and the batch's job
  * scripts to build it from. frozenRow(c): a study row on the frozen engine, the outside audit's corrections (au: gate, sg, fbs) and the second implementation's
  * four fixes (fx: pthb, hb, ab, sp) and the frozen spending share (SPEND_FROZEN), on every row a study runs, its no-programme rows included. c22Design(c): a programme row (relMainCfgs' second) turned into the
@@ -3454,6 +3509,10 @@ if (require.main === module) {
     console.log('\n=== secUnitSuite(): S53, security outcomes and the S19 series (harness-only) ===');
     SEU.forEach(function(x){ if (!x.pass) sef++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + SEU.length + ' run, ' + sef + ' failed');
+    var DMU = dmUnitSuite(), dmf = 0;
+    console.log('\n=== dmUnitSuite(): S57, distribution measures (harness-only) ===');
+    DMU.forEach(function(x){ if (!x.pass) dmf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + DMU.length + ' run, ' + dmf + ' failed');
     var LVU = lvUnitSuite(), lvf = 0;
     console.log('\n=== lvUnitSuite(): S54, the policy levers (harness-only) ===');
     LVU.forEach(function(x){ if (!x.pass) lvf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
@@ -3466,7 +3525,7 @@ if (require.main === module) {
     console.log('\n=== lfUnitSuite(): S61, baseline scope (harness-only) ===');
     LFU.forEach(function(x){ if (!x.pass) lff++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + LFU.length + ' run, ' + lff + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
