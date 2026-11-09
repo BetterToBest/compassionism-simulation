@@ -198,6 +198,8 @@ A new random process gets its own stream; nothing may add a draw to the main str
 
 All are means over the 500 seeds; a change is the mean of the 500 per-seed differences (programme − no programme on the same seed), and its 95% interval is `mean ± 1.96 × sd/√500` of those differences (`tbDiff`).
 
+That interval is the release row's (the page and the release file). The study reports from S36 on (S36, S38, S5, S55) use 95% paired-bootstrap intervals over seeds instead (10,000 replicates), unless a report says otherwise; each states its method beside its tables. The wealth Gini (`giniW`) counts debts as zero; the same Gini with debts kept is `giniWN` (both in every release and study output).
+
 | Measure (key) | Definition |
 |---|---|
 | Below the cost of living (`fgt0PY`) | Share of adult-years in which cash income (earnings + conversion + payouts + cash transfers − contribution) is below the adult's own cost of living (the basket after in-kind price cuts and BU purchases). Averaged over all years of the run. |
