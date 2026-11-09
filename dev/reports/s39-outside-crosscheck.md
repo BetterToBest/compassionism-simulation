@@ -47,6 +47,7 @@ In Adverse and Stress the full level also carries the environment's own price pa
 Facts the rerun establishes:
 - In these rows U is exactly the Source's payout less the part matched by output (`srcPay - srcM`, to the dollar per adult-year), and the general price level grows each year by exactly U/Y.
 - The conversion tax the Source keeps (about $13,500 per adult-year in C2.2 Reference) does not reduce U. If the tax takes money back out of circulation, the rule overstates the new money by that amount; if the Source spends it again, it does not. This is an open engine question for the next engine round (preregistration rule 4), not a change here.
+  *Correction note (Nov 9, 2026, step S58, `dev/reports/s58-price-rule.md` section 4):* this item is wrong. The engine records every conversion it pays net of the tax (gross × (1 − tax), or gross − tax − face value for the business premium), so the tax never reaches anyone's cash and U already excludes it; netting it from U again would count it twice. The Source spends none of it. S58's money-flow table shows it on every pilot seed (identity gap 0; C2.2 Reference: tax withheld $12,300 per adult-year, 23% of gross conversion). No figure in this report changes.
 - The price level does not depend on population size (study A: 500 to 50,000 adults agree within Monte Carlo error), because the rule reads only ratios.
 
 ## 2. The outside engine and the module
