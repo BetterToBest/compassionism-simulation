@@ -1,0 +1,18 @@
+{
+ "holdAny": 60.9,
+ "holdAnyBottom40": 59.9,
+ "unsecuredHolders": [
+  1200,
+  5000,
+  15000
+ ],
+ "unsecuredHoldersBottom40": [
+  710,
+  2500,
+  8700
+ ],
+ "liquidShareMedian": 0.046,
+ "inDebt": 9.6,
+ "turnedDown": 12.6,
+ "fearedDenial": 17.2
+}

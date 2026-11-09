@@ -606,6 +606,38 @@
    },
    "equal": true,
    "seconds": 138
+  },
+  {
+   "from": "68b5d6170719c8a799c15fe23af492b238a2f58460d654daddfea8e453314d34",
+   "to": "4b2c1786017950e22b40dffbb4059133c8cd87aedcd550e97c9c66951c510784",
+   "date": "2026-11-09",
+   "change": "S61: LF_SCOPE (row option lf) and the debt reading's lim moved with prices, liq and fl, off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 203
+  },
+  {
+   "from": "4b2c1786017950e22b40dffbb4059133c8cd87aedcd550e97c9c66951c510784",
+   "to": "21039dc0e6822918bb3aa73e325941f6ab9e7d3a9c400d8a68d35dd3121e208d",
+   "date": "2026-11-09",
+   "change": "S61 Amendment 2: LF_SCOPE own-income table at 0.5-point steps (off by default)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 396
   }
  ]
 }
