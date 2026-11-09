@@ -14,7 +14,7 @@ const Y = {sn: {abawd: true, slope: true}, lt: {s: 'all', m: 'all'}};
 /* name, programme (0 none, 1 release, 2 C2.2), price rule (undefined = today's) */
 const ROWS = [['np', 0], ['np-cap', 0, true], ['rel', 1], ['rel-cap', 1, true], ['rel-k25', 1, {k: 0.25}],
   ['c22', 2], ['c22-cap', 2, true], ['c22-k25', 2, {k: 0.25}], ['c22-k1', 2, {k: 1}], ['c22-r0', 2, {r: 0}], ['c22-r45', 2, {r: 0.45}], ['c22-a0', 2, {a: 0}],
-  ['c22-h', 2, {h: {gen: 0.0446}}], ['c22-k2z', 2, {k2: 0}], ['c22-k2h', 2, {k2: 0.657}], ['c22-nest', 2, {k: 1, r: 0, a: 0, h: 0}]];
+  ['c22-h', 2, {h: {gen: 0.0446}}], ['c22-k2z', 2, {k2: 0}], ['c22-k2h', 2, {k2: 0.657}], ['c22-nest', 2, {k: 1, r: 0, a: 0, h: 0, rs: false}]];
 const OUTK = ['endoAnn', 'endoMax', 'pLev10', 'pLev20', 'pov', 'fgt0PY', 'hhCostPY', 'bOAPy', 'medWealthReal', 'srcPay', 'srcM', 'srcTax', 'cost', 'eGiniW', 'eGiniWN', 'hhDebt20']
   .concat(H.TB_PLV_KEYS || []).concat(H.PR_KEYS, H.MF_KEYS);
 const out = {_meta: {what: 'S58: the capacity price rule pilot (research-update prereg/2026-11-s58-price-rule.md, Amendment 1)', env, seeds: N, years: YRS, yardstick: Y, frozen: H.FROZEN,

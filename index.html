@@ -6146,7 +6146,7 @@ function pmGenStep(PG, U, Y, lam){ return Y > 0 ? PG*(1 + lam*U/Y) : PG; }
 function pmBasketIdx(comp){ var b = 1; CFG.BASKET_KEYS.forEach(function(k){ b += CFG.BASKET[k]*(comp[k] - 1); }); return b; }  /* 1 + weighted deviations: exactly 1 when no price moved */
 function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, Yw:0, ptfN:0, conv:0, pthLiq:0, wageBonus:0, wageBonusNS:0}; }  /* v5.2 step 6: Yw, earned income (wages and Social Security) */
 /* S58 (Nov 9, 2026; research-update prereg/2026-11-s58-price-rule.md; dev/reports/s58-price-rule.md): THE CAPACITY PRICE RULE, behind PRICE_RULE
- * ('qt' = the quantity rule above, pmGenStep, unchanged and the default; 'capacity' = this rule), row option pr (true, or {k, k2, r, a, h, um, ks}),
+ * ('qt' = the quantity rule above, pmGenStep, unchanged and the default; 'capacity' = this rule), row option pr (true, or {k, k2, r, a, h, rs, um, ks}),
  * testbed runs only (tbRunCore; priceRun keeps 'qt', a stated limit). State: n, the log of the money-implied demand level; p[s], the log price level
  * of sector s (gen = the general basket, food, housing, medical); all 0 at the start. Each year, after the year's flows (setting next year's prices,
  * the same timing as today):
@@ -6155,7 +6155,7 @@ function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, Y
  * where w = ln(1 + wIdx x piG) is the year's wage indexation to the general level, piE = ln(B_t/B_t-1) the year's endogenous basket inflation
  * (adaptive expectations) and slk the share of the year's income the recession left idle after the spending layer (PRICE.acc.slk, set in runYear).
  * Next year: P_G = exp(p.gen); an essential's price = PE x exp(p[s]) (PE: the essentials rule, unchanged); every other item P_G. With k = 1 and
- * r = a = h = 0 the rule is the quantity rule (p.gen = n) in every year with U >= 0; with no new money and no capacity loss every term is 0.
+ * r = a = h = 0 and rs false the rule is the quantity rule (p.gen = n) in every year with U >= 0; with no new money and no capacity loss every term is 0.
  *  k   0.445   price response to excess demand (a year, on the log gap): derived, sources/s58_price_rule.py (OLS of annual CPI-U inflation on last
  *              year's inflation and last year's CBO output gap split above and below potential, 1960-2024, 65 years: slope above 0.445, s.e. 0.189).
  *              Swept 0.25 and 1.
@@ -6168,6 +6168,7 @@ function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, Y
  *  h   0       slack in normal years (log; a number for every sector, or {gen, food, housing, medical}): each sourced sector is at or past its no-pressure
  *              level (CBO output gap 2025 +1.4%; food manufacturing utilisation 84.9% against its 1972-2025 mean 82.2%; rental vacancy 7.1% against 7.3%).
  *              Reading {gen: 0.0446}: total-industry utilisation 2025 (75.95%) against its 1972-2025 mean (79.41%).
+ *  rs  true    count the recession's idle share as slack (false: only h; the nesting point; research-update prereg Amendment 2).
  *  um  0.0593  the most output can stretch above its no-pressure level: the largest positive CBO gap since 1949 (1966 Q1, +6.1%). Reporting only.
  *  ks  0       capacity loss (log; a number, {sector: v}, or an array of either by year): a supply shock with no new money (unit tests; no study row).
  * Reporting (PR_KEYS, with the rule on, or under 'qt' with study option mf; nothing reported feeds back), on the general basket: prPT3/10/19/39
@@ -6177,7 +6178,7 @@ function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, Y
  * prSh = exp(max(0, x - h - um)), how far the measured level sits below one that would clear demand; prWsh median real wealth at shadow prices;
  * prPovSh wealth poverty at shadow prices. No RNG. */
 var PRICE_RULE = 'qt', PR_OPTS = null, PRS = null, PR_SECT = ['gen', 'food', 'housing', 'medical'];
-var PR_DEFAULTS = {k:0.445, k2:0.051, r:0.275, a:MULT_LS, h:0, um:0.0593, ks:0};
+var PR_DEFAULTS = {k:0.445, k2:0.051, r:0.275, a:MULT_LS, h:0, rs:true, um:0.0593, ks:0};
 var PR_KEYS = ['prOn', 'prPT3', 'prPT10', 'prPT19', 'prPT39', 'prX', 'prH', 'prSlk', 'prOut', 'prRat', 'prLoss', 'prXE', 'prRatE', 'prSh', 'prWsh', 'prPovSh'];
 function prOpts(o){ return Object.assign({}, PR_DEFAULTS, o === true || !o ? {} : o); }
 function prSec(v, s, d){ return typeof v === 'number' ? v : v && typeof v[s] === 'number' ? v[s] : d; }  /* a sector's value: a number for every sector, or {sector: v} */
@@ -6187,7 +6188,7 @@ function prNew(o, on){ return {on:!!on, o:prOpts(o), n:0, p:{gen:0, food:0, hous
  * where the state only records). Returns next year's P_G. */
 function prStep(S, U, Y, lam, wIdx, piG, bIdx, slk, yr, PGq){
   var o = S.o, dn = Y > 0 ? Math.log(Math.max(1e-12, 1 + lam*U/Y)) : 0, w = Math.log(Math.max(1e-12, 1 + (wIdx || 0)*(piG || 0))), piE = Math.log(bIdx/S.bPrev);
-  var hR = slk > 0 ? -Math.log(1 - Math.min(0.999, slk)) : 0, ks = Array.isArray(o.ks) ? (o.ks[yr] || 0) : o.ks, xG = 0, hG = 0;
+  var hR = o.rs !== false && slk > 0 ? -Math.log(1 - Math.min(0.999, slk)) : 0, ks = Array.isArray(o.ks) ? (o.ks[yr] || 0) : o.ks, xG = 0, hG = 0;
   S.n += dn; S.bPrev = bIdx;
   PR_SECT.forEach(function(s){ var h = prSec(o.h, s, 0) + hR - prSec(ks, s, 0), x = S.n - S.p[s];
     if (s === 'gen'){ xG = x; hG = h; }

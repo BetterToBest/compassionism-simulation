@@ -1488,11 +1488,13 @@ function prUnitSuite(){
   t('S58: no new money: the no-programme run under the capacity rule gives every output of today\'s rule exactly (seed 1, Reference)', function(){
     var R = tbStudy([row(false), row(false, {pr:true})], 1, P, SO), bad = same(R[0], R[1], TB_KEYS);
     return {pass:bad.length === 0 && R[1].prOn === 1 && R[1].prX === 0, detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
-  t('S58: nesting: k = 1, r = a = h = 0 is today\'s rule (the rule alone over 30 random years to 1e-12; the C2.2 design\'s year-20 price level to 1e-9)', function(){
+  t('S58: nesting: k = 1, r = a = h = 0 with rs false is today\'s rule (the rule alone over 30 random years to 1e-12; the C2.2 design\'s year-20 price level to 1e-9 in Reference, and in Adverse on seed 39, 500 adults, whose recession leaves idle income after the spending layer, where rs true differs)', function(){
     var rg = mulberry32(58), seq = [], q = 1; for (var i = 0; i < 30; i++){ seq.push(0.5*rg()); q *= 1 + seq[i]; }
-    var S = sim({k:1, r:0, a:0, h:0}, seq), d1 = Math.abs(Math.exp(S.p.gen)/q - 1);
-    var R = tbStudy([row(true, null, true), row(true, {pr:{k:1, r:0, a:0, h:0}}, true)], 1, P, SO), d2 = Math.abs(R[1].pLev20/R[0].pLev20 - 1);
-    return {pass:d1 < 1e-12 && d2 < 1e-9, detail:'rule alone ' + d1.toExponential(2) + '; C2.2 year-20 level ' + d2.toExponential(2)}; });
+    var S = sim({k:1, r:0, a:0, h:0, rs:false}, seq), d1 = Math.abs(Math.exp(S.p.gen)/q - 1), nest = {k:1, r:0, a:0, h:0, rs:false};
+    var R = tbStudy([row(true, null, true), row(true, {pr:nest}, true)], 1, P, SO), d2 = Math.abs(R[1].pLev20/R[0].pLev20 - 1);
+    var Pa = Object.assign({}, ADVERSE_REFERENCE, {years:20, nAgents:500}), rowA = function(x){ var M = relMainCfgs(tbPresets(Pa)); return c22Design(frozenRow(Object.assign(M[1], JSON.parse(JSON.stringify(Y)), x || {}))); };
+    var Q = tbStudy([rowA(), rowA({pr:nest}), rowA({pr:{k:1, r:0, a:0, h:0}})], 39, Pa, SO, 39), d3 = Math.abs(Q[1].pLev20/Q[0].pLev20 - 1), d4 = Math.abs(Q[2].pLev20/Q[0].pLev20 - 1);
+    return {pass:d1 < 1e-12 && d2 < 1e-9 && d3 < 1e-9 && d4 > 1e-6, detail:'rule alone ' + d1.toExponential(2) + '; C2.2 year-20 level ' + d2.toExponential(2) + ' (Reference), ' + d3.toExponential(2) + ' (Adverse; with the recession\'s slack counted ' + d4.toExponential(2) + ')'}; });
   t('S58: slack: new money no larger than the slack moves no price (normal-years slack h, and a recession\'s idle share), and output takes it', function(){
     var S = prNew({h:0.10, r:0, a:0}, true); prStep(S, 0.05, 1, 1, 0, 0, 1, 0, 0, 1.05);
     var T = prNew({h:0, r:0, a:0}, true); prStep(T, 0.08, 1, 1, 0, 0, 1, 0.10, 0, 1.08);
