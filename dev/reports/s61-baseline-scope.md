@@ -24,9 +24,66 @@ The outside reviews (research-update `audits/2026-11-s39-s55-review-triage.md`, 
 
 The Hub's Optimal Transfer Design paper distributes the Basic Unit "universally" (`dev/reports/c22-coverage-adequacy.md`, which read the papers for S6); nothing in the papers treats adults outside the labour force differently. So in the model they receive the Basic Unit and every price effect like anyone else. Where the papers are silent is whether they gain programme income through work. The engine treats them as it treats retirees: they may take part in conversion projects, giving up no wage. A reading with no conversion at all (`conv: 'none'`) is reported beside it. **Modelling assumption:** status is fixed for the run (nobody enters or leaves the labour force); bargaining power and the outside option, which could move people in or out, come in S60.
 
-## Results
+## Results (pilot: seeds 1-100, 500 adults, 20 years; engine `1d9ab84`; every figure in `dev/runs/s61-scope/tables.md`)
 
-(Filled from the pilot below.)
+Every row is the frozen yardstick (the frozen engine, US earnings, today's safety net) plus the named reading. Figures are means over the 100 seeds.
+
+### 1. Borrowing for ordinary spending: the limit changes how deep households fall, not how many fall into debt
+
+| Families in debt (net worth below zero), Reference | Year 0 | Year 20 | Single parents, median net worth, Year 20 |
+|---|---|---|---|
+| US (SCF 2025, head 25-64 with wages) | 9.3% | (one year only) | $49,000 |
+| Frozen yardstick (no limit; write-off at −$10,000) | 13.4% | 22.0% | −$1,400 |
+| **Cap, limit $2,500 (recommended)** | 13.4% | 21.6% | $5,000 |
+| Cap, limit $5,000 / $8,700 / $10,000 | 13.4% | 21.8% / 21.9% / 21.9% | $2,800 / −$300 / −$1,400 |
+| Cap, limit $0 (S35's reading) | 9.9% | 12.3% | $7,100 |
+| Cap, only 4.6% of savings available | 10.6% | 18.3% | $24,900 |
+| Floor (graded only above the poverty line) + cap | 12.5% | 20.8% | $8,100 |
+
+- Any positive limit lets a household below its budget cross zero, so the share in debt hardly moves (22.0% → 21.6-21.9%). What the limit changes is how far households fall and whether the floor writes their debt off: with the cap, a single parent's median net worth at Year 20 is +$5,000 instead of −$1,400, and spending that the released rule financed by a write-off is cut instead (the limit binds in about 58% of the year-decisions where spending is graded, with a mean cut of about $10,900 in today's dollars).
+- Only a limit of zero (no borrowing at all, which the reviews called unrealistic) brings the figure near the survey's: 12.3%. The remaining gap at any positive limit is **open**: households below their budget in the model keep spending above their income every year, which the survey's 9.3% says real households do far less. A sourced reason for that (family help inside the household, deeper cuts, the timing of spending) is not in the model. The 9.3% is a check, not a target, and no constant was changed to approach it.
+- Adverse and Stress tell the same story (Year 20: 30.5% frozen, 30.4% cap, 28.9% floor, 18.2% limit $0).
+- None of the readings moves basket poverty or the cost-of-living measure (they compare income with the full budget, so a cut in spending is hardship, not relief); wealth poverty moves by at most 2.4 points (the liquid-share reading: 21.9% → 20.5% in Reference, 31.9% → 29.5% in Adverse and Stress; the floor reading: 21.9% → 21.4% in Reference, 31.9% → 31.0% in Adverse and Stress; the limit alone by less than 0.1).
+
+**Recommendation to S63 (criterion C1-C3, fixed before the run):** the **cap reading with the $2,500 limit** for the main row. It is admissible (spending above income only from savings and the explicit limit; unit test), every constant is sourced or a labelled design parameter, and it has one fewer design choice than the floor reading. The floor reading, the limit sweep and the liquid-share reading go beside it.
+
+### 2. Adults outside the labour force
+
+| Reference, Year 0 | US | Frozen yardstick | With adults outside the labour force (`lf`) |
+|---|---|---|---|
+| Adults 25-64 with any earnings | 80.9% | 100.0% (gap) | 82.7% |
+| Official poverty, adults | 8.5% | 3.3% (gap) | 11.5% |
+| Official poverty, children | 13.4% | 6.1% (gap) | 14.5% |
+| Official poverty, adults and children | 10.0% | 4.1% (gap) | 12.4% |
+| Median household money income | $105,000 | $93,000 | $75,600 (gap) |
+| Median family net worth | $185,600 | $162,300 | $159,300 |
+| Families in debt (Year 20: 22.0% and 27.9%) | 9.3% | 13.4% (gap) | 14.3% (gap) |
+
+- The switch does what it says: 17.3% of adults are outside the labour force (the CPS share), the share with earnings moves from 100% to 82.7% (the survey: 80.9%), and official poverty closes from well below the survey to somewhat above it.
+- It overshoots poverty for the adults it adds. By reason, the model's official poverty at Year 0 against the CPS: disability 52% (35%), early retirement 28% (19%), care 44% (24%), school 63% (35%); adults in the labour force 4.7% (4.6%). The likely reason is scope (class "scope"): in the model a household is one or two adults and their children, so a student or a disabled adult living with parents or other relatives is a one-adult household with only its own income; in the survey their family's income counts. Household money income falls for the same reason (more one-adult households with low income). Not tuned; reported.
+- They fall into debt more: 27.9% of families at Year 20 (27.7% with the cap).
+
+### 3. Does the programme's effect depend on the reading? (criterion C4; pilot, not a result)
+
+The C2.2 design against its own no-programme row, Reference, points (95% paired bootstrap interval):
+
+| Reading | Basket poverty | Wealth poverty | Cost-of-living measure |
+|---|---|---|---|
+| Frozen yardstick | −24.6 [−25.0, −24.3] | +0.7 [+0.2, +1.1] | −28.2 [−28.7, −27.8] |
+| Cap ($2,500) | −24.6 [−25.0, −24.3] | +0.7 [+0.3, +1.1] | −28.3 [−28.7, −27.8] |
+| Floor + cap | −24.6 [−25.0, −24.3] | +1.1 [+0.7, +1.6] | −28.2 [−28.7, −27.8] |
+| Adults outside the labour force | −31.4 [−31.8, −31.0] | +9.8 [+9.4, +10.3] | −34.9 [−35.4, −34.5] |
+| Adults outside the labour force + cap | −31.4 [−31.8, −31.0] | +9.9 [+9.4, +10.4] | −35.0 [−35.4, −34.5] |
+
+- No reading changes the sign of an effect or whether its interval excludes zero, in any environment, so C4 does not require S63 to carry two main rows.
+- But adding adults outside the labour force changes the size of the programme's effects a great deal. The basket-poverty gain is larger (−31.4 against −24.6 points: more people start below the cost of living and the Basic Unit reaches them), and so is the wealth-poverty **harm**: +9.8 points against +0.7 in Reference (Adverse +35.4 against +30.2; Stress +45.0 against +41.7). A likely mechanism, not yet traced: adults with no wages cannot rebuild savings that the programme's inflation erodes. **For S63:** carry `lf` on and off beside each other whatever the main row, and trace the wealth-poverty harm before any headline uses it.
+- With no conversion income for these adults (`conv: 'none'`), the no-programme figures are identical (as they must be); the programme effect under that reading is for S63's rows.
+
+## What S63 must carry from this step
+1. Main-row candidates: the cap reading at $2,500 (recommended) and `lf` (recommended under decision rule 3: its tests pass and it moves the share with earnings to the CPS figure). Which readings join the main row is S63's ledger decision.
+2. Beside them: the limit sweep ($0, $5,000, $8,700, $10,000), the liquid share 0.046, the floor reading, `lf` off, `conv: 'none'`.
+3. A per-adult reporting key for basket poverty by labour-force reason (Q4; prereg Amendment 1 item 5).
+4. The open gap on families in debt, and the wealth-poverty harm under `lf`, traced before any headline uses it.
 
 ## Limits
 
