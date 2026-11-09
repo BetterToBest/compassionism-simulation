@@ -6317,6 +6317,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
   var SXp = p.sx ? sxOpts(p.sx) : null; SXS = SXp ? sxNew(SXp, p.years) : null; if (SXS) SXS.p = p;  /* S52 (reporting state only with p.sx) */
   SECS = o.sec ? secNew(o.sec, p.years) : null;  /* S53 (reporting state only with o.sec) */
+  DMS = o.dm ? dmNew(o.dm) : null;  /* S57 (reporting state only with o.dm) */
   LVS = o.lv ? lvNew(o.lv, p) : null;  /* S54 (only with o.lv) */
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null, tb:o.taxBase, tauMax:o.tauMax};  /* v5.2 step 7: taxBase 'prog' | 'land' (undefined = the flat contribution) */
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
@@ -6336,6 +6337,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       if (!o.noEP){ var epY = extremePovertyOf(housingDistressOf(agents), epD0, p); epSum += epY ? epY.total/100 : 0; }  /* plan step 9 */  /* session 21 (s41): year-end state, before this year's price step (which moves no agent) */
       if (R52) tbRepYear(R52, agents, p, o, yr, T, (!o.noEP && epY) ? epY.total : 0);  /* v5.2 step 2 */
       if (SECS) secYear(agents, p, yr, (!o.noEP && epY) ? epY.total : 0);  /* S53 */
+      if (DMS) dmYear(DMS, agents, p, o, yr, T);  /* S57 (reporting only) */
       if (RHH) hhRepYear(RHH, agents, p, o, yr, T);  /* v5.3 B3 */
       if (yr === 19) dbt20 = tbDebtShare(agents); else if (yr === 39) dbt40 = tbDebtShare(agents);  /* S35 (reporting only) */
       if (EDCS) edcYear(EDCS, agents, p);  /* v5.3 B6 */
@@ -6429,6 +6431,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (o.bkm && L.bkm) emR = bkmRes(emR || {}, L.bkm, T);  /* S51 (only with o.bkm) */
   if (SXS) emR = sxRes(emR || {}, T);  /* S52 (only with p.sx) */
   if (SECS){ emR = secRes(emR || {}); SECS = null; }  /* S53 (only with o.sec) */
+  if (DMS){ emR = dmRes(emR || {}); DMS = null; }  /* S57 (only with o.dm) */
   if (lvK) emR = lvRes(emR || {}, lvK, T, !!(JOIN && JNS && CONVERSION_MODEL === 'framework' && p.ccoOn));  /* S54 (only with o.lv) */
   var plv = {}; TB_PLV_KEYS.forEach(function(k, t){ plv[k] = t < path.length ? path[t].full : 0; });  /* S35 (reporting only) */  /* v5.4 item 3 (zeros in the no-programme run) */
   return {path:path, res:Object.assign(lfRes(fbsRes(FBSS, edcRes(EDCS, hhRes(RHH, tbRepRes(R52, tbBleiRes(BG, {
@@ -6675,6 +6678,71 @@ function secRes(r){ var S = SECS, pc = function(x, n){ return n > 0 ? x/n*100 : 
   S19_M.forEach(function(m, j){ for (var t = 0; t < S19_N; t++){ var n = S.s[7][t], v = S.s[j][t];
     r['s19' + m + '_' + t] = m === 'n' || m === 'hd' || m === 'ep' ? v : m === 'f0X' ? (S.xn && S.xn[t] > 0 ? v/S.xn[t]*100 : 0) : n > 0 ? (m === 'gD' || m === 'gDc' ? v/n : v/n*100) : 0; } });
   return r; }
+/* S57 (Nov 9, 2026; research-update PLAN.md S57, prereg/2026-11-s57-distribution-measures.md): DISTRIBUTION MEASURES. Reporting only: no draw, nothing any rule
+ * reads (the only write is a mobility tag on each adult, a._dmQ, which no rule reads). Off unless the study options set o.dm (true, or an object, reserved);
+ * off, no key is added and no figure moves (guard test). Every share, percentile and rate is weighted by a._w (1 until S59's tail exists); at weight 1 it equals
+ * the plain version (unit test). Two moments: the end of Year 0 (suffix S, the start) and the end of the last year (suffix E). Dollars are Year-0 dollars (nominal over the
+ * year's price level, as tbRepYear does). Wealth is a.wealth (net worth, debts kept); income is a._tbDisp (disposable income, the Gini's income).
+ * Keys (s = S or E):
+ *   dmWt1s, dmWt10s, dmWb50s   top 1%, top 10% and bottom 50% share of wealth (%, of the weighted total net worth; the bottom share is negative if debts exceed assets)
+ *   dmYt1s, dmYt10s, dmYb50s   the same for disposable income
+ *   dmYps, dmYpOks             Palma ratio of income (top 10% over bottom 40%); dmYpOk 1 when the bottom 40% hold positive income (ratio 0 otherwise)
+ *   dmWrs, dmWrOks             wealth top-10-to-bottom-40 ratio; dmWrOk 1 when the bottom 40% hold positive wealth (ratio 0 otherwise)
+ *   dmWp<q>s, dmYp<q>s         real wealth and real income at percentile q of DM_GRID (1, 5, 10, ..., 95, 99), Year-0 dollars
+ *   dmLss, dmLcs, dmLsPY, dmLcPY   labour's share of money income (tbCashIncome): wages; wages plus conversion proceeds (%); s = the year, PY = ratio of the real sums over all years
+ *   dmFds, dmDms, dmDis        families in debt (%, tbDebtShare's family); median debt of those families (Year-0 $, 0 if none); their debt over their members' disposable income (0 if none)
+ *   dmNs                       adults
+ *   dmMob<i><j>, dmMobN        (last year only) % of the adults present at Year 0 in wealth fifth i (0 poorest) found in fifth j; the number followed */
+var DM_GRID = [1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 99], DMS = null;
+var DM_KEYS = (function(){ var k = [];
+  ['S', 'E'].forEach(function(s){ ['Wt1', 'Wt10', 'Wb50', 'Yt1', 'Yt10', 'Yb50', 'Yp', 'YpOk', 'Wr', 'WrOk', 'Ls', 'Lc', 'Fd', 'Dm', 'Di', 'N'].forEach(function(m){ k.push('dm' + m + s); });
+    DM_GRID.forEach(function(q){ k.push('dmWp' + q + s); k.push('dmYp' + q + s); }); });
+  k.push('dmLsPY', 'dmLcPY', 'dmMobN'); for (var i = 0; i < 5; i++) for (var j = 0; j < 5; j++) k.push('dmMob' + i + j); return k; })();
+function dmNew(o){ return {o:o === true ? {} : o, snap:{}, pyW:0, pyC:0, pyY:0, mob:null}; }
+function dmSort(v){ var idx = v.map(function(x, i){ return i; }); idx.sort(function(a, b){ return v[a] - v[b] || a - b; }); return idx; }
+/* the weighted quantile: order statistic k sits at (cumulative weight - its weight)/(total - mean weight), which is type 7 (quantileOf) at weight 1 */
+function dmQuantiles(v, w, qs){ var n = v.length; if (!n) return qs.map(function(){ return 0; });
+  var idx = dmSort(v), W = 0, p = [], c = 0; idx.forEach(function(i){ W += w[i]; });
+  var den = W - W/n; idx.forEach(function(i){ p.push(den > 0 ? c/den : 0); c += w[i]; });
+  return qs.map(function(q){ if (n === 1 || den <= 0) return v[idx[0]]; var k = 0; while (k < n - 2 && p[k + 1] <= q + 1e-12) k++;
+    var a = p[k], b = p[k + 1], t = b > a ? Math.min(1, Math.max(0, (q - a)/(b - a))) : 0; return v[idx[k]] + (v[idx[k + 1]] - v[idx[k]])*t; }); }
+/* the weighted sum of x over the top (or bottom) fraction f of the weighted population; the boundary adult counts for the part needed */
+function dmTail(v, w, f, top){ var idx = dmSort(v); if (top) idx.reverse(); var W = 0, s = 0; idx.forEach(function(i){ W += w[i]; }); var rem = f*W;
+  for (var t = 0; t < idx.length && rem > 0; t++){ var i = idx[t], u = Math.min(w[i], rem); s += u*v[i]; rem -= u; } return s; }
+function dmTot(v, w){ var s = 0; for (var i = 0; i < v.length; i++) s += w[i]*v[i]; return s; }
+function dmMeasure(v, w, out, pre, s){  /* shares, ratios and (for the grid) percentiles of one variable */
+  var T = dmTot(v, w), sh = function(f, top){ return T > 0 ? dmTail(v, w, f, top)/T*100 : 0; };
+  out['dm' + pre + 't1' + s] = sh(0.01, true); out['dm' + pre + 't10' + s] = sh(0.10, true); out['dm' + pre + 'b50' + s] = sh(0.50, false);
+  var b40 = dmTail(v, w, 0.40, false), t10 = dmTail(v, w, 0.10, true), ok = b40 > 0 ? 1 : 0;
+  out['dm' + (pre === 'W' ? 'Wr' : 'Yp') + s] = ok ? t10/b40 : 0; out['dm' + (pre === 'W' ? 'WrOk' : 'YpOk') + s] = ok;
+  var qs = dmQuantiles(v, w, DM_GRID.map(function(q){ return q/100; })); DM_GRID.forEach(function(q, j){ out['dm' + pre + 'p' + q + s] = qs[j]; }); }
+function dmFifths(v, w){ var idx = dmSort(v), W = 0, c = 0, q = new Array(v.length); idx.forEach(function(i){ W += w[i]; });
+  idx.forEach(function(i){ q[i] = W > 0 ? Math.min(4, Math.floor(5*(c + w[i]/2)/W)) : 0; c += w[i]; }); return q; }
+function dmYear(S, agents, p, o, yr, T){
+  var n = agents.length; if (!n || yr >= T) return;
+  var lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1);
+  var wt = agents.map(function(a){ return a._w === undefined ? 1 : +a._w; }), wg = 0, wc = 0, mi = 0;
+  agents.forEach(function(a, i){ var wgi = +a.yrWageUSD || 0, cv = +a.yrConvUSD || 0; wg += wt[i]*wgi; wc += wt[i]*(wgi + cv); mi += wt[i]*tbCashIncome(a); });
+  S.pyW += wg/lf; S.pyC += wc/lf; S.pyY += mi/lf;
+  if (yr !== 0 && yr !== T - 1) return;
+  var s = yr === 0 ? 'S' : 'E', o2 = {}, W = agents.map(function(a){ return a.wealth/lf; }), Y = agents.map(function(a){ return (+a._tbDisp || 0)/lf; });
+  dmMeasure(W, wt, o2, 'W', s); dmMeasure(Y, wt, o2, 'Y', s);
+  o2['dmLs' + s] = mi > 0 ? wg/mi*100 : 0; o2['dmLc' + s] = mi > 0 ? wc/mi*100 : 0; o2['dmN' + s] = n;
+  var fam = [];
+  if (HHS && HHS.list) HHS.list.forEach(function(H){ if (H.a.length) fam.push(H.a); }); else agents.forEach(function(a){ fam.push([a]); });
+  var fd = 0, fw = 0, dv = [], dw = [], dy = 0, dd = 0;
+  fam.forEach(function(m){ var wl = 0, y = 0, ww = 0; m.forEach(function(a){ wl += a.wealth; y += (+a._tbDisp || 0); ww += (a._w === undefined ? 1 : +a._w); }); ww /= m.length; fw += ww;
+    if (wl < 0){ fd += ww; dv.push(-wl/lf); dw.push(ww); dd += ww*(-wl/lf); dy += ww*y/lf; } });
+  o2['dmFd' + s] = fw > 0 ? fd/fw*100 : 0; o2['dmDm' + s] = dv.length ? dmQuantiles(dv, dw, [0.5])[0] : 0; o2['dmDi' + s] = dy > 0 ? dd/dy : 0;
+  S.snap[s] = o2;
+  var q = dmFifths(W, wt);
+  if (yr === 0) agents.forEach(function(a, i){ a._dmQ = q[i]; });
+  else { var M = [0, 1, 2, 3, 4].map(function(){ return [0, 0, 0, 0, 0]; }), N = 0; agents.forEach(function(a, i){ if (a._dmQ !== undefined){ M[a._dmQ][q[i]] += wt[i]; N++; } }); S.mob = {M:M, N:N}; } }
+function dmRes(r, S0){ var S = S0 || DMS; DM_KEYS.forEach(function(k){ r[k] = 0; });
+  ['S', 'E'].forEach(function(s){ var o2 = S.snap[s]; if (o2) Object.keys(o2).forEach(function(k){ r[k] = o2[k]; }); });
+  r.dmLsPY = S.pyY > 0 ? S.pyW/S.pyY*100 : 0; r.dmLcPY = S.pyY > 0 ? S.pyC/S.pyY*100 : 0;
+  if (S.mob){ r.dmMobN = S.mob.N; S.mob.M.forEach(function(row, i){ var t = row.reduce(function(x, y){ return x + y; }, 0); row.forEach(function(c, j){ r['dmMob' + i + j] = t > 0 ? c/t*100 : 0; }); }); }
+  return r; }
 /* S54 (Nov 5, 2026; research-update PLAN.md S54, ledger D12 and D13; dev/reports/s54-levers-reading.md): THE POLICY LEVERS, behind the row option o.lv
  * (undefined = off: nothing here runs and every figure is unchanged; o.lv = {} sets every lever at the design's own value and moves no figure either, unit test).
  * Each field is one lever a government running the programme could set; each is a design parameter swept by study N (research-update
@@ -6806,6 +6874,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.fbsAbove !== undefined) FBS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B7 */
         if (r.sxCBA !== undefined) SX_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S52 */
         if (r.secU25A !== undefined) SEC_KEYS.concat(S19_KEYS).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S53 */
+        if (r.dmWt1E !== undefined) DM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S57 */
         if (r.lvU !== undefined) LV_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S54 */
         if (r.bkmA !== undefined) BKM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S51 */
         if (r.dsHit !== undefined) DIS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 5 */
