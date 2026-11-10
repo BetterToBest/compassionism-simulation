@@ -4040,6 +4040,69 @@ var SPEND_GRADE = null;
  * used up the adult spends its income; the rest of the cost is cut, as the rule's own cut is (it stays in wealth, a._grCut). Nothing else changes: the debt
  * floor still applies to job loss, shocks and every other flow. No random draw. Per row: c.dr ({} or true = {lim:0}). */
 var DEBT_READ = null;
+/* S59 (Nov 10, 2026; research-update prereg/2026-11-s59-asset-classes.md; dev/reports/s59-asset-classes.md): RETURNS, wealth held by asset class.
+ * Off (null) unless a study row sets rt (true, or an object over RT_DEFAULTS); off, nothing is read and no figure moves (guard test). No random draw.
+ * At an adult's first year the adult's net worth is split by the household's wealth group (RT_EDGES: below zero, then the SCF population's P25, P50, P75,
+ * P90, P99 of net worth, 2025 dollars; RT_GROUPS, per group: debts over assets, the asset shares home, other real estate, shares, private business, other
+ * goods (the rest is nominal assets), and the fixed-rate share of debts; SCF 2022, sources/s59_portfolio.py): gross assets G = W/(1 - lev), debts lev*G.
+ * Each later year, before anything else reads the adult's wealth: last year's saving (every other change in the adult's wealth) repays floating debt, then
+ * goes to nominal assets (ns 'nom'; 'port': by the group's asset shares), and a shortfall draws nominal assets to zero, then adds floating debt; then with
+ * pi the change in the price level (the one SAVE uses) a real asset of class c grows by (1 + ix*pi)(1 + rho[c]) - 1, nominal assets by phi*pi, floating
+ * debt by psi*pi, and fixed-rate debt by chi*pi (main 0: it keeps its dollar value; 1: it reprices like floating debt, the reading with no debt relief). rho: Shiller's real price gains 1953-2022 (sources/s59_real_gains.py; other real estate as
+ * homes, private business as shares, other goods 0: modelling assumptions); phi 0.46: Drechsler, Savov and Schnabl, QJE 2017 (deposit rates rise 46 basis
+ * points per 100 of the policy rate). all: 'nom' or 'real' holds every asset in one class with no fixed debt (unit tests). Real assets are never sold and
+ * fixed debt is never repaid; there is no creditor side and no capital income (limits, in the report).
+ * Reporting (RT_KEYS, with rt only; Year-0 dollars per adult, weighted by a._w): the last year's real wealth in three parts, E the opening nominal position
+ * held untouched (nominal assets and floating debt with their interest, less fixed debt), V the opening real assets held untouched, S the rest (saving since
+ * the start and what it earned); the same at the start (E0, V0); each for all adults and by fifth of starting wealth (suffix 1-5); the top 1% of adults'
+ * share of private business equity at the end of Year 0 and of the last year (rtBt1S, rtBt1E, %); the last year's real assets, nominal assets, floating
+ * and fixed debt (rtRE, rtNE, rtDvE, rtDfE). */
+var RETURNS = null, RTR = null, RT_CLASSES = ['home', 'ore', 'eq', 'bus', 'oth'],
+  RT_DEFAULTS = {ix:1, phi:0.46, psi:1, chi:0, rho:{home:0.0094, ore:0.0094, eq:0.0402, bus:0.0402, oth:0}, ns:'nom', all:null},
+  RT_EDGES = [0, 40571, 215318, 728230, 2030980, 14012139],
+  RT_GROUPS = [[1.8197, 0.431, 0.0231, 0.0774, 0.0064, 0.2727, 0.9285], [0.6816, 0.4107, 0.0089, 0.0532, 0.0078, 0.3875, 0.9034], [0.5643, 0.673, 0.0249, 0.0591, 0.0097, 0.1345, 0.9071], [0.3186, 0.6073, 0.0427, 0.1033, 0.0225, 0.0844, 0.9067], [0.1899, 0.4524, 0.0801, 0.197, 0.0285, 0.0478, 0.9142], [0.0898, 0.243, 0.0835, 0.3039, 0.1453, 0.0219, 0.8851], [0.0288, 0.0761, 0.0872, 0.2025, 0.4854, 0.0171, 0.7482]];
+var RT_KEYS = ['rtE', 'rtV', 'rtS', 'rtE0', 'rtV0'].reduce(function(r, k){ r.push(k); [1, 2, 3, 4, 5].forEach(function(q){ r.push(k + q); }); return r; }, []).concat(['rtBt1S', 'rtBt1E', 'rtRE', 'rtNE', 'rtDvE', 'rtDfE']);
+function rtOpts(v){ var o = Object.assign({}, RT_DEFAULTS, v === true ? {} : v), rho = {};
+  RT_CLASSES.forEach(function(c){ rho[c] = typeof o.rho === 'number' ? o.rho : (o.rho && o.rho[c] !== undefined ? +o.rho[c] : RT_DEFAULTS.rho[c]); }); o.rho = rho;
+  if (o.ns !== 'nom' && o.ns !== 'port') throw new Error('rt.ns must be \'nom\' or \'port\''); if (o.all && o.all !== 'nom' && o.all !== 'real') throw new Error('rt.all must be \'nom\' or \'real\'');
+  return o; }
+function rtGroup(W){ var g = 0; while (g < RT_EDGES.length && W >= RT_EDGES[g]) g++; return g; }  /* 0: below zero */
+function rtOpen(w, Wh, R, P){  /* one adult's opening balances: w the adult's net worth, Wh the household's (in Year-0 dollars for the group), P the price level */
+  var b = {r:[0, 0, 0, 0, 0], v:[0, 0, 0, 0, 0], n:0, dv:0, df:0, en:0, ed:0, al:null, g:-1, w0:w, w:w, p:P, p0:P}, c, q = R.all ? null : RT_GROUPS[rtGroup(Wh)], G = q ? w/(1 - q[0]) : 0;
+  if (q && G >= 0){ var s = 0; b.g = rtGroup(Wh); for (c = 0; c < 5; c++){ b.r[c] = G*q[1 + c]; s += q[1 + c]; } b.n = G*(1 - s); b.df = G*q[0]*q[6]; b.dv = G*q[0]*(1 - q[6]); b.al = q.slice(1, 6).concat([1 - s]); }
+  else { if (w >= 0){ if (R.all === 'real') b.r[4] = w; else b.n = w; } else b.dv = -w; b.al = R.all === 'real' ? [0, 0, 0, 0, 1, 0] : [0, 0, 0, 0, 0, 1]; }  /* all in one class (or an adult whose sign differs from the household's) */
+  for (c = 0; c < 5; c++) b.v[c] = b.r[c]; b.en = b.n; b.ed = b.dv; b.e0 = b.n - b.dv - b.df; b.v0 = b.r[0] + b.r[1] + b.r[2] + b.r[3] + b.r[4]; return b; }
+function rtPlace(b, flow, R){  /* a year's saving: repays floating debt, then nominal assets (or the group's asset shares); a shortfall draws nominal assets, then borrows */
+  if (flow >= 0){ var pay = Math.min(b.dv, flow), c; b.dv -= pay; flow -= pay; if (R.ns === 'port'){ for (c = 0; c < 5; c++) b.r[c] += flow*b.al[c]; b.n += flow*b.al[5]; } else b.n += flow; }
+  else { var d = Math.min(b.n, -flow); b.n -= d; b.dv += -flow - d; } }
+function rtStep(b, flow, pi, R){  /* one year: last year's saving, then the revaluation; returns the revaluation in dollars (what is added to the adult's wealth) */
+  var c, f, x, I = 0; rtPlace(b, flow, R);
+  for (c = 0; c < 5; c++){ f = (1 + R.ix*pi)*(1 + R.rho[RT_CLASSES[c]]) - 1; I += b.r[c]*f; b.r[c] += b.r[c]*f; b.v[c] += b.v[c]*f; }
+  x = R.phi*pi; I += b.n*x; b.n += b.n*x; b.en += b.en*x; x = R.psi*pi; I -= b.dv*x; b.dv += b.dv*x; b.ed += b.ed*x; x = R.chi*pi; I -= b.df*x; b.df += b.df*x; return I; }
+function rtInit(agents, P){  /* before the year's loop: adults seen for the first time (every adult in Year 0), from the household's net worth before any of its members' year */
+  if (SAVE) throw new Error('rt (wealth by asset class) and sv (savings that keep up with prices) would revalue wealth twice: use one');
+  agents.forEach(function(a){ if (a._rt) return; var Wh = a.wealth; if (a._hh && a._hh.a && a._hh.a.length > 1){ Wh = 0; a._hh.a.forEach(function(m){ Wh += m.wealth; }); } a._rt = rtOpen(a.wealth, Wh/P, RETURNS, P); a._rtNew = true; }); }
+function rtAdult(a, P){  /* in the year's loop, where SAVE pays its interest: returns the revaluation added to the adult's wealth */
+  var b = a._rt; if (a._rtNew){ a._rtNew = false; return 0; }
+  var I = rtStep(b, a.wealth - b.w, P/b.p - 1, RETURNS); a.wealth += I; b.w = a.wealth; b.p = P; return I; }
+function rtRep(S, agents, o, yr, T){  /* reporting only: the end of Year 0 and of the last year */
+  var n = agents.length; if (!n || (yr !== 0 && yr !== T - 1)) return;
+  var lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1), sfx = yr === 0 ? 'S' : 'E';
+  var L = agents.filter(function(a){ return a._rt; }), wt = L.map(function(a){ return a._w === undefined ? 1 : +a._w; }), tw = 0, tb = 0, cw = 0, top = 0;
+  var ord = L.map(function(a, i){ return i; }).sort(function(i, j){ return L[j].wealth - L[i].wealth || i - j; });
+  wt.forEach(function(w, i){ tw += w; tb += w*L[i]._rt.r[3]; });
+  ord.forEach(function(i){ var take = Math.max(0, Math.min(wt[i], 0.01*tw - cw)); cw += wt[i]; top += take*L[i]._rt.r[3]; });
+  S['rtBt1' + sfx] = tb > 0 ? top/tb*100 : 0;
+  if (yr === 0){ var o0 = L.map(function(a, i){ return i; }).sort(function(i, j){ return L[i]._rt.w0 - L[j]._rt.w0 || i - j; }), c0 = 0;  /* fifths of starting wealth (by weight) */
+    o0.forEach(function(i){ L[i]._rt.q = Math.min(5, Math.floor((c0 + wt[i]/2)/tw*5) + 1); c0 += wt[i]; }); }
+  if (yr !== T - 1) return;
+  var A = {}, W = [0, 0, 0, 0, 0, 0]; ['rtE', 'rtV', 'rtS', 'rtE0', 'rtV0', 'rtRE', 'rtNE', 'rtDvE', 'rtDfE'].forEach(function(k){ A[k] = [0, 0, 0, 0, 0, 0]; });
+  L.forEach(function(a, i){ var b = a._rt, q = b.q || 0, w = wt[i], E = (b.en - b.ed - b.df)/lf, V = (b.v[0] + b.v[1] + b.v[2] + b.v[3] + b.v[4])/lf, k = {r:b.r.slice(), n:b.n, dv:b.dv, al:b.al}; rtPlace(k, a.wealth - b.w, RETURNS);  /* k: the classes with this year's saving placed */
+    var R = (k.r[0] + k.r[1] + k.r[2] + k.r[3] + k.r[4])/lf;
+    [0, q].forEach(function(j, t){ if (t && !q) return; W[j] += w; A.rtE[j] += w*E; A.rtV[j] += w*V; A.rtS[j] += w*(a.wealth/lf - E - V); A.rtE0[j] += w*b.e0/b.p0; A.rtV0[j] += w*b.v0/b.p0;
+      A.rtRE[j] += w*R; A.rtNE[j] += w*k.n/lf; A.rtDvE[j] += w*k.dv/lf; A.rtDfE[j] += w*b.df/lf; }); });
+  ['rtE', 'rtV', 'rtS', 'rtE0', 'rtV0'].forEach(function(k){ for (var j = 0; j < 6; j++) S[k + (j || '')] = W[j] > 0 ? A[k][j]/W[j] : 0; });
+  ['rtRE', 'rtNE', 'rtDvE', 'rtDfE'].forEach(function(k){ S[k] = W[0] > 0 ? A[k][0]/W[0] : 0; }); }
 /* S61 (Nov 9, 2026; research-update prereg/2026-11-s61-baseline-scope.md; dev/reports/s61-baseline-scope.md): LF_SCOPE, adults outside the labour force
  * (null = off: every adult is in the labour force, as released). When an object (row option lf; LF_DEFAULTS), each adult is drawn out of the labour
  * force for the whole run with the CPS ASEC 2026 probability for the adult's household type and reason (disability, early retirement, care, school;
@@ -5600,6 +5663,7 @@ function runYear(agentSet,yr,p,recSt){
   var agP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);  // v5.2 step 4: the price level the benefit moves with (read only when AGE is on)
   if(DEBT_READ||LF_SCOPE)DR_PL=agP;  // S61: the borrowing limit and the own income of adults outside the labour force move with it
   var svF=0;if(SAVE){var svP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);if(yr===0||!SVS)SVS={prevP:svP,intR:0,realR:0};else svF=(svP/SVS.prevP)*(1+SAVE.r)-1;var svPp=SVS.prevP;SVS.prevP=svP;}  // v5.2 step 3: savings that keep up with prices (no RNG)
+  if(RETURNS){var rtP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);rtInit(agentSet,rtP);}  // S59: wealth by asset class (no RNG)
   var tbY=(TB&&p.tb)?tbYear(p,colaF):null;  // session 6 (A4 testbed): null unless TB and p.tb are both set (harness-only; no RNG)
   if(SNET&&SNS&&tbY)snYear(agentSet,yr,HHON,inflRate);  // session 2b: today's safety net (SNAP, EITC, the refundable CTC), set on last year's income; off by default; no stream drawn
   if(DIS&&DSS)disYear(agentSet,yr,agP);  // v5.4 item 5: who the disaster hits (and, later, who has recovered)
@@ -5752,6 +5816,7 @@ function runYear(agentSet,yr,p,recSt){
     var HHA=HHON&&a._hh&&!a._hh.single,eSA=HHA?a._hhE:eShareCur,fSA=HHA?a._hhFd:fShareCur,hSA=HHA?a._hhH:hShareCur,buA=HHA?buEff*a._hhBU:buEff,dcA=HHA?dollarCost*a._hhD:dollarCost,HHP=HHPOOL&&HHA&&a._hh.a.length>1;tShA=HHA?a._hhT:tShareCur;if(HHON)a._hhPool=HHP;  // v5.3 B3: a household member's shares, BU and BLEI cost; HHP: a pooled couple (finished in hhPool)
     var dsOn=!!(DIS&&DSS&&yr===DIS.yr&&a._disHit);if(dsOn&&p.ccoOn&&a.inCCO&&p.bu>0)buA*=1+DIS.emerg;  // v5.4 item 5: the emergency distribution
     if(svF!==0&&(a.wealth>0||(a.wealth<0&&SAVE.debt==='same'))){var svI=(LVS&&LVS.svc>0?Math.min(a.wealth,LVS.svc*svP):a.wealth)*svF;a.wealth+=svI;if(LVS&&LVS.sv)LVS.svY+=svI;/* S54: o.lv.svc protects savings up to svc year-0 dollars */if(ACCT)a._acI=svI;if(EDCS&&svI<0)a._edcIntP=-svI;SVS.intR+=svI/svP;SVS.realR+=a.wealth/(1+svF)*SAVE.r/svPp;if(LEDGER)ledAdd(yr,'saveInterest',svI);}  // v5.2 step 3
+    if(RETURNS){var rtI=rtAdult(a,rtP);if(ACCT)a._acI+=rtI;}  // S59: last year's saving placed, then each class revalued
     a.yrWealthStartUSD=a.wealth;  /* v4.18 parity: start-of-year wealth for housingDistressOf() (no RNG) */
     var agentVar=0.90+RNG()*0.20,incomeShock=popShock*agentVar;
     if(HHON&&HOUSEHOLDS.shock&&a._hh&&a._hh.a.length>1){var hsR=HOUSEHOLDS.shock==='shore'?CFG.HH_SHOCK_CORR[recSt.active?1:0]:+HOUSEHOLDS.shock,hsA=Math.min(1,Math.abs(hsR)),hsS=hsR<0&&a._hh.a[1]===a?-1:1;agentVar=1+Math.sqrt(hsA)*hsS*(a._hh.hv-1)+Math.sqrt(1-hsA)*(agentVar-1);incomeShock=popShock*agentVar;a._shkV=agentVar;a._shkR=!!recSt.active;}  // v5.3 B6: a couple's swings share a household part (off by default)
@@ -6291,7 +6356,7 @@ var S3_CACHE = {};
 function s3BaseS(p, seed){
   var bp = baselineFor(p, true);
   if (p.years > bp.years) bp.years = p.years;  /* session 33: the supply path covers runs longer than the Baseline's 20 years (unchanged for 20) */
-  var k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed + '|' + JSON.stringify(HOUSEHOLDS) + '|' + JSON.stringify(SPEND_GRADE) + (DEBT_READ ? '|dr' + JSON.stringify(DEBT_READ) : '') + (LF_SCOPE ? '|lf' + JSON.stringify(LF_SCOPE) : '') + (LW ? '|lw' + LW : '') + (AUD ? '|au' + JSON.stringify(AUD) : '');  /* S14: + the line (key unchanged when off) */  /* S35: + the debt reading (key unchanged when off). v5.3 B3: + households (the reference path of an economy of households); B7: + income-graded spending */
+  var k = JSON.stringify(bp) + '|' + SURPLUS_CONSUMPTION_SHARE + '|' + SURPLUS_CONSUMPTION_BASE + '|' + seed + '|' + JSON.stringify(HOUSEHOLDS) + '|' + JSON.stringify(SPEND_GRADE) + (DEBT_READ ? '|dr' + JSON.stringify(DEBT_READ) : '') + (LF_SCOPE ? '|lf' + JSON.stringify(LF_SCOPE) : '') + (RETURNS ? '|rt' + JSON.stringify(RETURNS) : '') + (LW ? '|lw' + LW : '') + (AUD ? '|au' + JSON.stringify(AUD) : '');  /* S14: + the line (key unchanged when off) */  /* S35: + the debt reading (key unchanged when off). v5.3 B3: + households (the reference path of an economy of households); B7: + income-graded spending */
   if (!S3_CACHE[k]) S3_CACHE[k] = priceRun(bp, seed, {}, null).D;
   return S3_CACHE[k];
 }
@@ -6312,7 +6377,7 @@ function tbBaseS(envP, seed, o){
   Object.keys(o || {}).forEach(function(k){ if (SP_PROG_OPTS.indexOf(k) < 0) oS[k] = o[k]; });
   var k = 'sp|' + seed + '|' + JSON.stringify(bp) + '|' + JSON.stringify(oS) + '|' + JSON.stringify([SURPLUS_CONSUMPTION_SHARE, SURPLUS_CONSUMPTION_BASE, HOUSEHOLDS, SPEND_GRADE,
     DEBT_READ, LF_SCOPE, LW, AUD, FX, HEALTH, SNET, PREV, LATENT, SAVE, AGE, RISK_MEASURE, EMPL, PTHB, PTFS, DIS, THETA_GATE, PTH_MODE, DISC_BASE, PTF_MODE, PATHWAY_OFF,
-    FBS_BU_ONCE, PTH_APPR_CONSERVE, N7_BLEI, SURP_CUT_MARKUP, REC_SCRIPT]);
+    FBS_BU_ONCE, PTH_APPR_CONSERVE, N7_BLEI, SURP_CUT_MARKUP, REC_SCRIPT]) + (RETURNS ? '|rt' + JSON.stringify(RETURNS) : '');  /* S59 (key unchanged when off) */
   if (S3_CACHE[k]) return S3_CACHE[k];
   var sv = {pj:PROJ, es:ESP, sp:SURP, pd:PROD, ml:MULT, oc:OCT, cs:COST, jn:JOIN, c22:C22, cl:COMM, fb:FBS50, hc:HCAP, rv:REVIEW, bs:BU_SCOPE, cm:CONVERSION_MODEL,
     gc:GATE_CURRENT, em:EDC_MEASURE, hg:HL_GOVREF, rh:REP_HOOK};
@@ -6393,6 +6458,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var SXp = p.sx ? sxOpts(p.sx) : null; SXS = SXp ? sxNew(SXp, p.years) : null; if (SXS) SXS.p = p;  /* S52 (reporting state only with p.sx) */
   SECS = o.sec ? secNew(o.sec, p.years) : null;  /* S53 (reporting state only with o.sec) */
   DMS = o.dm ? dmNew(o.dm) : null;  /* S57 (reporting state only with o.dm) */
+  RTR = RETURNS ? {} : null;  /* S59 (reporting state only with rt) */
   PRS = PRICE_RULE === 'capacity' || o.mf ? prNew(PR_OPTS, PRICE_RULE === 'capacity') : null; var MFS = o.mf ? mfNew() : null;  /* S58: the capacity rule (or, under 'qt' with o.mf, its record only); the money-flow table (o.mf) */
   LVS = o.lv ? lvNew(o.lv, p) : null;  /* S54 (only with o.lv) */
   TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null, tb:o.taxBase, tauMax:o.tauMax};  /* v5.2 step 7: taxBase 'prog' | 'land' (undefined = the flat contribution) */
@@ -6414,6 +6480,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       if (R52) tbRepYear(R52, agents, p, o, yr, T, (!o.noEP && epY) ? epY.total : 0);  /* v5.2 step 2 */
       if (SECS) secYear(agents, p, yr, (!o.noEP && epY) ? epY.total : 0);  /* S53 */
       if (DMS) dmYear(DMS, agents, p, o, yr, T);  /* S57 (reporting only) */
+      if (RTR) rtRep(RTR, agents, o, yr, T);  /* S59 (reporting only) */
       if (RHH) hhRepYear(RHH, agents, p, o, yr, T);  /* v5.3 B3 */
       if (yr === 19) dbt20 = tbDebtShare(agents); else if (yr === 39) dbt40 = tbDebtShare(agents);  /* S35 (reporting only) */
       if (EDCS) edcYear(EDCS, agents, p);  /* v5.3 B6 */
@@ -6511,6 +6578,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (SXS) emR = sxRes(emR || {}, T);  /* S52 (only with p.sx) */
   if (SECS){ emR = secRes(emR || {}); SECS = null; }  /* S53 (only with o.sec) */
   if (DMS){ emR = dmRes(emR || {}); DMS = null; }  /* S57 (only with o.dm) */
+  if (RTR){ emR = Object.assign(emR || {}, RTR); RTR = null; }  /* S59 (only with rt) */
   if (prK) emR = prRes(emR || {}, prK, agents, lineF);  /* S58 (with the capacity rule, or o.mf) */
   if (MFS) emR = mfRes(emR || {}, MFS, NY);  /* S58 (only with o.mf) */
   if (lvK) emR = lvRes(emR || {}, lvK, T, !!(JOIN && JNS && CONVERSION_MODEL === 'framework' && p.ccoOn));  /* S54 (only with o.lv) */
@@ -6938,6 +7006,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var au0 = AUD; if (c.au) AUD = c.au === true ? {gate:true, sg:true, fbs:true} : Object.assign({}, c.au);  /* S13: the audit's corrections for this row (no programme rows too) */
       var fx0 = FX; if (c.fx) FX = c.fx === true ? {pthb:true, hb:true, ab:true, sp:true} : Object.assign({}, c.fx);  /* S47: the second implementation's fixes for this row (no programme rows too) */
       var dr0 = DEBT_READ; if (c.dr) DEBT_READ = Object.assign({lim:0}, c.dr === true ? {} : c.dr);  /* S35: the debt reading for this row (no programme rows too) */
+      var rt0 = RETURNS; if (c.rt) RETURNS = rtOpts(c.rt);  /* S59: wealth held by asset class for this row (no programme rows too) */
       var lf0 = LF_SCOPE; if (c.lf) LF_SCOPE = Object.assign({}, LF_DEFAULTS, c.lf === true ? {} : c.lf);  /* S61: adults outside the labour force for this row (no programme rows too) */
       var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; }  /* S58: the capacity price rule for this row (no programme rows too) */
       var pa0 = [PTF_ACCESS, PA]; if (c.pa && c.pa !== 'members'){ if (c.pa !== 'open' && typeof c.pa !== 'object') throw new Error('pa: members, open or {fix}'); PTF_ACCESS = 'open'; PA = Object.assign({}, PA_DEFAULTS, typeof c.pa === 'object' ? c.pa : {}); }  /* S55: open PTF access for this row */
@@ -6958,6 +7027,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.secU25A !== undefined) SEC_KEYS.concat(S19_KEYS).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S53 */
         if (r.prOn !== undefined) PR_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S58 */
         if (r.mfU !== undefined) MF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S58 */
+        if (r.rtE !== undefined) RT_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S59 */
         if (r.dmWt1E !== undefined) DM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S57 */
         if (r.lvU !== undefined) LV_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S54 */
         if (r.bkmA !== undefined) BKM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S51 */
@@ -6976,7 +7046,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.drHit !== undefined) ['drHit', 'drCut'].forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: the debt reading's tally (rows with dr only) */
         if (r.lfShare !== undefined) LF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; LF_SCOPE = lf0; LFS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; LF_SCOPE = lf0; LFS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;

@@ -1,0 +1,25 @@
+{
+ "source": "Shiller online data (ie_data.xls, Fig3-1.xls), downloaded Nov 10, 2026; sources/s59_real_gains.py",
+ "sha256": {
+  "ie_data.xls": "0df9392b7dacf91f756e92c8db508ad903c4588b43f3253680eec3dd8b40db68",
+  "Fig3-1.xls": "d664da26a5abefb3071b6f9e46a7e2bffde05b3c4deb748481d00b0f8a1b3c17"
+ },
+ "windows": {
+  "1953-2022": {
+   "home": 0.0094,
+   "eq": 0.0402
+  },
+  "1890-2022": {
+   "home": 0.0059,
+   "eq": 0.0232
+  },
+  "1983-2022": {
+   "home": 0.0181,
+   "eq": 0.0571
+  }
+ },
+ "main": {
+  "home": 0.0094,
+  "eq": 0.0402
+ }
+}

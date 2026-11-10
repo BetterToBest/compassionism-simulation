@@ -1466,6 +1466,82 @@ function lfUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { LF_KEYS, LF_DEFAULTS, lfInit, drExtra: function(){ return drExtra.apply(null, arguments); }, drFloorCut, lfUnitSuite });  /* S61 */
+
+/* S59 (Nov 10, 2026; research-update prereg/2026-11-s59-asset-classes.md, unit tests a-e): RETURNS, wealth held by asset class. */
+function rtUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR, A0 = ACCT; CFG.WEALTH_FLOOR = -10000;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); CFG.WEALTH_FLOOR = wf0; ACCT = A0; RETURNS = null; RTR = null; TB = null; LABOR = null; PRICE = null; REP_HOOK = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), Y = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}};
+  function rows(P, x, prog){ var M = relMainCfgs(tbPresets(P)), c = frozenRow(Object.assign(M[prog ? 1 : 0], JSON.parse(JSON.stringify(Y)), JSON.parse(JSON.stringify(x || {})))); return prog ? c22Design(c) : c; }
+  function same(A, B, skip){ var bad = []; Object.keys(A).forEach(function(k){ if (k === '_s' || k === 'cfg' || k === 'label' || (skip && skip(k))) return; if (typeof A[k] === 'number' && !(A[k] === B[k] || (A[k] !== A[k] && B[k] !== B[k]))) bad.push(k); });
+    Object.keys(A._s || {}).forEach(function(k){ if (skip && skip(k)) return; var x = A._s[k], y = (B._s || {})[k]; if (!y){ bad.push('_s.' + k); return; } for (var i = 0; i < x.length; i++) if (!(x[i] === y[i] || (x[i] !== x[i] && y[i] !== y[i]))){ bad.push('_s.' + k); break; } }); return bad; }
+  var isRt = function(k){ return /^rt/.test(k); };
+  t('the table: seven groups; shares between 0 and 1 and summing to at most 1; debts above assets only below zero; rising edges', function(){
+    var bad = []; if (RT_GROUPS.length !== 7 || RT_EDGES.length !== 6) bad.push('sizes');
+    RT_GROUPS.forEach(function(q, g){ var s = q[1] + q[2] + q[3] + q[4] + q[5]; if (q.length !== 7 || q.some(function(v){ return !(v >= 0); }) || s > 1 || q[6] > 1 || (g === 0) !== (q[0] > 1)) bad.push('group ' + g); });
+    for (var i = 1; i < RT_EDGES.length; i++) if (!(RT_EDGES[i] > RT_EDGES[i - 1])) bad.push('edge ' + i);
+    if (rtGroup(-1) !== 0 || rtGroup(0) !== 1 || rtGroup(40570) !== 1 || rtGroup(40571) !== 2 || rtGroup(1e9) !== 6) bad.push('rtGroup');
+    return {pass:!bad.length, detail:bad.join('; ')}; });
+  t('the opening split: the parts add up to the adult\'s net worth in every group; a couple\'s members take the household\'s group; the same net worth gives the same split', function(){
+    var R = rtOpts(true), bad = [], r = mulberry32(59), i;
+    for (i = 0; i < 4000; i++){ var w = i % 9 === 0 ? -r()*9000 : Math.exp(r()*18) - 1, b = rtOpen(w, w, R, 1), tot = b.r.reduce(function(x, y){ return x + y; }, 0) + b.n - b.dv - b.df;
+      if (Math.abs(tot - w) > 1e-9*Math.max(1, Math.abs(w)) || b.r.some(function(v){ return v < 0; }) || b.n < 0 || b.dv < 0 || b.df < 0 || b.g !== rtGroup(w) || Math.abs(b.e0 + b.v0 - w) > 1e-9*Math.max(1, Math.abs(w))) bad.push(w.toFixed(0)); }
+    var h = rtOpen(300000, 600000, R, 1), k = rtOpen(300000, 300000, R, 1), h2 = rtOpen(300000, 600000, R, 1); if (h.g !== 3 || k.g !== 3 || rtOpen(100000, 200000, R, 1).g !== 2 || rtOpen(100000, 800000, R, 1).g !== 4) bad.push('household group');
+    if (JSON.stringify(h) !== JSON.stringify(h2)) bad.push('not deterministic');
+    var p3 = rtOpen(3000, 3000, R, 3); if (p3.g !== 1 || p3.p0 !== 3) bad.push('price level');
+    return {pass:!bad.length, detail:bad.slice(0, 5).join('; ')}; });
+  t('one year\'s step against hand arithmetic (prereg test d): saving repays floating debt first, then nominal assets; a shortfall draws nominal assets, then borrows; each class at its own rate; fixed debt unchanged', function(){
+    var R = rtOpts(true), bad = [], pi = 0.10, q = RT_GROUPS[2], G = 100000/(1 - q[0]), n0 = G*(1 - q[1] - q[2] - q[3] - q[4] - q[5]), dv0 = G*q[0]*(1 - q[6]), df0 = G*q[0]*q[6];
+    function near(x, y){ return Math.abs(x - y) <= 1e-9*Math.max(1, Math.abs(y)); }
+    var b = rtOpen(100000, 100000, R, 1), w0 = 100000, I = rtStep(b, 10000, pi, R);
+    var dvE = Math.max(0, dv0 - 10000)*1.10, nE = (n0 + Math.max(0, 10000 - dv0))*(1 + 0.46*pi), hE = G*q[1]*(1.10*1.0094), eE = G*q[3]*(1.10*1.0402), oE = G*q[5]*1.10;
+    if (!near(b.dv, dvE) || !near(b.n, nE) || !near(b.r[0], hE) || !near(b.r[2], eE) || !near(b.r[4], oE) || !near(b.df, df0)) bad.push('saving year');
+    var tot = b.r.reduce(function(x, y){ return x + y; }, 0) + b.n - b.dv - b.df; if (!near(tot, w0 + 10000 + I)) bad.push('revaluation returned ' + I + ' against ' + (tot - w0 - 10000));
+    if (!near(b.en, n0*(1 + 0.46*pi)) || !near(b.ed, dv0*1.10) || !near(b.v[0], hE)) bad.push('untouched opening balances');
+    var c = rtOpen(100000, 100000, R, 1); rtStep(c, -50000, pi, R); if (!near(c.n, 0) || !near(c.dv, (dv0 + 50000 - n0)*1.10) || !near(c.r[0], hE)) bad.push('shortfall year');
+    var P = rtOpts({ns:'port'}), d = rtOpen(100000, 100000, P, 1), fl = 30000 - dv0; rtStep(d, 30000, 0, P); if (!near(d.dv, 0) || !near(d.r[0], (G*q[1] + fl*q[1])*1.0094) || !near(d.n, n0 + fl*d.al[5]) || !near(d.al.reduce(function(x, y){ return x + y; }, 0), 1)) bad.push('saving by the group\'s shares');
+    var x1 = rtOpts({chi:1}), e = rtOpen(100000, 100000, x1, 1), Ie = rtStep(e, 0, pi, x1), e0 = rtOpen(100000, 100000, R, 1), I0 = rtStep(e0, 0, pi, R); if (!near(e.df, df0*1.10) || !near(I0 - Ie, df0*0.10)) bad.push('fixed debt repricing (chi)');
+    var z = rtOpts({rho:0}); if (RT_CLASSES.some(function(k){ return z.rho[k] !== 0; }) || rtOpts({rho:{eq:0.05}}).rho.home !== 0.0094) bad.push('rho option');
+    return {pass:!bad.length, detail:bad.join('; ')}; });
+  t('every asset real, no return, no debt: an untouched balance keeps its real value under any inflation (prereg test b); every asset nominal with no pass-through keeps its dollars', function(){
+    var R = rtOpts({all:'real', rho:0}), N = rtOpts({all:'nom', phi:0, psi:0}), r = mulberry32(5901), bad = 0, i, y;
+    for (i = 0; i < 200; i++){ var w = r()*1e6, b = rtOpen(w, w, R, 1), c = rtOpen(w, w, N, 1), P = 1;
+      for (y = 0; y < 20; y++){ var pi = r()*0.8 - 0.05; P *= 1 + pi; if (rtStep(c, 0, pi, N) !== 0) bad++; rtStep(b, 0, pi, R); }
+      if (Math.abs(b.r[4]/P - w) > 1e-9*w || c.n !== w || b.df !== 0 || b.dv !== 0) bad++; }
+    return {pass:bad === 0, detail:bad + ' mismatches'}; });
+  t('in a run, every asset nominal with no pass-through is today\'s path exactly, with and without the programme (prereg test a); rt adds its keys and no others', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {years:8}), x = {rt:{all:'nom', phi:0, psi:0}};
+    tbStudy([rows(P, {}, false), rows(P, {}, true)], 3, P, SO);  /* warm-up, same seeds: a no-programme row's pd* keys read the previous run's PTF state (a known reporting quirk), so both studies must follow the same run */
+    var A = tbStudy([rows(P, {}, false), rows(P, {}, true)], 3, P, SO), B = tbStudy([rows(P, x, false), rows(P, x, true)], 3, P, SO), bad = same(A[0], B[0], isRt).concat(same(A[1], B[1], isRt));
+    var extra = Object.keys(B[1]).filter(function(k){ return A[1][k] === undefined && RT_KEYS.indexOf(k) < 0; });
+    return {pass:!bad.length && !extra.length && A[1].rtE === undefined && RT_KEYS.every(function(k){ return isFinite(B[0][k]) && isFinite(B[1][k]); }), detail:(bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : '') + (extra.length ? ' extra keys: ' + extra.slice(0, 5).join(', ') : '')}; });
+  t('in a run with the main reading: the three parts sum to real wealth, overall and by fifth; the opening parts sum to starting wealth; both runs of a pair hold the same opening split (prereg tests c, e); the accounting identities hold', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {years:8}), x = {rt:true}, bad = [], open = [], endW = [], w0 = [];
+    var cur = null;  /* the hook also sees short helper runs: keep a start only when its run reaches the last year */
+    REP_HOOK = function(agents, yr, T, lf){ if (yr === 0) cur = [agents.map(function(a){ return [a._rt.g, a._rt.e0, a._rt.v0, a._rt.df].join(','); }).join('|'), agents.reduce(function(s, a){ return s + a._rt.w0; }, 0)/agents.length];
+      if (yr === T - 1 && T > 1){ open.push(cur[0]); w0.push(cur[1]); }
+      if (yr === T - 1 && T > 1) endW.push(agents.reduce(function(s, a){ return s + a.wealth; }, 0)/agents.length/lf); };
+    ACCT = acctNew(); var B = tbStudy([rows(P, x, false), rows(P, x, true)], 2, P, SO), AC = ACCT, nf = Object.keys(AC.nFail).length; ACCT = null; REP_HOOK = null;
+    if (open.length !== 4 || open[0] !== open[1] || open[2] !== open[3] || open[0] === open[2]) bad.push('opening split differs within a pair (or not across seeds)');
+    [0, 1].forEach(function(i){ for (var sd = 0; sd < 2; sd++){ var g = function(k){ return B[i]._s[k][sd]; }, W = endW[sd*2 + i], tot = g('rtE') + g('rtV') + g('rtS'), q5 = 0, o5 = 0;
+        for (var q = 1; q <= 5; q++){ q5 += (g('rtE' + q) + g('rtV' + q) + g('rtS' + q))/5; o5 += (g('rtE0' + q) + g('rtV0' + q))/5; }
+        if (Math.abs(tot - W) > 1e-6*Math.max(1, Math.abs(W))) bad.push('parts ' + tot.toFixed(2) + ' against real wealth ' + W.toFixed(2));
+        if (Math.abs(q5 - W) > 1e-6*Math.max(1, Math.abs(W))) bad.push('fifths ' + q5.toFixed(2) + ' against ' + W.toFixed(2));
+        if (Math.abs(g('rtE0') + g('rtV0') - w0[sd*2 + i]) > 1e-6*Math.abs(w0[sd*2 + i]) || Math.abs(o5 - w0[sd*2 + i]) > 1e-6*Math.abs(w0[sd*2 + i])) bad.push('opening parts against starting wealth');
+        if (Math.abs(g('rtRE') + g('rtNE') - g('rtDvE') - g('rtDfE') - W) > 1e-6*Math.max(1, Math.abs(W))) bad.push('classes against real wealth');
+        if (!(g('rtBt1S') > 0 && g('rtBt1S') <= 100 && g('rtBt1E') > 0 && g('rtBt1E') <= 100)) bad.push('business share'); } });
+    if (B[0]._s.rtE0[0] !== B[1]._s.rtE0[0] || B[0]._s.rtV03[1] !== B[1]._s.rtV03[1]) bad.push('opening keys differ within a pair');
+    if (nf) bad.push('accounting identities failed: ' + JSON.stringify(AC.nFail) + ' ' + JSON.stringify(AC.fails.slice(0, 2)));
+    return {pass:!bad.length, detail:bad.slice(0, 5).join('; ')}; });
+  t('rt and sv together are refused (both would revalue wealth)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {years:2}), th = false; try { tbStudy([rows(P, {rt:true, sv:true}, false)], 1, P, SO); } catch (e){ th = /revalue wealth twice/.test(e.message); }
+    return {pass:th, detail:''}; });
+  return out;
+}
+Object.assign(module.exports, { RT_KEYS, RT_DEFAULTS, RT_GROUPS, RT_EDGES, RT_CLASSES, rtOpts, rtOpen, rtStep, rtGroup, rtUnitSuite });  /* S59 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3583,11 +3659,15 @@ if (require.main === module) {
     console.log('\n=== lfUnitSuite(): S61, baseline scope (harness-only) ===');
     LFU.forEach(function(x){ if (!x.pass) lff++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + LFU.length + ' run, ' + lff + ' failed');
+    var RTU = rtUnitSuite(), rtf = 0;
+    console.log('\n=== rtUnitSuite(): S59, wealth held by asset class (harness-only) ===');
+    RTU.forEach(function(x){ if (!x.pass) rtf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + RTU.length + ' run, ' + rtf + ' failed');
     var PRU = prUnitSuite(), prf = 0;
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
