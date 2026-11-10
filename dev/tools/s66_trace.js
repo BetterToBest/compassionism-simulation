@@ -121,7 +121,7 @@ function runPart(E, part, env, lo, hi) {
 }
 function r4(x) { return typeof x === 'number' && isFinite(x) ? +x.toPrecision(7) : x; }
 function compact(rec) {  /* year arrays per measure */
-  const o = {}, ks = Object.keys(rec.y[0]);
+  const o = {}, ks = [...new Set([].concat(...rec.y.map(d => d ? Object.keys(d) : [])))];  /* every year's keys (the bands exist only in snapshot years) */
   ks.forEach(k => { o[k] = rec.y.map(d => d && d[k] !== undefined ? (Array.isArray(d[k]) ? d[k].map(r4) : r4(d[k])) : null); });
   o.U = rec.path.map(q => r4(q.U/(q.idx || 1)/500)); o.UY = rec.path.map(q => r4(q.Y > 0 ? q.U/q.Y*100 : 0));
   if (rec.adults) { o.adults = rec.adults.map((a, j) => [a.id, r4(rec.w0[j]), r4(a.wEnd), a.lf, r4(a.wage), r4(a.conv), r4(a.disp), r4(a.cost)]); o.lfEnd = r4(rec.y[rec.y.length - 1].lf); }
