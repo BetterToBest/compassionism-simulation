@@ -686,6 +686,22 @@
    },
    "equal": true,
    "seconds": 180
+  },
+  {
+   "from": "c92521a722b44b2c2f4ff028bcf29ebed5ebab37741d5ab260634739aa56e08d",
+   "to": "0a10d33b7eb779974e0ae11d3d8688eebe18a08c60c05243de89df79abd8b8b8",
+   "date": "2026-11-10",
+   "change": "S59: RETURNS, wealth held by asset class (row option rt; off by default)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 140
   }
  ]
 }
