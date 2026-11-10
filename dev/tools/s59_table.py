@@ -23,7 +23,7 @@ for k in rows:
 P(''); P('Wealth poverty with no programme (%): ' + '; '.join('%s off %.1f, main %.1f' % (n, R[e]['rows']['off']['mean']['none']['pov'], R[e]['rows']['main']['mean']['none']['pov']) for e, n in ENVS if e in R) + '.'); P('')
 SEC = [('dmWp50E', 'median real wealth ($)', 'usd'), ('dmWp10E', 'real wealth at the 10th percentile ($)', 'usd'), ('dmWp90E', 'real wealth at the 90th percentile ($)', 'usd'), ('eGiniWN', 'wealth Gini, debts kept', 3), ('eGiniW', 'wealth Gini, debts as zero', 3),
        ('dmWt1E', 'top 1% share of wealth (%)', 2), ('dmWt10E', 'top 10% share of wealth (%)', 2), ('dmWb50E', 'bottom 50% share of wealth (%)', 2), ('dmFdE', 'families in debt (%)', 2),
-       ('fgt0PY', 'basket poverty (% of adult-years)', 2), ('hhCostPY', 'cost of living', 2), ('endoAnn', 'programme inflation (points a year)', 2)]
+       ('fgt0PY', 'basket poverty (% of adult-years)', 2), ('hhCostPY', 'adults below the cost of living (% of adult-years)', 2), ('endoAnn', 'programme inflation (points a year)', 2)]
 P('## 2. Secondary outcomes: the programme\'s effect, today\'s reading beside the asset-class readings'); P('')
 for e, n in ENVS:
     if e not in R: continue
