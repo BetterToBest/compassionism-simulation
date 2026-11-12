@@ -702,6 +702,22 @@
    },
    "equal": true,
    "seconds": 140
+  },
+  {
+   "from": "0a10d33b7eb779974e0ae11d3d8688eebe18a08c60c05243de89df79abd8b8b8",
+   "to": "835056ce95356e504705436d4545e6ba0410f447000d8c52ced3802788ebc4ca",
+   "date": "2026-11-12",
+   "change": "S59 part 2: the weighted top tail (WEALTH_TAIL, row option wt), business owners, capital income and the returns gradients (rt options bo, ci, ng, rg), the owners rule by equity (SURP.own), all off by default; RT_EDGES corrected (rt rows only)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 137
   }
  ]
 }
