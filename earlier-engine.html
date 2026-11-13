@@ -4547,7 +4547,8 @@ function lfDraw(a){ var r = LFS.r, u1 = r(), u2 = r(), t = lfType(a), S = CFG.LF
   LFS.n++; if (!why || a._ret) return;  /* a retiree (67 and over, ageing) keeps the engine's own retirement */
   var y = lfIncome(CFG.LF_INCOME[why], u2); a._lf = why; a._lfW = a.wage; a._ret = true; a._ssB0 = y; a._ssY = y*DR_PL; a.wage = a._ssY/12/CFG.WAGE_TO_USD; LFS.k[why]++; LFS.inc += y; if (!(y > 0)) LFS.z++; }
 function lfInit(agents, seed){ LFS = {r:mulberry32(seed + 600071), n:0, k:{dis:0, ret:0, care:0, sch:0}, inc:0, z:0}; DR_PL = 1; agents.forEach(lfDraw); }
-function lfRes(out){ if (DR_ACC){ out.drHit = DR_ACC.n ? DR_ACC.h/DR_ACC.n*100 : 0; out.drCut = DR_ACC.h ? DR_ACC.c/DR_ACC.h : 0; }  /* S61: % of graded spending decisions the limit cut, and the mean cut (year-0 dollars) */
+function lfRes(out){ if (BGS) bgRes(out);  /* S60: BARGAIN's measures (rows with bg only) */
+  if (DR_ACC){ out.drHit = DR_ACC.n ? DR_ACC.h/DR_ACC.n*100 : 0; out.drCut = DR_ACC.h ? DR_ACC.c/DR_ACC.h : 0; }  /* S61: % of graded spending decisions the limit cut, and the mean cut (year-0 dollars) */
   if (!LFS) return out; var S = LFS, m = S.k.dis + S.k.ret + S.k.care + S.k.sch, n = Math.max(1, S.n);
   out.lfShare = m/n*100; out.lfDis = S.k.dis/n*100; out.lfRet = S.k.ret/n*100; out.lfCare = S.k.care/n*100; out.lfSch = S.k.sch/n*100; out.lfInc0 = m ? S.inc/m : 0; out.lfZero = m ? S.z/m*100 : 0; return out; }  /* the starting population's draws (year-0 dollars) */
 /* S61 (Nov 9, 2026; research-update prereg/2026-11-s61-baseline-scope.md; dev/reports/s61-baseline-scope.md): three more parts, each off by default, so
@@ -4963,6 +4964,45 @@ var PRICE = null;
  * money-created; counted as cash income in the income and basket measures. Unset in every preset. */
 var LABOR = null;
 var LABOR_DEFAULTS = {rho:0.16, rhoBU:0.16, rhoR:0, eps:0.33, delta:0};
+/* S60 (Nov 13, 2026; research-update prereg/2026-11-s60-bargaining-power.md; dev/reports/s60-bargaining-power.md): BARGAIN, a worker's outside option and an
+ * employer markdown, in reduced form (no firms, vacancies or hiring). null (the default) = off: nothing below is read and no figure moves (guard test). It
+ * acts inside LABOR's block (a row needs the labour response); no random draw. Sources: sources/s60_bargain.py.
+ *  m    the wage as a share of what the worker adds: MRPL = w/m on the year's wage (the engine takes the programme's raises as matched by output), so the
+ *       room for a bargained raise is 1/m - 1 of the wage. 1/1.21 (main; Azar, Berry and Marinescu, NBER w30365, 2022: median markdown 21%, firm-level
+ *       elasticity 4.8); 1/1.53 (Yeh, Macaluso and Hershbein, AER 2022, US manufacturing plants); 1 = no markdown, no room (identical to off).
+ *  pi   cents of yearly wage per dollar of yearly outside option. 0 (main: Jager, Schoefer, Young and Zweimuller, QJE 2020, preferred estimates 0.00 and
+ *       -0.027, more than 0.03 ruled out); 0.03 (their bound); 0.10 (Vivalt et al., NBER w32719 revised Aug 2026: hourly pay -$0.14, more than +$0.58
+ *       ruled out, against $1,000 a month over 2,080 hours); 0.24 and 0.48 (the Nash benchmarks Jager et al. calibrate and reject).
+ * The outside option O is what the programme adds to what a worker keeps without working: the unconditional dollars the income effect counts, at its own
+ * weights (cash; BU spent x rhoBU/rho, so a BU counts at the value of what it buys; expired BU x rhoR/rho, 0 by default; conversion proceeds x (1 - delta);
+ * the testbed's cash, guarantee, endowment and in-kind dollars; owners' dollars), without today's safety net (the baseline the wages were measured under) or
+ * the contribution's terms. With no programme O is 0, so a no-programme run is identical to off. The year's bargained raise g = min(pi O / E_full, 1/m - 1),
+ * E_full the year's full-year earnings before any response. Earnings are multiplied by (1 + g)^(1 + eps - rho): the wage, and the hours response to it at
+ * the one elasticity every raise gets (guardrail 7); the income effect is unchanged. The raise is not added to the wage path (it goes when O goes), and
+ * the hours measure divides it out (a._lbE0 is set at the bargained wage).
+ * Reporting (BG_KEYS, rows with bg only; workers = adults with earnings in the year, years 1 to T-1, weighted by a._w where the row has the tail; Year-0
+ * dollars at the basket's price level): bgN worker-years per adult-year (%); bgO the outside-option rise per worker-year; bgR the bargained raise (the
+ * wage part, before the hours response); bgE the earnings it adds after the hours response; bgSh the bargained share of the programme's raises to the
+ * wage rate (BLEI, octave, CIP, ESP payroll and business payout, bargained; earnings-weighted log shares, %); bgCap worker-years at the markdown cap (%);
+ * bgMd the mean markdown (earnings-weighted wage over MRPL, %); bgOP10, bgOP50, bgOP90 the outside-option rise as a share of full-year earnings in the
+ * last year (%; the Nash relation's reservation wage is (1 - (1 - pi)/m)/pi of the wage plus this share, bgRw0); bgK the bargained raise over the capital
+ * income adults receive (%, rows with rt.ci; who pays is not modelled). */
+var BARGAIN = null, BG_DEFAULTS = {m:1/1.21, pi:0}, BGS = null,
+  BG_KEYS = ['bgN', 'bgO', 'bgR', 'bgE', 'bgSh', 'bgCap', 'bgMd', 'bgOP10', 'bgOP50', 'bgOP90', 'bgK'];
+function bgOpts(v){ var o = Object.assign({}, BG_DEFAULTS, v === true ? {} : v); o.m = +o.m; o.pi = +o.pi;
+  if (!(o.m > 0 && o.m <= 1)) throw new Error('bg.m must be above 0 and at most 1'); if (!(o.pi >= 0)) throw new Error('bg.pi must be 0 or more'); return o; }
+function bgRaise(O, Ef, B){ return Ef > 0 && O > 0 && B.pi > 0 ? Math.min(B.pi*O/Ef, 1/B.m - 1) : 0; }  /* the year's bargained raise, a share of the wage */
+function bgRw0(B){ return B.pi > 0 ? (1 - (1 - B.pi)/B.m)/B.pi : NaN; }  /* Nash: w = (1 - pi) MRPL + pi r, so r/w = (1 - (1 - pi)/m)/pi before the programme (negative: Nash cannot give this pi with this m) */
+function bgNew(){ return {wy:0, ay:0, O:0, R:0, E:0, cap:0, md:0, mdW:0, lg:0, lgB:0, Kc:0, L:[]}; }
+function bgAcc(a, yr, T, E0, g, O, Ef, Rp, Eg, idx){  /* one worker-year (reporting only) */
+  var S = BGS, w = a._w !== undefined ? +a._w : 1; S.yIdx = idx; if (yr === T - 1) S.L.push([Ef > 0 ? O/Ef*100 : 0, w]); if (yr < 1) return;
+  S.wy += w; S.O += w*O/idx; S.R += w*E0*g/idx; S.E += w*Eg/idx; if (g > 0 && g >= 1/BARGAIN.m - 1 - 1e-12) S.cap += w;
+  S.md += w*E0*BARGAIN.m*(1 + g); S.mdW += w*E0; var lr = Math.log(Math.max(1e-12, Rp)) + Math.log(1 + g); if (lr > 0){ S.lg += w*E0*lr; S.lgB += w*E0*Math.log(1 + g); } }
+function bgYear(agents, yr, idx){ if (!BGS || yr < 1) return; agents.forEach(function(a){ var w = a._w !== undefined ? +a._w : 1; BGS.ay += w; BGS.Kc += w*(+a.yrCapUSD || 0)/idx; }); }  /* reporting only: adult-years and the capital income adults receive */
+function bgQ(L, p){ if (!L.length) return 0; var v = L.slice().sort(function(x, y){ return x[0] - y[0]; }), W = 0, c = 0, i; for (i = 0; i < v.length; i++) W += v[i][1]; for (i = 0; i < v.length; i++){ c += v[i][1]; if (c >= p*W - 1e-12) return v[i][0]; } return v[v.length - 1][0]; }  /* weighted quantile */
+function bgRes(out){ var S = BGS, n = S.wy > 0 ? S.wy : 1;
+  out.bgN = S.ay > 0 ? S.wy/S.ay*100 : 0; out.bgO = S.O/n; out.bgR = S.R/n; out.bgE = S.E/n; out.bgSh = S.lg > 0 ? S.lgB/S.lg*100 : 0; out.bgCap = S.cap/n*100;
+  out.bgMd = S.mdW > 0 ? S.md/S.mdW*100 : BARGAIN.m*100; out.bgOP10 = bgQ(S.L, 0.1); out.bgOP50 = bgQ(S.L, 0.5); out.bgOP90 = bgQ(S.L, 0.9); out.bgK = S.Kc > 0 ? S.R/S.Kc*100 : 0; return out; }
 /* Session 5 restudy switches (harness-only; each off by default, so every shipped figure is bit-identical; checked by `unit`).
  *  THETA_GATE  'szh' = index.html: SZH theta (the PTF conversion bonus add-on, the PTF induction boost and the BLEI term)
  *              is read off the SZH zone-coherence slider. 'density' = the framework's gate (claims ledger C08, dashboard
@@ -5032,13 +5072,14 @@ function tbLab(a, y, E0, cutUSD){
   var ex = LABOR.eps - LABOR.rho, F = 1, el = tbNitElig(y, E0) && (!y.Gp || a.inCCO), tx = y.tau > 0 && E0 > y.X;
   var V = y.ubi + y.xc*(1 - y.xd) + (el ? y.G : 0), D = y.xc*y.xd;  /* cash first, so an NIT at t = 0 is bit-identical to a UBI */
   if (a._tbEl) V += y.W/y.T;
+  var O = V;  /* S60: the programme's unconditional dollars so far (cash, guarantee, endowment); BARGAIN's outside option reads it, nothing else does */
   if (y.tb === 'prog'){ if (y.tau > 0){ var ft = fedTax(E0, y.xi, y.tau, y.cap); if (ft.m > 0) F *= Math.pow(1 - ft.m, ex); V += ft.m*E0 - ft.tax; } }  /* v5.2 step 7: the marginal rate, and the virtual income of the schedule linearised at E0 (for a flat rate above X this is tau x X, as below) */
   else if (y.tb === 'land'){ if (y.tau > 0) V -= y.tau*Math.max(0, a.yrWealthStartUSD || 0); }  /* v5.2 step 7: a tax on what is owned, not on work: an income effect only (one income effect per unconditional dollar, rule 7) */
   else if (tx){ F *= Math.pow(1 - y.tau, ex); V += y.tau*y.X; }
   if (el) F *= Math.pow(1 - y.t, ex);
   if (SNET && SNS && a._snB !== undefined){ F *= Math.pow(1 - a._snM, ex); V += a._snB + a._snM*E0; }  /* session 2b: today's safety net, its marginal rate (one elasticity) and its dollars linearised at last year's position (one income effect) */
-  if (TB.inkindRho) V += cutUSD + (a._tbPthPrev || 0);
-  return {F:F, V:V, D:D};
+  if (TB.inkindRho){ V += cutUSD + (a._tbPthPrev || 0); O += cutUSD + (a._tbPthPrev || 0); }
+  return {F:F, V:V, D:D, O:O};
 }
 function tbCashFlow(a, y, E, yr){
   var B = (y.G > 0 && (!y.Gp || a.inCCO)) ? (y.t > 0 ? Math.max(0, y.G - y.t*E) : y.G) : 0, cash = y.ubi + y.xc + B, tax = y.tau > 0 ? (y.tb === 'prog' ? fedTax(E, y.xi, y.tau, y.cap).tax : y.tb === 'land' ? y.tau*Math.max(0, a.yrWealthStartUSD || 0) : y.tau*Math.max(0, E - y.X)) : 0;  /* v5.2 step 7: tb 'prog' | 'land' */
@@ -6346,12 +6387,17 @@ function runYear(agentSet,yr,p,recSt){
       var lbInc=LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC+(tbQ?LABOR.rho*tbQ.V:0),lbDisp=LABOR.delta*lbC+(tbQ?tbQ.D:0);
       if(SPON&&a._spOwn>0){lbInc+=LABOR.rho*a._spOwn;if(LABOR.acc)LABOR.acc.cash+=LABOR.rho*a._spOwn;}  // plan step 1: owners' dollars are unconditional (one income effect)
       if(emQ){lbInc*=1-emQ.out;lbDisp*=1-emQ.out;}  // v5.4 item 2: the hours response applies to the part of the year at work
-      annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=lbE0;  // session 8 (A5): earnings with no response, for the hours measure
+      var bgG=0;if(BARGAIN&&lbE0>0&&!a._ret){  // S60: the outside option (the income effect's unconditional dollars at its weights, no safety net) and the year's bargained raise (no RNG)
+        var bgO=lbU+(LABOR.rho>0?LABOR.rhoBU/LABOR.rho:1)*lbBU+(LABOR.rho>0?LABOR.rhoR/LABOR.rho:0)*lbR+(1-LABOR.delta)*lbC+(tbQ?tbQ.O:0)+(SPON&&a._spOwn>0?a._spOwn:0),bgEf=a.wage*12*CFG.WAGE_TO_USD*incomeShock*(1+mlNT);
+        bgG=bgRaise(bgO,bgEf,BARGAIN);a._bgG=bgG;var bgE1=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);if(bgG>0)lbRaise*=Math.pow(1+bgG,1+LABOR.eps-LABOR.rho);  // the wage and the hours response to it at the one elasticity (guardrail 7)
+        if(BGS)bgAcc(a,yr,BGS.T,lbE0,bgG,bgO,bgEf,Math.max(1,LFS&&a._lf&&!(a._lwNB>0)?1:a.wage/a._lwNB)*(1+lbBiz)*(ESON?1+a._esX:1),Math.max(0,lbE0*lbRaise-lbInc-lbDisp)-bgE1,Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1));}
+      else if(BARGAIN)a._bgG=0;  // S60: reporting state (the year's raise; 0 for a non-worker)
+      annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=bgG>0?lbE0*(1+bgG):lbE0;  // session 8 (A5): earnings with no response, for the hours measure (S60: at the bargained wage)
       if(tbQ&&LABOR.acc)LABOR.acc.cash+=LABOR.rho*tbQ.V;
       if(LABOR.acc){var LA=LABOR.acc;LA.n++;if(a.inCCO)LA.nP++;LA.E0+=lbE0;LA.E+=annualWageUSD;LA.raise+=lbE0*(lbRaise-1);LA.cash+=LABOR.rho*lbU;LA.bu+=LABOR.rhoBU*lbBU;LA.buR+=LABOR.rhoR*lbR;
         LA.rent+=LABOR.rho*(1-LABOR.delta)*lbC;LA.disp+=lbDisp;LA.C+=lbC;LA.U+=lbU+lbBU;LA.projH+=lbE0>0?lbDisp/lbE0:0;if(annualWageUSD===0&&lbE0>0)LA.zero++;}
     }
-    if(PJON){a._pjHW=0;if(a._pjBU>0){var pjH=a._pjBU/pjPay,pjHw=a.wage*12*CFG.WAGE_TO_USD*incomeShock/PROJ.hrsYr,pjD=pjH*pjHw;  // N1 (session 15): project hours
+    if(PJON){a._pjHW=0;if(a._pjBU>0){var pjH=a._pjBU/pjPay,pjHw=a.wage*12*CFG.WAGE_TO_USD*incomeShock/PROJ.hrsYr*(BARGAIN&&a._bgG>0?1+a._bgG:1),pjD=pjH*pjHw;  // N1 (session 15): project hours
       if(PROJ.hours==='displace'){pjD=Math.min(pjD,Math.max(0,annualWageUSD));annualWageUSD-=pjD;if(LABOR&&LABOR.acc)LABOR.acc.E-=pjD;}
       a._pjHW=pjD;PJS.acc.hrs+=pjH;PJS.acc.disp+=(PROJ.hours==='displace'?pjD:0)/pjIdx;}}
     if(SNET&&SNET.abawd){var abW=emQ?emQ.out*52:0,abUi=emQ&&emWk>0?Math.min(abW,emQ.ui/(CFG.EMPL_UI_REPL*emWk)):0,abB=LABOR?(a._lbE0||0):annualWageUSD,abR=abB>0?(LABOR?annualWageUSD/abB:1):0;a._snAbC=a._ret?0:12*Math.max(0,(abR<0.5?52:abW)-abUi)/52;if(FX&&FX.ab&&a._snAbC<1e-9)a._snAbC=0;}  // session 7: SNAP's work rule, this year's months not meeting it (read next year)
@@ -6753,6 +6799,7 @@ function priceRun(p, seed, o, S){
   RTO = RETURNS && RETURNS.bo ? mulberry32(seed + 600091) : null;  /* S59 part 2: the owners' stream */
   if (HOUSEHOLDS) hhInit(agents, seed);  /* v5.3 B3: the same households as the testbed run of this seed */
   if (LF_SCOPE) lfInit(agents, seed); else LFS = null;  /* S61: the same adults outside the labour force as the testbed run */
+  BGS = null;  /* S60: BARGAIN's tallies are kept by testbed runs only */
   var recPath = p.shock ? (REC_SCRIPT ? recScriptPath(p.years) : buildRecessionPath(p.years, seed)) : null;  /* session 9: REC_SCRIPT (comment above tbOpts), so the supply path sees the same scripted path */
   RNG = mulberry32(seed);
   var comp = {}; CFG.BASKET_KEYS.forEach(function(k){ comp[k] = 1; });
@@ -6911,6 +6958,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (AGE && HHS) hhAges(agents, seed);  /* v5.3 B4: ages, sexes and the family stream for households with ageing */
   if (AGE && AGE.earn === 'cps') ageEarn0(agents);  /* v5.3 B7: wages by age, after every age is set */
   if (LF_SCOPE) lfInit(agents, seed); else LFS = null;  /* S61: adults outside the labour force (own stream; after households and ages) */
+  if (BARGAIN && !o.labor) throw new Error('bg (BARGAIN) acts inside the labour response: the row needs o.labor');
+  BGS = BARGAIN ? bgNew() : null; if (BGS) BGS.T = p.years;  /* S60: BARGAIN's tallies (reporting only) */
   DR_ACC = DEBT_READ ? {n:0, h:0, c:0} : null; DR_PL = 1;  /* S61: the debt reading's tally (reporting only) */
   REVS = REVIEW ? {rng:mulberry32(seed + 800023), x:0, c:0} : null; HCS = null;  /* v5.2 step 7: the review stream and the rent state, per run */
   RNG = mulberry32(seed);
@@ -6944,6 +6993,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       if (DMS) dmYear(DMS, agents, p, o, yr, T);  /* S57 (reporting only) */
       if (RTR) rtRep(RTR, agents, o, yr, T);  /* S59 (reporting only) */
       if (WTS) wtRep(WTS, agents, o, yr, T);  /* S59 part 2 (reporting only) */
+      if (BGS) bgYear(agents, yr, BGS.yIdx || 1);  /* S60 (reporting only) */
       if (RHH) hhRepYear(RHH, agents, p, o, yr, T);  /* v5.3 B3 */
       if (yr === 19) dbt20 = tbDebtShare(agents); else if (yr === 39) dbt40 = tbDebtShare(agents);  /* S35 (reporting only) */
       if (EDCS) edcYear(EDCS, agents, p);  /* v5.3 B6 */
@@ -7473,6 +7523,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var wt0 = WEALTH_TAIL; if (c.wt) WEALTH_TAIL = wtOpts(c.wt);  /* S59 part 2: the weighted top tail for this row (no programme rows too) */
       var rt0 = RETURNS; if (c.rt) RETURNS = rtOpts(c.rt);  /* S59: wealth held by asset class for this row (no programme rows too) */
       var lf0 = LF_SCOPE; if (c.lf) LF_SCOPE = Object.assign({}, LF_DEFAULTS, c.lf === true ? {} : c.lf);  /* S61: adults outside the labour force for this row (no programme rows too) */
+      var bg0 = BARGAIN; if (c.bg) BARGAIN = bgOpts(c.bg);  /* S60: a worker's outside option and an employer markdown for this row (no programme rows too) */
       var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; }  /* S58: the capacity price rule for this row (no programme rows too) */
       var pa0 = [PTF_ACCESS, PA]; if (c.pa && c.pa !== 'members'){ if (c.pa !== 'open' && typeof c.pa !== 'object') throw new Error('pa: members, open or {fix}'); PTF_ACCESS = 'open'; PA = Object.assign({}, PA_DEFAULTS, typeof c.pa === 'object' ? c.pa : {}); }  /* S55: open PTF access for this row */
       var cl0 = COMM; if (c.cl) COMM = Object.assign({}, COMM_DEFAULTS, c.cl === true ? {} : c.cl);  /* S37: the community layer for this row */
@@ -7511,9 +7562,10 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.rkEv !== undefined) RISK_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 1 */
         if (r.edcM !== undefined) EDC_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.3 B6 */
         if (r.drHit !== undefined) ['drHit', 'drCut'].forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: the debt reading's tally (rows with dr only) */
+        if (r.bgN !== undefined) BG_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S60: bargaining (rows with bg only) */
         if (r.lfShare !== undefined) LF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;
