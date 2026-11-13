@@ -30,3 +30,7 @@ Moved from the root HANDOFF.md on Nov 13, 2026, word for word, so the root file 
 - Pilot result files write 0 for keys past the run (year-40 keys in 20-year rows); never read a 0 there as a value.
 
 - The frozen model is `harness.js frozenRow` (au, fx, sc 0.877): a job that sets `sc` after calling it replaces the frozen share (the measurement tools do this on purpose). Study-level `sc` does not matter under `fx.sp`; the row's does.
+- S59 `wt` (Nov 13): with the tail on, the engine's unweighted Gini and top shares (`eGiniW`, `eGiniWN`, `giniD`) are not valid, and unweighted poverty rates shift a little through who is counted (about 18 tail adults of 500 stand for 2.6% of people). A rule that shares money by wealth (`priv: 'owners'`) cannot be combined with the tail. `ng: 'all'` (the top interest ratio on the inflation pass-through) is a stress reading only. One tail household per type (`m: 1`) is unbiased but very noisy.
+- S59 `ci` (Nov 13): capital income is untaxed and has no hours response; without the programme it grows from 11% to 16% of money income over 20 years (assets gain value, wages do not grow).
+- The Fed re-issues its SCF summary extracts in the newest survey's dollars (it did on Oct 5, 2026): any script reading one must check the dollar year before applying a price adjustment (`FILE` in `sources/s59_capital.py`: HOUSES over X716).
+- A session machine restart kills background runs: run a pilot in chunks that each write their own file (`--rows`), as `s59-tail-62a189b`'s run.txt records.

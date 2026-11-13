@@ -16,6 +16,11 @@ from statistics import NormalDist
 import numpy as np, pandas as pd
 URL = 'https://www.federalreserve.gov/econres/files/scfp2022s.zip'
 CPI22, CPI25 = 292.655, 321.943
+# The Fed re-issued the summary extract on Oct 5, 2026 with every dollar amount in 2025 dollars (CPI-U-RS): a home's value in the extract is 1.09438 times the
+# value given at the 2022 interview in the full public data set (HOUSES over X716, every family; checked in sources/s59_capital.py). FILE takes the extract
+# back to 2022 dollars; before that date the extract was in 2022 dollars (FILE = 1), which is what the engine's tables of Oct 7 were computed from.
+FILE = 1.09438
+CPI25 = CPI25/FILE  # so that every CPI25/CPI22 below takes the re-issued extract to the same 2025 dollars as before
 COLS = ['wgt', 'age', 'married', 'kids', 'wageinc', 'networth']
 if len(sys.argv) > 1:
     df = pd.read_stata(sys.argv[1], columns=COLS)

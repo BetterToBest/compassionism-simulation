@@ -27,6 +27,10 @@ Prints the table and writes sources/s59_portfolio.json. Usage: python3 sources/s
 import io, json, os, sys, tempfile, urllib.request, zipfile
 import numpy as np, pandas as pd
 CPI22, CPI25 = 292.655, 321.943
+# The Fed re-issued the summary extract on Oct 5, 2026 with every dollar amount in 2025 dollars (CPI-U-RS): a home's value in the extract is 1.09438 times the
+# value given at the 2022 interview in the full public data set (HOUSES over X716, every family; checked in sources/s59_capital.py). FILE takes the extract
+# back to 2022 dollars; before that date the extract was in 2022 dollars (FILE = 1), which is what the engine's tables of Oct 7 were computed from.
+FILE = 1.09438  # correction of Nov 12, 2026 (S59 part 2): the edges printed on Nov 10 were 1.09438 times too high
 U1 = 'https://www.federalreserve.gov/econres/files/scfp2022s.zip'; U2 = 'https://www.federalreserve.gov/econres/files/scf2022s.zip'
 COLS = ['y1', 'wgt', 'age', 'married', 'kids', 'wageinc', 'networth', 'asset', 'fin', 'nfin', 'debt', 'equity', 'houses', 'oresre', 'nnresre', 'bus', 'vehic', 'othnfin',
         'mrthel', 'heloc', 'nh_mort', 'resdbt', 'othloc', 'ccbal', 'install', 'odebt']
@@ -42,7 +46,7 @@ with tempfile.TemporaryDirectory() as d:
     df = stata(p1, COLS); mf = stata(p2, MC)
 df = df.merge(mf, on='y1', how='left', validate='one_to_one')
 df = df[(df.age >= 25) & (df.age <= 66) & (df.wageinc > 0) & (df.married > 0)].copy()
-w = df.wgt.values.astype(float); k = CPI25/CPI22
+w = df.wgt.values.astype(float); k = CPI25/CPI22/FILE
 assert np.allclose(df.asset, df.fin + df.nfin) and np.allclose(df.networth, df.asset - df.debt)
 assert np.allclose(df.debt, df.mrthel + df.resdbt + df.othloc + df.ccbal + df.install + df.odebt, atol=1) and np.allclose(df.mrthel, df.nh_mort + df.heloc, atol=1)
 assert np.allclose(df.nfin, df.houses + df.oresre + df.nnresre + df.bus + df.vehic + df.othnfin, atol=1)

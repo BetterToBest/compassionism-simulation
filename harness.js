@@ -1483,13 +1483,13 @@ function rtUnitSuite(){
     var bad = []; if (RT_GROUPS.length !== 7 || RT_EDGES.length !== 6) bad.push('sizes');
     RT_GROUPS.forEach(function(q, g){ var s = q[1] + q[2] + q[3] + q[4] + q[5]; if (q.length !== 7 || q.some(function(v){ return !(v >= 0); }) || s > 1 || q[6] > 1 || (g === 0) !== (q[0] > 1)) bad.push('group ' + g); });
     for (var i = 1; i < RT_EDGES.length; i++) if (!(RT_EDGES[i] > RT_EDGES[i - 1])) bad.push('edge ' + i);
-    if (rtGroup(-1) !== 0 || rtGroup(0) !== 1 || rtGroup(40570) !== 1 || rtGroup(40571) !== 2 || rtGroup(1e9) !== 6) bad.push('rtGroup');
+    if (rtGroup(-1) !== 0 || rtGroup(0) !== 1 || rtGroup(37072) !== 1 || rtGroup(37073) !== 2 || rtGroup(1e9) !== 6) bad.push('rtGroup');  /* the edges as corrected Nov 12, 2026 (S59 part 2) */
     return {pass:!bad.length, detail:bad.join('; ')}; });
   t('the opening split: the parts add up to the adult\'s net worth in every group; a couple\'s members take the household\'s group; the same net worth gives the same split', function(){
     var R = rtOpts(true), bad = [], r = mulberry32(59), i;
     for (i = 0; i < 4000; i++){ var w = i % 9 === 0 ? -r()*9000 : Math.exp(r()*18) - 1, b = rtOpen(w, w, R, 1), tot = b.r.reduce(function(x, y){ return x + y; }, 0) + b.n - b.dv - b.df;
       if (Math.abs(tot - w) > 1e-9*Math.max(1, Math.abs(w)) || b.r.some(function(v){ return v < 0; }) || b.n < 0 || b.dv < 0 || b.df < 0 || b.g !== rtGroup(w) || Math.abs(b.e0 + b.v0 - w) > 1e-9*Math.max(1, Math.abs(w))) bad.push(w.toFixed(0)); }
-    var h = rtOpen(300000, 600000, R, 1), k = rtOpen(300000, 300000, R, 1), h2 = rtOpen(300000, 600000, R, 1); if (h.g !== 3 || k.g !== 3 || rtOpen(100000, 200000, R, 1).g !== 2 || rtOpen(100000, 800000, R, 1).g !== 4) bad.push('household group');
+    var h = rtOpen(300000, 600000, R, 1), k = rtOpen(300000, 300000, R, 1), h2 = rtOpen(300000, 600000, R, 1); if (h.g !== 3 || k.g !== 3 || rtOpen(100000, 190000, R, 1).g !== 2 || rtOpen(100000, 800000, R, 1).g !== 4) bad.push('household group');
     if (JSON.stringify(h) !== JSON.stringify(h2)) bad.push('not deterministic');
     var p3 = rtOpen(3000, 3000, R, 3); if (p3.g !== 1 || p3.p0 !== 3) bad.push('price level');
     return {pass:!bad.length, detail:bad.slice(0, 5).join('; ')}; });
@@ -1542,6 +1542,93 @@ function rtUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { RT_KEYS, RT_DEFAULTS, RT_GROUPS, RT_EDGES, RT_CLASSES, rtOpts, rtOpen, rtStep, rtGroup, rtUnitSuite });  /* S59 */
+
+/* S59, part 2 (Nov 12, 2026; research-update prereg/2026-11-s59-tail-returns.md, unit tests a-h): WEALTH_TAIL, the weighted top tail, and the options of rt
+ * (business owners, the income wealth pays), and the owners rule by equity held. */
+function wtUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR, A0 = ACCT; CFG.WEALTH_FLOOR = -10000;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); CFG.WEALTH_FLOOR = wf0; ACCT = A0; RETURNS = null; RTR = null; RTO = null; WEALTH_TAIL = null; WTS = null; TB = null; LABOR = null; PRICE = null; REP_HOOK = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY, {dm:true, wtm:true}), Y = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}};
+  function rows(P, x, prog){ var M = relMainCfgs(tbPresets(P)), c = frozenRow(Object.assign(M[prog ? 1 : 0], JSON.parse(JSON.stringify(Y)), JSON.parse(JSON.stringify(x || {})))); return prog ? c22Design(c) : c; }
+  function same(A, B, skip){ var bad = []; Object.keys(A).forEach(function(k){ if (k === '_s' || k === 'cfg' || k === 'label' || (skip && skip(k))) return; if (typeof A[k] === 'number' && !(A[k] === B[k] || (A[k] !== A[k] && B[k] !== B[k]))) bad.push(k); });
+    Object.keys(A._s || {}).forEach(function(k){ if (skip && skip(k)) return; var x = A._s[k], y = (B._s || {})[k]; if (!y){ bad.push('_s.' + k); return; } for (var i = 0; i < x.length; i++) if (!(x[i] === y[i] || (x[i] !== x[i] && y[i] !== y[i]))){ bad.push('_s.' + k); break; } }); return bad; }
+  var TYPES = ['coupleKids', 'coupleNoKids', 'singleParent', 'single'], MAIN = {bo:true, ci:true, ng:'base'};
+  function fake(t, n){ var L = [], p = []; for (var i = 0; i < n; i++){ L.push({a:t.indexOf('couple') === 0 ? [{}, {}] : [{}]}); p.push((i + 0.5)/n); } return {L:L, p:p, Q:t === 'single' ? CFG.SCF_NETWORTH_PCTL : CFG.HH_SCF_PCTL[t]}; }
+  t('the tables: three cutoffs with rising dollars; shares above the cutoff between 0 and 1 and smaller at a higher cutoff; owners\' shares rise with wealth at the top; owners\' and others\' holdings sum to at most 1 and the others hold no business', function(){
+    var bad = [], C = WT_CUTS; if (!(C.p90.u < C.main.u && C.main.u < C.p99.u)) bad.push('cutoffs');
+    TYPES.forEach(function(t){ if (!(C.p99.pi[t] < C.main.pi[t] && C.main.pi[t] < C.p90.pi[t] && C.p99.pi[t] > 0 && C.p90.pi[t] < 1)) bad.push('pi ' + t); });
+    if (RT_OWN.length !== 7 || !(RT_OWN[4] < RT_OWN[5] && RT_OWN[5] < RT_OWN[6] && RT_OWN[6] < 1 && RT_OWN[0] > 0)) bad.push('owners');
+    [RT_GROUPS_O, RT_GROUPS_N].forEach(function(G, k){ G.forEach(function(q, g){ var s = q[1] + q[2] + q[3] + q[4] + q[5]; if (q.length !== 7 || s > 1 + 1e-9 || (k === 1 && q[4] !== 0) || (k === 0 && !(q[4] > 0)) || ((q[0] > 1) !== (g === 0))) bad.push('holdings ' + k + '.' + g); }); });
+    if (RT_YLD.length !== 7 || RT_SOLE.length !== 7 || RT_EDGES[5] !== 12803724) bad.push('rates or edges');
+    return {pass:!bad.length, detail:bad.join('; ')}; });
+  t('weights (prereg test b): in every household type they sum to the type\'s adults, the tail adults\' weight is the SCF share above the cutoff, tail net worths lie above the cutoff and rise with the layer, the others lie at or below it; an adult\'s place in the population runs from 0 to 1 in the order of wealth', function(){
+    var bad = [], det = []; WEALTH_TAIL = wtOpts(true);
+    TYPES.forEach(function(t){ var f = fake(t, 60), r = mulberry32(7), u = [r(), r(), r()], W = 0, tw = 0, ad = 0, C = WT_CUTS.main, last = C.u; wtAssign(f.L, t, f.Q, f.p, u);
+      f.L.forEach(function(H){ H.a.forEach(function(a){ W += a._w; ad++; if (a._wtJ > 0) tw += a._w; }); if (H._wtJ > 0){ var w = H.a[0].wealth*H.a.length; if (!(w >= last)) bad.push(t + ' layer ' + H._wtJ + ' not above the one below'); last = w; } else if (H.a[0].wealth*H.a.length > C.u*(1 + 1e-12)) bad.push(t + ' a household outside the tail above the cutoff'); });
+      if (Math.abs(W - ad) > 1e-9*ad) bad.push(t + ' weights ' + W + ' against ' + ad + ' adults'); if (Math.abs(tw/W - C.pi[t]) > 1e-12) bad.push(t + ' tail weight ' + tw/W);
+      wtRank(f.L); var A = []; f.L.forEach(function(H){ H.a.forEach(function(a){ A.push(a); }); }); A.sort(function(x, y){ return x.wealth - y.wealth; });
+      for (var i = 1; i < A.length; i++) if (A[i]._wtP < A[i - 1]._wtP && A[i].wealth > A[i - 1].wealth) bad.push(t + ' place out of order'); if (!(A[0]._wtP > 0 && A[A.length - 1]._wtP < 1)) bad.push(t + ' place out of range');
+      det.push(t + ' ' + (tw/W*100).toFixed(3) + '%'); });
+    return {pass:!bad.length, detail:bad.length ? bad.slice(0, 4).join('; ') : 'tail weight ' + det.join(', ')}; });
+  t('the tail\'s net worth (prereg test c): over 20,000 draws the weighted mean net worth of a type\'s tail matches the fitted Pareto\'s mean up to the one-family cap within four standard errors, for 1, 3 and 6 layers; the generalised Pareto set to its Pareto case gives the same net worths', function(){
+    var bad = [], det = [], C = WT_CUTS.main, t = 'coupleKids', pi = C.pi[t], B = 1/(C.N[t]*pi), a = C.a, exact = C.u*a/(a - 1)*(1 - Math.pow(B, 1 - 1/a))/(1 - B);
+    [1, 3, 6].forEach(function(m){ WEALTH_TAIL = wtOpts({m:m}); var r = mulberry32(11), s = 0, s2 = 0, N = 20000;
+      for (var k = 0; k < N; k++){ var f = fake(t, 40), u = []; for (var j = 0; j < m; j++) u.push(r()); wtAssign(f.L, t, f.Q, f.p, u); var x = 0, w = 0; f.L.forEach(function(H){ if (H._wtJ > 0){ x += H.a[0]._w*H.a[0].wealth*2; w += H.a[0]._w; } }); x /= w; s += x; s2 += x*x; }
+      var mean = s/N, se = Math.sqrt((s2/N - mean*mean)/N); det.push(m + ': ' + (mean/exact).toFixed(4) + ' of the fitted mean (se ' + (se/exact).toFixed(4) + ')'); if (Math.abs(mean - exact) > 4*se) bad.push('m ' + m); });
+    WEALTH_TAIL = wtOpts(true); var g = wtOpts({form:'gpd', xi:1/a, sg:1/a}), worst = 0; [1, 0.5, 0.1, 1e-3, 1e-6].forEach(function(s){ worst = Math.max(worst, Math.abs(wtTailQ(s, C, g)/wtTailQ(s, C, WEALTH_TAIL) - 1)); }); if (worst > 1e-9) bad.push('forms differ by ' + worst);
+    return {pass:!bad.length, detail:det.join('; ') + (bad.length ? ' FAILED ' + bad.join(', ') : '')}; });
+  t('in a run (prereg tests a, f): the tail with every weight 1 and no change of wealth is the run without it on every shared key, with and without the programme; and without the tail the weighted measures are the plain ones (wealth poverty, both Ginis after the engine\'s n/(n - 1), the top 1% share)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {years:8}), isWt = function(k){ return /^wt/.test(k); };
+    tbStudy([rows(P, {rt:true}, false), rows(P, {rt:true}, true)], 3, P, SO);
+    var A = tbStudy([rows(P, {rt:true}, false), rows(P, {rt:true}, true)], 3, P, SO), B = tbStudy([rows(P, {rt:true, wt:{flat:true}}, false), rows(P, {rt:true, wt:{flat:true}}, true)], 3, P, SO), bad = same(A[0], B[0]).concat(same(A[1], B[1])), n = P.nAgents;
+    [0, 1].forEach(function(i){ for (var sd = 0; sd < 3; sd++){ var g = function(k){ return A[i]._s[k][sd]; };
+      if (Math.abs(g('wtPovE') - g('pov')) > 1e-9) bad.push('wealth poverty ' + g('wtPovE') + ' against ' + g('pov'));
+      if (Math.abs(g('wtGnE')*n/(n - 1) - g('eGiniWN')) > 1e-9 || Math.abs(g('wtGzE')*n/(n - 1) - g('eGiniW')) > 1e-9) bad.push('Gini ' + g('wtGnE')*n/(n - 1) + ' against ' + g('eGiniWN'));
+      if (Math.abs(g('wtT1E') - g('dmWt1E')) > 1e-9 || Math.abs(g('wtB50S') - g('dmWb50S')) > 1e-9 || g('wtW') !== n || g('wtN') !== 0) bad.push('shares or weights'); } });
+    return {pass:!bad.length, detail:bad.slice(0, 6).join('; ')}; });
+  t('pairing and the draws (prereg tests d, e): with the tail, business owners and capital income the main stream takes the same number of draws as without them, and both runs of a pair start with the same tail, weights, owners and holdings (and not the same across seeds)', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {nAgents:200, years:5}), x = {rt:MAIN, wt:true}, mb0 = mulberry32, cnt = [0, 0], which = 0, st = [], cur = null;
+    tbStudy([rows(P, {}), rows(P, {}, true)], 3, P, SO, 3); tbStudy([rows(P, x), rows(P, x, true)], 3, P, SO, 3);  /* uncounted first: the cached supply paths */
+    mulberry32 = function(sd){ var g = mb0(sd); return sd === 3 ? function(){ cnt[which]++; return g(); } : g; };
+    try { tbStudy([rows(P, {}), rows(P, {}, true)], 3, P, SO, 3); which = 1; }
+    finally { mulberry32 = mb0; }
+    REP_HOOK = function(agents, yr, T){ if (yr === 0) cur = agents.map(function(a){ return [a._w, a._wtJ, a._wtP, a._rt.own ? 1 : 0, a._rt.w0, a._rt.g].join(','); }).join('|'); if (yr === T - 1 && T > 1) st.push(cur); };
+    mulberry32 = function(sd){ var g = mb0(sd); return sd === 3 ? function(){ cnt[which]++; return g(); } : g; };
+    try { tbStudy([rows(P, x), rows(P, x, true)], 3, P, SO, 3); } finally { mulberry32 = mb0; REP_HOOK = null; }
+    var B = tbStudy([rows(P, x), rows(P, x, true)], 2, P, SO), ok = st.length === 2 && st[0] === st[1] && /,1,/.test(st[0]) && B[0]._s.wtN[0] === B[1]._s.wtN[0] && B[0]._s.wtN[0] > 0 && B[0]._s.rtOwnS[0] === B[1]._s.rtOwnS[0] && B[0]._s.rtE0[0] === B[1]._s.rtE0[0] && B[0]._s.rtV0[0] !== B[0]._s.rtV0[1];
+    return {pass:cnt[0] > 0 && cnt[0] === cnt[1] && ok, detail:'main-stream draws ' + cnt[0] + ' off, ' + cnt[1] + ' on; tail adults ' + B[0]._s.wtN[0] + '; owners ' + B[0]._s.rtOwnS[0].toFixed(1) + '% of adults'}; });
+  t('the income wealth pays (prereg test g): each adult\'s capital income is the SCF rates times the year\'s holdings by hand; it enters disposable income once (Year 0, against the same run without it); the three parts still sum to real wealth and the accounting identities hold', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {years:6}), bad = [], d0 = [], d1 = [], ck = [], endW = [], nk = 0, x0 = {rt:{bo:true}}, x1 = {rt:{bo:true, ci:true}};
+    tbStudy([rows(P, x0, false)], 1, P, SO);
+    REP_HOOK = function(agents, yr, T){ if (yr === 0 && T > 1 && !d0.length) d0 = agents.map(function(a){ return a._tbDisp; }); }; tbStudy([rows(P, x0, false)], 1, P, SO);
+    REP_HOOK = function(agents, yr, T, lf){ if (T <= 1) return; if (yr === 0 && !d1.length){ d1 = agents.map(function(a){ return a._tbDisp; }); ck = agents.map(function(a){ return a.yrCapUSD; }); }
+      agents.forEach(function(a){ var b = a._rt, y = RT_YLD[b.g], h = b.g < 0 ? 0 : y[0]*b.n + y[1]*b.r[2] + y[2]*(b.r[1] + b.r[3]); nk++; if (Math.abs(h - a.yrCapUSD) > 1e-9*Math.max(1, Math.abs(h))) bad.push('by hand ' + h + ' against ' + a.yrCapUSD); });
+      if (yr === T - 1) endW.push(agents.reduce(function(s, a){ return s + a.wealth; }, 0)/agents.length/lf); };
+    ACCT = acctNew(); var B = tbStudy([rows(P, x1, false), rows(P, x1, true)], 1, P, SO), AC = ACCT, nf = Object.keys(AC.nFail).length; ACCT = null; REP_HOOK = null;
+    if (d0.length !== d1.length || !d0.length) bad.push('no Year 0'); else d0.forEach(function(v, i){ if (Math.abs(d1[i] - v - ck[i]) > 1e-6*Math.max(1, Math.abs(v))) bad.push('disposable income moved by ' + (d1[i] - v) + ', capital income ' + ck[i]); });
+    [0, 1].forEach(function(i){ var g = function(k){ return B[i]._s[k][0]; }, W = endW[i], tot = g('rtE') + g('rtV') + g('rtS'); if (Math.abs(tot - W) > 1e-6*Math.max(1, Math.abs(W))) bad.push('parts ' + tot + ' against real wealth ' + W); if (!(g('rtYkE') > 0 && g('rtYkShE') > 0 && g('rtYkShE') < 100)) bad.push('capital income keys'); });
+    if (nf) bad.push('accounting identities failed: ' + JSON.stringify(AC.nFail));
+    return {pass:!bad.length && nk > 0, detail:bad.length ? bad.slice(0, 4).join('; ') : nk + ' adult-years checked; capital income ' + B[0]._s.rtYkShE[0].toFixed(1) + '% of money income without the programme'}; });
+  t('the owners rule by equity held (prereg test h): under priv \'owners\' with own \'eq\' each year\'s owners\' dollars are paid out exactly, in proportion to shares plus private-business equity (an adult with none gets nothing); without own the split is by positive wealth as before', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {years:5}), bad = [], n = 0, paid = 0;
+    function run(own){ var c = rows(P, {rt:{bo:true}}, true); c.sp = Object.assign({}, c.sp, own ? {priv:'owners', own:'eq'} : {priv:'owners'});
+      REP_HOOK = function(agents, yr, T){ if (T <= 1 || !SPS || !SPS.y[yr] || !(SPS.y[yr].own > 0)) return; var s = 0, base = 0; n++;
+        agents.forEach(function(a){ s += a._spOwn; var e = Math.max(0, a._rt.r[2] + a._rt.r[3]); if (own && e === 0 && a._spOwn !== 0) bad.push('paid without equity'); if (!own && a.yrWealthStartUSD <= 0 && a._spOwn !== 0) bad.push('paid without wealth'); });
+        paid += s; if (Math.abs(s - SPS.y[yr].own) > 1e-6*SPS.y[yr].own) bad.push('paid ' + s + ' against the pool ' + SPS.y[yr].own); };
+      tbStudy([c], 1, P, SO); REP_HOOK = null; }
+    run(true); var n1 = n; run(false);
+    return {pass:!bad.length && n1 > 0 && n > n1 && paid > 0, detail:bad.length ? bad.slice(0, 3).join('; ') : n + ' run-years with owners\' dollars'}; });
+  t('the tail is refused without SCF household wealth, and the interest gradient acts only where an adult\'s place in the population is known', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {years:2}), th = false, c = rows(P, {wt:true}, false); c.hh = Object.assign({}, c.hh, {wealth:'model'});
+    try { tbStudy([c], 1, P, SO); } catch (e){ th = /needs households with SCF wealth/.test(e.message); }
+    var A = tbStudy([rows(P, {rt:{bo:true, ci:true}}, false)], 1, P, SO), B = tbStudy([rows(P, {rt:{bo:true, ci:true, ng:'base'}}, false)], 1, P, SO), bad = same(A[0], B[0]);
+    return {pass:th && !bad.length, detail:(th ? '' : 'not refused; ') + bad.slice(0, 4).join(', ')}; });
+  return out;
+}
+Object.assign(module.exports, { WT_KEYS, WT_DEFAULTS, WT_CUTS, RT2_KEYS, RT_OWN, RT_YLD, wtOpts, wtAssign, wtTailQ, wtUnitSuite });  /* S59 part 2 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3663,11 +3750,15 @@ if (require.main === module) {
     console.log('\n=== rtUnitSuite(): S59, wealth held by asset class (harness-only) ===');
     RTU.forEach(function(x){ if (!x.pass) rtf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + RTU.length + ' run, ' + rtf + ' failed');
+    var WTU = wtUnitSuite(), wtf = 0;
+    console.log('\n=== wtUnitSuite(): S59 part 2, the weighted top tail, business owners and capital income (harness-only) ===');
+    WTU.forEach(function(x){ if (!x.pass) wtf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + WTU.length + ' run, ' + wtf + ' failed');
     var PRU = prUnitSuite(), prf = 0;
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
