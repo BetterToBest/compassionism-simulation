@@ -138,7 +138,7 @@ for k, kn, dp in OUTC[:8]:
             a = float(eff(e, 'main', des, k).mean()); b = float(eff(e, 'chi1', des, k).mean()); lo, hi = min(a, b), max(a, b); outs = []
             for row in FIVE:
                 x = float(eff(e, row, des, k).mean())
-                if x < lo or x > hi: outs.append('%s (%s main)' % (row, 'beyond' if abs(x - a) < abs(x - b) else 'beyond no-relief'))
+                if x < lo or x > hi: outs.append('%s (%s)' % (row, 'beyond S59 main' if abs(x - a) < abs(x - b) else 'beyond no debt relief'))
             summ['bounds'].setdefault(k, {})['%s.%s' % (e, des)] = outs; cells.append('all inside' if not outs else ', '.join(outs))
     P('| %s | ' % kn + ' | '.join(cells) + ' |')
 P('')
