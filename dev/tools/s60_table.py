@@ -74,7 +74,7 @@ for r in READ[2:]:
     S['mech'].setdefault('nash_rw0', {})[r] = rw; P('| %s | %.2f | %.3f | %.0f | %s | %s |' % (r, pi, m, rw, row[0], row[1]))
 OUTK = [('wtPovE', 'wealth poverty, year 20, weighted (points)', f1), ('fgt0PY', 'basket poverty, person-years (points)', f1), ('Er', 'real wage earnings per adult-year ($)', f0),
         ('hrs', 'hours (share of hours with no response)', lambda t: '%.4f [%.4f, %.4f]' % t), ('emp', 'adults with earnings (points)', f2), ('endoAnn', 'inflation a year (points)', lambda t: '%.2f [%.2f, %.2f]' % tuple(100*x for x in t)),
-        ('hhCostPY', 'cost of living, household person-years', f2), ('wtT1E', 'top 1% share of wealth, year 20, weighted (points)', f2), ('wtMedE', 'median wealth, year 20, weighted ($)', f0)]
+        ('hhCostPY', 'basket poverty, households (person-years, points)', f2), ('wtT1E', 'top 1% share of wealth, year 20, weighted (points)', f2), ('wtMedE', 'median wealth, year 20, weighted ($)', f0)]
 P('\n## 3. Effects of the programme (programme minus no programme), by reading\n')
 for d, dn in DES:
     P('### %s design\n' % dn)
