@@ -22,7 +22,7 @@ const ROWS = [['np', 0], ['np-cap', 0, true], ['rel', 1], ['rel-cap', 1, true], 
 const OUTK = ['endoAnn', 'endoMax', 'pLev10', 'pLev20', 'pov', 'fgt0PY', 'hhCostPY', 'bOAPy', 'medWealthReal', 'srcPay', 'srcM', 'srcTax', 'cost', 'eGiniW', 'eGiniWN', 'hhDebt20']
   .concat(H.TB_PLV_KEYS || []).concat(H.PR_KEYS, H.MF_KEYS)
   .concat(['f0', 'pov', 'medW'].reduce((r, m) => r.concat(Array.from({length: YRS}, (_, t) => 'p' + m + '_' + t)), []));
-const out = {_meta: {what: 'S67: the price rule's new readings, pilot (research-update prereg/2026-11-s67-price-rule-derivation.md, Amendment 1)', env, seeds: N, years: YRS, yardstick: Y, frozen: H.FROZEN,
+const out = {_meta: {what: 'S67: the new readings of the price rule, pilot (research-update prereg/2026-11-s67-price-rule-derivation.md, Amendment 1)', env, seeds: N, years: YRS, yardstick: Y, frozen: H.FROZEN,
   defaults: H.PR_DEFAULTS, manifest: H.runManifest(), command: 'node dev/tools/s67_price.js ' + process.argv.slice(2).join(' '), rows: ROWS.map(r => ({name: r[0], prog: r[1], pr: r[2] || 'qt'}))}, rows: {}};
 try {
   const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P), so = Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: H.SPEND_SOURCED, mf: true}, H.REL_V52_STUDY);
