@@ -1483,13 +1483,13 @@ function rtUnitSuite(){
     var bad = []; if (RT_GROUPS.length !== 7 || RT_EDGES.length !== 6) bad.push('sizes');
     RT_GROUPS.forEach(function(q, g){ var s = q[1] + q[2] + q[3] + q[4] + q[5]; if (q.length !== 7 || q.some(function(v){ return !(v >= 0); }) || s > 1 || q[6] > 1 || (g === 0) !== (q[0] > 1)) bad.push('group ' + g); });
     for (var i = 1; i < RT_EDGES.length; i++) if (!(RT_EDGES[i] > RT_EDGES[i - 1])) bad.push('edge ' + i);
-    if (rtGroup(-1) !== 0 || rtGroup(0) !== 1 || rtGroup(40570) !== 1 || rtGroup(40571) !== 2 || rtGroup(1e9) !== 6) bad.push('rtGroup');
+    if (rtGroup(-1) !== 0 || rtGroup(0) !== 1 || rtGroup(37072) !== 1 || rtGroup(37073) !== 2 || rtGroup(1e9) !== 6) bad.push('rtGroup');  /* the edges as corrected Nov 12, 2026 (S59 part 2) */
     return {pass:!bad.length, detail:bad.join('; ')}; });
   t('the opening split: the parts add up to the adult\'s net worth in every group; a couple\'s members take the household\'s group; the same net worth gives the same split', function(){
     var R = rtOpts(true), bad = [], r = mulberry32(59), i;
     for (i = 0; i < 4000; i++){ var w = i % 9 === 0 ? -r()*9000 : Math.exp(r()*18) - 1, b = rtOpen(w, w, R, 1), tot = b.r.reduce(function(x, y){ return x + y; }, 0) + b.n - b.dv - b.df;
       if (Math.abs(tot - w) > 1e-9*Math.max(1, Math.abs(w)) || b.r.some(function(v){ return v < 0; }) || b.n < 0 || b.dv < 0 || b.df < 0 || b.g !== rtGroup(w) || Math.abs(b.e0 + b.v0 - w) > 1e-9*Math.max(1, Math.abs(w))) bad.push(w.toFixed(0)); }
-    var h = rtOpen(300000, 600000, R, 1), k = rtOpen(300000, 300000, R, 1), h2 = rtOpen(300000, 600000, R, 1); if (h.g !== 3 || k.g !== 3 || rtOpen(100000, 200000, R, 1).g !== 2 || rtOpen(100000, 800000, R, 1).g !== 4) bad.push('household group');
+    var h = rtOpen(300000, 600000, R, 1), k = rtOpen(300000, 300000, R, 1), h2 = rtOpen(300000, 600000, R, 1); if (h.g !== 3 || k.g !== 3 || rtOpen(100000, 190000, R, 1).g !== 2 || rtOpen(100000, 800000, R, 1).g !== 4) bad.push('household group');
     if (JSON.stringify(h) !== JSON.stringify(h2)) bad.push('not deterministic');
     var p3 = rtOpen(3000, 3000, R, 3); if (p3.g !== 1 || p3.p0 !== 3) bad.push('price level');
     return {pass:!bad.length, detail:bad.slice(0, 5).join('; ')}; });
