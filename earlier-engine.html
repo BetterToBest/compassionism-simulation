@@ -6583,7 +6583,7 @@ function pmGenStep(PG, U, Y, lam){ return Y > 0 ? PG*(1 + lam*U/Y) : PG; }
 function pmBasketIdx(comp){ var b = 1; CFG.BASKET_KEYS.forEach(function(k){ b += CFG.BASKET[k]*(comp[k] - 1); }); return b; }  /* 1 + weighted deviations: exactly 1 when no price moved */
 function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, Yw:0, ptfN:0, conv:0, pthLiq:0, wageBonus:0, wageBonusNS:0}; }  /* v5.2 step 6: Yw, earned income (wages and Social Security) */
 /* S58 (Nov 9, 2026; research-update prereg/2026-11-s58-price-rule.md; dev/reports/s58-price-rule.md): THE CAPACITY PRICE RULE, behind PRICE_RULE
- * ('qt' = the quantity rule above, pmGenStep, unchanged and the default; 'capacity' = this rule), row option pr (true, or {k, k2, r, a, h, rs, um, ks}),
+ * ('qt' = the quantity rule above, pmGenStep, unchanged and the default; 'capacity' = this rule), row option pr (true, or {k, k2, r, a, h, rs, um, ks, q, bv, bd}),
  * testbed runs only (tbRunCore; priceRun keeps 'qt', a stated limit). State: n, the log of the money-implied demand level; p[s], the log price level
  * of sector s (gen = the general basket, food, housing, medical); all 0 at the start. Each year, after the year's flows (setting next year's prices,
  * the same timing as today):
@@ -6607,33 +6607,65 @@ function newPMAcc(){ return {n:0, essD:0, unmet:0, basketOwn:0, unmetN:0, Y:0, Y
  *              Reading {gen: 0.0446}: total-industry utilisation 2025 (75.95%) against its 1972-2025 mean (79.41%).
  *  rs  true    count the recession's idle share as slack (false: only h; the nesting point; research-update prereg Amendment 2).
  *  um  0.0593  the most output can stretch above its no-pressure level: the largest positive CBO gap since 1949 (1966 Q1, +6.1%). Reporting only.
+ *  q   1       S67: sub-steps a year (prStepQ; 1 = one yearly step, as S58). Reading 4 (quarters), with k, k2 and r per quarter: 'wy' {q:4, k:0.0788,
+ *              k2:0, r:0.2333} (S58's regression form on quarterly data, sources/s67_pstar.py) and 'wyroot' {q:4, a:0, r:0.9406, k:0.0317, k2:0.0036}
+ *              (the quarterly rule whose roots are the fourth roots of the yearly main rule's: the same waves by construction).
+ *  bv  0       S67: the velocity response (years): the money-implied level is n + bv x expected inflation (the general level's log change over the
+ *              last year). Readings 0.0043 and 0.0022 (sources/s67_panel.py, P4: 77 episodes of sustained inflation above 20%, World Bank data; not
+ *              distinguishable from 0). The closed form is stable while a + r + k x bv < 1.
+ *  bd  0       S67 (prereg Amendment 1): the velocity drift: the money-implied level grows (1 + bd) times the money. Reading 0.132 (the same panel, P3:
+ *              mean velocity growth over mean growth of money per unit of output inside episodes). Pass-through (prPT*) stays measured on the money.
  *  ks  0       capacity loss (log; a number, {sector: v}, or an array of either by year): a supply shock with no new money (unit tests; no study row).
  * Reporting (PR_KEYS, with the rule on, or under 'qt' with study option mf; nothing reported feeds back), on the general basket: prPT3/10/19/39
  * pass-through ln P_G / n after 3, 10, 19, 39 years (0 before or without new money); means over the run of excess demand at the year's prices prX,
  * the slack prH, the recession's idle share prSlk, the output response prOut, the rationed share prRat (demand no output can meet, beyond h + um)
  * and the output loss prLoss (when prices overshoot the money, x < 0), all % of no-pressure output; the last year's prXE, prRatE and shadow ratio
  * prSh = exp(max(0, x - h - um)), how far the measured level sits below one that would clear demand; prWsh median real wealth at shadow prices;
- * prPovSh wealth poverty at shadow prices. No RNG. */
+ * prPovSh wealth poverty at shadow prices; prAvg (S67) the mean over the run of the within-year average price level over the year's opening level (1 with
+ * q = 1). With q > 1 each year's x, out, rat and loss are means over the sub-steps. No RNG. */
 var PRICE_RULE = 'qt', PR_OPTS = null, PRS = null, PR_SECT = ['gen', 'food', 'housing', 'medical'];
-var PR_DEFAULTS = {k:0.445, k2:0.051, r:0.275, a:MULT_LS, h:0, rs:true, um:0.0593, ks:0};
-var PR_KEYS = ['prOn', 'prPT3', 'prPT10', 'prPT19', 'prPT39', 'prX', 'prH', 'prSlk', 'prOut', 'prRat', 'prLoss', 'prXE', 'prRatE', 'prSh', 'prWsh', 'prPovSh'];
+var PR_DEFAULTS = {k:0.445, k2:0.051, r:0.275, a:MULT_LS, h:0, rs:true, um:0.0593, ks:0, q:1, bv:0, bd:0};
+var PR_KEYS = ['prOn', 'prPT3', 'prPT10', 'prPT19', 'prPT39', 'prX', 'prH', 'prSlk', 'prOut', 'prRat', 'prLoss', 'prXE', 'prRatE', 'prSh', 'prWsh', 'prPovSh', 'prAvg'];
 function prOpts(o){ return Object.assign({}, PR_DEFAULTS, o === true || !o ? {} : o); }
 function prSec(v, s, d){ return typeof v === 'number' ? v : v && typeof v[s] === 'number' ? v[s] : d; }  /* a sector's value: a number for every sector, or {sector: v} */
-function prNew(o, on){ return {on:!!on, o:prOpts(o), n:0, p:{gen:0, food:0, housing:0, medical:0}, bPrev:1, y:[], pt:{}}; }
+function prNew(o, on){ return {on:!!on, o:prOpts(o), n:0, m:0, p:{gen:0, food:0, housing:0, medical:0}, bPrev:1, y:[], pt:{}, dg:0, dl:0, dq:[]}; }
 /* One year's step. U, Y: the year's unmatched new money and cash income (as pmGenStep); lam: lamG; wIdx, piG: the wage indexation and this year's general
  * inflation; bIdx: this year's endogenous basket index; slk: the recession's idle share; PGq: the quantity rule's next level (used under 'qt', S.on false,
  * where the state only records). Returns next year's P_G. */
 function prStep(S, U, Y, lam, wIdx, piG, bIdx, slk, yr, PGq){
   var o = S.o, dn = Y > 0 ? Math.log(Math.max(1e-12, 1 + lam*U/Y)) : 0, w = Math.log(Math.max(1e-12, 1 + (wIdx || 0)*(piG || 0))), piE = Math.log(bIdx/S.bPrev);
-  var hR = o.rs !== false && slk > 0 ? -Math.log(1 - Math.min(0.999, slk)) : 0, ks = Array.isArray(o.ks) ? (o.ks[yr] || 0) : o.ks, xG = 0, hG = 0;
+  var hR = o.rs !== false && slk > 0 ? -Math.log(1 - Math.min(0.999, slk)) : 0, ks = Array.isArray(o.ks) ? (o.ks[yr] || 0) : o.ks, xG = 0, hG = 0, p0 = S.p.gen;
+  S.m += dn; if (o.bd) dn *= 1 + o.bd;  /* S67: the velocity drift (the money-implied level runs ahead of the money) */
+  if (o.q > 1 && S.on) return prStepQ(S, o, dn, w, hR, ks, yr, bIdx);  /* S67: sub-steps within the year */
   S.n += dn; S.bPrev = bIdx;
-  PR_SECT.forEach(function(s){ var h = prSec(o.h, s, 0) + hR - prSec(ks, s, 0), x = S.n - S.p[s];
+  var nE = o.bv ? S.n + o.bv*S.dg : S.n;  /* S67: the velocity response (expected inflation = the general level's last yearly log change) */
+  PR_SECT.forEach(function(s){ var h = prSec(o.h, s, 0) + hR - prSec(ks, s, 0), x = nE - S.p[s];
     if (s === 'gen'){ xG = x; hG = h; }
     if (S.on) S.p[s] += prSec(o.a, s, MULT_LS)*w + o.r*piE + o.k*Math.max(0, x - h) + o.k2*Math.min(0, x); });
   if (!S.on) S.p.gen = Math.log(PGq);
   var cap = hG + o.um, rec = {x:xG, h:hG, slk:hR > 0 ? Math.min(0.999, slk) : 0, out:Math.min(Math.max(0, xG), Math.max(0, cap)), rat:Math.max(0, xG - cap), loss:Math.min(0, xG)};
-  S.y.push(rec); if (S.n > 0) S.pt[yr + 1] = S.p.gen/S.n;
+  S.y.push(rec); if (S.n > 0) S.pt[yr + 1] = S.p.gen/(o.bd ? S.m : S.n); S.dg = S.p.gen - p0;
   return S.on ? Math.exp(S.p.gen) : PGq; }
+/* S67 (Nov 13, 2026; research-update prereg/2026-11-s67-price-rule-derivation.md, Part B; dev/reports/s67-price-rule-derivation.md): the year in q
+ * sub-steps (option q > 1; the capacity rule only). The year's money arrives evenly; in each sub-step every sector's log price rises by
+ * a[s] x w/q (wages are still indexed once a year; spreading it stands for staggered contracts) + r x the general level's log change in the last
+ * sub-step + k x max(0, x - h) + k2 x min(0, x), x = the money-implied level at that sub-step (plus bv x the general level's log change over the last
+ * q sub-steps) less the sector's price; k, k2 and r are per sub-step. Next year's level is the level after the last sub-step. The year's record holds
+ * means over the sub-steps, and avg, the mean log of the level each sub-step's demand met over the year's opening level. Households still shop at the
+ * year's opening prices (the engine's year is not split): a stated limit. No RNG. */
+function prStepQ(S, o, dn, w, hR, ks, yr, bIdx){
+  var Q = Math.round(o.q), p0 = S.p.gen, cap = 0, hG = 0, rec = {x:0, h:0, slk:hR > 0 ? 1 - Math.exp(-hR) : 0, out:0, rat:0, loss:0, avg:0};
+  S.bPrev = bIdx;
+  for (var j = 0; j < Q; j++){
+    S.n += dn/Q; rec.avg += (S.p.gen - p0)/Q;
+    var nE = o.bv ? S.n + o.bv*S.dq.reduce(function(a, v){ return a + v; }, 0) : S.n, pe = S.dl, g0 = S.p.gen, xG = 0;
+    PR_SECT.forEach(function(s){ var h = prSec(o.h, s, 0) + hR - prSec(ks, s, 0), x = nE - S.p[s];
+      if (s === 'gen'){ xG = x; hG = h; }
+      S.p[s] += prSec(o.a, s, MULT_LS)*w/Q + o.r*pe + o.k*Math.max(0, x - h) + o.k2*Math.min(0, x); });
+    S.dl = S.p.gen - g0; S.dq.push(S.dl); if (S.dq.length > Q) S.dq.shift();
+    cap = hG + o.um; rec.x += xG/Q; rec.out += Math.min(Math.max(0, xG), Math.max(0, cap))/Q; rec.rat += Math.max(0, xG - cap)/Q; rec.loss += Math.min(0, xG)/Q; }
+  rec.h = hG; S.y.push(rec); if (S.n > 0) S.pt[yr + 1] = S.p.gen/(o.bd ? S.m : S.n); S.dg = S.p.gen - p0;
+  return Math.exp(S.p.gen); }
 /* Next year's essentials under the rule: PE x exp(p[s]) (pgOnE false: PE alone, as today). */
 function prComp(S, comp, PE, pgOnE){ CFG.ESSENTIALS.forEach(function(k){ comp[k] = PE[k]*(pgOnE ? Math.exp(S.p[k]) : 1); }); }
 function prRes(r, S, agents, lineF){ var Y = S.y, T = Y.length, m = function(f){ return T ? Y.reduce(function(a, y){ return a + f(y); }, 0)/T*100 : 0; }, L = T ? Y[T - 1] : {x:0, h:0, rat:0};
@@ -6642,7 +6674,7 @@ function prRes(r, S, agents, lineF){ var Y = S.y, T = Y.length, m = function(f){
   r.prOn = S.on ? 1 : 0; [3, 10, 19, 39].forEach(function(t){ r['prPT' + t] = S.pt[t] || 0; });
   r.prX = m(function(y){ return pct(y.x); }); r.prH = m(function(y){ return pct(y.h); }); r.prSlk = m(function(y){ return y.slk; });
   r.prOut = m(function(y){ return pct(y.out); }); r.prRat = m(function(y){ return 1 - Math.exp(-y.rat); }); r.prLoss = m(function(y){ return 1 - Math.exp(y.loss); });
-  r.prXE = pct(L.x)*100; r.prRatE = (1 - Math.exp(-(L.rat || 0)))*100; r.prSh = sh;
+  r.prXE = pct(L.x)*100; r.prRatE = (1 - Math.exp(-(L.rat || 0)))*100; r.prSh = sh; r.prAvg = T ? Y.reduce(function(a, y){ return a + Math.exp(y.avg || 0); }, 0)/T : 1;
   r.prWsh = medianOf(ws)/(agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1))/sh; r.prPovSh = agents.length ? pv/agents.length*100 : 0;
   return r; }
 /* S58 study option mf (reporting only): the consolidated money-flow table, year-0 dollars per adult-year, means over the run (MF_KEYS):
