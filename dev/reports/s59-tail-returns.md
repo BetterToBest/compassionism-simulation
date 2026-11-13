@@ -11,6 +11,8 @@ Nov 13, 2026. Pilot: seeds 1-100, 500 adults, 20 years, three environments, engi
 6. **If private owners kept the conversion premium** (an earlier reading of the design; the release reading passes it to customers as lower prices), the programme would still lower the top 1% share of wealth, by less (−0.6 to −0.8 in Reference instead of −1.0 to −1.5), but the top 1% share of income would rise by 1 to 5 points instead of falling, and the programme's cut in basket poverty would be about 4 points smaller.
 7. **A correction to part 1.** The survey file was re-issued in 2025 dollars on Oct 5, 2026, and part 1's script adjusted for prices a second time: its wealth-group edges were 9.4% too high. Corrected and rerun: no finding changes (largest move 0.11 points).
 
+**Note added Nov 13, 2026 (S71, `dev/reports/s71-creditor-side.md`).** Point 3 above and the lines below that say the direction "turns on the missing creditor side" are corrected in wording; no figure changes. A creditor side has since been built: the households that hold the debt lose what the borrowers gain. With it the programme still lowers the top 1% share (−1.02 points for the release design in Reference under the main creditor reading; −0.67 when every dollar of the loss falls on households in the model). So the direction does not turn on the lender. It turns on whether fixed-rate debts keep their dollar value at all: the "no debt relief" reading removes the borrower's gain, which is a different thing from adding a lender's loss. Both readings stay beside every wealth result.
+
 ## What was built
 All of it is off unless a study row asks for it; with everything off every figure of the engine is unchanged (guard test; 8 new unit tests).
 

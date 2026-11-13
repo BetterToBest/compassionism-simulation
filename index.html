@@ -4059,7 +4059,7 @@ var DEBT_READ = null;
  * share of private business equity at the end of Year 0 and of the last year (rtBt1S, rtBt1E, %); the last year's real assets, nominal assets, floating
  * and fixed debt (rtRE, rtNE, rtDvE, rtDfE). */
 var RETURNS = null, RTR = null, RT_CLASSES = ['home', 'ore', 'eq', 'bus', 'oth'],
-  RT_DEFAULTS = {ix:1, phi:0.46, psi:1, chi:0, rho:{home:0.0094, ore:0.0094, eq:0.0402, bus:0.0402, oth:0}, ns:'nom', all:null, bo:false, ci:false, ng:false, rg:false},
+  RT_DEFAULTS = {ix:1, phi:0.46, psi:1, chi:0, rho:{home:0.0094, ore:0.0094, eq:0.0402, bus:0.0402, oth:0}, ns:'nom', all:null, bo:false, ci:false, ng:false, rg:false, cr:false},
   RT_EDGES = [0, 37073, 196748, 665427, 1855827, 12803724],  /* corrected Nov 12, 2026: the Nov 10 edges were 1.09438 times too high (the Fed re-issued the extract in 2025 dollars; sources/s59_portfolio.py) */
   RT_GROUPS = [[1.8197, 0.431, 0.0231, 0.0774, 0.0064, 0.2727, 0.9285], [0.681, 0.4099, 0.0089, 0.0533, 0.0077, 0.3875, 0.9034], [0.564, 0.673, 0.025, 0.0591, 0.0097, 0.1343, 0.9071], [0.3191, 0.6074, 0.0427, 0.1032, 0.0225, 0.0845, 0.9067], [0.1898, 0.4523, 0.0801, 0.1971, 0.0284, 0.0478, 0.9142], [0.0898, 0.2431, 0.0835, 0.3038, 0.1453, 0.0219, 0.8852], [0.0288, 0.0761, 0.0872, 0.2025, 0.4854, 0.0171, 0.7482]];
 var RT2_KEYS = ['rtYkS', 'rtYkE', 'rtYkShE', 'rtYbE', 'rtOwnS', 'rtOwnLoS', 'rtOwnHiS', 'rtGt1E', 'rtGt10E'];
@@ -4085,11 +4085,56 @@ var RTO = null, RT_OWN = [0.0457, 0.0559, 0.1049, 0.1145, 0.2008, 0.4498, 0.8731
   RT_GROUPS_N = [[1.8471, 0.4604, 0.0036, 0.0712, 0, 0.2776, 0.9334], [0.6563, 0.4054, 0.0044, 0.057, 0, 0.395, 0.8958], [0.5624, 0.6787, 0.0255, 0.0608, 0, 0.1358, 0.9049], [0.3152, 0.6191, 0.0423, 0.1077, 0, 0.0853, 0.9071], [0.1867, 0.4562, 0.0831, 0.2122, 0, 0.0473, 0.9134], [0.0841, 0.2586, 0.0736, 0.3937, 0, 0.0236, 0.8936], [0.0269, 0.097, 0.249, 0.348, 0, 0.0642, 0.6234]],
   RT_YLD = [[0.00477, 0.00068, -0.00404], [0.00057, 0.01722, 0.0176], [0.00121, 0.00067, 0.09495], [0.00083, 0.00686, 0.05394], [0.00273, 0.00197, 0.04122], [0.00393, 0.00694, 0.03594], [0.01094, 0.01407, 0.03532]],
   RT_SOLE = [0.1216, 0.163, 0.097, 0.0931, 0.045, 0.0606, 0.0146], RT_NG = [1.52/0.91, 3.79/0.91], RT_RG = [2.00/1.64, 9.06/7.55];
+/* S71 (Nov 13, 2026; research-update prereg/2026-11-s71-creditor-side.md; dev/reports/s71-creditor-side.md): option cr of rt, a creditor side for
+ * fixed-rate debt. Off (false) by default; off, nothing below is read and no figure moves (guard test). No random draw. With chi below 1 a fixed-rate debt
+ * loses real value as prices rise; cr charges that loss to the households that hold the debt, in proportion to their claims. RT_CR (sources/
+ * s71_creditors.py; the Fed's Financial Accounts at 2022:Q4, looked through by the rule of Doepke and Schneider, JPE 2006): led, where one dollar of
+ * household fixed-rate debt is finally held (dHH, dGOV, dROW deposit-like claims of households, the government and foreigners; bHH bond-like claims of
+ * households; BUS businesses, for their shareholders; GOV, ROW direct holdings); own, who owns U.S. shares; w, the engine families' share of all
+ * families' deposit-like assets, bond-like assets and stocks over their share of all families' fixed-rate debt (SCF 2022: retired households hold claims
+ * too and are outside the model); t, the bond-like fraction of nominal assets by wealth group (tAll: an adult with no group).
+ * A nominal asset is already paid only phi of inflation, so a claim dollar's loss of (1 - phi) is on the books before cr; cr charges the rest, down to
+ * what the debt itself is paid (chi): (phi - chi) pi per claim dollar. inc 'pass' (main): bond-like claims are charged; deposits keep phi, and what a
+ * depositor does not lose on a deposit-funded loan the lenders' shareholders do, with businesses' own holdings. 'hold': deposit claims are charged like
+ * bonds; shareholders carry businesses' own holdings only. 'hedge': shareholders are not charged (their part is reported as outside).
+ * pop 1: the model's families are the whole household sector (w = 1). out 0: nothing is outside (the government's and foreigners' parts are spread
+ * over households' claims; w = 1). w 0: the year's totals are unweighted. With w 1 (main) the totals D, NB, ND, EQ are sums weighted by a._w: THE ONE
+ * RULE THAT READS A WEIGHT, and only through these four totals, so that the ledger balances in the population the weighted measures describe.
+ * Each year (crYear, at the first adult's turn, last year's saving placed first): claims are capped at holdings; the excess is reported (crUn).
+ * Reporting (CR_KEYS, with cr only; Year-0 dollars per adult, weighted, summed over the run): crRel the debt inflated away; crBook the part of the
+ * model households' loss already on the books; crNom, crEq the new charges on nominal assets and on shares (measured from the balances); crOutG, crOutF,
+ * crOutH, crOutS the parts left outside (government, foreigners, households outside the model, lenders' shareholders not charged); crUn unplaced; crGap
+ * relief less all of these (zero if the build is right); crN1-5, crR1-5 new charges and relief per adult by fifth of starting wealth; crT1 the top 1%
+ * of adults' (by starting wealth) share of new charges (%). */
+var RT_CR = {led:{dHH:0.2393, bHH:0.0845, BUS:0.3242, GOV:0.2556, ROW:0.0641, dGOV:0.0182, dROW:0.0141}, own:{eH:0.7313, eG:0.071, eR:0.1977},
+    w:{wD:0.6566, wB:0.6067, wE:0.6233}, t:[0.3805, 0.392, 0.4977, 0.5883, 0.6648, 0.726, 0.6624], tAll:0.6753},
+  CR_DEFAULTS = {inc:'pass', pop:0, out:1, w:1}, CRS = null, CRY = null, CRP = null,
+  CR_KEYS = ['crRel', 'crBook', 'crNom', 'crEq', 'crOutG', 'crOutF', 'crOutH', 'crOutS', 'crUn', 'crGap', 'crN1', 'crN2', 'crN3', 'crN4', 'crN5', 'crR1', 'crR2', 'crR3', 'crR4', 'crR5', 'crT1'];
+function crOpts(v){ if (!v) return false; var o = Object.assign({}, CR_DEFAULTS, v === true ? {} : v);
+  if (o.inc !== 'pass' && o.inc !== 'hold' && o.inc !== 'hedge') throw new Error('rt.cr.inc must be \'pass\', \'hold\' or \'hedge\'');
+  var L = RT_CR.led, s = L.dHH + L.bHH + L.BUS; o.led = +o.out === 0 ? {dHH:L.dHH/s, bHH:L.bHH/s, BUS:L.BUS/s, GOV:0, ROW:0, dGOV:0, dROW:0} : Object.assign({}, L);
+  o.own = +o.out === 0 ? {eH:1, eG:0, eR:0} : Object.assign({}, RT_CR.own); o.wf = +o.out === 0 || +o.pop === 1 ? {wD:1, wB:1, wE:1} : Object.assign({}, RT_CR.w); return o; }
+function crT(b){ return b.g >= 0 ? RT_CR.t[b.g] : RT_CR.tAll; }
+function crRates(D, NB, ND, EQ, pi, R){  /* the year's charges per dollar held, and the ledger in dollars, from the four totals */
+  var C = R.cr, L = C.led, O = C.own, W = C.wf, a = 1 - R.chi, k = R.phi - R.chi, h = 1 - R.phi, dAll = L.dHH + L.dGOV + L.dROW, hold = C.inc === 'hold', dl = hold ? a : h;
+  var Kb = L.bHH*W.wB*D, Kd = L.dHH*W.wD*D, kb = Math.min(Kb, Math.max(0, NB)), kd = Math.min(Kd, Math.max(0, ND));
+  var pool = hold ? a*L.BUS*D : (a*L.BUS + k*dAll)*D, ch = C.inc !== 'hedge', eq = ch ? pool*O.eH*W.wE : 0, pl = EQ > 0 ? Math.max(-EQ, Math.min(EQ, eq)) : 0;  /* shares cannot lose more than their value times inflation */
+  return {pi:pi, rb:NB > 0 ? k*pi*kb/NB : 0, rd:hold && ND > 0 ? k*pi*kd/ND : 0, re:EQ > 0 ? pi*pl/EQ : 0,
+    rel:a*pi*D, book:h*pi*(kb + kd), un:pi*(a*(Kb - kb) + dl*(Kd - kd) + (eq - pl)),
+    outG:pi*(a*L.GOV*D + dl*L.dGOV*D + (ch ? pool*O.eG : 0)), outF:pi*(a*L.ROW*D + dl*L.dROW*D + (ch ? pool*O.eR : 0)),
+    outH:pi*(a*L.bHH*(1 - W.wB)*D + dl*L.dHH*(1 - W.wD)*D + (ch ? pool*O.eH*(1 - W.wE) : 0)), outS:ch ? 0 : pi*pool}; }
+function crYear(agents, P, yr){  /* at the first adult's turn, before any adult's year: the totals of adults already in the model, with last year's saving placed */
+  if (yr === 0 || !CRS) CRS = {p0:P, A:{rel:0, book:0, nom:0, eq:0, outG:0, outF:0, outH:0, outS:0, un:0}};
+  var R = RETURNS, D = 0, NB = 0, ND = 0, EQ = 0, Wt = 0, pi = null;
+  agents.forEach(function(a){ var b = a._rt; if (!b || a._rtNew) return; var w = R.cr.w && a._w !== undefined ? +a._w : 1, k = {r:b.r.slice(), n:b.n, dv:b.dv, al:b.al}, t = crT(b);
+    rtPlace(k, a.wealth - b.w, R); if (pi === null) pi = P/b.p - 1; D += w*b.df; NB += w*t*k.n; ND += w*(1 - t)*k.n; EQ += w*k.r[2]; Wt += w; });
+  if (pi === null || !(Wt > 0)) return null;
+  var y = crRates(D, NB, ND, EQ, pi, R), f = CRS.p0/P/Wt; y.f = CRS.p0/P; y.Wt = Wt; ['rel', 'book', 'outG', 'outF', 'outH', 'outS', 'un'].forEach(function(k){ CRS.A[k] += y[k]*f; }); return y; }
 function rtCap(b){ if (b.g < 0) return 0; var y = RT_YLD[b.g]; return y[0]*(b.ng || 1)*b.n + y[1]*b.r[2] + y[2]*(b.r[1] + b.r[3]); }  /* the year's capital income at the year's holdings */
 function rtOpts(v){ var o = Object.assign({}, RT_DEFAULTS, v === true ? {} : v), rho = {};
   RT_CLASSES.forEach(function(c){ rho[c] = typeof o.rho === 'number' ? o.rho : (o.rho && o.rho[c] !== undefined ? +o.rho[c] : RT_DEFAULTS.rho[c]); }); o.rho = rho;
   if (o.ns !== 'nom' && o.ns !== 'port') throw new Error('rt.ns must be \'nom\' or \'port\''); if (o.ng && o.ng !== 'base' && o.ng !== 'all') throw new Error('rt.ng must be \'base\' or \'all\''); if (o.all && o.all !== 'nom' && o.all !== 'real') throw new Error('rt.all must be \'nom\' or \'real\'');
-  return o; }
+  o.cr = crOpts(o.cr); return o; }
 function rtGroup(W){ var g = 0; while (g < RT_EDGES.length && W >= RT_EDGES[g]) g++; return g; }  /* 0: below zero */
 function rtOpen(w, Wh, R, P, own){  /* one adult's opening balances: w the adult's net worth, Wh the household's (in Year-0 dollars for the group), P the price level */
   var b = {r:[0, 0, 0, 0, 0], v:[0, 0, 0, 0, 0], n:0, dv:0, df:0, en:0, ed:0, al:null, g:-1, w0:w, w:w, p:P, p0:P}, c, q = R.all ? null : (R.bo ? (own ? RT_GROUPS_O : RT_GROUPS_N) : RT_GROUPS)[rtGroup(Wh)], G = q ? w/(1 - q[0]) : 0; b.own = !!own; b.gy = 0;
@@ -4099,18 +4144,21 @@ function rtOpen(w, Wh, R, P, own){  /* one adult's opening balances: w the adult
 function rtPlace(b, flow, R){  /* a year's saving: repays floating debt, then nominal assets (or the group's asset shares); a shortfall draws nominal assets, then borrows */
   if (flow >= 0){ var pay = Math.min(b.dv, flow), c; b.dv -= pay; flow -= pay; if (R.ns === 'port'){ for (c = 0; c < 5; c++) b.r[c] += flow*b.al[c]; b.n += flow*b.al[5]; } else b.n += flow; }
   else { var d = Math.min(b.n, -flow); b.n -= d; b.dv += -flow - d; } }
-function rtStep(b, flow, pi, R){  /* one year: last year's saving, then the revaluation; returns the revaluation in dollars (what is added to the adult's wealth) */
+function rtStep(b, flow, pi, R, cr){  /* one year: last year's saving, then the revaluation; returns the revaluation in dollars (what is added to the adult's wealth). cr (S71): the year's creditor charges, from crYear */
   var c, f, x, I = 0; rtPlace(b, flow, R);
-  var rh, gy = 0; for (c = 0; c < 5; c++){ rh = R.rho[RT_CLASSES[c]]; if (R.rg && b.g === 6 && c < 2) rh *= RT_RG[c]; gy += b.r[c]*rh*(1 + R.ix*pi); f = (1 + R.ix*pi)*(1 + rh) - 1; I += b.r[c]*f; b.r[c] += b.r[c]*f; b.v[c] += b.v[c]*f; } b.gy = gy;  /* gy: the year's real gain at the year's prices (reporting) */
-  x = R.phi*pi; if (R.ng === 'all' && b.ng) x *= b.ng; I += b.n*x; b.n += b.n*x; b.en += b.en*x; x = R.psi*pi; I -= b.dv*x; b.dv += b.dv*x; b.ed += b.ed*x; x = R.chi*pi; I -= b.df*x; b.df += b.df*x; return I; }
-function rtInit(agents, P){  /* before the year's loop: adults seen for the first time (every adult in Year 0), from the household's net worth before any of its members' year */
+  var rh, gy = 0; for (c = 0; c < 5; c++){ rh = R.rho[RT_CLASSES[c]]; if (R.rg && b.g === 6 && c < 2) rh *= RT_RG[c]; gy += b.r[c]*rh*(1 + R.ix*pi); f = (1 + R.ix*pi)*(1 + rh) - 1; if (cr && c === 2){ b.ce = b.r[2]*cr.re; f -= cr.re; } I += b.r[c]*f; b.r[c] += b.r[c]*f; b.v[c] += b.v[c]*f; } b.gy = gy;  /* gy: the year's real gain at the year's prices (reporting) */
+  x = R.phi*pi; if (R.ng === 'all' && b.ng) x *= b.ng; if (cr){ f = crT(b); f = f*cr.rb + (1 - f)*cr.rd; b.cn = b.n*f; x -= f; } I += b.n*x; b.n += b.n*x; b.en += b.en*x; x = R.psi*pi; I -= b.dv*x; b.dv += b.dv*x; b.ed += b.ed*x; x = R.chi*pi; I -= b.df*x; b.df += b.df*x; return I; }
+function rtInit(agents, P, yr){  /* before the year's loop: adults seen for the first time (every adult in Year 0), from the household's net worth before any of its members' year */
   if (SAVE) throw new Error('rt (wealth by asset class) and sv (savings that keep up with prices) would revalue wealth twice: use one');
   agents.forEach(function(a){ if (a._rt) return; var Wh = a.wealth; if (a._hh && a._hh.a && a._hh.a.length > 1){ Wh = 0; a._hh.a.forEach(function(m){ Wh += m.wealth; }); } var own = false; if (RETURNS.bo){ var H = a._hh; if (H && H._rtOwn !== undefined) own = H._rtOwn; else { if (!RTO) throw new Error('rt.bo needs a run that sets its stream (testbed runs do)'); own = RTO() < RT_OWN[rtGroup(Wh/P)]; if (H) H._rtOwn = own; } }
     a._rt = rtOpen(a.wealth, Wh/P, RETURNS, P, own); a._rtNew = true;
-    if (RETURNS.ng && a._wtP !== undefined) a._rt.ng = a._wtP >= 0.9999 ? RT_NG[1] : a._wtP >= 0.999 ? RT_NG[0] : 1; }); }
+    if (RETURNS.ng && a._wtP !== undefined) a._rt.ng = a._wtP >= 0.9999 ? RT_NG[1] : a._wtP >= 0.999 ? RT_NG[0] : 1; });
+  CRY = null; CRP = RETURNS.cr ? {agents:agents, yr:yr} : null; }  /* S71: the year's creditor charges are taken at the first adult's turn (rtAdult), after every start-of-year payment (a pathway exit pays equity into wealth after this point) */
 function rtAdult(a, P){  /* in the year's loop, where SAVE pays its interest: returns the revaluation added to the adult's wealth */
-  var b = a._rt; if (a._rtNew){ a._rtNew = false; if (RETURNS.ci) a._rtCk = rtCap(b); return 0; }
-  var I = rtStep(b, a.wealth - b.w, P/b.p - 1, RETURNS); a.wealth += I; b.w = a.wealth; b.p = P; if (RETURNS.ci) a._rtCk = rtCap(b); return I; }
+  var b = a._rt; if (CRP){ CRY = crYear(CRP.agents, P, CRP.yr); CRP = null; }  /* S71: before any adult's year moves a balance */
+  if (a._rtNew){ a._rtNew = false; if (RETURNS.ci) a._rtCk = rtCap(b); return 0; }
+  var I = rtStep(b, a.wealth - b.w, P/b.p - 1, RETURNS, CRY); if (CRY){ var cw = RETURNS.cr.w && a._w !== undefined ? +a._w : 1, cf = CRY.f, cx = (1 - RETURNS.chi)*CRY.pi*b.df; CRS.A.nom += cw*b.cn*cf/CRY.Wt; CRS.A.eq += cw*b.ce*cf/CRY.Wt; b.crn = (b.crn || 0) + (b.cn + b.ce)*cf; b.crr = (b.crr || 0) + cx*cf; }  /* S71 (reporting state) */
+  a.wealth += I; b.w = a.wealth; b.p = P; if (RETURNS.ci) a._rtCk = rtCap(b); return I; }
 function rtRep(S, agents, o, yr, T){  /* reporting only: the end of Year 0 and of the last year */
   var n = agents.length; if (!n || (yr !== 0 && yr !== T - 1)) return;
   var lf = o.lines === 'nominal' ? 1 : agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1), sfx = yr === 0 ? 'S' : 'E';
@@ -4132,7 +4180,8 @@ function rtRep(S, agents, o, yr, T){  /* reporting only: the end of Year 0 and o
     og.forEach(function(i){ var t1 = Math.max(0, Math.min(wt[i], 0.01*tw - cg)), t10 = Math.max(0, Math.min(wt[i], 0.10*tw - cg)); cg += wt[i]; g1 += t1*L[i]._rt.gy; g10 += t10*L[i]._rt.gy; });
     S.rtGt1E = gs > 0 ? g1/gs*100 : 0; S.rtGt10E = gs > 0 ? g10/gs*100 : 0; }
   if (yr === 0){ var o0 = L.map(function(a, i){ return i; }).sort(function(i, j){ return L[i]._rt.w0 - L[j]._rt.w0 || i - j; }), c0 = 0;  /* fifths of starting wealth (by weight) */
-    o0.forEach(function(i){ L[i]._rt.q = Math.min(5, Math.floor((c0 + wt[i]/2)/tw*5) + 1); c0 += wt[i]; }); }
+    o0.forEach(function(i){ L[i]._rt.q = Math.min(5, Math.floor((c0 + wt[i]/2)/tw*5) + 1); c0 += wt[i]; });
+    if (RETURNS.cr){ var c1 = 0; o0.slice().reverse().forEach(function(i){ L[i]._rt.t1 = wt[i] > 0 ? Math.max(0, Math.min(wt[i], 0.01*tw - c1))/wt[i] : 0; c1 += wt[i]; }); } }  /* S71: the part of the adult inside the top 1% by starting wealth */
   if (yr !== T - 1) return;
   var A = {}, W = [0, 0, 0, 0, 0, 0]; ['rtE', 'rtV', 'rtS', 'rtE0', 'rtV0', 'rtRE', 'rtNE', 'rtDvE', 'rtDfE'].forEach(function(k){ A[k] = [0, 0, 0, 0, 0, 0]; });
   L.forEach(function(a, i){ var b = a._rt, q = b.q || 0, w = wt[i], E = (b.en - b.ed - b.df)/lf, V = (b.v[0] + b.v[1] + b.v[2] + b.v[3] + b.v[4])/lf, k = {r:b.r.slice(), n:b.n, dv:b.dv, al:b.al}; rtPlace(k, a.wealth - b.w, RETURNS);  /* k: the classes with this year's saving placed */
@@ -4140,7 +4189,12 @@ function rtRep(S, agents, o, yr, T){  /* reporting only: the end of Year 0 and o
     [0, q].forEach(function(j, t){ if (t && !q) return; W[j] += w; A.rtE[j] += w*E; A.rtV[j] += w*V; A.rtS[j] += w*(a.wealth/lf - E - V); A.rtE0[j] += w*b.e0/b.p0; A.rtV0[j] += w*b.v0/b.p0;
       A.rtRE[j] += w*R; A.rtNE[j] += w*k.n/lf; A.rtDvE[j] += w*k.dv/lf; A.rtDfE[j] += w*b.df/lf; }); });
   ['rtE', 'rtV', 'rtS', 'rtE0', 'rtV0'].forEach(function(k){ for (var j = 0; j < 6; j++) S[k + (j || '')] = W[j] > 0 ? A[k][j]/W[j] : 0; });
-  ['rtRE', 'rtNE', 'rtDvE', 'rtDfE'].forEach(function(k){ S[k] = W[0] > 0 ? A[k][0]/W[0] : 0; }); }
+  ['rtRE', 'rtNE', 'rtDvE', 'rtDfE'].forEach(function(k){ S[k] = W[0] > 0 ? A[k][0]/W[0] : 0; });
+  if (RETURNS.cr && CRS){ var CA = CRS.A, cn = [0, 0, 0, 0, 0, 0], cr_ = [0, 0, 0, 0, 0, 0], cwq = [0, 0, 0, 0, 0, 0], ct = 0, cs = 0;  /* S71 */
+    L.forEach(function(a, i){ var b = a._rt, q = b.q || 0, w = wt[i], x = b.crn || 0; cwq[q] += w; cn[q] += w*x; cr_[q] += w*(b.crr || 0); cs += w*x; ct += w*(b.t1 || 0)*x; });
+    S.crRel = CA.rel; S.crBook = CA.book; S.crNom = CA.nom; S.crEq = CA.eq; S.crOutG = CA.outG; S.crOutF = CA.outF; S.crOutH = CA.outH; S.crOutS = CA.outS; S.crUn = CA.un;
+    S.crGap = CA.rel - CA.book - CA.nom - CA.eq - CA.outG - CA.outF - CA.outH - CA.outS - CA.un;
+    for (var cq = 1; cq <= 5; cq++){ S['crN' + cq] = cwq[cq] > 0 ? cn[cq]/cwq[cq] : 0; S['crR' + cq] = cwq[cq] > 0 ? cr_[cq]/cwq[cq] : 0; } S.crT1 = cs !== 0 ? ct/cs*100 : 0; } }
 /* S59, part 2 (Nov 12, 2026; research-update prereg/2026-11-s59-tail-returns.md; dev/reports/s59-tail-returns.md): WEALTH_TAIL, a weighted top tail.
  * Off (null) unless a study row sets wt (true, or an object over WT_DEFAULTS); off, nothing is read and no figure moves (guard test). It acts where households
  * take their net worth from the SCF tables (HOUSEHOLDS.wealth 'scf'; hhScfWealth). In each household type the m households with the highest wealth rank
@@ -5754,7 +5808,7 @@ function runYear(agentSet,yr,p,recSt){
   var agP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);  // v5.2 step 4: the price level the benefit moves with (read only when AGE is on)
   if(DEBT_READ||LF_SCOPE)DR_PL=agP;  // S61: the borrowing limit and the own income of adults outside the labour force move with it
   var svF=0;if(SAVE){var svP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);if(yr===0||!SVS)SVS={prevP:svP,intR:0,realR:0};else svF=(svP/SVS.prevP)*(1+SAVE.r)-1;var svPp=SVS.prevP;SVS.prevP=svP;}  // v5.2 step 3: savings that keep up with prices (no RNG)
-  if(RETURNS){var rtP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);rtInit(agentSet,rtP);}  // S59: wealth by asset class (no RNG)
+  if(RETURNS){var rtP=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);rtInit(agentSet,rtP,yr);}  // S59: wealth by asset class (no RNG)
   var tbY=(TB&&p.tb)?tbYear(p,colaF):null;  // session 6 (A4 testbed): null unless TB and p.tb are both set (harness-only; no RNG)
   if(SNET&&SNS&&tbY)snYear(agentSet,yr,HHON,inflRate);  // session 2b: today's safety net (SNAP, EITC, the refundable CTC), set on last year's income; off by default; no stream drawn
   if(DIS&&DSS)disYear(agentSet,yr,agP);  // v5.4 item 5: who the disaster hits (and, later, who has recovered)
@@ -7159,6 +7213,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.prOn !== undefined) PR_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S58 */
         if (r.mfU !== undefined) MF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S58 */
         if (r.rtE !== undefined) RT_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S59 */
+        if (r.crRel !== undefined) CR_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S71 */
         if (r.wtW !== undefined) WT_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S59 part 2 */
         if (r.dmWt1E !== undefined) DM_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S57 */
         if (r.lvU !== undefined) LV_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S54 */

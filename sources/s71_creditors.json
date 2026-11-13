@@ -1,0 +1,128 @@
+{
+ "source": "Z.1 release of Sep 11, 2026 (levels at 2022:Q4); SCF 2022 summary extract; DFA 2022:Q4 (check only); sources/s71_creditors.py",
+ "sha256": {
+  "z1_csv_files.zip": "b63af9755437df0fb88b7cf346f8f9eaeb22bf1aa2b5df1709334135c43de4b6",
+  "scfp2022s.zip": "d4e139c69f6acf72c47512c7a204ae9a38d263781a9f0f51cdaecdf101d2d657",
+  "dfa.zip": "e7f35451dc4df13986ef416d8659d00689ad98a9af79f4b09977e41be5e35919"
+ },
+ "arm": 0.0656,
+ "main": {
+  "ledger": {
+   "dHH": 0.2393,
+   "bHH": 0.0845,
+   "BUS": 0.3242,
+   "GOV": 0.2556,
+   "ROW": 0.0641,
+   "dGOV": 0.0182,
+   "dROW": 0.0141
+  },
+  "own": {
+   "eH": 0.7313,
+   "eG": 0.071,
+   "eR": 0.1977
+  },
+  "dsh": 0.7443,
+  "amounts": {
+   "mortgages_fixed_households": 11408385.8281,
+   "consumer_fixed": 3665799.0,
+   "fixed_share_other_consumer_holders": 0.6442
+  }
+ },
+ "check_2026Q2": {
+  "ledger": {
+   "dHH": 0.22,
+   "bHH": 0.0826,
+   "BUS": 0.3723,
+   "GOV": 0.2173,
+   "ROW": 0.072,
+   "dGOV": 0.0216,
+   "dROW": 0.0141
+  },
+  "own": {
+   "eH": 0.7335,
+   "eG": 0.0544,
+   "eR": 0.2121
+  },
+  "dsh": 0.7221,
+  "amounts": {
+   "mortgages_fixed_households": 12494749.0077,
+   "consumer_fixed": 3811282.0,
+   "fixed_share_other_consumer_holders": 0.6265
+  }
+ },
+ "scf": {
+  "share": {
+   "dep": 0.5184,
+   "bond": 0.479,
+   "equity": 0.4921,
+   "fix": 0.7895
+  },
+  "w": {
+   "wD": 0.6566,
+   "wB": 0.6067,
+   "wE": 0.6233
+  },
+  "t": [
+   0.3805,
+   0.392,
+   0.4977,
+   0.5883,
+   0.6648,
+   0.726,
+   0.6624
+  ],
+  "tAll": 0.6753
+ },
+ "dfa_check": {
+  "narrow bonds": [
+   0.4836,
+   0.3791,
+   0.1318,
+   0.0054
+  ],
+  "wide bonds": [
+   0.4643,
+   0.381,
+   0.1458,
+   0.0089
+  ],
+  "groups": [
+   "top 1%",
+   "next 9%",
+   "next 40%",
+   "bottom 50%"
+  ],
+  "instruments": {
+   "deposits and money market funds": [
+    0.2496,
+    0.365,
+    0.3381,
+    0.0473
+   ],
+   "debt securities and loans": [
+    0.3929,
+    0.4006,
+    0.1997,
+    0.0067
+   ],
+   "the same with defined-contribution pensions, annuities and life insurance": [
+    0.2106,
+    0.418,
+    0.3323,
+    0.0391
+   ],
+   "corporate equities and mutual fund shares": [
+    0.4944,
+    0.3766,
+    0.1237,
+    0.0053
+   ],
+   "home mortgages and consumer credit (the debtors)": [
+    0.0399,
+    0.1972,
+    0.4527,
+    0.3102
+   ]
+  }
+ }
+}

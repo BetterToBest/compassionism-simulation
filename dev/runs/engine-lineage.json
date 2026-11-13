@@ -734,6 +734,22 @@
    },
    "equal": true,
    "seconds": 144
+  },
+  {
+   "from": "9e9b7844165d91f564f8b2311cd0157de9f307ef534ed6ec4dc47ef58c2f04d9",
+   "to": "e4399051817ff136af82616b5f7aadfb516bed23f815a6e4400f61e8ac48736b",
+   "date": "2026-11-13",
+   "change": "S71: option cr of rt (a creditor side for fixed-rate debt: RT_CR, crOpts, crRates, crYear; rtStep, rtInit, rtAdult, rtRep and the study's keys read it), off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 139
   }
  ]
 }
