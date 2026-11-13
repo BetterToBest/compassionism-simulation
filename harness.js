@@ -1684,6 +1684,40 @@ function prUnitSuite(){
     var R = tbStudy([row(false), row(true)], 1, P, SO), Q = tbStudy([row(false), row(true)], 1, P, Object.assign({mf:true}, SO)), bad = same(R[0], Q[0], TB_KEYS).concat(same(R[1], Q[1], TB_KEYS)), m = Q[1];
     var ok = m.mfChk < 1e-6 && Math.abs(m.mfU - (m.mfPay - m.mfM)) < 1e-6 && m.mfTax > 0 && Math.abs(m.mfCvG - m.mfCvN - m.mfTax) < 1e-6 && Math.abs(m.mfPay - (m.cBU + m.cConv)) < 1e-6 && Q[0].mfU === 0;
     return {pass:bad.length === 0 && ok && R[1].mfU === undefined && Q[1].prOn === 0, detail:(bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') + '; ' : '') + 'payout ' + m.mfPay.toFixed(0) + ', matched ' + m.mfM.toFixed(0) + ', U ' + m.mfU.toFixed(0) + ', tax ' + m.mfTax.toFixed(0) + ', identity gap ' + m.mfChk.toExponential(2)}; });
+  /* S67 (Nov 13, 2026; research-update prereg/2026-11-s67-price-rule-derivation.md, Part B): sub-steps within the year (q), the velocity response (bv), the velocity drift (bd) */
+  t('S67: off is S58\'s rule: pr {q: 1, bv: 0, bd: 0} gives every output of the C2.2 design under pr true identically (seed 1, Reference), and prAvg is 1', function(){
+    var R = tbStudy([row(true, {pr:true}, true), row(true, {pr:{q:1, bv:0, bd:0}}, true)], 1, P, SO), bad = same(R[0], R[1], TB_KEYS.concat(PR_KEYS));
+    return {pass:bad.length === 0 && R[0].prAvg === 1, detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
+  t('S67: no new money: the no-programme run under q 4, bv and bd gives every output of today\'s rule exactly (so neither option draws a random number)', function(){
+    var R = tbStudy([row(false), row(false, {pr:{q:4, k:0.0788, k2:0, r:0.2333, bv:0.3, bd:0.132}})], 1, P, SO), bad = same(R[0], R[1], TB_KEYS);
+    return {pass:bad.length === 0 && R[1].prOn === 1 && R[1].prX === 0 && R[1].prAvg === 1, detail:bad.length ? 'moved: ' + bad.slice(0, 8).join(', ') : ''}; });
+  t('S67: sub-steps nest today\'s rule at year ends: q = 4 with k = 1, a = r = 0 gives the quantity rule\'s level over 30 random years (1e-12) with a smaller rationed share, and a within-year average level above the opening level', function(){
+    var rg = mulberry32(67), seq = [], lv = 1; for (var i = 0; i < 30; i++){ seq.push(0.5*rg()); lv *= 1 + seq[i]; }
+    var o1 = {k:1, r:0, a:0, h:0, rs:false}, A = sim(o1, seq), B = sim(Object.assign({q:4}, o1), seq), ra = function(S){ return S.y.reduce(function(a, y){ return a + y.rat; }, 0)/S.y.length; };
+    var d = Math.abs(Math.exp(B.p.gen)/lv - 1), av = B.y.reduce(function(a, y){ return a + y.avg; }, 0)/B.y.length;
+    return {pass:d < 1e-12 && ra(B) < 0.5*ra(A) && av > 0 && A.y[0].avg === undefined, detail:'level ' + d.toExponential(2) + '; rationed (log, mean) ' + ra(A).toFixed(3) + ' yearly against ' + ra(B).toFixed(3) + ' in quarters; within-year average level ' + Math.exp(av).toFixed(3) + ' times the opening level'}; });
+  t('S67: sub-steps under steady money: with the quarterly-fitted values (q 4, k 0.0788, k2 0, r 0.2333) inflation settles at money growth and the level pass-through tends to 1', function(){
+    var seq = [], m = Math.log(1.3); for (var i = 0; i < 200; i++) seq.push(0.3);
+    var S = sim({q:4, k:0.0788, k2:0, r:0.2333}, seq), pt = S.p.gen/S.n;
+    return {pass:Math.abs(S.dg - m) < 1e-9 && Math.abs(pt - 1) < 0.02, detail:'year-200 inflation ' + S.dg.toFixed(6) + ' against money ' + m.toFixed(6) + '; pass-through ' + pt.toFixed(4)}; });
+  t('S67: the same-roots quarterly rule has the yearly rule\'s wave: with r = phi^(1/4), a = 0 and k set from the yearly roots (k2 = k so the rule is linear), yearly inflation obeys the yearly recursion pi(t) = (1 + phi - k) pi(t-1) - phi pi(t-2) + k m (1e-9, years 6-40)', function(){
+    var phi = MULT_LS + 0.275, k = 0.445, tr = 1 + phi - k, mod = Math.sqrt(phi), th = Math.acos(tr/(2*mod)), rq = Math.pow(phi, 0.25), kq = 1 + rq - 2*Math.pow(mod, 0.25)*Math.cos(th/4);
+    var seq = [], m = Math.log(1.3), pi = [], S = prNew({q:4, a:0, r:rq, k:kq, k2:kq}, true), PG = 1, worst = 0;
+    for (var y = 0; y < 40; y++){ var PGn = prStep(S, 0.3, 1, 1, 1, 0, 1, 0, y, PG); pi.push(Math.log(PGn/PG)); PG = PGn; }
+    for (var t = 5; t < 40; t++) worst = Math.max(worst, Math.abs((pi[t] - m) - tr*(pi[t - 1] - m) + phi*(pi[t - 2] - m)));
+    return {pass:worst < 1e-9 && Math.abs(rq - 0.9406) < 5e-5 && Math.abs(kq - 0.0317) < 5e-5, detail:'quarterly r ' + rq.toFixed(4) + ', k ' + kq.toFixed(4) + '; largest gap from the yearly recursion ' + worst.toExponential(2)}; });
+  t('S67: the velocity response: bv = 0.3 raises the level pass-through under sustained money and leaves steady inflation equal to money growth (a + r + k x bv = 0.92, stable); at bv = 0.6 (1.05) the wave never dies out (yearly log inflation still swings by more than 0.1 in years 151-200; the weak pull below normal bounds it); bv = 0 is the rule unchanged', function(){
+    var seq = [], m = Math.log(1.3); for (var i = 0; i < 300; i++) seq.push(0.3);
+    var A = sim({}, seq.slice(0, 19)), B = sim({bv:0.3}, seq.slice(0, 19)), C = sim({bv:0.3}, seq), Z = sim({bv:0}, seq.slice(0, 19));
+    var swing = function(bv){ var S = prNew({bv:bv}, true), PG = 1, B0 = 1, piG = 0, lo = 9, hi = -9;
+      for (var y = 0; y < 200; y++){ var PGn = prStep(S, 0.3, 1, 1, 1, piG, B0, 0, y, PG); piG = PGn/PG - 1; PG = PGn; B0 = PG; if (y >= 150){ lo = Math.min(lo, S.dg); hi = Math.max(hi, S.dg); } }
+      return hi - lo; }, D = swing(0.6), D0 = swing(0.3);
+    return {pass:B.p.gen/B.n > A.p.gen/A.n && Math.abs(C.dg - m) < 1e-6 && C.p.gen/C.n > 1 && D > 0.1 && D0 < 0.01 && Z.p.gen === A.p.gen,
+      detail:'pass-through at year 19: ' + (A.p.gen/A.n).toFixed(3) + ' without, ' + (B.p.gen/B.n).toFixed(3) + ' with bv 0.3; year-300 inflation ' + C.dg.toFixed(6) + ' (money ' + m.toFixed(6) + '), level pass-through ' + (C.p.gen/C.n).toFixed(4) + '; swing of yearly log inflation in years 151-200: ' + D0.toExponential(1) + ' at bv 0.3, ' + D.toFixed(3) + ' at bv 0.6'}; });
+  t('S67: the velocity drift: at the nesting point with bd = 0.132 the price level is the money to the power 1.132 every year (pass-through exactly 1 + bd, measured on the money); bd = 0 is the rule unchanged', function(){
+    var rg = mulberry32(671), seq = [], n = 0; for (var i = 0; i < 20; i++){ seq.push(0.5*rg()); n += Math.log(1 + seq[i]); }
+    var S = sim({k:1, r:0, a:0, h:0, rs:false, bd:0.132}, seq), A = sim({}, seq), Z = sim({bd:0}, seq);
+    return {pass:Math.abs(S.p.gen/n - 1.132) < 1e-12 && Math.abs(S.pt[20] - 1.132) < 1e-12 && Z.p.gen === A.p.gen, detail:'pass-through ' + (S.p.gen/n).toFixed(6)}; });
   return out;
 }
 Object.assign(module.exports, { PR_KEYS, MF_KEYS, PR_DEFAULTS, prNew, prStep, prUnitSuite });  /* S58 */

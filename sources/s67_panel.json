@@ -1,0 +1,749 @@
+{
+ "source": {
+  "countries.json": "c9acf3932785191a649cbc04c3056af4cf64a236e5c3b49d49be25ddb0440bce",
+  "FP.CPI.TOTL.ZG.json": "6b8cc761fcbc424caf50d712be1e84325efcd0eedd1457eeee46e279e46adb38",
+  "FP.CPI.TOTL.ZG lastupdated": "2026-11-11",
+  "FM.LBL.BMNY.ZG.json": "cf26e8db0731678e566a60265cd8d53671d75451b360bdb4d7ddea0e6e882260",
+  "FM.LBL.BMNY.ZG lastupdated": "2026-11-11",
+  "NY.GDP.MKTP.KD.ZG.json": "0bba8423b84c1c9d10edd31b0fdb9658bea3e53df6c95ba0987774a06041f7fa",
+  "NY.GDP.MKTP.KD.ZG lastupdated": "2026-11-11"
+ },
+ "panelCsvSha256": "ef461065c069665cacf04700eb7511b3cacd462139908c82d86f86f801da263e",
+ "countryYearsWithAllThree": 7225,
+ "all": {
+  "episodes": 77,
+  "countries": 52,
+  "countryYears": 518,
+  "medianLength": 5,
+  "medianInflationPct": 42.0,
+  "P1": {
+   "pooled": {
+    "n": 441,
+    "clusters": 52,
+    "coef": [
+     0.6696
+    ],
+    "se": [
+     0.0413
+    ],
+    "const": 0.1791
+   },
+   "episodeFE": {
+    "n": 441,
+    "clusters": 52,
+    "coef": [
+     0.5573
+    ],
+    "se": [
+     0.0691
+    ],
+    "const": null
+   },
+   "band20to50": {
+    "n": 231,
+    "clusters": 46,
+    "coef": [
+     0.529
+    ],
+    "se": [
+     0.1564
+    ],
+    "const": 0.1663
+   },
+   "band50to100": {
+    "n": 120,
+    "clusters": 31,
+    "coef": [
+     0.72
+    ],
+    "se": [
+     0.412
+    ],
+    "const": 0.1864
+   },
+   "bandOver100": {
+    "n": 90,
+    "clusters": 24,
+    "coef": [
+     0.5604
+    ],
+    "se": [
+     0.0625
+    ],
+    "const": 0.4392
+   }
+  },
+  "P2": {
+   "pooled": {
+    "n": 441,
+    "clusters": 52,
+    "coef": [
+     0.6631,
+     0.0851
+    ],
+    "se": [
+     0.0361,
+     0.0529
+    ],
+    "const": 0.2054
+   },
+   "episodeFE": {
+    "n": 441,
+    "clusters": 52,
+    "coef": [
+     0.5438,
+     0.1782
+    ],
+    "se": [
+     0.0709,
+     0.1294
+    ],
+    "const": null
+   }
+  },
+  "P3": {
+   "meanVelocityGrowth": 0.0603,
+   "medianVelocityGrowth": 0.0426,
+   "sharePositive": 0.675,
+   "meanInflation": 0.5172,
+   "meanMoneyPerOutput": 0.4569,
+   "crossSection": {
+    "n": 77,
+    "clusters": 52,
+    "coef": [
+     1.0571
+    ],
+    "se": [
+     0.0707
+    ],
+    "const": 0.0343
+   }
+  },
+  "P4": {
+   "pooledChanges": {
+    "n": 441,
+    "clusters": 52,
+    "coef": [
+     0.0043
+    ],
+    "se": [
+     0.0321
+    ],
+    "const": 0.0556
+   },
+   "levelsEpisodeFE": {
+    "n": 441,
+    "clusters": 52,
+    "coef": [
+     -0.0484
+    ],
+    "se": [
+     0.081
+    ],
+    "const": null
+   }
+  }
+ },
+ "withoutYearsAbove1000pct": {
+  "episodes": 75,
+  "countries": 50,
+  "countryYears": 495,
+  "medianLength": 5,
+  "medianInflationPct": 41.5,
+  "P1": {
+   "pooled": {
+    "n": 416,
+    "clusters": 51,
+    "coef": [
+     0.6356
+    ],
+    "se": [
+     0.0904
+    ],
+    "const": 0.1653
+   },
+   "episodeFE": {
+    "n": 415,
+    "clusters": 50,
+    "coef": [
+     0.4532
+    ],
+    "se": [
+     0.1007
+    ],
+    "const": null
+   },
+   "band20to50": {
+    "n": 231,
+    "clusters": 46,
+    "coef": [
+     0.529
+    ],
+    "se": [
+     0.1564
+    ],
+    "const": 0.1663
+   },
+   "band50to100": {
+    "n": 119,
+    "clusters": 31,
+    "coef": [
+     0.4438
+    ],
+    "se": [
+     0.2911
+    ],
+    "const": 0.308
+   },
+   "bandOver100": {
+    "n": 66,
+    "clusters": 22,
+    "coef": [
+     0.4266
+    ],
+    "se": [
+     0.1739
+    ],
+    "const": 0.4059
+   }
+  },
+  "P2": {
+   "pooled": {
+    "n": 416,
+    "clusters": 51,
+    "coef": [
+     0.6398,
+     0.0473
+    ],
+    "se": [
+     0.0855,
+     0.0303
+    ],
+    "const": 0.1768
+   },
+   "episodeFE": {
+    "n": 415,
+    "clusters": 50,
+    "coef": [
+     0.4629,
+     0.063
+    ],
+    "se": [
+     0.099,
+     0.0545
+    ],
+    "const": null
+   }
+  },
+  "P3": {
+   "meanVelocityGrowth": 0.0391,
+   "medianVelocityGrowth": 0.0372,
+   "sharePositive": 0.667,
+   "meanInflation": 0.4246,
+   "meanMoneyPerOutput": 0.3856,
+   "crossSection": {
+    "n": 75,
+    "clusters": 50,
+    "coef": [
+     0.8383
+    ],
+    "se": [
+     0.0735
+    ],
+    "const": 0.1014
+   }
+  },
+  "P4": {
+   "pooledChanges": {
+    "n": 416,
+    "clusters": 51,
+    "coef": [
+     0.0499
+    ],
+    "se": [
+     0.0766
+    ],
+    "const": 0.0372
+   },
+   "levelsEpisodeFE": {
+    "n": 425,
+    "clusters": 51,
+    "coef": [
+     0.0431
+    ],
+    "se": [
+     0.1712
+    ],
+    "const": null
+   }
+  }
+ },
+ "episodeList": [
+  {
+   "iso3": "AGO",
+   "from": 1996,
+   "to": 2005,
+   "peakPct": 4145.1
+  },
+  {
+   "iso3": "AGO",
+   "from": 2020,
+   "to": 2022,
+   "peakPct": 25.8
+  },
+  {
+   "iso3": "ARG",
+   "from": 2018,
+   "to": 2024,
+   "peakPct": 219.9
+  },
+  {
+   "iso3": "AZE",
+   "from": 1993,
+   "to": 1995,
+   "peakPct": 1662.2
+  },
+  {
+   "iso3": "BDI",
+   "from": 2023,
+   "to": 2025,
+   "peakPct": 34.1
+  },
+  {
+   "iso3": "BGR",
+   "from": 1992,
+   "to": 1997,
+   "peakPct": 1058.4
+  },
+  {
+   "iso3": "BLR",
+   "from": 1995,
+   "to": 2003,
+   "peakPct": 709.3
+  },
+  {
+   "iso3": "BOL",
+   "from": 1980,
+   "to": 1986,
+   "peakPct": 11749.6
+  },
+  {
+   "iso3": "BRA",
+   "from": 1981,
+   "to": 1995,
+   "peakPct": 2947.7
+  },
+  {
+   "iso3": "CHL",
+   "from": 1971,
+   "to": 1980,
+   "peakPct": 504.7
+  },
+  {
+   "iso3": "COD",
+   "from": 1974,
+   "to": 1995,
+   "peakPct": 23773.1
+  },
+  {
+   "iso3": "COL",
+   "from": 1973,
+   "to": 1975,
+   "peakPct": 23.9
+  },
+  {
+   "iso3": "COL",
+   "from": 1979,
+   "to": 1982,
+   "peakPct": 27.5
+  },
+  {
+   "iso3": "COL",
+   "from": 1991,
+   "to": 1996,
+   "peakPct": 30.4
+  },
+  {
+   "iso3": "CRI",
+   "from": 1981,
+   "to": 1983,
+   "peakPct": 90.1
+  },
+  {
+   "iso3": "DOM",
+   "from": 1988,
+   "to": 1991,
+   "peakPct": 50.5
+  },
+  {
+   "iso3": "DZA",
+   "from": 1991,
+   "to": 1995,
+   "peakPct": 31.7
+  },
+  {
+   "iso3": "ECU",
+   "from": 1983,
+   "to": 2001,
+   "peakPct": 96.1
+  },
+  {
+   "iso3": "GHA",
+   "from": 1975,
+   "to": 1984,
+   "peakPct": 122.9
+  },
+  {
+   "iso3": "GHA",
+   "from": 1986,
+   "to": 1990,
+   "peakPct": 39.8
+  },
+  {
+   "iso3": "GHA",
+   "from": 1993,
+   "to": 1997,
+   "peakPct": 59.5
+  },
+  {
+   "iso3": "GHA",
+   "from": 2022,
+   "to": 2024,
+   "peakPct": 38.1
+  },
+  {
+   "iso3": "GNB",
+   "from": 1988,
+   "to": 1993,
+   "peakPct": 80.8
+  },
+  {
+   "iso3": "GNB",
+   "from": 1995,
+   "to": 1997,
+   "peakPct": 50.7
+  },
+  {
+   "iso3": "HND",
+   "from": 1994,
+   "to": 1997,
+   "peakPct": 29.5
+  },
+  {
+   "iso3": "HTI",
+   "from": 1993,
+   "to": 1997,
+   "peakPct": 39.3
+  },
+  {
+   "iso3": "HUN",
+   "from": 1990,
+   "to": 1993,
+   "peakPct": 34.8
+  },
+  {
+   "iso3": "IRN",
+   "from": 1987,
+   "to": 1989,
+   "peakPct": 28.7
+  },
+  {
+   "iso3": "IRN",
+   "from": 1992,
+   "to": 1996,
+   "peakPct": 49.7
+  },
+  {
+   "iso3": "IRN",
+   "from": 2011,
+   "to": 2013,
+   "peakPct": 36.6
+  },
+  {
+   "iso3": "ISL",
+   "from": 1973,
+   "to": 1986,
+   "peakPct": 84.0
+  },
+  {
+   "iso3": "ISR",
+   "from": 1973,
+   "to": 1986,
+   "peakPct": 373.2
+  },
+  {
+   "iso3": "JAM",
+   "from": 1978,
+   "to": 1980,
+   "peakPct": 34.9
+  },
+  {
+   "iso3": "JAM",
+   "from": 1990,
+   "to": 1994,
+   "peakPct": 77.3
+  },
+  {
+   "iso3": "KAZ",
+   "from": 1994,
+   "to": 1996,
+   "peakPct": 1877.4
+  },
+  {
+   "iso3": "KEN",
+   "from": 1991,
+   "to": 1994,
+   "peakPct": 46.0
+  },
+  {
+   "iso3": "LAO",
+   "from": 1997,
+   "to": 2000,
+   "peakPct": 125.3
+  },
+  {
+   "iso3": "MDA",
+   "from": 1992,
+   "to": 1996,
+   "peakPct": 1613.6
+  },
+  {
+   "iso3": "MEX",
+   "from": 1980,
+   "to": 1991,
+   "peakPct": 131.8
+  },
+  {
+   "iso3": "MEX",
+   "from": 1995,
+   "to": 1997,
+   "peakPct": 35.0
+  },
+  {
+   "iso3": "MMR",
+   "from": 1973,
+   "to": 1976,
+   "peakPct": 31.7
+  },
+  {
+   "iso3": "MMR",
+   "from": 1991,
+   "to": 1995,
+   "peakPct": 32.3
+  },
+  {
+   "iso3": "MMR",
+   "from": 2001,
+   "to": 2003,
+   "peakPct": 57.1
+  },
+  {
+   "iso3": "MWI",
+   "from": 1992,
+   "to": 1996,
+   "peakPct": 83.3
+  },
+  {
+   "iso3": "MWI",
+   "from": 1998,
+   "to": 2001,
+   "peakPct": 44.8
+  },
+  {
+   "iso3": "MWI",
+   "from": 2012,
+   "to": 2016,
+   "peakPct": 27.3
+  },
+  {
+   "iso3": "MWI",
+   "from": 2022,
+   "to": 2024,
+   "peakPct": 32.2
+  },
+  {
+   "iso3": "NGA",
+   "from": 1992,
+   "to": 1996,
+   "peakPct": 72.8
+  },
+  {
+   "iso3": "NGA",
+   "from": 2023,
+   "to": 2025,
+   "peakPct": 33.2
+  },
+  {
+   "iso3": "PAK",
+   "from": 1973,
+   "to": 1975,
+   "peakPct": 26.7
+  },
+  {
+   "iso3": "PER",
+   "from": 1975,
+   "to": 1994,
+   "peakPct": 7481.7
+  },
+  {
+   "iso3": "POL",
+   "from": 1991,
+   "to": 1995,
+   "peakPct": 76.8
+  },
+  {
+   "iso3": "PRY",
+   "from": 1984,
+   "to": 1991,
+   "peakPct": 37.3
+  },
+  {
+   "iso3": "ROU",
+   "from": 1991,
+   "to": 2002,
+   "peakPct": 255.2
+  },
+  {
+   "iso3": "SAU",
+   "from": 1974,
+   "to": 1976,
+   "peakPct": 34.6
+  },
+  {
+   "iso3": "SDN",
+   "from": 1979,
+   "to": 1998,
+   "peakPct": 132.8
+  },
+  {
+   "iso3": "SDN",
+   "from": 2012,
+   "to": 2014,
+   "peakPct": 36.9
+  },
+  {
+   "iso3": "SDN",
+   "from": 2017,
+   "to": 2020,
+   "peakPct": 163.3
+  },
+  {
+   "iso3": "SLE",
+   "from": 2022,
+   "to": 2024,
+   "peakPct": 47.6
+  },
+  {
+   "iso3": "SLV",
+   "from": 1985,
+   "to": 1987,
+   "peakPct": 31.9
+  },
+  {
+   "iso3": "SRB",
+   "from": 1998,
+   "to": 2001,
+   "peakPct": 95.0
+  },
+  {
+   "iso3": "SUR",
+   "from": 1990,
+   "to": 1995,
+   "peakPct": 368.5
+  },
+  {
+   "iso3": "SUR",
+   "from": 1999,
+   "to": 2001,
+   "peakPct": 98.8
+  },
+  {
+   "iso3": "SUR",
+   "from": 2020,
+   "to": 2023,
+   "peakPct": 59.1
+  },
+  {
+   "iso3": "SYR",
+   "from": 1986,
+   "to": 1988,
+   "peakPct": 59.5
+  },
+  {
+   "iso3": "TUR",
+   "from": 1977,
+   "to": 2003,
+   "peakPct": 105.2
+  },
+  {
+   "iso3": "TUR",
+   "from": 2022,
+   "to": 2025,
+   "peakPct": 72.3
+  },
+  {
+   "iso3": "TZA",
+   "from": 1980,
+   "to": 1996,
+   "peakPct": 36.1
+  },
+  {
+   "iso3": "UKR",
+   "from": 1993,
+   "to": 1996,
+   "peakPct": 4734.9
+  },
+  {
+   "iso3": "URY",
+   "from": 1963,
+   "to": 1969,
+   "peakPct": 125.3
+  },
+  {
+   "iso3": "URY",
+   "from": 1971,
+   "to": 1981,
+   "peakPct": 97.0
+  },
+  {
+   "iso3": "URY",
+   "from": 1983,
+   "to": 1996,
+   "peakPct": 112.5
+  },
+  {
+   "iso3": "VEN",
+   "from": 2009,
+   "to": 2013,
+   "peakPct": 40.6
+  },
+  {
+   "iso3": "YEM",
+   "from": 1991,
+   "to": 1996,
+   "peakPct": 55.1
+  },
+  {
+   "iso3": "ZMB",
+   "from": 1986,
+   "to": 1991,
+   "peakPct": 123.4
+  },
+  {
+   "iso3": "ZMB",
+   "from": 1994,
+   "to": 2003,
+   "peakPct": 54.6
+  },
+  {
+   "iso3": "ZWE",
+   "from": 2019,
+   "to": 2022,
+   "peakPct": 557.2
+  }
+ ],
+ "bv": {
+  "vel": 0.0043,
+  "velh": 0.0022
+ }
+}
