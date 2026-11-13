@@ -1699,6 +1699,63 @@ function crUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { RT_CR, CR_KEYS, CR_DEFAULTS, crOpts, crRates, crT, crUnitSuite });  /* S71 */
+/* S60 (Nov 13, 2026; research-update prereg/2026-11-s60-bargaining-power.md): unit tests of BARGAIN (row option bg), a worker's outside option and an
+ * employer markdown, each part alone. The rows are S71's (frozen row, today's safety net, CPS earnings) with adults outside the labour force. */
+function bgUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); CFG.WEALTH_FLOOR = wf0; BARGAIN = null; BGS = null; LF_SCOPE = null; LFS = null; TB = null; LABOR = null; PRICE = null; REP_HOOK = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), SON = Object.assign({}, SO, {fin:'none'}), Y = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}, lf:{}};
+  function rows(P, x, prog, c22){ var M = relMainCfgs(tbPresets(P)), c = frozenRow(Object.assign(M[prog ? 1 : 0], JSON.parse(JSON.stringify(Y)), JSON.parse(JSON.stringify(x || {})))); return c22 ? c22Design(c) : c; }
+  function three(P, x){ return [rows(P, x), rows(P, x, true), rows(P, x, true, true)]; }
+  var P20 = Object.assign({}, FULL_INTEGRATION, {nAgents:500, years:20}), P3 = Object.assign({}, FULL_INTEGRATION, {nAgents:500, years:3});
+  /* A no-programme row's production-side keys (pd*) are not compared: PDS is reset only in runs where the production side acts, so a no-programme row
+   * reports what the previous programme run left there (a reporting leak older than S60, found by this test inside the full suite; listed for S68). */
+  function same(A, B){ var bad = []; A.forEach(function(r, i){ Object.keys(r._s).forEach(function(k){ if (BG_KEYS.indexOf(k) >= 0 || (i === 0 && /^pd/.test(k))) return; var x = r._s[k], y = B[i]._s[k];
+    for (var s = 0; s < x.length; s++) if (!(x[s] === y[s] || (isNaN(x[s]) && isNaN(y[s])))){ if (bad.length < 4) bad.push('row ' + i + ' ' + k + ': ' + x[s] + ' against ' + y[s]); break; } }); }); return bad; }
+  t('off, pi 0 and m 1 (no markdown) give results identical to the switch absent on every key in the no-programme, release and C2.2 rows (Reference, 2 seeds, 20 years; a no-programme row\'s production-side keys are stale state from the previous run and not compared); with pi 0.48 the no-programme row is identical too (no programme, no outside option)', function(){
+    tbStudy(three(P20), 2, P20, SO);  /* uncounted first: the cached supply paths (an earlier suite can leave them for other rows) */
+    var A = tbStudy(three(P20), 2, P20, SO), B = tbStudy(three(P20, {bg:{pi:0}}), 2, P20, SO), C = tbStudy(three(P20, {bg:{pi:0.48, m:1}}), 2, P20, SO), D = tbStudy(three(P20, {bg:{pi:0.48}}), 2, P20, SO);  /* the same three-row study each time: the rows share cached paths */
+    var bad = same(A, B).concat(same(A, C), same([A[0]], [D[0]])), keys = Object.keys(A[1]._s).length;
+    return {pass:bad.length === 0 && keys > 300 && B[1].bgO > 0 && B[1].bgR === 0 && D[0].bgO === 0 && D[0].bgR === 0 && D[1].bgR > 0, detail:bad.join('; ') + ' (' + keys + ' keys; outside option ' + B[1].bgO + ')'}; });
+  t('by hand: the raise is min(pi O / E_full, 1/m - 1), and 0 with no outside option, no earnings or no pass-through; the Nash reservation wage is (1 - (1 - pi)/m)/pi of the wage; bg rejects m 0, m above 1 and pi below 0', function(){
+    var B = bgOpts({pi:0.24}), ok = near(bgRaise(10000, 40000, B), 0.06) && near(bgRaise(100000, 40000, B), 0.21) && bgRaise(0, 40000, B) === 0 && bgRaise(10000, 0, B) === 0 && bgRaise(10000, 40000, bgOpts({pi:0})) === 0;
+    ok = ok && near(bgRaise(1e6, 1e4, bgOpts({pi:0.48, m:1/1.53})), 0.53) && bgRaise(1e6, 1e4, bgOpts({pi:0.48, m:1})) === 0 && near(B.m, 1/1.21) && bgOpts(true).pi === 0;
+    ok = ok && near(bgRw0(bgOpts({pi:0.48})), (1 - 0.52*1.21)/0.48) && bgRw0(bgOpts({pi:0.03})) < 0 && isNaN(bgRw0(bgOpts({pi:0})));
+    var thr = 0; [{m:0}, {m:1.2}, {pi:-0.1}].forEach(function(v){ try { bgOpts(v); } catch (e){ thr++; } });
+    return {pass:ok && thr === 3, detail:'raise ' + bgRaise(10000, 40000, B) + ', capped ' + bgRaise(100000, 40000, B) + ', Nash r/w at 0.48 ' + bgRw0(bgOpts({pi:0.48})) + ', rejected ' + thr}; });
+  function year0(x, lab){ var got = []; REP_HOOK = function(agents, yr){ if (yr === 0) got = agents.map(function(a){ return [a.yrWageUSD, a._bgG, a._pjHW || 0, a._ret ? 1 : 0]; }); };
+    var P1 = Object.assign({}, P3, {years:1}), c = rows(P1, x, true); c.o = {labor:lab}; var R = tbStudy([c], 1, P1, SON)[0]; REP_HOOK = null; return {got:got, R:R}; }
+  t('one wage elasticity: in year 0 (both runs start alike; unfinanced, so the contribution\'s rate does not move) every worker\'s earnings with the raise are those without it times (1 + g)^(1 + eps) with no income effect (rho 0, eps 0.33), and times (1 + g) with no response at all; with no response the hours measure is the same with and without the raise (project hours valued at the bargained wage)', function(){
+    var bad = [], n = 0, hrs = [];
+    [[{rho:0, rhoBU:0, rhoR:0, eps:0.33, delta:0}, 1.33], [{rho:0, rhoBU:0, rhoR:0, eps:0, delta:0}, 1]].forEach(function(L){
+      var a0 = year0({}, L[0]), a1 = year0({bg:{pi:0.48}}, L[0]); hrs.push(a1.R.hrs, a0.R.hrs);
+      a1.got.forEach(function(q, i){ var p = a0.got[i]; if (q[3] || !(p[0] > 0) || q[2] || p[2]) return; n++; var e = p[0]*Math.pow(1 + q[1], L[1]); if (!near(q[0], e, 1e-9)) bad.push(i + ': ' + q[0] + ' against ' + e); }); });
+    var g = 0; year0({bg:{pi:0.48}}, {rho:0, rhoBU:0, rhoR:0, eps:0, delta:0}).got.forEach(function(q){ if (q[1] > 0) g++; });
+    return {pass:bad.length === 0 && n > 400 && g > 100 && near(hrs[2], hrs[3], 1e-12), detail:bad.slice(0, 3).join('; ') + ' (' + n + ' worker-years compared; ' + g + ' with a raise; hours ' + hrs.join(', ') + ')'}; });
+  t('the markdown cap: with pi 1 no worker\'s raise exceeds 1/m - 1 in any year, some workers are at the cap, and the mean markdown stays at or below 100%; with m 1/1.53 the cap allows more', function(){
+    var mx = {}, bad = []; [1/1.21, 1/1.53].forEach(function(m){ mx[m] = 0; REP_HOOK = function(agents){ agents.forEach(function(a){ if (a._bgG > mx[m]) mx[m] = a._bgG; if (a._bgG > 1/m - 1 + 1e-12) bad.push(a._bgG); }); };
+      var R = tbStudy([rows(P20, {bg:{pi:1, m:m}}, true)], 1, P20, SO)[0]; REP_HOOK = null; if (!(R.bgCap > 0 && R.bgMd <= 100 + 1e-9)) bad.push('m ' + m + ': cap share ' + R.bgCap + ', markdown ' + R.bgMd); });
+    return {pass:bad.length === 0 && near(mx[1/1.21], 0.21) && near(mx[1/1.53], 0.53), detail:bad.slice(0, 3).join('; ') + ' (largest raise ' + mx[1/1.21] + ', ' + mx[1/1.53] + ')'}; });
+  t('monotone: the bargained raise rises with pi (0.03, 0.10, 0.24, 0.48) and with the room (m 1, 1/1.21, 1/1.53 at pi 0.48); the outside option it reads does not depend on pi (year 0, as a share of earnings)', function(){
+    var R = [0.03, 0.10, 0.24, 0.48].map(function(pi){ return tbStudy([rows(P3, {bg:{pi:pi}}, true)], 2, P3, SO)[0]; }), M = [1, 1/1.21, 1/1.53].map(function(m){ return tbStudy([rows(P3, {bg:{pi:0.48, m:m}}, true)], 2, P3, SO)[0]; });
+    var up = R.every(function(r, i){ return i === 0 || r.bgR > R[i - 1].bgR; }) && M.every(function(r, i){ return i === 0 || r.bgR > M[i - 1].bgR; }) && M[0].bgR === 0;
+    var Y1 = Object.assign({}, P3, {years:1}), o1 = [0.03, 0.48].map(function(pi){ var r = tbStudy([rows(Y1, {bg:{pi:pi}}, true)], 2, Y1, SO)[0]; return [r.bgOP50, r.bgOP90]; });
+    return {pass:up && o1[0][0] === o1[1][0] && o1[0][1] === o1[1][1] && o1[0][0] > 0, detail:'raises ' + R.map(function(r){ return r.bgR.toFixed(0); }).join(', ') + '; by room ' + M.map(function(r){ return r.bgR.toFixed(0); }).join(', ') + '; year-0 outside option as a share of earnings (median, P90) ' + o1.join(', ')}; });
+  t('the outside option is the income effect\'s programme dollars at its weights, without today\'s safety net: zero with no programme; in year 0 (both runs start alike) the same with the safety net off as on, smaller with rhoBU 0 (BU spent drop out) and larger with BU weighted twice', function(){
+    var Y1 = Object.assign({}, P3, {years:1}), L = function(x){ return Object.assign({}, LABOR_DEFAULTS, x); }, run = function(prog, lab, x){ var c = rows(Y1, Object.assign({bg:{pi:0.1}}, x || {}), prog); if (lab) c.o = {labor:lab}; var r = tbStudy([c], 2, Y1, SON)[0]; return [r.bgOP50, r.bgOP90]; };
+    var o0 = tbStudy([rows(Object.assign({}, P3, {years:2}), {bg:{pi:0.1}})], 2, Object.assign({}, P3, {years:2}), SON)[0].bgO, o = run(true), oS = run(true, null, {sn:false}), oB = run(true, L({rhoBU:0})), o2 = run(true, L({rhoBU:0.32}));
+    return {pass:o0 === 0 && o[0] > 0 && oS[0] === o[0] && oS[1] === o[1] && oB[1] < o[1] && o2[1] > o[1], detail:'no programme ' + o0 + '; median and P90 share of earnings: main ' + o.join(', ') + '; safety net off ' + oS.join(', ') + '; rhoBU 0 ' + oB.join(', ') + '; BU twice ' + o2.join(', ')}; });
+  t('no random draw: with pi 0.48 the main stream is at the same place at the end of every year as with the switch off (probed in both runs of the C2.2 row, 20 years)', function(){
+    var probe = function(x){ var v = []; REP_HOOK = function(){ v.push(RNG()); }; try { tbStudy([rows(P20, x, true, true)], 1, P20, SO); } finally { REP_HOOK = null; } return v; };
+    var a = probe({}), b = probe({bg:{pi:0.48}}), ok = a.length >= 20 && a.length === b.length && a.every(function(x, i){ return x === b[i]; });
+    return {pass:ok, detail:a.length + ' probes, first ' + a[0] + ' against ' + b[0]}; });
+  function near(a, b, tol){ return Math.abs(a - b) <= (tol || 1e-9)*Math.max(1, Math.abs(a), Math.abs(b)); }
+  return out;
+}
+Object.assign(module.exports, { BARGAIN_KEYS:BG_KEYS, BG_KEYS, BG_DEFAULTS, bgOpts, bgRaise, bgRw0, bgUnitSuite });  /* S60 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3862,11 +3919,15 @@ if (require.main === module) {
     console.log('\n=== crUnitSuite(): S71, a creditor side for fixed-rate debt (harness-only) ===');
     CRU.forEach(function(x){ if (!x.pass) crf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + CRU.length + ' run, ' + crf + ' failed');
+    var BGU = bgUnitSuite(), bgf = 0;
+    console.log('\n=== bgUnitSuite(): S60, bargaining power: a worker\'s outside option and an employer markdown (harness-only) ===');
+    BGU.forEach(function(x){ if (!x.pass) bgf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + BGU.length + ' run, ' + bgf + ' failed');
     var PRU = prUnitSuite(), prf = 0;
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
