@@ -3,7 +3,7 @@
 ## Start, work, stop (token rules)
 
 - Begin every session by reading `HANDOFF.md` only. Open other files only when the next action needs them.
-- Use grep and line ranges (`sed -n A,Bp`, Read with offset/limit). Never read a whole file over 300 lines (index.html, harness.js, dev/PROGRESS.md, dev/DECISIONS.md are all longer).
+- Use grep and line ranges (`sed -n A,Bp`, Read with offset/limit). `dev/CODEMAP.md` maps index.html, harness.js and the long dev documents (functions, switches, section headings, with line numbers): grep it, never read it whole. Never read a whole file over 300 lines (index.html, harness.js, dev/PROGRESS.md, dev/DECISIONS.md are all longer).
 - No screenshots unless a visual check is the task.
 - Never wait or poll for long jobs. Start them on Runpod (`dev/batch/runpod.sh`), check once that they started, and end the session.
 - No model names in commit messages, pull request text, release notes or any pushed file.
@@ -46,4 +46,4 @@ The Compassionism Simulation: an open, in-browser agent-based model of the Compa
 
 ## Where things are
 
-`HANDOFF.md` (start here) · `dev/PLAN.md` (build order, release gate) · `dev/PROGRESS.md` (done and next) · `dev/DECISIONS.md` · `dev/reports/` (one plain-words report per mechanism) · `dev/background/`.
+`HANDOFF.md` (start here) · `dev/CODEMAP.md` (grep it for line numbers; `node dev/tools/codemap.js` rebuilds it) · `dev/PLAN.md` (build order, release gate) · `dev/PROGRESS.md` (done and next) · `dev/DECISIONS.md` · `dev/reports/` (one plain-words report per mechanism) · `dev/background/`.
