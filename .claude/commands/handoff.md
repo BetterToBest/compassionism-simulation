@@ -10,6 +10,7 @@ Do these four things, in order, then stop. Do not start new work.
    - **Next 3 actions**, numbered, each doable from this file alone.
    - **Files to touch** for those actions (paths, with line ranges or grep patterns for files over 300 lines).
    - **Pitfalls** (what went wrong or nearly did; tokens, expiry dates, environment limits).
+   If the session changed index.html, harness.js or the long dev documents, run `node dev/tools/codemap.js` first so `dev/CODEMAP.md` has current line numbers.
    Commit it with a clear message and push the session branch.
 
 2. **Update the ledger in one write.** The ledger is the claude.ai artifact F1hceP6XEfPQ1pf6Sw1Ki8, database collection `projects`, document `hub` (never read it whole; read only `next`, `phase`, the open issues and the steps whose status is not done). If the session started in BetterToBest/research-update (`/start-session`), prefer that repository's `/end-session` (`.claude/skills/end-session/SKILL.md`) over this command. In a single `ArtifactData` update: mark the steps finished this session as done, set `next`, and add one log line (date, what shipped). If no ledger tool is available, put the exact changes under a heading `Ledger updates for Duke` at the end of `HANDOFF.md` instead (this may take it past 40 lines).
