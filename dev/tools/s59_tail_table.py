@@ -91,15 +91,15 @@ table('## 10. The programme\'s effect on basket poverty (points of adult-years; 
 table('## 11. Programme inflation (points a year)', 'endoAnn', 2, 100.0)
 # 12. check 2
 P('## 12. Check 2: does the tail move the economy? The programme\'s effect with the tail less the effect without it, same seeds'); P('')
-P('"Tail only" against part 1\'s reading, and the main reading against the same reading without the tail (r2). The preregistered rule: programme inflation, the cost of living and unweighted basket poverty must differ by less than their intervals.'); P('')
+P('"Tail only" against part 1\'s reading, and the main reading against the same reading without the tail (r2). The preregistered rule: programme inflation, the cost of living and unweighted basket poverty must differ by less than their intervals. Each difference is followed in square brackets by the half-width of the interval of the effect itself under the reading without the tail. The unweighted poverty measures count the tail\'s adults as ordinary adults (about 18 of 500 where the population has 2.6%), so they also move through who is counted; the weighted year-20 measures are given beside them.'); P('')
 P('| Comparison | Outcome | ' + ' | '.join('%s, %s' % (n, dn) for e, n in ENVS if e in R for _, dn in DES) + ' |'); P('|---|---|' + '---|'*(2*len(R)))
 SUM['check2'] = {}
 for r1, r0 in (('tailonly', 'p1'), ('main', 'r2')):
     if not (have(r1) and have(r0)): continue
-    for k, lab, d, s in (('endoAnn', 'programme inflation (points a year)', 3, 100.0), ('hhCostPY', 'adults below the cost of living (points of adult-years)', 2, 1.0), ('fgt0PY', 'basket poverty (points of adult-years)', 2, 1.0), ('pLev20', 'price level at year 20 (ratio to Year 0)', 2, 1.0)):
+    for k, lab, d, s in (('endoAnn', 'programme inflation (points a year)', 3, 100.0), ('hhCostPY', 'adults below the cost of living (points of adult-years, unweighted)', 2, 1.0), ('fgt0PY', 'basket poverty (points of adult-years, unweighted)', 2, 1.0), ('wtF0E', 'basket poverty at year 20, weighted (points)', 2, 1.0), ('wtPovE', 'wealth poverty at year 20, weighted (points)', 2, 1.0), ('pLev20', 'price level at year 20 (ratio to Year 0)', 2, 1.0)):
         if k not in R[next(iter(R))]['rows'][r1]['seeds']['rls']: continue
         c = {e: {d2: diff2(e, r1, r0, d2, k) for d2, _ in DES} for e in R}; SUM['check2']['%s-%s.%s' % (r1, r0, k)] = c
-        P('| %s less %s | %s | ' % (r1, r0, lab) + ' | '.join(eff(c[e][d2], d, s) for e, _ in ENVS if e in R for d2, _ in DES) + ' |')
+        P('| %s less %s | %s | ' % (r1, r0, lab) + ' | '.join('%s [%.*f]' % (eff(c[e][d2], d, s), d, (R[e]['rows'][r0]['effect'][d2][k]['hi'] - R[e]['rows'][r0]['effect'][d2][k]['lo'])/2*s) for e, _ in ENVS if e in R for d2, _ in DES) + ' |')
 P('')
 # 13. capital income and owners
 P('## 13. Business owners and the income wealth pays (no programme unless said; Year-0 dollars per adult)'); P('')
@@ -109,7 +109,7 @@ for e, n in ENVS:
     for r in ('r2', 'main', 'bo0', 'ci0'):
         if r not in R[e]['rows']: continue
         a = R[e]['rows'][r]['mean']['none']; P('| %s | %s | %.1f | %.1f | %.1f | %s | %s | %.1f | %s |' % (n, r, a['rtOwnS'], a['rtOwnLoS'], a['rtOwnHiS'], usd(a['rtYkS']), usd(a['rtYkE']), a['rtYkShE'], usd(a['rtYbE'])))
-P(''); P('SCF 2022: 14.7%% of the engine\'s families hold private-business equity; of all families 14.6%%, 8.3%% in the bottom half of income and 41.0%% in the top tenth (the Bulletin\'s 20%%, 14%% and "nearly half" also count the self-employed without business equity).'); P('')
+P(''); P('SCF 2022: 14.7% of the engine\'s families hold private-business equity; of all families 14.6%, 8.3% in the bottom half of income and 41.0% in the top tenth (the Bulletin\'s 20%, 14% and "nearly half" also count the self-employed without business equity). The engine\'s own unweighted income Gini (`giniD`) and wealth Ginis (`eGiniW`, `eGiniWN`) are not valid where the tail is on; the weighted keys are.'); P('')
 table('**The programme\'s effect on capital income per adult at year 20 (Year-0 dollars)**', 'rtYkE', rows=[k for k in ('r2', 'main', 'chi1', 'ix05') if k in ROWS], usdf=True)
 P('**Shares of the last year\'s real gains on real assets received by the top 1% and top 10% of adults ranked by disposable income plus those gains (%)** (Campbell, Robbins and Wylde 2025 report 45.3% and 75.7% of capital gains for 2002-2021 on a comparable ranking; a comparison, not a target)'); P('')
 P('| Reading | ' + ' | '.join('%s: none / release / C2.2' % n for e, n in ENVS if e in R) + ' |'); P('|---|' + '---|'*len(R))
