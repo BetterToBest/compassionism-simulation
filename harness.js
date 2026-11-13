@@ -1629,6 +1629,76 @@ function wtUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { WT_KEYS, WT_DEFAULTS, WT_CUTS, RT2_KEYS, RT_OWN, RT_YLD, wtOpts, wtAssign, wtTailQ, wtUnitSuite });  /* S59 part 2 */
+
+/* S71 (Nov 13, 2026; research-update prereg/2026-11-s71-creditor-side.md): unit tests of the creditor side (option cr of rt). */
+function crUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR, A0 = ACCT; CFG.WEALTH_FLOOR = -10000;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); CFG.WEALTH_FLOOR = wf0; ACCT = A0; RETURNS = null; RTR = null; CRS = null; CRY = null; CRP = null; WEALTH_TAIL = null; WTS = null; TB = null; LABOR = null; PRICE = null; REP_HOOK = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), Y = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}};
+  function rows(P, x, prog){ var M = relMainCfgs(tbPresets(P)), c = frozenRow(Object.assign(M[prog ? 1 : 0], JSON.parse(JSON.stringify(Y)), JSON.parse(JSON.stringify(x || {})))); return prog ? c22Design(c) : c; }
+  var near = function(a, b, tol){ return Math.abs(a - b) <= (tol || 1e-9)*Math.max(1, Math.abs(a), Math.abs(b)); };
+  /* a built population: net worth and weight per adult, across every wealth group; the year's totals taken as crYear takes them */
+  var POP = [[-20000, 1.3], [5000, 1.3], [30000, 1.3], [120000, 1.3], [400000, 1.3], [400000, 1.3], [1200000, 1.3], [5000000, 1.3], [20000000, 0.4], [90000000, 0.05]];
+  function build(R, flows){ return POP.map(function(q, i){ var b = rtOpen(q[0], q[0], R, 1), k = {r:b.r.slice(), n:b.n, dv:b.dv, al:b.al}, f = flows ? flows[i] : 0; rtPlace(k, f, R); return {b:b, w:q[1], f:f, k:k}; }); }
+  function totals(L, wOn){ var T = {D:0, NB:0, ND:0, EQ:0}; L.forEach(function(x){ var w = wOn ? x.w : 1, tt = crT(x.b); T.D += w*x.b.df; T.NB += w*tt*x.k.n; T.ND += w*(1 - tt)*x.k.n; T.EQ += w*x.k.r[2]; }); return T; }
+  function year(R, pi, flows, wOn){  /* one year with and without cr on the same balances: the measured new charges, weighted */
+    var L = build(R, flows), T = totals(L, wOn), y = crRates(T.D, T.NB, T.ND, T.EQ, pi, R), nom = 0, eq = 0, rel = 0, R0 = Object.assign({}, R, {cr:false});
+    L.forEach(function(x){ var w = wOn ? x.w : 1, c = JSON.parse(JSON.stringify(x.b)), d0 = x.b.df, I1 = rtStep(x.b, x.f, pi, R, y), I0 = rtStep(c, x.f, pi, R0); nom += w*((c.n - x.b.n)); eq += w*(c.r[2] - x.b.r[2]); rel += w*(1 - R.chi)*pi*d0;
+      x.d = I0 - I1; x.dn = c.n - x.b.n; x.de = c.r[2] - x.b.r[2]; x.other = Math.abs(c.r[0] - x.b.r[0]) + Math.abs(c.r[1] - x.b.r[1]) + Math.abs(c.r[3] - x.b.r[3]) + Math.abs(c.r[4] - x.b.r[4]) + Math.abs(c.dv - x.b.dv) + Math.abs(c.df - x.b.df); });
+    return {L:L, T:T, y:y, nom:nom, eq:eq, rel:rel}; }
+  t('the table: the seven places of a dollar of debt sum to 1, the owners of shares sum to 1, every share is between 0 and 1; cr is off by default and off returns the same dollars', function(){
+    var L = RT_CR.led, s = L.dHH + L.bHH + L.BUS + L.GOV + L.ROW + L.dGOV + L.dROW, o = RT_CR.own.eH + RT_CR.own.eG + RT_CR.own.eR, ok = near(s, 1) && near(o, 1);
+    Object.keys(L).forEach(function(k){ if (!(L[k] >= 0 && L[k] <= 1)) ok = false; }); RT_CR.t.concat([RT_CR.tAll, RT_CR.w.wD, RT_CR.w.wB, RT_CR.w.wE]).forEach(function(x){ if (!(x > 0 && x <= 1)) ok = false; });
+    var R = rtOpts(true), a = rtOpen(300000, 300000, R, 1), b = rtOpen(300000, 300000, R, 1), Ia = rtStep(a, 5000, 0.3, R), Ib = rtStep(b, 5000, 0.3, R, null);
+    return {pass:ok && RT_CR.t.length === 7 && R.cr === false && rtOpts({cr:false}).cr === false && Ia === Ib && JSON.stringify(a) === JSON.stringify(b), detail:'sum ' + s + ', owners ' + o}; });
+  t('conservation (the step\'s test): debt inflated away equals the creditors\' losses, measured from the balances, plus the part on the books, plus the stated outside parts; under each incidence and scope reading, chi 0 and 0.5, weighted and unweighted totals, with saving and dissaving', function(){
+    var bad = [], n = 0, fl = [0, -3000, 2000, 10000, -60000, 25000, 0, 100000, -400000, 1e6];
+    ['pass', 'hold', 'hedge'].forEach(function(inc){ [{}, {pop:1}, {out:0}].forEach(function(sc){ [0, 0.5].forEach(function(chi){ [true, false].forEach(function(wOn){ [null, fl].forEach(function(f){ [0.35, -0.04].forEach(function(pi){
+      var R = rtOpts({chi:chi, cr:Object.assign({inc:inc, w:wOn ? 1 : 0}, sc)}), q = year(R, pi, f, wOn), y = q.y, sum = y.book + q.nom + q.eq + y.outG + y.outF + y.outH + y.outS + y.un; n++;
+      if (!near(q.rel, y.rel, 1e-10) || !near(sum, q.rel, 1e-10) || !(Math.abs(q.rel) > 0)) bad.push(inc + JSON.stringify(sc) + chi + wOn + (f ? 'f' : '') + pi + ': ' + q.rel + ' against ' + sum);
+      if (sc.out === 0 && (y.outG !== 0 || y.outF !== 0 || y.outH !== 0)) bad.push('out 0 leaves something outside');
+      if (inc === 'hedge' ? !(q.eq === 0 && y.outS !== 0) : y.outS !== 0) bad.push(inc + ': shareholders'); }); }); }); }); }); });
+    return {pass:bad.length === 0 && n === 144, detail:bad.slice(0, 3).join('; ')}; });
+  t('with no inflation nothing moves: every charge is zero and every balance equals the run without cr; with chi equal to phi the nominal charge is zero; only nominal assets and shares are ever charged', function(){
+    var bad = [];
+    ['pass', 'hold', 'hedge'].forEach(function(inc){ var q = year(rtOpts({cr:{inc:inc}}), 0, null, true); if (q.nom !== 0 || q.eq !== 0 || q.y.rel !== 0 || q.L.some(function(x){ return x.d !== 0 || x.other !== 0; })) bad.push(inc + ' moved at zero inflation');
+      var e = year(rtOpts({chi:0.46, cr:{inc:inc}}), 0.3, null, true); if (!near(e.nom, 0, 1e-12)) bad.push(inc + ': nominal charge at chi = phi ' + e.nom);
+      var g = year(rtOpts({cr:{inc:inc}}), 0.3, null, true); if (g.L.some(function(x){ return x.other !== 0; })) bad.push(inc + ' touched another class'); if (!(g.nom > 0)) bad.push(inc + ': no nominal charge'); });
+    return {pass:bad.length === 0, detail:bad.join('; ')}; });
+  t('in proportion to claims: two adults of one wealth group, one with twice the wealth, twice the charge on nominal assets and on shares; debtors keep their relief (fixed-rate debt is untouched)', function(){
+    var R = rtOpts({cr:true}), q = year(R, 0.3, null, true), a = q.L[4], b5 = q.L[5], bad = [];
+    if (a.dn !== b5.dn || a.de !== b5.de) bad.push('equal adults charged differently');
+    var S2 = rtOpts({cr:true}), x1 = rtOpen(300000, 300000, S2, 1), x2 = rtOpen(600000, 600000, S2, 1); if (x1.g !== x2.g) bad.push('groups differ');
+    var y = q.y, c1 = JSON.parse(JSON.stringify(x1)), c2 = JSON.parse(JSON.stringify(x2)); rtStep(x1, 0, 0.3, S2, y); rtStep(x2, 0, 0.3, S2, y); rtStep(c1, 0, 0.3, S2); rtStep(c2, 0, 0.3, S2);
+    if (!near((c2.n - x2.n), 2*(c1.n - x1.n), 1e-12) || !near(c2.r[2] - x2.r[2], 2*(c1.r[2] - x1.r[2]), 1e-12) || !(c1.n - x1.n > 0) || !(c1.r[2] - x1.r[2] > 0)) bad.push('not proportional');
+    if (x1.df !== c1.df || x1.df <= 0) bad.push('fixed debt moved');
+    return {pass:bad.length === 0, detail:bad.join('; ')}; });
+  t('claims above holdings are capped and the excess reported: with almost no bond-like assets or shares in the population the charge stops at the holdings, the rest is unplaced, and the ledger still balances', function(){
+    var R = rtOpts({cr:{inc:'hold', out:0}}), bad = [], D = 1e6, pi = 0.3, y = crRates(D, 1000, 2000, 500, pi, R), L = R.cr.led;
+    var nom = (R.phi - R.chi)*pi*(1000 + 2000), eq = pi*500, sum = y.book + nom + eq + y.outG + y.outF + y.outH + y.outS + y.un;
+    if (!near(y.rb*1000 + y.rd*2000, nom, 1e-12) || !near(y.re*500, eq, 1e-12)) bad.push('charges not at the cap'); if (!(y.un > 0)) bad.push('nothing unplaced'); if (!near(sum, y.rel, 1e-12)) bad.push('ledger ' + sum + ' against ' + y.rel);
+    var z = crRates(D, 0, 0, 0, pi, R); if (z.rb !== 0 || z.rd !== 0 || z.re !== 0 || !near(z.un + z.book, z.rel, 1e-12)) bad.push('no holdings: ' + JSON.stringify(z));
+    var u = crRates(D, 1e9, 1e9, 1e9, pi, rtOpts({cr:true})); if (u.un !== 0) bad.push('unplaced with ample holdings');
+    return {pass:bad.length === 0, detail:bad.join('; ')}; });
+  t('the option: readings parse, a wrong incidence throws; pop 1 and out 0 set every population factor to 1; out 0 spreads the outside parts over households\' claims', function(){
+    var thr = false; try { rtOpts({cr:{inc:'x'}}); } catch (e){ thr = true; }
+    var a = rtOpts({cr:true}).cr, p = rtOpts({cr:{pop:1}}).cr, o = rtOpts({cr:{out:0}}).cr, L = o.led;
+    return {pass:thr && a.inc === 'pass' && a.w === 1 && a.wf.wB === RT_CR.w.wB && p.wf.wD === 1 && p.wf.wB === 1 && p.wf.wE === 1 && p.led.GOV === RT_CR.led.GOV && o.wf.wE === 1 && o.own.eH === 1 && L.GOV === 0 && L.ROW === 0 && L.dGOV === 0 && near(L.dHH + L.bHH + L.BUS, 1), detail:''}; });
+  t('in a full run, with the tail, owners and capital income: the ledger gap is zero to rounding in both runs of a pair and under each reading; relief is positive with the programme; the keys appear with cr only; without cr the run is the run before this option', function(){
+    var P = Object.assign({}, FULL_INTEGRATION, {years:6}), MN = {bo:true, ci:true, ng:'base'}, bad = [], X = function(c){ return {rt:Object.assign({}, MN, c ? {cr:c} : {}), wt:true}; };
+    var A = tbStudy([rows(P, X(null), false), rows(P, X(null), true)], 2, P, SO);
+    [true, {inc:'hold'}, {inc:'hedge'}, {pop:1}, {out:0}, {w:0}].forEach(function(c){ var B = tbStudy([rows(P, X(c), false), rows(P, X(c), true)], 2, P, SO);
+      [0, 1].forEach(function(i){ var g = Array.from(B[i]._s.crGap), r = Array.from(B[i]._s.crRel); g.forEach(function(v, j){ if (!(Math.abs(v) <= 1e-6*Math.max(1, Math.abs(r[j])))) bad.push(JSON.stringify(c) + ' row ' + i + ': gap ' + v + ' of relief ' + r[j]); });
+        if (!CR_KEYS.every(function(k){ return isFinite(B[i][k]); })) bad.push('a key is missing'); });
+      if (!(B[1].crRel > 0)) bad.push('no relief with the programme'); if (c === true && !(B[1].crNom > 0 && B[1].crEq > 0 && B[1].crBook > 0)) bad.push('no charge under the main reading'); });
+    if (A[1].crRel !== undefined || A[0].crGap !== undefined) bad.push('keys without cr');
+    return {pass:bad.length === 0, detail:bad.slice(0, 3).join('; ')}; });
+  return out;
+}
+Object.assign(module.exports, { RT_CR, CR_KEYS, CR_DEFAULTS, crOpts, crRates, crT, crUnitSuite });  /* S71 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3788,11 +3858,15 @@ if (require.main === module) {
     console.log('\n=== wtUnitSuite(): S59 part 2, the weighted top tail, business owners and capital income (harness-only) ===');
     WTU.forEach(function(x){ if (!x.pass) wtf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + WTU.length + ' run, ' + wtf + ' failed');
+    var CRU = crUnitSuite(), crf = 0;
+    console.log('\n=== crUnitSuite(): S71, a creditor side for fixed-rate debt (harness-only) ===');
+    CRU.forEach(function(x){ if (!x.pass) crf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + CRU.length + ' run, ' + crf + ' failed');
     var PRU = prUnitSuite(), prf = 0;
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
