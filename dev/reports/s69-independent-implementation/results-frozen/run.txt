@@ -1,0 +1,19 @@
+S69 phase 1: a third, independent implementation of the frozen main row of round 2 (full backing, S69 corrections on) (Python), and its comparison with the engine's references.
+
+Packet: ../../packets/s69-frozen-row.zip, sha256 64acfae99699555d692c768eeb5e42cf65cca269bee43abeecd1e94671f06bf6 (built from engine commit 104691f3993ac6f37d6ff1b8ccd4690120cfe949).
+Program: the files listed in SHA256SUMS (written on top of repository commit a3234e3d8da9e46780696b34ac92df225c27fbc3). Python 3.13.18, standard library only.
+Machine: 4 processors; seconds per batch are in each results file.
+
+Commands (from this folder):
+  python3 -I s69_main.py --env ref --row base --seeds 1-500 --jobs 4 --packet ../../packets/s69-frozen-row.zip --out results-frozen/ref-base-1-500.json
+  python3 -I s69_main.py --env ref --row main --seeds 1-500 --jobs 4 --packet ../../packets/s69-frozen-row.zip --out results-frozen/ref-main-1-500.json
+  python3 -I s69_main.py --env adv --row base --seeds 1-500 --jobs 4 --packet ../../packets/s69-frozen-row.zip --out results-frozen/adv-base-1-500.json
+  python3 -I s69_main.py --env adv --row main --seeds 1-500 --jobs 4 --packet ../../packets/s69-frozen-row.zip --out results-frozen/adv-main-1-500.json
+  python3 -I s69_main.py --env st --row base --seeds 1-500 --jobs 4 --packet ../../packets/s69-frozen-row.zip --out results-frozen/st-base-1-500.json
+  python3 -I s69_main.py --env st --row main --seeds 1-500 --jobs 4 --packet ../../packets/s69-frozen-row.zip --out results-frozen/st-main-1-500.json
+  python3 -I s69_compare.py results-frozen ../../packets/s69-frozen-row.zip          (writes results-frozen/compare.md and results-frozen/compare-*.csv)
+  python3 -I s69_check_capture.py            (the Stress supply-path settings rule, checked on Reference and Adverse)
+  node dump_tables.js <packet>/code/main-row-code-full.js tables.json   (code_tables.json: the tables the configuration file lacks)
+  gzip -9 -n results-frozen/*-1-500.json
+
+One seed with a key-by-key comparison: python3 -I s69_main.py --env ref --row main --seed 1 --cmp
