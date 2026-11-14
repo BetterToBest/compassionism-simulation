@@ -156,6 +156,7 @@ A study row is an object of options (`tbStudy`'s configurations). This table giv
 | `rt` | wealth held by asset class (options below) | all wealth is cash | `{bo: true, ci: true, ng: 'base', cr: true}` | MODEL_SPEC 14.6, 14.7 |
 | `wt` | the weighted top tail | off | `true` | MODEL_SPEC 14.8 |
 | `bg` | bargaining: the outside option and the markdown | off | `{pi: 0, m: 1/1.21}` (identical to off) | MODEL_SPEC 14.9 |
+| `gv` | the government account (who pays, interest, programme debt, the erosion of today's debt), the contribution's share and base, its books at each adult's weight (S72) | off | `{}` (reporting, and weighted books) | MODEL_SPEC 14.14 |
 
 ### 7.2 Study options added in round 2 (and `o.wy`, which may also sit on a row)
 
@@ -172,7 +173,9 @@ A study row is an object of options (`tbStudy`'s configurations). This table giv
 | Option | Plain name | Values (absent first) | Candidate main row |
 |---|---|---|---|
 | `fx.pthb`, `fx.hb`, `fx.ab`, `fx.sp` | PTH's books after households; the PTH home's price and receipt; SNAP's month count; the essentials' supply path | false / true | true |
-| `fx.fin` | who pays the part a capped contribution does not raise | none / 'report' / 'money' ('debt' refused until S72) | 'report' |
+| `fx.fin` | who pays the part a capped contribution does not raise | none / 'report' / 'money' / 'debt' (borrowed; needs `gv`) / 'cap' (a higher rate cap, the rest new money; needs `gv`) | 'report' |
+| `gv.sh`, `gv.base`, `gv.wb` | the share of the payout the contribution is set to raise; its base ('w' wages, 'wc' wages plus conversion proceeds, 'all' all money income; the parts other than wages on last year's amounts); its books at each adult's weight | 1, 'w', true | the defaults |
+| `gv.r`, `gv.rr`, `gv.dk`, `gv.a`, `gv.b`, `gv.rs`, `gv.pt`, `gv.ip`, `gv.capHi`, `gv.m` | the borrowing rate ('fixed' real rate, or 'rule', a policy-rate rule); the real rate; the debt premium per unit of debt to GDP; the rule's weight on inflation and on the gap; its neutral real rate and target; interest paid by the contribution ('tax') or borrowed; the higher cap; the years over which today's fixed-coupon debt reprices (reporting) | 'fixed', 0.0097, 0.04, 0.5, 0.5, 0.0097, 0.02, 'tax', 0.99, 6 | the defaults |
 | `fx.pe` | the PTH trust's books when a member dies (with ageing) | false / true | true (moves nothing without ageing) |
 | `pa.fix`, `pa.grow`, `pa.cap`, `pa.ops`, `pa.dem` | a fixed share; growth on; capacity from owned capital or none; operations at the Hub's prices or outside costs; the demand ceiling | null, true, 'own', 'hub', 0.49 | the defaults |
 | `po.cost`, `po.pay`, `po.res`, `po.bonus`, `po.curve`, `po.w`, `po.test`, `po.hire` | running costs ('full', 'sector', 'hub'); who pays ('source', 'price'); the reserve; the bonus ('workers', 'members'); the curve ('smooth', 'step'); the band's half-width; what the tests read ('sales', 'members', 'capacity'); a hiring limit | `PO_DEFAULTS` | the defaults |
