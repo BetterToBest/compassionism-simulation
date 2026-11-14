@@ -4833,12 +4833,22 @@ function hhAges(agents, seed){
   HHS.rng = mulberry32(seed + 500029); HHS.st = st;
 }
 function hhGrow(){ var S = HHS; S.elig = []; S.grown = S.grown.filter(function(g){ g.age++; if (g.age >= CFG.ENTRY_AGE){ S.elig.push(g); return false; } return true; }); }  /* grown children turning 25 can take a place this year */
-function hhEstate(a, H, pLev){
+/* S68 part 2 (fx part 'pe', off by default; found by the on-together tests): the PTH trust's books when a member dies (ageing with the PTH balance sheet).
+ * Without it a PTH heir's Acre Equity rises by the inheritance while their home's books do not, so the home's identity (homes less debt = members' equity +
+ * community equity, ACCT 'pth-books') misses by the inheritance from then on, and the deceased's home keeps equity no member holds. With it, the deceased's
+ * equity leaves their home's books as it leaves the member: a PTH heir's share is redeemed on the deceased's home (its debt rises) and pays down the heir's
+ * own home (its debt falls); any other share is paid in cash at the liquid share, as an exit is, the rest staying with the community. */
+var PE_GIVEN = 0;
+function hhEstate(a, H, pLev){ var S1 = FX && FX.pe && PBS && a._pbS ? a._pbS : null, e = Math.max(0, +a.acreEquity || 0), lq = pthLiquidShare(a.pthTenure || 0);
+  PE_GIVEN = 0; hhEstate0(a, H, pLev, S1);
+  if (S1){ var rest = Math.max(0, e - PE_GIVEN); S1.D += rest*lq; S1.CE += rest*(1 - lq); a._pbS = null; } }
+function hhEstate0(a, H, pLev, S1){
   var st = HHS.st, w = Math.max(0, a.wealth), e = Math.max(0, +a.acreEquity || 0), lq = pthLiquidShare(a.pthTenure || 0);
   if (w + e <= 0) return;
   st.estN++; st.estV += (w + e)/pLev;
   if (HOUSEHOLDS.estate === 'leave'){ st.estO += (w + e)/pLev; return; }
-  function give(h, sw, se){ var got = sw + (h.inPTH ? se : se*lq); h.wealth += sw; if (h.inPTH) h.acreEquity = (+h.acreEquity || 0) + se; else h.wealth += se*lq; return got; }
+  function give(h, sw, se){ var got = sw + (h.inPTH ? se : se*lq); h.wealth += sw; if (h.inPTH) h.acreEquity = (+h.acreEquity || 0) + se; else h.wealth += se*lq;
+    if (S1){ PE_GIVEN += se; if (h.inPTH){ S1.D += se; if (h._pbS) h._pbS.D -= se; } else { S1.D += se*lq; S1.CE += se*(1 - lq); } } return got; }
   if (H.a.length){ var got = give(H.a[0], w, e); st.estP += got/pLev; st.estO += (w + e - got)/pLev; return; }  /* the surviving partner */
   var n = H.kids.length + H.grown.length; if (!n){ st.estO += (w + e)/pLev; return; }
   var sw = w/n, se = e/n;
@@ -6299,7 +6309,7 @@ function runYear(agentSet,yr,p,recSt){
     pjIdx=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);pjPay=PROJ.pay*pjIdx;pjCipB=p.cip?(1+p.cipDemo*0.12):1.0;
     var pjP=[],pjWt=0,pjWR=0,pjIn=PJS.prev?PJS.prev.pool+PJS.prev.gpool:0,pjCarry=0;pjFg=pjIn>0?PJS.prev.gpool/pjIn:0;
     if(REVIEW&&REVS)agentSet.forEach(function(a){a._rvU=REVS.rng();});  // v5.2 step 7: one number per adult a year from the review stream
-    if(p.ccoOn)agentSet.forEach(function(a){if(!a.inCCO)return;if(a._ret&&(AGE&&AGE.ret==='noconv'||LF_SCOPE&&a._lf&&LF_SCOPE.conv==='none')){a._pjBU=0;return;}/* v5.2 step 4: no conversion after retirement under 'noconv' */var r=pjOwnRate(a,p,clPCB(a)),cap=12*FW.octaveCapBase*Math.pow(2,a.octave),w=cap*Math.max(0,a.quality);if(POS){POS.bn+=poBonus(a,p,clPCB(a))-1;POS.bc++;}
+    if(p.ccoOn)agentSet.forEach(function(a){if(!a.inCCO)return;if(a._ret&&(AGE&&AGE.ret==='noconv'||LF_SCOPE&&a._lf&&LF_SCOPE.conv==='none')){a._pjBU=0;if(a._pjR===undefined)a._pjR=0;if(a._pjRu===undefined)a._pjRu=0;return;}/* S68 part 2: an adult who never had a project rate (outside the labour force, conv 'none') converts nothing; before, 0 x undefined gave NaN *//* v5.2 step 4: no conversion after retirement under 'noconv' */var r=pjOwnRate(a,p,clPCB(a)),cap=12*FW.octaveCapBase*Math.pow(2,a.octave),w=cap*Math.max(0,a.quality);if(POS){POS.bn+=poBonus(a,p,clPCB(a))-1;POS.bc++;}
       a._pjR=r;a._pjCap=cap;a._pjW=w;a._pjBU=0;pjWt+=w;pjWR+=w*r;pjP.push(a);});
     var pjRc=pjWt>0?pjWR/pjWt:1,pjSet=[];PJS.acc.rc+=pjRc;PJS.acc.rcN++;
     pjP.forEach(function(a){var ru=PROJ.rate==='max'?Math.max(a._pjR,pjRc):a._pjR,v=pjPay*ru*(1-pjTax(p,ru))*pjCipB,h=a.wage*12*CFG.WAGE_TO_USD/PROJ.hrsYr;
@@ -7660,7 +7670,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var lf0 = LF_SCOPE; if (c.lf) LF_SCOPE = Object.assign({}, LF_DEFAULTS, c.lf === true ? {} : c.lf);  /* S61: adults outside the labour force for this row (no programme rows too) */
       var po0 = PTF_OPS; if (c.po) PTF_OPS = poOpts(c.po);  /* S62: PTF realism for this row (needs pa open) */
       var bg0 = BARGAIN; if (c.bg) BARGAIN = bgOpts(c.bg);  /* S60: a worker's outside option and an employer markdown for this row (no programme rows too) */
-      var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; }  /* S58: the capacity price rule for this row (no programme rows too) */
+      var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; } if (PRICE_RULE === 'capacity' && PR_OPTS.h && MULT && MULT.nt) throw new Error('pr.h and ml.nt both read the normal-years slack: use one');  /* S68 part 2: a hazard made a refusal */  /* S58: the capacity price rule for this row (no programme rows too) */
       var pa0 = [PTF_ACCESS, PA]; if (c.pa && c.pa !== 'members'){ if (c.pa !== 'open' && typeof c.pa !== 'object') throw new Error('pa: members, open or {fix}'); PTF_ACCESS = 'open'; PA = Object.assign({}, PA_DEFAULTS, typeof c.pa === 'object' ? c.pa : {}); }  /* S55: open PTF access for this row */
       var cl0 = COMM; if (c.cl) COMM = Object.assign({}, COMM_DEFAULTS, c.cl === true ? {} : c.cl);  /* S37: the community layer for this row */
       var c220 = C22; if (c.c22) C22 = Object.assign({}, C22_DEFAULTS, c.c22 === true ? {} : c.c22);  /* S6: coverage and adequacy for this row */

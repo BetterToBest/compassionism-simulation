@@ -112,3 +112,77 @@ The batch (research-update `prereg/run-manifest.md`) runs every row with `harnes
 | O | the outside supply shock (`o.sx`) | S52's rows |
 | P | the security outputs (`o.sec`, reporting only), `sv` | S53's rows |
 | X | none (the per-year series of no programme, the C2.2 design and the release design) | Reporting |
+
+## 7. Plain names of every row option (S68 part 2)
+
+A study row is an object of options (`tbStudy`'s configurations). This table gives each two-letter option its plain name, its value when absent, the value in the candidate main row of round 2 (`harness.js` `r2MainRow`; MODEL_SPEC.md 14.0) and where it is described. "Absent" always means the engine as it was before the option existed (guardrail 1).
+
+### 7.1 Row options
+
+| Option | Plain name | Absent | Candidate main row | Described in |
+|---|---|---|---|---|
+| `p` | the environment's preset for this run (programme on or off, the BU, the parts) | required | `tbPresets(P).baseline()` / the C2.2 design's preset | MODEL_SPEC 10, 13.4 |
+| `o` | the row's own study options (financing and the like; section 7.2) | the study's | `{fin: 'source', a: 0}` (programme run) | section 2 |
+| `cm` | the conversion model | 'engine' | 'framework' | section 1 |
+| `pj`, `es`, `sp`, `pd`, `jn`, `cs`, `oc` | project hiring; ESP payroll; the surplus split; the production side; open enrolment; the PTF discount from forgone profit; the octave gap | off | as the release row | section 1; MODEL_SPEC 6 |
+| `ml` | the spending layer (`nt`: idle labour in normal years) | off | recession years only (as released) | section 1; MODEL_SPEC 6.12 |
+| `gc` | the BLEI gate reads this year's BU | false | true | section 1 |
+| `pw` | parts of the pathway switched off (attribution) | none | the octave wage raise off | section 1 |
+| `g` | engine settings for this row (the accounting profile) | the testbed profile | as the release row | section 1 |
+| `sc` | the share of the cash surplus consumed | 0 | 0.877 (frozen) | MODEL_SPEC 13.3 |
+| `sg` | income-graded spending | off | on | MODEL_SPEC 6.4 |
+| `hh` | households and children | adults alone | `REL_V53.hh` | MODEL_SPEC 6.13 |
+| `bs` | what BU can buy | 'core' | 'hub' | section 1 |
+| `fb` | advancement in FBS50 units | off | off | section 1 |
+| `em` | the measured EDC (reporting) | off | on | section 1 |
+| `v54` | the v5.4 parts: job loss, PTH's books, PTF by sector, risk measures | off | `V54_MAIN` | MODEL_SPEC 12 |
+| `sn` | today's safety net (`abawd` SNAP's work rule, `slope` the phase-out) | off | `{abawd: true, slope: true}` | MODEL_SPEC 12.4 |
+| `lt` | US-data readings (`s` wage spread, `m` wage median: 'all' = CPS earnings) | off | `{s: 'all', m: 'all'}` | section 1 |
+| `sv` | savings that keep up with prices | off | off | section 1 |
+| `ag` | ageing, retirement at 67, replacement | off | off | section 1 |
+| `hc`, `rv` | landlords capture BU spent on rent; unearned high rates in the review | off | off | section 1 |
+| `hl`, `pv` | health coverage; the prevention link | off | off | section 1 |
+| `lw` | the cost-of-living line (S14) | the MIT line | the MIT line | section 6 (job L) |
+| `cl` | the community and zone layer | off | off | section 6 (jobs G-J) |
+| `au` | the outside audit's corrections (gate, sg, fbs; `wOut`) | off | `true` (frozen) | MODEL_SPEC 13.1 |
+| `fx` | the second implementation's fixes, and parts added since | off | `{pthb, hb, ab, sp, fin: 'report', pe: true}` | MODEL_SPEC 13.2, 14.10; section 7.3 |
+| `c22` | coverage and adequacy (the C2.2 design) | off | `{auto: true, idx: 'needs'}` (programme run) | MODEL_SPEC 13.4 |
+| `lv` | the policy levers | off | off | section 1 |
+| `pa` | open PTF access and the growth of the PTF share of sales | members only | 'open' | MODEL_SPEC 14.1 |
+| `po` | PTF running costs, who pays, PTF workers, the density tests' curve | off | `true` | MODEL_SPEC 14.2 |
+| `pr` | the capacity price rule (options `q`, `bv`, `bd`) | today's rule | today's rule (absent) | MODEL_SPEC 14.3 |
+| `lf` | adults outside the labour force (`conv` 'keep' or 'none') | everyone in it | `{}` ('keep') | MODEL_SPEC 14.4 |
+| `dr` | borrowing for ordinary spending (`lim` the limit, `liq` the liquid share, `fl` the floor) | off | `{lim: 2500}` | MODEL_SPEC 14.5 |
+| `rt` | wealth held by asset class (options below) | all wealth is cash | `{bo: true, ci: true, ng: 'base', cr: true}` | MODEL_SPEC 14.6, 14.7 |
+| `wt` | the weighted top tail | off | `true` | MODEL_SPEC 14.8 |
+| `bg` | bargaining: the outside option and the markdown | off | `{pi: 0, m: 1/1.21}` (identical to off) | MODEL_SPEC 14.9 |
+
+### 7.2 Study options added in round 2 (and `o.wy`, which may also sit on a row)
+
+| Option | Plain name | Absent | Candidate main row | Described in |
+|---|---|---|---|---|
+| `dm` | distribution measures | off | on | MODEL_SPEC 14.11 |
+| `mf` | the money-flow table | off | on | MODEL_SPEC 14.11 |
+| `wtm` | the tail's weighted measures | off | on | MODEL_SPEC 14.8 |
+| `wy` | costs at the within-year price level | off | on (equal to the published measures under today's rule) | MODEL_SPEC 13.2a |
+| `fin` | how the programme is paid for ('tax', 'source', 'money', 'hybrid', 'none') | 'tax' at study level | 'source' (programme run) | section 2; MODEL_SPEC 11 |
+
+### 7.3 Parts and sub-options
+
+| Option | Plain name | Values (absent first) | Candidate main row |
+|---|---|---|---|
+| `fx.pthb`, `fx.hb`, `fx.ab`, `fx.sp` | PTH's books after households; the PTH home's price and receipt; SNAP's month count; the essentials' supply path | false / true | true |
+| `fx.fin` | who pays the part a capped contribution does not raise | none / 'report' / 'money' ('debt' refused until S72) | 'report' |
+| `fx.pe` | the PTH trust's books when a member dies (with ageing) | false / true | true (moves nothing without ageing) |
+| `pa.fix`, `pa.grow`, `pa.cap`, `pa.ops`, `pa.dem` | a fixed share; growth on; capacity from owned capital or none; operations at the Hub's prices or outside costs; the demand ceiling | null, true, 'own', 'hub', 0.49 | the defaults |
+| `po.cost`, `po.pay`, `po.res`, `po.bonus`, `po.curve`, `po.w`, `po.test`, `po.hire` | running costs ('full', 'sector', 'hub'); who pays ('source', 'price'); the reserve; the bonus ('workers', 'members'); the curve ('smooth', 'step'); the band's half-width; what the tests read ('sales', 'members', 'capacity'); a hiring limit | `PO_DEFAULTS` | the defaults |
+| `pr.k`, `pr.k2`, `pr.r`, `pr.a`, `pr.h`, `pr.rs`, `pr.um` | κ, κ₂, ρ, α, normal-years slack, recession slack, the stretch cap (reporting) | `PR_DEFAULTS` | (rule off) |
+| `pr.q`, `pr.bv`, `pr.bd` | sub-steps within the year; the velocity response; the velocity drift | 1, 0, 0 | (rule off) |
+| `rt.ix`, `rt.phi`, `rt.psi`, `rt.chi`, `rt.rho` | real assets' indexation; nominal assets' share of inflation; floating debt's; fixed-rate debt's (0 debt relief, 1 none); real gains by class | 1, 0.46, 1, 0, Shiller's | the defaults |
+| `rt.ns`, `rt.all`, `rt.ng`, `rt.rg` | where saving goes ('nom', 'port'); all wealth in one class ('nom', 'real'); the nominal rate by group ('base', 'all'); higher top real-estate returns | 'nom', null, false, false | `ng: 'base'` |
+| `rt.bo`, `rt.ci` | business owners; the income wealth pays | false, false | true, true |
+| `rt.cr` (`inc`, `pop`, `out`, `w`) | the creditor side: who bears the loss ('pass', 'hold', 'hedge'); the model as all households; nothing outside; weights read | false; 'pass', 0, 0, 1 | true (the defaults) |
+| `wt.m`, `wt.form`, `wt.cut`, `wt.a`, `wt.flat` | tail households per type; Pareto or generalised Pareto; the cutoff ('main', 'p99', 'p90'); the exponent; no tail (weights 1) | 3, 'pareto', 'main', fitted, false | the defaults |
+| `bg.pi`, `bg.m` | the pass-through; the markdown | 0, 1/1.21 | the defaults |
+| `lf.conv` | conversion outside the labour force | 'keep' / 'none' | 'keep' |
+| `dr.lim`, `dr.liq`, `dr.fl` | the borrowing limit (year-0 $); the liquid share of savings; the floor ('fpl') | 0, 1, none | 2500, 1, none |

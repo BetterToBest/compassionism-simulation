@@ -1,0 +1,15 @@
+main pass 2.5s
+pr pass 2.4s
+q pass 2.2s
+bd pass 2.3s
+bg pass 2.6s
+fin pass 3.7s
+po pass 2.5s
+pa pass 2.4s
+rt pass 4.1s
+cr pass 4.0s
+wt pass 3.8s
+lf pass 3.9s
+dr pass 4.0s
+ag pass 5.5s
+cl pass 2.9s
