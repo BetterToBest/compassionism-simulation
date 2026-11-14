@@ -1239,6 +1239,20 @@ function fxUnitSuite(){
     var A = tbStudy([c[0], c[1]], 1, P, SO, 1), B = tbStudy([c[1], c[0]], 1, P, SO, 1), d = TB_KEYS.filter(function(k){ return A[1]._s[k][0] !== B[0]._s[k][0]; });
     FX = {sp:true}; var s1 = tbBaseS(P, 1, SO), s2 = tbBaseS(P, 1, Object.assign({}, SO, {fin:'source', lv:{}, sec:true})); FX = null;
     return {pass:d.length === 0 && s1 === s2 && s1.length === P.years, detail:(d.length ? 'moved with order: ' + d.slice(0, 8).join(', ') : '') + (s1 === s2 ? '' : ' path differs with programme options')}; });
+  /* S63 (Nov 14, 2026; S69 GAPS items 22 and 24): fx.ez and fx.rk on the round-2 main pair (r2MainPair, full backing). */
+  function r2keys(R0, R1, j){ return Object.keys(R0._s).filter(function(k){ var a = R0._s[k], b = R1._s[k]; return a && b && a[j] !== b[j] && !(isNaN(a[j]) && isNaN(b[j])); }); }
+  function r2pair(Q, fx){ var cf = r2MainPair(Q, 'c22'); cf[1].o = Object.assign({}, cf[1].o, {a:1}); cf.forEach(function(c){ Object.assign(c.fx, fx); }); return cf; }
+  t('S63: fx.rk is ranking only: on the round-2 main pair (no programme and C2.2, seeds 1-3, Reference) only the weighted distribution measures (dm..., and the tail\'s measures wt..., which share the ranking) move', function(){
+    var A = tbStudy(r2pair(P, {}), 3, P, r2MainStudy(), 1), B = tbStudy(r2pair(P, {rk:true}), 3, P, r2MainStudy(), 1), mv = {};
+    [0, 1].forEach(function(i){ [0, 1, 2].forEach(function(j){ r2keys(A[i], B[i], j).forEach(function(k){ mv[k] = 1; }); }); });
+    var k = Object.keys(mv), bad = k.filter(function(x){ return !/^(dm|wt)/.test(x); });
+    return {pass:bad.length === 0, detail:'moved: ' + (k.length ? k.length + ' keys (' + k.slice(0, 6).join(', ') + ')' : 'none') + (bad.length ? '; not dm: ' + bad.slice(0, 8).join(', ') : '')}; });
+  t('S63: fx.ez moves no headline by more than 1e-5 (relative) on the round-2 main pair (Reference seeds 1-3 and 246, where S69 found it acts) and acts in seed 246', function(){
+    var worst = 0, wk = '', acts = 0, H5 = ['bNAPy', 'fgt0PY', 'pov', 'ppov_19', 'wtMedE', 'endoAnn', 'cost', 'pLev20'];
+    [[1, 3], [246, 246]].forEach(function(sd){ var A = tbStudy(r2pair(P, {}), sd[1], P, r2MainStudy(), sd[0]), B = tbStudy(r2pair(P, {ez:true}), sd[1], P, r2MainStudy(), sd[0]);
+      [0, 1].forEach(function(i){ for (var j = 0; j <= sd[1] - sd[0]; j++){ if (sd[0] === 246) acts += r2keys(A[i], B[i], j).length;
+        H5.forEach(function(k){ var a = A[i]._s[k], b = B[i]._s[k]; if (!a || !b) return; var d = Math.abs(a[j] - b[j])/Math.max(1, Math.abs(a[j])); if (d > worst){ worst = d; wk = k + ' seed ' + (sd[0] + j); } }); } }); });
+    return {pass:worst <= 1e-5 && acts > 0, detail:'largest headline change ' + worst.toExponential(2) + (wk ? ' (' + wk + ')' : '') + '; keys moved in seed 246: ' + acts}; });
   return out;
 }
 /* S68 (Nov 14, 2026): the financing identity and fx.fin (index.html finStep, FIN_KEYS), costs at the within-year price level (o.wy, WY_KEYS) and the
@@ -3733,6 +3747,13 @@ function r2MainRow(c){ Object.assign(c, JSON.parse(JSON.stringify(R2_MAIN))); c.
 function r2MainPair(P, design){ var cf = relMainCfgs(tbPresets(P)).map(function(c){ c.sc = SPEND_SOURCED; return r2MainRow(c); }); if (design !== 'rel') c22Design(cf[1]); return cf; }
 function r2MainStudy(){ return Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY, R2_MAIN_STUDY); }
 Object.assign(module.exports, { R2_MAIN, R2_MAIN_STUDY, r2MainRow, r2MainPair, r2MainStudy });  /* S68 part 2 */
+/* S63 (Nov 14, 2026; research-update prereg/2026-11-s63-round2-freeze.md; ledger D25 and D26): the frozen round-2 main row. r2MainRow (unchanged, so
+ * S68-S70 and S69's packet reproduce) with S69's two reporting corrections on (fx.ez, fx.rk), and the programme run at full backing (o.a 1: every
+ * programme dollar matched by new output, the design's statement, a design parameter; D25). Today's price rule (no pr; D26). */
+var R2_FREEZE_FX = {ez:true, rk:true};
+function r2FreezeRow(c, prog){ r2MainRow(c); Object.assign(c.fx, R2_FREEZE_FX); if (prog) c.o = Object.assign({}, c.o, {a:1}); return c; }
+function r2FreezePair(P, design){ var cf = relMainCfgs(tbPresets(P)).map(function(c, i){ c.sc = SPEND_SOURCED; return r2FreezeRow(c, i === 1); }); if (design !== 'rel') c22Design(cf[1]); return cf; }
+Object.assign(module.exports, { R2_FREEZE_FX, r2FreezeRow, r2FreezePair });
 /* S68 part 2, item 3: on-together tests. Each round-2 switch has one other reading that runs its own code (R2_ALT); every single one and every pair is
  * applied to the candidate main row (which already has the other switches on at their main readings), in both runs of the pair. Per row and run:
  * the accounting identities (ACCT, MODEL_SPEC section 11), eight main-stream draws per adult-year (the pre-pass year included), no non-finite output,
