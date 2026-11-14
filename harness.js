@@ -1241,6 +1241,55 @@ function fxUnitSuite(){
     return {pass:d.length === 0 && s1 === s2 && s1.length === P.years, detail:(d.length ? 'moved with order: ' + d.slice(0, 8).join(', ') : '') + (s1 === s2 ? '' : ' path differs with programme options')}; });
   return out;
 }
+/* S68 (Nov 14, 2026): the financing identity and fx.fin (index.html finStep, FIN_KEYS), costs at the within-year price level (o.wy, WY_KEYS) and the
+ * per-run reset of module state (research-update prereg/2026-11-s68-financing-identity.md). */
+function s68UnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), A0 = ACCT;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); ACCT = A0; TB = null; LABOR = null; PRICE = null; FX = null; WYS = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500});
+  function pair(){ return relMainCfgs(tbPresets(P)).map(function(c){ c.sc = SPEND_SOURCED; c.sn = {abawd:true, slope:true}; c.lt = {s:'all', m:'all'}; return frozenRow(c); }); }
+  function row(d, fin, f){ var c = d === 'c22' ? c22Design(pair()[1]) : d === 'none' ? pair()[0] : pair()[1];
+    c.o = Object.assign({}, c.o, fin === 'prog' ? {fin:'tax', taxBase:'prog'} : fin === 'land' ? {fin:'tax', taxBase:'land'} : fin ? {fin:fin} : {});
+    if (f) c.fx = {pthb:true, hb:true, ab:true, sp:true, fin:f}; return c; }
+  function moved(A, B, keys){ return keys.filter(function(k){ return A._s[k][0] !== B._s[k][0]; }); }
+  var FINS = ['source', 'tax', 'prog', 'land', 'hybrid', 'money', 'none'];
+  t('S68: fx.fin \'report\' changes no testbed output (C2.2 with the flat contribution, and the release design under the Source; seed 1, Reference)', function(){
+    var R = tbStudy([row('c22', 'tax'), row('c22', 'tax', 'report'), row('rel', 'source'), row('rel', 'source', 'report')], 1, P, SO, 1), b = moved(R[0], R[1], TB_KEYS).concat(moved(R[2], R[3], TB_KEYS));
+    return {pass:!b.length && R[1].finPay > 0, detail:b.length ? 'moved: ' + b.slice(0, 8).join(', ') : ''}; });
+  t('S68: the financing identity holds every year for every reading, with fx.fin \'report\' and \'money\' (release design and C2.2, seed 1, Reference)', function(){
+    var rs = []; ['rel', 'c22'].forEach(function(d){ FINS.forEach(function(fn){ rs.push(row(d, fn, 'report')); rs.push(row(d, fn, 'money')); }); });
+    ACCT = acctNew(); tbStudy(rs, 1, P, SO, 1); var A = ACCT; ACCT = null;
+    return {pass:A.n.fin >= rs.length*P.years && !A.nFail.fin, detail:'checks ' + A.n.fin + ', failed ' + (A.nFail.fin || 0) + ', worst ' + (A.worst.fin || 0).toExponential(2)}; });
+  t('S68: the runtime check changes no figure (C2.2 with the flat contribution, fx.fin \'money\', ACCT on and off, seed 1)', function(){
+    var A = tbStudy([row('c22', 'tax', 'money')], 1, P, SO, 1); ACCT = acctNew(); var B = tbStudy([row('c22', 'tax', 'money')], 1, P, SO, 1); ACCT = null;
+    var b = moved(A[0], B[0], TB_KEYS.concat(FIN_KEYS)); return {pass:!b.length, detail:b.join(', ')}; });
+  t('S68: fx.fin \'money\' makes the whole gap new money for the flat contribution, hybrid and the Source, and leaves the progressive and land taxes, money and none unchanged', function(){
+    var bad = [], rs = []; FINS.forEach(function(fn){ rs.push(row('c22', fn, 'report')); rs.push(row('c22', fn, 'money')); });
+    var R = tbStudy(rs, 1, P, SO, 1);
+    FINS.forEach(function(fn, i){ var a = R[2*i], b = R[2*i + 1];
+      if (['tax', 'hybrid', 'source'].indexOf(fn) >= 0){ if (Math.abs(b.finGap - b.finGapM) > 1e-9*Math.max(1, b.finPay) || b.finGapSh !== 0) bad.push(fn + ': gap left ' + (b.finGap - b.finGapM)); }
+      else { var m = moved(a, b, TB_KEYS.concat(FIN_KEYS)); if (m.length) bad.push(fn + ' moved ' + m.slice(0, 4).join(', ')); } });
+    var flat = R[2]; return {pass:!bad.length && flat.finGapSh > 10, detail:(bad.join('; ') || '') + ' (C2.2 flat contribution: ' + flat.finGapSh.toFixed(1) + '% of payout unpaid without fx.fin)'}; });
+  t('S68: fx.fin refuses \'debt\' (built in S72) and an unknown reading', function(){
+    var e = []; ['debt', 'loan'].forEach(function(f){ try { tbStudy([row('rel', 'tax', f)], 1, Object.assign({}, P, {years:2}), SO, 1); e.push(f + ' ran'); } catch (x){} });
+    return {pass:!e.length, detail:e.join(', ')}; });
+  t('S68: o.wy is reporting only and equals the published measure when the year is not split (no-programme run and release design, seed 1)', function(){
+    var a = row('none'), b = row('none'), c = row('rel'), d = row('rel'); b.o = Object.assign({}, b.o, {wy:true}); d.o = Object.assign({}, d.o, {wy:true});
+    var R = tbStudy([a, b, c, d], 1, P, SO, 1), m = moved(R[0], R[1], TB_KEYS).concat(moved(R[2], R[3], TB_KEYS)), bad = [];
+    [1, 3].forEach(function(i){ ['F0', 'F1', 'F2'].forEach(function(k){ if (R[i]['wy' + k + 'PY'] !== R[i]['fgt' + k.slice(1) + 'PY'] && Math.abs(R[i]['wy' + k + 'PY'] - R[i]['fgt' + k.slice(1) + 'PY']) > 1e-9) bad.push(i + ' ' + k); }); if (R[i].wyAvg !== 1) bad.push(i + ' wyAvg ' + R[i].wyAvg); });
+    return {pass:!m.length && !bad.length, detail:(m.length ? 'moved: ' + m.join(', ') + '; ' : '') + bad.join(', ')}; });
+  t('S68: on the quarterly count o.wy raises the release design\'s cost of living by the year\'s within-year level (wyAvg = prAvg > 1, wyF0PY >= fgt0PY)', function(){
+    var c = row('rel'); c.pr = {q:4, k:1, a:0, r:0, h:0, rs:false}; c.o = Object.assign({}, c.o, {wy:true}); var R = tbStudy([c], 1, P, SO, 1)[0];
+    return {pass:R.wyAvg > 1 && Math.abs(R.wyAvg - R.prAvg) < 1e-12 && R.wyF0PY >= R.fgt0PY, detail:'wyAvg ' + R.wyAvg.toFixed(4) + ', fgt0PY ' + R.fgt0PY.toFixed(2) + ' -> ' + R.wyF0PY.toFixed(2)}; });
+  t('S68: run order: a no-programme row gives every output identically whether it runs first or after the release design, C2.2, every row with the production side on (seed 1)', function(){
+    var pd = function(c){ c.pd = true; return c; }, A = tbStudy([pd(row('none'))], 1, P, SO, 1), B = tbStudy([pd(row('rel')), pd(row('c22')), pd(row('none'))], 1, P, SO, 1), C = tbStudy([pd(row('c22')), pd(row('none')), pd(row('rel'))], 1, P, SO, 1);
+    var ks = Object.keys(A[0]._s), b = moved(A[0], B[2], ks).concat(moved(A[0], C[1], ks)), d = moved(B[0], C[2], Object.keys(B[0]._s));
+    return {pass:!b.length && !d.length, detail:(b.length ? 'no programme moved: ' + b.slice(0, 8).join(', ') : '') + (d.length ? ' release moved: ' + d.slice(0, 8).join(', ') : '')}; });
+  return out;
+}
 /* S52 (Nov 2, 2026): the outside supply shock (index.html sxOpts, sxEnergy, sxYear, sxPtf, the preset key p.sx). */
 function sxUnitSuite(){
   var out = [];
@@ -1830,6 +1879,7 @@ function poUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { PO_KEYS, PO_DEFAULTS, poOpts, poEps, poCost, poForg, poUnitSuite });  /* S62 */
+Object.assign(module.exports, { s68UnitSuite, FIN_KEYS, WY_KEYS, finStep, finRes, wyRes });  /* S68 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3957,6 +4007,10 @@ if (require.main === module) {
     console.log('\n=== fxUnitSuite(): S47, the second implementation\'s fixes (harness-only) ===');
     FXU.forEach(function(x){ if (!x.pass) fxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + FXU.length + ' run, ' + fxf + ' failed');
+    var S68U = s68UnitSuite(), s68f = 0;
+    console.log('\n=== s68UnitSuite(): S68, the financing identity, fx.fin, costs at the within-year price level, the per-run reset (harness-only) ===');
+    S68U.forEach(function(x){ if (!x.pass) s68f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + S68U.length + ' run, ' + s68f + ' failed');
     var SXU = sxUnitSuite(), sxf = 0;
     console.log('\n=== sxUnitSuite(): S52, the outside supply shock (harness-only) ===');
     SXU.forEach(function(x){ if (!x.pass) sxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
@@ -4005,7 +4059,7 @@ if (require.main === module) {
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));

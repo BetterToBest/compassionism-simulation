@@ -782,6 +782,22 @@
    },
    "equal": true,
    "seconds": 242
+  },
+  {
+   "from": "36092ab1e7bb6d05fd18abfb07be84920bb9de3fbad9a9ad7e3975c5433de3c5",
+   "to": "889af10cdb0ea6c0aeed33991580c034537b9e617eaaaa38069837c6bac416c2",
+   "date": "2026-11-14",
+   "change": "S68: the financing identity (ACCT 'fin'), fx.fin for the capped contribution's gap ('report', 'money'; 'debt' reserved for S72), costs at the within-year price level (o.wy, reporting only), per-run reset of module state; off identical",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 146
   }
  ]
 }
