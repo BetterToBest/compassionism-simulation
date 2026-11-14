@@ -1305,7 +1305,7 @@ function s68UnitSuite(){
     [false, true].forEach(function(pe){ var c = frozenRow(relMainCfgs(tbPresets(P6))[1]); c.fx = {pthb:true, hb:true, ab:true, sp:true, pe:pe}; var r = tbStudy([c], 1, P6, SO)[0];
       sg.push(Object.keys(r._s).sort().map(function(k){ return k + ':' + Array.prototype.join.call(r._s[k], ','); }).join(';')); });
     return {pass:n[0] > 0 && n[1] === 0 && sg[0] === sg[1], detail:'PTH-books misses with ageing: ' + n[0] + ' without pe, ' + n[1] + ' with; without ageing identical: ' + (sg[0] === sg[1])}; });
-  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 44 places (39 at S68 part 2; S73 added 5, all its own handling of adults outside the labour force: lfOut, lfFlow, lfAcc, the margin's call) (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
+  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 44 places (39 at S68 part 2; S73 added 5, all its own handling of adults outside the labour force: lfOut, lfFlow, lfAcc, the margin\'s call) (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
     var S = builtSource(), k = S.indexOf('/* ==== HARNESS' + '-ONLY CODE ==== */'), n = (S.slice(0, k).match(/\._ret\b/g) || []).length;
     return {pass:n === 44, detail:'reads of a._ret in the engine: ' + n + ' (expected 44)'}; });
   t('S68 part 2: the on-together check (r2PairCheck) passes on the candidate main row and with the price rule counted in quarters, and the run-order test holds (Reference, seed 1)', function(){
