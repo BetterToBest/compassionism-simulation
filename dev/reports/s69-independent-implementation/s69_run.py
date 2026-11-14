@@ -11,6 +11,7 @@ class Run(Engine):
 
     def __init__(self, state, tables, p, seed, o, S, tau0, yMax, spd=None):
         Engine.__init__(self, state, tables)
+        RP.RK = bool(self.FX and self.FX.get('rk'))  # S63 fx.rk
         self.p = p
         self.seed = seed
         self.o = o

@@ -85,3 +85,12 @@ All six runs were done. Phase 2 (reading the engine to explain each remaining di
 - `s69_compare.py`: the comparison tables; `results/compare.md` and `results/compare-*.csv` (every measure, every environment).
 - `GAPS.md`: what the description lacked, and what the check found in the engine.
 - `results/run.txt`, `results/SHA256SUMS`: commands, versions and file hashes.
+
+## Rerun on the frozen main row (Nov 14, 2026, S63 part 3)
+
+Round 2's batch runs a slightly different main row from the one checked above. It has full backing (every programme dollar matched by new output, the design's statement; `o.a` 1), and it has S69's two reporting corrections switched on. The first correction counts earnings below 1e-9 dollars as zero (`fx.ez`, item 22 of GAPS.md). The second ranks the weighted distribution measures on wealth rounded to the cent (`fx.rk`, item 24). S69's own rule was that the program is run again on that row before the batch is dispatched.
+
+- **The packet:** `dev/packets/s69-frozen-row.zip`, built from engine commit `104691f` with `make_s69_reference.js --frozen` (`harness.js` `r2FreezePair`). Seed 1's rows equal the round-2 dry run's main rows (compassionism-sim-results `r2dry-104691f`) on every key.
+- **The program:** two changes, each read from the row's settings and inactive when the setting is off. `fx.ez` sets earnings under 1e-9 dollars to zero at the same point in the year as the engine. `fx.rk` makes the distribution measures rank on the value rounded to the cent, with ties broken by index. On the earlier packet the program gives the same results as before.
+- **The result:** all six runs (no programme and the main row, Reference, Adverse and Stress, seeds 1-500) agree with the engine **exactly**. That is every key in every seed, 958 keys in each no-programme run and 990 in each main-row run, at a relative difference under 1e-9. No key fails the two-standard-error test, and no effect fails it either. On the candidate row, 10 keys of each no-programme run and 296 to 313 keys of each main-row run differed in some seeds. Every one of those differences came from the two rounding-decided cases that the corrections now settle. The Stress supply-path settings rule still holds (`s69_check_capture.py`).
+- **Files:** `results-frozen/` (`compare.md`, `compare-*.csv`, the per-seed results, `run.txt`, `SHA256SUMS`); commands in `results-frozen/run.txt`.

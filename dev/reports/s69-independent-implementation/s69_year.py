@@ -339,6 +339,8 @@ def run_year(R, agents, yr, p, recSt):
             else:
                 annualWageUSD = max(0, lbE0 * lbRaise - lbInc - lbDisp)
             a._lbE0 = lbE0 * (1 + bgG) if bgG > 0 else lbE0
+            if FX and FX.get('ez') and annualWageUSD < 1e-9:
+                annualWageUSD = 0  # S63 fx.ez (GAPS item 22): earnings below 1e-9 dollars count as zero, so rounding no longer decides 'worked'
             if 0 < annualWageUSD < 1e-6 or (annualWageUSD == 0 and lbE0 > 0 and LFS and LFS.pm > 0 and a._lpU is not None and not (a._lpU < LFS.pm)):
                 R.tiny += 1  # diagnostic only: an adult-year whose earnings are zero in exact arithmetic, so rounding decides 'worked'
             if LFS and LFS.ac:

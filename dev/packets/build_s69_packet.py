@@ -6,8 +6,10 @@ Usage: python3 dev/packets/build_s69_packet.py <reference dir> <coverage dir> <c
   config.json:   node dev/packets/make_s69_reference.js config"""
 import hashlib, json, os, sys, zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ref, cov, cfg, out = sys.argv[1:5]
-note = sys.argv[5] if len(sys.argv) > 5 else ''  # optional free-text note for run.txt
+FROZEN = '--frozen' in sys.argv  # S63 part 3: the packet of the frozen main row (make_s69_reference.js ... --frozen; harness.js r2FreezePair)
+argv = [a for a in sys.argv if a != '--frozen']
+ref, cov, cfg, out = argv[1:5]
+note = argv[5] if len(argv) > 5 else ''  # optional free-text note for run.txt
 files = {  # packet path -> bytes
     '00-START-HERE.md': open(os.path.join(ROOT, 'dev/packets/s69-brief.md'), 'rb').read(),
     '01-PROMPT-to-paste.md': open(os.path.join(ROOT, 'dev/packets/s69-prompt.md'), 'rb').read(),
@@ -30,16 +32,18 @@ c0 = json.loads(files['main-row-config.json'])['manifest']
 eng = {(m['engineSha256'], m['harnessSha256'], m['engineBlockSha256']) for m in list(man.values()) + [c0]}
 assert len(eng) == 1, 'the reference files and the config come from different engines'
 sha = lambda b: hashlib.sha256(b).hexdigest()
-run = ['S69 packet: how it was made (S68 part 2)', '',
+FZ = ' --frozen' if FROZEN else ''
+run = ['S69 packet: how it was made (%s)' % ('S63 part 3: the frozen main row' if FROZEN else 'S68 part 2'), '',
        'Engine: index.html and harness.js as at commit %s (the reference script added on top changes no engine file).' % c0['commit'],
        'Engine hashes (runManifest): engineSha256 %s, harnessSha256 %s, engineBlockSha256 %s.' % sorted(eng)[0],
        'Node %s.' % c0['node'], '',
        'Commands (from the repository root):',
-       '  node dev/packets/make_s69_reference.js run ref 1 500 > s69-ref-1-500.json   (and adv, st; one process each)',
-       '  node dev/packets/make_s69_reference.js config > main-row-config.json',
-       '  node dev/packets/make_s69_reference.js coverage 20 <dir>',
-       '  python3 dev/packets/build_s69_packet.py <reference dir> <dir> main-row-config.json dev/packets/s69-main-row.zip', '',
-       'The pair is harness.js r2MainPair(P, \'c22\') with study options r2MainStudy(): the candidate main row (r2MainRow) and its no-programme run.',
+       '  node dev/packets/make_s69_reference.js run ref 1 500%s > s69-ref-1-500.json   (and adv, st; one process each)' % FZ,
+       '  node dev/packets/make_s69_reference.js config%s > main-row-config.json' % FZ,
+       '  node dev/packets/make_s69_reference.js coverage 20 <dir>%s' % FZ,
+       '  python3 dev/packets/build_s69_packet.py <reference dir> <dir> main-row-config.json %s%s' % (os.path.relpath(out, ROOT) if os.path.isabs(out) else out, FZ), '',
+       ('The pair is harness.js r2FreezePair(P, \'c22\') with study options r2MainStudy(): the frozen main row of round 2 (r2MainRow with S69\'s two reporting corrections, fx.ez and fx.rk, on, and the programme run at full backing, o.a 1) and its no-programme run.'
+        if FROZEN else 'The pair is harness.js r2MainPair(P, \'c22\') with study options r2MainStudy(): the candidate main row (r2MainRow) and its no-programme run.'),
        'Reference runs:']
 for e in ('ref', 'adv', 'st'):
     m = man[e]; run.append('  %s: commit %s, dirty %s, %.0f s' % (e, m['commit'], m['dirty'], m['seconds']))

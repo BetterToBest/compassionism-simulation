@@ -1,0 +1,19 @@
+2026-11-14T21:26:56Z start ref base
+ref base seeds 1-500: 500 ran, 0 failed, 326 s
+2026-11-14T21:32:22Z end ref base (exit 0)
+2026-11-14T21:32:22Z start ref main
+ref main seeds 1-500: 500 ran, 0 failed, 384 s
+2026-11-14T21:38:46Z end ref main (exit 0)
+2026-11-14T21:38:46Z start adv base
+adv base seeds 1-500: 500 ran, 0 failed, 294 s
+2026-11-14T21:43:40Z end adv base (exit 0)
+2026-11-14T21:43:40Z start adv main
+adv main seeds 1-500: 500 ran, 0 failed, 397 s
+2026-11-14T21:50:16Z end adv main (exit 0)
+2026-11-14T21:50:16Z start st base
+st base seeds 1-500: 500 ran, 0 failed, 303 s
+2026-11-14T21:55:19Z end st base (exit 0)
+2026-11-14T21:55:19Z start st main
+st main seeds 1-500: 500 ran, 0 failed, 384 s
+2026-11-14T22:01:43Z end st main (exit 0)
+ALLDONE
