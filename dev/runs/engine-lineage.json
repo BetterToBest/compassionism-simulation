@@ -814,6 +814,22 @@
    },
    "equal": true,
    "seconds": 137
+  },
+  {
+   "from": "ce87becf2cd93807c5d8a0f1c1e5fb4e0047f1697f38ffd0f14f43efbce1b9a9",
+   "to": "b23f9e8272f787f813932302fd8ad3afc8b2d3f4b305dc3560432a460ad735bd",
+   "date": "2026-11-14",
+   "change": "S72: the government account (gv), fx.fin debt and cap, the frontier's settings; off identical",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 304
   }
  ]
 }
