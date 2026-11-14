@@ -1,0 +1,19 @@
+S69 phase 1: a third, independent implementation of the candidate main row of round 2 (Python), and its comparison with the engine's references.
+
+Packet: dev/packets/s69-main-row.zip, sha256 c4fc7d631fa40889963862f3f07b8fdf7c1b6f2ca91bff460a27bb5cdab468e9 (built from engine commit 26d9b47cef39785ab40881619945b6ca68d0292c).
+Program: the files listed in SHA256SUMS (written on top of repository commit 707cb9f47ea4405cc76fded48d6b78c78f79f5d5). Python 3.13.18, standard library only.
+Machine: 4 processors; seconds per batch are in each results file.
+
+Commands (from this folder):
+  python3 -I s69_main.py --env ref --row base --seeds 1-500 --jobs 4 --out results/ref-base-1-500.json
+  python3 -I s69_main.py --env ref --row main --seeds 1-500 --jobs 4 --out results/ref-main-1-500.json
+  python3 -I s69_main.py --env adv --row base --seeds 1-500 --jobs 4 --out results/adv-base-1-500.json
+  python3 -I s69_main.py --env adv --row main --seeds 1-500 --jobs 4 --out results/adv-main-1-500.json
+  python3 -I s69_main.py --env st --row base --seeds 1-500 --jobs 4 --out results/st-base-1-500.json
+  python3 -I s69_main.py --env st --row main --seeds 1-500 --jobs 4 --out results/st-main-1-500.json
+  python3 -I s69_compare.py results          (writes results/compare.md and results/compare-*.csv)
+  python3 -I s69_check_capture.py            (the Stress supply-path settings rule, checked on Reference and Adverse)
+  node dump_tables.js <packet>/code/main-row-code-full.js tables.json   (code_tables.json: the tables the configuration file lacks)
+  gzip -9 -n results/*-1-500.json
+
+One seed with a key-by-key comparison: python3 -I s69_main.py --env ref --row main --seed 1 --cmp
