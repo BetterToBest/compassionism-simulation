@@ -6,7 +6,9 @@
  *   node dev/packets/make_s69_reference.js config > config.json              every switch and constant in effect while each run goes (seed 1)
  *   node dev/packets/make_s69_reference.js coverage N OUTDIR                 runs seeds 1..N of all six runs under V8 block coverage and writes the code
  *                                                                            that ran (main-row-code.js: blocks that never ran folded; -full.js: whole)
- * Nothing here changes the engine. S72 and S73 add switches to the candidate main row; rebuild the packet then. */
+ * Nothing here changes the engine. S72 and S73 add switches to the candidate main row; rebuild the packet then.
+ * --frozen (any mode; S63 part 3): the frozen round-2 main row instead, harness.js r2FreezePair (r2MainRow with S69's two reporting corrections fx.ez and
+ * fx.rk on, and the programme run at full backing, o.a 1), with the same study options; the packet S69's program is rerun on before S64 dispatches. */
 'use strict';
 const path = require('path'), fs = require('fs'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');
@@ -30,12 +32,14 @@ function __ser(x, up){ up = up || [];  /* plain data: functions left out, typed 
   if (Array.isArray(x)) return x.map(function(v){ var s = __ser(v, u); return s === undefined ? null : s; });
   var o = {}; Object.keys(x).forEach(function(k){ var s = __ser(x[k], u); if (s !== undefined) o[k] = s; }); return o; }
 /* The pair: row 0 the no-programme run, row 1 the candidate main row (C2.2 design unless DESIGN is 'rel'); study options r2MainStudy. */
-var __design = 'c22';
+var __design = 'c22', __frozen = false;
 function __pair(e){
   var ENV = {ref:FULL_INTEGRATION, adv:ADVERSE_REFERENCE, st:STRESS_TEST}, P = Object.assign({}, ENV[e]);
-  return {P:P, cfg:r2MainPair(P, __design), o:r2MainStudy(), label:['No programme', 'Candidate main row (' + (__design === 'rel' ? 'release design' : 'C2.2 design') + ')']};
+  return {P:P, cfg:(__frozen ? r2FreezePair : r2MainPair)(P, __design), o:r2MainStudy(),
+    label:['No programme', (__frozen ? 'Frozen main row, full backing' : 'Candidate main row') + ' (' + (__design === 'rel' ? 'release design' : 'C2.2 design') + ')']};
 }
 module.exports.design = function(d){ __design = d || 'c22'; };
+module.exports.frozen = function(f){ __frozen = !!f; };
 /* The testbed mode's profile: the debt floor at -$10,000, the NR6 accounting profile, N7_BLEI (TB_PROFILE_G). */
 function __profile(fn){ var wf = CFG.WEALTH_FLOOR, svN = applyNR6(), svG = tbSetG(TB_PROFILE_G); CFG.WEALTH_FLOOR = -10000;
   try { return fn(); } finally { CFG.WEALTH_FLOOR = wf; resetNR6(svN); tbSetG(svG); } }
@@ -47,17 +51,19 @@ module.exports.config = function(e){ var g0 = __ser(__snap()); return __profile(
     return {row:i ? 'main' : 'base', label:X.label[i], rowConfig:__ser(X.cfg[i]), preset:c.p, options:c.o, switchesDifferentFromLoad:d}; }), studyOptions:X.o, env:__ser(X.P), atLoad:g0}; }); };
 module.exports.manifest = function(){ return runManifest(__dirname); };
 `;
-function load(){ const mod = {exports:{}};
+function load0(){ const mod = {exports:{}};
   vm.runInThisContext('(function (require, module, exports, __dirname, __filename, builtSource, csEngineSource) {' + SRC + '\n' + MY + '\n})', {filename:URL})(require, mod, mod.exports, ROOT, path.join(ROOT, 'harness.js'), H.builtSource, H.csEngineSource);
   return mod.exports; }
-const mode = process.argv[2];
-if (mode === 'run'){ const e = process.argv[3], lo = +process.argv[4], hi = +process.argv[5], X = load(), t = Date.now(); X.design(process.argv[6]);
+const FROZEN = process.argv.indexOf('--frozen') >= 0, ARGV = process.argv.filter(function(a){ return a !== '--frozen'; });
+const mode = ARGV[2];
+function load(){ const X = load0(); X.frozen(FROZEN); return X; }
+if (mode === 'run'){ const e = ARGV[3], lo = +ARGV[4], hi = +ARGV[5], X = load(), t = Date.now(); X.design(ARGV[6]);
   const rows = X.run(e, lo, hi);
-  process.stdout.write(JSON.stringify({about:'s69 reference: the candidate main row of round 2 and its no-programme run, per-seed outputs (tbStudy _s arrays), design ' + (process.argv[6] || 'c22') + ', env ' + e + ', seeds ' + lo + '-' + hi, env:e, lo:lo, hi:hi, seconds:(Date.now() - t)/1000, manifest:X.manifest(), rows:rows}));
+  process.stdout.write(JSON.stringify({about:'s69 reference: ' + (FROZEN ? 'the frozen main row of round 2 (r2FreezePair: full backing, fx.ez, fx.rk)' : 'the candidate main row of round 2') + ' and its no-programme run, per-seed outputs (tbStudy _s arrays), design ' + (ARGV[6] || 'c22') + ', env ' + e + ', seeds ' + lo + '-' + hi, env:e, lo:lo, hi:hi, seconds:(Date.now() - t)/1000, manifest:X.manifest(), rows:rows}));
 } else if (mode === 'config'){ const X = load(), out = {about:'s69: switches and constants in effect while each row runs (captured at the tbRun call for seed 1). switchesDifferentFromLoad: top-level values that differ from the engine at load. atLoad: every top-level value at load (functions left out).', manifest:X.manifest(), envs:{}};
   ['ref', 'adv', 'st'].forEach(function(e){ const c = X.config(e); out.envs[e] = {env:c.env, studyOptions:c.studyOptions, rows:c.rows}; out.atLoad = c.atLoad; });
   process.stdout.write(JSON.stringify(out, null, 1));
-} else if (mode === 'coverage'){ const N = +process.argv[3], OUT = process.argv[4], inspector = require('inspector'), S = new inspector.Session(); S.connect();
+} else if (mode === 'coverage'){ const N = +ARGV[3], OUT = ARGV[4], inspector = require('inspector'), S = new inspector.Session(); S.connect();
   S.post('Profiler.enable', function(){ S.post('Profiler.startPreciseCoverage', {callCount:true, detailed:true}, function(){
     const X = load(); ['ref', 'adv', 'st'].forEach(function(e){ X.run(e, 1, N); });
     S.post('Profiler.takePreciseCoverage', function(err, res){ if (err) throw err;

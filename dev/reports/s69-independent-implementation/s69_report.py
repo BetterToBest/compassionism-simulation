@@ -1,7 +1,7 @@
 """S69: the measures (section 9 and every part's own keys). Reporting only: nothing here moves an adult or draws a number."""
 import math
 from s69_engine import NS, INF
-from s69_rng import median_of, quantile_of, gini_of, gini_neg
+from s69_rng import median_of, quantile_of, gini_of, gini_neg, js_round
 
 
 def tb_new_acc():
@@ -593,7 +593,13 @@ def dm_new(o):
     return NS(o={} if o is True else o, snap={}, pyW=0.0, pyC=0.0, pyY=0.0, mob=None)
 
 
+RK = False  # S63 fx.rk (GAPS item 24), set by Run from the row's FX: the weighted measures rank on the value rounded to the cent, ties by index
+
+
 def dm_sort(v):
+    if RK:
+        k = [js_round(x * 100) for x in v]
+        return sorted(range(len(v)), key=lambda i: (k[i], i))
     return sorted(range(len(v)), key=lambda i: (v[i], i))
 
 
