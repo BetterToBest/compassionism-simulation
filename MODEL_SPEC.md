@@ -334,6 +334,7 @@ Claude's recommendation for the design freeze's main-row decision (research-upda
 - bargaining at pass-through 0 with the markdown 1/1.21: `bg: {pi: 0, m: 1/1.21}` (identical to off; 14.9);
 - open PTF access with growth: `pa: 'open'` (14.1); PTF running costs at their main readings: `po: true` (14.2);
 - the financing identity reported and the PTH estate correction: `fx: {pthb, hb, ab, sp, fin: 'report', pe: true}` (14.10);
+- in the frozen round-2 main row (S63, `harness.js` `r2FreezePair`; ledger D25, D26), also S69's two reporting corrections `fx.ez` and `fx.rk` and full backing (`o.a` 1, the design's statement) on the programme run;
 - today's price rule (no `pr`; 14.3 describes the capacity rule, a labelled reading);
 - study options `dm`, `rep52`, `wtm`, `mf`, `wy` (reporting only; 14.11). The programme row is the C2.2 design (13.4), paid for by the Source (`fin: 'source'`, `a` 0).
 S72 added the government account (`gv: {}`, 14.14) and S73 the yearly flows and the participation margin (`lf.fl`, `lf.pm`, 14.15).

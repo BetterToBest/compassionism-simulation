@@ -4358,7 +4358,14 @@ var AUD = null;
  *  sp    the essentials' supply path (each year's capacity) from the reported no-programme testbed run of the same seed, environment, population and
  *        rules (GAPS item 2), instead of the separate price-only run (s3BaseS: no job loss, safety net, labour response or wage indexation, and always
  *        500 adults). See tbBaseS. It is a study-level reading in effect: every row that sets it gets the path of the same no-programme run.
- * fx: true is all four parts. */
+ *  ez    (S63; S69 GAPS item 22) earnings below 1e-9 dollars a year count as zero. Under the participation margin (lf.pm) a worker whose whole year's
+ *        earnings go to the income effect is left with a floating-point remainder of about 1e-10 dollars, and its sign decided whether the year counted as
+ *        worked (emp, lfPart, zero, next year's EITC test, the working adults' median wage). Moves no headline by more than 1e-5 (S69).
+ *  rk    (S63; S69 GAPS item 24) the weighted distribution measures rank each variable rounded to the cent, ties by the adult's index: dm (shares,
+ *        percentiles, fifths and mobility, median debt) and the weighted tail's measures (wtm: wtGini, shares, median), which share dmSort. Households held at the borrowing limit end within about 1e-11 of it on either side, and the order of those
+ *        near-ties decided which adult fell on which side of a fifth's edge. Ranking only: the values read are unrounded, so a percentile (wtMedE
+ *        included) moves by less than a cent. Reporting only.
+ * fx: true is the first four parts (pthb, hb, ab, sp), as before S63; ez and rk are named. */
 var FX = null;
 /* v5.3 B7 (Oct 7, 2026; plan item B7, "FBS lambda -> FBS50"; dev/DECISIONS.md Session 39, "B7"): FBS50, the advancement rule in interpretable units. The
  * chance of advancing an octave in a year is 1 - exp(-lambda x FBS) (BLEI paper, Index IV); FBS50 = ln 2 / lambda is the monthly free bandwidth surplus at
@@ -6357,7 +6364,7 @@ function runYear(agentSet,yr,p,recSt){
         bgG=bgRaise(bgO,bgEf,BARGAIN);a._bgG=bgG;if(POS){POS.gN+=lbE0*bgG;POS.gD+=lbE0;}var bgE1=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);if(bgG>0)lbRaise*=Math.pow(1+bgG,1+LABOR.eps-LABOR.rho);  // the wage and the hours response to it at the one elasticity (guardrail 7)
         if(BGS)bgAcc(a,yr,BGS.T,lbE0,bgG,bgO,bgEf,Math.max(1,LFS&&a._lf&&!(a._lwNB>0)?1:a.wage/a._lwNB)*(1+lbBiz)*(ESON?1+a._esX:1),Math.max(0,lbE0*lbRaise-lbInc-lbDisp)-bgE1,Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1));}
       else if(BARGAIN)a._bgG=0;  // S60: reporting state (the year's raise; 0 for a non-worker)
-      annualWageUSD=LFS&&LFS.pm>0&&lbE0>0&&!a._ret?lfPM(a,lbE0*lbRaise-lbDisp,lbInc,(LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC+(tbQ?LABOR.rho*tbQ.O:0)+(SPON&&a._spOwn>0?LABOR.rho*a._spOwn:0))*(emQ?1-emQ.out:1),emQ,yr,agP):Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=bgG>0?lbE0*(1+bgG):lbE0;if(LFS&&LFS.ac)lfAcc(a,annualWageUSD,yr);  // S73: the programme's participation margin (lf.pm) and the flows' tallies  // session 8 (A5): earnings with no response, for the hours measure (S60: at the bargained wage)
+      annualWageUSD=LFS&&LFS.pm>0&&lbE0>0&&!a._ret?lfPM(a,lbE0*lbRaise-lbDisp,lbInc,(LABOR.rho*lbU+LABOR.rhoBU*lbBU+LABOR.rhoR*lbR+LABOR.rho*(1-LABOR.delta)*lbC+(tbQ?LABOR.rho*tbQ.O:0)+(SPON&&a._spOwn>0?LABOR.rho*a._spOwn:0))*(emQ?1-emQ.out:1),emQ,yr,agP):Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=bgG>0?lbE0*(1+bgG):lbE0;if(FX&&FX.ez&&annualWageUSD<1e-9)annualWageUSD=0;if(LFS&&LFS.ac)lfAcc(a,annualWageUSD,yr);  // S73: the programme's participation margin (lf.pm) and the flows' tallies  // session 8 (A5): earnings with no response, for the hours measure (S60: at the bargained wage)
       if(tbQ&&LABOR.acc)LABOR.acc.cash+=LABOR.rho*tbQ.V;
       if(LABOR.acc){var LA=LABOR.acc;LA.n++;if(a.inCCO)LA.nP++;LA.E0+=lbE0;LA.E+=annualWageUSD;LA.raise+=lbE0*(lbRaise-1);LA.cash+=LABOR.rho*lbU;LA.bu+=LABOR.rhoBU*lbBU;LA.buR+=LABOR.rhoR*lbR;
         LA.rent+=LABOR.rho*(1-LABOR.delta)*lbC;LA.disp+=lbDisp;LA.C+=lbC;LA.U+=lbU+lbBU;LA.projH+=lbE0>0?lbDisp/lbE0:0;if(annualWageUSD===0&&lbE0>0)LA.zero++;}
@@ -7338,7 +7345,8 @@ var DM_KEYS = (function(){ var k = [];
     DM_GRID.forEach(function(q){ k.push('dmWp' + q + s); k.push('dmYp' + q + s); }); });
   k.push('dmLsPY', 'dmLcPY', 'dmMobN'); for (var i = 0; i < 5; i++) for (var j = 0; j < 5; j++) k.push('dmMob' + i + j); return k; })();
 function dmNew(o){ return {o:o === true ? {} : o, snap:{}, pyW:0, pyC:0, pyY:0, mob:null}; }
-function dmSort(v){ var idx = v.map(function(x, i){ return i; }); idx.sort(function(a, b){ return v[a] - v[b] || a - b; }); return idx; }
+function dmSort(v){ var idx = v.map(function(x, i){ return i; }), k = FX && FX.rk ? v.map(function(x){ return Math.round(x*100); }) : v;  /* S63 fx.rk: rank on the cent */
+  idx.sort(function(a, b){ return k[a] - k[b] || a - b; }); return idx; }
 /* the weighted quantile: order statistic k sits at (cumulative weight - its weight)/(total - mean weight), which is type 7 (quantileOf) at weight 1 */
 function dmQuantiles(v, w, qs){ var n = v.length; if (!n) return qs.map(function(){ return 0; });
   var idx = dmSort(v), W = 0, p = [], c = 0; idx.forEach(function(i){ W += w[i]; });
