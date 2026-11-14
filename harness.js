@@ -1273,7 +1273,7 @@ function s68UnitSuite(){
       if (['tax', 'hybrid', 'source'].indexOf(fn) >= 0){ if (Math.abs(b.finGap - b.finGapM) > 1e-9*Math.max(1, b.finPay) || b.finGapSh !== 0) bad.push(fn + ': gap left ' + (b.finGap - b.finGapM)); }
       else { var m = moved(a, b, TB_KEYS.concat(FIN_KEYS)); if (m.length) bad.push(fn + ' moved ' + m.slice(0, 4).join(', ')); } });
     var flat = R[2]; return {pass:!bad.length && flat.finGapSh > 10, detail:(bad.join('; ') || '') + ' (C2.2 flat contribution: ' + flat.finGapSh.toFixed(1) + '% of payout unpaid without fx.fin)'}; });
-  t('S68: fx.fin refuses \'debt\' (built in S72) and an unknown reading', function(){
+  t('S68: fx.fin refuses \'debt\' without the government account (S72: gv) and an unknown reading', function(){
     var e = []; ['debt', 'loan'].forEach(function(f){ try { tbStudy([row('rel', 'tax', f)], 1, Object.assign({}, P, {years:2}), SO, 1); e.push(f + ' ran'); } catch (x){} });
     return {pass:!e.length, detail:e.join(', ')}; });
   t('S68: o.wy is reporting only and equals the published measure when the year is not split (no-programme run and release design, seed 1)', function(){
@@ -1903,6 +1903,59 @@ function poUnitSuite(){
 }
 Object.assign(module.exports, { PO_KEYS, PO_DEFAULTS, poOpts, poEps, poCost, poForg, poUnitSuite });  /* S62 */
 Object.assign(module.exports, { s68UnitSuite, FIN_KEYS, WY_KEYS, finStep, finRes, wyRes });  /* S68 */
+Object.assign(module.exports, { GV_KEYS, GV_DEFAULTS, GV_US, gvOpts });  /* S72 */
+/* S72 (Nov 14, 2026): the government account (index.html gvStep, GV_KEYS; row option gv), fx.fin 'debt' and 'cap', the frontier's settings
+ * (research-update prereg/2026-11-s72-government-budget.md). */
+function s72UnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), A0 = ACCT;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); ACCT = A0; TB = null; LABOR = null; PRICE = null; FX = null; GOV = null; GVS = null; } }
+  var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500}), SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), MS = r2MainStudy();
+  function frozen(d){ var c = relMainCfgs(tbPresets(P)).map(function(c){ c.sc = SPEND_SOURCED; c.sn = {abawd:true, slope:true}; c.lt = {s:'all', m:'all'}; return frozenRow(c); });
+    var x = d === 'none' ? c[0] : d === 'c22' ? c22Design(c[1]) : c[1]; x.fx = {pthb:true, hb:true, ab:true, sp:true, fin:'report'}; return x; }
+  function main(d, fin, f, gv){ var c = r2MainPair(P, d === 'none' ? 'c22' : d)[d === 'none' ? 0 : 1]; if (fin) c.o = Object.assign({}, c.o, {fin:fin}); if (f) c.fx.fin = f; if (gv) c.gv = gv; else delete c.gv; return c; }  /* gv only where a test sets it (the main row carries gv {}) */
+  function moved(A, B, keys){ return keys.filter(function(k){ return A._s[k] && B._s[k] && A._s[k][0] !== B._s[k][0]; }); }
+  var K = TB_KEYS.concat(FIN_KEYS);
+  t('S72: gv {} changes no existing output without the weighted tail (frozen rows: release design under the Source, C2.2 flat contribution with fx.fin money; seed 1)', function(){
+    var a = frozen('rel'), b = frozen('rel'), c = frozen('c22'), d = frozen('c22'); c.o = Object.assign({}, c.o, {fin:'tax'}); d.o = Object.assign({}, d.o, {fin:'tax'}); c.fx.fin = 'money'; d.fx.fin = 'money'; b.gv = {}; d.gv = {sh:1, base:'w'};
+    var R = tbStudy([a, b, c, d], 1, P, SO, 1), m = moved(R[0], R[1], K).concat(moved(R[2], R[3], K));
+    return {pass:!m.length && R[3].gvPay > 0, detail:m.length ? 'moved: ' + m.slice(0, 8).join(', ') : 'C2.2 payout ' + R[3].gvPay.toFixed(0) + ' per adult-year'}; });
+  t('S72: with the weighted tail (candidate main row), gv {wb: false} changes no existing output (C2.2 flat contribution, fx.fin money; seed 1)', function(){
+    var R = tbStudy([main('c22', 'tax', 'money'), main('c22', 'tax', 'money', {wb:false})], 1, P, MS), m = moved(R[0], R[1], K);
+    return {pass:!m.length, detail:m.length ? 'moved: ' + m.slice(0, 8).join(', ') : ''}; });
+  t('S72: the government account\'s identity holds every year on every reading (report, money, debt fixed and rule, cap), both designs, Source and flat contribution (seed 1)', function(){
+    var rs = [main('none', null, null, {})]; ['rel', 'c22'].forEach(function(d){ rs.push(main(d, null, 'report', {})); ['report', 'money', 'debt', 'cap'].forEach(function(f){ rs.push(main(d, 'tax', f, {})); }); rs.push(main(d, 'tax', 'debt', {r:'rule'})); rs.push(main(d, 'tax', 'debt', {sh:0.5, base:'all', ip:'borrow'})); });
+    ACCT = acctNew(); var R = tbStudy(rs, 1, P, MS), A = ACCT, bad = []; ACCT = null;
+    R.forEach(function(r, i){ Object.keys(r._s).forEach(function(k){ if (!isFinite(r._s[k][0])) bad.push(i + ':' + k); }); });
+    return {pass:A.n.gov >= rs.length*P.years && !A.nFail.gov && !A.nFail.fin && !bad.length, detail:'checks ' + A.n.gov + ', failed ' + (A.nFail.gov || 0) + ' (fin ' + (A.nFail.fin || 0) + '), worst ' + (A.worst.gov || 0).toExponential(2) + (bad.length ? '; non-finite ' + bad.slice(0, 4).join(', ') : '')}; });
+  t('S72: fx.fin \'debt\' borrows the unpaid part and makes no new money for it; \'money\' borrows nothing (C2.2 flat contribution, seed 1)', function(){
+    var R = tbStudy([main('c22', 'tax', 'debt', {}), main('c22', 'tax', 'money', {})], 1, P, MS), d = R[0], m = R[1];
+    return {pass:d.finGapM === 0 && d.gvMon === 0 && d.gvBor > 0 && Math.abs(d.finGapSh) < 1e-9 && m.gvBor === 0 && m.gvInt === 0 && m.gvMon > 0 && d.endoAnn < m.endoAnn,
+      detail:'debt: borrowed ' + d.gvBor.toFixed(0) + ', inflation ' + (100*d.endoAnn).toFixed(2) + '%; money: new money ' + m.gvMon.toFixed(0) + ', inflation ' + (100*m.endoAnn).toFixed(2) + '%'}; });
+  t('S72: with a zero real rate, no premium and interest borrowed, the last year\'s debt is the sum of the yearly deficits before interest, in year-0 dollars (C2.2 flat contribution, seed 1)', function(){
+    var r = tbStudy([main('c22', 'tax', 'debt', {rr:0, dk:0, ip:'borrow'})], 1, P, MS)[0], sum = (r.gvDef - r.gvInt)*P.years;
+    return {pass:Math.abs(r.gvDebt - sum) <= 1e-9*Math.max(1, sum) && r.gvDebt > 0 && Math.abs(r.gvRReal) < 1e-9, detail:'debt ' + r.gvDebt.toFixed(2) + ' against ' + sum.toFixed(2) + '; mean real rate ' + r.gvRReal.toExponential(2) + '%'}; });
+  t('S72: gv.sh 0: the contribution raises nothing and the deficit is the payout (C2.2 flat contribution, fx.fin money, seed 1)', function(){
+    var r = tbStudy([main('c22', 'tax', 'money', {sh:0})], 1, P, MS)[0];
+    return {pass:r.gvTax === 0 && r.tauMean === 0 && Math.abs(r.gvDef - r.gvPay) <= 1e-9*r.gvPay && r.gvPay > 0, detail:'payout ' + r.gvPay.toFixed(0) + ', deficit ' + r.gvDef.toFixed(0) + ', tax ' + r.gvTax}; });
+  t('S72: fx.fin \'cap\' with the higher cap equal to the cap gives \'money\' exactly (C2.2 flat contribution, seed 1)', function(){
+    var R = tbStudy([main('c22', 'tax', 'cap', {capHi:0.9}), main('c22', 'tax', 'money', {})], 1, P, MS), m = moved(R[0], R[1], K.concat(GV_KEYS));
+    var R2 = tbStudy([main('c22', 'tax', 'cap', {capHi:0.99})], 1, P, MS)[0];
+    return {pass:!m.length && R2.tauMean > R[1].tauMean, detail:(m.length ? 'moved: ' + m.slice(0, 6).join(', ') + '; ' : '') + 'mean rate at cap 0.9 ' + R[1].tauMean.toFixed(3) + ', at 0.99 ' + R2.tauMean.toFixed(3)}; });
+  t('S72: the bases: in a two-year run every base sets the same rate (year 0 has no lagged income) and wages plus conversion, and all money income, raise at least as much as wages', function(){
+    var P2 = Object.assign({}, P, {years:2}), R = tbStudy(['w', 'wc', 'all'].map(function(b){ var c = r2MainPair(P2, 'c22')[1]; c.o = Object.assign({}, c.o, {fin:'tax'}); c.fx.fin = 'money'; c.gv = {base:b, sh:0.5}; return c; }), 1, P2, MS);
+    return {pass:R[0].tauMean === R[1].tauMean && R[1].tauMean === R[2].tauMean && R[1].gvTax >= R[0].gvTax && R[2].gvTax >= R[1].gvTax && R[2].gvTax > R[0].gvTax,
+      detail:'rates ' + R.map(function(r){ return r.tauMean.toFixed(4); }).join(' / ') + '; raised ' + R.map(function(r){ return r.gvTax.toFixed(0); }).join(' / ')}; });
+  t('S72: refusals come before any switch is set: fx.fin \'debt\' or \'cap\' without gv, \'debt\' with a progressive tax, an unknown base; a no-programme row is unchanged after them', function(){
+    var e = [], A = tbStudy([main('none')], 1, P, MS);
+    [function(){ return main('c22', 'tax', 'debt'); }, function(){ return main('c22', 'tax', 'cap'); }, function(){ var c = main('c22', 'tax', 'money', {base:'x'}); return c; }].forEach(function(f, i){ try { tbStudy([f()], 1, P, MS); e.push(i + ' ran'); } catch (x){} });
+    try { var c = main('c22', 'tax', 'debt', {}); c.o = Object.assign({}, c.o, {taxBase:'prog'}); tbStudy([c], 1, Object.assign({}, P, {years:2}), MS); e.push('prog ran'); } catch (x){}
+    var B = tbStudy([main('none')], 1, P, MS), m = moved(A[0], B[0], Object.keys(A[0]._s));
+    return {pass:!e.length && !m.length && GOV === null, detail:(e.join(', ') || 'all refused') + (m.length ? '; moved: ' + m.slice(0, 5).join(', ') : '')}; });
+  return out; }
+Object.assign(module.exports, { s72UnitSuite });  /* S72 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3622,9 +3675,10 @@ Object.assign(module.exports, { FROZEN, SPEND_FROZEN, frozenRow, c22Design });  
  * force (lf; S61) and the borrowing limit for ordinary spending at $2,500 (dr; S61); bargaining at pass-through 0 with the markdown 1/1.21 (bg; S60:
  * identical to off); open PTF access with growth (pa; S55); PTF running costs and who pays at their main readings (po; S62); the financing identity reported
  * (fx.fin 'report'; S68: moves no figure under the Source); today's price rule (no pr; S67 section 9). Applied to both runs of a pair. Study options:
- * R2_MAIN_STUDY (distribution measures dm, the money-flow table mf, the tail's measures wtm, costs at the within-year price level wy). S72 and S73 add
- * their switches here once built; the packet for S69 is rebuilt then. */
-var R2_MAIN = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}, rt:{bo:true, ci:true, ng:'base', cr:true}, wt:true, lf:{}, dr:{lim:2500}, bg:{pi:0, m:1/1.21}, pa:'open', po:true};
+ * R2_MAIN_STUDY (distribution measures dm, the money-flow table mf, the tail's measures wtm, costs at the within-year price level wy). S72 added the
+ * government account (gv {}: reporting, and the contribution's books at each adult's weight, which moves the Source rows' small contribution because
+ * the weighted tail is on); S73 adds its switch here once built; the packet for S69 is rebuilt then. */
+var R2_MAIN = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}, rt:{bo:true, ci:true, ng:'base', cr:true}, wt:true, lf:{}, dr:{lim:2500}, bg:{pi:0, m:1/1.21}, pa:'open', po:true, gv:{}};  /* S72: the government account (gv, with its weighted books) */
 var R2_MAIN_STUDY = {dm:true, rep52:true, wtm:true, mf:true, wy:true};
 function r2MainRow(c){ Object.assign(c, JSON.parse(JSON.stringify(R2_MAIN))); c.bg.m = R2_MAIN.bg.m; frozenRow(c); c.fx = {pthb:true, hb:true, ab:true, sp:true, fin:'report', pe:true}; return c; }
 /* The pair (row 0 no programme, row 1 the design: 'c22' the C2.2 design, 'rel' the release design) and the study options, environment P. */
@@ -3644,6 +3698,7 @@ var R2_ALT = [
   ['bd', 'the velocity drift (bd 0.132)', function(c){ r2Pr(c, {bd:0.132}, R2_TODAY); }],
   ['bg', 'bargaining pass-through 0.03', function(c){ c.bg = {pi:0.03, m:R2_MAIN.bg.m}; }],
   ['fin', 'the flat contribution with its unpaid part as new money (programme run)', function(c, i){ if (i) c.o = Object.assign({}, c.o, {fin:'tax'}); c.fx.fin = 'money'; }],
+  ['gv', 'the flat contribution with its unpaid part borrowed (fx.fin debt, programme run; S72)', function(c, i){ if (i){ c.o = Object.assign({}, c.o, {fin:'tax'}); c.fx.fin = 'debt'; } }],
   ['po', 'PTF prices rise to running cost (po pay price)', function(c){ c.po = {pay:'price'}; }],
   ['pa', 'no demand ceiling (pa dem 1)', function(c){ c.pa = {dem:1}; }],
   ['rt', 'no debt relief (rt chi 1, the creditor side off, as S59 and S71 run it)', function(c){ c.rt.chi = 1; c.rt.cr = false; }],
@@ -3664,8 +3719,10 @@ function r2Own(r, ids, i){ var bad = [], v = function(k){ return r[k]; };
   if (r.crGap !== undefined && !(Math.abs(r.crGap) <= 1e-6*Math.max(1, Math.abs(r.crRel || 0)))) bad.push('cr: ledger gap ' + r.crGap);
   if (r.crUn !== undefined && !(Math.abs(r.crUn) <= 0.05*Math.max(1, Math.abs(r.crRel || 0), Math.abs(r.crBook || 0)))) bad.push('cr: unplaced claims ' + r.crUn + ' over 5% of the ledger');  /* S71's rule: unplaced claims at most 5% of the relief (or of the book loss, where there is no relief: rt chi 1) */
   if (r.finGap !== undefined && !(r.finGap >= -1e-9)) bad.push('fin: negative unpaid part');
-  if (ids.indexOf('fin') >= 0 && i && !(Math.abs(r.finGapSh || 0) < 1e-12 && Math.abs(r.finGapM - r.finGap) <= 1e-9*Math.max(1, r.finGap))) bad.push('fin: money reading leaves ' + r.finGapSh + '% unpaid');
+  if (ids.indexOf('fin') >= 0 && ids.indexOf('gv') < 0 && i && !(Math.abs(r.finGapSh || 0) < 1e-12 && Math.abs(r.finGapM - r.finGap) <= 1e-9*Math.max(1, r.finGap))) bad.push('fin: money reading leaves ' + r.finGapSh + '% unpaid');
   if (r.lfShare !== undefined && !(r.lfShare >= 0 && r.lfShare <= 100)) bad.push('lf: share outside 0-100%');
+  if (r.gvPay !== undefined && !(r.gvDebt >= 0 && isFinite(r.gvDebt))) bad.push('gv: debt below zero or not finite');
+  if (ids.indexOf('gv') >= 0 && i && !(r.gvMon === 0 && r.gvBor > 0 && Math.abs(r.finGapSh) < 1e-9)) bad.push('gv: the debt reading made new money or left a part unpaid');
   if (r.poSub !== undefined && ids.indexOf('po') >= 0 && i && Math.abs(r.poSub) > 1e-9) bad.push('po: pay price still subsidises ' + r.poSub);
   if (r.poSub !== undefined && !(r.poSub >= -1e-9)) bad.push('po: negative subsidy');
   if (r.wtW !== undefined && !(r.wtW > 0 && r.wtTailW >= 0)) bad.push('wt: weights');
@@ -3690,7 +3747,7 @@ function r2PairCheck(env, seeds, opt){ opt = opt || {}; var E = {ref:FULL_INTEGR
           var dBad = S.d.filter(function(d){ return d.n !== d.exp; });
           x.acct = S.A; x.draws = {runs:S.d.length, bad:dBad.length, first:dBad[0] || null}; x.nonFinite = nf; x.own = own;
           x.pass = S.A.nFail === 0 && dBad.length === 0 && nf.length === 0 && own.length === 0;
-          x.keys = {}; ['fgt0PY', 'pov', 'endoAnn', 'cost', 'finGapSh', 'poSub', 'paSh', 'wtT1E', 'prAvg', 'lfShare'].forEach(function(k){ x.keys[k] = [S.R[0][k], S.R[1][k]]; }); }
+          x.keys = {}; ['fgt0PY', 'pov', 'endoAnn', 'cost', 'finGapSh', 'poSub', 'paSh', 'wtT1E', 'prAvg', 'lfShare', 'gvDebtY', 'gvShR'].forEach(function(k){ x.keys[k] = [S.R[0][k], S.R[1][k]]; }); }
         catch (e){ x.pass = false; x.threw = e.message; }
         x.secs = (Date.now() - t)/1000; out.rows.push(x); if (opt.log) opt.log(x); });
       var last = sig(study(r2MainPair(P, opt.design)).R), none1 = sig(study([r2MainPair(P, opt.design)[0]]).R);
@@ -4116,6 +4173,10 @@ if (require.main === module) {
     console.log('\n=== s68UnitSuite(): S68, the financing identity, fx.fin, costs at the within-year price level, the per-run reset (harness-only) ===');
     S68U.forEach(function(x){ if (!x.pass) s68f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + S68U.length + ' run, ' + s68f + ' failed');
+    var S72U = s72UnitSuite(), s72f = 0;
+    console.log('\n=== s72UnitSuite(): S72, the government account, fx.fin debt and cap, the financing frontier (harness-only) ===');
+    S72U.forEach(function(x){ if (!x.pass) s72f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + S72U.length + ' run, ' + s72f + ' failed');
     var SXU = sxUnitSuite(), sxf = 0;
     console.log('\n=== sxUnitSuite(): S52, the outside supply shock (harness-only) ===');
     SXU.forEach(function(x){ if (!x.pass) sxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
@@ -4164,7 +4225,7 @@ if (require.main === module) {
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));

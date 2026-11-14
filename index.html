@@ -4788,10 +4788,10 @@ var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutr
 var FIN_KEYS = ['finPay', 'finTax', 'finMoney', 'finMatch', 'finGap', 'finSur', 'finGapM', 'finGapSh', 'finCapYrs'];
 function finStep(L, o, C, A, need, U, extra, gRun, bkP, bkU, T, tauUsed){
   var F = FX && FX.fin, cuts = (1 - o.eP)*(C.cutPT - C.cutFree + C.cutG), taxed = o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source', gp = 0, sr = 0, gm = 0, P, M, B, G;
-  if (F === 'debt') throw new Error("fx.fin 'debt' (government borrowing) is built in S72");
-  if (F && F !== 'report' && F !== 'money') throw new Error('fx.fin: unknown reading ' + F);
+  if (F && F !== 'report' && F !== 'money' && F !== 'debt' && F !== 'cap') throw new Error('fx.fin: unknown reading ' + F);
+  if ((F === 'debt' || F === 'cap') && (!GOV || !taxed || o.taxBase)) throw new Error("fx.fin '" + F + "' needs gv (the government account, S72) and a contribution that pays need without a taxBase (the progressive and land taxes already make their unpaid part new money)");
   if (taxed){ gp = Math.max(0, need - C.tax); sr = Math.max(0, C.tax - need); }
-  if (F === 'money' && (o.fin === 'hybrid' || o.fin === 'source' || (o.fin === 'tax' && !o.taxBase))){ gm = gp; U += gp; }
+  if ((F === 'money' || F === 'cap') && (o.fin === 'hybrid' || o.fin === 'source' || (o.fin === 'tax' && !o.taxBase))){ gm = gp; U += gp; }  /* S72: 'cap' (a higher rate cap) makes what the higher cap cannot raise new money; 'debt' leaves it to the government account (gvStep), which borrows it */
   if (o.fin === 'tax' && o.taxBase) gm = gp;  /* already new money (v5.2 step 7) */
   M = U - extra;
   if (o.fin === 'tax'){ P = need; B = 0; G = gp - gm; }
@@ -4803,11 +4803,64 @@ function finStep(L, o, C, A, need, U, extra, gRun, bkP, bkU, T, tauUsed){
   var Tx = taxed ? C.tax : 0;
   if (ACCT) acctChk('fin', L.yr, P - Tx - M - B - G + sr, Math.abs(P) + Math.abs(Tx) + Math.abs(M) + Math.abs(B) + Math.abs(G), o.fin);
   if (F){ var Q = L.fi || (L.fi = {P:0, T:0, M:0, B:0, G:0, S:0, GM:0, cap:0}), i = C.idx || 1;
-    Q.P += P/i; Q.T += Tx/i; Q.M += M/i; Q.B += B/i; Q.G += (taxed ? gp : G)/i; Q.S += sr/i; Q.GM += gm/i; if (o.fin === 'tax' && !o.taxBase && tauUsed >= o.tauMax - 1e-12) Q.cap++; }
+    Q.P += P/i; Q.T += Tx/i; Q.M += M/i; Q.B += B/i; Q.G += (taxed ? gp : G)/i; Q.S += sr/i; Q.GM += gm/i; if (o.fin === 'tax' && !o.taxBase && tauUsed >= (TB.capE !== undefined ? TB.capE : o.tauMax) - 1e-12) Q.cap++;
+    if (F === 'debt') Q.GB = (Q.GB || 0) + gp/i; }  /* S72: the part borrowed */
   return U; }
 function finRes(r, Q, NY){ Q = Q || {P:0, T:0, M:0, B:0, G:0, S:0, GM:0, cap:0};
   r.finPay = Q.P/NY; r.finTax = Q.T/NY; r.finMoney = Q.M/NY; r.finMatch = Q.B/NY; r.finGap = Q.G/NY; r.finSur = Q.S/NY; r.finGapM = Q.GM/NY;
-  r.finGapSh = Q.P > 0 ? (Q.G - Q.GM)/Q.P*100 : 0; r.finCapYrs = Q.cap; return r; }
+  r.finGapSh = Q.P > 0 ? (Q.G - Q.GM - (Q.GB || 0))/Q.P*100 : 0; r.finCapYrs = Q.cap; return r; }
+/* S72 (Nov 14, 2026; research-update prereg/2026-11-s72-government-budget.md; dev/reports/s72-government-budget.md): THE GOVERNMENT ACCOUNT (row option gv,
+ * switch GOV; off, nothing below is read and no figure moves). Each year, in the year's dollars: the payout the government finances (need: what a
+ * contribution is meant to pay; under the Source the Source's own payout stays new money and backed output, FIN_KEYS), the contribution raised (C.tax),
+ * interest on programme debt, the deficit (need + interest - contribution) and how it is met: new money (fx.fin 'money' or 'cap', and taxBase rows),
+ * borrowing (fx.fin 'debt'), unpaid (otherwise), less a surplus. Identity (ACCT id 'gov'): need + interest - tax = money + borrowing + unpaid - surplus.
+ * Rates (fx.fin 'debt'): r 'fixed' (main) pays the real rate rr (FRED DFII10 mean, as SAVE_DEFAULTS) plus a premium dk x (programme debt / GDP per adult)
+ * (Laubach 2003: about 4 basis points per point of debt to GDP), so the debt keeps its real value; r 'rule' sets the year's nominal rate from last year,
+ * max(0, rs + pi + a(pi - pt) + b gap) plus the premium (Taylor 1993's weights as the Federal Reserve writes the rule; gap: the log of the environment's
+ * recession income multiplier, 0 in calm years; Claude's reading: hours chosen in response to the programme move potential output, so they are not a
+ * gap), and this year's inflation erodes it. ip 'tax' (main): next year's contribution targets sh x need plus this year's interest, up to the cap;
+ * 'borrow': interest is borrowed. Interest goes to bondholders outside the modelled incomes (a cautious modelling assumption). fx.fin 'cap': the rate cap
+ * is capHi; what it cannot raise is new money. The frontier (flat contribution): sh, the share of need the rate is set to raise; base 'w' wages (today),
+ * 'wc' wages plus conversion proceeds, 'all' the engine's money income (tbCashIncome); the parts other than wages are charged on last year's amounts,
+ * unindexed, and enter the labour response as an income effect only (rule 7). wb (default on with gv; found by the build): the contribution's books (its
+ * base and what it raised) count each adult at its weight a._w, so that with the weighted tail (wt) the tail's few adults, who stand for very few people,
+ * do not carry a third of the wage base and nearly all capital income; without wt every weight is 1 and nothing moves. The payout, prices and every
+ * decision stay unweighted (S59's rule). Reporting: today's debt per adult (GV_US.D0, debt held by the public at
+ * Sept 30, 2025 over adults; sources/s72_government.py), its fixed-coupon share fc eroded at each year's inflation, with no repricing (gvEr, an upper
+ * bound) and with 1/m of it repricing a year (gvErM; m a design parameter). Debt ratios use GDP per adult of fiscal 2025 (Y0), held fixed in real
+ * terms (the model has no GDP). Keys GV_KEYS (with gv only): per adult-year in year-0 dollars unless stated; gvDebt programme debt per adult at the
+ * last year; gvDebtY, gvDebtY15 it as % of GDP per adult at the last year and five years before; gvRate, gvRReal mean nominal and real rate (%);
+ * gvIntSh interest over the payout (%); gvShR the contribution over the payout (%); gvCapYrs years at the effective cap; gvY100 the first year programme debt passed 100% of GDP per adult (T + 1: never); gvGuard the years the rate sat at its numerical guard. No RNG. */
+var GOV = null, GVS = null, GV_DEFAULTS = {sh:1, base:'w', r:'fixed', rr:0.0097, dk:0.04, a:0.5, b:0.5, rs:0.0097, pt:0.02, ip:'tax', capHi:0.99, m:6, wb:true},
+  GV_US = {D0:113410, Y0:113579, fc:0.697},
+  GV_KEYS = ['gvPay', 'gvTax', 'gvInt', 'gvDef', 'gvMon', 'gvBor', 'gvUnp', 'gvSur', 'gvDebt', 'gvDebtY', 'gvDebtY15', 'gvIntSh', 'gvRate', 'gvRReal', 'gvEr', 'gvErM', 'gvShR', 'gvCapYrs', 'gvY100', 'gvGuard'];
+function gvOpts(v){ var o = Object.assign({}, GV_DEFAULTS, v === true ? {} : v);
+  if (['w', 'wc', 'all'].indexOf(o.base) < 0) throw new Error("gv.base must be 'w', 'wc' or 'all'"); if (o.r !== 'fixed' && o.r !== 'rule') throw new Error("gv.r must be 'fixed' or 'rule'");
+  if (o.ip !== 'tax' && o.ip !== 'borrow') throw new Error("gv.ip must be 'tax' or 'borrow'"); if (!(o.sh >= 0 && o.sh <= 1)) throw new Error('gv.sh must be in [0, 1]');
+  if (!(o.capHi > 0 && o.capHi < 1)) throw new Error('gv.capHi must be in (0, 1)'); if (!(o.m >= 1)) throw new Error('gv.m must be at least 1'); return o; }
+function gvNew(){ return {D:0, int:0, piP:0, gapP:0, ixP:null, ratio:0, r15:0, y100:0, gd:0, fix:GV_US.D0*GV_US.fc, fixM:GV_US.D0*GV_US.fc, cap:0,
+  A:{pay:0, tax:0, int:0, def:0, mon:0, bor:0, unp:0, sur:0, er:0, erM:0, rate:0, rr:0, ny:0}}; }
+function gvIdx(agents){ var a = agents[0]; return a && a.yrBasketUSD > 0 ? a.yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(a._hhF || 1) : 1; }  /* the price level (as tbAccount's C.idx), read in both runs */
+function gvStep(S, o, C, need, agents, yr, T, mult, tauUsed){
+  var G = GOV, F = FX && FX.fin, taxed = o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source', ix = gvIdx(agents), n = Math.max(1, agents.length);
+  if (!taxed && need > 0) throw new Error("gv: the government account reads a contribution's need ('tax', 'hybrid' or 'source')");
+  var pi = S.ixP === null ? 0 : ix/S.ixP - 1, prem = G.dk*S.ratio, Dp = S.D, tx = taxed ? C.tax : 0;
+  var i = F !== 'debt' ? 0 : G.r === 'fixed' ? (1 + G.rr + prem)*(1 + pi) - 1 : Math.max(0, G.rs + S.piP + G.a*(S.piP - G.pt) + G.b*S.gapP) + prem;
+  if (i > 1){ i = 1; S.gd++; }  /* a numerical guard, not a reading: the rate is held at 100% a year (reached only when the premium has made the debt many times GDP; gvGuard counts the years) */
+  var it = i*Dp, def = need + it - tx, gp = Math.max(0, need - tx), sr = Math.max(0, tx - need), mon = 0, bor = 0, unp = 0, sur = 0;
+  if (F === 'debt'){ bor = Math.max(def, -Dp); sur = Math.max(0, -def - Dp); }
+  else { mon = (F === 'money' || F === 'cap' || (o.fin === 'tax' && o.taxBase)) ? gp : 0; unp = gp - mon; sur = sr; }
+  if (ACCT) acctChk('gov', yr, need + it - tx - mon - bor - unp + sur, Math.abs(need) + Math.abs(it) + Math.abs(tx) + Math.abs(bor), F || 'none');
+  S.D = Dp + bor; S.int = it; S.piP = pi; S.gapP = Math.log(mult > 0 ? mult : 1); S.ixP = ix; S.ratio = Math.max(0, S.D/ix/n/GV_US.Y0); if (yr === T - 6) S.r15 = S.ratio; if (!S.y100 && S.ratio > 1) S.y100 = yr + 1;
+  var A = S.A; A.pay += need/ix; A.tax += tx/ix; A.int += it/ix; A.def += def/ix; A.mon += mon/ix; A.bor += bor/ix; A.unp += unp/ix; A.sur += sur/ix;
+  if (F === 'debt'){ A.rate += i; A.rr += (1 + i)/(1 + pi) - 1; A.ny++; }
+  var er = S.fix*pi/(1 + pi), erM = S.fixM*pi/(1 + pi); S.fix /= 1 + pi; S.fixM *= (1 - 1/G.m)/(1 + pi); A.er += er; A.erM += erM;  /* per adult, year-0 dollars */
+  if (o.fin === 'tax' && !o.taxBase && need > 0 && tauUsed >= (TB.capE !== undefined ? TB.capE : o.tauMax) - 1e-12) S.cap++; }
+function gvTarget(need){ return GOV.sh*need + (GOV.ip === 'tax' && FX && FX.fin === 'debt' && GVS ? GVS.int : 0); }  /* what next year's rate is set to raise */
+function gvRes(r, S, NY, T){ var A = S.A;
+  r.gvPay = A.pay/NY; r.gvTax = A.tax/NY; r.gvInt = A.int/NY; r.gvDef = A.def/NY; r.gvMon = A.mon/NY; r.gvBor = A.bor/NY; r.gvUnp = A.unp/NY; r.gvSur = A.sur/NY;
+  r.gvDebt = S.ratio*GV_US.Y0; r.gvDebtY = S.ratio*100; r.gvDebtY15 = S.r15*100; r.gvIntSh = A.pay > 0 ? A.int/A.pay*100 : 0; r.gvShR = A.pay > 0 ? A.tax/A.pay*100 : 0;
+  r.gvRate = A.ny ? A.rate/A.ny*100 : 0; r.gvRReal = A.ny ? A.rr/A.ny*100 : 0; r.gvEr = A.er/T; r.gvErM = A.erM/T; r.gvCapYrs = S.cap; r.gvY100 = S.y100 || T + 1; r.gvGuard = S.gd; return r; }
 /* S68 (Nov 14, 2026; Nov 13 audit, finding 4): COSTS AT THE WITHIN-YEAR PRICE LEVEL (study or row option o.wy; reporting only). Each adult-year's cost of
  * living and its reference (mlc) times the year's within-year average price level over its opening level, exp(avg) from the capacity rule's record (1 when
  * the year is not split, q = 1, or the rule is off); basket poverty and its depth recounted (WY_KEYS). Incomes are the year's nominal dollars, paid through
@@ -4822,7 +4875,8 @@ function tbYear(p, colaF){
   var s = p.tb;
   TB.cur = tbNewAcc();
   return {ubi:(s.ubi || 0)*colaF, xc:(s.xc ? s.xc.amt : 0)*colaF, xd:s.xc ? (s.xc.delta || 0) : 0, G:s.nit ? s.nit.G*colaF : 0, t:s.nit ? s.nit.t : 0,
-    tau:TB.tau || 0, X:(TB.X || 0)*(TB.xIdx || 1), tb:TB.tb, xi:TB.tb === 'prog' ? (TB.pxi || 1) : (TB.xIdx || 1), cap:TB.tauMax || 0.9, W:s.endow ? s.endow.amt : 0, T:p.years, gcap:s.groc ? (s.groc.cap || 0) : 0, gcov:s.groc ? s.groc.cover : 0, Gp:!!(s.nit && s.nit.part)};
+    tau:TB.tau || 0, X:(TB.X || 0)*(TB.xIdx || 1), tb:TB.tb, xi:TB.tb === 'prog' ? (TB.pxi || 1) : (TB.xIdx || 1), cap:TB.tauMax || 0.9, W:s.endow ? s.endow.amt : 0, T:p.years, gcap:s.groc ? (s.groc.cap || 0) : 0, gcov:s.groc ? s.groc.cover : 0, Gp:!!(s.nit && s.nit.part),
+    nw:!!(GOV && GOV.base !== 'w' && !TB.tb)};  /* S72: the flat contribution also charges last year's money income other than wages (gv.base 'wc' | 'all') */
 }
 /* d28: the BLEI gate on the engine's wage-growth bonus, read the same way for every design: Baseline rules (gamma 0.12, the base
  * daily cost, no SZH term) plus one month of the design's regular support, BU (the credit agentBLEI gives participants) or cash
@@ -4845,6 +4899,7 @@ function tbLab(a, y, E0, cutUSD){
   if (y.tb === 'prog'){ if (y.tau > 0){ var ft = fedTax(E0, y.xi, y.tau, y.cap); if (ft.m > 0) F *= Math.pow(1 - ft.m, ex); V += ft.m*E0 - ft.tax; } }  /* v5.2 step 7: the marginal rate, and the virtual income of the schedule linearised at E0 (for a flat rate above X this is tau x X, as below) */
   else if (y.tb === 'land'){ if (y.tau > 0) V -= y.tau*Math.max(0, a.yrWealthStartUSD || 0); }  /* v5.2 step 7: a tax on what is owned, not on work: an income effect only (one income effect per unconditional dollar, rule 7) */
   else if (tx){ F *= Math.pow(1 - y.tau, ex); V += y.tau*y.X; }
+  if (y.nw && y.tau > 0) V -= y.tau*(a._gvNW || 0);  /* S72: the contribution on last year's other money income is an income effect only (rule 7) */
   if (el) F *= Math.pow(1 - y.t, ex);
   if (SNET && SNS && a._snB !== undefined){ F *= Math.pow(1 - a._snM, ex); V += a._snB + a._snM*E0; }  /* session 2b: today's safety net, its marginal rate (one elasticity) and its dollars linearised at last year's position (one income effect) */
   if (TB.inkindRho){ V += cutUSD + (a._tbPthPrev || 0); O += cutUSD + (a._tbPthPrev || 0); }
@@ -4853,6 +4908,7 @@ function tbLab(a, y, E0, cutUSD){
 function tbCashFlow(a, y, E, yr){
   var B = (y.G > 0 && (!y.Gp || a.inCCO)) ? (y.t > 0 ? Math.max(0, y.G - y.t*E) : y.G) : 0, cash = y.ubi + y.xc + B, tax = y.tau > 0 ? (y.tb === 'prog' ? fedTax(E, y.xi, y.tau, y.cap).tax : y.tb === 'land' ? y.tau*Math.max(0, a.yrWealthStartUSD || 0) : y.tau*Math.max(0, E - y.X)) : 0;  /* v5.2 step 7: tb 'prog' | 'land' */
   if (SNET && SNS && a._snB) cash += a._snB;  /* session 2b: today's safety net, paid as cash (kept out of programme cost in tbAccount) */
+  if (y.nw && y.tau > 0) tax += y.tau*(a._gvNW || 0);  /* S72 (gv.base 'wc' | 'all') */
   a.yrTbCash = cash; a.yrTax = tax; a._tbNit = B;
   return {net:cash - tax, endow:(yr === 0 && a._tbEl) ? y.W : 0};
 }
@@ -5835,7 +5891,9 @@ function tbRepRes(R, out){
 function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   var C = TB.cur, idx = mlc/CFG.LIVING_WAGE_ANNUAL/(a._hhF || 1), conv = +a.yrConvUSD || 0;  /* v5.3 B3: a household member's basket is its share of the household's; the index is the price level */
   TB.xIdx = idx;  /* d26: the contribution threshold X is in year-0 dollars, indexed to the basket with a one-year lag */
-  C.n++; C.idx = idx; C.E += E; C.cash += a.yrTbCash; if (SNET && SNS && a._snB) C.cash -= a._snB; C.tax += a.yrTax;  /* session 2b: the safety net is paid by the basket's taxes, not programme cost */ if (y.tb === 'prog'){ var e0 = a._lbE0 > 0 ? a._lbE0 : E; (C.Es || (C.Es = [])).push([E, e0, y.tau > 0 ? fedTax(e0, y.xi, y.tau, y.cap).m : 0]); } C.base += y.tb === 'prog' ? fedTax(E, y.xi, 1, Infinity).tax : y.tb === 'land' ? Math.max(0, a.yrWealthStartUSD || 0) : Math.max(0, E - y.X);  /* v5.2 step 7 */
+  var gw = GOV && GOV.wb && a._w !== undefined ? +a._w : 1;  /* S72 gv.wb: the contribution's books at the adult's weight (1 without the weighted tail) */
+  C.n++; C.idx = idx; C.E += E; C.cash += a.yrTbCash; if (SNET && SNS && a._snB) C.cash -= a._snB; C.tax += gw*a.yrTax;  /* session 2b: the safety net is paid by the basket's taxes, not programme cost */ if (y.tb === 'prog'){ var e0 = a._lbE0 > 0 ? a._lbE0 : E; (C.Es || (C.Es = [])).push([E, e0, y.tau > 0 ? fedTax(e0, y.xi, y.tau, y.cap).m : 0]); } C.base += gw*(y.tb === 'prog' ? fedTax(E, y.xi, 1, Infinity).tax : y.tb === 'land' ? Math.max(0, a.yrWealthStartUSD || 0) : Math.max(0, E - y.X));  /* v5.2 step 7 */
+  if (y.nw){ C.base += gw*(a._gvNW || 0); a._gvNW = Math.max(0, GOV.base === 'wc' ? (+a.yrConvUSD || 0) : tbCashIncome(a) - (+a.yrWageUSD || 0)); }  /* S72: this year's charged amount (last year's), then next year's */
   if (yr === 0 && a._tbEl) C.endow += y.W;
   var spCut = a._spCutY || 0, buR = Math.max(0, mlc*(cfPreCCO - cf) - tbG - spCut);  /* plan step 1 (d105): the split's price cut is conversion premium, not BU relief */
   if (a._csFree){ C.cutFree += a._csFree; a._csFree = 0; }  /* plan step 5 */
@@ -6830,7 +6888,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   WTS = WEALTH_TAIL || o.wtm ? {} : null;  /* S59 part 2 (reporting state only with wt or o.wtm) */
   PRS = PRICE_RULE === 'capacity' || o.mf ? prNew(PR_OPTS, PRICE_RULE === 'capacity') : null; var MFS = o.mf ? mfNew() : null;  /* S58: the capacity rule (or, under 'qt' with o.mf, its record only); the money-flow table (o.mf) */
   LVS = o.lv ? lvNew(o.lv, p) : null;  /* S54 (only with o.lv) */
-  TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null, tb:o.taxBase, tauMax:o.tauMax};  /* v5.2 step 7: taxBase 'prog' | 'land' (undefined = the flat contribution) */
+  TB = {fin:o.fin, tau:tau0, X:o.X, inkindRho:o.inkindRho, neutralGate:o.neutralGate, cur:null, tb:o.taxBase, tauMax:o.tauMax};
+  GVS = GOV ? gvNew() : null; var gvCap = GOV ? (FX && FX.fin === 'cap' ? GOV.capHi : o.tauMax) : 0; if (GOV) TB.capE = gvCap;  /* S72: the government account (per run) and the effective rate cap */  /* v5.2 step 7: taxBase 'prog' | 'land' (undefined = the flat contribution) */
   var PG = 1, path = [], wbPrev = 0, labAcc = null, T = p.years;
   var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0,
     bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0, convM:0, buIss:0, ctax:0, cutFree:0, bkP:0, bkU:0, bkY:0, ntR:0};  /* session 19 (s38); convM: plan step 2; buIss, ctax: plan step 3; bk*, ntR: v5.2 step 6 */
@@ -6880,6 +6939,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       else if (o.fin === 'hybrid') U = (1 - o.a)*(C.conv - C.convM) + extra;  /* plan step 2: matched output (0 unless PROD) */  /* session 7 (d26 option c): transfers taxed, conversion rewards created at a */
       else U = (1 - o.a)*A.conv + (o.pthUnmatched ? A.pthLiq : 0) + extra;  /* 'none': the session 2-5 rule (transfers and price cuts unfinanced) */
       if ((FX && FX.fin) || ACCT){ L.yr = yr; U = finStep(L, o, C, A, need, U, extra, gRun, o.fin === 'source' ? bkP : 0, o.fin === 'source' ? bkU : 0, T, tauUsed); }  /* S68: the financing identity; fx.fin 'money' makes the capped contribution's gap new money */
+      if (GVS) gvStep(GVS, o, C, need, agents, yr, T, recPath ? recPath[yr].incomeMultiplier : 1, tauUsed);  /* S72: the government account (fx.fin 'debt' borrows the unpaid part) */
       if (LVS) lvAcc(U, A.Yw, C.idx);  /* S54 */
       if (MFS) mfYear(MFS, C, U, A.Y);  /* S58 (reporting only) */
       if (yr === 0){ L.need0 = need; L.base0 = C.base; if (C.Es){ L.Es0 = C.Es; L.xi0 = 1; } }  /* v5.2 step 7: year 0's earnings for the progressive schedule (its brackets are in year-0 terms) */
@@ -6894,7 +6954,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       L.bz += C.bz/C.idx; L.es += C.es/C.idx; L.pyP += C.pyP/C.idx; L.pyN += C.pyN/C.idx; L.esWP += C.esWP/C.idx; L.n1 += C.n1; L.nP1 += C.nP1; L.nN1 += C.nN1; L.nWP1 += C.nWP1;  /* session 19 */
       if (o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source'){
         if (o.taxBase === 'prog' && C.Es && L.Es0){ var pm = function(v){ return v.reduce(function(x, e){ return x + e[0]; }, 0)/Math.max(1, v.length); }; TB.pxi = pm(L.Es0) > 0 ? pm(C.Es)/pm(L.Es0) : 1; }  /* v5.2 step 7: the brackets move with mean earnings (as the Social Security wage base does), not with prices */
-        TB.tau = C.base > 0 ? (o.taxBase === 'prog' ? progLam(C.Es, TB.pxi || 1, o.tauMax, need, LABOR ? LABOR.eps - LABOR.rho : 0) : Math.min(o.tauMax, need/C.base)) : 0; }  /* v5.2 step 7: for the progressive tax, the multiplier on the schedule that raises need (its marginal rates are capped instead) */
+        TB.tau = C.base > 0 ? (o.taxBase === 'prog' ? progLam(C.Es, TB.pxi || 1, o.tauMax, need, LABOR ? LABOR.eps - LABOR.rho : 0) : GOV ? Math.min(TB.capE, gvTarget(need)/C.base) : Math.min(o.tauMax, need/C.base)) : 0; }  /* S72: with gv, the share sh of need (plus last year's interest under fx.fin 'debt', ip 'tax'), up to the effective cap */  /* v5.2 step 7: for the progressive tax, the multiplier on the schedule that raises need (its marginal rates are capped instead) */
       var PGn = pmGenStep(PG, U, A.Y, o.lamG), capShare = o.ptfCap*(A.n ? A.ptfN/A.n : 0), PE = {};
       CFG.ESSENTIALS.forEach(function(k){
         var cut = !p.ptf ? 0 : PTF_MODE === 'shipped' ? (p.szh ? 0.12 + p.szhCoh*0.04 : 0.12) : (k === 'food' ? PTF_FOOD_CUT[PTF_MODE] : 0);
@@ -6914,7 +6974,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       PRICE.bIdx = pmBasketIdx(comp);
     }
   } finally { PRICE = null; TB = null; if (labAcc) LABOR = null; var prK = PRS; PRS = null; var lvK = LVS; if (LVS){ lvEnd(); LVS = null; } }
-  if (yMax < T) return {tau0: L.base0 > 0 ? (o.taxBase === 'prog' ? progLam(L.Es0, L.xi0, o.tauMax, L.need0, LABOR ? LABOR.eps - LABOR.rho : 0) : Math.min(o.tauMax, L.need0/L.base0)) : 0};
+  if (yMax < T) return {tau0: L.base0 > 0 ? (o.taxBase === 'prog' ? progLam(L.Es0, L.xi0, o.tauMax, L.need0, LABOR ? LABOR.eps - LABOR.rho : 0) : GOV ? Math.min(gvCap, GOV.sh*L.need0/L.base0) : Math.min(o.tauMax, L.need0/L.base0)) : 0};  /* S72: the share sh, and the effective cap */
   var n = agents.length, NY = n*T, full = agents[0].yrBasketUSD/CFG.LIVING_WAGE_ANNUAL/(agents[0]._hhF || 1), lineF = o.lines === 'nominal' ? 1 : full, pov = 0, bpov = 0, g0 = 0, g1 = 0, g2 = 0;
   var nbpov = 0;  /* session 7 (d28): design-neutral BLEI, Baseline rules plus one month of the design's regular support (the d28 gate's measure) */
   agents.forEach(function(a){ if (a.wealth < CFG.POVERTY_LINE*lineF) pov++; if (agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf)/lineF < CFG.BLEI_PRECARIOUS_MAX) bpov++;
@@ -6947,6 +7007,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (PAS) emR = paRes(emR || {});  /* S55 */
   if (POS) emR = poRes(emR || {}, NY, L.cost/NY);  /* S62 */
   if (FX && FX.fin) emR = finRes(emR || {}, L.fi, NY);  /* S68 */
+  if (GVS){ emR = gvRes(emR || {}, GVS, NY, T); GVS = null; }  /* S72 (only with gv) */
   if (WYS){ emR = wyRes(emR || {}, WYS); WYS = null; }  /* S68 (only with o.wy) */
   if (C22) emR = c22Res(emR || {}, grpOf(function(a){ return !!a._inel; }), n);  /* S6 */
   if (HEALTH && HLS) emR = hlRes(emR || {});  /* session 2a */
@@ -7358,7 +7419,8 @@ var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthRe
 function tbStudy(cfgs, N, envP, o0, lo){
   if (o0 && typeof o0.sc === 'number'){ var scS = SURPLUS_CONSUMPTION_SHARE; SURPLUS_CONSUMPTION_SHARE = o0.sc;  /* plan step 7: a study-level spending rule (the supply path and every row) */
     try { var oS = Object.assign({}, o0); delete oS.sc; return tbStudy(cfgs, N, envP, oS, lo); } finally { SURPLUS_CONSUMPTION_SHARE = scS; } }
-  cfgs.forEach(function(c){ if (c.pr && c.pr !== 'qt' && typeof c.pr === 'object' && c.pr.h && c.ml && c.ml.nt) throw new Error('pr.h and ml.nt both read the normal-years slack: use one'); });  /* S68 part 2: a hazard made a refusal, before any switch is set */
+  cfgs.forEach(function(c){ if (c.pr && c.pr !== 'qt' && typeof c.pr === 'object' && c.pr.h && c.ml && c.ml.nt) throw new Error('pr.h and ml.nt both read the normal-years slack: use one');
+    if (c.gv) gvOpts(c.gv); var ff = c.fx && c.fx !== true ? c.fx.fin : null; if ((ff === 'debt' || ff === 'cap') && !c.gv) throw new Error("fx.fin '" + ff + "' needs gv (the government account, S72)"); });  /* S72: refusals before any switch is set */  /* S68 part 2: a hazard made a refusal, before any switch is set */
   lo = lo || 1; var M = N - lo + 1, grp = {part:envP.partRate, pth:envP.pthUptake};
   var out = cfgs.map(function(){ var r = {_s:{}}; TB_KEYS.forEach(function(k){ r[k] = 0; r._s[k] = new Float64Array(M); }); return r; });
   for (var sd = lo; sd <= N; sd++){
@@ -7390,6 +7452,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var rt0 = RETURNS; if (c.rt) RETURNS = rtOpts(c.rt);  /* S59: wealth held by asset class for this row (no programme rows too) */
       var lf0 = LF_SCOPE; if (c.lf) LF_SCOPE = Object.assign({}, LF_DEFAULTS, c.lf === true ? {} : c.lf);  /* S61: adults outside the labour force for this row (no programme rows too) */
       var po0 = PTF_OPS; if (c.po) PTF_OPS = poOpts(c.po);  /* S62: PTF realism for this row (needs pa open) */
+      var gv0 = GOV; if (c.gv) GOV = gvOpts(c.gv);  /* S72: the government account for this row (no programme rows too) */
       var bg0 = BARGAIN; if (c.bg) BARGAIN = bgOpts(c.bg);  /* S60: a worker's outside option and an employer markdown for this row (no programme rows too) */
       var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; }  /* S58: the capacity price rule for this row (no programme rows too) */
       var pa0 = [PTF_ACCESS, PA]; if (c.pa && c.pa !== 'members'){ if (c.pa !== 'open' && typeof c.pa !== 'object') throw new Error('pa: members, open or {fix}'); PTF_ACCESS = 'open'; PA = Object.assign({}, PA_DEFAULTS, typeof c.pa === 'object' ? c.pa : {}); }  /* S55: open PTF access for this row */
@@ -7421,6 +7484,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.c22PY !== undefined) C22_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S6 */
         if (r.clN !== undefined) CL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S37 */
         if (r.poSub !== undefined) PO_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S62 */
+        if (r.gvPay !== undefined) GV_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S72 */
         if (r.finPay !== undefined) FIN_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S68 */
         if (r.wyAvg !== undefined) WY_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S68 */
         if (r.paSh !== undefined) PA_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S55 */
@@ -7435,7 +7499,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.bgN !== undefined) BG_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S60: bargaining (rows with bg only) */
         if (r.lfShare !== undefined) LF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; PTF_OPS = po0; POS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { GOV = gv0; GVS = null; PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; PTF_OPS = po0; POS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;
