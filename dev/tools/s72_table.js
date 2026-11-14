@@ -28,10 +28,10 @@ for (const env of ENVS){
   out.push('', 'No programme: basket poverty ' + f1(mean(none.fgt0PY)) + '%, wealth poverty ' + f1(mean(none.pov)) + '%, weighted ' + f1(mean(none.wtF0E)) + '% and ' + f1(mean(none.wtPovE)) + '%. The government\'s loss as a lender on household debt inflated away (`crOutG`, per adult over the run): ' +
     J.rows.slice(1).map(r => r.row + ' ' + f0(mean(r.s.crOutG))).join('; ') + '.', '');
 }
-for (const env of ENVS){
-  const fp = path.join(DIR, 's72-frontier-' + env + '.json'); if (!fs.existsSync(fp)) continue;
+for (const tag of ['', 'nowt-']) for (const env of ENVS){
+  const fp = path.join(DIR, 's72-frontier-' + tag + env + '.json'); if (!fs.existsSync(fp)) continue;
   const J = JSON.parse(fs.readFileSync(fp)), none = J.rows[0].s;
-  out.push('## Frontier, ' + EN[env] + ' (seeds 1-' + J.seeds + ')', '');
+  out.push('## Frontier' + (tag ? ' without the weighted tail (Amendment 2)' : '') + ', ' + EN[env] + ' (seeds 1-' + J.seeds + ')', '');
   ['rel', 'c22'].forEach(d => { out.push('### ' + (d === 'rel' ? 'The release design' : 'The C2.2 design') + ', unpaid part as new money: programme inflation, % a year (mean; upper 95% bound)', '', '| Base | Cap | 0 | 25% | 50% | 75% | 100% | Lowest share under 5% |', '|---|---|---|---|---|---|---|---|');
     const z = J.rows.find(r => r.d === d && r.f === 'money' && r.sh === 0);
     ['w', 'wc', 'all'].forEach(b => [0.5, 0.7, 0.9].forEach(cap => { let low = 'none'; const cells = [z].concat([0.25, 0.5, 0.75, 1].map(sh => J.rows.find(r => r.d === d && r.f === 'money' && r.sh === sh && r.base === b && r.cap === cap)));
