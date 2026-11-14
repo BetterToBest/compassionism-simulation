@@ -1,0 +1,1023 @@
+{
+ "_meta": {
+  "script": "sources/s73_lf_flows.py",
+  "source": "S73 (Nov 14, 2026; research-update prereg/2026-11-s73-participation.md): yearly movement in and out of the labour force, from two linked years of\nthe Current Population Survey's Annual Social and Economic Supplement (CPS ASEC).\n\nSources: Census Bureau, CPS ASEC public-use CSV files (https://www2.census.gov/programs-surveys/cps/datasets/YYYY/march/), downloaded Nov 14, 2026:\n  asecpub25csv.zip  sha256 318845a2b5e0034eb2973898de1738f4df0025727de38499e7669cb9c0deef0b  (person file pppub25.csv; income and work year 2024)\n  asecpub26csv.zip  sha256 fe819d0d2fc4470c282e76c247b8aa8b6054811619730307e9f2fe6186707d93  (person file pppub26.csv; year 2025; the file S61 used)\nThe CPS interviews a household for 4 months, rests 8, and returns for 4, so about half of one March's sample is interviewed again the next March. The\nperson identifier PERIDNUM links them. A link is kept when sex is the same and age has risen by 0 to 2 years (97% of identifier matches; the rest are\na different person at the same address).\n\nStatus, as S61 (sources/lf_scope.py): \"out\" = did not work at all in the year (WORKYN 2) for one of four reasons (RSNNOTW 1 ill or disabled, 2 retired,\n3 taking care of home or family, 4 going to school); everyone else is \"in\" (worked some time, or did not work because they could not find work, the\nengine's job loss, or for another reason). Household type as S61, in the first year.\nWho: adults aged 25-63 in the first survey (so 26-64 in the second), first-year weight MARSUPWT. Movers out of the address are lost to the link (the\nCPS samples addresses, not people): a stated limit; the matched sample's out share is printed beside the full first-year sample's.\n\nEstimates (weighted logistic fits, IRLS; no constant is set by hand). Covariates: age band (25-34, 35-49, 50-61, 62-64), sex, household type, and\nsex by children (the care reason differs most by sex where there are children); returns on age band and sex only.\n  stock[r]  share of adults 25-64 out for reason r in the 2026 cross-section (the S61 sample, now by sex as well): one fit per reason.\n  ret[r]    chance that an adult \"out\" for reason r in year 1 is \"in\" in year 2 (the linked sample): one fit per reason; an age band with fewer than\n            20 records out for that reason is pooled with the band below it.\n  exitPanel[r]  chance that an adult \"in\" in year 1 is \"out\" for reason r in year 2 (the linked sample): one fit per reason.\n  exit[r]   the exit chance that holds each cell's stock where ages do not move (the engine without ageing): exit_r = ret_r x stock_r / (1 - stock),\n            stock the cell's total out share; then inflow (1 - stock) exit_r equals outflow stock_r ret_r for every reason.\n  pooled    the same for adults with no age or sex (runs without ageing): by household type, each cell weighted by the 2026 survey's adults in it\n            (in the labour force for exits, out for reason r for returns), so the type's out share is held as well.\nThe panel's own exits are higher than the stock-holding ones because they include the life cycle (more people leave than return as they age, and\nthe ages move); they are the reading for runs with ageing (flows 'panel').\nChecks printed: the stationary out share the panel's own flows imply at fixed ages, against the cross-section; the reason mix of those who left work;\nthe earnings in year 1 of those who left and of those who stayed."
+ },
+ "stock": {
+  "25-34": {
+   "m": {
+    "single": {
+     "dis": 0.05293,
+     "ret": 0.00702,
+     "care": 0.01094,
+     "sch": 0.03497
+    },
+    "singleParent": {
+     "dis": 0.02645,
+     "ret": 0.002,
+     "care": 0.00652,
+     "sch": 0.01953
+    },
+    "coupleNoKids": {
+     "dis": 0.01434,
+     "ret": 0.01112,
+     "care": 0.02033,
+     "sch": 0.01222
+    },
+    "coupleKids": {
+     "dis": 0.00891,
+     "ret": 0.00371,
+     "care": 0.01729,
+     "sch": 0.01302
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.0584,
+     "ret": 0.00962,
+     "care": 0.04877,
+     "sch": 0.04627
+    },
+    "singleParent": {
+     "dis": 0.02722,
+     "ret": 0.00236,
+     "care": 0.10497,
+     "sch": 0.02962
+    },
+    "coupleNoKids": {
+     "dis": 0.01589,
+     "ret": 0.01521,
+     "care": 0.08774,
+     "sch": 0.01629
+    },
+    "coupleKids": {
+     "dis": 0.00917,
+     "ret": 0.00437,
+     "care": 0.23926,
+     "sch": 0.01981
+    }
+   }
+  },
+  "35-49": {
+   "m": {
+    "single": {
+     "dis": 0.10478,
+     "ret": 0.01016,
+     "care": 0.00884,
+     "sch": 0.01257
+    },
+    "singleParent": {
+     "dis": 0.05383,
+     "ret": 0.0029,
+     "care": 0.00527,
+     "sch": 0.00695
+    },
+    "coupleNoKids": {
+     "dis": 0.02957,
+     "ret": 0.01606,
+     "care": 0.01647,
+     "sch": 0.00433
+    },
+    "coupleKids": {
+     "dis": 0.01848,
+     "ret": 0.00538,
+     "care": 0.014,
+     "sch": 0.00461
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.11495,
+     "ret": 0.0139,
+     "care": 0.03972,
+     "sch": 0.01676
+    },
+    "singleParent": {
+     "dis": 0.05537,
+     "ret": 0.00342,
+     "care": 0.08645,
+     "sch": 0.01061
+    },
+    "coupleNoKids": {
+     "dis": 0.03271,
+     "ret": 0.02193,
+     "care": 0.07202,
+     "sch": 0.00578
+    },
+    "coupleKids": {
+     "dis": 0.01902,
+     "ret": 0.00633,
+     "care": 0.2024,
+     "sch": 0.00705
+    }
+   }
+  },
+  "50-61": {
+   "m": {
+    "single": {
+     "dis": 0.17111,
+     "ret": 0.04518,
+     "care": 0.00944,
+     "sch": 0.00431
+    },
+    "singleParent": {
+     "dis": 0.0912,
+     "ret": 0.01325,
+     "care": 0.00562,
+     "sch": 0.00237
+    },
+    "coupleNoKids": {
+     "dis": 0.051,
+     "ret": 0.06999,
+     "care": 0.01756,
+     "sch": 0.00148
+    },
+    "coupleKids": {
+     "dis": 0.03214,
+     "ret": 0.02433,
+     "care": 0.01493,
+     "sch": 0.00157
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.18639,
+     "ret": 0.06103,
+     "care": 0.0423,
+     "sch": 0.00576
+    },
+    "singleParent": {
+     "dis": 0.09369,
+     "ret": 0.01556,
+     "care": 0.09177,
+     "sch": 0.00363
+    },
+    "coupleNoKids": {
+     "dis": 0.05628,
+     "ret": 0.09368,
+     "care": 0.07653,
+     "sch": 0.00197
+    },
+    "coupleKids": {
+     "dis": 0.03307,
+     "ret": 0.02852,
+     "care": 0.2132,
+     "sch": 0.00241
+    }
+   }
+  },
+  "62-64": {
+   "m": {
+    "single": {
+     "dis": 0.21896,
+     "ret": 0.17379,
+     "care": 0.00522,
+     "sch": 0.00204
+    },
+    "singleParent": {
+     "dis": 0.11994,
+     "ret": 0.05632,
+     "care": 0.0031,
+     "sch": 0.00112
+    },
+    "coupleNoKids": {
+     "dis": 0.06801,
+     "ret": 0.25067,
+     "care": 0.00975,
+     "sch": 0.0007
+    },
+    "coupleKids": {
+     "dis": 0.04314,
+     "ret": 0.09979,
+     "care": 0.00828,
+     "sch": 0.00074
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.23729,
+     "ret": 0.22415,
+     "care": 0.02376,
+     "sch": 0.00272
+    },
+    "singleParent": {
+     "dis": 0.1231,
+     "ret": 0.06565,
+     "care": 0.05274,
+     "sch": 0.00172
+    },
+    "coupleNoKids": {
+     "dis": 0.07492,
+     "ret": 0.31482,
+     "care": 0.04367,
+     "sch": 0.00093
+    },
+    "coupleKids": {
+     "dis": 0.04439,
+     "ret": 0.11543,
+     "care": 0.12992,
+     "sch": 0.00114
+    }
+   }
+  }
+ },
+ "ret": {
+  "dis": {
+   "25-34": {
+    "m": 0.20527,
+    "f": 0.16915
+   },
+   "35-49": {
+    "m": 0.14428,
+    "f": 0.11731
+   },
+   "50-61": {
+    "m": 0.108,
+    "f": 0.08712
+   },
+   "62-64": {
+    "m": 0.09513,
+    "f": 0.07652
+   }
+  },
+  "ret": {
+   "25-34": {
+    "m": 0.20324,
+    "f": 0.20405
+   },
+   "35-49": {
+    "m": 0.21296,
+    "f": 0.2138
+   },
+   "50-61": {
+    "m": 0.09937,
+    "f": 0.09981
+   },
+   "62-64": {
+    "m": 0.08107,
+    "f": 0.08144
+   }
+  },
+  "care": {
+   "25-34": {
+    "m": 0.56215,
+    "f": 0.25545
+   },
+   "35-49": {
+    "m": 0.44496,
+    "f": 0.17643
+   },
+   "50-61": {
+    "m": 0.42187,
+    "f": 0.16318
+   },
+   "62-64": {
+    "m": 0.30903,
+    "f": 0.10675
+   }
+  },
+  "sch": {
+   "25-34": {
+    "m": 0.51106,
+    "f": 0.36169
+   },
+   "35-49": {
+    "m": 0.52395,
+    "f": 0.3737
+   },
+   "50-61": {
+    "m": 0.52395,
+    "f": 0.3737
+   },
+   "62-64": {
+    "m": 0.52395,
+    "f": 0.3737
+   }
+  }
+ },
+ "exit": {
+  "25-34": {
+   "m": {
+    "single": {
+     "dis": 0.01215,
+     "ret": 0.0016,
+     "care": 0.00688,
+     "sch": 0.01999
+    },
+    "singleParent": {
+     "dis": 0.00574,
+     "ret": 0.00043,
+     "care": 0.00388,
+     "sch": 0.01056
+    },
+    "coupleNoKids": {
+     "dis": 0.00312,
+     "ret": 0.0024,
+     "care": 0.01213,
+     "sch": 0.00663
+    },
+    "coupleKids": {
+     "dis": 0.00191,
+     "ret": 0.00079,
+     "care": 0.01016,
+     "sch": 0.00695
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.0118,
+     "ret": 0.00235,
+     "care": 0.01489,
+     "sch": 0.02
+    },
+    "singleParent": {
+     "dis": 0.00551,
+     "ret": 0.00058,
+     "care": 0.03208,
+     "sch": 0.01282
+    },
+    "coupleNoKids": {
+     "dis": 0.00311,
+     "ret": 0.00359,
+     "care": 0.02592,
+     "sch": 0.00681
+    },
+    "coupleKids": {
+     "dis": 0.00213,
+     "ret": 0.00123,
+     "care": 0.08403,
+     "sch": 0.00985
+    }
+   }
+  },
+  "35-49": {
+   "m": {
+    "single": {
+     "dis": 0.0175,
+     "ret": 0.00251,
+     "care": 0.00455,
+     "sch": 0.00763
+    },
+    "singleParent": {
+     "dis": 0.00834,
+     "ret": 0.00066,
+     "care": 0.00252,
+     "sch": 0.00391
+    },
+    "coupleNoKids": {
+     "dis": 0.00457,
+     "ret": 0.00366,
+     "care": 0.00785,
+     "sch": 0.00243
+    },
+    "coupleKids": {
+     "dis": 0.00278,
+     "ret": 0.0012,
+     "care": 0.00651,
+     "sch": 0.00252
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.01655,
+     "ret": 0.00365,
+     "care": 0.0086,
+     "sch": 0.00769
+    },
+    "singleParent": {
+     "dis": 0.00769,
+     "ret": 0.00087,
+     "care": 0.01807,
+     "sch": 0.0047
+    },
+    "coupleNoKids": {
+     "dis": 0.00442,
+     "ret": 0.0054,
+     "care": 0.01465,
+     "sch": 0.00249
+    },
+    "coupleKids": {
+     "dis": 0.00292,
+     "ret": 0.00177,
+     "care": 0.04667,
+     "sch": 0.00344
+    }
+   }
+  },
+  "50-61": {
+   "m": {
+    "single": {
+     "dis": 0.024,
+     "ret": 0.00583,
+     "care": 0.00517,
+     "sch": 0.00293
+    },
+    "singleParent": {
+     "dis": 0.0111,
+     "ret": 0.00148,
+     "care": 0.00267,
+     "sch": 0.0014
+    },
+    "coupleNoKids": {
+     "dis": 0.0064,
+     "ret": 0.00809,
+     "care": 0.00861,
+     "sch": 0.0009
+    },
+    "coupleKids": {
+     "dis": 0.00374,
+     "ret": 0.00261,
+     "care": 0.00679,
+     "sch": 0.00089
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.02305,
+     "ret": 0.00865,
+     "care": 0.0098,
+     "sch": 0.00306
+    },
+    "singleParent": {
+     "dis": 0.01026,
+     "ret": 0.00195,
+     "care": 0.01883,
+     "sch": 0.00171
+    },
+    "coupleNoKids": {
+     "dis": 0.00635,
+     "ret": 0.01212,
+     "care": 0.01619,
+     "sch": 0.00095
+    },
+    "coupleKids": {
+     "dis": 0.00399,
+     "ret": 0.00394,
+     "care": 0.04813,
+     "sch": 0.00125
+    }
+   }
+  },
+  "62-64": {
+   "m": {
+    "single": {
+     "dis": 0.03472,
+     "ret": 0.02348,
+     "care": 0.00269,
+     "sch": 0.00178
+    },
+    "singleParent": {
+     "dis": 0.01392,
+     "ret": 0.00557,
+     "care": 0.00117,
+     "sch": 0.00072
+    },
+    "coupleNoKids": {
+     "dis": 0.00964,
+     "ret": 0.03029,
+     "care": 0.00449,
+     "sch": 0.00055
+    },
+    "coupleKids": {
+     "dis": 0.00484,
+     "ret": 0.00954,
+     "care": 0.00302,
+     "sch": 0.00046
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.03546,
+     "ret": 0.03565,
+     "care": 0.00495,
+     "sch": 0.00198
+    },
+    "singleParent": {
+     "dis": 0.01245,
+     "ret": 0.00706,
+     "care": 0.00744,
+     "sch": 0.00085
+    },
+    "coupleNoKids": {
+     "dis": 0.01013,
+     "ret": 0.04533,
+     "care": 0.00824,
+     "sch": 0.00061
+    },
+    "coupleKids": {
+     "dis": 0.00479,
+     "ret": 0.01326,
+     "care": 0.01956,
+     "sch": 0.0006
+    }
+   }
+  }
+ },
+ "exitPanel": {
+  "25-34": {
+   "m": {
+    "single": {
+     "dis": 0.01432,
+     "ret": 0.00285,
+     "care": 0.00915,
+     "sch": 0.00987
+    },
+    "singleParent": {
+     "dis": 0.01212,
+     "ret": 0.00052,
+     "care": 0.0047,
+     "sch": 0.02278
+    },
+    "coupleNoKids": {
+     "dis": 0.00478,
+     "ret": 0.00355,
+     "care": 0.00956,
+     "sch": 0.00456
+    },
+    "coupleKids": {
+     "dis": 0.00268,
+     "ret": 0.00115,
+     "care": 0.00779,
+     "sch": 0.00335
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.0162,
+     "ret": 0.00474,
+     "care": 0.02388,
+     "sch": 0.01529
+    },
+    "singleParent": {
+     "dis": 0.01652,
+     "ret": 0.00062,
+     "care": 0.03508,
+     "sch": 0.02304
+    },
+    "coupleNoKids": {
+     "dis": 0.00541,
+     "ret": 0.00591,
+     "care": 0.02492,
+     "sch": 0.00709
+    },
+    "coupleKids": {
+     "dis": 0.00366,
+     "ret": 0.00139,
+     "care": 0.05697,
+     "sch": 0.00338
+    }
+   }
+  },
+  "35-49": {
+   "m": {
+    "single": {
+     "dis": 0.01882,
+     "ret": 0.00519,
+     "care": 0.00736,
+     "sch": 0.00444
+    },
+    "singleParent": {
+     "dis": 0.01594,
+     "ret": 0.00095,
+     "care": 0.00377,
+     "sch": 0.01033
+    },
+    "coupleNoKids": {
+     "dis": 0.0063,
+     "ret": 0.00647,
+     "care": 0.00768,
+     "sch": 0.00205
+    },
+    "coupleKids": {
+     "dis": 0.00353,
+     "ret": 0.0021,
+     "care": 0.00626,
+     "sch": 0.0015
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.02128,
+     "ret": 0.00863,
+     "care": 0.01925,
+     "sch": 0.0069
+    },
+    "singleParent": {
+     "dis": 0.0217,
+     "ret": 0.00114,
+     "care": 0.02835,
+     "sch": 0.01045
+    },
+    "coupleNoKids": {
+     "dis": 0.00714,
+     "ret": 0.01075,
+     "care": 0.0201,
+     "sch": 0.00319
+    },
+    "coupleKids": {
+     "dis": 0.00483,
+     "ret": 0.00253,
+     "care": 0.04624,
+     "sch": 0.00152
+    }
+   }
+  },
+  "50-61": {
+   "m": {
+    "single": {
+     "dis": 0.02656,
+     "ret": 0.01904,
+     "care": 0.00738,
+     "sch": 0.00158
+    },
+    "singleParent": {
+     "dis": 0.02253,
+     "ret": 0.00351,
+     "care": 0.00378,
+     "sch": 0.00368
+    },
+    "coupleNoKids": {
+     "dis": 0.00894,
+     "ret": 0.02366,
+     "care": 0.0077,
+     "sch": 0.00073
+    },
+    "coupleKids": {
+     "dis": 0.00501,
+     "ret": 0.00778,
+     "care": 0.00627,
+     "sch": 0.00053
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.02999,
+     "ret": 0.03137,
+     "care": 0.0193,
+     "sch": 0.00246
+    },
+    "singleParent": {
+     "dis": 0.03059,
+     "ret": 0.00422,
+     "care": 0.02841,
+     "sch": 0.00373
+    },
+    "coupleNoKids": {
+     "dis": 0.01012,
+     "ret": 0.03887,
+     "care": 0.02014,
+     "sch": 0.00113
+    },
+    "coupleKids": {
+     "dis": 0.00685,
+     "ret": 0.00935,
+     "care": 0.04634,
+     "sch": 0.00054
+    }
+   }
+  },
+  "62-64": {
+   "m": {
+    "single": {
+     "dis": 0.03195,
+     "ret": 0.067,
+     "care": 0.00195,
+     "sch": 0.0
+    },
+    "singleParent": {
+     "dis": 0.02712,
+     "ret": 0.01286,
+     "care": 0.001,
+     "sch": 0.0
+    },
+    "coupleNoKids": {
+     "dis": 0.01079,
+     "ret": 0.08229,
+     "care": 0.00204,
+     "sch": 0.0
+    },
+    "coupleKids": {
+     "dis": 0.00606,
+     "ret": 0.02821,
+     "care": 0.00166,
+     "sch": 0.0
+    }
+   },
+   "f": {
+    "single": {
+     "dis": 0.03605,
+     "ret": 0.10701,
+     "care": 0.00515,
+     "sch": 0.0
+    },
+    "singleParent": {
+     "dis": 0.03676,
+     "ret": 0.01543,
+     "care": 0.00764,
+     "sch": 0.0
+    },
+    "coupleNoKids": {
+     "dis": 0.01221,
+     "ret": 0.13016,
+     "care": 0.00538,
+     "sch": 0.0
+    },
+    "coupleKids": {
+     "dis": 0.00827,
+     "ret": 0.03375,
+     "care": 0.01263,
+     "sch": 0.0
+    }
+   }
+  }
+ },
+ "pooled": {
+  "stock": {
+   "single": {
+    "dis": 0.11595,
+    "ret": 0.0369,
+    "care": 0.02447,
+    "sch": 0.02074
+   },
+   "singleParent": {
+    "dis": 0.05227,
+    "ret": 0.00483,
+    "care": 0.07683,
+    "sch": 0.01429
+   },
+   "coupleNoKids": {
+    "dis": 0.04322,
+    "ret": 0.08113,
+    "care": 0.04624,
+    "sch": 0.0049
+   },
+   "coupleKids": {
+    "dis": 0.01902,
+    "ret": 0.01005,
+    "care": 0.11405,
+    "sch": 0.00771
+   }
+  },
+  "exit": {
+   "single": {
+    "dis": 0.01747,
+    "ret": 0.00507,
+    "care": 0.00798,
+    "sch": 0.01143
+   },
+   "singleParent": {
+    "dis": 0.00753,
+    "ret": 0.0009,
+    "care": 0.01855,
+    "sch": 0.00642
+   },
+   "coupleNoKids": {
+    "dis": 0.00554,
+    "ret": 0.0099,
+    "care": 0.01292,
+    "sch": 0.00254
+   },
+   "coupleKids": {
+    "dis": 0.00284,
+    "ret": 0.00173,
+    "care": 0.02883,
+    "sch": 0.00384
+   }
+  },
+  "exitPanel": {
+   "single": {
+    "dis": 0.0206,
+    "ret": 0.01439,
+    "care": 0.01316,
+    "sch": 0.00708
+   },
+   "singleParent": {
+    "dis": 0.02021,
+    "ret": 0.00138,
+    "care": 0.02516,
+    "sch": 0.01311
+   },
+   "coupleNoKids": {
+    "dis": 0.00804,
+    "ret": 0.02716,
+    "care": 0.01358,
+    "sch": 0.00233
+   },
+   "coupleKids": {
+    "dis": 0.00418,
+    "ret": 0.00338,
+    "care": 0.02516,
+    "sch": 0.00176
+   }
+  },
+  "ret": {
+   "single": {
+    "dis": 0.12081,
+    "ret": 0.11011,
+    "care": 0.26149,
+    "sch": 0.4417
+   },
+   "singleParent": {
+    "dis": 0.12274,
+    "ret": 0.15847,
+    "care": 0.2056,
+    "sch": 0.38264
+   },
+   "coupleNoKids": {
+    "dis": 0.10577,
+    "ret": 0.10057,
+    "care": 0.23029,
+    "sch": 0.42827
+   },
+   "coupleKids": {
+    "dis": 0.12666,
+    "ret": 0.14624,
+    "care": 0.21462,
+    "sch": 0.42285
+   }
+  }
+ },
+ "counts": {
+  "exit": {
+   "dis": 162,
+   "ret": 208,
+   "care": 297,
+   "sch": 60
+  },
+  "ret": {
+   "dis": {
+    "out": 1028,
+    "returned": 118,
+    "byBand": {
+     "25-34": 124,
+     "35-49": 293,
+     "50-61": 480,
+     "62-64": 131
+    }
+   },
+   "ret": {
+    "out": 666,
+    "returned": 81,
+    "byBand": {
+     "25-34": 22,
+     "35-49": 58,
+     "50-61": 354,
+     "62-64": 232
+    }
+   },
+   "care": {
+    "out": 1288,
+    "returned": 278,
+    "byBand": {
+     "25-34": 311,
+     "35-49": 619,
+     "50-61": 312,
+     "62-64": 46
+    }
+   },
+   "sch": {
+    "out": 160,
+    "returned": 77,
+    "byBand": {
+     "25-34": 104,
+     "35-49": 56,
+     "50-61": 0,
+     "62-64": 0
+    }
+   }
+  },
+  "stock": {
+   "dis": 3853,
+   "ret": 2610,
+   "care": 4453,
+   "sch": 658
+  },
+  "retPooled": {
+   "dis": {},
+   "ret": {},
+   "care": {},
+   "sch": {
+    "50-61": "35-49",
+    "62-64": "35-49"
+   }
+  }
+ },
+ "checks": {
+  "idMatches": 39927,
+  "linked25to63": 18937,
+  "linkedIn": 15795,
+  "linkedOut": 3142,
+  "outShareLinked": {
+   "dis": 0.05929,
+   "ret": 0.03765,
+   "care": 0.06293,
+   "sch": 0.00974
+  },
+  "outShareFull2025": {
+   "dis": 0.06057,
+   "ret": 0.03477,
+   "care": 0.06543,
+   "sch": 0.01131
+  },
+  "exitRate": 0.0471,
+  "exitMix": {
+   "dis": 0.2362,
+   "ret": 0.3112,
+   "care": 0.3735,
+   "sch": 0.0791
+  },
+  "exitMixBySex": {
+   "m": {
+    "dis": 0.3201,
+    "ret": 0.3535,
+    "care": 0.2287,
+    "sch": 0.0976
+   },
+   "f": {
+    "dis": 0.1894,
+    "ret": 0.2876,
+    "care": 0.4543,
+    "sch": 0.0687
+   }
+  },
+  "returnRate": {
+   "dis": 0.1181,
+   "ret": 0.108,
+   "care": 0.2151,
+   "sch": 0.4373
+  },
+  "leaversEarnYear1Mean": 48022,
+  "stayersEarnYear1Mean": 86959,
+  "stationaryOutShare": {
+   "25-34": {
+    "m": {
+     "single": 0.114,
+     "singleParent": 0.1093,
+     "coupleNoKids": 0.0655,
+     "coupleKids": 0.0387
+    },
+    "f": {
+     "single": 0.2362,
+     "singleParent": 0.2726,
+     "coupleNoKids": 0.1672,
+     "coupleKids": 0.2196
+    }
+   },
+   "35-49": {
+    "m": {
+     "single": 0.1639,
+     "singleParent": 0.1317,
+     "coupleNoKids": 0.0922,
+     "coupleKids": 0.0504
+    },
+    "f": {
+     "single": 0.3088,
+     "singleParent": 0.3271,
+     "coupleNoKids": 0.216,
+     "coupleKids": 0.263
+    }
+   },
+   "50-61": {
+    "m": {
+     "single": 0.3784,
+     "singleParent": 0.2226,
+     "coupleNoKids": 0.2881,
+     "coupleKids": 0.1326
+    },
+    "f": {
+     "single": 0.6075,
+     "singleParent": 0.4586,
+     "coupleNoKids": 0.4972,
+     "coupleKids": 0.3812
+    }
+   },
+   "62-64": {
+    "m": {
+     "single": 0.7102,
+     "singleParent": 0.362,
+     "coupleNoKids": 0.6122,
+     "coupleKids": 0.3234
+    },
+    "f": {
+     "single": 0.9341,
+     "singleParent": 0.5506,
+     "coupleNoKids": 0.8007,
+     "coupleKids": 0.4963
+    }
+   }
+  },
+  "stockFit": {
+   "fitted": 0.1729,
+   "survey": 0.1729
+  },
+  "exitMean": {
+   "stockHolding": 0.03632,
+   "panel": 0.04727
+  },
+  "stationaryVsLinked": {
+   "stationary": 0.2763,
+   "linkedYear1": 0.1696,
+   "linkedYear2": 0.1799
+  }
+ }
+}

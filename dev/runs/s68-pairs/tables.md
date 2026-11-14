@@ -4,13 +4,13 @@ Written by `python3 dev/tools/s68_pairs_table.py`. A test, not a study: no figur
 
 ## 1. The on-together tests
 
-Engine commit e9143e921ed44e4cad4ee148df495d53030c0af6 (dirty True); 5 seeds; design c22. Every row is the candidate main row (`r2MainRow`) with the readings named; both runs of each pair are checked.
+Engine commit d12fd0f0e628af0d9a65bf321abe73e709f05497 (dirty False); 5 seeds; design c22. Every row is the candidate main row (`r2MainRow`) with the readings named; both runs of each pair are checked.
 
 | Environment | Rows | Pass | Failed | Run order (main pair; no programme alone) | Seconds |
 |---|---|---|---|---|---|
-| ref | 137 | 137 | none | identical; identical | 592 |
-| adv | 137 | 137 | none | identical; identical | 597 |
-| st | 137 | 137 | none | identical; identical | 570 |
+| ref | 154 | 154 | none | identical; identical | 661 |
+| adv | 154 | 154 | none | identical; identical | 685 |
+| st | 154 | 154 | none | identical; identical | 621 |
 
 The other readings (`R2_ALT`):
 
@@ -26,6 +26,7 @@ The other readings (`R2_ALT`):
 - `cr`: creditors hold the loss (cr inc hold)
 - `wt`: six tail households per type (wt m 6)
 - `lf`: no conversion outside the labour force (lf conv none)
+- `lp`: the survey's own flows and the whole income effect on leaving work (lf fl panel, pm 1; S73)
 - `dr`: the floor reading (dr fl fpl)
 - `ag`: ageing (ag)
 - `cl`: the community layer (cl)
@@ -48,6 +49,7 @@ The other readings (`R2_ALT`):
 | ref cr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref wt | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref lf | 299859 | 0 | 40 | 0 | 0 | 0 |
+| ref lp | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | ref cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -63,6 +65,7 @@ The other readings (`R2_ALT`):
 | ref pr+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref pr+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref pr+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref pr+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref pr+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref pr+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | ref pr+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -77,6 +80,7 @@ The other readings (`R2_ALT`):
 | ref q+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref q+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref q+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref q+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref q+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref q+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | ref q+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -90,6 +94,7 @@ The other readings (`R2_ALT`):
 | ref bd+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref bd+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref bd+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref bd+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref bd+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref bd+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | ref bd+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -102,6 +107,7 @@ The other readings (`R2_ALT`):
 | ref bg+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref bg+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref bg+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref bg+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref bg+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref bg+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | ref bg+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -113,6 +119,7 @@ The other readings (`R2_ALT`):
 | ref fin+cr | 299754 | 0 | 40 | 0 | 0 | 0 |
 | ref fin+wt | 299754 | 0 | 40 | 0 | 0 | 0 |
 | ref fin+lf | 299754 | 0 | 40 | 0 | 0 | 0 |
+| ref fin+lp | 299754 | 0 | 40 | 0 | 0 | 0 |
 | ref fin+dr | 299754 | 0 | 40 | 0 | 0 | 0 |
 | ref fin+ag | 290419 | 0 | 40 | 0 | 0 | 0 |
 | ref fin+cl | 160524 | 0 | 20 | 0 | 0 | 0 |
@@ -123,6 +130,7 @@ The other readings (`R2_ALT`):
 | ref gv+cr | 230139 | 0 | 30 | 0 | 0 | 0 |
 | ref gv+wt | 230139 | 0 | 30 | 0 | 0 | 0 |
 | ref gv+lf | 230139 | 0 | 30 | 0 | 0 | 0 |
+| ref gv+lp | 230139 | 0 | 30 | 0 | 0 | 0 |
 | ref gv+dr | 230139 | 0 | 30 | 0 | 0 | 0 |
 | ref gv+ag | 222989 | 0 | 30 | 0 | 0 | 0 |
 | ref gv+cl | 160524 | 0 | 20 | 0 | 0 | 0 |
@@ -132,6 +140,7 @@ The other readings (`R2_ALT`):
 | ref po+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref po+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref po+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref po+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref po+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref po+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | ref po+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -140,6 +149,7 @@ The other readings (`R2_ALT`):
 | ref pa+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref pa+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref pa+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref pa+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref pa+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref pa+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | ref pa+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -147,25 +157,33 @@ The other readings (`R2_ALT`):
 | ref rt+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref rt+wt | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref rt+lf | 299859 | 0 | 40 | 0 | 0 | 0 |
+| ref rt+lp | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref rt+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref rt+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | ref rt+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref rt+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref cr+wt | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref cr+lf | 299859 | 0 | 40 | 0 | 0 | 0 |
+| ref cr+lp | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref cr+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref cr+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | ref cr+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref cr+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref wt+lf | 299859 | 0 | 40 | 0 | 0 | 0 |
+| ref wt+lp | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref wt+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref wt+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | ref wt+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref wt+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref lf+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref lf+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | ref lf+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | ref lf+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref lf+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref lp+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
+| ref lp+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
+| ref lp+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
+| ref lp+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref dr+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | ref dr+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | ref dr+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -185,6 +203,7 @@ The other readings (`R2_ALT`):
 | adv cr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv wt | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv lf | 299859 | 0 | 40 | 0 | 0 | 0 |
+| adv lp | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | adv cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -200,6 +219,7 @@ The other readings (`R2_ALT`):
 | adv pr+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv pr+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv pr+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv pr+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv pr+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv pr+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | adv pr+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -214,6 +234,7 @@ The other readings (`R2_ALT`):
 | adv q+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv q+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv q+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv q+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv q+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv q+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | adv q+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -227,6 +248,7 @@ The other readings (`R2_ALT`):
 | adv bd+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv bd+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv bd+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv bd+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv bd+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv bd+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | adv bd+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -239,6 +261,7 @@ The other readings (`R2_ALT`):
 | adv bg+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv bg+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv bg+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv bg+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv bg+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv bg+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | adv bg+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -250,6 +273,7 @@ The other readings (`R2_ALT`):
 | adv fin+cr | 299754 | 0 | 40 | 0 | 0 | 0 |
 | adv fin+wt | 299754 | 0 | 40 | 0 | 0 | 0 |
 | adv fin+lf | 299754 | 0 | 40 | 0 | 0 | 0 |
+| adv fin+lp | 299754 | 0 | 40 | 0 | 0 | 0 |
 | adv fin+dr | 299754 | 0 | 40 | 0 | 0 | 0 |
 | adv fin+ag | 290419 | 0 | 40 | 0 | 0 | 0 |
 | adv fin+cl | 160524 | 0 | 20 | 0 | 0 | 0 |
@@ -260,6 +284,7 @@ The other readings (`R2_ALT`):
 | adv gv+cr | 230139 | 0 | 30 | 0 | 0 | 0 |
 | adv gv+wt | 230139 | 0 | 30 | 0 | 0 | 0 |
 | adv gv+lf | 230139 | 0 | 30 | 0 | 0 | 0 |
+| adv gv+lp | 230139 | 0 | 30 | 0 | 0 | 0 |
 | adv gv+dr | 230139 | 0 | 30 | 0 | 0 | 0 |
 | adv gv+ag | 222989 | 0 | 30 | 0 | 0 | 0 |
 | adv gv+cl | 160524 | 0 | 20 | 0 | 0 | 0 |
@@ -269,6 +294,7 @@ The other readings (`R2_ALT`):
 | adv po+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv po+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv po+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv po+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv po+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv po+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | adv po+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -277,6 +303,7 @@ The other readings (`R2_ALT`):
 | adv pa+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv pa+wt | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv pa+lf | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv pa+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv pa+dr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv pa+ag | 155664 | 0 | 20 | 0 | 0 | 0 |
 | adv pa+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -284,25 +311,33 @@ The other readings (`R2_ALT`):
 | adv rt+cr | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv rt+wt | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv rt+lf | 299859 | 0 | 40 | 0 | 0 | 0 |
+| adv rt+lp | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv rt+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv rt+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | adv rt+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv rt+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv cr+wt | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv cr+lf | 299859 | 0 | 40 | 0 | 0 | 0 |
+| adv cr+lp | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv cr+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv cr+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | adv cr+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv cr+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv wt+lf | 299859 | 0 | 40 | 0 | 0 | 0 |
+| adv wt+lp | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv wt+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv wt+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | adv wt+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv wt+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv lf+lp | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv lf+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
 | adv lf+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | adv lf+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv lf+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv lp+dr | 299859 | 0 | 40 | 0 | 0 | 0 |
+| adv lp+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
+| adv lp+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
+| adv lp+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv dr+ag | 290524 | 0 | 40 | 0 | 0 | 0 |
 | adv dr+cl | 160629 | 0 | 20 | 0 | 0 | 0 |
 | adv dr+ml | 160629 | 0 | 20 | 0 | 0 | 0 |
@@ -322,6 +357,7 @@ The other readings (`R2_ALT`):
 | st cr | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st wt | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st lf | 289569 | 0 | 40 | 0 | 0 | 0 |
+| st lp | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st dr | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st ag | 280690 | 0 | 40 | 0 | 0 | 0 |
 | st cl | 150339 | 0 | 20 | 0 | 0 | 0 |
@@ -337,6 +373,7 @@ The other readings (`R2_ALT`):
 | st pr+cr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st pr+wt | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st pr+lf | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st pr+lp | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st pr+dr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st pr+ag | 145830 | 0 | 20 | 0 | 0 | 0 |
 | st pr+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
@@ -351,6 +388,7 @@ The other readings (`R2_ALT`):
 | st q+cr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st q+wt | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st q+lf | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st q+lp | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st q+dr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st q+ag | 145830 | 0 | 20 | 0 | 0 | 0 |
 | st q+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
@@ -364,6 +402,7 @@ The other readings (`R2_ALT`):
 | st bd+cr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st bd+wt | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st bd+lf | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st bd+lp | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st bd+dr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st bd+ag | 145830 | 0 | 20 | 0 | 0 | 0 |
 | st bd+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
@@ -376,6 +415,7 @@ The other readings (`R2_ALT`):
 | st bg+cr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st bg+wt | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st bg+lf | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st bg+lp | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st bg+dr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st bg+ag | 145830 | 0 | 20 | 0 | 0 | 0 |
 | st bg+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
@@ -387,6 +427,7 @@ The other readings (`R2_ALT`):
 | st fin+cr | 289464 | 0 | 40 | 0 | 0 | 0 |
 | st fin+wt | 289464 | 0 | 40 | 0 | 0 | 0 |
 | st fin+lf | 289464 | 0 | 40 | 0 | 0 | 0 |
+| st fin+lp | 289464 | 0 | 40 | 0 | 0 | 0 |
 | st fin+dr | 289464 | 0 | 40 | 0 | 0 | 0 |
 | st fin+ag | 280585 | 0 | 40 | 0 | 0 | 0 |
 | st fin+cl | 150234 | 0 | 20 | 0 | 0 | 0 |
@@ -397,6 +438,7 @@ The other readings (`R2_ALT`):
 | st gv+cr | 219849 | 0 | 30 | 0 | 0 | 0 |
 | st gv+wt | 219849 | 0 | 30 | 0 | 0 | 0 |
 | st gv+lf | 219849 | 0 | 30 | 0 | 0 | 0 |
+| st gv+lp | 219849 | 0 | 30 | 0 | 0 | 0 |
 | st gv+dr | 219849 | 0 | 30 | 0 | 0 | 0 |
 | st gv+ag | 213155 | 0 | 30 | 0 | 0 | 0 |
 | st gv+cl | 150234 | 0 | 20 | 0 | 0 | 0 |
@@ -406,6 +448,7 @@ The other readings (`R2_ALT`):
 | st po+cr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st po+wt | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st po+lf | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st po+lp | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st po+dr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st po+ag | 145830 | 0 | 20 | 0 | 0 | 0 |
 | st po+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
@@ -414,6 +457,7 @@ The other readings (`R2_ALT`):
 | st pa+cr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st pa+wt | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st pa+lf | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st pa+lp | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st pa+dr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st pa+ag | 145830 | 0 | 20 | 0 | 0 | 0 |
 | st pa+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
@@ -421,25 +465,33 @@ The other readings (`R2_ALT`):
 | st rt+cr | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st rt+wt | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st rt+lf | 289569 | 0 | 40 | 0 | 0 | 0 |
+| st rt+lp | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st rt+dr | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st rt+ag | 280690 | 0 | 40 | 0 | 0 | 0 |
 | st rt+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st rt+ml | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st cr+wt | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st cr+lf | 289569 | 0 | 40 | 0 | 0 | 0 |
+| st cr+lp | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st cr+dr | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st cr+ag | 280690 | 0 | 40 | 0 | 0 | 0 |
 | st cr+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st cr+ml | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st wt+lf | 289569 | 0 | 40 | 0 | 0 | 0 |
+| st wt+lp | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st wt+dr | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st wt+ag | 280690 | 0 | 40 | 0 | 0 | 0 |
 | st wt+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st wt+ml | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st lf+lp | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st lf+dr | 289569 | 0 | 40 | 0 | 0 | 0 |
 | st lf+ag | 280690 | 0 | 40 | 0 | 0 | 0 |
 | st lf+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st lf+ml | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st lp+dr | 289569 | 0 | 40 | 0 | 0 | 0 |
+| st lp+ag | 280690 | 0 | 40 | 0 | 0 | 0 |
+| st lp+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
+| st lp+ml | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st dr+ag | 280690 | 0 | 40 | 0 | 0 | 0 |
 | st dr+cl | 150339 | 0 | 20 | 0 | 0 | 0 |
 | st dr+ml | 150339 | 0 | 20 | 0 | 0 | 0 |
