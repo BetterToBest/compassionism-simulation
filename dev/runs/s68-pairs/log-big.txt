@@ -1,0 +1,15 @@
+ref 500 tail 2 s
+ref 500 no tail 1 s
+ref 10000 tail 30 s
+ref 10000 no tail 29 s
+ref: done in 63 s
+adv 500 tail 2 s
+adv 500 no tail 2 s
+adv 10000 tail 30 s
+adv 10000 no tail 29 s
+adv: done in 63 s
+st 500 tail 2 s
+st 500 no tail 1 s
+st 10000 tail 30 s
+st 10000 no tail 30 s
+st: done in 64 s

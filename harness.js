@@ -1288,6 +1288,29 @@ function s68UnitSuite(){
     var pd = function(c){ c.pd = true; return c; }, A = tbStudy([pd(row('none'))], 1, P, SO, 1), B = tbStudy([pd(row('rel')), pd(row('c22')), pd(row('none'))], 1, P, SO, 1), C = tbStudy([pd(row('c22')), pd(row('none')), pd(row('rel'))], 1, P, SO, 1);
     var ks = Object.keys(A[0]._s), b = moved(A[0], B[2], ks).concat(moved(A[0], C[1], ks)), d = moved(B[0], C[2], Object.keys(B[0]._s));
     return {pass:!b.length && !d.length, detail:(b.length ? 'no programme moved: ' + b.slice(0, 8).join(', ') : '') + (d.length ? ' release moved: ' + d.slice(0, 8).join(', ') : '')}; });
+  /* S68 part 2: the hazards the on-together tests met, as tests. */
+  t('S68 part 2: a normal-years slack in the price rule (pr.h) with the spending layer\'s normal-times slack (ml.nt) is refused, since both would use the same slack', function(){
+    var c = frozenRow(relMainCfgs(tbPresets(P))[1]); c.pr = {h:0.02}; c.ml = {nt:{m:CFG.MULT_NORMAL, s:CFG.US_UNDERUSE}}; var msg = '';
+    try { tbStudy([c], 1, P, SO); } catch (e){ msg = e.message; }
+    var c2 = frozenRow(relMainCfgs(tbPresets(P))[1]); c2.pr = {h:0.02}; var ok2 = true; try { tbStudy([c2], 1, P, SO); } catch (e){ ok2 = false; }
+    return {pass:/pr\.h and ml\.nt/.test(msg) && ok2, detail:'refusal: ' + (msg || 'none') + '; pr.h alone runs: ' + ok2}; });
+  t('S68 part 2: adults outside the labour force with no conversion (lf conv \'none\') under the C2.2 design give finite outputs (an adult with no project rate gave 0 x undefined = NaN before)', function(){
+    var cf = r2MainPair(P, 'c22'); cf.forEach(function(c){ c.lf = {conv:'none'}; }); var R = tbStudy(cf, 1, P, r2MainStudy()), bad = [];
+    R.forEach(function(r, i){ Object.keys(r._s).forEach(function(k){ if (!isFinite(r._s[k][0])) bad.push(i + ':' + k); }); });
+    return {pass:bad.length === 0 && R[1].lfShare > 0, detail:'non-finite outputs: ' + (bad.slice(0, 5).join(', ') || 'none') + '; outside the labour force ' + (+R[1].lfShare).toFixed(1) + '%'}; });
+  t('S68 part 2: fx.pe, the PTH trust\'s books when a member dies: with ageing the PTH books hold every year with it and miss without it; without ageing it moves no figure', function(){
+    var P6 = Object.assign({}, P, {years:6}), n = [], sg = [];
+    [false, true].forEach(function(pe){ var c = frozenRow(relMainCfgs(tbPresets(P6))[1]); c.sc = SPEND_SOURCED; frozenRow(c); c.ag = {}; c.fx = {pthb:true, hb:true, ab:true, sp:true, pe:pe};
+      ACCT = acctNew(); tbStudy([c], 2, P6, SO); n.push(ACCT.nFail['pth-books'] || 0); ACCT = null; });
+    [false, true].forEach(function(pe){ var c = frozenRow(relMainCfgs(tbPresets(P6))[1]); c.fx = {pthb:true, hb:true, ab:true, sp:true, pe:pe}; var r = tbStudy([c], 1, P6, SO)[0];
+      sg.push(Object.keys(r._s).sort().map(function(k){ return k + ':' + Array.prototype.join.call(r._s[k], ','); }).join(';')); });
+    return {pass:n[0] > 0 && n[1] === 0 && sg[0] === sg[1], detail:'PTH-books misses with ageing: ' + n[0] + ' without pe, ' + n[1] + ' with; without ageing identical: ' + (sg[0] === sg[1])}; });
+  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 39 places at S68 part 2 (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
+    var S = builtSource(), k = S.indexOf('/* ==== HARNESS' + '-ONLY CODE ==== */'), n = (S.slice(0, k).match(/\._ret\b/g) || []).length;
+    return {pass:n === 39, detail:'reads of a._ret in the engine: ' + n + ' (expected 39)'}; });
+  t('S68 part 2: the on-together check (r2PairCheck) passes on the candidate main row and with the price rule counted in quarters, and the run-order test holds (Reference, seed 1)', function(){
+    var R = r2PairCheck('ref', 1, {only:['q']}), f = R.rows.filter(function(x){ return !x.pass; });
+    return {pass:f.length === 0 && R.runOrder.mainSame && R.runOrder.noneSame, detail:R.rows.length + ' rows, failed: ' + (f.map(function(x){ return x.id + (x.threw ? ' (' + x.threw + ')' : ''); }).join(', ') || 'none') + '; run order ' + JSON.stringify(R.runOrder)}; });
   return out;
 }
 /* S52 (Nov 2, 2026): the outside supply shock (index.html sxOpts, sxEnergy, sxYear, sxPtf, the preset key p.sx). */
@@ -3593,6 +3616,88 @@ var FROZEN = {au:true, fx:true, sc:SPEND_FROZEN};
 function frozenRow(c){ c.au = FROZEN.au; c.fx = FROZEN.fx; c.sc = FROZEN.sc; return c; }
 function c22Design(c){ c.c22 = {auto:true, idx:'needs'}; c.p = Object.assign({}, c.p, {bu:c22NeedsBU()}); return c; }
 Object.assign(module.exports, { FROZEN, SPEND_FROZEN, frozenRow, c22Design });  /* S47 */
+/* S68 part 2 (Nov 14, 2026): the candidate main row of round 2, Claude's recommendation for S63's main-row decision (research-update PLAN S63, S69),
+ * as each round-2 report recommends it: the frozen engine (frozenRow) with today's safety net and CPS earnings (the frozen yardstick); wealth by asset class
+ * with business owners, capital income and the creditor side at its main reading (rt; S59, S71); the weighted top tail (wt; S59); adults outside the labour
+ * force (lf; S61) and the borrowing limit for ordinary spending at $2,500 (dr; S61); bargaining at pass-through 0 with the markdown 1/1.21 (bg; S60:
+ * identical to off); open PTF access with growth (pa; S55); PTF running costs and who pays at their main readings (po; S62); the financing identity reported
+ * (fx.fin 'report'; S68: moves no figure under the Source); today's price rule (no pr; S67 section 9). Applied to both runs of a pair. Study options:
+ * R2_MAIN_STUDY (distribution measures dm, the money-flow table mf, the tail's measures wtm, costs at the within-year price level wy). S72 and S73 add
+ * their switches here once built; the packet for S69 is rebuilt then. */
+var R2_MAIN = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}, rt:{bo:true, ci:true, ng:'base', cr:true}, wt:true, lf:{}, dr:{lim:2500}, bg:{pi:0, m:1/1.21}, pa:'open', po:true};
+var R2_MAIN_STUDY = {dm:true, rep52:true, wtm:true, mf:true, wy:true};
+function r2MainRow(c){ Object.assign(c, JSON.parse(JSON.stringify(R2_MAIN))); c.bg.m = R2_MAIN.bg.m; frozenRow(c); c.fx = {pthb:true, hb:true, ab:true, sp:true, fin:'report', pe:true}; return c; }
+/* The pair (row 0 no programme, row 1 the design: 'c22' the C2.2 design, 'rel' the release design) and the study options, environment P. */
+function r2MainPair(P, design){ var cf = relMainCfgs(tbPresets(P)).map(function(c){ c.sc = SPEND_SOURCED; return r2MainRow(c); }); if (design !== 'rel') c22Design(cf[1]); return cf; }
+function r2MainStudy(){ return Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY, R2_MAIN_STUDY); }
+Object.assign(module.exports, { R2_MAIN, R2_MAIN_STUDY, r2MainRow, r2MainPair, r2MainStudy });  /* S68 part 2 */
+/* S68 part 2, item 3: on-together tests. Each round-2 switch has one other reading that runs its own code (R2_ALT); every single one and every pair is
+ * applied to the candidate main row (which already has the other switches on at their main readings), in both runs of the pair. Per row and run:
+ * the accounting identities (ACCT, MODEL_SPEC section 11), eight main-stream draws per adult-year (the pre-pass year included), no non-finite output,
+ * and each switch's own checks (r2Own). r2PairCheck also runs the run-order test: the main pair and the no-programme run alone, first (after a warm-up)
+ * and last in the process, must give identical outputs. */
+function r2Pr(c, add, today){ var b = c.pr === true ? {} : c.pr && typeof c.pr === 'object' ? c.pr : null; c.pr = Object.assign({}, b || today, add); }
+var R2_TODAY = {k:1, a:0, r:0, h:0, rs:false};
+var R2_ALT = [
+  ['pr', 'the capacity price rule at S58\'s main values', function(c){ c.pr = true; }],
+  ['q', 'the price rule counted in quarters (q 4)', function(c){ r2Pr(c, {q:4}, R2_TODAY); }],
+  ['bd', 'the velocity drift (bd 0.132)', function(c){ r2Pr(c, {bd:0.132}, R2_TODAY); }],
+  ['bg', 'bargaining pass-through 0.03', function(c){ c.bg = {pi:0.03, m:R2_MAIN.bg.m}; }],
+  ['fin', 'the flat contribution with its unpaid part as new money (programme run)', function(c, i){ if (i) c.o = Object.assign({}, c.o, {fin:'tax'}); c.fx.fin = 'money'; }],
+  ['po', 'PTF prices rise to running cost (po pay price)', function(c){ c.po = {pay:'price'}; }],
+  ['pa', 'no demand ceiling (pa dem 1)', function(c){ c.pa = {dem:1}; }],
+  ['rt', 'no debt relief (rt chi 1, the creditor side off, as S59 and S71 run it)', function(c){ c.rt.chi = 1; c.rt.cr = false; }],
+  ['cr', 'creditors hold the loss (cr inc hold)', function(c){ if (c.rt.cr !== false) c.rt.cr = {inc:'hold'}; }],
+  ['wt', 'six tail households per type (wt m 6)', function(c){ c.wt = {m:6}; }],
+  ['lf', 'no conversion outside the labour force (lf conv none)', function(c){ c.lf = {conv:'none'}; }],
+  ['dr', 'the floor reading (dr fl fpl)', function(c){ c.dr = {lim:2500, fl:'fpl'}; }],
+  ['ag', 'ageing (ag)', function(c){ c.ag = {}; }],
+  ['cl', 'the community layer (cl)', function(c){ c.cl = {}; }],
+  ['ml', 'idle labour in normal years (ml nt)', function(c){ c.ml = {nt:{m:CFG.MULT_NORMAL, s:CFG.US_UNDERUSE}}; }]];
+function r2PairRows(only){ var A = R2_ALT.filter(function(x){ return !only || only.indexOf(x[0]) >= 0; }), rows = [{id:'main', alts:[]}];
+  A.forEach(function(x){ rows.push({id:x[0], alts:[x]}); });
+  A.forEach(function(x, i){ A.slice(i + 1).forEach(function(y){ rows.push({id:x[0] + '+' + y[0], alts:[x, y]}); }); }); return rows; }
+/* Each switch's own expectations that can be read from a run's outputs (r is one row of tbStudy, i 0 no programme, 1 programme). */
+function r2Own(r, ids, i){ var bad = [], v = function(k){ return r[k]; };
+  if (r.paS5 !== undefined && i){ if (!(v('paS5') <= v('paS10') + 1e-12 && v('paS10') <= v('paS19') + 1e-12)) bad.push('pa: the share fell');
+    ['paS5', 'paS10', 'paS19', 'paSh'].forEach(function(k){ if (r[k] !== undefined && !(r[k] >= 0 && r[k] <= 100 + 1e-9)) bad.push('pa: ' + k + ' outside 0-100%'); }); }
+  if (r.crGap !== undefined && !(Math.abs(r.crGap) <= 1e-6*Math.max(1, Math.abs(r.crRel || 0)))) bad.push('cr: ledger gap ' + r.crGap);
+  if (r.crUn !== undefined && !(Math.abs(r.crUn) <= 0.05*Math.max(1, Math.abs(r.crRel || 0), Math.abs(r.crBook || 0)))) bad.push('cr: unplaced claims ' + r.crUn + ' over 5% of the ledger');  /* S71's rule: unplaced claims at most 5% of the relief (or of the book loss, where there is no relief: rt chi 1) */
+  if (r.finGap !== undefined && !(r.finGap >= -1e-9)) bad.push('fin: negative unpaid part');
+  if (ids.indexOf('fin') >= 0 && i && !(Math.abs(r.finGapSh || 0) < 1e-12 && Math.abs(r.finGapM - r.finGap) <= 1e-9*Math.max(1, r.finGap))) bad.push('fin: money reading leaves ' + r.finGapSh + '% unpaid');
+  if (r.lfShare !== undefined && !(r.lfShare >= 0 && r.lfShare <= 100)) bad.push('lf: share outside 0-100%');
+  if (r.poSub !== undefined && ids.indexOf('po') >= 0 && i && Math.abs(r.poSub) > 1e-9) bad.push('po: pay price still subsidises ' + r.poSub);
+  if (r.poSub !== undefined && !(r.poSub >= -1e-9)) bad.push('po: negative subsidy');
+  if (r.wtW !== undefined && !(r.wtW > 0 && r.wtTailW >= 0)) bad.push('wt: weights');
+  if (r.wyF0PY !== undefined && r.prAvg === undefined && r.wyF0PY !== r.fgt0PY) bad.push('wy: differs from the published measure without a split year');
+  if (r.bgSh !== undefined && !(r.bgSh >= -1e-12)) bad.push('bg: negative share');
+  return bad; }
+function r2PairCheck(env, seeds, opt){ opt = opt || {}; var E = {ref:FULL_INTEGRATION, adv:ADVERSE_REFERENCE, st:STRESS_TEST}[env], out = {env:env, seeds:seeds, rows:[]};
+  var P = Object.assign({}, E, {years:opt.years || 20, nAgents:opt.n || 500}), so = r2MainStudy(), mb0 = mulberry32, core0 = tbRunCore, cnt = 0, live = {}, draws = [];
+  return acctProfile(function(){
+    mulberry32 = function(sd){ var g = mb0(sd); return live[sd] ? function(){ cnt++; return g(); } : g; };
+    tbRunCore = function(p, seed, o, S, tau0, yrs){ live = {}; live[seed] = 1; var c0 = cnt, r = core0.apply(this, arguments); live = {}; draws.push({n:cnt - c0, exp:8*p.nAgents*yrs}); return r; };
+    try {
+      function study(cf){ draws = []; var A0 = ACCT; ACCT = acctNew(); try { var R = tbStudy(cf, seeds, P, so), nF = 0; Object.keys(ACCT.nFail || {}).forEach(function(k){ nF += ACCT.nFail[k]; }); return {R:R, A:{n:ACCT.n, nFail:nF, byId:ACCT.nFail, worst:ACCT.worst, fails:(ACCT.fails || []).slice(0, 3)}, d:draws.slice()}; } finally { ACCT = A0; } }
+      function sig(R){ return R.map(function(r){ return Object.keys(r._s).sort().map(function(k){ return k + ':' + Array.prototype.join.call(r._s[k], ','); }).join(';'); }).join('\n'); }
+      study(r2MainPair(P, opt.design));  /* warm-up, not counted */
+      var first = sig(study(r2MainPair(P, opt.design)).R), none0 = sig(study([r2MainPair(P, opt.design)[0]]).R);
+      r2PairRows(opt.only).forEach(function(row){ var t = Date.now(), cf = r2MainPair(P, opt.design), x = {id:row.id, label:row.alts.map(function(a){ return a[1]; }).join(' + ') || 'the candidate main row'};
+        cf.forEach(function(c, i){ row.alts.forEach(function(a){ a[2](c, i); }); });
+        try { var S = study(cf), nf = [], own = [];
+          S.R.forEach(function(r, i){ Object.keys(r._s).forEach(function(k){ var a = r._s[k]; for (var j = 0; j < a.length; j++) if (!isFinite(a[j])){ nf.push(i + ':' + k); break; } });
+            r2Own(r, row.alts.map(function(a){ return a[0]; }), i).forEach(function(b){ own.push(i + ':' + b); }); });
+          var dBad = S.d.filter(function(d){ return d.n !== d.exp; });
+          x.acct = S.A; x.draws = {runs:S.d.length, bad:dBad.length, first:dBad[0] || null}; x.nonFinite = nf; x.own = own;
+          x.pass = S.A.nFail === 0 && dBad.length === 0 && nf.length === 0 && own.length === 0;
+          x.keys = {}; ['fgt0PY', 'pov', 'endoAnn', 'cost', 'finGapSh', 'poSub', 'paSh', 'wtT1E', 'prAvg', 'lfShare'].forEach(function(k){ x.keys[k] = [S.R[0][k], S.R[1][k]]; }); }
+        catch (e){ x.pass = false; x.threw = e.message; }
+        x.secs = (Date.now() - t)/1000; out.rows.push(x); if (opt.log) opt.log(x); });
+      var last = sig(study(r2MainPair(P, opt.design)).R), none1 = sig(study([r2MainPair(P, opt.design)[0]]).R);
+      out.runOrder = {mainSame:first === last, noneSame:none0 === none1};
+      return out; }
+    finally { mulberry32 = mb0; tbRunCore = core0; } }); }
+Object.assign(module.exports, { R2_ALT, r2PairRows, r2Own, r2PairCheck });  /* S68 part 2 */
 Object.assign(module.exports, { PA_KEYS, PA_DEFAULTS, paW, paInit, paUnitSuite });  /* S55 */
 Object.assign(module.exports, { LV_KEYS, lvUnitSuite });  /* S54 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
