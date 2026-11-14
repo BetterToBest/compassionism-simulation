@@ -5047,6 +5047,45 @@ var TB = null;
  * testbed row sets it with c.gc (n1Row option gc); v5.1's release row turns it on (REL_V5). No random draw is added or moved. */
 var GATE_CURRENT = false;
 var TB_DEFAULTS = {fin:'tax', aT:0, eP:0, tauMax:0.9, X:0, inkindRho:true, neutralGate:true, rep52:false, giniNN1:false};  /* v5.2 step 2: rep52 (the Year 7 and federal-poverty-line reporting) and giniNN1 (the n/(n - 1) Gini correction), reporting only, off by default */
+/* S68 (Nov 14, 2026; Nov 13 audit, finding 1): THE FINANCING IDENTITY, AND THE FLAT CONTRIBUTION'S GAP (row option fx: {fin: ...}; not part of fx: true).
+ * Each year, for every financing reading: the programme's payout at face value under the reading's timing = taxes raised + new money for the payout (U less
+ * `extra`, the floor's unmatched part and the wage bonus, new money in every reading) + output that matches or backs it + the stated unpaid part - the surplus
+ * raised beyond the payout. The unpaid part is need - tax where a capped contribution pays need (flat 'tax', 'hybrid', 'source'; 'tax' with a taxBase
+ * already makes it new money), and the transfers and price cuts under 'none' (its definition). fx.fin 'report': keys only, no figure moves; 'money': the
+ * gap of flat 'tax', 'hybrid' and 'source' is new money, as for taxBase 'prog' and 'land'; 'debt': S72 (refused until built). The check (ACCT id 'fin')
+ * runs with ACCT on; no figure depends on it. Keys (FIN_KEYS, only with fx.fin): per adult-year in year-0 dollars, finGapSh % of payout, finCapYrs the
+ * years the flat rate sat at its cap. No RNG. */
+var FIN_KEYS = ['finPay', 'finTax', 'finMoney', 'finMatch', 'finGap', 'finSur', 'finGapM', 'finGapSh', 'finCapYrs'];
+function finStep(L, o, C, A, need, U, extra, gRun, bkP, bkU, T, tauUsed){
+  var F = FX && FX.fin, cuts = (1 - o.eP)*(C.cutPT - C.cutFree + C.cutG), taxed = o.fin === 'tax' || o.fin === 'hybrid' || o.fin === 'source', gp = 0, sr = 0, gm = 0, P, M, B, G;
+  if (F === 'debt') throw new Error("fx.fin 'debt' (government borrowing) is built in S72");
+  if (F && F !== 'report' && F !== 'money') throw new Error('fx.fin: unknown reading ' + F);
+  if (taxed){ gp = Math.max(0, need - C.tax); sr = Math.max(0, C.tax - need); }
+  if (F === 'money' && (o.fin === 'hybrid' || o.fin === 'source' || (o.fin === 'tax' && !o.taxBase))){ gm = gp; U += gp; }
+  if (o.fin === 'tax' && o.taxBase) gm = gp;  /* already new money (v5.2 step 7) */
+  M = U - extra;
+  if (o.fin === 'tax'){ P = need; B = 0; G = gp - gm; }
+  else if (o.fin === 'hybrid'){ P = need + C.conv; B = o.a*(C.conv - C.convM) + C.convM; G = gp - gm; }
+  else if (o.fin === 'source'){ var cvS = gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv; P = need + C.bu + cvS; B = bkP - bkU + C.convM + (o.faceM ? C.bu : 0); G = gp - gm; }
+  else { P = C.cash + C.endow + C.cap + C.bu + cuts + C.conv + C.pthLiq;
+    if (o.fin === 'money'){ B = o.aT*(C.cash + C.endow + C.cap) + (o.buAtA ? o.a : o.aT)*C.bu + o.a*(C.conv - C.convM) + C.convM + (o.pthUnmatched ? 0 : C.pthLiq); G = 0; }
+    else { B = o.a*A.conv; G = C.cash + C.endow + C.cap + C.bu + cuts + (C.conv - A.conv) + (o.pthUnmatched ? C.pthLiq - A.pthLiq : C.pthLiq); } }
+  var Tx = taxed ? C.tax : 0;
+  if (ACCT) acctChk('fin', L.yr, P - Tx - M - B - G + sr, Math.abs(P) + Math.abs(Tx) + Math.abs(M) + Math.abs(B) + Math.abs(G), o.fin);
+  if (F){ var Q = L.fi || (L.fi = {P:0, T:0, M:0, B:0, G:0, S:0, GM:0, cap:0}), i = C.idx || 1;
+    Q.P += P/i; Q.T += Tx/i; Q.M += M/i; Q.B += B/i; Q.G += (taxed ? gp : G)/i; Q.S += sr/i; Q.GM += gm/i; if (o.fin === 'tax' && !o.taxBase && tauUsed >= o.tauMax - 1e-12) Q.cap++; }
+  return U; }
+function finRes(r, Q, NY){ Q = Q || {P:0, T:0, M:0, B:0, G:0, S:0, GM:0, cap:0};
+  r.finPay = Q.P/NY; r.finTax = Q.T/NY; r.finMoney = Q.M/NY; r.finMatch = Q.B/NY; r.finGap = Q.G/NY; r.finSur = Q.S/NY; r.finGapM = Q.GM/NY;
+  r.finGapSh = Q.P > 0 ? (Q.G - Q.GM)/Q.P*100 : 0; r.finCapYrs = Q.cap; return r; }
+/* S68 (Nov 14, 2026; Nov 13 audit, finding 4): COSTS AT THE WITHIN-YEAR PRICE LEVEL (study or row option o.wy; reporting only). Each adult-year's cost of
+ * living and its reference (mlc) times the year's within-year average price level over its opening level, exp(avg) from the capacity rule's record (1 when
+ * the year is not split, q = 1, or the rule is off); basket poverty and its depth recounted (WY_KEYS). Incomes are the year's nominal dollars, paid through
+ * the year; wages are indexed once a year. The general level stands for every item (a modelling assumption). No figure reads it; no RNG. */
+var WYS = null, WY_KEYS = ['wyF0PY', 'wyF1PY', 'wyF2PY', 'wyAvg'];
+function wyYear(W, f){ for (var j = 0; j < W.cur.length; j += 3){ var g = Math.max(0, W.cur[j]*f - W.cur[j + 1])/(W.cur[j + 2]*f); W.f0 += g > 0 ? 1 : 0; W.f1 += g; W.f2 += g*g; W.n++; }
+  W.cur = []; W.fs += f; W.ny++; }
+function wyRes(r, W){ var n = Math.max(1, W.n); r.wyF0PY = W.f0/n*100; r.wyF1PY = W.f1/n*100; r.wyF2PY = W.f2/n*100; r.wyAvg = W.ny ? W.fs/W.ny : 1; return r; }
 function tbNewAcc(){ return {pjg:0, n:0, cash:0, endow:0, bu:0, conv:0, convM:0, buIss:0, ctax:0, cutFree:0, cutPT:0, cutG:0, cap:0, pthLiq:0, tax:0, base:0, E:0, f0:0, f1:0, f2:0, idx:1, pd:0, tgt:0, emp:0, hrs:0, bR:0, bP:0,
   bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0}; }  /* session 19 (s38): business premium and ESP payroll by group, years 1-19 (reporting only) */
 function tbYear(p, colaF){
@@ -6105,6 +6144,7 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
 function tbPov(a, C, idx, inc, mlc, costUSD, disp){
   var g = Math.max(0, costUSD - inc)/mlc;
   C.f0 += g > 0 ? 1 : 0; C.f1 += g; C.f2 += g*g;
+  if (WYS) WYS.cur.push(costUSD, inc, mlc);  /* S68 (reporting only) */
   if (SXS) sxAcc(a, SXS.p, costUSD, mlc, g > 0);  /* S52 (reporting only) */
   if (SECS) secAcc(a, inc, mlc, costUSD, idx, g);  /* S53 (reporting only) */
   a._tbGap = g; a._tbF0 = (a._tbF0 || 0) + (g > 0 ? 1 : 0); a._tbF2 = (a._tbF2 || 0) + g*g;  /* session 21 (s41): FGT2 by group */
@@ -7054,6 +7094,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   PRICE = {bIdx:1, comp:comp, piG:0, colaLevel:1, lastFull:1, wIdx:o.wIdx, noDamp:o.noDamp, acc:null};
   var SXp = p.sx ? sxOpts(p.sx) : null; SXS = SXp ? sxNew(SXp, p.years) : null; if (SXS) SXS.p = p;  /* S52 (reporting state only with p.sx) */
   SECS = o.sec ? secNew(o.sec, p.years) : null;  /* S53 (reporting state only with o.sec) */
+  WYS = o.wy ? {cur:[], f0:0, f1:0, f2:0, n:0, fs:0, ny:0} : null;  /* S68 (reporting only) */
   DMS = o.dm ? dmNew(o.dm) : null;  /* S57 (reporting state only with o.dm) */
   RTR = RETURNS ? {} : null;  /* S59 (reporting state only with rt) */
   WTS = WEALTH_TAIL || o.wtm ? {} : null;  /* S59 part 2 (reporting state only with wt or o.wtm) */
@@ -7064,6 +7105,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var L = {pjg:0, cost:0, cash:0, endow:0, bu:0, conv:0, cutPT:0, cutG:0, cap:0, pth:0, tax:0, need:0, treas:0, f0:0, f1:0, f2:0, n:0, endowTot:0, need0:0, base0:0, pd:0, tgt:0, emp:0, hrs:0, Er:0, bR:0, bP:0,
     bz:0, es:0, n1:0, nP1:0, nN1:0, pyP:0, pyN:0, nWP1:0, esWP:0, convM:0, buIss:0, ctax:0, cutFree:0, bkP:0, bkU:0, bkY:0, ntR:0};  /* session 19 (s38); convM: plan step 2; buIss, ctax: plan step 3; bk*, ntR: v5.2 step 6 */
   THETA_DENS = null;
+  FWS = null; PJS = null; ESS = null; SPS = null; PDS = null; JNS = null; HCS = null;  /* S68 (Nov 9 audit, finding 4): per-run state starts empty in every run, so a row cannot read the previous run's (each mechanism rebuilds its own at year 0) */
   var epD0 = housingDistressYear0(agents), epSum = 0;  /* plan step 9: unhoused person-years (reporting only) */
   var BG = tbBleiAcc();  /* session 21 (s41; i10-1): BLEI by group, every year (reporting only, no RNG) */
   var dbt20 = 0, dbt40 = 0;  /* S35: families in debt (reporting only) */
@@ -7107,6 +7149,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
         if (ACCT && !gRun){ var srcB = bkP - bkU + C.convM + (o.faceM ? C.bu : 0); acctChk('source', yr, C.bu + C.conv - bkU - srcB, Math.abs(C.bu) + Math.abs(C.conv) + Math.abs(bkU) + Math.abs(srcB), null); } }  /* v5.3 B2: what the Source pays (BU face value and conversion) = new money + the output that backs it */
       else if (o.fin === 'hybrid') U = (1 - o.a)*(C.conv - C.convM) + extra;  /* plan step 2: matched output (0 unless PROD) */  /* session 7 (d26 option c): transfers taxed, conversion rewards created at a */
       else U = (1 - o.a)*A.conv + (o.pthUnmatched ? A.pthLiq : 0) + extra;  /* 'none': the session 2-5 rule (transfers and price cuts unfinanced) */
+      if ((FX && FX.fin) || ACCT){ L.yr = yr; U = finStep(L, o, C, A, need, U, extra, gRun, o.fin === 'source' ? bkP : 0, o.fin === 'source' ? bkU : 0, T, tauUsed); }  /* S68: the financing identity; fx.fin 'money' makes the capped contribution's gap new money */
       if (LVS) lvAcc(U, A.Yw, C.idx);  /* S54 */
       if (MFS) mfYear(MFS, C, U, A.Y);  /* S58 (reporting only) */
       if (yr === 0){ L.need0 = need; L.base0 = C.base; if (C.Es){ L.Es0 = C.Es; L.xi0 = 1; } }  /* v5.2 step 7: year 0's earnings for the progressive schedule (its brackets are in year-0 terms) */
@@ -7130,7 +7173,9 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
         var dEff = o.supply === 'baseline' ? d : sRef + Math.max(0, d - sRef) - Math.max(0, S[yr] - sRef);
         PE[k] = pmEssLevel(dEff, sRef, capShare*cut, k === 'medical' && HEALTH && (HEALTH.set === 'B' || HEALTH.set === 'C') && yr + 1 >= HEALTH.start ? 0 : o.theta[k]);  /* session 2a, d-health-price rule a: under single payer the public payer sets rates (a shortage shows as waits); this step sets next year's prices */
       });
+      var wyN = PRS ? PRS.y.length : 0;
       if (PRS) PGn = prStep(PRS, U, A.Y, o.lamG, PRICE.wIdx, PRICE.piG, PRICE.bIdx, PRICE.acc.slk || 0, yr, PGn);  /* S58: the capacity rule's general level (under 'qt' the record only; PGn unchanged) */
+      if (WYS) wyYear(WYS, PRS && PRS.y.length > wyN ? Math.exp(PRS.y[PRS.y.length - 1].avg || 0) : 1);  /* S68 (reporting only): this year's within-year level, known after the price step */
       path.push({bIdx:PRICE.bIdx, PG:PG, U:U, Y:A.Y, tau:tauUsed, colaLevel:PRICE.colaLevel, full:C.idx});  /* session 8: full price level (exogenous x endogenous) */
       PRICE.piG = PGn/PG - 1; PG = PGn;
       CFG.BASKET_KEYS.forEach(function(k){ comp[k] = CFG.ESSENTIALS.indexOf(k) >= 0 ? PE[k]*(o.pgOnE ? PG : 1) : PG; });
@@ -7171,6 +7216,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (COMM) emR = clRes(emR || {});  /* S37 */
   if (PAS) emR = paRes(emR || {});  /* S55 */
   if (POS) emR = poRes(emR || {}, NY, L.cost/NY);  /* S62 */
+  if (FX && FX.fin) emR = finRes(emR || {}, L.fi, NY);  /* S68 */
+  if (WYS){ emR = wyRes(emR || {}, WYS); WYS = null; }  /* S68 (only with o.wy) */
   if (C22) emR = c22Res(emR || {}, grpOf(function(a){ return !!a._inel; }), n);  /* S6 */
   if (HEALTH && HLS) emR = hlRes(emR || {});  /* session 2a */
   if (SNET && SNS) emR = snRes(emR || {});  /* session 2b */
@@ -7643,6 +7690,8 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.c22PY !== undefined) C22_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S6 */
         if (r.clN !== undefined) CL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S37 */
         if (r.poSub !== undefined) PO_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S62 */
+        if (r.finPay !== undefined) FIN_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S68 */
+        if (r.wyAvg !== undefined) WY_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S68 */
         if (r.paSh !== undefined) PA_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S55 */
         if (r.pbV !== undefined) PTHB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 3 */
         if (r.snAbN !== undefined) SN_AB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* session 7 */
