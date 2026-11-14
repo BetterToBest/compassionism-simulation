@@ -1,8 +1,9 @@
-# Handoff (Nov 13, 2026): engine state after S60 (bargaining power: a worker's outside option and an employer markdown)
+# Handoff (Nov 14, 2026): engine state after S62 (PTF realism: running costs and who pays, PTF workers and wages, the density tests)
 
 The project is coordinated from BetterToBest/research-update (its HANDOFF.md and PLAN.md come first); this file records this repository's state. The full Nov 10 handoff, with every shipped item from S6 to S66, is kept word for word in `dev/handoff-archive/2026-11-10-handoff-full.md`. Pitfalls are in `dev/PITFALLS.md`.
 
 ## What shipped (latest first)
+- S62 (Nov 14, pull request 99): switch `PTF_OPS` (row option `po`; needs `pa` open), PTF realism: running costs `cost` 'full' (main, with reserve `res` 0.017), 'sector', 'hub'; who pays `pay` 'source' (main, D19) or 'price'; the conversion bonus on PTF workers `bonus` 'workers' (main) or 'members'; PTF payroll follows `bg`; a hiring limit `hire` (stress only); the food factor `curve` 'smooth' (main, D20; `w` 0.20) or 'step'; what the tests read `test` 'sales' (main), 'members', 'capacity' (`PO_DEFAULTS`, `poOpts`, `poCost`, `poForg`, `poEps`, `poPtfsCut`, `poFree`, `poBonus`, `poYear`, `poTally`, `poRes`; keys `PO_KEYS`). Off = identical; `po {cost:'full', res:0, bonus:'members', curve:'step', test:'sales'}` = identical (the engine already counted the subsidy since step 5). 10 unit tests (`poUnitSuite`); `sources/s62_ptf_ops.py`; report `dev/reports/s62-ptf-realism.md`; tables `dev/runs/s62-ptf-ops/`; results compassionism-sim-results `s62-ptf-ops-3500d0b`.
 - S60 (Nov 13, pull request 98): switch `BARGAIN` (row option `bg`), a worker's outside option and an employer markdown in reduced form (`BG_DEFAULTS` m 1/1.21, pi 0; `bgOpts`, `bgRaise`, `bgRw0`, `bgAcc`, `bgYear`, `bgRes`; keys `BG_KEYS`). The outside option is the income effect's unconditional programme dollars without the safety net (`tbLab` returns `O`); the raise `min(pi O / E, 1/m - 1)` multiplies earnings by `(1 + g)^(1 + eps - rho)`; hours and project hours at the bargained wage. Off = identical; 7 unit tests (`bgUnitSuite`). Sources `sources/s60_bargain.py`. Report `dev/reports/s60-bargaining-power.md`; tables `dev/runs/s60-bargain/`; results compassionism-sim-results `s60-bargain-69f69f5`. Findings: the evidence gives a pass-through of about 0 (main reading = off); at the 3-cent bound the raise is about $650 a worker-year (5-9% of the programme's raises, poverty 0.1-0.6 points lower); the engine has no participation margin (0.0 against the US experiment's −4.2 points).
 - S71 (Nov 13, pull request 97): option `cr` of `rt`, a creditor side for household fixed-rate debt (`RT_CR`, `crOpts`, `crRates`, `crYear`; readings `inc: 'pass' | 'hold' | 'hedge'`, `pop: 1`, `out: 0`, `w: 0`; keys `CR_KEYS`). Off = identical; 7 unit tests (`crUnitSuite`). Coefficients: `sources/s71_creditors.py` (the Fed's Financial Accounts, SCF 2022; Doepke and Schneider 2006). Report `dev/reports/s71-creditor-side.md`; tables `dev/runs/s71-creditors/`; results compassionism-sim-results `s71-creditors-f7572fd`. Findings: wealth poverty does not move with the creditor side; the programme still lowers the top 1% share in every creditor reading; the sign turns on whether debt relief happens, not on the lender (a dated note in the S59 report).
 - S67 (Nov 13, pull request 96): three dated correction notes (S58 and S57 reports; no figure changed); the capacity rule's closed form (`dev/tools/s67_closed_form.py`); the response speed estimated on the rule's own variable (`sources/s67_pstar.py`: zero within error) and 77 high-inflation episodes (`sources/s67_panel.py`); options `q` (sub-steps within the year), `bv` (velocity response), `bd` (velocity drift) of `pr`, off = identical, 7 unit tests in `prUnitSuite`; reported key `prAvg`. Report `dev/reports/s67-price-rule-derivation.md` (its section 9 is the recommendation for S63: today's rule as the main row); results compassionism-sim-results `s67-price-985f0c3`.
@@ -13,24 +14,26 @@ The project is coordinated from BetterToBest/research-update (its HANDOFF.md and
 - Earlier work (S6, S13, S35 to S39, S47 to S57, S61; S61's report is `dev/reports/s61-baseline-scope.md`): see the archive file above.
 
 ## Branch and pull request state
-- Branch `claude/s60-bargaining-power`, pull request 98 (S60): see research-update HANDOFF.md for whether it merged.
+- Branch `claude/s62-ptf-realism`, pull request 99 (S62): see research-update HANDOFF.md for whether it merged.
 
 ## Long jobs in flight: none.
 
 ## Next 3 actions
-1. S62 (PTF realism): research-update PLAN.md has the step's text; its PTF wages use S60's wage setting (`bg`, main reading pass-through 0). Preregister first in research-update `prereg/`.
-2. S68 places the closed form (`dev/reports/s67-price-rule-derivation.md`, section 3, "For MODEL_SPEC") and the options `q`, `bv`, `bd` and `prAvg` in MODEL_SPEC, ODD and TESTBED_SPEC.
-3. Before any engine change, run `node dev/tools/guard_test.js` and record the change with `node dev/tools/engine_lineage.js prove "what changed"`.
+1. S68 (round 2 written into MODEL_SPEC, ODD and TESTBED_SPEC; per-run module reset; pairwise on-together tests) can start now that S62 is done: add `po` to the plain-names table and the pairwise tests (`po` with `pr`, `rt`, `wt`, `cl`, `bg`).
+2. S70 screens the S62 readings preregistered for it (sector costs, no reserve, the band widths, the two test readings, the hiring limits, the bonus on members).
+3. Before any engine change, run `node dev/tools/guard_test.js`, resync `earlier-engine.html` (`python3 dev/tools/sync_earlier.py`) and record the change with `node dev/tools/engine_lineage.js prove "what changed"`.
 
 ## Files to touch
 - `index.html`: grep `WEALTH_TAIL`, `WT_`, `RT_`, `rtCap`, `spBase`, `PRICE_RULE`; look the line ranges up in `dev/CODEMAP.md`.
 - `harness.js`: grep `wtUnitSuite`, `rtUnitSuite`, `prUnitSuite`, `frozenRow`.
 - Price rule: `index.html` `prStep`, `prStepQ`, `PR_DEFAULTS`; pilot tools `dev/tools/s67_price.js`, `dev/tools/s67_table.py`.
 - `sources/s59_tail.py`, `sources/s59_capital.py`, `sources/s59_portfolio.py`; pilot tools `dev/tools/s59_tail.js`, `dev/tools/s59_tail_table.py`.
+- PTF realism: `index.html` `PO_DEFAULTS`, `poPtfsCut`, `poFree` (the subsidy enters at the step-5 free part, `a._csFree`), `poBonus` (three call sites: `pjOwnRate`, the framework and engine conversions); pilot tools `dev/tools/s62_ptf_ops.js`, `dev/tools/s62_table.py`.
 - Bargaining: `index.html` `BG_DEFAULTS`, `bgRaise`, the labour block in `runYear` (grep `bgG`), `tbLab`'s `O`; pilot tools `dev/tools/s60_bargain.js`, `dev/tools/s60_table.py`.
 - `dev/DECISIONS.md`: add a section per decision (grep "S60 (Nov 13" for the last one).
 
 ## Pitfalls (the ones that bite every session; the rest are in `dev/PITFALLS.md`)
+- `po` acts only under open access and refuses `pa {ops:'outside'}`. Under `po` the reported `pfCut` and `csFree` follow the reading; the subsidy is `poSub` (the PTF cut less its free part), not `cCut`, which includes PTH. Under `pay:'price'` the density tests and SZH no longer touch the PTF cut.
 - `bg` needs the labour response (testbed runs set it); it throws otherwise. A bargained raise has no payer and lowers inflation under today's price rule (it adds to the income new money is divided by): never quote a reading above 0.03 for a wealth or price result without saying so.
 - `PDS` (the production side's yearly record) is reset only where the production side acts: a no-programme row reports the previous programme run's `pdC*` and `pdMem19`. Never read those keys for a no-programme row; S68's per-run reset is to fix it.
 - Unit tests that compare whole studies need an uncounted warm-up run and the same row structure each time (cached supply paths are shared by the rows of a study).
