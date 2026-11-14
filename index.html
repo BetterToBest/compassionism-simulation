@@ -7358,6 +7358,7 @@ var TB_KEYS = ['endoAnn','endoMax','pov','bleiPov','nbleiPov','tgt','medWealthRe
 function tbStudy(cfgs, N, envP, o0, lo){
   if (o0 && typeof o0.sc === 'number'){ var scS = SURPLUS_CONSUMPTION_SHARE; SURPLUS_CONSUMPTION_SHARE = o0.sc;  /* plan step 7: a study-level spending rule (the supply path and every row) */
     try { var oS = Object.assign({}, o0); delete oS.sc; return tbStudy(cfgs, N, envP, oS, lo); } finally { SURPLUS_CONSUMPTION_SHARE = scS; } }
+  cfgs.forEach(function(c){ if (c.pr && c.pr !== 'qt' && typeof c.pr === 'object' && c.pr.h && c.ml && c.ml.nt) throw new Error('pr.h and ml.nt both read the normal-years slack: use one'); });  /* S68 part 2: a hazard made a refusal, before any switch is set */
   lo = lo || 1; var M = N - lo + 1, grp = {part:envP.partRate, pth:envP.pthUptake};
   var out = cfgs.map(function(){ var r = {_s:{}}; TB_KEYS.forEach(function(k){ r[k] = 0; r._s[k] = new Float64Array(M); }); return r; });
   for (var sd = lo; sd <= N; sd++){
@@ -7390,7 +7391,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var lf0 = LF_SCOPE; if (c.lf) LF_SCOPE = Object.assign({}, LF_DEFAULTS, c.lf === true ? {} : c.lf);  /* S61: adults outside the labour force for this row (no programme rows too) */
       var po0 = PTF_OPS; if (c.po) PTF_OPS = poOpts(c.po);  /* S62: PTF realism for this row (needs pa open) */
       var bg0 = BARGAIN; if (c.bg) BARGAIN = bgOpts(c.bg);  /* S60: a worker's outside option and an employer markdown for this row (no programme rows too) */
-      var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; } if (PRICE_RULE === 'capacity' && PR_OPTS.h && MULT && MULT.nt) throw new Error('pr.h and ml.nt both read the normal-years slack: use one');  /* S68 part 2: a hazard made a refusal */  /* S58: the capacity price rule for this row (no programme rows too) */
+      var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; }  /* S58: the capacity price rule for this row (no programme rows too) */
       var pa0 = [PTF_ACCESS, PA]; if (c.pa && c.pa !== 'members'){ if (c.pa !== 'open' && typeof c.pa !== 'object') throw new Error('pa: members, open or {fix}'); PTF_ACCESS = 'open'; PA = Object.assign({}, PA_DEFAULTS, typeof c.pa === 'object' ? c.pa : {}); }  /* S55: open PTF access for this row */
       var cl0 = COMM; if (c.cl) COMM = Object.assign({}, COMM_DEFAULTS, c.cl === true ? {} : c.cl);  /* S37: the community layer for this row */
       var c220 = C22; if (c.c22) C22 = Object.assign({}, C22_DEFAULTS, c.c22 === true ? {} : c.c22);  /* S6: coverage and adequacy for this row */
