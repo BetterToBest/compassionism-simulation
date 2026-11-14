@@ -846,6 +846,22 @@
    },
    "equal": true,
    "seconds": 136
+  },
+  {
+   "from": "10229932ee84a775e99ab48a9ed353cf8762ec1cb05d229d079cd222fd91b5ce",
+   "to": "3426ee3611d27897425f18a76da7e5dd00255ec2780acfc771cc75e5a14aad81",
+   "date": "2026-11-14",
+   "change": "S63 part 2: fx.ez and fx.rk (S69's two reporting corrections, off by default); r2FreezePair (harness only)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 295
   }
  ]
 }
