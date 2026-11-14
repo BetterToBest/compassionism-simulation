@@ -1756,6 +1756,80 @@ function bgUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { BARGAIN_KEYS:BG_KEYS, BG_KEYS, BG_DEFAULTS, bgOpts, bgRaise, bgRw0, bgUnitSuite });  /* S60 */
+/* S62 (Nov 14, 2026; research-update prereg/2026-11-s62-ptf-realism.md): unit tests of PTF_OPS (row option po), PTF realism. */
+function poUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); CFG.WEALTH_FLOOR = wf0; PTFS = null; PTF_OPS = null; POS = null; PAS = null; PA = null; PTF_ACCESS = 'members'; PFS = null; CMS = null; BARGAIN = null; BGS = null; LF_SCOPE = null; LFS = null; TB = null; LABOR = null; PRICE = null; REP_HOOK = null; } }
+  var SO = Object.assign({fin:'tax', aT:0, a:0, X:0, sc:SPEND_SOURCED}, REL_V52_STUDY), Y = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}, lf:{}, bg:{pi:0}, pa:'open'};
+  var ID = {cost:'full', res:0, bonus:'members', curve:'step', test:'sales'};
+  function rows(P, x, prog, c22){ var M = relMainCfgs(tbPresets(P)), c = frozenRow(Object.assign(M[prog ? 1 : 0], JSON.parse(JSON.stringify(Y)), JSON.parse(JSON.stringify(x || {})))); return c22 ? c22Design(c) : c; }
+  function three(P, x){ return [rows(P, x), rows(P, x, true), rows(P, x, true, true)]; }
+  var P20 = Object.assign({}, FULL_INTEGRATION, {nAgents:500, years:20}), P5 = Object.assign({}, FULL_INTEGRATION, {nAgents:500, years:5});
+  function same(A, B){ var bad = []; A.forEach(function(r, i){ Object.keys(r._s).forEach(function(k){ if (PO_KEYS.indexOf(k) >= 0 || (i === 0 && /^pd/.test(k))) return; var x = r._s[k], y = B[i]._s[k];
+    if (!y){ if (bad.length < 4) bad.push('row ' + i + ' ' + k + ' missing'); return; }
+    for (var s = 0; s < x.length; s++) if (!(x[s] === y[s] || (isNaN(x[s]) && isNaN(y[s])))){ if (bad.length < 4) bad.push('row ' + i + ' ' + k + ': ' + x[s] + ' against ' + y[s]); break; } }); }); return bad; }
+  function near(a, b, tol){ return Math.abs(a - b) <= (tol || 1e-9)*Math.max(1, Math.abs(a), Math.abs(b)); }
+  function fake(s, o){ PTFS = Object.assign({}, PTFS_DEFAULTS); PTF_OPS = poOpts(o || true); PA = Object.assign({}, PA_DEFAULTS); PAS = {z:Float64Array.from([s]), s:s, cY:[]}; CMS = null; PFS = null; PRICE = null;
+    POS = {wz:Float64Array.from([1]), mz:Float64Array.from([0.2]), cs:0.7, g:0, eN:0, eD:0}; }
+  t('off and po at the step-5 accounting (cost full, no reserve, the bonus on members, the step, the tests on sales) give results identical to no po on every key in the no-programme, release and C2.2 rows (Reference, 2 seeds, 20 years); the no-programme row of a po main row is identical too (open access needs PTF)', function(){
+    tbStudy(three(P20), 2, P20, SO);  /* uncounted first: the cached supply paths */
+    var A = tbStudy(three(P20), 2, P20, SO), B = tbStudy(three(P20, {po:ID}), 2, P20, SO), C = tbStudy(three(P20, {po:true}), 2, P20, SO);
+    var bad = same(A, B).concat(same([A[0]], [C[0]])), keys = Object.keys(A[1]._s).length;
+    return {pass:bad.length === 0 && keys > 300 && B[1].poSub > 0 && C[1].poSub > 0 && C[0].poSub === undefined, detail:bad.join('; ') + ' (' + keys + ' keys; subsidy ' + B[1].poSub + ', main ' + C[1].poSub + ')'}; });
+  t('running costs by hand: full food 1 - 0.0494 + 0.017, utilities 1 - 0.026/PTFS_UTIL + 0.017; sector food 1 - 0.288 + 255,664,944/982,152,009, utilities 0.839; with no reserve the free parts are exactly step 5\'s (COST_DEFAULTS); a payroll raise g adds payroll share x g', function(){
+    fake(0.3); var ok = near(poCost('f'), 1 - 0.0494 + 0.017) && near(poCost('u'), 1 - 0.0260/CFG.PTFS_UTIL + 0.017);
+    fake(0.3, {res:0}); ok = ok && poForg('f') === COST_DEFAULTS.food && poForg('u') === COST_DEFAULTS.util;
+    fake(0.3, {cost:'sector'}); ok = ok && near(poCost('f'), 1 - 0.288 + 255664944/982152009) && near(poCost('u'), 0.839);
+    fake(0.3); POS.g = 0.01; ok = ok && near(poCost('f'), 1 - 0.0494 + 0.017 + 0.01*101653223/982152009) && near(poCost('u'), 1 - 0.0260/CFG.PTFS_UTIL + 0.017 + 0.01*89920406/790488295);
+    return {pass:ok, detail:'full ' + (fake(0.3), poCost('f')) + ', ' + poCost('u')}; });
+  t('the cut by hand at a zone share of 0.3 (on what is bought at PTFs): source with the step, food 1 - 1/1.65 and utilities 1 - 1/1.80 at basket weights; price, 1 - running cost; the open-access cut is s x that; the free part is the cut under hub and price, the market price less the running cost under full', function(){
+    var a = {}, b = ptfsShares(a, false), p = {szh:false}, ok;
+    fake(0.3, {curve:'step'}); var c1 = ptfsCut(a, false, p, true, true), h1 = b.f*(1 - 1/1.65) + b.h*CFG.PTFS_UTIL*(1 - 1/1.80), o1 = ptfsCut(a, false, p, true);
+    ok = near(c1, h1) && near(o1, 0.3*h1);
+    fake(0.3, {pay:'price'}); var c2 = ptfsCut(a, false, p, true, true), h2 = b.f*(1 - poCost('f')) + b.h*CFG.PTFS_UTIL*(1 - poCost('u')); ok = ok && near(c2, h2);
+    var M = 1000, fS = b.f, hS = b.h; ok = ok && near(poFree(a, M, 1 - 0.3*h2, fS, hS), M*0.3*h2);
+    fake(0.3, {cost:'hub'}); ok = ok && near(poFree(a, M, 0.8, fS, hS), M*0.2);
+    fake(0.3); ok = ok && near(poFree(a, M, 0.8, fS, hS), M*(fS*poForg('f') + hS*poForg('u'))*0.3);
+    return {pass:ok, detail:'step ' + c1 + ' against ' + h1 + '; price ' + c2 + ' against ' + h2}; });
+  t('the smooth curve: 1.65 and 2.64 outside the band, 1/epsilon linear inside it, the step at w 0, and close to the step just outside 40% as w becomes small', function(){
+    fake(0.3); var lo = 1/1.65, hi = 1/2.64, ok = near(poEps(0.1), 1.65) && near(poEps(0.7), 2.64) && near(1/poEps(0.4), (lo + hi)/2) && near(1/poEps(0.3), 0.75*lo + 0.25*hi);
+    fake(0.3, {w:0}); ok = ok && poEps(0.39) === 1.65 && poEps(0.40) === 2.64; fake(0.3, {curve:'step'}); ok = ok && poEps(0.399) === 1.65 && poEps(0.41) === 2.64;
+    fake(0.3, {w:0.001}); ok = ok && near(poEps(0.395), 1.65) && near(poEps(0.405), 2.64);
+    return {pass:ok, detail:'at 0.30 ' + (fake(0.3), poEps(0.3)) + ', at 0.40 ' + poEps(0.4)}; });
+  t('workers: the bonus is 1 + k s (pcb - 1) for a worker whether or not a member, 1 for a retiree, an adult with no wage and an adult outside the labour force; with bonus members, S55\'s rule (pcb for a member, 1 otherwise)', function(){
+    fake(0.3); var p = {ptf:true}, pcb = 1.30, w = {wage:10, _ret:false, inPTF:false}, m = {wage:10, _ret:false, inPTF:true}, r = {wage:10, _ret:true, inPTF:true}, z = {wage:0, inPTF:true};
+    var ok = near(poBonus(w, p, pcb), 1 + CFG.PO_JOBS*0.3*0.30) && near(poBonus(m, p, pcb), poBonus(w, p, pcb)) && poBonus(r, p, pcb) === 1 && poBonus(z, p, pcb) === 1 && near(CFG.PO_JOBS, (3228.2917 + 592.4583)/157693.8333);
+    LFS = {}; ok = ok && poBonus({wage:10, _lf:true}, p, pcb) === 1; LFS = null;
+    fake(0.3, {bonus:'members'}); ok = ok && poBonus(m, p, pcb) === pcb && poBonus(w, p, pcb) === 1 && poBonus(m, {ptf:false}, pcb) === 1;
+    return {pass:ok, detail:'worker ' + (fake(0.3), poBonus(w, p, pcb))}; });
+  t('what the tests read: sales the zone\'s PTF share, members the zone\'s member share, capacity min(1, capacity / demand ceiling); the cut follows the share read', function(){
+    var a = {}, p = {szh:false}; fake(0.3, {test:'members'}); var e1 = poEps(poTZ(0)); fake(0.3, {test:'capacity'}); var e2 = poEps(poTZ(0)); fake(0.3); var e3 = poEps(poTZ(0));
+    var ok = near(e1, poEps(0.2)) && near(e2, poEps(0.7)) && near(e3, poEps(0.3)) && e2 > e3 && e3 > e1;
+    var R = tbStudy([rows(P5, {po:{test:'capacity'}}, true)], 1, P5, SO)[0], Q = tbStudy([rows(P5, {po:true}, true)], 1, P5, SO)[0];
+    return {pass:ok && R.poEpsF !== Q.poEpsF, detail:'epsilon members ' + e1 + ', capacity ' + e2 + ', sales ' + e3 + '; in a run ' + R.poEpsF + ' against ' + Q.poEpsF}; });
+  t('the hiring limit: the population\'s PTF share rises at most hire a year (release row, 20 years) and the limit is reported as binding; without it the share grows faster', function(){
+    var get = function(x){ var v = []; REP_HOOK = function(){ v.push(PAS.s); }; try { var R = tbStudy([rows(P20, x, true)], 1, P20, SO)[0]; } finally { REP_HOOK = null; } return {v:v, R:R}; };
+    var A = get({po:{hire:0.02}}), B = get({po:true}), up = 0, upB = 0; for (var i = 1; i < A.v.length; i++){ up = Math.max(up, A.v[i] - A.v[i - 1]); upB = Math.max(upB, B.v[i] - B.v[i - 1]); }
+    return {pass:A.v.length >= 19 && up <= 0.02 + 1e-9 && A.R.poHire > 0 && upB > 0.02 && B.R.poHire === 0, detail:'largest yearly rise ' + up + ' with the limit, ' + upB + ' without; binding ' + A.R.poHire + '%'}; });
+  t('wages: with S60\'s pass-through 0 nothing changes (poG 0); with 0.03 the PTF payroll rises (poG above 0) and the subsidy with it', function(){
+    var A = tbStudy([rows(P20, {po:true}, true)], 2, P20, SO)[0], B = tbStudy([rows(P20, {po:true, bg:{pi:0.03}}, true)], 2, P20, SO)[0];
+    return {pass:A.poG === 0 && B.poG > 0 && B.poSub > A.poSub, detail:'raise ' + B.poG + '%, subsidy ' + A.poSub + ' to ' + B.poSub}; });
+  t('refused: po without open access, po with ops outside, and unknown or out-of-range settings', function(){
+    var thr = function(f){ try { f(); return false; } catch (e){ return true; } }, n = 0;
+    if (thr(function(){ tbStudy([rows(P5, {po:true, pa:'members'}, true)], 1, P5, SO); })) n++;
+    if (thr(function(){ tbStudy([rows(P5, {po:true, pa:{ops:'outside'}}, true)], 1, P5, SO); })) n++;
+    [{cost:'x'}, {pay:'x'}, {bonus:'x'}, {curve:'x'}, {test:'x'}, {res:-1}, {w:0.5}, {hire:0}].forEach(function(v){ if (thr(function(){ poOpts(v); })) n++; });
+    return {pass:n === 10, detail:n + ' of 10 refused'}; });
+  t('no random draw: with po main and hire 0.02 the main stream is at the same place at the end of every year as without po (probed in the C2.2 row, 20 years)', function(){
+    var probe = function(x){ var v = []; REP_HOOK = function(){ v.push(RNG()); }; try { tbStudy([rows(P20, x, true, true)], 1, P20, SO); } finally { REP_HOOK = null; } return v; };
+    var a = probe({}), b = probe({po:{hire:0.02}}), ok = a.length >= 20 && a.length === b.length && a.every(function(x, i){ return x === b[i]; });
+    return {pass:ok, detail:a.length + ' probes, first ' + a[0] + ' against ' + b[0]}; });
+  return out;
+}
+Object.assign(module.exports, { PO_KEYS, PO_DEFAULTS, poOpts, poEps, poCost, poForg, poUnitSuite });  /* S62 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3923,11 +3997,15 @@ if (require.main === module) {
     console.log('\n=== bgUnitSuite(): S60, bargaining power: a worker\'s outside option and an employer markdown (harness-only) ===');
     BGU.forEach(function(x){ if (!x.pass) bgf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + BGU.length + ' run, ' + bgf + ' failed');
+    var POU = poUnitSuite(), pof = 0;
+    console.log('\n=== poUnitSuite(): S62, PTF realism: running costs and who pays, PTF workers and wages, the density tests (harness-only) ===');
+    POU.forEach(function(x){ if (!x.pass) pof++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + POU.length + ' run, ' + pof + ' failed');
     var PRU = prUnitSuite(), prf = 0;
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));

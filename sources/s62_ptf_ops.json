@@ -1,0 +1,174 @@
+{
+ "sources": {
+  "aies": {
+   "cite": "US Census Bureau, Annual Integrated Economic Survey 2024, national tables AIES00BASIC and AIES00EXP02 (released Sep 2026), United States, all establishments",
+   "url": [
+    "https://www2.census.gov/programs-surveys/aies/data/2024/AIES00BASIC.zip",
+    "https://www2.census.gov/programs-surveys/aies/data/2024/AIES00EXP02.zip"
+   ],
+   "sha256": [
+    "39c4235026672e7bffdbc36292ed976726df368f2ca435219aef1c84e8e4faa6",
+    "568874267bbeb7687eeb6a2fcb16860212ed40a494fe0fe038490736c2ffa6f7"
+   ],
+   "read": {
+    "445 food and beverage stores": {
+     "revenue": 982152009,
+     "payroll": 101653223,
+     "employees": 3395400,
+     "operating_expenses": 255664944
+    },
+    "4451 grocery stores": {
+     "revenue": 885740445,
+     "payroll": 92002595,
+     "employees": 3037443,
+     "operating_expenses": 227568598
+    },
+    "22 utilities": {
+     "revenue": 790488295,
+     "payroll": 89920406,
+     "fringe_benefits": 26781411,
+     "employees": 716627,
+     "operating_expenses": 581352215
+    },
+    "6244 child day care, all": {
+     "revenue": 65546955,
+     "payroll": 32143542,
+     "employees": 1089087,
+     "operating_expenses": 60760890
+    },
+    "6244 child day care, exempt from federal income tax": {
+     "revenue": 20651715,
+     "payroll": 11043938,
+     "employees": 331492,
+     "operating_expenses": 20027614
+    }
+   },
+   "note": "operating expenses exclude the cost of goods resold (retail); for utilities they include purchased fuel and power"
+  },
+  "census_gm": {
+   "cite": "Census, grocers' gross margin 28.8% (Annual Retail Trade Survey; the engine's figure since plan step 5)",
+   "read": {
+    "gross_margin": 0.288
+   }
+  },
+  "bea_nos": {
+   "cite": "BEA 2025, net operating surplus less depreciation as a share of sales (the engine's plan step 5 figures, COST_DEFAULTS)",
+   "read": {
+    "food_share_of_food_sales": 0.0494,
+    "utilities_share_of_housing_component": 0.026,
+    "utilities_share_of_housing_PTFS_UTIL": 0.12786810799982906
+   }
+  },
+  "fmi": {
+   "cite": "FMI (The Food Industry Association), 2025 food-retail net margin",
+   "read": {
+    "net_margin": 0.017
+   },
+   "note": "FMI's own release; confirmed by S56 (audits/2026-11-s39-s55-review-triage.md, A3)"
+  },
+  "nga": {
+   "cite": "NGA/FMS Independent Grocers Financial Survey, fiscal 2024",
+   "read": {
+    "net_margin": 0.019
+   },
+   "note": "trade-press summary only; not used for a figure"
+  },
+  "eia861": {
+   "cite": "EIA, Electric Sales, Revenue, and Average Price 2024, Table 6 (residential bundled retail sales by utility; forms EIA-861 schedules 4A and 4D and EIA-861S)",
+   "url": "https://www.eia.gov/electricity/sales_revenue_price/xls/table_6.xlsx",
+   "sha256": "925e336bb8fb88982f8428e17de752fe7279546c1dd36c9e157f2a041a7dca9e",
+   "read": {
+    "public_over_iou_within_state": 0.8385,
+    "states_public": 45,
+    "coop_over_iou_within_state": 0.9419,
+    "states_coop": 43,
+    "national_cents_per_kWh": {
+     "investor_owned": 16.922,
+     "cooperative": 13.465,
+     "municipal": 13.526,
+     "political_subdivision": 12.923,
+     "state": 21.895,
+     "federal": 12.4
+    }
+   },
+   "note": "public power = municipal, state, political subdivision and federal utilities; within each state, public power's average residential price over investor-owned utilities', weighted by public power's residential sales"
+  },
+  "appa": {
+   "cite": "American Public Power Association, What is public power? (publicpower.org/public-power)",
+   "read": {
+    "payments_to_community_share_of_revenue": 0.051
+   },
+   "note": "public power pays on average 5.1% of electric operating revenues to the community (taxes, fees, services); its prices cover that"
+  },
+  "crs": {
+   "cite": "Congressional Research Service, R48252 (2024), child care",
+   "read": {
+    "profit_most_providers_below": 0.01
+   },
+   "note": "personnel \"often the largest share\" of a centre's budget; confirmed by S56"
+  },
+  "ncg": {
+   "cite": "National Co+op Grocers, About us (ncg.coop/about-us)",
+   "read": {
+    "coops": 169,
+    "stores": 241,
+    "sales_billion": 2.8
+   },
+   "note": "no margin figures are published there; none is used"
+  },
+  "ces": {
+   "cite": "BLS Current Employment Statistics, 2024 annual averages of monthly figures (FRED series PAYEMS, CES4244500001, CES4422000001; thousands of jobs)",
+   "url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=PAYEMS&cosd=2024-01-01&coed=2024-12-01 (and the two others)",
+   "sha256": [
+    "cb6f1f5824631d8d5263b2f6f6d2feee727d6698a012b0b840b17b062c871f75",
+    "448adf6a7121dc5c4cefdf4b77c1b904dfa91238364e48aae1e804bb3c519880",
+    "f0230bd716ac864f9be283cd4f6fc1215327b2887980e213de0ea126d95d0ae2"
+   ],
+   "read": {
+    "all_nonfarm": 157693.8333,
+    "food_and_beverage_stores": 3228.2917,
+    "utilities": 592.4583
+   }
+  },
+  "blei": {
+   "cite": "Duke Johnson, Basic Living Economic Index, Research Hub (bettertobest.github.io/research-hub/basic-living-economic-index.html), section 3.3 and 6.1",
+   "read": {
+    "eps_base": 2.64,
+    "cost_share_base": 0.378,
+    "eps_conservative_early": 2.22,
+    "eps_establishment": [
+     1.5,
+     2.0
+    ],
+    "eps_low_density": [
+     1.5,
+     1.8
+    ],
+    "density_test": 0.4
+   },
+   "note": "\"PTF prices are set to cover direct costs plus minimal cooperative overhead\"; \"Below approximately 40% PTF merchant participation in a given zone, epsilon falls toward 1.5-1.8x\""
+  }
+ },
+ "derived": {
+  "full_food": 0.9676,
+  "full_utilities": 0.813665,
+  "full_no_reserve_food": 0.9506,
+  "full_no_reserve_utilities": 0.796665,
+  "sector_food": 0.972311,
+  "sector_utilities": 0.839,
+  "utilities_operating_expenses_over_revenue": 0.735434,
+  "child_care_tax_exempt_cost_over_revenue": 0.96978,
+  "hub_food_cost_share_mature": 0.378788,
+  "hub_food_cost_share_low": 0.606061,
+  "hub_utilities_cost_share": 0.555556,
+  "payroll_share_food": 0.1035,
+  "payroll_share_utilities": 0.113753,
+  "ptf_jobs_share_k": 0.024229,
+  "employees_per_million_revenue_food": 3.457102,
+  "employees_per_million_revenue_utilities": 0.906562,
+  "price_reading_cut_food": 0.0324,
+  "price_reading_cut_utilities": 0.186335,
+  "hub_price_over_full_cost_food": 0.391472,
+  "hub_price_over_full_cost_utilities": 0.682781
+ }
+}

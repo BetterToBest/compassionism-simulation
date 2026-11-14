@@ -3700,7 +3700,7 @@ var PROJ = null;
 var PROJ_DEFAULTS = {share:1, gift:1000, giftMode:'forward', giftFin:'payg', pay:CFG.LIVING_WAGE_ANNUAL/2080, alloc:'capq', rate:'max', hours:'side', cap:false, hrsYr:2080};  /* Duke's picks (Sep 30): d63 side hours, d64 no cap, d66 pay as you go */
 var PJS = null;
 function pjOwnRate(a, p, pcb){ var oc = 1 + (a.octave/Math.max(1, p.maxOct))*(Math.max(1, p.maxMult) - 1), qf = Math.min(1, a.quality/Math.max(1, p.maxMult));
-  var ph = (p.phi && a.quality > p.maxMult*CFG.PHI_QUALITY_THRESH) ? CFG.PHI_RATIO : 1.0, pb = (p.ptf && a.inPTF) ? pcb : 1.0;
+  var ph = (p.phi && a.quality > p.maxMult*CFG.PHI_QUALITY_THRESH) ? CFG.PHI_RATIO : 1.0, pb = POS ? poBonus(a, p, pcb) : (p.ptf && a.inPTF) ? pcb : 1.0;
   var r = Math.min((1 + qf*(oc - 1))*ph*pb, p.maxMult*(p.phi ? CFG.PHI_RATIO : 1.0)); return LVS && LVS.m !== 1 ? 1 + LVS.m*(r - 1) : r; }  /* S54: o.lv's phase-in and issuance cap (LVS.m) */
 function pjTax(p, r){ var bT = p.cip ? p.tax*(1 - p.cipDemo*0.18) : p.tax; return LVS ? Math.min(LVS.pc, bT + Math.max(0, (r - CFG.PROG_PIVOT)*LVS.pr)) : Math.min(CFG.PROG_TAX_MAX, bT + Math.max(0, (r - CFG.PROG_PIVOT)*CFG.PROG_RATE)); }  /* S54: o.lv's progression (pr) and cap (pc) */
 function pjNewAcc(){ return {pool:0, gift:0, exp:0, alloc:0, carry:0, conv:0, giftConv:0, gross:0, net:0, giftNet:0, hrs:0, disp:0, work:0, partY:0, rc:0, rcN:0, overCap:0, unwilling:0}; }
@@ -5077,7 +5077,7 @@ var PTFS_KEYS = ['pfCut', 'pfLeave', 'pfMem'];
 function ptfsShares(a, HHA){  /* the member's basket shares: food, housing, transport, medical, childcare */
   if (HHA && a._hhS) return a._hhS; var c = function(k){ return PRICE ? PRICE.comp[k]/PRICE.bIdx : 1; };
   return {f:CFG.BASKET.food*c('food'), h:CFG.BASKET.housing*c('housing'), t:CFG.BASKET.transport*c('transport'), m:CFG.BASKET.medical*c('medical'), k:0}; }
-function ptfsCut(a, HHA, p, quiet, full){ var s = ptfsShares(a, HHA), eF = PFS && (PAS ? paW(a) : CMS && a._cm !== undefined ? CMS.sh[a._cm] : PFS.dens) < CFG.PTFS_LOW_DENS ? CFG.PTFS_EPS_FOOD_LOW : CFG.PTFS_EPS_FOOD, o = PTFS.other;  /* S55: under open access the 40% test reads the zone's PTF share of essential sales */
+function ptfsCut(a, HHA, p, quiet, full){ if (POS) return poPtfsCut(a, HHA, p, quiet, full); var s = ptfsShares(a, HHA), eF = PFS && (PAS ? paW(a) : CMS && a._cm !== undefined ? CMS.sh[a._cm] : PFS.dens) < CFG.PTFS_LOW_DENS ? CFG.PTFS_EPS_FOOD_LOW : CFG.PTFS_EPS_FOOD, o = PTFS.other;  /* S55: under open access the 40% test reads the zone's PTF share of essential sales */
   var c = (PRICE && PRICE.sxF ? sxPtf(s.f, s.h, eF) : s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/CFG.PTFS_EPS_UTIL)) + (s.t + (HLS && HLS.planOn ? 0 : s.m) + s.k)*o;  /* session 2b (DECISIONS, 'Nothing counted twice', item 7): under single payer (B, C) the health-sector cut lowers the plan's costs (hlSingle), not the household's */ if (p.szh) c *= (0.12 + p.szhCoh*0.04)/0.12;
   if (PAS && !full) c = paW(a)*Math.min(0.95, c);  /* S55 open access: the adult buys the zone's share of these sectors at PTF prices (full: the cut on what is bought there) */
   if (PFS && !quiet){ PFS.cut += c; PFS.cn++; } return Math.min(0.95, c); }
@@ -5165,12 +5165,98 @@ function paPop(agents){ var C = PAS.z.length, t = new Float64Array(C), n = Math.
   for (i = 0; i < C; i++){ s += t[i]/n*PAS.z[i]; if (PAS.z[i] < CFG.PTFS_LOW_DENS) lo += t[i]/n; if (PAS.z[i] > CFG.SZH_THETA_THRESHOLD) th += t[i]/n; }
   PAS.s = s; return [lo, th]; }
 function paYear(agentSet, yr, p){  /* at the start of the year's PTF steps, before any test reads a share: growth (part 2), the population's share, the year's tallies (no draw) */
-  if (yr > 0){ PAS.cY[yr] = paCapNow(yr, p); if (PA.grow && PA.fix === null) paGrow(agentSet, yr, p); }
+  if (yr > 0){ PAS.cY[yr] = paCapNow(yr, p); if (POS) poYear(agentSet, yr, p); if (PA.grow && PA.fix === null){ if (POS && PTF_OPS.hire !== null) poHireGrow(agentSet, yr, p); else paGrow(agentSet, yr, p); } } else if (POS) poYear(agentSet, yr, p);  /* S62 */
   var q = paPop(agentSet), C = PAS.z.length, t = new Float64Array(C), n = Math.max(1, agentSet.length), i; PAS.sh += PAS.s; PAS.lo += q[0]; PAS.th += q[1]; PAS.yrs++; PAS.sY[yr] = PAS.s;
-  agentSet.forEach(function(a){ t[paZ(a)]++; }); for (i = 0; i < C; i++) PAS.cv += t[i]/n*paCover(PAS.z[i], p); }
+  agentSet.forEach(function(a){ t[paZ(a)]++; }); for (i = 0; i < C; i++) PAS.cv += t[i]/n*paCover(PAS.z[i], p); if (POS) poTally(agentSet, p); }
 function paRes(out){ var S = PAS; out.paSh = S && S.yrs ? S.sh/S.yrs*100 : 0; out.paLo = S && S.yrs ? S.lo/S.yrs*100 : 0; out.paTh = S && S.yrs ? S.th/S.yrs*100 : 0;
   out.paCap = S && S.yu ? S.cb/S.yu*100 : 0; out.paOps = S && S.yu ? S.ob/S.yu*100 : 0; out.paDem = S && S.yu ? S.db/S.yu*100 : 0; out.paCv = S && S.yrs ? S.cv/S.yrs*100 : 0;
   [5, 10, 19, 39].forEach(function(y){ out['paS' + y] = S && S.sY[y] !== undefined ? S.sY[y]*100 : 0; out['paC' + y] = S && S.cY[y] !== undefined ? S.cY[y]*100 : 0; }); return out; }
+/* S62 (Nov 14, 2026; research-update prereg/2026-11-s62-ptf-realism.md; dev/DECISIONS.md S62; dev/reports/s62-ptf-realism.md): PTF REALISM. PTF_OPS null is
+ * the default (every earlier run; POS null). An object (row option po: true for the defaults, or an object) runs only with open access (pa 'open' or
+ * {fix}, which needs PTF by sector) and refuses S55's ops 'outside' (the payer readings below replace it); the no-programme run is untouched (POS needs
+ * PAS). No draw is added (CRN holds). po {cost:'hub', bonus:'members', curve:'step', test:'sales'} is identical to no po.
+ *  cost   a PTF's running cost per market dollar of sales, food (f) and utilities (u). 'full' (main): full-cost break-even for a not-for-profit whose
+ *         capital comes from the reinvestment account: 1 less BEA's net operating surplus less depreciation (plan step 5: f 0.0494, u 0.0260/PTFS_UTIL,
+ *         what owners, lenders and income tax take; capital replacement is in the cost) plus the reserve res (0.017: FMI's 2025 food-retail net margin,
+ *         what a going concern keeps; swept 0). 'sector': observed costs and margins: f the stores' cost of goods plus operating expenses (1 - 0.288,
+ *         Census's grocers' gross margin, + 0.2603, Census AIES 2024 NAICS 445 operating expenses over revenue); u public power's residential price over
+ *         investor-owned utilities' in the same state (0.839, EIA-861 2024). 'hub': the Hub's cost structure as stated (BLEI paper 3.3): the cost is the
+ *         PTF price, 1/epsilon, so there is no gap.
+ *  pay    who pays when the PTF price sits below the running cost (D19, answered by Duke). 'source' (main): prices stay at the Hub's epsilon and the Source
+ *         pays the gap, counted in programme cost (the cut less its free part, market price less running cost; the engine counted the cut less the
+ *         step-5 forgone profit before). 'price': prices rise to the running cost, so the cut is 1 - cost per market dollar on food and utilities (no
+ *         density test, no SZH addition, no cut on the other sectors) and nothing is paid. Under cost 'hub' nothing is paid either way. The growth
+ *         rule's operations limit never binds under either payer.
+ *  bonus  'workers' (main): the Hub gives the conversion-rate bonus (1.30 + theta) to PTF workers. Each worker (wage above 0, not retired, not outside
+ *         the labour force) works the share k s of their hours at PTFs (k 0.02423: food and beverage stores plus utilities over all nonfarm jobs, CES
+ *         2024; s the zone's PTF share of sales) and gets 1 + k s (pcb - 1) on their own rate; membership no longer gives it. 'members': S55's rule.
+ *  wages  set as every wage is, by S60's BARGAIN where the row has it: the PTF payroll per market dollar (f 0.1035, u 0.1138: Census AIES 2024 payroll
+ *         over revenue) rises by last year's earnings-weighted mean bargained raise, which raises the running cost (and the subsidy, or the price).
+ *  hire   null (main): no hiring limit (the PTFs' staff are the sector's workers moving with its sales). A number: the population's PTF share may rise at
+ *         most hire a year (a labelled design parameter with no source, swept 0.05 and 0.02: stress readings); capital capacity still applies.
+ *  curve  the Hub's food epsilon by the share the test reads (D20, answered by Duke). 'smooth' (main): the PTF cost share 1/epsilon moves linearly from
+ *         1/1.65 to 1/2.64 across [0.40 - w, 0.40 + w] (w 0.20, swept 0.10 and 0.40); 'step': 1.65 below 40%, 2.64 at or above (the papers' wording).
+ *         theta is already continuous (0 below 55%, linear to 0.25 at 90%) and is unchanged.
+ *  test   what the 40% and 55% tests read: 'sales' (main, S55: the zone's PTF share of sales); 'members' (the zone's share of adults who are members at
+ *         the start of the year); 'capacity' (min(1, capacity / demand ceiling), population-wide: the share of demand the PTFs' capacity can serve).
+ * Reported (PO_KEYS, rows with po): poSub the PTF subsidy and poFree the cut's free part ($ per adult-year, year-0 dollars, as cost); poSubSh poSub over
+ * programme cost (%); poEpsF the mean food epsilon at PTF purchases (weighted by s); poCov PTF sales at PTF prices over running cost (%, mean over
+ * adult-years); poWk PTF jobs per 100 adults; poWkH the PTF share of workers' hours (%); poBon the mean bonus over converting participants (rate
+ * multiplier - 1, %); poHire the share of years from year 1 in which the hiring limit binds (%); poG the mean PTF payroll raise from bargaining (%). */
+var PTF_OPS = null, PO_DEFAULTS = {cost:'full', pay:'source', res:0.017, bonus:'workers', curve:'smooth', w:0.20, test:'sales', hire:null}, POS = null;
+var PO_KEYS = ['poSub', 'poFree', 'poSubSh', 'poEpsF', 'poCov', 'poWk', 'poWkH', 'poBon', 'poHire', 'poG'];
+CFG.PO_SECTOR = {f:1 - 0.288 + 255664944/982152009, u:0.839}; CFG.PO_JOBS = (3228.2917 + 592.4583)/157693.8333; CFG.PO_PAY = {f:101653223/982152009, u:89920406/790488295};
+function poOpts(v){ var o = Object.assign({}, PO_DEFAULTS, v === true ? {} : v); o.res = +o.res; o.w = +o.w;
+  if (['full', 'sector', 'hub'].indexOf(o.cost) < 0 || ['source', 'price'].indexOf(o.pay) < 0 || ['workers', 'members'].indexOf(o.bonus) < 0 || ['smooth', 'step'].indexOf(o.curve) < 0 || ['sales', 'members', 'capacity'].indexOf(o.test) < 0)
+    throw new Error('po: cost full, sector or hub; pay source or price; bonus workers or members; curve smooth or step; test sales, members or capacity');
+  if (!(o.res >= 0 && o.res < 0.5) || !(o.w >= 0 && o.w <= 0.40) || !(o.hire === null || (+o.hire > 0 && +o.hire <= 1))) throw new Error('po: res from 0 to 0.5, w from 0 to 0.40, hire null or a share above 0'); if (o.hire !== null) o.hire = +o.hire; return o; }
+function poForg(k){ /* the cut's free part (market price less running cost): food per food dollar; utilities per housing-component dollar (as step 5) */
+  var P = PTF_OPS, M = COST || COST_DEFAULTS, g = POS ? POS.g : 0;
+  if (k === 'f') return P.cost === 'sector' ? 1 - CFG.PO_SECTOR.f - CFG.PO_PAY.f*g : M.food - P.res - CFG.PO_PAY.f*g;
+  return P.cost === 'sector' ? CFG.PTFS_UTIL*(1 - CFG.PO_SECTOR.u - CFG.PO_PAY.u*g) : M.util - CFG.PTFS_UTIL*(P.res + CFG.PO_PAY.u*g); }
+function poCost(k){ return k === 'f' ? 1 - poForg('f') : 1 - poForg('u')/CFG.PTFS_UTIL; }  /* running cost per market dollar (not for 'hub') */
+function poEps(sh){ var P = PTF_OPS, lo = CFG.PTFS_EPS_FOOD_LOW, hi = CFG.PTFS_EPS_FOOD, t = CFG.PTFS_LOW_DENS;  /* the Hub's food epsilon at the share the test reads */
+  if (P.curve === 'step' || !(P.w > 0)) return sh < t ? lo : hi; var x = Math.min(1, Math.max(0, (sh - (t - P.w))/(2*P.w))); return 1/((1 - x)/lo + x/hi); }
+function poPrice(){ return PTF_OPS.pay === 'price' && PTF_OPS.cost !== 'hub'; }
+function poTZ(z){ var P = PTF_OPS; return P.test === 'members' ? POS.mz[z] : P.test === 'capacity' ? POS.cs : PAS.z[z]; }  /* the share a zone's tests read */
+function poTPop(){ if (PTF_OPS.test === 'sales') return PAS.s; var s = 0, i; for (i = 0; i < PAS.z.length; i++) s += POS.wz[i]*poTZ(i); return s; }
+function poTArr(){ if (PTF_OPS.test === 'sales') return Float64Array.from(PAS.z); var C = PAS.z.length, v = new Float64Array(C), i; for (i = 0; i < C; i++) v[i] = poTZ(i); return v; }
+function poCutParts(sh, ts, p){ /* [food cut, utilities cut] per market dollar at the zone's test share ts (before the purchase share s and the 0.95 cap) */
+  if (poPrice()) return [Math.max(0, 1 - poCost('f')), Math.max(0, 1 - poCost('u'))];
+  var g = p.szh ? (0.12 + p.szhCoh*0.04)/0.12 : 1; return [g*(1 - 1/poEps(ts)), g*(1 - 1/CFG.PTFS_EPS_UTIL)]; }
+function poCover(i, p){ /* zone i's PTF sales at PTF prices over running cost (food and utilities at basket weights) */
+  if (PTF_OPS.cost === 'hub') return 1; var c = poCutParts(PAS.z[i], poTZ(i), p), f = CFG.BASKET.food, u = CFG.BASKET.housing*CFG.PTFS_UTIL;
+  return (f*Math.max(0, 1 - c[0]) + u*Math.max(0, 1 - c[1]))/(f*poCost('f') + u*poCost('u')); }
+function poBonus(a, p, pcb){ if (PTF_OPS.bonus === 'members') return (p.ptf && a.inPTF) ? pcb : 1.0;  /* the conversion-rate multiplier PTF work gives */
+  if (!p.ptf || !poWorker(a)) return 1.0; return 1 + Math.min(1, CFG.PO_JOBS*paW(a))*(pcb - 1); }
+function poWorker(a){ return !a._ret && !(LFS && a._lf) && a.wage > 0; }
+function poFree(a, M, cfP, fS, hS){ /* the part of the adult's PTF cut that costs nothing (market price less running cost; all of it under 'hub' or 'price') */
+  var cut = M*(1 - cfP); if (PTF_OPS.cost === 'hub' || poPrice()) return cut;
+  return Math.max(0, Math.min(cut, M*(fS*poForg('f') + hS*poForg('u'))*paW(a))); }
+function poPtfsCut(a, HHA, p, quiet, full){ /* ptfsCut under PTF_OPS: the Hub's epsilon by the test's share (step or smooth), or prices at running cost */
+  var s = ptfsShares(a, HHA), pr = poPrice(), eF = pr ? 1/Math.min(1, Math.max(1e-9, poCost('f'))) : poEps(poTZ(paZ(a))), eU = pr ? 1/Math.min(1, Math.max(1e-9, poCost('u'))) : CFG.PTFS_EPS_UTIL, o = pr ? 0 : PTFS.other;
+  var c = (PRICE && PRICE.sxF ? sxPtf(s.f, s.h, eF, eU) : s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/eU)) + (s.t + (HLS && HLS.planOn ? 0 : s.m) + s.k)*o; if (p.szh && !pr) c *= (0.12 + p.szhCoh*0.04)/0.12;
+  if (!full) c = paW(a)*Math.min(0.95, c);
+  if (PFS && !quiet){ PFS.cut += c; PFS.cn++; POS.eN += paW(a)*eF; POS.eD += paW(a); } return Math.min(0.95, c); }
+function poHireGrow(agentSet, yr, p){ /* growth with the hiring limit: the population's share rises at most hire this year (capital capacity still applies) */
+  var cK = PAS.cY[yr], hc = PAS.s + PTF_OPS.hire, tot = 0, i; POS.yu++; if (hc < cK) PAS.cY[yr] = hc; paGrow(agentSet, yr, p); PAS.cY[yr] = cK;
+  for (i = 0; i < PAS.z.length; i++) tot += POS.wz[i]*PAS.z[i]; if (hc < cK && tot >= hc - 1e-9) POS.hb++; }
+function poInit(agents){ var C = PAS.z.length, wz = new Float64Array(C), n = Math.max(1, agents.length);
+  agents.forEach(function(a){ wz[paZ(a)] += 1/n; });
+  POS = {wz:wz, mz:new Float64Array(C), cs:0, g:0, gN:0, gD:0, gY:0, gy:0, sub:0, fr:0, eN:0, eD:0, cv:0, cy:0, wk:0, wh:0, wn:0, ay:0, bn:0, bc:0, hb:0, yu:0}; }
+function poYear(agentSet, yr, p){ /* start of the year, inside paYear before growth: shares the tests read, last year's bargained payroll raise (no draw) */
+  var S = POS, C = PAS.z.length, t = new Float64Array(C), m = new Float64Array(C), n = Math.max(1, agentSet.length), i;
+  agentSet.forEach(function(a){ var j = paZ(a); t[j]++; if (a.inPTF) m[j]++; }); for (i = 0; i < C; i++){ S.wz[i] = t[i]/n; S.mz[i] = m[i]/Math.max(1, t[i]); }
+  S.g = S.gD > 0 ? S.gN/S.gD : 0; S.gN = 0; S.gD = 0; if (yr > 0){ S.gY += S.g; S.gy++; }
+  S.cs = Math.min(1, (yr > 0 && PAS.cY[yr] !== undefined ? PAS.cY[yr] : paCapNow(0, p))/PA.dem); }
+function poTally(agentSet, p){ /* after growth: the year's coverage, jobs and hours (reporting only) */
+  var S = POS, n = Math.max(1, agentSet.length), wk = 0, wh = 0, i;
+  agentSet.forEach(function(a){ if (!poWorker(a)) return; wk++; wh += Math.min(1, CFG.PO_JOBS*paW(a)); });
+  for (i = 0; i < PAS.z.length; i++) S.cv += S.wz[i]*poCover(i, p); S.cy++;
+  S.wk += wh/n*100; S.wh += wk > 0 ? wh/wk*100 : 0; S.wn++; }
+function poRes(out, NY, cost){ var S = POS; out.poSub = S.sub/Math.max(1, NY); out.poFree = S.fr/Math.max(1, NY); out.poSubSh = cost > 0 ? out.poSub/cost*100 : 0;
+  out.poEpsF = S.eD > 0 ? S.eN/S.eD : 0; out.poCov = S.cy ? S.cv/S.cy*100 : 0; out.poWk = S.wn ? S.wk/S.wn : 0; out.poWkH = S.wn ? S.wh/S.wn : 0;
+  out.poBon = S.bc ? S.bn/S.bc*100 : 0; out.poHire = S.yu ? S.hb/S.yu*100 : 0; out.poG = S.gy ? S.gY/S.gy*100 : 0; return out; }
 /* S37 (Oct 31, 2026; dev/reports/community-layer.md; dev/DECISIONS.md S37): THE COMMUNITY AND ZONE LAYER. null = off (every earlier run: the tests that
  * read PTF density read the share of all adults who are members). When an object (row option cl), and only in runs with PTF:
  *  - Communities. At the start of the run the households (each adult alone, without households) are dealt into round(n/k) communities of about k adults,
@@ -5704,6 +5790,7 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   if (yr === 0 && a._tbEl) C.endow += y.W;
   var spCut = a._spCutY || 0, buR = Math.max(0, mlc*(cfPreCCO - cf) - tbG - spCut);  /* plan step 1 (d105): the split's price cut is conversion premium, not BU relief */
   if (a._csFree){ C.cutFree += a._csFree; a._csFree = 0; }  /* plan step 5 */
+  if (POS && a._poS !== undefined){ POS.sub += a._poS/idx; POS.fr += a._poF/idx; a._poS = undefined; }  /* S62: the PTF subsidy and the free part (year-0 dollars, as cost) */
   C.bu += buR; C.conv += conv + spCut; if (a._pdM){ C.convM += a._pdM; if (LVS) LVS.pjM += a._pdM; a._pdM = 0; }  /* plan step 2: matched project output */ C.pjg += a.yrPjGift || 0; a.yrPjGift = 0; C.cutPT += tbPT; C.cutG += tbG; C.pthLiq += a._tbPthNow || 0;
   /* Session 7 (A5 targeting share): program dollars this agent received this year (cash, the endowment's annuity value, BU relief,
    * conversion, price-cut dollars, PTH liquid appreciation; not capital), and the part that closes the agent's shortfall before
@@ -5753,10 +5840,10 @@ function runYear(agentSet,yr,p,recSt){
   var pthApprBonus=p.szh?p.szhCoh*0.01:0;
   var szhThetaVal=p.szh?szhTheta(p.szhCoh):0;
   if(PAS)paYear(agentSet,yr,p);  // S55 open access: this year's PTF shares of essential sales (part 2: grown), before any test reads them
-  if(THETA_GATE==='density'){var tdN=0;if(p.ptf&&!PAS)agentSet.forEach(function(a){if(a.inPTF)tdN++;});THETA_DENS=PAS?PAS.s:tdN/Math.max(1,agentSet.length);szhThetaVal=p.szh?szhTheta(THETA_DENS):0;}  // session 5 (C08/d12): harness-only  // S55: under open access the 55% test reads the PTF share of sales
+  if(THETA_GATE==='density'){var tdN=0;if(p.ptf&&!PAS)agentSet.forEach(function(a){if(a.inPTF)tdN++;});THETA_DENS=PAS?(POS?poTPop():PAS.s):tdN/Math.max(1,agentSet.length);szhThetaVal=p.szh?szhTheta(THETA_DENS):0;}  // session 5 (C08/d12): harness-only  // S55: under open access the 55% test reads the PTF share of sales
   var ptfConvBonus=1.30+((p.szh&&p.ptf)?szhThetaVal:0);
   var szhPartBoost=(p.szh&&p.ccoOn)?szhThetaVal*0.16:0;
-  if(CMS)CMS.th=PAS?Float64Array.from(PAS.z):clShares(agentSet);var clTh=CMS?function(a){return p.szh?szhTheta(THETA_GATE==='density'?CMS.th[a._cm]:p.szhCoh):0;}:null;  // S37: theta by community (CMS null: the population's, as before)
+  if(CMS)CMS.th=PAS?(POS?poTArr():Float64Array.from(PAS.z)):clShares(agentSet);var clTh=CMS?function(a){return p.szh?szhTheta(THETA_GATE==='density'?CMS.th[a._cm]:p.szhCoh):0;}:null;  // S37: theta by community (CMS null: the population's, as before)
   function clPCB(a){return clTh?1.30+((p.szh&&p.ptf)?clTh(a):0):ptfConvBonus;}function clPB(a){return clTh?((p.szh&&p.ccoOn)?clTh(a)*0.16:0):szhPartBoost;}
   /* v4.14 parity fix — ported from index.html: PTF's inflation-damping term used to read
    * the static initial-share slider (p.ptfShare) rather than the population's actual
@@ -5892,7 +5979,7 @@ function runYear(agentSet,yr,p,recSt){
     pjIdx=Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1);pjPay=PROJ.pay*pjIdx;pjCipB=p.cip?(1+p.cipDemo*0.12):1.0;
     var pjP=[],pjWt=0,pjWR=0,pjIn=PJS.prev?PJS.prev.pool+PJS.prev.gpool:0,pjCarry=0;pjFg=pjIn>0?PJS.prev.gpool/pjIn:0;
     if(REVIEW&&REVS)agentSet.forEach(function(a){a._rvU=REVS.rng();});  // v5.2 step 7: one number per adult a year from the review stream
-    if(p.ccoOn)agentSet.forEach(function(a){if(!a.inCCO)return;if(a._ret&&(AGE&&AGE.ret==='noconv'||LF_SCOPE&&a._lf&&LF_SCOPE.conv==='none')){a._pjBU=0;return;}/* v5.2 step 4: no conversion after retirement under 'noconv' */var r=pjOwnRate(a,p,clPCB(a)),cap=12*FW.octaveCapBase*Math.pow(2,a.octave),w=cap*Math.max(0,a.quality);
+    if(p.ccoOn)agentSet.forEach(function(a){if(!a.inCCO)return;if(a._ret&&(AGE&&AGE.ret==='noconv'||LF_SCOPE&&a._lf&&LF_SCOPE.conv==='none')){a._pjBU=0;return;}/* v5.2 step 4: no conversion after retirement under 'noconv' */var r=pjOwnRate(a,p,clPCB(a)),cap=12*FW.octaveCapBase*Math.pow(2,a.octave),w=cap*Math.max(0,a.quality);if(POS){POS.bn+=poBonus(a,p,clPCB(a))-1;POS.bc++;}
       a._pjR=r;a._pjCap=cap;a._pjW=w;a._pjBU=0;pjWt+=w;pjWR+=w*r;pjP.push(a);});
     var pjRc=pjWt>0?pjWR/pjWt:1,pjSet=[];PJS.acc.rc+=pjRc;PJS.acc.rcN++;
     pjP.forEach(function(a){var ru=PROJ.rate==='max'?Math.max(a._pjR,pjRc):a._pjR,v=pjPay*ru*(1-pjTax(p,ru))*pjCipB,h=a.wage*12*CFG.WAGE_TO_USD/PROJ.hrsYr;
@@ -6094,7 +6181,7 @@ function runYear(agentSet,yr,p,recSt){
     if(emQ)annualWageUSD*=1-emQ.out;
     if(HEALTH)a._hlOut=emQ?emQ.out:0;  // session 2a: a year mostly out of work loses employer coverage next year
     if(dsOn)annualWageUSD*=1-Math.min(52,DIS.weeks)/52;  // v5.4 item 5: weeks of work lost to the disaster  // v5.2 step 4: a retiree earns no wage  // v5.2 step 6: mlNT = 0 unless the spending layer fills normal-times slack
-    var tbG=0,tbPT=0;if(tbY&&COST&&p.ptf&&(a.inPTF||PAS)){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),PAS?mainLoopCostUSD*(fSA*COST.food+hSA*COST.util)*paW(a):mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // S55: under open access, on the share bought at PTFs  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
+    var tbG=0,tbPT=0;if(tbY&&POS&&p.ptf){a._csFree=poFree(a,mainLoopCostUSD,cfPTF,fSA,hSA);a._csFreeY=a._csFree;a._poS=Math.max(0,mainLoopCostUSD*(1-cfPTF)-a._csFree);a._poF=a._csFree;}else if(tbY&&COST&&p.ptf&&(a.inPTF||PAS)){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),PAS?mainLoopCostUSD*(fSA*COST.food+hSA*COST.util)*paW(a):mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // S55: under open access, on the share bought at PTFs  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
     if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(lvRc>0)tbPT-=mainLoopCostUSD*lvRc;if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fSA+(p.tb.groc.housing?hSA:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
     if(LABOR){  // session 4 (A3): the labor-supply response replaces this year's wage earnings (no RNG)
       var lbE0=annualWageUSD,lbBU=0,lbR=0,lbC=a._labC||0,lbU=p.ubi||0;
@@ -6109,7 +6196,7 @@ function runYear(agentSet,yr,p,recSt){
       if(emQ){lbInc*=1-emQ.out;lbDisp*=1-emQ.out;}  // v5.4 item 2: the hours response applies to the part of the year at work
       var bgG=0;if(BARGAIN&&lbE0>0&&!a._ret){  // S60: the outside option (the income effect's unconditional dollars at its weights, no safety net) and the year's bargained raise (no RNG)
         var bgO=lbU+(LABOR.rho>0?LABOR.rhoBU/LABOR.rho:1)*lbBU+(LABOR.rho>0?LABOR.rhoR/LABOR.rho:0)*lbR+(1-LABOR.delta)*lbC+(tbQ?tbQ.O:0)+(SPON&&a._spOwn>0?a._spOwn:0),bgEf=a.wage*12*CFG.WAGE_TO_USD*incomeShock*(1+mlNT);
-        bgG=bgRaise(bgO,bgEf,BARGAIN);a._bgG=bgG;var bgE1=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);if(bgG>0)lbRaise*=Math.pow(1+bgG,1+LABOR.eps-LABOR.rho);  // the wage and the hours response to it at the one elasticity (guardrail 7)
+        bgG=bgRaise(bgO,bgEf,BARGAIN);a._bgG=bgG;if(POS){POS.gN+=lbE0*bgG;POS.gD+=lbE0;}var bgE1=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);if(bgG>0)lbRaise*=Math.pow(1+bgG,1+LABOR.eps-LABOR.rho);  // the wage and the hours response to it at the one elasticity (guardrail 7)
         if(BGS)bgAcc(a,yr,BGS.T,lbE0,bgG,bgO,bgEf,Math.max(1,LFS&&a._lf&&!(a._lwNB>0)?1:a.wage/a._lwNB)*(1+lbBiz)*(ESON?1+a._esX:1),Math.max(0,lbE0*lbRaise-lbInc-lbDisp)-bgE1,Math.pow(1+inflRate,yr)*(PRICE?PRICE.bIdx:1));}
       else if(BARGAIN)a._bgG=0;  // S60: reporting state (the year's raise; 0 for a non-worker)
       annualWageUSD=Math.max(0,lbE0*lbRaise-lbInc-lbDisp);a._lbE0=bgG>0?lbE0*(1+bgG):lbE0;  // session 8 (A5): earnings with no response, for the hours measure (S60: at the bargained wage)
@@ -6167,7 +6254,7 @@ function runYear(agentSet,yr,p,recSt){
        * The draws above are made exactly as in the engine branch, so the two models stay CRN-paired. */
       if(p.cip&&uCipQuality<p.cipDemo*0.15)a.quality=Math.min(p.maxMult,a.quality+0.1);
       var octCeilF=1+(a.octave/Math.max(1,p.maxOct))*(Math.max(1,p.maxMult)-1),qfF=Math.min(1,a.quality/Math.max(1,p.maxMult));
-      var phiF=(p.phi&&a.quality>p.maxMult*CFG.PHI_QUALITY_THRESH)?CFG.PHI_RATIO:1.0,ptfBF=(p.ptf&&a.inPTF)?clPCB(a):1.0;
+      var phiF=(p.phi&&a.quality>p.maxMult*CFG.PHI_QUALITY_THRESH)?CFG.PHI_RATIO:1.0,ptfBF=POS?poBonus(a,p,clPCB(a)):(p.ptf&&a.inPTF)?clPCB(a):1.0;if(POS&&!PROJ){POS.bn+=ptfBF-1;POS.bc++;}
       var rateF=Math.min((1+qfF*(octCeilF-1))*phiF*ptfBF,p.maxMult*(p.phi?CFG.PHI_RATIO:1.0));
       var bTaxF=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax,taxF=Math.min(CFG.PROG_TAX_MAX,bTaxF+Math.max(0,(rateF-CFG.PROG_PIVOT)*CFG.PROG_RATE));
       var cipBF=p.cip?(1+p.cipDemo*0.12):1.0,capBU=12*FW.octaveCapBase*Math.pow(2,a.octave);
@@ -6209,7 +6296,7 @@ function runYear(agentSet,yr,p,recSt){
       var qualityFactor=Math.min(1,a.quality/Math.max(1,p.maxMult));
       var baseRate=1+qualityFactor*(octCeiling-1);
       var phi=(p.phi&&a.quality>p.maxMult*CFG.PHI_QUALITY_THRESH)?CFG.PHI_RATIO:1.0;
-      var ptfB=(p.ptf&&a.inPTF)?clPCB(a):1.0;
+      var ptfB=POS?poBonus(a,p,clPCB(a)):(p.ptf&&a.inPTF)?clPCB(a):1.0;
       var cipB=p.cip?(1+p.cipDemo*0.12):1.0;
       var rate=Math.min(baseRate*phi*ptfB,p.maxMult*(p.phi?CFG.PHI_RATIO:1.0));
       var bTax=p.cip?p.tax*(1-p.cipDemo*0.18):p.tax;
@@ -6667,7 +6754,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (HOUSEHOLDS) hhInit(agents, seed); else HHS = null;  /* v5.3 B3: households drawn once, on their own stream (no draw on the main or construction streams) */
   if (PTHB && p.pth && FX && FX.pthb) pthbInit(agents, latent, seed);  /* S47 fx.pthb: the books follow the household's PTH decision (no draw at set-up) */
   if (COMM && p.ptf) clInit(agents, seed, p); else CMS = null;
-  if (PTF_ACCESS === 'open' && p.ptf){ if (!PTFS) throw new Error('pa open: needs PTF by sector (v54 ptfs)'); paInit(agents); } else PAS = null;  /* S55: the zones' PTF shares of essential sales (after the layer places members; no draw) */
+  if (PTF_ACCESS === 'open' && p.ptf){ if (!PTFS) throw new Error('pa open: needs PTF by sector (v54 ptfs)'); paInit(agents); } else PAS = null;  if (PTF_OPS){ if (PTF_ACCESS !== 'open') throw new Error('po: needs open PTF access (pa open)'); if (PA.ops === 'outside') throw new Error('po: replaces ops outside (the payer readings)'); if (PAS) poInit(agents); else POS = null; } else POS = null;  /* S62 */  /* S55: the zones' PTF shares of essential sales (after the layer places members; no draw) */
   if (C22) c22Init(agents, seed); else C22S = null;  /* S6: eligibility and automatic distribution (own stream); coverage tallies */  /* S37: the community layer (its own stream; nothing to do without PTF) */
   if (HOUSEHOLDS && HOUSEHOLDS.wealth === 'scf' && spec.endow) agents.forEach(function(a){ a._tbEl = a.wealth < spec.endow.thresh; });  /* v5.3 B7: an endowment's test reads the household's starting wealth */
   var RHH = HOUSEHOLDS && HHS ? hhRepAcc() : null;  /* v5.3 B3: the household reading's measures (reporting only) */
@@ -6803,6 +6890,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (PTFS) emR = ptfsRes(emR || {});  /* v5.4 item 4 */
   if (COMM) emR = clRes(emR || {});  /* S37 */
   if (PAS) emR = paRes(emR || {});  /* S55 */
+  if (POS) emR = poRes(emR || {}, NY, L.cost/NY);  /* S62 */
   if (C22) emR = c22Res(emR || {}, grpOf(function(a){ return !!a._inel; }), n);  /* S6 */
   if (HEALTH && HLS) emR = hlRes(emR || {});  /* session 2a */
   if (SNET && SNS) emR = snRes(emR || {});  /* session 2b */
@@ -6937,8 +7025,8 @@ function sxYear(X, y){ var F = sxFac(X, y), P = Math.max(1, X.pool | 0), pf = 0,
   if (!any) return null; F.pf = pf/P; F.pu = pu/P; F.k = (1 - X.m)*(1 - X.s*(1 - X.kap)); return F; }
 function sxApply(comp, X, y){ var F = sxYear(X, y); PRICE.sxF = F; if (!F) return; comp.food *= F.f; comp.housing *= F.h; comp.transport *= F.t; }
 function sxH(h){ return PRICE && PRICE.sxF ? h/PRICE.sxF.h : h; }  /* the housing share before the shock (PTH's cut) */
-function sxPtf(sf, sh, eF){ var F = PRICE.sxF, b = sf/F.f, u0 = sh/F.h*CFG.PTFS_UTIL;  /* PTF's food and utilities cut with the shock: on the prices before it, less the member's share of the rise */
-  return b*(1 - 1/eF) + b*((F.f - 1) - (F.pf - 1)*F.k) + u0*(1 - 1/CFG.PTFS_EPS_UTIL) + u0*((F.u - 1) - (F.pu - 1)*F.k); }
+function sxPtf(sf, sh, eF, eU){ var F = PRICE.sxF, b = sf/F.f, u0 = sh/F.h*CFG.PTFS_UTIL;  /* PTF's food and utilities cut with the shock: on the prices before it, less the member's share of the rise */
+  return b*(1 - 1/eF) + b*((F.f - 1) - (F.pf - 1)*F.k) + u0*(1 - 1/(eU || CFG.PTFS_EPS_UTIL)) + u0*((F.u - 1) - (F.pu - 1)*F.k); }
 /* Measures (reporting only, no draw). Groups this year: F PTF members; H PTH members not in PTF; P CCO participants in neither; N adults in none of the
  * three; X adults who chose not to take part (a._tbPart false: the same adults in every design and in the no-programme run); A all. Own cost is what the
  * adult pays in money: BU spent on essentials is not in it, so the BU's part of the insulation shows in P (and in F and H, whose members mostly hold BU too). Windows: B before the shock, D during it, After. For each group
@@ -7243,6 +7331,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var wt0 = WEALTH_TAIL; if (c.wt) WEALTH_TAIL = wtOpts(c.wt);  /* S59 part 2: the weighted top tail for this row (no programme rows too) */
       var rt0 = RETURNS; if (c.rt) RETURNS = rtOpts(c.rt);  /* S59: wealth held by asset class for this row (no programme rows too) */
       var lf0 = LF_SCOPE; if (c.lf) LF_SCOPE = Object.assign({}, LF_DEFAULTS, c.lf === true ? {} : c.lf);  /* S61: adults outside the labour force for this row (no programme rows too) */
+      var po0 = PTF_OPS; if (c.po) PTF_OPS = poOpts(c.po);  /* S62: PTF realism for this row (needs pa open) */
       var bg0 = BARGAIN; if (c.bg) BARGAIN = bgOpts(c.bg);  /* S60: a worker's outside option and an employer markdown for this row (no programme rows too) */
       var pr0 = [PRICE_RULE, PR_OPTS]; if (c.pr && c.pr !== 'qt'){ PRICE_RULE = 'capacity'; PR_OPTS = c.pr === true || c.pr === 'capacity' ? {} : c.pr; }  /* S58: the capacity price rule for this row (no programme rows too) */
       var pa0 = [PTF_ACCESS, PA]; if (c.pa && c.pa !== 'members'){ if (c.pa !== 'open' && typeof c.pa !== 'object') throw new Error('pa: members, open or {fix}'); PTF_ACCESS = 'open'; PA = Object.assign({}, PA_DEFAULTS, typeof c.pa === 'object' ? c.pa : {}); }  /* S55: open PTF access for this row */
@@ -7273,6 +7362,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.pfCut !== undefined) PTFS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 4 */
         if (r.c22PY !== undefined) C22_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S6 */
         if (r.clN !== undefined) CL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S37 */
+        if (r.poSub !== undefined) PO_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S62 */
         if (r.paSh !== undefined) PA_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S55 */
         if (r.pbV !== undefined) PTHB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 3 */
         if (r.snAbN !== undefined) SN_AB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* session 7 */
@@ -7285,7 +7375,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.bgN !== undefined) BG_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S60: bargaining (rows with bg only) */
         if (r.lfShare !== undefined) LF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; PTF_OPS = po0; POS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;

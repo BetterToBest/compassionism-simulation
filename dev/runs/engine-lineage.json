@@ -766,6 +766,22 @@
    },
    "equal": true,
    "seconds": 149
+  },
+  {
+   "from": "48f92c3aab58d042791c64066ce1bae2da24d5965c678d650d238c3f9d7820e4",
+   "to": "36092ab1e7bb6d05fd18abfb07be84920bb9de3fbad9a9ad7e3975c5433de3c5",
+   "date": "2026-11-14",
+   "change": "S62: PTF_OPS (row option po), PTF realism, off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 242
   }
  ]
 }
