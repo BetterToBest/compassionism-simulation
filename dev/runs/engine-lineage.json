@@ -830,6 +830,22 @@
    },
    "equal": true,
    "seconds": 304
+  },
+  {
+   "from": "b23f9e8272f787f813932302fd8ad3afc8b2d3f4b305dc3560432a460ad735bd",
+   "to": "10229932ee84a775e99ab48a9ed353cf8762ec1cb05d229d079cd222fd91b5ce",
+   "date": "2026-11-14",
+   "change": "S73: lf options fl (yearly movement in and out of the labour force, linked CPS ASEC 2025-2026) and pm (the programme's participation margin, one income effect); off identical",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 136
   }
  ]
 }

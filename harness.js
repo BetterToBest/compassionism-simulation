@@ -1305,9 +1305,9 @@ function s68UnitSuite(){
     [false, true].forEach(function(pe){ var c = frozenRow(relMainCfgs(tbPresets(P6))[1]); c.fx = {pthb:true, hb:true, ab:true, sp:true, pe:pe}; var r = tbStudy([c], 1, P6, SO)[0];
       sg.push(Object.keys(r._s).sort().map(function(k){ return k + ':' + Array.prototype.join.call(r._s[k], ','); }).join(';')); });
     return {pass:n[0] > 0 && n[1] === 0 && sg[0] === sg[1], detail:'PTH-books misses with ageing: ' + n[0] + ' without pe, ' + n[1] + ' with; without ageing identical: ' + (sg[0] === sg[1])}; });
-  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 39 places at S68 part 2 (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
+  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 44 places (39 at S68 part 2; S73 added 5, all its own handling of adults outside the labour force: lfOut, lfFlow, lfAcc, the margin's call) (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
     var S = builtSource(), k = S.indexOf('/* ==== HARNESS' + '-ONLY CODE ==== */'), n = (S.slice(0, k).match(/\._ret\b/g) || []).length;
-    return {pass:n === 39, detail:'reads of a._ret in the engine: ' + n + ' (expected 39)'}; });
+    return {pass:n === 44, detail:'reads of a._ret in the engine: ' + n + ' (expected 44)'}; });
   t('S68 part 2: the on-together check (r2PairCheck) passes on the candidate main row and with the price rule counted in quarters, and the run-order test holds (Reference, seed 1)', function(){
     var R = r2PairCheck('ref', 1, {only:['q']}), f = R.rows.filter(function(x){ return !x.pass; });
     return {pass:f.length === 0 && R.runOrder.mainSame && R.runOrder.noneSame, detail:R.rows.length + ' rows, failed: ' + (f.map(function(x){ return x.id + (x.threw ? ' (' + x.threw + ')' : ''); }).join(', ') || 'none') + '; run order ' + JSON.stringify(R.runOrder)}; });
@@ -1537,7 +1537,7 @@ function lfUnitSuite(){
     return {pass:z.none === 0, detail:'adult-years with project conversion: none ' + z.none + ', keep ' + z.keep}; });
   return out;
 }
-Object.assign(module.exports, { LF_KEYS, LF_DEFAULTS, lfInit, drExtra: function(){ return drExtra.apply(null, arguments); }, drFloorCut, lfUnitSuite });  /* S61 */
+Object.assign(module.exports, { LF_KEYS, LF_DEFAULTS, lfInit, LF_FLOW_KEYS, lfPM: function(){ return lfPM.apply(null, arguments); }, lfCell: function(){ return lfCell.apply(null, arguments); }, lfState: function(){ return LFS; }, drExtra: function(){ return drExtra.apply(null, arguments); }, drFloorCut, lfUnitSuite });  /* S61 */
 
 /* S59 (Nov 10, 2026; research-update prereg/2026-11-s59-asset-classes.md, unit tests a-e): RETURNS, wealth held by asset class. */
 function rtUnitSuite(){
@@ -1956,6 +1956,53 @@ function s72UnitSuite(){
     return {pass:!e.length && !m.length && GOV === null, detail:(e.join(', ') || 'all refused') + (m.length ? '; moved: ' + m.slice(0, 5).join(', ') : '')}; });
   return out; }
 Object.assign(module.exports, { s72UnitSuite });  /* S72 */
+/* S73 (Nov 14, 2026; research-update prereg/2026-11-s73-participation.md): yearly movement in and out of the labour force (lf.fl) and the programme's
+ * participation margin (lf.pm) (index.html lfFlow, lfPM, lfAcc, lfFlowRes, CFG.LF_FLOWS; keys LF_FLOW_KEYS). */
+function s73UnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), A0 = ACCT, mb = mulberry32;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { mulberry32 = mb; resetNR6(sv); tbSetG(g); ACCT = A0; TB = null; LABOR = null; PRICE = null; FX = null; LF_SCOPE = null; LFS = null; } }
+  var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500}), MS = r2MainStudy();
+  function main(d, lf){ var c = r2MainPair(P, d === 'none' ? 'c22' : d)[d === 'none' ? 0 : 1]; c.lf = lf; return c; }
+  function moved(A, B, keys){ return keys.filter(function(k){ return !(A._s[k] && B._s[k]) ? !!A._s[k] !== !!B._s[k] : A._s[k][0] !== B._s[k][0]; }); }
+  function all(A, B){ var k = {}; Object.keys(A._s).concat(Object.keys(B._s)).forEach(function(x){ k[x] = 1; }); return Object.keys(k); }
+  t('S73: lf with fl and pm unset, or fl null and pm 0, gives S61\'s reading exactly, both runs (C2.2 candidate main pair, seed 1)', function(){
+    var R = tbStudy([main('none', {}), main('c22', {}), main('none', {fl:null, pm:0}), main('c22', {fl:null, pm:0})], 1, P, MS), m = moved(R[0], R[2], all(R[0], R[2])).concat(moved(R[1], R[3], all(R[1], R[3])));
+    return {pass:!m.length && R[0].lfOut === undefined, detail:m.length ? 'moved: ' + m.slice(0, 8).join(', ') : ''}; });
+  t('S73: pm 0 with the flows gives the flows alone exactly; the flows move the run (C2.2 candidate main pair, seed 1)', function(){
+    var R = tbStudy([main('c22', {fl:'stock'}), main('c22', {fl:'stock', pm:0}), main('c22', {})], 1, P, MS), m = moved(R[0], R[1], all(R[0], R[1]));
+    return {pass:!m.length && R[0].fgt0PY !== R[2].fgt0PY && R[0].lpOut === 0, detail:(m.length ? 'moved: ' + m.slice(0, 8).join(', ') + '; ' : '') + 'basket poverty ' + R[2].fgt0PY.toFixed(3) + ' -> ' + R[0].fgt0PY.toFixed(3)}; });
+  t('S73: the flows\' stream draws the same number in a no-programme and a C2.2 run (two per adult-year whatever the state), the margin\'s stream one per adult per population (seed 1)', function(){
+    var mb0 = mulberry32, cnt = function(c){ var n = {}; mulberry32 = function(x){ var g = mb0(x); return function(){ n[x] = (n[x] || 0) + 1; return g(); }; }; try { tbStudy([c], 1, P, MS); } finally { mulberry32 = mb0; } return [n[1 + 730073] || 0, n[1 + 730079] || 0]; };
+    var A = cnt(main('none', {fl:'stock', pm:0.43})), B = cnt(main('c22', {fl:'stock', pm:0.43})), Y = A[0]/(2*P.nAgents);
+    return {pass:A[0] === B[0] && A[1] === B[1] && A[0] > 0 && Y === Math.round(Y) && A[1] % P.nAgents === 0, detail:'flows ' + A[0] + ' and ' + B[0] + ' (' + Y + ' adult-years per adult), margin ' + A[1] + ' and ' + B[1]}; });
+  t('S73: the margin\'s rule keeps the expected earnings of today\'s rule exactly: E[lfPM] = max(0, E - I) over the personal draw (seven cases, 20,000-point grid)', function(){
+    LF_SCOPE = {conv:'keep', pm:0.43}; lfInit([], 1); var worst = 0, bad = [];
+    [[30000, 3000, 3000], [30000, 5000, 3000], [10000, 12000, 12000], [8000, 2000, 2000], [20000, 0, 0], [5000, 4000, 1000], [1000, 900, 900]].forEach(function(c, j){ [0.43, 1, 0.25].forEach(function(pm){ LFS.pm = pm;
+      var M = 20000, s = 0; for (var i = 0; i < M; i++){ var a = {_lpU:(i + 0.5)/M}; s += lfPM(a, c[0], c[1], c[2], null, 0, 1); } s /= M; var x = Math.max(0, c[0] - c[1]), d = Math.abs(s - x)/Math.max(1, x);
+      worst = Math.max(worst, d); if (d > 2e-4) bad.push(j + '/' + pm + ': ' + s.toFixed(1) + ' vs ' + x); }); });
+    return {pass:!bad.length, detail:(bad.join('; ') || 'all match') + ', worst relative gap ' + worst.toExponential(2)}; });
+  t('S73: with the margin, a no-programme run has no programme leavers and the C2.2 run has some; earnings per adult-year move by under 2% of the programme\'s earnings change (seeds 1-5)', function(){
+    var R = tbStudy([main('none', {fl:'stock'}), main('c22', {fl:'stock'}), main('none', {fl:'stock', pm:0.43}), main('c22', {fl:'stock', pm:0.43})], 5, P, MS), dE0 = R[1].E - R[0].E, dE1 = R[3].E - R[2].E;
+    return {pass:R[2].lpOut === 0 && R[3].lpOut > 0 && Math.abs(dE1 - dE0) < 0.02*Math.abs(dE0) + 1, detail:'leavers ' + R[3].lpOut.toFixed(2) + '% of adult-years; programme earnings change ' + dE0.toFixed(0) + ' (pm 0) and ' + dE1.toFixed(0) + ' (pm 0.43)'}; });
+  t('S73: a returner\'s wage is the wage at exit times the price ratio, and its no-programme wages likewise', function(){
+    LF_SCOPE = {conv:'keep', fl:'stock'}; lfInit([], 1); var a = {wage:1000, _lwNB:900, _wNB:950}, k = 0;
+    lfOut(a, 'sch', 4000, 1.1); var ok = a._ret && a._lf === 'sch' && a._ssY === 4000*1.1;
+    while (a._lf && k < 1000){ lfFlow(a, 1.32, 3); k++; }
+    var r = 1.32/1.1; return {pass:ok && !a._ret && Math.abs(a.wage - 1000*r) < 1e-9 && Math.abs(a._lwNB - 900*r) < 1e-9 && Math.abs(a._wNB - 950*r) < 1e-9, detail:'returned after ' + k + ' years; wage ' + a.wage.toFixed(2)}; });
+  t('S73: refusals (fl \'x\', pm 2) leave no switch set: a no-programme row is unchanged after them', function(){
+    var e = [], A = tbStudy([main('none', {})], 1, P, MS);
+    [{fl:'x'}, {pm:2}].forEach(function(l, i){ try { tbStudy([main('none', l)], 1, P, MS); e.push(i + ' ran'); } catch (x){} });
+    var B = tbStudy([main('none', {})], 1, P, MS), m = moved(A[0], B[0], all(A[0], B[0]));
+    return {pass:!e.length && !m.length && LF_SCOPE === null, detail:(e.join(', ') || 'both refused') + (m.length ? '; moved: ' + m.slice(0, 5).join(', ') : '')}; });
+  return out; }
+function s73Stock(seeds){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
+  try { var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500}), c = r2MainPair(P, 'c22')[0]; c.lf = {fl:'stock'}; var r = tbStudy([c], seeds, P, r2MainStudy())[0], d = [];
+    for (var i = 0; i < seeds; i++) d.push(r._s.lfOutL[i] - r._s.lfOut0[i]); var m = d.reduce(function(a, b){ return a + b; }, 0)/seeds, se = Math.sqrt(d.reduce(function(a, b){ return a + (b - m)*(b - m); }, 0)/(seeds - 1)/seeds);
+    return {pass:Math.abs(m) < 1, m:m, se:se, y0:r.lfOut0, yL:r.lfOutL}; } finally { resetNR6(sv); tbSetG(g); } }
+Object.assign(module.exports, { s73UnitSuite, s73Stock, lfOut: function(){ return lfOut.apply(null, arguments); }, lfFlow: function(){ return lfFlow.apply(null, arguments); } });  /* S73 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3677,8 +3724,9 @@ Object.assign(module.exports, { FROZEN, SPEND_FROZEN, frozenRow, c22Design });  
  * (fx.fin 'report'; S68: moves no figure under the Source); today's price rule (no pr; S67 section 9). Applied to both runs of a pair. Study options:
  * R2_MAIN_STUDY (distribution measures dm, the money-flow table mf, the tail's measures wtm, costs at the within-year price level wy). S72 added the
  * government account (gv {}: reporting, and the contribution's books at each adult's weight, which moves the Source rows' small contribution because
- * the weighted tail is on); S73 adds its switch here once built; the packet for S69 is rebuilt then. */
-var R2_MAIN = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}, rt:{bo:true, ci:true, ng:'base', cr:true}, wt:true, lf:{}, dr:{lim:2500}, bg:{pi:0, m:1/1.21}, pa:'open', po:true, gv:{}};  /* S72: the government account (gv, with its weighted books) */
+ * the weighted tail is on). S73 added lf {fl: 'stock', pm: 0.43} (yearly movement in and out of the labour force, and the share of the income effect
+ * taken by leaving work; dev/reports/s73-participation.md); the packet for S69 is rebuilt now. */
+var R2_MAIN = {sn:{abawd:true, slope:true}, lt:{s:'all', m:'all'}, rt:{bo:true, ci:true, ng:'base', cr:true}, wt:true, lf:{fl:'stock', pm:0.43}, dr:{lim:2500}, bg:{pi:0, m:1/1.21}, pa:'open', po:true, gv:{}};  /* S72: the government account (gv, with its weighted books). S73: yearly flows in and out of the labour force and the participation margin (lf fl, pm) */
 var R2_MAIN_STUDY = {dm:true, rep52:true, wtm:true, mf:true, wy:true};
 function r2MainRow(c){ Object.assign(c, JSON.parse(JSON.stringify(R2_MAIN))); c.bg.m = R2_MAIN.bg.m; frozenRow(c); c.fx = {pthb:true, hb:true, ab:true, sp:true, fin:'report', pe:true}; return c; }
 /* The pair (row 0 no programme, row 1 the design: 'c22' the C2.2 design, 'rel' the release design) and the study options, environment P. */
@@ -3704,7 +3752,8 @@ var R2_ALT = [
   ['rt', 'no debt relief (rt chi 1, the creditor side off, as S59 and S71 run it)', function(c){ c.rt.chi = 1; c.rt.cr = false; }],
   ['cr', 'creditors hold the loss (cr inc hold)', function(c){ if (c.rt.cr !== false) c.rt.cr = {inc:'hold'}; }],
   ['wt', 'six tail households per type (wt m 6)', function(c){ c.wt = {m:6}; }],
-  ['lf', 'no conversion outside the labour force (lf conv none)', function(c){ c.lf = {conv:'none'}; }],
+  ['lf', 'no conversion outside the labour force (lf conv none)', function(c){ c.lf = Object.assign({}, R2_MAIN.lf, {conv:'none'}); }],
+  ['lp', 'the survey\'s own flows and the whole income effect on leaving work (lf fl panel, pm 1; S73)', function(c){ c.lf = {fl:'panel', pm:1}; }],
   ['dr', 'the floor reading (dr fl fpl)', function(c){ c.dr = {lim:2500, fl:'fpl'}; }],
   ['ag', 'ageing (ag)', function(c){ c.ag = {}; }],
   ['cl', 'the community layer (cl)', function(c){ c.cl = {}; }],
@@ -3721,6 +3770,8 @@ function r2Own(r, ids, i){ var bad = [], v = function(k){ return r[k]; };
   if (r.finGap !== undefined && !(r.finGap >= -1e-9)) bad.push('fin: negative unpaid part');
   if (ids.indexOf('fin') >= 0 && ids.indexOf('gv') < 0 && i && !(Math.abs(r.finGapSh || 0) < 1e-12 && Math.abs(r.finGapM - r.finGap) <= 1e-9*Math.max(1, r.finGap))) bad.push('fin: money reading leaves ' + r.finGapSh + '% unpaid');
   if (r.lfShare !== undefined && !(r.lfShare >= 0 && r.lfShare <= 100)) bad.push('lf: share outside 0-100%');
+  if (r.lfOut !== undefined){ ['lfOut0', 'lfOut', 'lfOutL', 'lfPart', 'lpOut', 'lfEx', 'lfRt'].forEach(function(k){ if (!(r[k] >= 0 && r[k] <= 100 + 1e-9)) bad.push('lf: ' + k + ' outside 0-100%'); });
+    if (!(r.lpE >= 0)) bad.push('lf: negative earnings forgone'); if (!i && r.lpOut !== 0) bad.push('lf: programme leavers in the no-programme run'); }  /* S73 */
   if (r.gvPay !== undefined && !(r.gvDebt >= 0 && isFinite(r.gvDebt))) bad.push('gv: debt below zero or not finite');
   if (ids.indexOf('gv') >= 0 && i && !(r.gvMon === 0 && r.gvBor > 0 && Math.abs(r.finGapSh) < 1e-9)) bad.push('gv: the debt reading made new money or left a part unpaid');
   if (r.poSub !== undefined && ids.indexOf('po') >= 0 && i && Math.abs(r.poSub) > 1e-9) bad.push('po: pay price still subsidises ' + r.poSub);
@@ -4177,6 +4228,12 @@ if (require.main === module) {
     console.log('\n=== s72UnitSuite(): S72, the government account, fx.fin debt and cap, the financing frontier (harness-only) ===');
     S72U.forEach(function(x){ if (!x.pass) s72f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + S72U.length + ' run, ' + s72f + ' failed');
+    var S73U = s73UnitSuite(), s73f = 0;
+    console.log('\n=== s73UnitSuite(): S73, yearly movement in and out of the labour force and the participation margin (harness-only) ===');
+    S73U.forEach(function(x){ if (!x.pass) s73f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    var S73S = s73Stock(100); if (!S73S.pass) s73f++;
+    console.log('  ' + (S73S.pass ? 'PASS' : 'FAIL') + '  S73: without ageing the stock-holding flows keep the out share: year 20 minus year 0 within 1 point (no programme, Reference, seeds 1-100)\n         ' + S73S.y0.toFixed(2) + '% -> ' + S73S.yL.toFixed(2) + '% (difference ' + S73S.m.toFixed(2) + ', standard error ' + S73S.se.toFixed(2) + ')');
+    console.log('\n' + (S73U.length + 1) + ' run, ' + s73f + ' failed');
     var SXU = sxUnitSuite(), sxf = 0;
     console.log('\n=== sxUnitSuite(): S52, the outside supply shock (harness-only) ===');
     SXU.forEach(function(x){ if (!x.pass) sxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
@@ -4225,7 +4282,7 @@ if (require.main === module) {
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
