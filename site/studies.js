@@ -10,6 +10,7 @@
     ['s55-open-access', 'Open access to community-owned providers (S55)', 'Anyone may buy at their prices, against members only. A conditional model result: see the report for what it rests on.'],
     ['s6-c22-pilot', 'Coverage and adequacy of the tax-financed design (S6, pilot)', 'A 100-seed pilot, not the full study; the frozen full panel is in the release data.'],
     ['s14-lw-pilot', 'Cost-of-living line weighted by where people live (S14, pilot)', 'A pilot (study L); labelled as such.'],
+    ['s47-spend', 'The spending share (S47)', 'What the earlier share, 0.593, and the share that gives the saving-rate target on the frozen model, 0.877, do to each outcome; the bridge between the published figures and the frozen ones.'],
     ['s34-baseline', 'The no-programme baseline against outside data (S34)', 'The model without the programme set beside survey and national-accounts figures.']
   ];
   var PAGE = 40;
