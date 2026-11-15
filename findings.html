@@ -76,7 +76,7 @@ footer p{margin:0 0 6px}
 </div></div>
 
 <nav class="fx-nav" aria-label="Sections and view"><div class="wrap">
-  <div class="fx-nav-in" id="nav-links"><a href="#headline">The answer</a><a href="#results">By environment</a><a href="#hh">Children</a><a href="#work">Jobs and risk</a><a href="#targets">Hub targets</a><a href="#fixed">Fixed lines</a><a href="#backing">Backing</a><a href="#readings">How far it moves</a><a href="#attrib">Each part</a><a href="#us">Against US data</a><a href="#studies">Studies</a><a href="#tables">All tables</a></div>
+  <div class="fx-nav-in" id="nav-links"><a href="#headline">The answer</a><a href="#results">By environment</a><a href="#hh">Children</a><a href="#work">Jobs and risk</a><a href="#targets">Hub targets</a><a href="#fixed">Fixed lines</a><a href="#backing">Backing</a><a href="#readings">How far it moves</a><a href="#attrib">Each part</a><a href="#us">Against US data</a><a href="#notes">Method notes</a><a href="#studies">Studies</a><a href="#tables">All tables</a></div>
   <div class="fx-strip-bar" id="controls"></div>
 </div></nav>
 
@@ -95,6 +95,14 @@ footer p{margin:0 0 6px}
       <div class="gloss-item"><div class="gloss-term">BLEI — Basic Living Economic Index</div><p class="gloss-def">Primary welfare metric: how many days of basic living an agent's accessible resources cover (cash + income + benefit buffers). Two readings are shown: the BLEI paper's own, and the same-rules reading (earlier called design-neutral): the same rules for everyone: 12% of a month's wage and the ordinary daily cost of living, plus one month of whatever regular support a design pays; it leaves out the two extras the BLEI paper gives participants (20% of wage, and a lower daily cost in community housing).</p></div>
       <div class="gloss-item"><div class="gloss-term">EDC — Extractive Drain Coefficient</div><p class="gloss-def">Share of income captured by contracts that build zero household wealth (rent, interest, fees). PTH payments have EDC = 0. The earlier engine's EDC figures are a design target proxy: a formula set to the BLEI paper's target bands, not measured from the model's flows (since v5.3 the model also measures it from rent and interest paid).</p></div>
       <div class="gloss-item"><div class="gloss-term">FBS — Financial Bandwidth Score</div><p class="gloss-def">Monthly residual resources above the basic-living threshold; gates an agent's probability of advancing an octave level.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Basket poverty</div><p class="gloss-def">The share of people (children counted in their households) whose household income falls short of that household’s cost of a basic living, the MIT living-wage basket for its adults and children. Shown as a share of person-years.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Wealth poverty</div><p class="gloss-def">The share of adults at the end of the run whose net wealth (what they own less what they owe; in a couple, half of what the two own) is below the threshold of <span class="num" data-src="inputs.wealthLine" data-f="usd">$25,000</span> in today’s money. The threshold is a design threshold chosen for this page, not a measured line. It moves with inflation: with prices rising and savings earning nothing, more adults fall below it.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Programme inflation</div><p class="gloss-def">The yearly rise in the price level that the programme causes, as the model computes it. It rests on the model’s placeholder price rule: all new money the programme pays that is not matched by new output reaches prices. It is a result of that rule, not a forecast.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Backing and financing options</div><p class="gloss-def">Backing is how much of the money the Source pays out is matched by new output. The headline reading is cautious: none is. “If every dollar were backed” is a stated alternative. Financing options pay the programme by taxes instead of new money: a flat contribution on wages, or a land-value tax.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Participation</div><p class="gloss-def">The share of adults who take part in the programme. In the as-released design adults opt in; in the C2.2 design everyone is covered automatically, so a participation figure applies only to the first.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Inflation-protected savings</div><p class="gloss-def">Savings whose value keeps pace with prices: interest equals inflation (zero real return). It is a reading that removes the programme’s erosion of savings; it is not a test of a positive return. The page shows it beside ordinary savings, which earn nothing in real terms.</p></div>
+      <div class="gloss-item"><div class="gloss-term">The three environments</div><p class="gloss-def">Reference: the model’s main settings, with no recessions and no outside inflation. Adverse: recessions, outside inflation and an automation wave. Stress Test: the Adverse environment with weaker settings (fewer take part, a smaller allowance). The figures for each are in the release file.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Percentage points</div><p class="gloss-def">A change in a share is given in percentage points (pts): the difference between two percentages, each measured against the same base, which is named next to the figure (usually the no-programme run of the same seeds). A fall from one share to a lower one is stated in points, never as a percentage of the first.</p></div>
       <!-- /glossary:items -->
   </details>
   <p class="layer-h">Layer 1 &middot; The answer</p>
@@ -110,6 +118,11 @@ footer p{margin:0 0 6px}
   </section>
   <p class="layer-h">Layer 2 &middot; A guided read of each result</p>
   <div id="stories"><span id="results"></span><span id="hh"></span><span id="work"></span><span id="targets"></span><span id="fixed"></span><span id="backing"></span><span id="readings"></span><span id="attrib"></span><span id="us"></span><p class="fx-note">The guided reads load with the release data.</p></div>
+  <section class="fx-sec" id="notes" aria-labelledby="notes-h">
+    <h2 class="fx-h2" id="notes-h">Method notes <a class="fx-anchor" href="#notes" aria-label="Link to this section">#</a></h2>
+    <p class="fx-lead">How the model’s saving and spending are set, and how the earlier figures connect to the frozen ones. Every number below is read from a study file when the page loads.</p>
+    <div id="notes-list"></div>
+  </section>
   <p class="layer-h">Layer 2b &middot; Preregistered studies since v5.6</p>
   <section class="fx-sec" id="studies" aria-labelledby="studies-h">
     <h2 class="fx-h2" id="studies-h">Every preregistered study, every estimate <a class="fx-anchor" href="#studies" aria-label="Link to this section">#</a></h2>
@@ -133,6 +146,7 @@ footer p{margin:0 0 6px}
 <script src="site/charts.js?v=5.6.0"></script>
 <script src="site/findings.js?v=5.6.0"></script>
 <script src="site/studies.js?v=5.6.0"></script>
+<script src="site/notes.js?v=5.6.0"></script>
 <script>
 /* The explorer: loads data/manifest.json, opens the current release (or ?v=), and renders the three layers from it. The address carries the release,
  * the environment, the horizon and the section, so any view can be shared. Everything shown comes from the release file (site/findings.js). */
@@ -170,6 +184,7 @@ footer p{margin:0 0 6px}
       if (location.hash && document.getElementById(location.hash.slice(1))) document.getElementById(location.hash.slice(1)).scrollIntoView(); });
   }
   if (window.CSS_STUDIES) window.CSS_STUDIES.mount($('study-list'));
+  if (window.CSS_NOTES) window.CSS_NOTES.mount($('notes-list'));
   F.fetchJSON('data/manifest.json').then(function (m) {
     MAN = m; var sel = $('version'); sel.innerHTML = '';
     m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = 'v' + r.version + ' · ' + r.date + (r.status === 'latest' ? ' (latest; figures from v' + r.figuresFrom + ')' : r.figuresFrom ? ' (figures from v' + r.figuresFrom + ')' : r.status === 'current' ? ' (current figures)' : ''); sel.appendChild(o); });

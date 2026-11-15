@@ -8,7 +8,7 @@ as columns (one list per CSV column; an empty CSV cell is null, any other numeri
 reads it, the engine commit, the seeds, and the SHA-256 of every source file, so a reader can tie the data to the sim-results folder it came from.
 The findings page (S7 part 2) prints these figures through site/findings.js; no number is typed into a page.
 """
-import csv, hashlib, json, os, sys
+import csv, hashlib, json, os, re, sys
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..')
 OUTDIR = os.path.join(ROOT, 'data', 'studies')
@@ -90,9 +90,53 @@ def s34_file():
     return out
 
 
+def num_or_str(v):
+    v = v.strip()
+    return cell(v) if re.fullmatch(r'-?\d+(\.\d+)?', v) else v
+
+
+def s47_file():
+    """The spending share (S47): the tables of dev/reports/s47-spend-tables.md as rows, plus the re-derivation's own numbers (rederive.json)."""
+    rep = os.path.join('dev', 'reports', 's47-spend-tables.md')
+    reder = os.path.join('dev', 'runs', 's47-spend', 'rederive.json')
+    env, sect, design = None, None, ''
+    rows = []
+    for line in open(os.path.join(ROOT, rep), encoding='utf-8'):
+        line = line.rstrip('\n')
+        m = re.match(r'### (\w+) ', line)
+        if m: env = m.group(1); continue
+        m = re.match(r'\*\*(.+?)\*\*', line)
+        if m and not line.startswith('|'):
+            t = m.group(1)
+            sect = 'effects' if t.startswith('Programme effects') else 'levels'
+            design = '' if sect == 'effects' else re.sub(r' \(frozen engine\)', '', t)
+            continue
+        if not line.startswith('|') or line.startswith('|---') or 'share 0.593' in line and 'Measure' in line or line.startswith('| Design'):
+            continue
+        c = [x.strip() for x in line.strip('|').split('|')]
+        if sect == 'levels':
+            if design.startswith('No programme') is False and design not in ('Release design', 'C2.2 design', 'No programme'):
+                pass
+            rows.append([env, 'levels', design, c[0], num_or_str(c[1]), num_or_str(c[2]), c[3], num_or_str(c[4]), c[5]])
+        elif sect == 'effects':
+            rows.append([env, 'effects', c[0], c[1], num_or_str(c[2]), num_or_str(c[3]), c[5], num_or_str(c[4]), c[6]])
+    cols = ['environment', 'section', 'design', 'measure', 'at share 0.593', 'at share 0.779', 'change, 0.779 against 0.593', 'at share 0.877', 'change, 0.877 against 0.593']
+    data = [[r[j] for r in rows] for j in range(len(cols))]
+    rd = json.load(open(os.path.join(ROOT, reder), encoding='utf-8'))
+    calib = {'targetRate': rd['_meta']['target'], 'spendSourced': rd['_meta']['current'], 'spendFrozen': 0.877,
+             'publishedSavingRate': rd['published']['rate'], 'frozenSavingAtSourced': rd['frozenAtCurrent']['rateDPI']}
+    src = {rep: sha(os.path.join(ROOT, rep)), reder: sha(os.path.join(ROOT, reder))}
+    return {'meta': {'id': 's47-spend', 'title': 'The spending share (S47): what 0.593 and 0.877 do to the frozen model',
+                     'prereg': 'prereg/run-manifest.md (Amendment 3)', 'report': 'dev/reports/s47-spend.md', 'engine': rd['_meta']['manifest']['commit'],
+                     'seeds': 50, 'rows': 'frozen engine, no programme, release design and C2.2, three environments; the share at 0.593, 0.779 and 0.877',
+                     'resultsFolders': '(run on the session machine; files here are the record)', 'source': src, 'calib': calib, 'n': len(rows)},
+            'columns': cols, 'data': data}
+
+
 def build():
     out = {sid: csv_file(sid) for sid in CSV_STUDIES}
     out['s34-baseline'] = s34_file()
+    out['s47-spend'] = s47_file()
     return out
 
 
