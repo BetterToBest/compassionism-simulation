@@ -2108,6 +2108,11 @@ function s74UnitSuite(){
     var P = Object.assign({}, ADVERSE_REFERENCE, {years:20, nAgents:500}), rows = [{}, {fs:false}, {fd:0.1}].map(function(x){ var c = r2FreezePair(P, 'c22')[0]; c.cb = x; return c; }), R = tbStudy(rows, 1, P, MS);
     var ok = R[1].fsQ === 0 && R[1].fsYrs === 0 && R[0].fsQ > 0 && Math.abs(R[0].fsGap) < 1e-6 && R[0].fsPx === 1 && Math.abs(R[2].fsPx - 0.9) < 1e-12 && Math.abs(R[2].fsGap) < 1e-6;
     return {pass:ok, detail:'sold per adult-year ' + R[0].fsQ.toFixed(1) + ' (main), ' + R[1].fsQ + ' (off); price paid ' + R[2].fsPx.toFixed(3) + ' with the discount'}; });
+  t('S74: hx rp \'infl\' (History with no central bank) pays today\'s reading of rates (phi and psi x the year\'s inflation, no refinancing) and keeps History\'s asset gains; cb refuses it', function(){
+    var R = rtOpts({}), ry = hxYear({hx:{rp:'infl'}}, 4), b = {r:[100, 0, 50, 0, 10], v:[100, 0, 50, 0, 10], n:200, dv:40, df:80, en:200, ed:40}, pi = 0.03, I = rtStep(b, 0, pi, R, null, ry);
+    var want = 100*((1 + pi)*(1 + HX.hR[4]/100) - 1) + 50*((1 + pi)*(1 + HX.eR[4]/100) - 1) + 10*pi + 200*0.46*pi - 40*pi, thrown = false;
+    var sv = CB; CB = cbOpts({}); try { cbYear({hx:{rp:'infl'}}, 0, 1, null, []); } catch (e){ thrown = true; } finally { CB = sv; CBS = null; CBJ = null; }
+    return {pass:Math.abs(I - want) < 1e-9 && ry.i === null && thrown, detail:'revaluation ' + I.toFixed(6) + ' (expected ' + want.toFixed(6) + ')'}; });
   return out; }
 Object.assign(module.exports, { cbSell, cbSettle, s74UnitSuite, HISTORY_ENV, HX, hxPi, hxIdx, hxRecPath, hxYear, cbOpts, cbYear, cbJob, CB_DEFAULTS, CB_U, CB_KEYS, setCbHook:function(f){ CB_HOOK = f; } });  /* S74 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
