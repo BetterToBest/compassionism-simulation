@@ -137,10 +137,54 @@ def s47_file():
             'columns': cols, 'data': data}
 
 
+def s54_file():
+    """Policy levers (S54): the front's points entering stage 3, how many pass decision rule 5 on fresh seeds, and the passing points' paired changes with intervals.
+    Rule 5 as dev/tools/s54_levers.py confirm() applies it, read from stage3-effects.csv.gz: in every environment basket poverty's interval upper end is below 0,
+    each no-harm measure's upper end is at or below +0.5 points, and (reported, not required) programme inflation's upper end is under 5 points a year."""
+    import gzip
+    rep, eff, st = 'dev/reports/s54-levers.md', 'dev/runs/s54-levers/stage3-effects.csv.gz', 'dev/runs/s54-levers/stage3-settings.json'
+    NOHARM = ['gNonF0', 'gNonW', 'secU25X', 'secM3X', 'pov']
+    sets = json.load(open(os.path.join(ROOT, st), encoding='utf-8'))
+    cell_ = {}
+    with gzip.open(os.path.join(ROOT, eff), 'rt', encoding='utf-8', newline='') as f:
+        for r in csv.DictReader(f):
+            cell_[(r['design'], int(r['wage']), r['row'], r['env'], r['key'])] = (float(r['prog']), float(r['prog_lo']), float(r['prog_hi']))
+    summary, conf = [], []
+    for sv in sets['sets']:
+        d, w = sv['design'], sv['wage']
+        tested = passed = passed_inf = 0
+        for nm in sv['pareto']:
+            tested += 1
+            ok = okx = True
+            for e in ENVS:
+                g = lambda k: cell_[(d, w, nm, e, k)]
+                ok = ok and g('fgt0PY')[2] < 0 and all(g(k)[2] <= 0.5 for k in NOHARM)
+                okx = okx and g('endoAnn')[2] * 100 < 5
+            if ok:
+                passed += 1; passed_inf += okx
+                for e in ENVS:
+                    for k in ['fgt0PY', 'pov', 'gNonF0', 'gNonW', 'secU25X', 'secM3X', 'endoAnn']:
+                        m, lo, hi = cell_[(d, w, nm, e, k)]
+                        sc = 100 if k == 'endoAnn' else 1
+                        conf.append([d, w, nm, e, k, m * sc, lo * sc, hi * sc])
+        summary.append([d, w, sv['candidates'], sv['pass_noharm'], tested, passed, passed_inf])
+    cols = ['design', 'wage', 'setting', 'environment', 'measure', 'change', 'lo', 'hi']
+    return {'meta': {'id': 's54-levers', 'title': 'Policy levers (S54): the trade-off front on fresh seeds',
+                     'prereg': 'prereg/2026-11-levers-addendum.md (research-update)', 'report': rep, 'engine': sets['engine'], 'seeds': 'chosen on 1-50, confirmed on 51-100 (50 seeds each)',
+                     'rows': 'PILOT: the front of the lever search, release row and C2.2 design, wages 100% and 90%, three environments',
+                     'resultsFolders': 's54-levers3-e6da050', 'resultsRepo': 'BetterToBest/compassionism-sim-results',
+                     'source': {eff: sha(os.path.join(ROOT, eff)), st: sha(os.path.join(ROOT, st))},
+                     'summaryColumns': ['design', 'wage', 'candidates', 'passNoHarmOnChoosingSeeds', 'frontPointsTested', 'passedRule5', 'passedRule5AndInflationUnder5'],
+                     'summary': summary, 'n': len(conf),
+                     'intervals': '95% paired-bootstrap intervals over seeds; changes against the same design\'s no-programme row; inflation in points a year'},
+            'columns': cols, 'data': [[r[j] for r in conf] for j in range(len(cols))]}
+
+
 def build():
     out = {sid: csv_file(sid) for sid in CSV_STUDIES}
     out['s34-baseline'] = s34_file()
     out['s47-spend'] = s47_file()
+    out['s54-levers'] = s54_file()
     return out
 
 
