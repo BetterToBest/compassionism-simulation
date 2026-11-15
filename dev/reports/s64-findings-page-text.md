@@ -14,13 +14,13 @@ S65 may shorten any paragraph; it may not drop a qualifier that a rule attaches 
 
 Card footnote (required): "Main row: every dollar the programme pays is matched by new output, as the design states (a design parameter, not a model estimate). The model's own mechanism for new output reaches about 1% of that. See *How much new output backs the payout*."
 
-**One-sentence answer.** Across all 62 preregistered readings, both designs lower all three poverty measures and raise median real wealth, in every environment and at both horizons; C2.2 does about one and a half to five times as much as the release design. These results hold when every dollar paid is matched by new output, which is the design's statement and not something the model shows; with the model's own backing mechanism, prices rise 15 to 53 points a year.
+**One-sentence answer.** Across all 62 preregistered readings, both designs lower all three poverty measures and raise median real wealth, in every environment and at both horizons; C2.2 does about 1.4 to 7.1 times as much as the release design. These results hold when every dollar paid is matched by new output, which is the design's statement and not something the model shows; with the model's own backing mechanism, prices rise 15 to 53 points a year.
 
 ## How sure we are: the range across readings
 
 Chart: `spec-c22-fgt0PY-20.svg` first (basket poverty), then basic living, wealth poverty and median wealth; programme inflation last. Each has the financed rows beside it.
 
-- Across the 62 preregistered readings, the C2.2 design lowers basket poverty by 26.0 to 33.3 points; at the main row, 32.4 points (seed interval 32.2 to 32.5). The release design lowers it by 16.2 to 22.3 points; at the main row, 20.9 (20.8 to 21.1).
+- Across the 62 preregistered readings, the C2.2 design lowers basket poverty by 25.9 to 33.3 points; at the main row, 32.4 points (seed interval 32.2 to 32.5). The release design lowers it by 16.2 to 22.3 points; at the main row, 20.9 (20.8 to 21.1).
 - C2.2 lowers adult-years below 30 days of basic living by 16.5 to 19.7 points (main row 18.7) and wealth poverty by 15.7 to 19.7 points (main row 18.6); the release design by 10.7 to 13.0 (12.3) and 9.0 to 12.7 (10.9).
 - Across the 62 readings, C2.2 raises median real wealth by $187,600 to $659,600; at the main row, $208,400 ($207,100 to $209,900); the release design by $84,600 to $282,100 (main row $99,400). These figures rest on today's price rule (ledger decision D26) and on full backing. Less than 3% of any wealth figure is the erosion of the balances adults held at the start, and it works in the programme's favour: slightly higher prices lower what net debtors owe in real terms (if all wealth were cash, it would work against it, by at most 5.3%). The widest part of the range comes from how much of their spare cash adults spend.
 - Every one of these curves is robust: at every reading the effect keeps its sign and its interval excludes zero (48 of 48 poverty and wealth curves, three environments, two horizons). In Stress the release design keeps every sign but loses about two thirds of each effect (basket poverty −7.7 points), because Stress lowers take-up to 40% and the PTF share; C2.2's effects grow there (basket poverty −40.1).
@@ -37,7 +37,7 @@ At the main row, programme inflation is 0.0 to 0.2 points a year above no progra
 
 Chart: the lower row of each curve chart.
 
-If the programme is paid for by a contribution, with the rest borrowed, C2.2 needs a mean contribution of 63 to 77% of all money income and lowers basket poverty by at most 17.5 points (in Stress at 20 years it raises it, +0.6); the release design, at 46 to 71% of wages, raises basket poverty by up to 9.6 points. Government debt stays under GDP at the main financed rows, but every financed result is fragile: it reverses at some readings in every environment, depending on how the contribution is set up. These rows were run without the weighted top tail.
+If the programme is paid for by a contribution, with the rest borrowed, C2.2 needs a mean contribution of 63 to 77% of all money income and lowers basket poverty by at most 17.5 points (in Stress at 20 years it raises it, +0.6); the release design, at 46 to 71% of wages, raises basket poverty by up to 9.6 points. Government debt stays under GDP at the main financed rows, but 46 of the 48 financed poverty and wealth curves are fragile (the two that hold are the release design's basic-living effect in Reference, at both horizons), depending on how the contribution is set up. These rows were run without the weighted top tail.
 
 ## Who gains
 
@@ -46,12 +46,12 @@ C2.2 lowers the top 1%'s share of wealth by 4.6 points (31.6% to 27.0%) and rais
 ## Unfavourable results
 
 Shown together, with the same prominence as the headline:
-- Programme inflation is above no programme in every cell: immaterial at the main row, 15 to 53 points a year without backing.
+- Programme inflation is above no programme in every cell: immaterial at the main row, 18 to 53 points a year at no backing.
 - Fewer adults work: participation falls 1 to 5 points (adults who leave work for the programme), with their earnings forgone.
 - Less movement out of the lowest wealth fifth: 69.8% of adults who start there are still there at year 20 under C2.2, against 66.3% without the programme.
-- Labour's share of money income falls by 10 to 30 points, because the programme's payments are income that is not wages.
+- Labour's share of money income falls by 11.7 to 30.5 points in Reference at 20 years (1.1 to 32.1 across every cell), because the programme's payments are income that is not wages.
 - The release design's effects shrink by two thirds in Stress.
-- Every financed row is fragile, and the release design paid by a contribution on wages raises basket poverty.
+- 46 of 48 financed poverty and wealth curves are fragile (the release design's basic-living effect in Reference holds), and the release design paid by a contribution on wages raises basket poverty.
 
 ## What no figure here covers
 
