@@ -76,7 +76,7 @@ footer p{margin:0 0 6px}
 </div></div>
 
 <nav class="fx-nav" aria-label="Sections and view"><div class="wrap">
-  <div class="fx-nav-in" id="nav-links"><a href="#headline">The answer</a><a href="#results">By environment</a><a href="#hh">Children</a><a href="#work">Jobs and risk</a><a href="#targets">Hub targets</a><a href="#fixed">Fixed lines</a><a href="#backing">Backing</a><a href="#readings">How far it moves</a><a href="#attrib">Each part</a><a href="#us">Against US data</a><a href="#tables">All tables</a></div>
+  <div class="fx-nav-in" id="nav-links"><a href="#headline">The answer</a><a href="#results">By environment</a><a href="#hh">Children</a><a href="#work">Jobs and risk</a><a href="#targets">Hub targets</a><a href="#fixed">Fixed lines</a><a href="#backing">Backing</a><a href="#readings">How far it moves</a><a href="#attrib">Each part</a><a href="#us">Against US data</a><a href="#studies">Studies</a><a href="#tables">All tables</a></div>
   <div class="fx-strip-bar" id="controls"></div>
 </div></nav>
 
@@ -110,6 +110,12 @@ footer p{margin:0 0 6px}
   </section>
   <p class="layer-h">Layer 2 &middot; A guided read of each result</p>
   <div id="stories"><span id="results"></span><span id="hh"></span><span id="work"></span><span id="targets"></span><span id="fixed"></span><span id="backing"></span><span id="readings"></span><span id="attrib"></span><span id="us"></span><p class="fx-note">The guided reads load with the release data.</p></div>
+  <p class="layer-h">Layer 2b &middot; Preregistered studies since v5.6</p>
+  <section class="fx-sec" id="studies" aria-labelledby="studies-h">
+    <h2 class="fx-h2" id="studies-h">Every preregistered study, every estimate <a class="fx-anchor" href="#studies" aria-label="Link to this section">#</a></h2>
+    <p class="fx-lead">These studies were preregistered before they ran and all of their results are published, including the ones that found nothing. Each opens on demand; filter by environment, horizon or outcome, and download the rows or the whole file. The numbers are printed exactly as each study wrote them. Studies S6 and S14 are 100-seed pilots and say so.</p>
+    <div id="study-list"></div>
+  </section>
   <p class="layer-h">Layer 3 &middot; Every table, with downloads</p>
   <section class="fx-sec" id="tables" aria-labelledby="tables-h">
     <h2 class="fx-h2" id="tables-h">All tables of this release <a class="fx-anchor" href="#tables" aria-label="Link to this section">#</a></h2>
@@ -126,6 +132,7 @@ footer p{margin:0 0 6px}
 
 <script src="site/charts.js?v=5.6.0"></script>
 <script src="site/findings.js?v=5.6.0"></script>
+<script src="site/studies.js?v=5.6.0"></script>
 <script>
 /* The explorer: loads data/manifest.json, opens the current release (or ?v=), and renders the three layers from it. The address carries the release,
  * the environment, the horizon and the section, so any view can be shared. Everything shown comes from the release file (site/findings.js). */
@@ -162,6 +169,7 @@ footer p{margin:0 0 6px}
       $('version-changed').innerHTML = d.text && d.text['release.changed'] ? F.text(d, 'release.changed') : ''; $('version-changed').hidden = !(d.text && d.text['release.changed']);
       if (location.hash && document.getElementById(location.hash.slice(1))) document.getElementById(location.hash.slice(1)).scrollIntoView(); });
   }
+  if (window.CSS_STUDIES) window.CSS_STUDIES.mount($('study-list'));
   F.fetchJSON('data/manifest.json').then(function (m) {
     MAN = m; var sel = $('version'); sel.innerHTML = '';
     m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = 'v' + r.version + ' · ' + r.date + (r.status === 'latest' ? ' (latest; figures from v' + r.figuresFrom + ')' : r.figuresFrom ? ' (figures from v' + r.figuresFrom + ')' : r.status === 'current' ? ' (current figures)' : ''); sel.appendChild(o); });
