@@ -40,7 +40,27 @@
       '<li><strong>A scale effect:</strong> for each outcome, the three larger populations (2,000, 10,000 and 50,000 adults) against 500 adults.</li></ul>' +
       '<p>A synergy is claimed only where its own interval excludes zero; whether it also survives Holm is stated beside it. Studies added later (open access, the community layer, the policy levers) name their own family in their tables, and say whether their intervals are adjusted.</p>';
   }
-  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], [null, holm]];
+  function levers(d) {
+    var S = 's54-levers', ENV = ['ref', 'adv', 'st'], NAME = {ref: 'Reference', adv: 'Adverse', st: 'Stress'};
+    function sum(des, w) { for (var i = 0; i < d.meta.summary.length; i++) { var r = d.meta.summary[i]; if (r[0] === des && r[1] === w) return {i: i, r: r}; } }
+    function sn(des, w, j, name) { var x = sum(des, w); return snum(S, 'meta.summary[' + x.i + '] ' + name, String(x.r[j])); }
+    function cellv(des, w, st, env, m) {
+      var c = d.columns, k = -1;
+      for (var i = 0; i < d.data[0].length; i++) if (col(d, 'design')[i] === des && col(d, 'wage')[i] === w && col(d, 'setting')[i] === st && col(d, 'environment')[i] === env && col(d, 'measure')[i] === m) k = i;
+      var v = col(d, 'change')[k], lo = col(d, 'lo')[k], hi = col(d, 'hi')[k];
+      return snum(S, 'row ' + k + ' ' + env + ' ' + m, (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + ' (' + (lo >= 0 ? '+' : '−') + Math.abs(lo).toFixed(1) + ' to ' + (hi >= 0 ? '+' : '−') + Math.abs(hi).toFixed(1) + ')');
+    }
+    var pts = [['c22', 100, 'kp50', 'C2.2, wages keeping up fully, the Source keeps half of project sales'], ['c22', 100, 'svc', 'C2.2, wages keeping up fully, protected account capped at the first $10,000 of savings'], ['c22', 90, 'svc', 'C2.2, wages at 90%, protected account capped at the first $10,000'], ['c22', 100, 'fflat', 'NOT confirmed: C2.2 paid for by a flat contribution on wages (tax-financed), wages keeping up fully']];
+    var h = '<h3 class="fx-h3">Policy levers: what the confirmation on fresh seeds left standing</h3>' +
+      '<p>This is a pilot (50 seeds to choose, 50 fresh seeds to confirm). The search looked for a setting of the government’s levers that cuts poverty, harms no one beyond a small margin, and keeps programme inflation under 5 points a year. None met all three, so no best setting is reported. The trade-off front of the search was then rerun on seeds that took no part in choosing it. A point is confirmed when, in all three environments, basket poverty’s interval lies below zero and each no-harm measure’s upper end is at or below half a point (rule 5). Inflation is reported, not required.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Front points entering and passing confirmation"><table class="fx-table"><caption>Points of the front tested on fresh seeds, and how many passed</caption><thead><tr><th>Design</th><th>Wages</th><th>Points entering</th><th>Passed rule 5</th><th>Of those, inflation under 5 points everywhere</th></tr></thead><tbody>' +
+      [['rel', 'Release row'], ['c22', 'C2.2 design']].map(function (D) { return [100, 90].map(function (w) { return '<tr><td>' + D[1] + '</td><td>' + w + '%</td><td>' + sn(D[0], w, 4, 'frontPointsTested') + '</td><td>' + sn(D[0], w, 5, 'passedRule5') + '</td><td>' + sn(D[0], w, 6, 'passedRule5AndInflationUnder5') + '</td></tr>'; }).join(''); }).join('') + '</tbody></table></div>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="The confirmed points"><table class="fx-table"><caption>The confirmed points, and the tax-financed C2.2 beside them (500 adults, 20 years, 50 fresh seeds): change against no programme on fresh seeds, with 95% interval (basket poverty and wealth poverty in points; non-participants’ big income falls per 100 adult-years; inflation in points a year)</caption><thead><tr><th>Point</th><th>Environment</th><th>Basket poverty</th><th>Wealth poverty</th><th>Non-participants’ big income falls</th><th>Programme inflation</th></tr></thead><tbody>' +
+      pts.map(function (q) { return ENV.map(function (e) { return '<tr><td>' + esc(e === 'ref' ? q[3] : '') + '</td><td>' + NAME[e] + '</td><td>' + cellv(q[0], q[1], q[2], e, 'fgt0PY') + '</td><td>' + cellv(q[0], q[1], q[2], e, 'pov') + '</td><td>' + cellv(q[0], q[1], q[2], e, 'secU25X') + '</td><td>' + cellv(q[0], q[1], q[2], e, 'endoAnn') + '</td></tr>'; }).join(''); }).join('') + '</tbody></table></div>' +
+      '<p class="fx-note">Every confirmed point cuts poverty and harms no one beyond the margin, and every one runs at inflation far above 5 points a year, which rests on the placeholder price rule above. No point of the release row is confirmed. These three failed the stricter no-harm test (rule 4: no harm at all) on the choosing seeds and pass the margin test (rule 5) here; both rules were written before any run. The last block is the one way found to keep inflation low: pay for the payout with a flat contribution on wages instead of new money. It cuts poverty, but raises non-participants’ big income falls in every environment (its interval’s upper end is above the half-point margin), so it is not confirmed. Every figure here is for 500 adults over 20 years. Adopting a tax-financed design is a change to the design itself and has not been decided.</p>';
+    return h;
+  }
+  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], [null, holm]];
   function mount(host) {
     NOTES.forEach(function (n) {
       var blk = document.createElement('div'); blk.className = 'fx-note-block'; host.appendChild(blk);
