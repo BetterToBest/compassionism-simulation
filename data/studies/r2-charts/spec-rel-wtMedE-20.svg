@@ -1,0 +1,1673 @@
+<svg class="cv" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-labelledby="t d">
+<style>.cv{--su:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e3e2dc;--axis:#9a9992;--band:#efeee9;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .cv{--su:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#6f6e68;--band:#262624;--s1:#3987e5;--s2:#d95926;--s3:#199e70}}:root[data-theme="dark"] .cv{--su:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#6f6e68;--band:#262624;--s1:#3987e5;--s2:#d95926;--s3:#199e70}.cv{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.cv .bg{fill:var(--su)}.cv .t{font-size:15px;font-weight:600;fill:var(--ink)}.cv .h{font-size:13px;font-weight:600;fill:var(--ink)}.cv .sub,.cv .tk,.cv .ax{font-size:11.5px;fill:var(--ink2)}.cv .tk{font-variant-numeric:tabular-nums}.cv .lab{font-size:11.5px;fill:var(--ink)}.cv .g{stroke:var(--grid);stroke-width:1}.cv .z{stroke:var(--axis);stroke-width:1}.cv .band{fill:var(--band)}.cv .iv{stroke-width:1;stroke-opacity:.55}.cv .d{stroke:var(--su);stroke-width:1}.cv .m{fill:var(--su);stroke:var(--ink);stroke-width:2}.cv .ln{fill:none;stroke-width:2}.cv .ref{stroke:var(--ink2);stroke-width:1;stroke-dasharray:4 3}.cv .hit{fill:transparent}.cv .s1{fill:var(--s1);stroke:var(--s1)}.cv .s2{fill:var(--s2);stroke:var(--s2)}.cv .s3{fill:var(--s3);stroke:var(--s3)}.cv .ls1{stroke:var(--s1)}.cv .ls2{stroke:var(--s2)}.cv .ls3{stroke:var(--s3)}.cv .o{fill:var(--su);stroke-width:2}</style>
+<rect class="bg" width="1000" height="620"/>
+<desc id="d">Paid for by the Source, Reference: Across the 62 preregistered readings, the release design design changes median real wealth by $84,579 to $282,143; at the main row, $99,425 (seed interval $98,241 to $100,661). Paid for by the Source, Adverse: Across the 62 preregistered readings, the release design design changes median real wealth by $58,142 to $194,254; at the main row, $72,011 (seed interval $70,915 to $73,193). Paid for by the Source, Stress: Across the 62 preregistered readings, the release design design changes median real wealth by $24,304 to $73,340; at the main row, $28,820 (seed interval $27,991 to $29,712). Paid for by a contribution, Reference: Across the 116 preregistered readings, the release design design changes median real wealth by $-391,774 to $104,912; at the main row, $-35,495 (seed interval $-37,108 to $-33,852). Paid for by a contribution, Adverse: Across the 116 preregistered readings, the release design design changes median real wealth by $-212,689 to $75,787; at the main row, $-22,069 (seed interval $-23,304 to $-20,822). Paid for by a contribution, Stress: Across the 116 preregistered readings, the release design design changes median real wealth by $-212,694 to $44,897; no material change in median real wealth at the main row ($-1,990; materiality $10,126) (seed interval $-2,821 to $-1,070).</desc>
+<title id="t">Median real wealth (weighted, year-0 dollars): the release design against no programme, 20 years</title>
+<text class="t" x="16" y="24">Median real wealth (weighted, year-0 dollars): the release design against no programme, 20 years</text>
+<text class="sub" x="16" y="42">Each dot is one preregistered reading, sorted by its effect, with its 95% seed interval (unit: $).</text>
+<text class="sub" x="16" y="58">Ringed: the main row. Diamond: the least-favourable bound. Shaded: not material (rule 3). Below each panel: the curve's verdict (rule 2).</text>
+<text class="h" x="16" y="98">Paid for by the Source (main row: full backing, a design parameter)</text>
+<line class="g" x1="76" x2="366" y1="300.0" y2="300.0"/>
+<text class="tk" x="70" y="300.0" text-anchor="end" dominant-baseline="middle">−$100k</text>
+<line class="g" x1="76" x2="366" y1="252.8" y2="252.8"/>
+<text class="tk" x="70" y="252.8" text-anchor="end" dominant-baseline="middle">$0</text>
+<line class="g" x1="76" x2="366" y1="205.6" y2="205.6"/>
+<text class="tk" x="70" y="205.6" text-anchor="end" dominant-baseline="middle">$100k</text>
+<line class="g" x1="76" x2="366" y1="158.4" y2="158.4"/>
+<text class="tk" x="70" y="158.4" text-anchor="end" dominant-baseline="middle">$200k</text>
+<line class="g" x1="76" x2="366" y1="111.2" y2="111.2"/>
+<text class="tk" x="70" y="111.2" text-anchor="end" dominant-baseline="middle">$300k</text>
+<rect class="band" x="76" width="290" y="247.5" height="10.6"><title>Not material: within $11,193 of zero (rule 3)</title></rect>
+<line class="z" x1="76" x2="366" y1="252.8" y2="252.8"/>
+<text class="lab" x="76" y="318">Reference · robust</text>
+<g><title>Reference, bound.rel.wtMedE [bgM=1, lfPm=0, poTest=capacity, rho=0.3, rtChi=1, rtIx=0.5, rtPhi=0, wtM=6]: +$84,579 (95% $83,446 to $85,759)</title><line class="iv ls1" x1="82.0" x2="82.0" y1="213.4" y2="212.3"/>
+<path class="o ls1" style="stroke:var(--s1)" d="M82.0 208.4l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="79.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rho=0.3: +$89,392 (95% $88,250 to $90,593)</title><line class="iv ls1" x1="86.6" x2="86.6" y1="211.1" y2="210.0"/>
+<circle class="d s1" cx="86.6" cy="210.6" r="2.6"/>
+<rect class="hit" x="84.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtChi x rtIx: +$95,021 (95% $93,841 to $96,226)</title><line class="iv ls1" x1="91.1" x2="91.1" y1="208.5" y2="207.4"/>
+<circle class="d s1" cx="91.1" cy="207.9" r="2.6"/>
+<rect class="hit" x="88.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.lfFl x rtIx: +$96,472 (95% $95,256 to $97,694)</title><line class="iv ls1" x1="95.7" x2="95.7" y1="207.8" y2="206.7"/>
+<circle class="d s1" cx="95.7" cy="207.2" r="2.6"/>
+<rect class="hit" x="93.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtIx=0.5: +$96,688 (95% $95,522 to $97,913)</title><line class="iv ls1" x1="100.2" x2="100.2" y1="207.7" y2="206.6"/>
+<circle class="d s1" cx="100.2" cy="207.1" r="2.6"/>
+<rect class="hit" x="98.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prK x rtIx: +$96,688 (95% $95,522 to $97,913)</title><line class="iv ls1" x1="104.8" x2="104.8" y1="207.7" y2="206.6"/>
+<circle class="d s1" cx="104.8" cy="207.1" r="2.6"/>
+<rect class="hit" x="102.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtIx x wIdx: +$96,688 (95% $95,522 to $97,913)</title><line class="iv ls1" x1="109.3" x2="109.3" y1="207.7" y2="206.6"/>
+<circle class="d s1" cx="109.3" cy="207.1" r="2.6"/>
+<rect class="hit" x="107.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prBd x rtIx: +$96,688 (95% $95,522 to $97,913)</title><line class="iv ls1" x1="113.9" x2="113.9" y1="207.7" y2="206.6"/>
+<circle class="d s1" cx="113.9" cy="207.1" r="2.6"/>
+<rect class="hit" x="111.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtIx x rtPhi: +$96,971 (95% $95,801 to $98,194)</title><line class="iv ls1" x1="118.5" x2="118.5" y1="207.6" y2="206.4"/>
+<circle class="d s1" cx="118.5" cy="207.0" r="2.6"/>
+<rect class="hit" x="116.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtChi=1: +$97,748 (95% $96,573 to $98,984)</title><line class="iv ls1" x1="123.0" x2="123.0" y1="207.2" y2="206.1"/>
+<circle class="d s1" cx="123.0" cy="206.6" r="2.6"/>
+<rect class="hit" x="120.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prR x wIdx: +$98,053 (95% $96,882 to $99,284)</title><line class="iv ls1" x1="127.6" x2="127.6" y1="207.1" y2="205.9"/>
+<circle class="d s1" cx="127.6" cy="206.5" r="2.6"/>
+<rect class="hit" x="125.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prR=0.45: +$98,354 (95% $97,182 to $99,580)</title><line class="iv ls1" x1="132.1" x2="132.1" y1="206.9" y2="205.8"/>
+<circle class="d s1" cx="132.1" cy="206.4" r="2.6"/>
+<rect class="hit" x="129.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.paDem=1: +$98,393 (95% $97,250 to $99,645)</title><line class="iv ls1" x1="136.7" x2="136.7" y1="206.9" y2="205.7"/>
+<circle class="d s1" cx="136.7" cy="206.3" r="2.6"/>
+<rect class="hit" x="134.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.paDem x wIdx: +$98,393 (95% $97,250 to $99,645)</title><line class="iv ls1" x1="141.2" x2="141.2" y1="206.9" y2="205.7"/>
+<circle class="d s1" cx="141.2" cy="206.3" r="2.6"/>
+<rect class="hit" x="139.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.lfPm=0: +$98,977 (95% $97,828 to $100,217)</title><line class="iv ls1" x1="145.8" x2="145.8" y1="206.6" y2="205.5"/>
+<circle class="d s1" cx="145.8" cy="206.1" r="2.6"/>
+<rect class="hit" x="143.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtPhi=0: +$99,193 (95% $98,015 to $100,428)</title><line class="iv ls1" x1="150.4" x2="150.4" y1="206.5" y2="205.4"/>
+<circle class="d s1" cx="150.4" cy="206.0" r="2.6"/>
+<rect class="hit" x="148.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.lfFl=off: +$99,217 (95% $98,005 to $100,460)</title><line class="iv ls1" x1="154.9" x2="154.9" y1="206.5" y2="205.4"/>
+<circle class="d s1" cx="154.9" cy="205.9" r="2.6"/>
+<rect class="hit" x="152.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.lfFl x wIdx: +$99,217 (95% $98,005 to $100,460)</title><line class="iv ls1" x1="159.5" x2="159.5" y1="206.5" y2="205.4"/>
+<circle class="d s1" cx="159.5" cy="205.9" r="2.6"/>
+<rect class="hit" x="157.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.wtCut=p90: +$99,242 (95% $98,105 to $100,419)</title><line class="iv ls1" x1="164.0" x2="164.0" y1="206.5" y2="205.4"/>
+<circle class="d s1" cx="164.0" cy="205.9" r="2.6"/>
+<rect class="hit" x="161.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poCost=sector: +$99,352 (95% $98,166 to $100,587)</title><line class="iv ls1" x1="168.6" x2="168.6" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="168.6" cy="205.9" r="2.6"/>
+<rect class="hit" x="166.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poCost x wIdx: +$99,352 (95% $98,166 to $100,587)</title><line class="iv ls1" x1="173.1" x2="173.1" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="173.1" cy="205.9" r="2.6"/>
+<rect class="hit" x="170.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poPay=price: +$99,364 (95% $98,195 to $100,626)</title><line class="iv ls1" x1="177.7" x2="177.7" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="177.7" cy="205.9" r="2.6"/>
+<rect class="hit" x="175.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poPay x wIdx: +$99,364 (95% $98,195 to $100,626)</title><line class="iv ls1" x1="182.3" x2="182.3" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="182.3" cy="205.9" r="2.6"/>
+<rect class="hit" x="180.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, main row: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="186.8" x2="186.8" y1="206.4" y2="205.3"/>
+<rect class="hit" x="184.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prK=0.2: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="191.4" x2="191.4" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="191.4" cy="205.9" r="2.6"/>
+<rect class="hit" x="189.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prA=0.5078: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="195.9" x2="195.9" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="195.9" cy="205.9" r="2.6"/>
+<rect class="hit" x="193.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prH=0.0446: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="200.5" x2="200.5" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="200.5" cy="205.9" r="2.6"/>
+<rect class="hit" x="198.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prBd=0.132: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="205.0" x2="205.0" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="205.0" cy="205.9" r="2.6"/>
+<rect class="hit" x="202.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.wIdx=0.75: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="209.6" x2="209.6" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="209.6" cy="205.9" r="2.6"/>
+<rect class="hit" x="207.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.bgM=1: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="214.2" x2="214.2" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="214.2" cy="205.9" r="2.6"/>
+<rect class="hit" x="211.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prK x wIdx: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="218.7" x2="218.7" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="218.7" cy="205.9" r="2.6"/>
+<rect class="hit" x="216.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prA x wIdx: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="223.3" x2="223.3" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="223.3" cy="205.9" r="2.6"/>
+<rect class="hit" x="221.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgM x wIdx: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="227.8" x2="227.8" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="227.8" cy="205.9" r="2.6"/>
+<rect class="hit" x="225.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prBd x wIdx: +$99,425 (95% $98,241 to $100,661)</title><line class="iv ls1" x1="232.4" x2="232.4" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="232.4" cy="205.9" r="2.6"/>
+<rect class="hit" x="230.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poTest=capacity: +$99,428 (95% $98,252 to $100,659)</title><line class="iv ls1" x1="237.0" x2="237.0" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="237.0" cy="205.8" r="2.6"/>
+<rect class="hit" x="234.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poTest=members: +$99,430 (95% $98,251 to $100,676)</title><line class="iv ls1" x1="241.5" x2="241.5" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="241.5" cy="205.8" r="2.6"/>
+<rect class="hit" x="239.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poTest x wIdx: +$99,430 (95% $98,251 to $100,676)</title><line class="iv ls1" x1="246.1" x2="246.1" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="246.1" cy="205.8" r="2.6"/>
+<rect class="hit" x="243.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poHire=0.05: +$99,440 (95% $98,260 to $100,671)</title><line class="iv ls1" x1="250.6" x2="250.6" y1="206.4" y2="205.3"/>
+<circle class="d s1" cx="250.6" cy="205.8" r="2.6"/>
+<rect class="hit" x="248.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.wtM=6: +$99,615 (95% $98,434 to $100,869)</title><line class="iv ls1" x1="255.2" x2="255.2" y1="206.3" y2="205.2"/>
+<circle class="d s1" cx="255.2" cy="205.8" r="2.6"/>
+<rect class="hit" x="252.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtPhi=1: +$99,700 (95% $98,521 to $100,937)</title><line class="iv ls1" x1="259.7" x2="259.7" y1="206.3" y2="205.1"/>
+<circle class="d s1" cx="259.7" cy="205.7" r="2.6"/>
+<rect class="hit" x="257.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.lfConv=none: +$99,705 (95% $98,550 to $100,938)</title><line class="iv ls1" x1="264.3" x2="264.3" y1="206.3" y2="205.1"/>
+<circle class="d s1" cx="264.3" cy="205.7" r="2.6"/>
+<rect class="hit" x="262.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poHire=0.02: +$99,728 (95% $98,534 to $100,954)</title><line class="iv ls1" x1="268.9" x2="268.9" y1="206.3" y2="205.1"/>
+<circle class="d s1" cx="268.9" cy="205.7" r="2.6"/>
+<rect class="hit" x="266.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poHire x wIdx: +$99,728 (95% $98,534 to $100,954)</title><line class="iv ls1" x1="273.4" x2="273.4" y1="206.3" y2="205.1"/>
+<circle class="d s1" cx="273.4" cy="205.7" r="2.6"/>
+<rect class="hit" x="271.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.lfPm=1: +$100,187 (95% $99,030 to $101,468)</title><line class="iv ls1" x1="278.0" x2="278.0" y1="206.0" y2="204.9"/>
+<circle class="d s1" cx="278.0" cy="205.5" r="2.6"/>
+<rect class="hit" x="275.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poBonus=members: +$100,571 (95% $99,400 to $101,824)</title><line class="iv ls1" x1="282.5" x2="282.5" y1="205.9" y2="204.7"/>
+<circle class="d s1" cx="282.5" cy="205.3" r="2.6"/>
+<rect class="hit" x="280.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poBonus x wIdx: +$100,571 (95% $99,400 to $101,824)</title><line class="iv ls1" x1="287.1" x2="287.1" y1="205.9" y2="204.7"/>
+<circle class="d s1" cx="287.1" cy="205.3" r="2.6"/>
+<rect class="hit" x="284.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgPi x rtIx: +$102,637 (95% $101,491 to $103,883)</title><line class="iv ls1" x1="291.6" x2="291.6" y1="204.9" y2="203.7"/>
+<circle class="d s1" cx="291.6" cy="204.3" r="2.6"/>
+<rect class="hit" x="289.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgM x rtIx: +$102,638 (95% $101,491 to $103,883)</title><line class="iv ls1" x1="296.2" x2="296.2" y1="204.9" y2="203.7"/>
+<circle class="d s1" cx="296.2" cy="204.3" r="2.6"/>
+<rect class="hit" x="293.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poCost=hub: +$103,093 (95% $101,931 to $104,352)</title><line class="iv ls1" x1="300.8" x2="300.8" y1="204.7" y2="203.5"/>
+<circle class="d s1" cx="300.8" cy="204.1" r="2.6"/>
+<rect class="hit" x="298.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtIx x rtNs: +$103,306 (95% $102,113 to $104,619)</title><line class="iv ls1" x1="305.3" x2="305.3" y1="204.6" y2="203.4"/>
+<circle class="d s1" cx="305.3" cy="204.0" r="2.6"/>
+<rect class="hit" x="303.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rho x rtIx: +$104,004 (95% $102,824 to $105,301)</title><line class="iv ls1" x1="309.9" x2="309.9" y1="204.2" y2="203.1"/>
+<circle class="d s1" cx="309.9" cy="203.7" r="2.6"/>
+<rect class="hit" x="307.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.bgPi=0.1: +$105,390 (95% $104,225 to $106,646)</title><line class="iv ls1" x1="314.4" x2="314.4" y1="203.6" y2="202.4"/>
+<circle class="d s1" cx="314.4" cy="203.0" r="2.6"/>
+<rect class="hit" x="312.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgPi x wIdx: +$105,390 (95% $104,225 to $106,646)</title><line class="iv ls1" x1="319.0" x2="319.0" y1="203.6" y2="202.4"/>
+<circle class="d s1" cx="319.0" cy="203.0" r="2.6"/>
+<rect class="hit" x="316.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.bgM=0.6536: +$105,395 (95% $104,230 to $106,642)</title><line class="iv ls1" x1="323.5" x2="323.5" y1="203.6" y2="202.4"/>
+<circle class="d s1" cx="323.5" cy="203.0" r="2.6"/>
+<rect class="hit" x="321.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtNs=port: +$106,048 (95% $104,844 to $107,382)</title><line class="iv ls1" x1="328.1" x2="328.1" y1="203.3" y2="202.1"/>
+<circle class="d s1" cx="328.1" cy="202.7" r="2.6"/>
+<rect class="hit" x="325.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rho=0.05: +$106,814 (95% $105,616 to $108,130)</title><line class="iv ls1" x1="332.7" x2="332.7" y1="202.9" y2="201.7"/>
+<circle class="d s1" cx="332.7" cy="202.4" r="2.6"/>
+<rect class="hit" x="330.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rho x wIdx: +$106,814 (95% $105,616 to $108,130)</title><line class="iv ls1" x1="337.2" x2="337.2" y1="202.9" y2="201.7"/>
+<circle class="d s1" cx="337.2" cy="202.4" r="2.6"/>
+<rect class="hit" x="334.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtIx x sc: +$253,810 (95% $251,466 to $256,201)</title><line class="iv ls1" x1="341.8" x2="341.8" y1="134.1" y2="131.8"/>
+<circle class="d s1" cx="341.8" cy="133.0" r="2.6"/>
+<rect class="hit" x="339.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.sc=0.593: +$256,983 (95% $254,667 to $259,404)</title><line class="iv ls1" x1="346.3" x2="346.3" y1="132.6" y2="130.3"/>
+<circle class="d s1" cx="346.3" cy="131.5" r="2.6"/>
+<rect class="hit" x="344.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtPhi x sc: +$257,387 (95% $255,066 to $259,807)</title><line class="iv ls1" x1="350.9" x2="350.9" y1="132.4" y2="130.1"/>
+<circle class="d s1" cx="350.9" cy="131.3" r="2.6"/>
+<rect class="hit" x="348.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgM x sc: +$276,322 (95% $273,976 to $278,783)</title><line class="iv ls1" x1="355.4" x2="355.4" y1="123.4" y2="121.2"/>
+<circle class="d s1" cx="355.4" cy="122.3" r="2.6"/>
+<rect class="hit" x="353.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtNs x sc: +$282,143 (95% $279,680 to $284,700)</title><line class="iv ls1" x1="360.0" x2="360.0" y1="120.8" y2="118.4"/>
+<circle class="d s1" cx="360.0" cy="119.6" r="2.6"/>
+<rect class="hit" x="357.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, main row: +$99,425 (95% $98,241 to $100,661)</title><circle class="m" cx="186.8" cy="205.9" r="5"/></g>
+<text class="lab" x="193.8" y="195.9" text-anchor="start">main +$99,425</text>
+<line class="g" x1="394" x2="684" y1="300.0" y2="300.0"/>
+<line class="g" x1="394" x2="684" y1="252.8" y2="252.8"/>
+<line class="g" x1="394" x2="684" y1="205.6" y2="205.6"/>
+<line class="g" x1="394" x2="684" y1="158.4" y2="158.4"/>
+<line class="g" x1="394" x2="684" y1="111.2" y2="111.2"/>
+<rect class="band" x="394" width="290" y="248.0" height="9.5"><title>Not material: within $10,105 of zero (rule 3)</title></rect>
+<line class="z" x1="394" x2="684" y1="252.8" y2="252.8"/>
+<text class="lab" x="394" y="318">Adverse · robust</text>
+<g><title>Adverse, bound.rel.wtMedE [bgM=1, lfPm=0, poTest=capacity, rho=0.3, rtChi=1, rtIx=0.5, rtPhi=0, wtM=6]: +$58,142 (95% $57,224 to $59,144)</title><line class="iv ls2" x1="400.0" x2="400.0" y1="225.8" y2="224.9"/>
+<path class="o ls2" style="stroke:var(--s2)" d="M400.0 220.8l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="397.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rho=0.3: +$64,945 (95% $63,886 to $66,092)</title><line class="iv ls2" x1="404.6" x2="404.6" y1="222.6" y2="221.6"/>
+<circle class="d s2" cx="404.6" cy="222.1" r="2.6"/>
+<rect class="hit" x="402.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtPhi=0: +$67,954 (95% $66,900 to $69,057)</title><line class="iv ls2" x1="409.1" x2="409.1" y1="221.2" y2="220.2"/>
+<circle class="d s2" cx="409.1" cy="220.7" r="2.6"/>
+<rect class="hit" x="406.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtChi x rtIx: +$69,015 (95% $68,036 to $70,039)</title><line class="iv ls2" x1="413.7" x2="413.7" y1="220.7" y2="219.7"/>
+<circle class="d s2" cx="413.7" cy="220.2" r="2.6"/>
+<rect class="hit" x="411.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.lfFl x rtIx: +$69,404 (95% $68,356 to $70,495)</title><line class="iv ls2" x1="418.2" x2="418.2" y1="220.5" y2="219.5"/>
+<circle class="d s2" cx="418.2" cy="220.0" r="2.6"/>
+<rect class="hit" x="416.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtIx=0.5: +$69,670 (95% $68,697 to $70,708)</title><line class="iv ls2" x1="422.8" x2="422.8" y1="220.4" y2="219.4"/>
+<circle class="d s2" cx="422.8" cy="219.9" r="2.6"/>
+<rect class="hit" x="420.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prK x rtIx: +$69,670 (95% $68,697 to $70,708)</title><line class="iv ls2" x1="427.3" x2="427.3" y1="220.4" y2="219.4"/>
+<circle class="d s2" cx="427.3" cy="219.9" r="2.6"/>
+<rect class="hit" x="425.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtIx x wIdx: +$69,670 (95% $68,697 to $70,708)</title><line class="iv ls2" x1="431.9" x2="431.9" y1="220.4" y2="219.4"/>
+<circle class="d s2" cx="431.9" cy="219.9" r="2.6"/>
+<rect class="hit" x="429.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prBd x rtIx: +$69,670 (95% $68,697 to $70,708)</title><line class="iv ls2" x1="436.5" x2="436.5" y1="220.4" y2="219.4"/>
+<circle class="d s2" cx="436.5" cy="219.9" r="2.6"/>
+<rect class="hit" x="434.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtChi=1: +$71,168 (95% $70,098 to $72,351)</title><line class="iv ls2" x1="441.0" x2="441.0" y1="219.7" y2="218.6"/>
+<circle class="d s2" cx="441.0" cy="219.2" r="2.6"/>
+<rect class="hit" x="438.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prR x wIdx: +$71,207 (95% $70,090 to $72,416)</title><line class="iv ls2" x1="445.6" x2="445.6" y1="219.7" y2="218.6"/>
+<circle class="d s2" cx="445.6" cy="219.2" r="2.6"/>
+<rect class="hit" x="443.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prR=0.45: +$71,379 (95% $70,270 to $72,591)</title><line class="iv ls2" x1="450.1" x2="450.1" y1="219.6" y2="218.5"/>
+<circle class="d s2" cx="450.1" cy="219.1" r="2.6"/>
+<rect class="hit" x="447.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.lfFl=off: +$71,807 (95% $70,735 to $72,964)</title><line class="iv ls2" x1="454.7" x2="454.7" y1="219.4" y2="218.3"/>
+<circle class="d s2" cx="454.7" cy="218.9" r="2.6"/>
+<rect class="hit" x="452.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.lfFl x wIdx: +$71,807 (95% $70,735 to $72,964)</title><line class="iv ls2" x1="459.2" x2="459.2" y1="219.4" y2="218.3"/>
+<circle class="d s2" cx="459.2" cy="218.9" r="2.6"/>
+<rect class="hit" x="457.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.lfPm=0: +$71,837 (95% $70,731 to $72,988)</title><line class="iv ls2" x1="463.8" x2="463.8" y1="219.4" y2="218.3"/>
+<circle class="d s2" cx="463.8" cy="218.9" r="2.6"/>
+<rect class="hit" x="461.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.paDem=1: +$71,936 (95% $70,841 to $73,100)</title><line class="iv ls2" x1="468.4" x2="468.4" y1="219.3" y2="218.3"/>
+<circle class="d s2" cx="468.4" cy="218.8" r="2.6"/>
+<rect class="hit" x="466.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.paDem x wIdx: +$71,936 (95% $70,841 to $73,100)</title><line class="iv ls2" x1="472.9" x2="472.9" y1="219.3" y2="218.3"/>
+<circle class="d s2" cx="472.9" cy="218.8" r="2.6"/>
+<rect class="hit" x="470.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poCost=sector: +$71,937 (95% $70,842 to $73,122)</title><line class="iv ls2" x1="477.5" x2="477.5" y1="219.3" y2="218.3"/>
+<circle class="d s2" cx="477.5" cy="218.8" r="2.6"/>
+<rect class="hit" x="475.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poCost x wIdx: +$71,937 (95% $70,842 to $73,122)</title><line class="iv ls2" x1="482.0" x2="482.0" y1="219.3" y2="218.3"/>
+<circle class="d s2" cx="482.0" cy="218.8" r="2.6"/>
+<rect class="hit" x="479.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poTest=capacity: +$71,986 (95% $70,884 to $73,189)</title><line class="iv ls2" x1="486.6" x2="486.6" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="486.6" cy="218.8" r="2.6"/>
+<rect class="hit" x="484.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, main row: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="491.1" x2="491.1" y1="219.3" y2="218.2"/>
+<rect class="hit" x="488.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prK=0.2: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="495.7" x2="495.7" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="495.7" cy="218.8" r="2.6"/>
+<rect class="hit" x="493.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prA=0.5078: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="500.3" x2="500.3" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="500.3" cy="218.8" r="2.6"/>
+<rect class="hit" x="498.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prH=0.0446: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="504.8" x2="504.8" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="504.8" cy="218.8" r="2.6"/>
+<rect class="hit" x="502.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prBd=0.132: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="509.4" x2="509.4" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="509.4" cy="218.8" r="2.6"/>
+<rect class="hit" x="507.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.wIdx=0.75: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="513.9" x2="513.9" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="513.9" cy="218.8" r="2.6"/>
+<rect class="hit" x="511.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.bgM=1: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="518.5" x2="518.5" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="518.5" cy="218.8" r="2.6"/>
+<rect class="hit" x="516.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prK x wIdx: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="523.0" x2="523.0" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="523.0" cy="218.8" r="2.6"/>
+<rect class="hit" x="520.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prA x wIdx: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="527.6" x2="527.6" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="527.6" cy="218.8" r="2.6"/>
+<rect class="hit" x="525.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgM x wIdx: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="532.2" x2="532.2" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="532.2" cy="218.8" r="2.6"/>
+<rect class="hit" x="529.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prBd x wIdx: +$72,010 (95% $70,915 to $73,193)</title><line class="iv ls2" x1="536.7" x2="536.7" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="536.7" cy="218.8" r="2.6"/>
+<rect class="hit" x="534.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.lfConv=none: +$72,016 (95% $70,919 to $73,186)</title><line class="iv ls2" x1="541.3" x2="541.3" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="541.3" cy="218.8" r="2.6"/>
+<rect class="hit" x="539.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poHire=0.05: +$72,031 (95% $70,938 to $73,216)</title><line class="iv ls2" x1="545.8" x2="545.8" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="545.8" cy="218.8" r="2.6"/>
+<rect class="hit" x="543.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poTest=members: +$72,063 (95% $70,969 to $73,243)</title><line class="iv ls2" x1="550.4" x2="550.4" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="550.4" cy="218.8" r="2.6"/>
+<rect class="hit" x="548.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poTest x wIdx: +$72,063 (95% $70,969 to $73,243)</title><line class="iv ls2" x1="555.0" x2="555.0" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="555.0" cy="218.8" r="2.6"/>
+<rect class="hit" x="552.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.wtCut=p90: +$72,089 (95% $71,031 to $73,104)</title><line class="iv ls2" x1="559.5" x2="559.5" y1="219.3" y2="218.3"/>
+<circle class="d s2" cx="559.5" cy="218.8" r="2.6"/>
+<rect class="hit" x="557.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poPay=price: +$72,099 (95% $71,003 to $73,250)</title><line class="iv ls2" x1="564.1" x2="564.1" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="564.1" cy="218.8" r="2.6"/>
+<rect class="hit" x="561.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poPay x wIdx: +$72,099 (95% $71,003 to $73,250)</title><line class="iv ls2" x1="568.6" x2="568.6" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="568.6" cy="218.8" r="2.6"/>
+<rect class="hit" x="566.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poHire=0.02: +$72,103 (95% $71,018 to $73,282)</title><line class="iv ls2" x1="573.2" x2="573.2" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="573.2" cy="218.7" r="2.6"/>
+<rect class="hit" x="570.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poHire x wIdx: +$72,103 (95% $71,018 to $73,282)</title><line class="iv ls2" x1="577.7" x2="577.7" y1="219.3" y2="218.2"/>
+<circle class="d s2" cx="577.7" cy="218.7" r="2.6"/>
+<rect class="hit" x="575.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.lfPm=1: +$72,421 (95% $71,320 to $73,661)</title><line class="iv ls2" x1="582.3" x2="582.3" y1="219.1" y2="218.0"/>
+<circle class="d s2" cx="582.3" cy="218.6" r="2.6"/>
+<rect class="hit" x="580.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poBonus=members: +$72,462 (95% $71,371 to $73,654)</title><line class="iv ls2" x1="586.9" x2="586.9" y1="219.1" y2="218.0"/>
+<circle class="d s2" cx="586.9" cy="218.6" r="2.6"/>
+<rect class="hit" x="584.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poBonus x wIdx: +$72,462 (95% $71,371 to $73,654)</title><line class="iv ls2" x1="591.4" x2="591.4" y1="219.1" y2="218.0"/>
+<circle class="d s2" cx="591.4" cy="218.6" r="2.6"/>
+<rect class="hit" x="589.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.wtM=6: +$73,070 (95% $72,036 to $74,221)</title><line class="iv ls2" x1="596.0" x2="596.0" y1="218.8" y2="217.7"/>
+<circle class="d s2" cx="596.0" cy="218.3" r="2.6"/>
+<rect class="hit" x="593.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgPi x rtIx: +$73,882 (95% $72,904 to $74,924)</title><line class="iv ls2" x1="600.5" x2="600.5" y1="218.4" y2="217.4"/>
+<circle class="d s2" cx="600.5" cy="217.9" r="2.6"/>
+<rect class="hit" x="598.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgM x rtIx: +$73,890 (95% $72,917 to $74,928)</title><line class="iv ls2" x1="605.1" x2="605.1" y1="218.4" y2="217.4"/>
+<circle class="d s2" cx="605.1" cy="217.9" r="2.6"/>
+<rect class="hit" x="602.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtIx x rtNs: +$74,293 (95% $73,266 to $75,358)</title><line class="iv ls2" x1="609.6" x2="609.6" y1="218.2" y2="217.2"/>
+<circle class="d s2" cx="609.6" cy="217.7" r="2.6"/>
+<rect class="hit" x="607.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rho x rtIx: +$74,652 (95% $73,647 to $75,733)</title><line class="iv ls2" x1="614.2" x2="614.2" y1="218.0" y2="217.0"/>
+<circle class="d s2" cx="614.2" cy="217.5" r="2.6"/>
+<rect class="hit" x="611.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtIx x rtPhi: +$75,294 (95% $74,250 to $76,386)</title><line class="iv ls2" x1="618.8" x2="618.8" y1="217.7" y2="216.7"/>
+<circle class="d s2" cx="618.8" cy="217.2" r="2.6"/>
+<rect class="hit" x="616.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poCost=hub: +$75,584 (95% $74,478 to $76,761)</title><line class="iv ls2" x1="623.3" x2="623.3" y1="217.6" y2="216.6"/>
+<circle class="d s2" cx="623.3" cy="217.1" r="2.6"/>
+<rect class="hit" x="621.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.bgPi=0.1: +$76,374 (95% $75,260 to $77,560)</title><line class="iv ls2" x1="627.9" x2="627.9" y1="217.3" y2="216.2"/>
+<circle class="d s2" cx="627.9" cy="216.7" r="2.6"/>
+<rect class="hit" x="625.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgPi x wIdx: +$76,374 (95% $75,260 to $77,560)</title><line class="iv ls2" x1="632.4" x2="632.4" y1="217.3" y2="216.2"/>
+<circle class="d s2" cx="632.4" cy="216.7" r="2.6"/>
+<rect class="hit" x="630.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.bgM=0.6536: +$76,379 (95% $75,264 to $77,568)</title><line class="iv ls2" x1="637.0" x2="637.0" y1="217.3" y2="216.2"/>
+<circle class="d s2" cx="637.0" cy="216.7" r="2.6"/>
+<rect class="hit" x="634.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rho=0.05: +$77,258 (95% $76,128 to $78,465)</title><line class="iv ls2" x1="641.5" x2="641.5" y1="216.8" y2="215.7"/>
+<circle class="d s2" cx="641.5" cy="216.3" r="2.6"/>
+<rect class="hit" x="639.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rho x wIdx: +$77,258 (95% $76,128 to $78,465)</title><line class="iv ls2" x1="646.1" x2="646.1" y1="216.8" y2="215.7"/>
+<circle class="d s2" cx="646.1" cy="216.3" r="2.6"/>
+<rect class="hit" x="643.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtPhi=1: +$77,720 (95% $76,543 to $78,865)</title><line class="iv ls2" x1="650.7" x2="650.7" y1="216.7" y2="215.6"/>
+<circle class="d s2" cx="650.7" cy="216.1" r="2.6"/>
+<rect class="hit" x="648.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtNs=port: +$80,782 (95% $79,678 to $81,952)</title><line class="iv ls2" x1="655.2" x2="655.2" y1="215.2" y2="214.1"/>
+<circle class="d s2" cx="655.2" cy="214.7" r="2.6"/>
+<rect class="hit" x="652.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtIx x sc: +$161,882 (95% $160,189 to $163,695)</title><line class="iv ls2" x1="659.8" x2="659.8" y1="177.2" y2="175.5"/>
+<circle class="d s2" cx="659.8" cy="176.4" r="2.6"/>
+<rect class="hit" x="657.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.sc=0.593: +$163,297 (95% $161,547 to $165,221)</title><line class="iv ls2" x1="664.3" x2="664.3" y1="176.5" y2="174.8"/>
+<circle class="d s2" cx="664.3" cy="175.7" r="2.6"/>
+<rect class="hit" x="662.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgM x sc: +$176,530 (95% $174,663 to $178,519)</title><line class="iv ls2" x1="668.9" x2="668.9" y1="170.3" y2="168.5"/>
+<circle class="d s2" cx="668.9" cy="169.4" r="2.6"/>
+<rect class="hit" x="666.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtPhi x sc: +$179,820 (95% $177,947 to $181,900)</title><line class="iv ls2" x1="673.4" x2="673.4" y1="168.8" y2="166.9"/>
+<circle class="d s2" cx="673.4" cy="167.9" r="2.6"/>
+<rect class="hit" x="671.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtNs x sc: +$194,254 (95% $192,221 to $196,446)</title><line class="iv ls2" x1="678.0" x2="678.0" y1="162.0" y2="160.0"/>
+<circle class="d s2" cx="678.0" cy="161.1" r="2.6"/>
+<rect class="hit" x="675.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, main row: +$72,010 (95% $70,915 to $73,193)</title><circle class="m" cx="491.1" cy="218.8" r="5"/></g>
+<text class="lab" x="498.1" y="208.8" text-anchor="start">main +$72,010</text>
+<line class="g" x1="712" x2="1002" y1="300.0" y2="300.0"/>
+<line class="g" x1="712" x2="1002" y1="252.8" y2="252.8"/>
+<line class="g" x1="712" x2="1002" y1="205.6" y2="205.6"/>
+<line class="g" x1="712" x2="1002" y1="158.4" y2="158.4"/>
+<line class="g" x1="712" x2="1002" y1="111.2" y2="111.2"/>
+<rect class="band" x="712" width="290" y="248.0" height="9.5"><title>Not material: within $10,105 of zero (rule 3)</title></rect>
+<line class="z" x1="712" x2="1002" y1="252.8" y2="252.8"/>
+<text class="lab" x="712" y="318">Stress · robust</text>
+<g><title>Stress, bound.rel.wtMedE [bgM=1, lfPm=0, poTest=capacity, rho=0.3, rtChi=1, rtIx=0.5, rtPhi=0, wtM=6]: +$24,304 (95% $23,622 to $25,041)</title><line class="iv ls3" x1="718.0" x2="718.0" y1="241.6" y2="241.0"/>
+<path class="o ls3" style="stroke:var(--s3)" d="M718.0 236.8l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="715.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rho=0.3: +$26,109 (95% $25,326 to $26,957)</title><line class="iv ls3" x1="722.6" x2="722.6" y1="240.8" y2="240.1"/>
+<circle class="d s3" cx="722.6" cy="240.5" r="2.6"/>
+<rect class="hit" x="720.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtPhi=0: +$27,406 (95% $26,579 to $28,270)</title><line class="iv ls3" x1="727.1" x2="727.1" y1="240.2" y2="239.4"/>
+<circle class="d s3" cx="727.1" cy="239.9" r="2.6"/>
+<rect class="hit" x="724.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.lfFl x rtIx: +$28,656 (95% $27,877 to $29,521)</title><line class="iv ls3" x1="731.7" x2="731.7" y1="239.6" y2="238.9"/>
+<circle class="d s3" cx="731.7" cy="239.3" r="2.6"/>
+<rect class="hit" x="729.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prR x wIdx: +$28,677 (95% $27,841 to $29,563)</title><line class="iv ls3" x1="736.2" x2="736.2" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="736.2" cy="239.3" r="2.6"/>
+<rect class="hit" x="734.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.lfPm=0: +$28,729 (95% $27,901 to $29,654)</title><line class="iv ls3" x1="740.8" x2="740.8" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="740.8" cy="239.2" r="2.6"/>
+<rect class="hit" x="738.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prR=0.45: +$28,761 (95% $27,924 to $29,659)</title><line class="iv ls3" x1="745.3" x2="745.3" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="745.3" cy="239.2" r="2.6"/>
+<rect class="hit" x="743.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poCost=sector: +$28,785 (95% $27,956 to $29,678)</title><line class="iv ls3" x1="749.9" x2="749.9" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="749.9" cy="239.2" r="2.6"/>
+<rect class="hit" x="747.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poCost x wIdx: +$28,785 (95% $27,956 to $29,678)</title><line class="iv ls3" x1="754.5" x2="754.5" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="754.5" cy="239.2" r="2.6"/>
+<rect class="hit" x="752.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.lfConv=none: +$28,807 (95% $27,974 to $29,700)</title><line class="iv ls3" x1="759.0" x2="759.0" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="759.0" cy="239.2" r="2.6"/>
+<rect class="hit" x="756.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poTest=members: +$28,811 (95% $27,977 to $29,702)</title><line class="iv ls3" x1="763.6" x2="763.6" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="763.6" cy="239.2" r="2.6"/>
+<rect class="hit" x="761.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poTest x wIdx: +$28,811 (95% $27,977 to $29,702)</title><line class="iv ls3" x1="768.1" x2="768.1" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="768.1" cy="239.2" r="2.6"/>
+<rect class="hit" x="765.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtIx=0.5: +$28,814 (95% $28,062 to $29,637)</title><line class="iv ls3" x1="772.7" x2="772.7" y1="239.5" y2="238.8"/>
+<circle class="d s3" cx="772.7" cy="239.2" r="2.6"/>
+<rect class="hit" x="770.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prK x rtIx: +$28,814 (95% $28,062 to $29,637)</title><line class="iv ls3" x1="777.2" x2="777.2" y1="239.5" y2="238.8"/>
+<circle class="d s3" cx="777.2" cy="239.2" r="2.6"/>
+<rect class="hit" x="775.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtIx x wIdx: +$28,814 (95% $28,062 to $29,637)</title><line class="iv ls3" x1="781.8" x2="781.8" y1="239.5" y2="238.8"/>
+<circle class="d s3" cx="781.8" cy="239.2" r="2.6"/>
+<rect class="hit" x="779.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prBd x rtIx: +$28,814 (95% $28,062 to $29,637)</title><line class="iv ls3" x1="786.4" x2="786.4" y1="239.5" y2="238.8"/>
+<circle class="d s3" cx="786.4" cy="239.2" r="2.6"/>
+<rect class="hit" x="784.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, main row: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="790.9" x2="790.9" y1="239.6" y2="238.8"/>
+<rect class="hit" x="788.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prK=0.2: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="795.5" x2="795.5" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="795.5" cy="239.2" r="2.6"/>
+<rect class="hit" x="793.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prA=0.5078: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="800.0" x2="800.0" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="800.0" cy="239.2" r="2.6"/>
+<rect class="hit" x="797.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prH=0.0446: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="804.6" x2="804.6" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="804.6" cy="239.2" r="2.6"/>
+<rect class="hit" x="802.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prBd=0.132: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="809.1" x2="809.1" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="809.1" cy="239.2" r="2.6"/>
+<rect class="hit" x="806.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.wIdx=0.75: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="813.7" x2="813.7" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="813.7" cy="239.2" r="2.6"/>
+<rect class="hit" x="811.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.bgM=1: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="818.3" x2="818.3" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="818.3" cy="239.2" r="2.6"/>
+<rect class="hit" x="816.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poHire=0.05: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="822.8" x2="822.8" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="822.8" cy="239.2" r="2.6"/>
+<rect class="hit" x="820.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prK x wIdx: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="827.4" x2="827.4" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="827.4" cy="239.2" r="2.6"/>
+<rect class="hit" x="825.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prA x wIdx: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="831.9" x2="831.9" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="831.9" cy="239.2" r="2.6"/>
+<rect class="hit" x="829.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgM x wIdx: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="836.5" x2="836.5" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="836.5" cy="239.2" r="2.6"/>
+<rect class="hit" x="834.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prBd x wIdx: +$28,820 (95% $27,991 to $29,712)</title><line class="iv ls3" x1="841.0" x2="841.0" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="841.0" cy="239.2" r="2.6"/>
+<rect class="hit" x="838.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poHire=0.02: +$28,820 (95% $27,990 to $29,714)</title><line class="iv ls3" x1="845.6" x2="845.6" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="845.6" cy="239.2" r="2.6"/>
+<rect class="hit" x="843.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poHire x wIdx: +$28,820 (95% $27,990 to $29,714)</title><line class="iv ls3" x1="850.2" x2="850.2" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="850.2" cy="239.2" r="2.6"/>
+<rect class="hit" x="847.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.paDem=1: +$28,820 (95% $27,992 to $29,714)</title><line class="iv ls3" x1="854.7" x2="854.7" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="854.7" cy="239.2" r="2.6"/>
+<rect class="hit" x="852.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.paDem x wIdx: +$28,820 (95% $27,992 to $29,714)</title><line class="iv ls3" x1="859.3" x2="859.3" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="859.3" cy="239.2" r="2.6"/>
+<rect class="hit" x="857.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poTest=capacity: +$28,824 (95% $27,993 to $29,720)</title><line class="iv ls3" x1="863.8" x2="863.8" y1="239.6" y2="238.8"/>
+<circle class="d s3" cx="863.8" cy="239.2" r="2.6"/>
+<rect class="hit" x="861.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.wtCut=p90: +$28,845 (95% $28,046 to $29,731)</title><line class="iv ls3" x1="868.4" x2="868.4" y1="239.5" y2="238.8"/>
+<circle class="d s3" cx="868.4" cy="239.2" r="2.6"/>
+<rect class="hit" x="866.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poPay=price: +$28,851 (95% $28,013 to $29,748)</title><line class="iv ls3" x1="873.0" x2="873.0" y1="239.6" y2="238.7"/>
+<circle class="d s3" cx="873.0" cy="239.2" r="2.6"/>
+<rect class="hit" x="870.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poPay x wIdx: +$28,851 (95% $28,013 to $29,748)</title><line class="iv ls3" x1="877.5" x2="877.5" y1="239.6" y2="238.7"/>
+<circle class="d s3" cx="877.5" cy="239.2" r="2.6"/>
+<rect class="hit" x="875.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poBonus=members: +$28,852 (95% $28,014 to $29,750)</title><line class="iv ls3" x1="882.1" x2="882.1" y1="239.6" y2="238.7"/>
+<circle class="d s3" cx="882.1" cy="239.2" r="2.6"/>
+<rect class="hit" x="879.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poBonus x wIdx: +$28,852 (95% $28,014 to $29,750)</title><line class="iv ls3" x1="886.6" x2="886.6" y1="239.6" y2="238.7"/>
+<circle class="d s3" cx="886.6" cy="239.2" r="2.6"/>
+<rect class="hit" x="884.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtChi x rtIx: +$28,862 (95% $28,100 to $29,692)</title><line class="iv ls3" x1="891.2" x2="891.2" y1="239.5" y2="238.8"/>
+<circle class="d s3" cx="891.2" cy="239.2" r="2.6"/>
+<rect class="hit" x="888.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtChi=1: +$28,925 (95% $28,068 to $29,893)</title><line class="iv ls3" x1="895.7" x2="895.7" y1="239.5" y2="238.7"/>
+<circle class="d s3" cx="895.7" cy="239.1" r="2.6"/>
+<rect class="hit" x="893.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.lfPm=1: +$28,954 (95% $28,095 to $29,869)</title><line class="iv ls3" x1="900.3" x2="900.3" y1="239.5" y2="238.7"/>
+<circle class="d s3" cx="900.3" cy="239.1" r="2.6"/>
+<rect class="hit" x="898.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.lfFl=off: +$28,979 (95% $28,149 to $29,860)</title><line class="iv ls3" x1="904.9" x2="904.9" y1="239.5" y2="238.7"/>
+<circle class="d s3" cx="904.9" cy="239.1" r="2.6"/>
+<rect class="hit" x="902.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.lfFl x wIdx: +$28,979 (95% $28,149 to $29,860)</title><line class="iv ls3" x1="909.4" x2="909.4" y1="239.5" y2="238.7"/>
+<circle class="d s3" cx="909.4" cy="239.1" r="2.6"/>
+<rect class="hit" x="907.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.wtM=6: +$29,518 (95% $28,641 to $30,429)</title><line class="iv ls3" x1="914.0" x2="914.0" y1="239.3" y2="238.4"/>
+<circle class="d s3" cx="914.0" cy="238.9" r="2.6"/>
+<rect class="hit" x="911.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poCost=hub: +$30,069 (95% $29,235 to $30,970)</title><line class="iv ls3" x1="918.5" x2="918.5" y1="239.0" y2="238.2"/>
+<circle class="d s3" cx="918.5" cy="238.6" r="2.6"/>
+<rect class="hit" x="916.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtIx x rtNs: +$30,592 (95% $29,804 to $31,462)</title><line class="iv ls3" x1="923.1" x2="923.1" y1="238.7" y2="237.9"/>
+<circle class="d s3" cx="923.1" cy="238.3" r="2.6"/>
+<rect class="hit" x="920.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.bgM=0.6536: +$30,731 (95% $29,861 to $31,658)</title><line class="iv ls3" x1="927.6" x2="927.6" y1="238.7" y2="237.8"/>
+<circle class="d s3" cx="927.6" cy="238.3" r="2.6"/>
+<rect class="hit" x="925.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.bgPi=0.1: +$30,731 (95% $29,861 to $31,658)</title><line class="iv ls3" x1="932.2" x2="932.2" y1="238.7" y2="237.8"/>
+<circle class="d s3" cx="932.2" cy="238.3" r="2.6"/>
+<rect class="hit" x="929.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgPi x wIdx: +$30,731 (95% $29,861 to $31,658)</title><line class="iv ls3" x1="936.8" x2="936.8" y1="238.7" y2="237.8"/>
+<circle class="d s3" cx="936.8" cy="238.3" r="2.6"/>
+<rect class="hit" x="934.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgPi x rtIx: +$30,831 (95% $30,046 to $31,685)</title><line class="iv ls3" x1="941.3" x2="941.3" y1="238.6" y2="237.8"/>
+<circle class="d s3" cx="941.3" cy="238.2" r="2.6"/>
+<rect class="hit" x="939.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgM x rtIx: +$30,832 (95% $30,046 to $31,685)</title><line class="iv ls3" x1="945.9" x2="945.9" y1="238.6" y2="237.8"/>
+<circle class="d s3" cx="945.9" cy="238.2" r="2.6"/>
+<rect class="hit" x="943.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rho=0.05: +$30,931 (95% $30,064 to $31,892)</title><line class="iv ls3" x1="950.4" x2="950.4" y1="238.6" y2="237.7"/>
+<circle class="d s3" cx="950.4" cy="238.2" r="2.6"/>
+<rect class="hit" x="948.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rho x wIdx: +$30,931 (95% $30,064 to $31,892)</title><line class="iv ls3" x1="955.0" x2="955.0" y1="238.6" y2="237.7"/>
+<circle class="d s3" cx="955.0" cy="238.2" r="2.6"/>
+<rect class="hit" x="952.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtIx x rtPhi: +$30,984 (95% $30,187 to $31,877)</title><line class="iv ls3" x1="959.5" x2="959.5" y1="238.5" y2="237.7"/>
+<circle class="d s3" cx="959.5" cy="238.2" r="2.6"/>
+<rect class="hit" x="957.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtPhi=1: +$31,010 (95% $30,123 to $31,908)</title><line class="iv ls3" x1="964.1" x2="964.1" y1="238.6" y2="237.7"/>
+<circle class="d s3" cx="964.1" cy="238.1" r="2.6"/>
+<rect class="hit" x="961.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rho x rtIx: +$31,036 (95% $30,284 to $31,853)</title><line class="iv ls3" x1="968.7" x2="968.7" y1="238.5" y2="237.8"/>
+<circle class="d s3" cx="968.7" cy="238.1" r="2.6"/>
+<rect class="hit" x="966.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtNs=port: +$32,232 (95% $31,340 to $33,201)</title><line class="iv ls3" x1="973.2" x2="973.2" y1="238.0" y2="237.1"/>
+<circle class="d s3" cx="973.2" cy="237.6" r="2.6"/>
+<rect class="hit" x="970.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.sc=0.593: +$61,766 (95% $60,366 to $63,286)</title><line class="iv ls3" x1="977.8" x2="977.8" y1="224.3" y2="222.9"/>
+<circle class="d s3" cx="977.8" cy="223.6" r="2.6"/>
+<rect class="hit" x="975.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtIx x sc: +$62,770 (95% $61,396 to $64,236)</title><line class="iv ls3" x1="982.3" x2="982.3" y1="223.8" y2="222.5"/>
+<circle class="d s3" cx="982.3" cy="223.2" r="2.6"/>
+<rect class="hit" x="980.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgM x sc: +$67,274 (95% $65,796 to $68,841)</title><line class="iv ls3" x1="986.9" x2="986.9" y1="221.7" y2="220.3"/>
+<circle class="d s3" cx="986.9" cy="221.0" r="2.6"/>
+<rect class="hit" x="984.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtPhi x sc: +$68,391 (95% $66,814 to $69,940)</title><line class="iv ls3" x1="991.4" x2="991.4" y1="221.2" y2="219.8"/>
+<circle class="d s3" cx="991.4" cy="220.5" r="2.6"/>
+<rect class="hit" x="989.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtNs x sc: +$73,340 (95% $71,627 to $75,028)</title><line class="iv ls3" x1="996.0" x2="996.0" y1="219.0" y2="217.4"/>
+<circle class="d s3" cx="996.0" cy="218.2" r="2.6"/>
+<rect class="hit" x="993.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, main row: +$28,820 (95% $27,991 to $29,712)</title><circle class="m" cx="790.9" cy="239.2" r="5"/></g>
+<text class="lab" x="797.9" y="229.2" text-anchor="start">main +$28,820</text>
+<text class="h" x="16" y="362">Paid for by a contribution (the financed rows)</text>
+<line class="g" x1="76" x2="366" y1="564.0" y2="564.0"/>
+<text class="tk" x="70" y="564.0" text-anchor="end" dominant-baseline="middle">−$600k</text>
+<line class="g" x1="76" x2="366" y1="512.4" y2="512.4"/>
+<text class="tk" x="70" y="512.4" text-anchor="end" dominant-baseline="middle">−$400k</text>
+<line class="g" x1="76" x2="366" y1="460.8" y2="460.8"/>
+<text class="tk" x="70" y="460.8" text-anchor="end" dominant-baseline="middle">−$200k</text>
+<line class="g" x1="76" x2="366" y1="409.1" y2="409.1"/>
+<text class="tk" x="70" y="409.1" text-anchor="end" dominant-baseline="middle">$0</text>
+<rect class="band" x="76" width="290" y="406.2" height="5.8"><title>Not material: within $11,246 of zero (rule 3)</title></rect>
+<line class="z" x1="76" x2="366" y1="409.1" y2="409.1"/>
+<text class="lab" x="76" y="582">Reference · fragile</text>
+<g><title>Reference, bound.rel.wtMedE [bgM=1, cap=0, drLim=0, fin=cap, gvA=0.25, gvB=0, gvRr=0.0196, gvSh=0, lfFl=off, lfPm=0, paDem=1, poPay=price, prA=0.5078, prBd=0.132, prH=0.0446, prR=0.45, rho=0.3, rtChi=1, rtIx=0.5, rtPhi=0, sc=0.593, wIdx=0.75]: −$391,774 (95% −$394,860 to −$388,797)</title><line class="iv ls1" x1="82.0" x2="82.0" y1="511.1" y2="509.5"/>
+<path class="o ls1" style="stroke:var(--s1)" d="M82.0 505.8l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="80.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtIx x sc: −$114,498 (95% −$117,523 to −$111,585)</title><line class="iv ls1" x1="84.4" x2="84.4" y1="439.5" y2="437.9"/>
+<circle class="d s1" cx="84.4" cy="438.7" r="2.6"/>
+<rect class="hit" x="82.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.sc=0.593: −$113,369 (95% −$116,439 to −$110,392)</title><line class="iv ls1" x1="86.8" x2="86.8" y1="439.2" y2="437.6"/>
+<circle class="d s1" cx="86.8" cy="438.4" r="2.6"/>
+<rect class="hit" x="84.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x sc: −$73,534 (95% −$76,412 to −$70,819)</title><line class="iv ls1" x1="89.3" x2="89.3" y1="428.9" y2="427.4"/>
+<circle class="d s1" cx="89.3" cy="428.1" r="2.6"/>
+<rect class="hit" x="87.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rtIx: −$57,184 (95% −$60,153 to −$54,623)</title><line class="iv ls1" x1="91.7" x2="91.7" y1="424.7" y2="423.2"/>
+<circle class="d s1" cx="91.7" cy="423.9" r="2.6"/>
+<rect class="hit" x="89.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rho=0.05: −$57,100 (95% −$58,469 to −$55,754)</title><line class="iv ls1" x1="94.1" x2="94.1" y1="424.2" y2="423.5"/>
+<circle class="d s1" cx="94.1" cy="423.9" r="2.6"/>
+<rect class="hit" x="92.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rho x wIdx: −$57,100 (95% −$58,469 to −$55,754)</title><line class="iv ls1" x1="96.5" x2="96.5" y1="424.2" y2="423.5"/>
+<circle class="d s1" cx="96.5" cy="423.9" r="2.6"/>
+<rect class="hit" x="94.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rho x rtIx: −$56,519 (95% −$57,863 to −$55,158)</title><line class="iv ls1" x1="98.9" x2="98.9" y1="424.1" y2="423.4"/>
+<circle class="d s1" cx="98.9" cy="423.7" r="2.6"/>
+<rect class="hit" x="96.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtIx x rtNs: −$38,856 (95% −$40,472 to −$37,198)</title><line class="iv ls1" x1="101.3" x2="101.3" y1="419.6" y2="418.7"/>
+<circle class="d s1" cx="101.3" cy="419.2" r="2.6"/>
+<rect class="hit" x="99.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.paDem=1: −$38,396 (95% −$39,960 to −$36,808)</title><line class="iv ls1" x1="103.8" x2="103.8" y1="419.5" y2="418.6"/>
+<circle class="d s1" cx="103.8" cy="419.0" r="2.6"/>
+<rect class="hit" x="101.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvRr=0.0196: −$37,952 (95% −$39,580 to −$36,316)</title><line class="iv ls1" x1="106.2" x2="106.2" y1="419.4" y2="418.5"/>
+<circle class="d s1" cx="106.2" cy="418.9" r="2.6"/>
+<rect class="hit" x="104.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtNs=port: −$37,751 (95% −$39,372 to −$36,062)</title><line class="iv ls1" x1="108.6" x2="108.6" y1="419.3" y2="418.4"/>
+<circle class="d s1" cx="108.6" cy="418.9" r="2.6"/>
+<rect class="hit" x="106.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poBonus=members: −$37,353 (95% −$38,948 to −$35,731)</title><line class="iv ls1" x1="111.0" x2="111.0" y1="419.2" y2="418.4"/>
+<circle class="d s1" cx="111.0" cy="418.8" r="2.6"/>
+<rect class="hit" x="109.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtChi x rtIx: −$37,218 (95% −$38,767 to −$35,641)</title><line class="iv ls1" x1="113.4" x2="113.4" y1="419.1" y2="418.3"/>
+<circle class="d s1" cx="113.4" cy="418.7" r="2.6"/>
+<rect class="hit" x="111.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.lfFl x rtIx: −$37,179 (95% −$38,880 to −$35,522)</title><line class="iv ls1" x1="115.8" x2="115.8" y1="419.2" y2="418.3"/>
+<circle class="d s1" cx="115.8" cy="418.7" r="2.6"/>
+<rect class="hit" x="113.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtIx=0.5: −$36,548 (95% −$38,107 to −$34,958)</title><line class="iv ls1" x1="118.3" x2="118.3" y1="419.0" y2="418.2"/>
+<circle class="d s1" cx="118.3" cy="418.6" r="2.6"/>
+<rect class="hit" x="116.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtIx x wIdx: −$36,548 (95% −$38,107 to −$34,958)</title><line class="iv ls1" x1="120.7" x2="120.7" y1="419.0" y2="418.2"/>
+<circle class="d s1" cx="120.7" cy="418.6" r="2.6"/>
+<rect class="hit" x="118.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.prK x rtIx: −$36,548 (95% −$38,107 to −$34,958)</title><line class="iv ls1" x1="123.1" x2="123.1" y1="419.0" y2="418.2"/>
+<circle class="d s1" cx="123.1" cy="418.6" r="2.6"/>
+<rect class="hit" x="121.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poTest=capacity: −$36,438 (95% −$38,038 to −$34,809)</title><line class="iv ls1" x1="125.5" x2="125.5" y1="419.0" y2="418.1"/>
+<circle class="d s1" cx="125.5" cy="418.5" r="2.6"/>
+<rect class="hit" x="123.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtIx x rtPhi: −$36,410 (95% −$37,971 to −$34,809)</title><line class="iv ls1" x1="127.9" x2="127.9" y1="418.9" y2="418.1"/>
+<circle class="d s1" cx="127.9" cy="418.5" r="2.6"/>
+<rect class="hit" x="125.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtChi=1: −$36,178 (95% −$37,760 to −$34,573)</title><line class="iv ls1" x1="130.3" x2="130.3" y1="418.9" y2="418.1"/>
+<circle class="d s1" cx="130.3" cy="418.5" r="2.6"/>
+<rect class="hit" x="128.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.lfPm=0: −$36,162 (95% −$37,721 to −$34,562)</title><line class="iv ls1" x1="132.8" x2="132.8" y1="418.9" y2="418.1"/>
+<circle class="d s1" cx="132.8" cy="418.5" r="2.6"/>
+<rect class="hit" x="130.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.lfPm x wIdx: −$36,162 (95% −$37,721 to −$34,562)</title><line class="iv ls1" x1="135.2" x2="135.2" y1="418.9" y2="418.1"/>
+<circle class="d s1" cx="135.2" cy="418.5" r="2.6"/>
+<rect class="hit" x="133.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvRs=0.02: −$35,869 (95% −$37,470 to −$34,196)</title><line class="iv ls1" x1="137.6" x2="137.6" y1="418.8" y2="418.0"/>
+<circle class="d s1" cx="137.6" cy="418.4" r="2.6"/>
+<rect class="hit" x="135.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.lfFl=off: −$35,866 (95% −$37,570 to −$34,206)</title><line class="iv ls1" x1="140.0" x2="140.0" y1="418.8" y2="418.0"/>
+<circle class="d s1" cx="140.0" cy="418.4" r="2.6"/>
+<rect class="hit" x="138.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.lfFl x wIdx: −$35,866 (95% −$37,570 to −$34,206)</title><line class="iv ls1" x1="142.4" x2="142.4" y1="418.8" y2="418.0"/>
+<circle class="d s1" cx="142.4" cy="418.4" r="2.6"/>
+<rect class="hit" x="140.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poCost=sector: −$35,702 (95% −$37,308 to −$34,049)</title><line class="iv ls1" x1="144.9" x2="144.9" y1="418.8" y2="417.9"/>
+<circle class="d s1" cx="144.9" cy="418.4" r="2.6"/>
+<rect class="hit" x="142.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtPhi=0: −$35,619 (95% −$37,216 to −$33,981)</title><line class="iv ls1" x1="147.3" x2="147.3" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="147.3" cy="418.3" r="2.6"/>
+<rect class="hit" x="145.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, main row: −$35,495 (95% −$37,108 to −$33,852)</title><line class="iv ls1" x1="149.7" x2="149.7" y1="418.7" y2="417.9"/>
+<rect class="hit" x="147.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prK=0.2: −$35,495 (95% −$37,108 to −$33,852)</title><line class="iv ls1" x1="152.1" x2="152.1" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="152.1" cy="418.3" r="2.6"/>
+<rect class="hit" x="150.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prA=0.5078: −$35,495 (95% −$37,108 to −$33,852)</title><line class="iv ls1" x1="154.5" x2="154.5" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="154.5" cy="418.3" r="2.6"/>
+<rect class="hit" x="152.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prH=0.0446: −$35,495 (95% −$37,108 to −$33,852)</title><line class="iv ls1" x1="156.9" x2="156.9" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="156.9" cy="418.3" r="2.6"/>
+<rect class="hit" x="154.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prBd=0.132: −$35,495 (95% −$37,108 to −$33,852)</title><line class="iv ls1" x1="159.4" x2="159.4" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="159.4" cy="418.3" r="2.6"/>
+<rect class="hit" x="157.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.wIdx=0.75: −$35,495 (95% −$37,108 to −$33,852)</title><line class="iv ls1" x1="161.8" x2="161.8" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="161.8" cy="418.3" r="2.6"/>
+<rect class="hit" x="159.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.bgM=1: −$35,495 (95% −$37,108 to −$33,852)</title><line class="iv ls1" x1="164.2" x2="164.2" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="164.2" cy="418.3" r="2.6"/>
+<rect class="hit" x="162.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.prBd x wIdx: −$35,495 (95% −$37,108 to −$33,852)</title><line class="iv ls1" x1="166.6" x2="166.6" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="166.6" cy="418.3" r="2.6"/>
+<rect class="hit" x="164.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.drLim=0: −$35,468 (95% −$37,070 to −$33,833)</title><line class="iv ls1" x1="169.0" x2="169.0" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="169.0" cy="418.3" r="2.6"/>
+<rect class="hit" x="167.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.drLim=10000: −$35,465 (95% −$37,083 to −$33,835)</title><line class="iv ls1" x1="171.4" x2="171.4" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="171.4" cy="418.3" r="2.6"/>
+<rect class="hit" x="169.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.lfConv=none: −$35,390 (95% −$36,950 to −$33,779)</title><line class="iv ls1" x1="173.9" x2="173.9" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="173.9" cy="418.3" r="2.6"/>
+<rect class="hit" x="171.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.lfConv x wIdx: −$35,390 (95% −$36,950 to −$33,779)</title><line class="iv ls1" x1="176.3" x2="176.3" y1="418.7" y2="417.9"/>
+<circle class="d s1" cx="176.3" cy="418.3" r="2.6"/>
+<rect class="hit" x="174.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtPhi=1: −$35,353 (95% −$36,969 to −$33,710)</title><line class="iv ls1" x1="178.7" x2="178.7" y1="418.7" y2="417.8"/>
+<circle class="d s1" cx="178.7" cy="418.3" r="2.6"/>
+<rect class="hit" x="176.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poHire=0.05: −$35,198 (95% −$36,785 to −$33,575)</title><line class="iv ls1" x1="181.1" x2="181.1" y1="418.6" y2="417.8"/>
+<circle class="d s1" cx="181.1" cy="418.2" r="2.6"/>
+<rect class="hit" x="179.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvA=0.25: −$34,759 (95% −$36,330 to −$33,153)</title><line class="iv ls1" x1="183.5" x2="183.5" y1="418.5" y2="417.7"/>
+<circle class="d s1" cx="183.5" cy="418.1" r="2.6"/>
+<rect class="hit" x="181.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.lfPm=1: −$34,392 (95% −$35,949 to −$32,777)</title><line class="iv ls1" x1="185.9" x2="185.9" y1="418.4" y2="417.6"/>
+<circle class="d s1" cx="185.9" cy="418.0" r="2.6"/>
+<rect class="hit" x="183.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvR=rule: −$34,145 (95% −$35,704 to −$32,550)</title><line class="iv ls1" x1="188.4" x2="188.4" y1="418.4" y2="417.5"/>
+<circle class="d s1" cx="188.4" cy="418.0" r="2.6"/>
+<rect class="hit" x="186.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvB=0: −$34,145 (95% −$35,704 to −$32,550)</title><line class="iv ls1" x1="190.8" x2="190.8" y1="418.4" y2="417.5"/>
+<circle class="d s1" cx="190.8" cy="418.0" r="2.6"/>
+<rect class="hit" x="188.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvB=1: −$34,145 (95% −$35,704 to −$32,550)</title><line class="iv ls1" x1="193.2" x2="193.2" y1="418.4" y2="417.5"/>
+<circle class="d s1" cx="193.2" cy="418.0" r="2.6"/>
+<rect class="hit" x="191.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poTest=members: −$34,140 (95% −$35,697 to −$32,564)</title><line class="iv ls1" x1="195.6" x2="195.6" y1="418.4" y2="417.5"/>
+<circle class="d s1" cx="195.6" cy="417.9" r="2.6"/>
+<rect class="hit" x="193.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prR=0.45: −$33,980 (95% −$35,522 to −$32,409)</title><line class="iv ls1" x1="198.0" x2="198.0" y1="418.3" y2="417.5"/>
+<circle class="d s1" cx="198.0" cy="417.9" r="2.6"/>
+<rect class="hit" x="196.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvA=1: −$33,672 (95% −$35,252 to −$32,086)</title><line class="iv ls1" x1="200.5" x2="200.5" y1="418.2" y2="417.4"/>
+<circle class="d s1" cx="200.5" cy="417.8" r="2.6"/>
+<rect class="hit" x="198.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poHire=0.02: −$33,578 (95% −$35,150 to −$32,004)</title><line class="iv ls1" x1="202.9" x2="202.9" y1="418.2" y2="417.4"/>
+<circle class="d s1" cx="202.9" cy="417.8" r="2.6"/>
+<rect class="hit" x="200.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvRs=0: −$33,509 (95% −$35,092 to −$31,923)</title><line class="iv ls1" x1="205.3" x2="205.3" y1="418.2" y2="417.4"/>
+<circle class="d s1" cx="205.3" cy="417.8" r="2.6"/>
+<rect class="hit" x="203.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rtChi: −$33,442 (95% −$35,169 to −$31,852)</title><line class="iv ls1" x1="207.7" x2="207.7" y1="418.2" y2="417.4"/>
+<circle class="d s1" cx="207.7" cy="417.8" r="2.6"/>
+<rect class="hit" x="205.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvRr=0: −$33,174 (95% −$34,711 to −$31,612)</title><line class="iv ls1" x1="210.1" x2="210.1" y1="418.1" y2="417.3"/>
+<circle class="d s1" cx="210.1" cy="417.7" r="2.6"/>
+<rect class="hit" x="208.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvDk=0: −$32,527 (95% −$34,049 to −$30,988)</title><line class="iv ls1" x1="212.5" x2="212.5" y1="417.9" y2="417.1"/>
+<circle class="d s1" cx="212.5" cy="417.5" r="2.6"/>
+<rect class="hit" x="210.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvDk x wIdx: −$32,527 (95% −$34,049 to −$30,988)</title><line class="iv ls1" x1="215.0" x2="215.0" y1="417.9" y2="417.1"/>
+<circle class="d s1" cx="215.0" cy="417.5" r="2.6"/>
+<rect class="hit" x="213.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvIp=borrow: −$30,422 (95% −$31,956 to −$28,894)</title><line class="iv ls1" x1="217.4" x2="217.4" y1="417.4" y2="416.6"/>
+<circle class="d s1" cx="217.4" cy="417.0" r="2.6"/>
+<rect class="hit" x="215.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvIp x wIdx: −$30,422 (95% −$31,956 to −$28,894)</title><line class="iv ls1" x1="219.8" x2="219.8" y1="417.4" y2="416.6"/>
+<circle class="d s1" cx="219.8" cy="417.0" r="2.6"/>
+<rect class="hit" x="217.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poPay=price: −$29,271 (95% −$30,851 to −$27,713)</title><line class="iv ls1" x1="222.2" x2="222.2" y1="417.1" y2="416.3"/>
+<circle class="d s1" cx="222.2" cy="416.7" r="2.6"/>
+<rect class="hit" x="220.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.poPay x wIdx: −$29,271 (95% −$30,851 to −$27,713)</title><line class="iv ls1" x1="224.6" x2="224.6" y1="417.1" y2="416.3"/>
+<circle class="d s1" cx="224.6" cy="416.7" r="2.6"/>
+<rect class="hit" x="222.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvBase x gvSh: −$27,550 (95% −$28,658 to −$26,414)</title><line class="iv ls1" x1="227.0" x2="227.0" y1="416.5" y2="416.0"/>
+<circle class="d s1" cx="227.0" cy="416.2" r="2.6"/>
+<rect class="hit" x="225.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poCost=hub: −$25,627 (95% −$27,150 to −$24,107)</title><line class="iv ls1" x1="229.5" x2="229.5" y1="416.1" y2="415.4"/>
+<circle class="d s1" cx="229.5" cy="415.8" r="2.6"/>
+<rect class="hit" x="227.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.bgPi=0.1: −$23,077 (95% −$24,604 to −$21,587)</title><line class="iv ls1" x1="231.9" x2="231.9" y1="415.5" y2="414.7"/>
+<circle class="d s1" cx="231.9" cy="415.1" r="2.6"/>
+<rect class="hit" x="229.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.bgPi x wIdx: −$23,077 (95% −$24,604 to −$21,587)</title><line class="iv ls1" x1="234.3" x2="234.3" y1="415.5" y2="414.7"/>
+<circle class="d s1" cx="234.3" cy="415.1" r="2.6"/>
+<rect class="hit" x="232.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x sc: −$19,677 (95% −$22,095 to −$17,238)</title><line class="iv ls1" x1="236.7" x2="236.7" y1="414.8" y2="413.6"/>
+<circle class="d s1" cx="236.7" cy="414.2" r="2.6"/>
+<rect class="hit" x="234.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x wIdx: −$15,039 (95% −$16,404 to −$13,600)</title><line class="iv ls1" x1="239.1" x2="239.1" y1="413.4" y2="412.6"/>
+<circle class="d s1" cx="239.1" cy="413.0" r="2.6"/>
+<rect class="hit" x="237.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvBase=wc: −$13,056 (95% −$14,246 to −$11,918)</title><line class="iv ls1" x1="241.5" x2="241.5" y1="412.8" y2="412.2"/>
+<circle class="d s1" cx="241.5" cy="412.5" r="2.6"/>
+<rect class="hit" x="239.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rho=0.3: −$8,710 (95% −$9,975 to −$7,409)</title><line class="iv ls1" x1="244.0" x2="244.0" y1="411.7" y2="411.0"/>
+<circle class="d s1" cx="244.0" cy="411.4" r="2.6"/>
+<rect class="hit" x="242.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poPay: −$8,285 (95% −$9,578 to −$6,944)</title><line class="iv ls1" x1="246.4" x2="246.4" y1="411.6" y2="410.9"/>
+<circle class="d s1" cx="246.4" cy="411.3" r="2.6"/>
+<rect class="hit" x="244.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x lfFl: −$7,819 (95% −$9,181 to −$6,510)</title><line class="iv ls1" x1="248.8" x2="248.8" y1="411.5" y2="410.8"/>
+<circle class="d s1" cx="248.8" cy="411.2" r="2.6"/>
+<rect class="hit" x="246.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvRr x gvSh: −$7,139 (95% −$8,424 to −$5,781)</title><line class="iv ls1" x1="251.2" x2="251.2" y1="411.3" y2="410.6"/>
+<circle class="d s1" cx="251.2" cy="411.0" r="2.6"/>
+<rect class="hit" x="249.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x lfFl: −$5,800 (95% −$7,188 to −$4,441)</title><line class="iv ls1" x1="253.6" x2="253.6" y1="411.0" y2="410.3"/>
+<circle class="d s1" cx="253.6" cy="410.6" r="2.6"/>
+<rect class="hit" x="251.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x prA: −$4,978 (95% −$6,341 to −$3,665)</title><line class="iv ls1" x1="256.1" x2="256.1" y1="410.8" y2="410.1"/>
+<circle class="d s1" cx="256.1" cy="410.4" r="2.6"/>
+<rect class="hit" x="254.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x prR: −$4,955 (95% −$6,349 to −$3,598)</title><line class="iv ls1" x1="258.5" x2="258.5" y1="410.8" y2="410.1"/>
+<circle class="d s1" cx="258.5" cy="410.4" r="2.6"/>
+<rect class="hit" x="256.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rtPhi: −$4,750 (95% −$6,037 to −$3,399)</title><line class="iv ls1" x1="260.9" x2="260.9" y1="410.7" y2="410.0"/>
+<circle class="d s1" cx="260.9" cy="410.4" r="2.6"/>
+<rect class="hit" x="258.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvRs x gvSh: −$4,545 (95% −$5,813 to −$3,187)</title><line class="iv ls1" x1="263.3" x2="263.3" y1="410.6" y2="410.0"/>
+<circle class="d s1" cx="263.3" cy="410.3" r="2.6"/>
+<rect class="hit" x="261.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poHire: −$4,532 (95% −$5,814 to −$3,171)</title><line class="iv ls1" x1="265.7" x2="265.7" y1="410.6" y2="410.0"/>
+<circle class="d s1" cx="265.7" cy="410.3" r="2.6"/>
+<rect class="hit" x="263.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.drLim x gvSh: −$4,182 (95% −$5,452 to −$2,840)</title><line class="iv ls1" x1="268.1" x2="268.1" y1="410.5" y2="409.9"/>
+<circle class="d s1" cx="268.1" cy="410.2" r="2.6"/>
+<rect class="hit" x="266.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvSh=0: −$4,168 (95% −$5,444 to −$2,816)</title><line class="iv ls1" x1="270.6" x2="270.6" y1="410.5" y2="409.9"/>
+<circle class="d s1" cx="270.6" cy="410.2" r="2.6"/>
+<rect class="hit" x="268.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x wIdx: −$4,168 (95% −$5,444 to −$2,816)</title><line class="iv ls1" x1="273.0" x2="273.0" y1="410.5" y2="409.9"/>
+<circle class="d s1" cx="273.0" cy="410.2" r="2.6"/>
+<rect class="hit" x="271.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prBd: −$4,168 (95% −$5,444 to −$2,816)</title><line class="iv ls1" x1="275.4" x2="275.4" y1="410.5" y2="409.9"/>
+<circle class="d s1" cx="275.4" cy="410.2" r="2.6"/>
+<rect class="hit" x="273.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prK: −$4,168 (95% −$5,444 to −$2,816)</title><line class="iv ls1" x1="277.8" x2="277.8" y1="410.5" y2="409.9"/>
+<circle class="d s1" cx="277.8" cy="410.2" r="2.6"/>
+<rect class="hit" x="275.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prA: −$4,168 (95% −$5,444 to −$2,816)</title><line class="iv ls1" x1="280.2" x2="280.2" y1="410.5" y2="409.9"/>
+<circle class="d s1" cx="280.2" cy="410.2" r="2.6"/>
+<rect class="hit" x="278.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prH: −$4,168 (95% −$5,444 to −$2,816)</title><line class="iv ls1" x1="282.6" x2="282.6" y1="410.5" y2="409.9"/>
+<circle class="d s1" cx="282.6" cy="410.2" r="2.6"/>
+<rect class="hit" x="280.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prR: −$3,982 (95% −$5,260 to −$2,631)</title><line class="iv ls1" x1="285.1" x2="285.1" y1="410.5" y2="409.8"/>
+<circle class="d s1" cx="285.1" cy="410.2" r="2.6"/>
+<rect class="hit" x="283.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rtChi: −$3,900 (95% −$5,179 to −$2,552)</title><line class="iv ls1" x1="287.5" x2="287.5" y1="410.5" y2="409.8"/>
+<circle class="d s1" cx="287.5" cy="410.1" r="2.6"/>
+<rect class="hit" x="285.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x lfPm: −$3,878 (95% −$5,183 to −$2,563)</title><line class="iv ls1" x1="289.9" x2="289.9" y1="410.5" y2="409.8"/>
+<circle class="d s1" cx="289.9" cy="410.1" r="2.6"/>
+<rect class="hit" x="287.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rtIx: −$3,822 (95% −$5,101 to −$2,471)</title><line class="iv ls1" x1="292.3" x2="292.3" y1="410.5" y2="409.8"/>
+<circle class="d s1" cx="292.3" cy="410.1" r="2.6"/>
+<rect class="hit" x="290.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x lfConv: −$3,769 (95% −$5,085 to −$2,414)</title><line class="iv ls1" x1="294.7" x2="294.7" y1="410.4" y2="409.8"/>
+<circle class="d s1" cx="294.7" cy="410.1" r="2.6"/>
+<rect class="hit" x="292.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poTest: −$3,767 (95% −$5,018 to −$2,414)</title><line class="iv ls1" x1="297.1" x2="297.1" y1="410.4" y2="409.8"/>
+<circle class="d s1" cx="297.1" cy="410.1" r="2.6"/>
+<rect class="hit" x="295.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rho: −$3,318 (95% −$4,602 to −$1,914)</title><line class="iv ls1" x1="299.6" x2="299.6" y1="410.3" y2="409.6"/>
+<circle class="d s1" cx="299.6" cy="410.0" r="2.6"/>
+<rect class="hit" x="297.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poBonus: −$3,247 (95% −$4,525 to −$1,889)</title><line class="iv ls1" x1="302.0" x2="302.0" y1="410.3" y2="409.6"/>
+<circle class="d s1" cx="302.0" cy="410.0" r="2.6"/>
+<rect class="hit" x="300.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvA x gvSh: −$2,860 (95% −$4,128 to −$1,527)</title><line class="iv ls1" x1="304.4" x2="304.4" y1="410.2" y2="409.5"/>
+<circle class="d s1" cx="304.4" cy="409.9" r="2.6"/>
+<rect class="hit" x="302.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poCost: −$2,791 (95% −$4,055 to −$1,450)</title><line class="iv ls1" x1="306.8" x2="306.8" y1="410.2" y2="409.5"/>
+<circle class="d s1" cx="306.8" cy="409.9" r="2.6"/>
+<rect class="hit" x="304.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.fin=money: −$2,665 (95% −$4,058 to −$1,374)</title><line class="iv ls1" x1="309.2" x2="309.2" y1="410.2" y2="409.5"/>
+<circle class="d s1" cx="309.2" cy="409.8" r="2.6"/>
+<rect class="hit" x="307.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.fin=cap: −$2,204 (95% −$3,538 to −$909)</title><line class="iv ls1" x1="311.7" x2="311.7" y1="410.1" y2="409.4"/>
+<circle class="d s1" cx="311.7" cy="409.7" r="2.6"/>
+<rect class="hit" x="309.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x gvIp: −$2,204 (95% −$3,538 to −$909)</title><line class="iv ls1" x1="314.1" x2="314.1" y1="410.1" y2="409.4"/>
+<circle class="d s1" cx="314.1" cy="409.7" r="2.6"/>
+<rect class="hit" x="312.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rtNs: −$2,126 (95% −$3,501 to −$782)</title><line class="iv ls1" x1="316.5" x2="316.5" y1="410.0" y2="409.3"/>
+<circle class="d s1" cx="316.5" cy="409.7" r="2.6"/>
+<rect class="hit" x="314.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rtNs: −$2,031 (95% −$3,392 to −$638)</title><line class="iv ls1" x1="318.9" x2="318.9" y1="410.0" y2="409.3"/>
+<circle class="d s1" cx="318.9" cy="409.7" r="2.6"/>
+<rect class="hit" x="316.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvR x gvSh: −$1,728 (95% −$2,999 to −$387)</title><line class="iv ls1" x1="321.3" x2="321.3" y1="409.9" y2="409.2"/>
+<circle class="d s1" cx="321.3" cy="409.6" r="2.6"/>
+<rect class="hit" x="319.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x prBd: −$810 (95% −$2,179 to $486)</title><line class="iv ls1" x1="323.7" x2="323.7" y1="409.7" y2="409.0"/>
+<circle class="d s1" cx="323.7" cy="409.3" r="2.6"/>
+<rect class="hit" x="321.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvBase=all: −$649 (95% −$1,731 to $517)</title><line class="iv ls1" x1="326.2" x2="326.2" y1="409.6" y2="409.0"/>
+<circle class="d s1" cx="326.2" cy="409.3" r="2.6"/>
+<rect class="hit" x="324.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x paDem: −$465 (95% −$1,784 to $888)</title><line class="iv ls1" x1="328.6" x2="328.6" y1="409.6" y2="408.9"/>
+<circle class="d s1" cx="328.6" cy="409.3" r="2.6"/>
+<rect class="hit" x="326.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.bgPi x gvSh: −$373 (95% −$1,662 to $988)</title><line class="iv ls1" x1="331.0" x2="331.0" y1="409.6" y2="408.9"/>
+<circle class="d s1" cx="331.0" cy="409.2" r="2.6"/>
+<rect class="hit" x="329.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x prK: +$1,269 (95% $50 to $2,515)</title><line class="iv ls1" x1="333.4" x2="333.4" y1="409.1" y2="408.5"/>
+<circle class="d s1" cx="333.4" cy="408.8" r="2.6"/>
+<rect class="hit" x="331.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rtPhi: +$4,096 (95% $2,747 to $5,417)</title><line class="iv ls1" x1="335.8" x2="335.8" y1="408.4" y2="407.7"/>
+<circle class="d s1" cx="335.8" cy="408.1" r="2.6"/>
+<rect class="hit" x="333.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.bgPi x fin: +$4,823 (95% $3,478 to $6,189)</title><line class="iv ls1" x1="338.2" x2="338.2" y1="408.2" y2="407.5"/>
+<circle class="d s1" cx="338.2" cy="407.9" r="2.6"/>
+<rect class="hit" x="336.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x gvBase: +$7,720 (95% $6,573 to $8,851)</title><line class="iv ls1" x1="340.7" x2="340.7" y1="407.4" y2="406.9"/>
+<circle class="d s1" cx="340.7" cy="407.1" r="2.6"/>
+<rect class="hit" x="338.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.cap=0: +$11,133 (95% $9,840 to $12,459)</title><line class="iv ls1" x1="343.1" x2="343.1" y1="406.6" y2="405.9"/>
+<circle class="d s1" cx="343.1" cy="406.3" r="2.6"/>
+<rect class="hit" x="341.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.cap x wIdx: +$11,133 (95% $9,840 to $12,459)</title><line class="iv ls1" x1="345.5" x2="345.5" y1="406.6" y2="405.9"/>
+<circle class="d s1" cx="345.5" cy="406.3" r="2.6"/>
+<rect class="hit" x="343.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rho: +$12,748 (95% $11,487 to $13,991)</title><line class="iv ls1" x1="347.9" x2="347.9" y1="406.2" y2="405.5"/>
+<circle class="d s1" cx="347.9" cy="405.8" r="2.6"/>
+<rect class="hit" x="345.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.cap x gvSh: +$37,739 (95% $36,539 to $38,954)</title><line class="iv ls1" x1="350.3" x2="350.3" y1="399.7" y2="399.1"/>
+<circle class="d s1" cx="350.3" cy="399.4" r="2.6"/>
+<rect class="hit" x="348.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.cap x fin: +$41,666 (95% $40,359 to $42,891)</title><line class="iv ls1" x1="352.7" x2="352.7" y1="398.7" y2="398.1"/>
+<circle class="d s1" cx="352.7" cy="398.4" r="2.6"/>
+<rect class="hit" x="350.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x gvSh: +$56,506 (95% $55,272 to $57,709)</title><line class="iv ls1" x1="355.2" x2="355.2" y1="394.9" y2="394.2"/>
+<circle class="d s1" cx="355.2" cy="394.6" r="2.6"/>
+<rect class="hit" x="353.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvDk x gvSh: +$96,136 (95% $94,984 to $97,297)</title><line class="iv ls1" x1="357.6" x2="357.6" y1="384.6" y2="384.0"/>
+<circle class="d s1" cx="357.6" cy="384.3" r="2.6"/>
+<rect class="hit" x="355.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvIp x gvSh: +$104,912 (95% $103,751 to $106,080)</title><line class="iv ls1" x1="360.0" x2="360.0" y1="382.4" y2="381.8"/>
+<circle class="d s1" cx="360.0" cy="382.1" r="2.6"/>
+<rect class="hit" x="358.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, main row: −$35,495 (95% −$37,108 to −$33,852)</title><circle class="m" cx="149.7" cy="418.3" r="5"/></g>
+<text class="lab" x="156.7" y="408.3" text-anchor="start">main −$35,495</text>
+<line class="g" x1="394" x2="684" y1="564.0" y2="564.0"/>
+<line class="g" x1="394" x2="684" y1="512.4" y2="512.4"/>
+<line class="g" x1="394" x2="684" y1="460.8" y2="460.8"/>
+<line class="g" x1="394" x2="684" y1="409.1" y2="409.1"/>
+<rect class="band" x="394" width="290" y="406.5" height="5.2"><title>Not material: within $10,126 of zero (rule 3)</title></rect>
+<line class="z" x1="394" x2="684" y1="409.1" y2="409.1"/>
+<text class="lab" x="394" y="582">Adverse · fragile</text>
+<g><title>Adverse, bound.rel.wtMedE [bgM=1, cap=0, drLim=0, fin=cap, gvA=0.25, gvB=0, gvRr=0.0196, gvSh=0, lfFl=off, lfPm=0, paDem=1, poPay=price, prA=0.5078, prBd=0.132, prH=0.0446, prR=0.45, rho=0.3, rtChi=1, rtIx=0.5, rtPhi=0, sc=0.593, wIdx=0.75]: −$212,689 (95% −$214,972 to −$210,456)</title><line class="iv ls2" x1="400.0" x2="400.0" y1="464.6" y2="463.5"/>
+<path class="o ls2" style="stroke:var(--s2)" d="M400.0 459.5l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="398.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rtIx: −$138,008 (95% −$140,691 to −$135,152)</title><line class="iv ls2" x1="402.4" x2="402.4" y1="445.5" y2="444.0"/>
+<circle class="d s2" cx="402.4" cy="444.8" r="2.6"/>
+<rect class="hit" x="400.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x sc: −$66,221 (95% −$68,186 to −$64,218)</title><line class="iv ls2" x1="404.8" x2="404.8" y1="426.7" y2="425.7"/>
+<circle class="d s2" cx="404.8" cy="426.2" r="2.6"/>
+<rect class="hit" x="402.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtIx x sc: −$61,667 (95% −$63,693 to −$59,646)</title><line class="iv ls2" x1="407.3" x2="407.3" y1="425.6" y2="424.5"/>
+<circle class="d s2" cx="407.3" cy="425.1" r="2.6"/>
+<rect class="hit" x="405.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.sc=0.593: −$61,212 (95% −$63,318 to −$59,088)</title><line class="iv ls2" x1="409.7" x2="409.7" y1="425.5" y2="424.4"/>
+<circle class="d s2" cx="409.7" cy="424.9" r="2.6"/>
+<rect class="hit" x="407.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rho x rtIx: −$49,598 (95% −$50,909 to −$48,208)</title><line class="iv ls2" x1="412.1" x2="412.1" y1="422.3" y2="421.6"/>
+<circle class="d s2" cx="412.1" cy="421.9" r="2.6"/>
+<rect class="hit" x="410.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rho=0.05: −$48,284 (95% −$49,628 to −$46,866)</title><line class="iv ls2" x1="414.5" x2="414.5" y1="421.9" y2="421.2"/>
+<circle class="d s2" cx="414.5" cy="421.6" r="2.6"/>
+<rect class="hit" x="412.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rho x wIdx: −$48,284 (95% −$49,628 to −$46,866)</title><line class="iv ls2" x1="416.9" x2="416.9" y1="421.9" y2="421.2"/>
+<circle class="d s2" cx="416.9" cy="421.6" r="2.6"/>
+<rect class="hit" x="414.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rtChi: −$44,229 (95% −$45,455 to −$42,952)</title><line class="iv ls2" x1="419.3" x2="419.3" y1="420.9" y2="420.2"/>
+<circle class="d s2" cx="419.3" cy="420.6" r="2.6"/>
+<rect class="hit" x="417.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.lfFl x rtIx: −$25,334 (95% −$26,645 to −$24,066)</title><line class="iv ls2" x1="421.8" x2="421.8" y1="416.0" y2="415.3"/>
+<circle class="d s2" cx="421.8" cy="415.7" r="2.6"/>
+<rect class="hit" x="419.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtIx x rtPhi: −$25,310 (95% −$26,592 to −$24,009)</title><line class="iv ls2" x1="424.2" x2="424.2" y1="416.0" y2="415.3"/>
+<circle class="d s2" cx="424.2" cy="415.7" r="2.6"/>
+<rect class="hit" x="422.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtNs=port: −$24,982 (95% −$26,264 to −$23,650)</title><line class="iv ls2" x1="426.6" x2="426.6" y1="415.9" y2="415.2"/>
+<circle class="d s2" cx="426.6" cy="415.6" r="2.6"/>
+<rect class="hit" x="424.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtIx x rtNs: −$24,928 (95% −$26,187 to −$23,673)</title><line class="iv ls2" x1="429.0" x2="429.0" y1="415.9" y2="415.2"/>
+<circle class="d s2" cx="429.0" cy="415.6" r="2.6"/>
+<rect class="hit" x="427.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtChi x rtIx: −$24,702 (95% −$25,956 to −$23,464)</title><line class="iv ls2" x1="431.4" x2="431.4" y1="415.8" y2="415.2"/>
+<circle class="d s2" cx="431.4" cy="415.5" r="2.6"/>
+<rect class="hit" x="429.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtPhi=1: −$23,928 (95% −$25,206 to −$22,652)</title><line class="iv ls2" x1="433.8" x2="433.8" y1="415.6" y2="415.0"/>
+<circle class="d s2" cx="433.8" cy="415.3" r="2.6"/>
+<rect class="hit" x="431.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.paDem=1: −$23,543 (95% −$24,810 to −$22,277)</title><line class="iv ls2" x1="436.3" x2="436.3" y1="415.5" y2="414.9"/>
+<circle class="d s2" cx="436.3" cy="415.2" r="2.6"/>
+<rect class="hit" x="434.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtChi=1: −$23,535 (95% −$24,793 to −$22,274)</title><line class="iv ls2" x1="438.7" x2="438.7" y1="415.5" y2="414.9"/>
+<circle class="d s2" cx="438.7" cy="415.2" r="2.6"/>
+<rect class="hit" x="436.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvBase x gvSh: −$23,453 (95% −$24,437 to −$22,378)</title><line class="iv ls2" x1="441.1" x2="441.1" y1="415.4" y2="414.9"/>
+<circle class="d s2" cx="441.1" cy="415.2" r="2.6"/>
+<rect class="hit" x="439.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvRr=0.0196: −$23,411 (95% −$24,646 to −$22,136)</title><line class="iv ls2" x1="443.5" x2="443.5" y1="415.5" y2="414.9"/>
+<circle class="d s2" cx="443.5" cy="415.2" r="2.6"/>
+<rect class="hit" x="441.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtIx=0.5: −$23,244 (95% −$24,452 to −$22,025)</title><line class="iv ls2" x1="445.9" x2="445.9" y1="415.4" y2="414.8"/>
+<circle class="d s2" cx="445.9" cy="415.1" r="2.6"/>
+<rect class="hit" x="443.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtIx x wIdx: −$23,244 (95% −$24,452 to −$22,025)</title><line class="iv ls2" x1="448.3" x2="448.3" y1="415.4" y2="414.8"/>
+<circle class="d s2" cx="448.3" cy="415.1" r="2.6"/>
+<rect class="hit" x="446.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.prK x rtIx: −$23,244 (95% −$24,452 to −$22,025)</title><line class="iv ls2" x1="450.8" x2="450.8" y1="415.4" y2="414.8"/>
+<circle class="d s2" cx="450.8" cy="415.1" r="2.6"/>
+<rect class="hit" x="448.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.lfFl=off: −$23,089 (95% −$24,341 to −$21,818)</title><line class="iv ls2" x1="453.2" x2="453.2" y1="415.4" y2="414.8"/>
+<circle class="d s2" cx="453.2" cy="415.1" r="2.6"/>
+<rect class="hit" x="451.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.lfFl x wIdx: −$23,089 (95% −$24,341 to −$21,818)</title><line class="iv ls2" x1="455.6" x2="455.6" y1="415.4" y2="414.8"/>
+<circle class="d s2" cx="455.6" cy="415.1" r="2.6"/>
+<rect class="hit" x="453.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poBonus=members: −$22,954 (95% −$24,214 to −$21,690)</title><line class="iv ls2" x1="458.0" x2="458.0" y1="415.4" y2="414.7"/>
+<circle class="d s2" cx="458.0" cy="415.1" r="2.6"/>
+<rect class="hit" x="456.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poTest=capacity: −$22,615 (95% −$23,851 to −$21,364)</title><line class="iv ls2" x1="460.4" x2="460.4" y1="415.3" y2="414.7"/>
+<circle class="d s2" cx="460.4" cy="415.0" r="2.6"/>
+<rect class="hit" x="458.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvRs=0.02: −$22,535 (95% −$23,767 to −$21,300)</title><line class="iv ls2" x1="462.9" x2="462.9" y1="415.3" y2="414.6"/>
+<circle class="d s2" cx="462.9" cy="415.0" r="2.6"/>
+<rect class="hit" x="460.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.lfPm=0: −$22,476 (95% −$23,710 to −$21,220)</title><line class="iv ls2" x1="465.3" x2="465.3" y1="415.3" y2="414.6"/>
+<circle class="d s2" cx="465.3" cy="414.9" r="2.6"/>
+<rect class="hit" x="463.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.lfPm x wIdx: −$22,476 (95% −$23,710 to −$21,220)</title><line class="iv ls2" x1="467.7" x2="467.7" y1="415.3" y2="414.6"/>
+<circle class="d s2" cx="467.7" cy="414.9" r="2.6"/>
+<rect class="hit" x="465.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poCost=sector: −$22,220 (95% −$23,457 to −$20,964)</title><line class="iv ls2" x1="470.1" x2="470.1" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="470.1" cy="414.9" r="2.6"/>
+<rect class="hit" x="468.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvB=0: −$22,111 (95% −$23,346 to −$20,866)</title><line class="iv ls2" x1="472.5" x2="472.5" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="472.5" cy="414.8" r="2.6"/>
+<rect class="hit" x="470.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.drLim=10000: −$22,077 (95% −$23,317 to −$20,822)</title><line class="iv ls2" x1="474.9" x2="474.9" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="474.9" cy="414.8" r="2.6"/>
+<rect class="hit" x="472.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, main row: −$22,069 (95% −$23,304 to −$20,822)</title><line class="iv ls2" x1="477.4" x2="477.4" y1="415.2" y2="414.5"/>
+<rect class="hit" x="475.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prK=0.2: −$22,069 (95% −$23,304 to −$20,822)</title><line class="iv ls2" x1="479.8" x2="479.8" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="479.8" cy="414.8" r="2.6"/>
+<rect class="hit" x="477.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prA=0.5078: −$22,069 (95% −$23,304 to −$20,822)</title><line class="iv ls2" x1="482.2" x2="482.2" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="482.2" cy="414.8" r="2.6"/>
+<rect class="hit" x="480.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prH=0.0446: −$22,069 (95% −$23,304 to −$20,822)</title><line class="iv ls2" x1="484.6" x2="484.6" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="484.6" cy="414.8" r="2.6"/>
+<rect class="hit" x="482.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prBd=0.132: −$22,069 (95% −$23,304 to −$20,822)</title><line class="iv ls2" x1="487.0" x2="487.0" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="487.0" cy="414.8" r="2.6"/>
+<rect class="hit" x="485.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.wIdx=0.75: −$22,069 (95% −$23,304 to −$20,822)</title><line class="iv ls2" x1="489.4" x2="489.4" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="489.4" cy="414.8" r="2.6"/>
+<rect class="hit" x="487.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.bgM=1: −$22,069 (95% −$23,304 to −$20,822)</title><line class="iv ls2" x1="491.9" x2="491.9" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="491.9" cy="414.8" r="2.6"/>
+<rect class="hit" x="489.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.prBd x wIdx: −$22,069 (95% −$23,304 to −$20,822)</title><line class="iv ls2" x1="494.3" x2="494.3" y1="415.2" y2="414.5"/>
+<circle class="d s2" cx="494.3" cy="414.8" r="2.6"/>
+<rect class="hit" x="492.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.drLim=0: −$22,043 (95% −$23,272 to −$20,798)</title><line class="iv ls2" x1="496.7" x2="496.7" y1="415.1" y2="414.5"/>
+<circle class="d s2" cx="496.7" cy="414.8" r="2.6"/>
+<rect class="hit" x="494.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.lfConv=none: −$22,000 (95% −$23,236 to −$20,759)</title><line class="iv ls2" x1="499.1" x2="499.1" y1="415.1" y2="414.5"/>
+<circle class="d s2" cx="499.1" cy="414.8" r="2.6"/>
+<rect class="hit" x="497.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.lfConv x wIdx: −$22,000 (95% −$23,236 to −$20,759)</title><line class="iv ls2" x1="501.5" x2="501.5" y1="415.1" y2="414.5"/>
+<circle class="d s2" cx="501.5" cy="414.8" r="2.6"/>
+<rect class="hit" x="499.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poHire=0.05: −$21,937 (95% −$23,173 to −$20,676)</title><line class="iv ls2" x1="503.9" x2="503.9" y1="415.1" y2="414.5"/>
+<circle class="d s2" cx="503.9" cy="414.8" r="2.6"/>
+<rect class="hit" x="501.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prR=0.45: −$21,521 (95% −$22,757 to −$20,282)</title><line class="iv ls2" x1="506.4" x2="506.4" y1="415.0" y2="414.4"/>
+<circle class="d s2" cx="506.4" cy="414.7" r="2.6"/>
+<rect class="hit" x="504.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvA=1: −$21,438 (95% −$22,658 to −$20,210)</title><line class="iv ls2" x1="508.8" x2="508.8" y1="415.0" y2="414.4"/>
+<circle class="d s2" cx="508.8" cy="414.7" r="2.6"/>
+<rect class="hit" x="506.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvR=rule: −$21,427 (95% −$22,648 to −$20,198)</title><line class="iv ls2" x1="511.2" x2="511.2" y1="415.0" y2="414.4"/>
+<circle class="d s2" cx="511.2" cy="414.7" r="2.6"/>
+<rect class="hit" x="509.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvA=0.25: −$21,426 (95% −$22,647 to −$20,198)</title><line class="iv ls2" x1="513.6" x2="513.6" y1="415.0" y2="414.4"/>
+<circle class="d s2" cx="513.6" cy="414.7" r="2.6"/>
+<rect class="hit" x="511.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvB=1: −$21,422 (95% −$22,642 to −$20,193)</title><line class="iv ls2" x1="516.0" x2="516.0" y1="415.0" y2="414.3"/>
+<circle class="d s2" cx="516.0" cy="414.7" r="2.6"/>
+<rect class="hit" x="514.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poTest=members: −$21,351 (95% −$22,567 to −$20,114)</title><line class="iv ls2" x1="518.5" x2="518.5" y1="415.0" y2="414.3"/>
+<circle class="d s2" cx="518.5" cy="414.6" r="2.6"/>
+<rect class="hit" x="516.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.lfPm=1: −$21,293 (95% −$22,597 to −$20,012)</title><line class="iv ls2" x1="520.9" x2="520.9" y1="415.0" y2="414.3"/>
+<circle class="d s2" cx="520.9" cy="414.6" r="2.6"/>
+<rect class="hit" x="518.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poHire=0.02: −$21,204 (95% −$22,449 to −$19,931)</title><line class="iv ls2" x1="523.3" x2="523.3" y1="414.9" y2="414.3"/>
+<circle class="d s2" cx="523.3" cy="414.6" r="2.6"/>
+<rect class="hit" x="521.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvDk=0: −$20,908 (95% −$22,119 to −$19,671)</title><line class="iv ls2" x1="525.7" x2="525.7" y1="414.8" y2="414.2"/>
+<circle class="d s2" cx="525.7" cy="414.5" r="2.6"/>
+<rect class="hit" x="523.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvDk x wIdx: −$20,908 (95% −$22,119 to −$19,671)</title><line class="iv ls2" x1="528.1" x2="528.1" y1="414.8" y2="414.2"/>
+<circle class="d s2" cx="528.1" cy="414.5" r="2.6"/>
+<rect class="hit" x="526.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvRr=0: −$20,816 (95% −$22,032 to −$19,582)</title><line class="iv ls2" x1="530.5" x2="530.5" y1="414.8" y2="414.2"/>
+<circle class="d s2" cx="530.5" cy="414.5" r="2.6"/>
+<rect class="hit" x="528.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtPhi=0: −$20,624 (95% −$21,860 to −$19,382)</title><line class="iv ls2" x1="533.0" x2="533.0" y1="414.8" y2="414.1"/>
+<circle class="d s2" cx="533.0" cy="414.5" r="2.6"/>
+<rect class="hit" x="531.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvRs=0: −$20,483 (95% −$21,706 to −$19,259)</title><line class="iv ls2" x1="535.4" x2="535.4" y1="414.7" y2="414.1"/>
+<circle class="d s2" cx="535.4" cy="414.4" r="2.6"/>
+<rect class="hit" x="533.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x sc: −$19,754 (95% −$21,684 to −$17,864)</title><line class="iv ls2" x1="537.8" x2="537.8" y1="414.7" y2="413.7"/>
+<circle class="d s2" cx="537.8" cy="414.2" r="2.6"/>
+<rect class="hit" x="535.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poPay=price: −$19,203 (95% −$20,407 to −$17,996)</title><line class="iv ls2" x1="540.2" x2="540.2" y1="414.4" y2="413.8"/>
+<circle class="d s2" cx="540.2" cy="414.1" r="2.6"/>
+<rect class="hit" x="538.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.poPay x wIdx: −$19,203 (95% −$20,407 to −$17,996)</title><line class="iv ls2" x1="542.6" x2="542.6" y1="414.4" y2="413.8"/>
+<circle class="d s2" cx="542.6" cy="414.1" r="2.6"/>
+<rect class="hit" x="540.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvIp=borrow: −$17,769 (95% −$18,982 to −$16,569)</title><line class="iv ls2" x1="545.0" x2="545.0" y1="414.0" y2="413.4"/>
+<circle class="d s2" cx="545.0" cy="413.7" r="2.6"/>
+<rect class="hit" x="543.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvIp x wIdx: −$17,769 (95% −$18,982 to −$16,569)</title><line class="iv ls2" x1="547.5" x2="547.5" y1="414.0" y2="413.4"/>
+<circle class="d s2" cx="547.5" cy="413.7" r="2.6"/>
+<rect class="hit" x="545.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvRr x gvSh: −$16,258 (95% −$17,434 to −$15,041)</title><line class="iv ls2" x1="549.9" x2="549.9" y1="413.6" y2="413.0"/>
+<circle class="d s2" cx="549.9" cy="413.3" r="2.6"/>
+<rect class="hit" x="547.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poPay: −$16,218 (95% −$17,375 to −$15,009)</title><line class="iv ls2" x1="552.3" x2="552.3" y1="413.6" y2="413.0"/>
+<circle class="d s2" cx="552.3" cy="413.3" r="2.6"/>
+<rect class="hit" x="550.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rtChi: −$15,051 (95% −$16,261 to −$13,812)</title><line class="iv ls2" x1="554.7" x2="554.7" y1="413.3" y2="412.7"/>
+<circle class="d s2" cx="554.7" cy="413.0" r="2.6"/>
+<rect class="hit" x="552.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rtIx: −$14,939 (95% −$16,046 to −$13,789)</title><line class="iv ls2" x1="557.1" x2="557.1" y1="413.3" y2="412.7"/>
+<circle class="d s2" cx="557.1" cy="413.0" r="2.6"/>
+<rect class="hit" x="555.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poCost=hub: −$14,663 (95% −$15,870 to −$13,457)</title><line class="iv ls2" x1="559.5" x2="559.5" y1="413.2" y2="412.6"/>
+<circle class="d s2" cx="559.5" cy="412.9" r="2.6"/>
+<rect class="hit" x="557.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvRs x gvSh: −$14,648 (95% −$15,810 to −$13,406)</title><line class="iv ls2" x1="562.0" x2="562.0" y1="413.2" y2="412.6"/>
+<circle class="d s2" cx="562.0" cy="412.9" r="2.6"/>
+<rect class="hit" x="560.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.bgPi=0.1: −$14,403 (95% −$15,624 to −$13,166)</title><line class="iv ls2" x1="564.4" x2="564.4" y1="413.2" y2="412.5"/>
+<circle class="d s2" cx="564.4" cy="412.9" r="2.6"/>
+<rect class="hit" x="562.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.bgPi x wIdx: −$14,403 (95% −$15,624 to −$13,166)</title><line class="iv ls2" x1="566.8" x2="566.8" y1="413.2" y2="412.5"/>
+<circle class="d s2" cx="566.8" cy="412.9" r="2.6"/>
+<rect class="hit" x="564.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poHire: −$13,964 (95% −$15,105 to −$12,762)</title><line class="iv ls2" x1="569.2" x2="569.2" y1="413.0" y2="412.4"/>
+<circle class="d s2" cx="569.2" cy="412.7" r="2.6"/>
+<rect class="hit" x="567.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.drLim x gvSh: −$13,437 (95% −$14,596 to −$12,228)</title><line class="iv ls2" x1="571.6" x2="571.6" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="571.6" cy="412.6" r="2.6"/>
+<rect class="hit" x="569.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvSh=0: −$13,431 (95% −$14,586 to −$12,222)</title><line class="iv ls2" x1="574.1" x2="574.1" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="574.1" cy="412.6" r="2.6"/>
+<rect class="hit" x="572.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x wIdx: −$13,431 (95% −$14,586 to −$12,222)</title><line class="iv ls2" x1="576.5" x2="576.5" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="576.5" cy="412.6" r="2.6"/>
+<rect class="hit" x="574.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prBd: −$13,431 (95% −$14,586 to −$12,222)</title><line class="iv ls2" x1="578.9" x2="578.9" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="578.9" cy="412.6" r="2.6"/>
+<rect class="hit" x="576.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prK: −$13,431 (95% −$14,586 to −$12,222)</title><line class="iv ls2" x1="581.3" x2="581.3" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="581.3" cy="412.6" r="2.6"/>
+<rect class="hit" x="579.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prA: −$13,431 (95% −$14,586 to −$12,222)</title><line class="iv ls2" x1="583.7" x2="583.7" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="583.7" cy="412.6" r="2.6"/>
+<rect class="hit" x="581.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prH: −$13,431 (95% −$14,586 to −$12,222)</title><line class="iv ls2" x1="586.1" x2="586.1" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="586.1" cy="412.6" r="2.6"/>
+<rect class="hit" x="584.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x lfConv: −$13,341 (95% −$14,491 to −$12,144)</title><line class="iv ls2" x1="588.6" x2="588.6" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="588.6" cy="412.6" r="2.6"/>
+<rect class="hit" x="586.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poBonus: −$13,322 (95% −$14,489 to −$12,105)</title><line class="iv ls2" x1="591.0" x2="591.0" y1="412.9" y2="412.3"/>
+<circle class="d s2" cx="591.0" cy="412.6" r="2.6"/>
+<rect class="hit" x="589.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x lfFl: −$13,280 (95% −$14,477 to −$12,056)</title><line class="iv ls2" x1="593.4" x2="593.4" y1="412.9" y2="412.2"/>
+<circle class="d s2" cx="593.4" cy="412.6" r="2.6"/>
+<rect class="hit" x="591.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poTest: −$13,204 (95% −$14,354 to −$11,996)</title><line class="iv ls2" x1="595.8" x2="595.8" y1="412.8" y2="412.2"/>
+<circle class="d s2" cx="595.8" cy="412.5" r="2.6"/>
+<rect class="hit" x="593.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x lfPm: −$13,036 (95% −$14,192 to −$11,801)</title><line class="iv ls2" x1="598.2" x2="598.2" y1="412.8" y2="412.2"/>
+<circle class="d s2" cx="598.2" cy="412.5" r="2.6"/>
+<rect class="hit" x="596.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prR: −$12,801 (95% −$13,958 to −$11,588)</title><line class="iv ls2" x1="600.6" x2="600.6" y1="412.7" y2="412.1"/>
+<circle class="d s2" cx="600.6" cy="412.4" r="2.6"/>
+<rect class="hit" x="598.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rho: −$12,460 (95% −$13,705 to −$11,228)</title><line class="iv ls2" x1="603.1" x2="603.1" y1="412.7" y2="412.0"/>
+<circle class="d s2" cx="603.1" cy="412.4" r="2.6"/>
+<rect class="hit" x="601.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rtPhi: −$12,175 (95% −$13,404 to −$10,894)</title><line class="iv ls2" x1="605.5" x2="605.5" y1="412.6" y2="411.9"/>
+<circle class="d s2" cx="605.5" cy="412.3" r="2.6"/>
+<rect class="hit" x="603.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvA x gvSh: −$12,075 (95% −$13,242 to −$10,861)</title><line class="iv ls2" x1="607.9" x2="607.9" y1="412.6" y2="411.9"/>
+<circle class="d s2" cx="607.9" cy="412.3" r="2.6"/>
+<rect class="hit" x="605.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvR x gvSh: −$12,016 (95% −$13,180 to −$10,803)</title><line class="iv ls2" x1="610.3" x2="610.3" y1="412.5" y2="411.9"/>
+<circle class="d s2" cx="610.3" cy="412.2" r="2.6"/>
+<rect class="hit" x="608.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poCost: −$11,995 (95% −$13,157 to −$10,797)</title><line class="iv ls2" x1="612.7" x2="612.7" y1="412.5" y2="411.9"/>
+<circle class="d s2" cx="612.7" cy="412.2" r="2.6"/>
+<rect class="hit" x="610.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.bgPi x gvSh: −$10,549 (95% −$11,710 to −$9,346)</title><line class="iv ls2" x1="615.1" x2="615.1" y1="412.2" y2="411.5"/>
+<circle class="d s2" cx="615.1" cy="411.9" r="2.6"/>
+<rect class="hit" x="613.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rtNs: −$10,451 (95% −$11,734 to −$9,148)</title><line class="iv ls2" x1="617.6" x2="617.6" y1="412.2" y2="411.5"/>
+<circle class="d s2" cx="617.6" cy="411.8" r="2.6"/>
+<rect class="hit" x="615.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x paDem: −$10,188 (95% −$11,321 to −$8,973)</title><line class="iv ls2" x1="620.0" x2="620.0" y1="412.1" y2="411.5"/>
+<circle class="d s2" cx="620.0" cy="411.8" r="2.6"/>
+<rect class="hit" x="618.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvBase=wc: −$9,917 (95% −$10,928 to −$8,886)</title><line class="iv ls2" x1="622.4" x2="622.4" y1="412.0" y2="411.4"/>
+<circle class="d s2" cx="622.4" cy="411.7" r="2.6"/>
+<rect class="hit" x="620.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rho=0.3: −$7,044 (95% −$8,137 to −$5,879)</title><line class="iv ls2" x1="624.8" x2="624.8" y1="411.2" y2="410.7"/>
+<circle class="d s2" cx="624.8" cy="411.0" r="2.6"/>
+<rect class="hit" x="622.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.cap=0: −$2,362 (95% −$3,500 to −$1,188)</title><line class="iv ls2" x1="627.2" x2="627.2" y1="410.0" y2="409.4"/>
+<circle class="d s2" cx="627.2" cy="409.7" r="2.6"/>
+<rect class="hit" x="625.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.cap x wIdx: −$2,362 (95% −$3,500 to −$1,188)</title><line class="iv ls2" x1="629.7" x2="629.7" y1="410.0" y2="409.4"/>
+<circle class="d s2" cx="629.7" cy="409.7" r="2.6"/>
+<rect class="hit" x="627.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x wIdx: +$895 (95% −$354 to $2,168)</title><line class="iv ls2" x1="632.1" x2="632.1" y1="409.2" y2="408.6"/>
+<circle class="d s2" cx="632.1" cy="408.9" r="2.6"/>
+<rect class="hit" x="630.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvBase=all: +$1,517 (95% $516 to $2,563)</title><line class="iv ls2" x1="634.5" x2="634.5" y1="409.0" y2="408.5"/>
+<circle class="d s2" cx="634.5" cy="408.7" r="2.6"/>
+<rect class="hit" x="632.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x prR: +$3,548 (95% $2,092 to $5,044)</title><line class="iv ls2" x1="636.9" x2="636.9" y1="408.6" y2="407.8"/>
+<circle class="d s2" cx="636.9" cy="408.2" r="2.6"/>
+<rect class="hit" x="634.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x gvBase: +$4,959 (95% $3,869 to $6,079)</title><line class="iv ls2" x1="639.3" x2="639.3" y1="408.1" y2="407.6"/>
+<circle class="d s2" cx="639.3" cy="407.9" r="2.6"/>
+<rect class="hit" x="637.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.fin=cap: +$6,346 (95% $5,052 to $7,652)</title><line class="iv ls2" x1="641.7" x2="641.7" y1="407.8" y2="407.2"/>
+<circle class="d s2" cx="641.7" cy="407.5" r="2.6"/>
+<rect class="hit" x="639.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x gvIp: +$6,346 (95% $5,052 to $7,652)</title><line class="iv ls2" x1="644.2" x2="644.2" y1="407.8" y2="407.2"/>
+<circle class="d s2" cx="644.2" cy="407.5" r="2.6"/>
+<rect class="hit" x="642.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x prA: +$6,511 (95% $5,106 to $7,980)</title><line class="iv ls2" x1="646.6" x2="646.6" y1="407.8" y2="407.1"/>
+<circle class="d s2" cx="646.6" cy="407.5" r="2.6"/>
+<rect class="hit" x="644.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x prK: +$9,031 (95% $7,721 to $10,407)</title><line class="iv ls2" x1="649.0" x2="649.0" y1="407.1" y2="406.5"/>
+<circle class="d s2" cx="649.0" cy="406.8" r="2.6"/>
+<rect class="hit" x="647.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.fin=money: +$9,614 (95% $8,258 to $11,024)</title><line class="iv ls2" x1="651.4" x2="651.4" y1="407.0" y2="406.3"/>
+<circle class="d s2" cx="651.4" cy="406.7" r="2.6"/>
+<rect class="hit" x="649.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x lfFl: +$9,688 (95% $8,325 to $11,066)</title><line class="iv ls2" x1="653.8" x2="653.8" y1="407.0" y2="406.3"/>
+<circle class="d s2" cx="653.8" cy="406.6" r="2.6"/>
+<rect class="hit" x="651.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rho: +$10,161 (95% $8,963 to $11,390)</title><line class="iv ls2" x1="656.2" x2="656.2" y1="406.8" y2="406.2"/>
+<circle class="d s2" cx="656.2" cy="406.5" r="2.6"/>
+<rect class="hit" x="654.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.bgPi x fin: +$10,258 (95% $8,924 to $11,694)</title><line class="iv ls2" x1="658.7" x2="658.7" y1="406.8" y2="406.1"/>
+<circle class="d s2" cx="658.7" cy="406.5" r="2.6"/>
+<rect class="hit" x="656.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x prBd: +$10,374 (95% $9,025 to $11,754)</title><line class="iv ls2" x1="661.1" x2="661.1" y1="406.8" y2="406.1"/>
+<circle class="d s2" cx="661.1" cy="406.5" r="2.6"/>
+<rect class="hit" x="659.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rtNs: +$14,842 (95% $13,440 to $16,297)</title><line class="iv ls2" x1="663.5" x2="663.5" y1="405.7" y2="404.9"/>
+<circle class="d s2" cx="663.5" cy="405.3" r="2.6"/>
+<rect class="hit" x="661.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.cap x gvSh: +$18,375 (95% $17,278 to $19,547)</title><line class="iv ls2" x1="665.9" x2="665.9" y1="404.7" y2="404.1"/>
+<circle class="d s2" cx="665.9" cy="404.4" r="2.6"/>
+<rect class="hit" x="663.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rtPhi: +$23,311 (95% $21,879 to $24,839)</title><line class="iv ls2" x1="668.3" x2="668.3" y1="403.5" y2="402.7"/>
+<circle class="d s2" cx="668.3" cy="403.1" r="2.6"/>
+<rect class="hit" x="666.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.cap x fin: +$42,538 (95% $41,366 to $43,749)</title><line class="iv ls2" x1="670.7" x2="670.7" y1="398.5" y2="397.8"/>
+<circle class="d s2" cx="670.7" cy="398.2" r="2.6"/>
+<rect class="hit" x="668.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x gvSh: +$55,452 (95% $54,260 to $56,636)</title><line class="iv ls2" x1="673.2" x2="673.2" y1="395.1" y2="394.5"/>
+<circle class="d s2" cx="673.2" cy="394.8" r="2.6"/>
+<rect class="hit" x="671.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvDk x gvSh: +$55,603 (95% $54,523 to $56,764)</title><line class="iv ls2" x1="675.6" x2="675.6" y1="395.1" y2="394.5"/>
+<circle class="d s2" cx="675.6" cy="394.8" r="2.6"/>
+<rect class="hit" x="673.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvIp x gvSh: +$75,787 (95% $74,740 to $76,912)</title><line class="iv ls2" x1="678.0" x2="678.0" y1="389.8" y2="389.3"/>
+<circle class="d s2" cx="678.0" cy="389.6" r="2.6"/>
+<rect class="hit" x="676.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, main row: −$22,069 (95% −$23,304 to −$20,822)</title><circle class="m" cx="477.4" cy="414.8" r="5"/></g>
+<text class="lab" x="484.4" y="404.8" text-anchor="start">main −$22,069</text>
+<line class="g" x1="712" x2="1002" y1="564.0" y2="564.0"/>
+<line class="g" x1="712" x2="1002" y1="512.4" y2="512.4"/>
+<line class="g" x1="712" x2="1002" y1="460.8" y2="460.8"/>
+<line class="g" x1="712" x2="1002" y1="409.1" y2="409.1"/>
+<rect class="band" x="712" width="290" y="406.5" height="5.2"><title>Not material: within $10,126 of zero (rule 3)</title></rect>
+<line class="z" x1="712" x2="1002" y1="409.1" y2="409.1"/>
+<text class="lab" x="712" y="582">Stress · fragile</text>
+<g><title>Stress, bound.rel.wtMedE [bgM=1, cap=0, drLim=0, fin=cap, gvA=0.25, gvB=0, gvRr=0.0196, gvSh=0, lfFl=off, lfPm=0, paDem=1, poPay=price, prA=0.5078, prBd=0.132, prH=0.0446, prR=0.45, rho=0.3, rtChi=1, rtIx=0.5, rtPhi=0, sc=0.593, wIdx=0.75]: −$212,694 (95% −$214,978 to −$210,461)</title><line class="iv ls3" x1="718.0" x2="718.0" y1="464.6" y2="463.5"/>
+<path class="o ls3" style="stroke:var(--s3)" d="M718.0 459.5l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="716.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rtIx: −$10,839 (95% −$11,737 to −$9,920)</title><line class="iv ls3" x1="720.4" x2="720.4" y1="412.2" y2="411.7"/>
+<circle class="d s3" cx="720.4" cy="411.9" r="2.6"/>
+<rect class="hit" x="718.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.sc=0.593: −$10,721 (95% −$12,086 to −$9,287)</title><line class="iv ls3" x1="722.8" x2="722.8" y1="412.3" y2="411.5"/>
+<circle class="d s3" cx="722.8" cy="411.9" r="2.6"/>
+<rect class="hit" x="720.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtIx x sc: −$10,566 (95% −$11,922 to −$9,219)</title><line class="iv ls3" x1="725.3" x2="725.3" y1="412.2" y2="411.5"/>
+<circle class="d s3" cx="725.3" cy="411.9" r="2.6"/>
+<rect class="hit" x="723.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x sc: −$6,903 (95% −$8,306 to −$5,484)</title><line class="iv ls3" x1="727.7" x2="727.7" y1="411.3" y2="410.6"/>
+<circle class="d s3" cx="727.7" cy="410.9" r="2.6"/>
+<rect class="hit" x="725.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rtChi: −$4,680 (95% −$5,578 to −$3,683)</title><line class="iv ls3" x1="730.1" x2="730.1" y1="410.6" y2="410.1"/>
+<circle class="d s3" cx="730.1" cy="410.3" r="2.6"/>
+<rect class="hit" x="728.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rho x rtIx: −$2,980 (95% −$3,846 to −$2,073)</title><line class="iv ls3" x1="732.5" x2="732.5" y1="410.1" y2="409.7"/>
+<circle class="d s3" cx="732.5" cy="409.9" r="2.6"/>
+<rect class="hit" x="730.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.lfFl x rtIx: −$2,947 (95% −$3,754 to −$2,145)</title><line class="iv ls3" x1="734.9" x2="734.9" y1="410.1" y2="409.7"/>
+<circle class="d s3" cx="734.9" cy="409.9" r="2.6"/>
+<rect class="hit" x="732.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rho=0.05: −$2,945 (95% −$3,842 to −$1,984)</title><line class="iv ls3" x1="737.3" x2="737.3" y1="410.1" y2="409.6"/>
+<circle class="d s3" cx="737.3" cy="409.9" r="2.6"/>
+<rect class="hit" x="735.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rho x wIdx: −$2,945 (95% −$3,842 to −$1,984)</title><line class="iv ls3" x1="739.8" x2="739.8" y1="410.1" y2="409.6"/>
+<circle class="d s3" cx="739.8" cy="409.9" r="2.6"/>
+<rect class="hit" x="737.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtChi=1: −$2,684 (95% −$3,570 to −$1,704)</title><line class="iv ls3" x1="742.2" x2="742.2" y1="410.1" y2="409.6"/>
+<circle class="d s3" cx="742.2" cy="409.8" r="2.6"/>
+<rect class="hit" x="740.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.lfFl=off: −$2,556 (95% −$3,354 to −$1,627)</title><line class="iv ls3" x1="744.6" x2="744.6" y1="410.0" y2="409.6"/>
+<circle class="d s3" cx="744.6" cy="409.8" r="2.6"/>
+<rect class="hit" x="742.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.lfFl x wIdx: −$2,556 (95% −$3,354 to −$1,627)</title><line class="iv ls3" x1="747.0" x2="747.0" y1="410.0" y2="409.6"/>
+<circle class="d s3" cx="747.0" cy="409.8" r="2.6"/>
+<rect class="hit" x="745.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtIx x rtNs: −$2,477 (95% −$3,385 to −$1,564)</title><line class="iv ls3" x1="749.4" x2="749.4" y1="410.0" y2="409.5"/>
+<circle class="d s3" cx="749.4" cy="409.8" r="2.6"/>
+<rect class="hit" x="747.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtIx x rtPhi: −$2,406 (95% −$3,307 to −$1,494)</title><line class="iv ls3" x1="751.8" x2="751.8" y1="410.0" y2="409.5"/>
+<circle class="d s3" cx="751.8" cy="409.8" r="2.6"/>
+<rect class="hit" x="749.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtNs=port: −$2,385 (95% −$3,276 to −$1,354)</title><line class="iv ls3" x1="754.3" x2="754.3" y1="410.0" y2="409.5"/>
+<circle class="d s3" cx="754.3" cy="409.8" r="2.6"/>
+<rect class="hit" x="752.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.lfPm=0: −$2,322 (95% −$3,162 to −$1,387)</title><line class="iv ls3" x1="756.7" x2="756.7" y1="410.0" y2="409.5"/>
+<circle class="d s3" cx="756.7" cy="409.7" r="2.6"/>
+<rect class="hit" x="754.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.lfPm x wIdx: −$2,322 (95% −$3,162 to −$1,387)</title><line class="iv ls3" x1="759.1" x2="759.1" y1="410.0" y2="409.5"/>
+<circle class="d s3" cx="759.1" cy="409.7" r="2.6"/>
+<rect class="hit" x="757.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtChi x rtIx: −$2,297 (95% −$3,125 to −$1,407)</title><line class="iv ls3" x1="761.5" x2="761.5" y1="409.9" y2="409.5"/>
+<circle class="d s3" cx="761.5" cy="409.7" r="2.6"/>
+<rect class="hit" x="759.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvRr=0.0196: −$2,168 (95% −$3,000 to −$1,249)</title><line class="iv ls3" x1="763.9" x2="763.9" y1="409.9" y2="409.5"/>
+<circle class="d s3" cx="763.9" cy="409.7" r="2.6"/>
+<rect class="hit" x="761.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtIx=0.5: −$2,063 (95% −$2,914 to −$1,172)</title><line class="iv ls3" x1="766.3" x2="766.3" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="766.3" cy="409.7" r="2.6"/>
+<rect class="hit" x="764.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtIx x wIdx: −$2,063 (95% −$2,914 to −$1,172)</title><line class="iv ls3" x1="768.8" x2="768.8" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="768.8" cy="409.7" r="2.6"/>
+<rect class="hit" x="766.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.prK x rtIx: −$2,063 (95% −$2,914 to −$1,172)</title><line class="iv ls3" x1="771.2" x2="771.2" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="771.2" cy="409.7" r="2.6"/>
+<rect class="hit" x="769.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvRs=0.02: −$2,041 (95% −$2,869 to −$1,122)</title><line class="iv ls3" x1="773.6" x2="773.6" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="773.6" cy="409.7" r="2.6"/>
+<rect class="hit" x="771.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poCost=sector: −$2,031 (95% −$2,862 to −$1,109)</title><line class="iv ls3" x1="776.0" x2="776.0" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="776.0" cy="409.7" r="2.6"/>
+<rect class="hit" x="774.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poTest=capacity: −$2,010 (95% −$2,846 to −$1,090)</title><line class="iv ls3" x1="778.4" x2="778.4" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="778.4" cy="409.7" r="2.6"/>
+<rect class="hit" x="776.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poTest=members: −$2,007 (95% −$2,839 to −$1,088)</title><line class="iv ls3" x1="780.9" x2="780.9" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="780.9" cy="409.7" r="2.6"/>
+<rect class="hit" x="778.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poBonus=members: −$2,002 (95% −$2,832 to −$1,079)</title><line class="iv ls3" x1="783.3" x2="783.3" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="783.3" cy="409.7" r="2.6"/>
+<rect class="hit" x="781.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poPay=price: −$1,998 (95% −$2,811 to −$1,088)</title><line class="iv ls3" x1="785.7" x2="785.7" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="785.7" cy="409.7" r="2.6"/>
+<rect class="hit" x="783.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.poPay x wIdx: −$1,998 (95% −$2,811 to −$1,088)</title><line class="iv ls3" x1="788.1" x2="788.1" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="788.1" cy="409.7" r="2.6"/>
+<rect class="hit" x="786.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.drLim=0: −$1,995 (95% −$2,830 to −$1,078)</title><line class="iv ls3" x1="790.5" x2="790.5" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="790.5" cy="409.7" r="2.6"/>
+<rect class="hit" x="788.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, main row: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="792.9" x2="792.9" y1="409.9" y2="409.4"/>
+<rect class="hit" x="790.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prK=0.2: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="795.4" x2="795.4" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="795.4" cy="409.7" r="2.6"/>
+<rect class="hit" x="793.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prA=0.5078: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="797.8" x2="797.8" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="797.8" cy="409.7" r="2.6"/>
+<rect class="hit" x="795.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prH=0.0446: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="800.2" x2="800.2" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="800.2" cy="409.7" r="2.6"/>
+<rect class="hit" x="798.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prBd=0.132: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="802.6" x2="802.6" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="802.6" cy="409.7" r="2.6"/>
+<rect class="hit" x="800.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.wIdx=0.75: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="805.0" x2="805.0" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="805.0" cy="409.7" r="2.6"/>
+<rect class="hit" x="803.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.bgM=1: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="807.4" x2="807.4" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="807.4" cy="409.7" r="2.6"/>
+<rect class="hit" x="805.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poHire=0.05: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="809.9" x2="809.9" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="809.9" cy="409.7" r="2.6"/>
+<rect class="hit" x="807.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.cap=0: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="812.3" x2="812.3" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="812.3" cy="409.7" r="2.6"/>
+<rect class="hit" x="810.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.cap x wIdx: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="814.7" x2="814.7" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="814.7" cy="409.7" r="2.6"/>
+<rect class="hit" x="812.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.prBd x wIdx: −$1,990 (95% −$2,821 to −$1,070)</title><line class="iv ls3" x1="817.1" x2="817.1" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="817.1" cy="409.7" r="2.6"/>
+<rect class="hit" x="815.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvB=0: −$1,990 (95% −$2,820 to −$1,069)</title><line class="iv ls3" x1="819.5" x2="819.5" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="819.5" cy="409.7" r="2.6"/>
+<rect class="hit" x="817.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poHire=0.02: −$1,990 (95% −$2,820 to −$1,068)</title><line class="iv ls3" x1="821.9" x2="821.9" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="821.9" cy="409.7" r="2.6"/>
+<rect class="hit" x="819.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.paDem=1: −$1,990 (95% −$2,820 to −$1,069)</title><line class="iv ls3" x1="824.4" x2="824.4" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="824.4" cy="409.7" r="2.6"/>
+<rect class="hit" x="822.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtPhi=1: −$1,982 (95% −$2,854 to −$1,024)</title><line class="iv ls3" x1="826.8" x2="826.8" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="826.8" cy="409.6" r="2.6"/>
+<rect class="hit" x="824.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.lfConv=none: −$1,975 (95% −$2,805 to −$1,057)</title><line class="iv ls3" x1="829.2" x2="829.2" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="829.2" cy="409.6" r="2.6"/>
+<rect class="hit" x="827.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.lfConv x wIdx: −$1,975 (95% −$2,805 to −$1,057)</title><line class="iv ls3" x1="831.6" x2="831.6" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="831.6" cy="409.6" r="2.6"/>
+<rect class="hit" x="829.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prR=0.45: −$1,974 (95% −$2,801 to −$1,056)</title><line class="iv ls3" x1="834.0" x2="834.0" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="834.0" cy="409.6" r="2.6"/>
+<rect class="hit" x="832.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.drLim=10000: −$1,972 (95% −$2,794 to −$1,049)</title><line class="iv ls3" x1="836.5" x2="836.5" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="836.5" cy="409.6" r="2.6"/>
+<rect class="hit" x="834.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvDk=0: −$1,953 (95% −$2,783 to −$1,033)</title><line class="iv ls3" x1="838.9" x2="838.9" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="838.9" cy="409.6" r="2.6"/>
+<rect class="hit" x="836.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvDk x wIdx: −$1,953 (95% −$2,783 to −$1,033)</title><line class="iv ls3" x1="841.3" x2="841.3" y1="409.9" y2="409.4"/>
+<circle class="d s3" cx="841.3" cy="409.6" r="2.6"/>
+<rect class="hit" x="839.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvA=1: −$1,898 (95% −$2,727 to −$982)</title><line class="iv ls3" x1="843.7" x2="843.7" y1="409.8" y2="409.4"/>
+<circle class="d s3" cx="843.7" cy="409.6" r="2.6"/>
+<rect class="hit" x="841.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvR=rule: −$1,896 (95% −$2,725 to −$980)</title><line class="iv ls3" x1="846.1" x2="846.1" y1="409.8" y2="409.4"/>
+<circle class="d s3" cx="846.1" cy="409.6" r="2.6"/>
+<rect class="hit" x="844.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvB=1: −$1,896 (95% −$2,725 to −$980)</title><line class="iv ls3" x1="848.5" x2="848.5" y1="409.8" y2="409.4"/>
+<circle class="d s3" cx="848.5" cy="409.6" r="2.6"/>
+<rect class="hit" x="846.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvA=0.25: −$1,896 (95% −$2,725 to −$980)</title><line class="iv ls3" x1="851.0" x2="851.0" y1="409.8" y2="409.4"/>
+<circle class="d s3" cx="851.0" cy="409.6" r="2.6"/>
+<rect class="hit" x="849.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtPhi=0: −$1,841 (95% −$2,640 to −$967)</title><line class="iv ls3" x1="853.4" x2="853.4" y1="409.8" y2="409.4"/>
+<circle class="d s3" cx="853.4" cy="409.6" r="2.6"/>
+<rect class="hit" x="851.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvRr=0: −$1,820 (95% −$2,648 to −$903)</title><line class="iv ls3" x1="855.8" x2="855.8" y1="409.8" y2="409.4"/>
+<circle class="d s3" cx="855.8" cy="409.6" r="2.6"/>
+<rect class="hit" x="853.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvRs=0: −$1,762 (95% −$2,585 to −$848)</title><line class="iv ls3" x1="858.2" x2="858.2" y1="409.8" y2="409.4"/>
+<circle class="d s3" cx="858.2" cy="409.6" r="2.6"/>
+<rect class="hit" x="856.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.lfPm=1: −$1,668 (95% −$2,536 to −$731)</title><line class="iv ls3" x1="860.6" x2="860.6" y1="409.8" y2="409.3"/>
+<circle class="d s3" cx="860.6" cy="409.6" r="2.6"/>
+<rect class="hit" x="858.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvBase=wc: −$1,578 (95% −$2,383 to −$665)</title><line class="iv ls3" x1="863.0" x2="863.0" y1="409.8" y2="409.3"/>
+<circle class="d s3" cx="863.0" cy="409.5" r="2.6"/>
+<rect class="hit" x="861.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvIp=borrow: −$1,463 (95% −$2,281 to −$549)</title><line class="iv ls3" x1="865.5" x2="865.5" y1="409.7" y2="409.3"/>
+<circle class="d s3" cx="865.5" cy="409.5" r="2.6"/>
+<rect class="hit" x="863.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvIp x wIdx: −$1,463 (95% −$2,281 to −$549)</title><line class="iv ls3" x1="867.9" x2="867.9" y1="409.7" y2="409.3"/>
+<circle class="d s3" cx="867.9" cy="409.5" r="2.6"/>
+<rect class="hit" x="865.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rho=0.3: −$860 (95% −$1,647 to $16)</title><line class="iv ls3" x1="870.3" x2="870.3" y1="409.6" y2="409.1"/>
+<circle class="d s3" cx="870.3" cy="409.4" r="2.6"/>
+<rect class="hit" x="868.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poCost=hub: −$537 (95% −$1,357 to $382)</title><line class="iv ls3" x1="872.7" x2="872.7" y1="409.5" y2="409.0"/>
+<circle class="d s3" cx="872.7" cy="409.3" r="2.6"/>
+<rect class="hit" x="870.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x wIdx: −$522 (95% −$1,416 to $421)</title><line class="iv ls3" x1="875.1" x2="875.1" y1="409.5" y2="409.0"/>
+<circle class="d s3" cx="875.1" cy="409.3" r="2.6"/>
+<rect class="hit" x="873.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.bgPi=0.1: +$204 (95% −$644 to $1,148)</title><line class="iv ls3" x1="877.5" x2="877.5" y1="409.3" y2="408.8"/>
+<circle class="d s3" cx="877.5" cy="409.1" r="2.6"/>
+<rect class="hit" x="875.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.bgPi x wIdx: +$204 (95% −$644 to $1,148)</title><line class="iv ls3" x1="880.0" x2="880.0" y1="409.3" y2="408.8"/>
+<circle class="d s3" cx="880.0" cy="409.1" r="2.6"/>
+<rect class="hit" x="878.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvBase=all: +$2,064 (95% $1,286 to $2,976)</title><line class="iv ls3" x1="882.4" x2="882.4" y1="408.8" y2="408.4"/>
+<circle class="d s3" cx="882.4" cy="408.6" r="2.6"/>
+<rect class="hit" x="880.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x lfFl: +$2,921 (95% $2,066 to $3,850)</title><line class="iv ls3" x1="884.8" x2="884.8" y1="408.6" y2="408.1"/>
+<circle class="d s3" cx="884.8" cy="408.4" r="2.6"/>
+<rect class="hit" x="882.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x prK: +$3,490 (95% $2,688 to $4,353)</title><line class="iv ls3" x1="887.2" x2="887.2" y1="408.4" y2="408.0"/>
+<circle class="d s3" cx="887.2" cy="408.2" r="2.6"/>
+<rect class="hit" x="885.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.fin=money: +$3,912 (95% $3,044 to $4,858)</title><line class="iv ls3" x1="889.6" x2="889.6" y1="408.4" y2="407.9"/>
+<circle class="d s3" cx="889.6" cy="408.1" r="2.6"/>
+<rect class="hit" x="887.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.fin=cap: +$3,912 (95% $3,044 to $4,858)</title><line class="iv ls3" x1="892.1" x2="892.1" y1="408.4" y2="407.9"/>
+<circle class="d s3" cx="892.1" cy="408.1" r="2.6"/>
+<rect class="hit" x="890.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x gvIp: +$3,912 (95% $3,044 to $4,858)</title><line class="iv ls3" x1="894.5" x2="894.5" y1="408.4" y2="407.9"/>
+<circle class="d s3" cx="894.5" cy="408.1" r="2.6"/>
+<rect class="hit" x="892.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.cap x fin: +$3,912 (95% $3,044 to $4,858)</title><line class="iv ls3" x1="896.9" x2="896.9" y1="408.4" y2="407.9"/>
+<circle class="d s3" cx="896.9" cy="408.1" r="2.6"/>
+<rect class="hit" x="894.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x prR: +$4,122 (95% $3,257 to $5,068)</title><line class="iv ls3" x1="899.3" x2="899.3" y1="408.3" y2="407.8"/>
+<circle class="d s3" cx="899.3" cy="408.1" r="2.6"/>
+<rect class="hit" x="897.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rtNs: +$4,132 (95% $3,192 to $5,125)</title><line class="iv ls3" x1="901.7" x2="901.7" y1="408.3" y2="407.8"/>
+<circle class="d s3" cx="901.7" cy="408.1" r="2.6"/>
+<rect class="hit" x="899.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x gvBase: +$4,217 (95% $3,377 to $5,138)</title><line class="iv ls3" x1="904.1" x2="904.1" y1="408.3" y2="407.8"/>
+<circle class="d s3" cx="904.1" cy="408.0" r="2.6"/>
+<rect class="hit" x="902.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvRr x gvSh: +$4,313 (95% $3,497 to $5,220)</title><line class="iv ls3" x1="906.6" x2="906.6" y1="408.2" y2="407.8"/>
+<circle class="d s3" cx="906.6" cy="408.0" r="2.6"/>
+<rect class="hit" x="904.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x prA: +$4,317 (95% $3,415 to $5,264)</title><line class="iv ls3" x1="909.0" x2="909.0" y1="408.3" y2="407.8"/>
+<circle class="d s3" cx="909.0" cy="408.0" r="2.6"/>
+<rect class="hit" x="907.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x prBd: +$4,677 (95% $3,788 to $5,614)</title><line class="iv ls3" x1="911.4" x2="911.4" y1="408.2" y2="407.7"/>
+<circle class="d s3" cx="911.4" cy="407.9" r="2.6"/>
+<rect class="hit" x="909.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rho: +$5,201 (95% $4,361 to $6,133)</title><line class="iv ls3" x1="913.8" x2="913.8" y1="408.0" y2="407.6"/>
+<circle class="d s3" cx="913.8" cy="407.8" r="2.6"/>
+<rect class="hit" x="911.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rtPhi: +$5,770 (95% $4,853 to $6,739)</title><line class="iv ls3" x1="916.2" x2="916.2" y1="407.9" y2="407.4"/>
+<circle class="d s3" cx="916.2" cy="407.6" r="2.6"/>
+<rect class="hit" x="914.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.bgPi x fin: +$6,111 (95% $5,248 to $7,057)</title><line class="iv ls3" x1="918.6" x2="918.6" y1="407.8" y2="407.3"/>
+<circle class="d s3" cx="918.6" cy="407.6" r="2.6"/>
+<rect class="hit" x="916.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvRs x gvSh: +$7,056 (95% $6,236 to $7,969)</title><line class="iv ls3" x1="921.1" x2="921.1" y1="407.5" y2="407.1"/>
+<circle class="d s3" cx="921.1" cy="407.3" r="2.6"/>
+<rect class="hit" x="919.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x lfFl: +$7,648 (95% $6,838 to $8,545)</title><line class="iv ls3" x1="923.5" x2="923.5" y1="407.4" y2="406.9"/>
+<circle class="d s3" cx="923.5" cy="407.2" r="2.6"/>
+<rect class="hit" x="921.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rtChi: +$7,716 (95% $6,913 to $8,593)</title><line class="iv ls3" x1="925.9" x2="925.9" y1="407.4" y2="406.9"/>
+<circle class="d s3" cx="925.9" cy="407.1" r="2.6"/>
+<rect class="hit" x="923.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poPay: +$7,892 (95% $7,100 to $8,775)</title><line class="iv ls3" x1="928.3" x2="928.3" y1="407.3" y2="406.9"/>
+<circle class="d s3" cx="928.3" cy="407.1" r="2.6"/>
+<rect class="hit" x="926.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rtIx: +$8,056 (95% $7,244 to $8,915)</title><line class="iv ls3" x1="930.7" x2="930.7" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="930.7" cy="407.1" r="2.6"/>
+<rect class="hit" x="928.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.drLim x gvSh: +$8,091 (95% $7,296 to $9,006)</title><line class="iv ls3" x1="933.1" x2="933.1" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="933.1" cy="407.0" r="2.6"/>
+<rect class="hit" x="931.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poHire: +$8,094 (95% $7,302 to $9,000)</title><line class="iv ls3" x1="935.6" x2="935.6" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="935.6" cy="407.0" r="2.6"/>
+<rect class="hit" x="933.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poBonus: +$8,100 (95% $7,300 to $9,006)</title><line class="iv ls3" x1="938.0" x2="938.0" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="938.0" cy="407.0" r="2.6"/>
+<rect class="hit" x="936.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvSh=0: +$8,103 (95% $7,312 to $9,008)</title><line class="iv ls3" x1="940.4" x2="940.4" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="940.4" cy="407.0" r="2.6"/>
+<rect class="hit" x="938.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x wIdx: +$8,103 (95% $7,312 to $9,008)</title><line class="iv ls3" x1="942.8" x2="942.8" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="942.8" cy="407.0" r="2.6"/>
+<rect class="hit" x="940.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.cap x gvSh: +$8,103 (95% $7,312 to $9,008)</title><line class="iv ls3" x1="945.2" x2="945.2" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="945.2" cy="407.0" r="2.6"/>
+<rect class="hit" x="943.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prBd: +$8,103 (95% $7,312 to $9,008)</title><line class="iv ls3" x1="947.7" x2="947.7" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="947.7" cy="407.0" r="2.6"/>
+<rect class="hit" x="945.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prK: +$8,103 (95% $7,312 to $9,008)</title><line class="iv ls3" x1="950.1" x2="950.1" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="950.1" cy="407.0" r="2.6"/>
+<rect class="hit" x="948.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prA: +$8,103 (95% $7,312 to $9,008)</title><line class="iv ls3" x1="952.5" x2="952.5" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="952.5" cy="407.0" r="2.6"/>
+<rect class="hit" x="950.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prH: +$8,103 (95% $7,312 to $9,008)</title><line class="iv ls3" x1="954.9" x2="954.9" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="954.9" cy="407.0" r="2.6"/>
+<rect class="hit" x="952.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x paDem: +$8,104 (95% $7,312 to $9,008)</title><line class="iv ls3" x1="957.3" x2="957.3" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="957.3" cy="407.0" r="2.6"/>
+<rect class="hit" x="955.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x lfConv: +$8,139 (95% $7,347 to $9,045)</title><line class="iv ls3" x1="959.7" x2="959.7" y1="407.2" y2="406.8"/>
+<circle class="d s3" cx="959.7" cy="407.0" r="2.6"/>
+<rect class="hit" x="957.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rho: +$8,160 (95% $7,289 to $9,088)</title><line class="iv ls3" x1="962.2" x2="962.2" y1="407.3" y2="406.8"/>
+<circle class="d s3" cx="962.2" cy="407.0" r="2.6"/>
+<rect class="hit" x="960.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poTest: +$8,216 (95% $7,423 to $9,120)</title><line class="iv ls3" x1="964.6" x2="964.6" y1="407.2" y2="406.8"/>
+<circle class="d s3" cx="964.6" cy="407.0" r="2.6"/>
+<rect class="hit" x="962.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prR: +$8,229 (95% $7,432 to $9,130)</title><line class="iv ls3" x1="967.0" x2="967.0" y1="407.2" y2="406.8"/>
+<circle class="d s3" cx="967.0" cy="407.0" r="2.6"/>
+<rect class="hit" x="965.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x lfPm: +$8,298 (95% $7,456 to $9,204)</title><line class="iv ls3" x1="969.4" x2="969.4" y1="407.2" y2="406.8"/>
+<circle class="d s3" cx="969.4" cy="407.0" r="2.6"/>
+<rect class="hit" x="967.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvBase x gvSh: +$8,430 (95% $7,636 to $9,321)</title><line class="iv ls3" x1="971.8" x2="971.8" y1="407.2" y2="406.7"/>
+<circle class="d s3" cx="971.8" cy="407.0" r="2.6"/>
+<rect class="hit" x="969.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poCost: +$9,282 (95% $8,487 to $10,171)</title><line class="iv ls3" x1="974.2" x2="974.2" y1="406.9" y2="406.5"/>
+<circle class="d s3" cx="974.2" cy="406.7" r="2.6"/>
+<rect class="hit" x="972.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rtPhi: +$9,389 (95% $8,550 to $10,326)</title><line class="iv ls3" x1="976.7" x2="976.7" y1="406.9" y2="406.5"/>
+<circle class="d s3" cx="976.7" cy="406.7" r="2.6"/>
+<rect class="hit" x="974.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvA x gvSh: +$10,185 (95% $9,395 to $11,082)</title><line class="iv ls3" x1="979.1" x2="979.1" y1="406.7" y2="406.3"/>
+<circle class="d s3" cx="979.1" cy="406.5" r="2.6"/>
+<rect class="hit" x="977.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.bgPi x gvSh: +$10,200 (95% $9,349 to $11,128)</title><line class="iv ls3" x1="981.5" x2="981.5" y1="406.7" y2="406.3"/>
+<circle class="d s3" cx="981.5" cy="406.5" r="2.6"/>
+<rect class="hit" x="979.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvR x gvSh: +$10,225 (95% $9,433 to $11,121)</title><line class="iv ls3" x1="983.9" x2="983.9" y1="406.7" y2="406.3"/>
+<circle class="d s3" cx="983.9" cy="406.5" r="2.6"/>
+<rect class="hit" x="981.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rtNs: +$10,559 (95% $9,720 to $11,503)</title><line class="iv ls3" x1="986.3" x2="986.3" y1="406.6" y2="406.2"/>
+<circle class="d s3" cx="986.3" cy="406.4" r="2.6"/>
+<rect class="hit" x="984.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x sc: +$15,414 (95% $14,088 to $16,790)</title><line class="iv ls3" x1="988.7" x2="988.7" y1="405.5" y2="404.8"/>
+<circle class="d s3" cx="988.7" cy="405.2" r="2.6"/>
+<rect class="hit" x="986.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvDk x gvSh: +$21,850 (95% $21,070 to $22,731)</title><line class="iv ls3" x1="991.2" x2="991.2" y1="403.7" y2="403.3"/>
+<circle class="d s3" cx="991.2" cy="403.5" r="2.6"/>
+<rect class="hit" x="989.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvIp x gvSh: +$29,728 (95% $28,958 to $30,561)</title><line class="iv ls3" x1="993.6" x2="993.6" y1="401.7" y2="401.2"/>
+<circle class="d s3" cx="993.6" cy="401.5" r="2.6"/>
+<rect class="hit" x="991.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x gvSh: +$44,897 (95% $43,837 to $45,993)</title><line class="iv ls3" x1="996.0" x2="996.0" y1="397.8" y2="397.3"/>
+<circle class="d s3" cx="996.0" cy="397.5" r="2.6"/>
+<rect class="hit" x="994.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, main row: −$1,990 (95% −$2,821 to −$1,070)</title><circle class="m" cx="792.9" cy="409.7" r="5"/></g>
+<text class="lab" x="799.9" y="399.7" text-anchor="start">main −$1,990</text>
+</svg>

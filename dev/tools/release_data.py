@@ -45,9 +45,9 @@ CURRENT52 = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '
 # A release that changed no engine figure is listed on its own but carries the figures of the release it names (status "latest", figuresFrom): the page
 # names it as the newest release and keeps showing the earlier release's data file. v5.5.0 added the study page and changed no figure of v5.4.
 # v5.6 (session 10): with v5.6's own figures current, v5.5 stays listed with 5.4's figures, now as an earlier release.
-LATEST = {'version': '5.7', 'date': '2026-11-15', 'tag': 'v5.7.0', 'file': 'releases/v5.6.json',
-          'summary': 'No change to any headline figure: the merged published panel of the full study batch (engine ce8d030) equals v5.6\u2019s panel in all 47,466 values, so v5.6\u2019s data stays the data shown on this page. What 5.7 adds is the data of the preregistered studies behind their switches (S34 no-programme baseline against outside data, S36 synergy, S38 community layer, S5 participation, S55 open PTF access, S6 C2.2 coverage and adequacy, S14 cost-of-living line) in data/studies/, and the frozen C2.2 panel.',
-          'status': 'latest', 'shownIn': None, 'figuresFrom': '5.6'}
+LATEST = {'version': '5.8', 'date': '2026-11-15', 'tag': 'v5.8.0', 'file': 'releases/v5.6.json',
+          'summary': 'Release 2: round 2 of the engine (engine 104691f, preregistered and frozen before it ran, registered on OSF), beside release 1. The release 1 panel is unchanged (v5.6\u2019s data stays the data shown above), and the engine\u2019s code is the same as v5.7\u2019s: the round-2 switches (asset classes and the creditor side, the weighted top tail, the price rule, the backing mechanism, the financed rows, the distribution measures) are in the engine behind switches, off unless a study turns them on. What 5.8 adds is the findings page\u2019s Release 2 section and its six data files in data/studies/ (r2-effects, r2-curves, r2-backing, r2-financed, r2-distribution, r2-work), with the 24 charts: the main effects of both designs in three environments at 20 and 40 years, every preregistered reading of each outcome, the backing curve with the model\u2019s own mechanism and the break-even share, the financed rows (shown, never led with), who gains, and work. The unfavourable results are shown with the same prominence as the headline.',
+          'status': 'latest', 'shownIn': None, 'figuresFrom': '5.6', 'round2': {'engine': '104691f', 'studies': ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work'], 'charts': 'studies/r2-charts/', 'prereg': 'prereg/2026-11-s63-round2-freeze.md', 'osf': 'https://osf.io/msdzk/overview'}}
 
 def current():
     """the release the figures in dev/runs/ are: v5.6's once its panels carry today's safety net (--snab), v5.4's once its panels (labor and markets, harness.js --v54) are there, v5.3's for the v5.3 panels (households and children, --v53), else v5.2's"""
@@ -952,7 +952,7 @@ def plan(backfill=None):
             for name, blk in blocks: H, _ = put_block(H, name, blk)
             files[page] = H
     if LATEST['figuresFrom'] == R['version'] or any(r['version'] == LATEST['figuresFrom'] for r in manifest['releases']):
-        manifest['releases'] = [r for r in manifest['releases'] if r['version'] != LATEST['version']] + [dict(LATEST)]
+        manifest['releases'] = [dict(r, status='earlier') if r.get('status') == 'latest' and r['version'] != LATEST['version'] else r for r in manifest['releases'] if r['version'] != LATEST['version']] + [dict(LATEST)]  # S65: an older 'latest' entry becomes 'earlier'
     key = lambda r: [int(x) for x in r['version'].split('.')]
     manifest['releases'].sort(key=key, reverse=True)
     files['data/manifest.json'] = json.dumps(manifest, ensure_ascii=False, indent=1) + '\n'
