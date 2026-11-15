@@ -24,6 +24,9 @@ CSV_STUDIES = {
     's5-participation': ('Participation threshold (S5): outcomes by participation level, with each level’s departure from a straight line',
                          'prereg/2026-11-study-program.md', 'dev/reports/s5-participation.md', 's5-participation', 'ce8d030b8d16a752706c4ea2db71196e11e73831', 500,
                          'full batch, studies D (500 adults) and D10 (10,000 adults)', 'prog-d-ce8d030, prog-d10-ce8d030'),
+    's5-groups': ('Participants and non-participants (S5, item 6): each group against its own no-programme figure',
+                  'prereg/2026-11-study-program.md', 'dev/tools/s5_groups.py (no separate report; see the findings page note)', 's5-participation', 'ce8d030b8d16a752706c4ea2db71196e11e73831', 500,
+                  'full batch, studies D (500 adults) and D10 (10,000 adults), release row, groups gPart*/gNon*', 'prog-d-ce8d030, prog-d10-ce8d030'),
     's55-open-access': ('Open PTF access (S55): anyone may buy at PTF prices, against members only',
                         'prereg/2026-11-ptf-access-addendum.md', 'dev/reports/s55-open-access.md', 's55-open-access', '0c93593e1ea502555387e42215b79f290a60f127', 500,
                         'full 500-seed runs, studies T-Y, paired with the frozen batch', 'prog-t-0c93593, prog-u-0c93593, prog-u10-0c93593, prog-v-0c93593, prog-v10-0c93593, prog-vj-0c93593, prog-w-0c93593, prog-w10-0c93593, prog-y-0c93593'),
@@ -59,8 +62,9 @@ def cell(s):
 
 
 def csv_file(sid):
+    csvname = 'groups.csv' if sid == 's5-groups' else 'estimates.csv'
     title, pre, rep, folder, eng, seeds, rows, res = CSV_STUDIES[sid]
-    p = os.path.join('dev', 'runs', folder, 'estimates.csv')
+    p = os.path.join('dev', 'runs', folder, csvname)
     with open(os.path.join(ROOT, p), newline='', encoding='utf-8') as f:
         r = csv.reader(f)
         head = next(r)

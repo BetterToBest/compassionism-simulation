@@ -60,7 +60,31 @@
       '<p class="fx-note">Every confirmed point cuts poverty and harms no one beyond the margin, and every one runs at inflation far above 5 points a year, which rests on the placeholder price rule above. No point of the release row is confirmed. These three failed the stricter no-harm test (rule 4: no harm at all) on the choosing seeds and pass the margin test (rule 5) here; both rules were written before any run. The last block is the one way found to keep inflation low: pay for the payout with a flat contribution on wages instead of new money. It cuts poverty, but raises non-participants’ big income falls in every environment (its interval’s upper end is above the half-point margin), so it is not confirmed. Every figure here is for 500 adults over 20 years. Adopting a tax-financed design is a change to the design itself and has not been decided.</p>';
     return h;
   }
-  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], [null, holm]];
+  function groups(d) {
+    var S = 's5-groups', ENV = ['ref', 'adv', 'st'], NAME = {ref: 'Reference', adv: 'Adverse', st: 'Stress'}, LV = [10, 30, 50, 90];
+    var idx = {};
+    for (var i = 0; i < d.data[0].length; i++) {
+      if (col(d, 'study')[i] === 'D10' && col(d, 'yardstick')[i] === 'cps' && col(d, 'raise')[i] === 'off') {
+        idx[[col(d, 'env')[i], col(d, 'level_pct')[i], col(d, 'group')[i].charAt(0), col(d, 'measure')[i].charAt(0)].join('|')] = i;
+      }
+    }
+    function sg(x, dg) { return (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(dg === undefined ? 1 : dg); }
+    function cellv(e, q, g, m) {
+      var k = idx[[e, q, g, m].join('|')];
+      return snum(S, 'row ' + k + ' ' + e + ' ' + q + ' ' + g + ' ' + m, sg(col(d, 'change')[k]) + ' (' + sg(col(d, 'lo95')[k]) + ' to ' + sg(col(d, 'hi95')[k]) + ')');
+    }
+    function part(e, q) { var k = idx[[e, q, 'p', 'b'].join('|')]; return snum(S, 'row ' + k + ' realised_participation_pct', col(d, 'realised_participation_pct')[k].toFixed(1) + '%'); }
+    function base(e, g) { var k = idx[[e, 10, g, 't'].join('|')]; return snum(S, 'row ' + k + ' none', col(d, 'none')[k].toFixed(1) + '%'); }
+    var h = '<h3 class="fx-h3">Participants and non-participants under opt-in</h3>' +
+      '<p>When people opt in, the share with too little wealth rises as participation rises (the participation threshold above). To see who carries that rise, the engine reports two groups separately: the adults who take part and the adults who do not. Each adult carries a take-up flag, so a group is a set of people (assumed the same people with and without the programme, see the note below), and each group is compared with its own figure in the no-programme run (paired by seed). The release row, income yardstick CPS earnings, no pay raise, 10,000 adults, 20 years, 500 seeds.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Participants and non-participants"><table class="fx-table"><caption>Change against the same group with no programme, in percentage points (95% interval over seeds). Without a programme, in Reference, ' + base('ref', 'p') + ' of the future participants and ' + base('ref', 'n') + ' of the non-participants have too little wealth at year 20.</caption>' +
+      '<thead><tr><th>Environment</th><th>Take-up</th><th>Participants: below the cost of living</th><th>Non-participants: below the cost of living</th><th>Participants: too little wealth</th><th>Non-participants: too little wealth</th></tr></thead><tbody>' +
+      ENV.map(function (e) { return LV.map(function (q, j) { return '<tr><td>' + (j ? '' : NAME[e]) + '</td><td>' + part(e, q) + '</td><td>' + cellv(e, q, 'p', 'b') + '</td><td>' + cellv(e, q, 'n', 'b') + '</td><td>' + cellv(e, q, 'p', 't') + '</td><td>' + cellv(e, q, 'n', 't') + '</td></tr>'; }).join(''); }).join('') +
+      '</tbody></table></div>' +
+      '<p class="fx-note">Read the two wealth columns together: from 30% take-up upward both groups end with more people short of wealth than without the programme, so the opt-in result does not come from non-participants alone. Non-participants are hit harder in every environment shown, which fits prices rising for everyone while only participants receive the programme’s help. Basket poverty falls for both groups at every level shown, far more for participants until take-up is very high. That the take-up flag is the same in both runs is a modelling assumption; it is read from the no-programme figures of the two groups being equal within a few tenths of a point, not from the engine’s own check. Other levels, the 500-adult study and the pay-raise rows are in the study’s file.</p>';
+    return h;
+  }
+  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], [null, holm]];
   function mount(host) {
     NOTES.forEach(function (n) {
       var blk = document.createElement('div'); blk.className = 'fx-note-block'; host.appendChild(blk);
