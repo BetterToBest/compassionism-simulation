@@ -1,0 +1,91 @@
+<svg class="cv" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 418" role="img" aria-labelledby="t d">
+<style>.cv{--su:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e3e2dc;--axis:#9a9992;--band:#efeee9;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .cv{--su:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#6f6e68;--band:#262624;--s1:#3987e5;--s2:#d95926;--s3:#199e70}}:root[data-theme="dark"] .cv{--su:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#6f6e68;--band:#262624;--s1:#3987e5;--s2:#d95926;--s3:#199e70}.cv{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.cv .bg{fill:var(--su)}.cv .t{font-size:15px;font-weight:600;fill:var(--ink)}.cv .h{font-size:13px;font-weight:600;fill:var(--ink)}.cv .sub,.cv .tk,.cv .ax{font-size:11.5px;fill:var(--ink2)}.cv .tk{font-variant-numeric:tabular-nums}.cv .lab{font-size:11.5px;fill:var(--ink)}.cv .g{stroke:var(--grid);stroke-width:1}.cv .z{stroke:var(--axis);stroke-width:1}.cv .band{fill:var(--band)}.cv .iv{stroke-width:1;stroke-opacity:.55}.cv .d{stroke:var(--su);stroke-width:1}.cv .m{fill:var(--su);stroke:var(--ink);stroke-width:2}.cv .ln{fill:none;stroke-width:2}.cv .ref{stroke:var(--ink2);stroke-width:1;stroke-dasharray:4 3}.cv .hit{fill:transparent}.cv .s1{fill:var(--s1);stroke:var(--s1)}.cv .s2{fill:var(--s2);stroke:var(--s2)}.cv .s3{fill:var(--s3);stroke:var(--s3)}.cv .ls1{stroke:var(--s1)}.cv .ls2{stroke:var(--s2)}.cv .ls3{stroke:var(--s3)}.cv .o{fill:var(--su);stroke-width:2}</style>
+<rect class="bg" width="1000" height="418"/>
+<desc id="d">Reference: inflation 33.8 a year with no backing, 0.05 at full backing; 5% a year at 86% backed; the mechanism reaches 0.6% and 13.8%. Adverse: inflation 46.3 a year with no backing, 0.01 at full backing; 5% a year at 90% backed; the mechanism reaches 0.3% and 13.7%. Stress: inflation 20.6 a year with no backing, 0.00 at full backing; 5% a year at 77% backed; the mechanism reaches 0.7% and 13.7%.</desc>
+<title id="t">How much of the payout new output backs: the release design, 40 years</title>
+<text class="t" x="16" y="24">How much of the payout new output backs: the release design, 40 years</text>
+<text class="sub" x="16" y="44">Effect against no programme at each backed share; 100% is the main row (a design parameter, ledger D25), not an estimate.</text>
+<text class="sub" x="16" y="62">Hollow marks: the share the model's own backing mechanism reaches (main reading; with no ceiling). Diamonds on the 5% line: the break-even share (rule 4).</text>
+<line class="ln ls1" x1="16" x2="38" y1="84" y2="84"/><circle class="d s1" cx="27" cy="84" r="4"/><text class="lab" x="44" y="84" dominant-baseline="middle">Reference</text>
+<line class="ln ls2" x1="119" x2="141" y1="84" y2="84"/><circle class="d s2" cx="130" cy="84" r="4"/><text class="lab" x="147" y="84" dominant-baseline="middle">Adverse</text>
+<line class="ln ls3" x1="208" x2="230" y1="84" y2="84"/><circle class="d s3" cx="219" cy="84" r="4"/><text class="lab" x="236" y="84" dominant-baseline="middle">Stress</text>
+<text class="h" x="62" y="106">Programme inflation (points a year)</text>
+<line class="g" x1="62" x2="432" y1="348.0" y2="348.0"/><text class="tk" x="56" y="348.0" text-anchor="end" dominant-baseline="middle">0</text>
+<line class="g" x1="62" x2="432" y1="248.9" y2="248.9"/><text class="tk" x="56" y="248.9" text-anchor="end" dominant-baseline="middle">20</text>
+<line class="g" x1="62" x2="432" y1="149.7" y2="149.7"/><text class="tk" x="56" y="149.7" text-anchor="end" dominant-baseline="middle">40</text>
+<text class="tk" x="62.0" y="366" text-anchor="middle">0%</text>
+<text class="tk" x="154.5" y="366" text-anchor="middle">25%</text>
+<text class="tk" x="247.0" y="366" text-anchor="middle">50%</text>
+<text class="tk" x="339.5" y="366" text-anchor="middle">75%</text>
+<text class="tk" x="432.0" y="366" text-anchor="middle">100%</text>
+<text class="ax" x="247.0" y="386" text-anchor="middle">share of the payout backed by new output</text>
+<line class="z" x1="62" x2="432" y1="348.0" y2="348.0"/>
+<line class="ref" x1="62" x2="432" y1="323.2" y2="323.2"/><text class="sub" x="291" y="317.2" text-anchor="middle">5% a year</text>
+<polyline class="ln ls1" points="62.0,180.5 154.5,219.7 247.0,260.2 339.5,302.9 432.0,347.8"/>
+<g><title>Reference, 0% backed: +33.8 (95% 33.7 to 33.9)</title><circle class="d s1" cx="62.0" cy="180.5" r="4"/><circle class="hit" cx="62.0" cy="180.5" r="10"/></g>
+<g><title>Reference, 25% backed: +25.9 (95% 25.8 to 26.0)</title><circle class="d s1" cx="154.5" cy="219.7" r="4"/><circle class="hit" cx="154.5" cy="219.7" r="10"/></g>
+<g><title>Reference, 50% backed: +17.7 (95% 17.7 to 17.8)</title><circle class="d s1" cx="247.0" cy="260.2" r="4"/><circle class="hit" cx="247.0" cy="260.2" r="10"/></g>
+<g><title>Reference, 75% backed: +9.1 (95% 9.1 to 9.1)</title><circle class="d s1" cx="339.5" cy="302.9" r="4"/><circle class="hit" cx="339.5" cy="302.9" r="10"/></g>
+<g><title>Reference, 100% backed: +0.05 (95% 0.05 to 0.05)</title><circle class="d s1" cx="432.0" cy="347.8" r="4"/><circle class="hit" cx="432.0" cy="347.8" r="10"/></g>
+<g><title>Reference, mechanism, main reading: 0.6% backed; +33.6</title><circle class="o ls1" style="stroke:var(--s1)" cx="64.2" cy="181.5" r="5.5"/></g>
+<g><title>Reference, mechanism, no ceiling: 13.8% backed; +29.3</title><circle class="o ls1" style="stroke:var(--s1)" cx="113.1" cy="202.6" r="5.5"/></g>
+<g><title>Reference: programme inflation is 5% a year at 86% backed (break-even, rule 4)</title><path class="s1 d" d="M381.4 318.2l5 5l-5 5l-5-5z"/></g>
+<polyline class="ln ls2" points="62.0,118.7 154.5,172.2 247.0,228.1 339.5,286.5 432.0,347.9"/>
+<g><title>Adverse, 0% backed: +46.3 (95% 46.1 to 46.4)</title><circle class="d s2" cx="62.0" cy="118.7" r="4"/><circle class="hit" cx="62.0" cy="118.7" r="10"/></g>
+<g><title>Adverse, 25% backed: +35.5 (95% 35.4 to 35.6)</title><circle class="d s2" cx="154.5" cy="172.2" r="4"/><circle class="hit" cx="154.5" cy="172.2" r="10"/></g>
+<g><title>Adverse, 50% backed: +24.2 (95% 24.1 to 24.3)</title><circle class="d s2" cx="247.0" cy="228.1" r="4"/><circle class="hit" cx="247.0" cy="228.1" r="10"/></g>
+<g><title>Adverse, 75% backed: +12.4 (95% 12.4 to 12.4)</title><circle class="d s2" cx="339.5" cy="286.5" r="4"/><circle class="hit" cx="339.5" cy="286.5" r="10"/></g>
+<g><title>Adverse, 100% backed: +0.01 (95% 0.01 to 0.01)</title><circle class="d s2" cx="432.0" cy="347.9" r="4"/><circle class="hit" cx="432.0" cy="347.9" r="10"/></g>
+<g><title>Adverse, mechanism, main reading: 0.3% backed; +46.1</title><circle class="o ls2" style="stroke:var(--s2)" cx="63.1" cy="119.3" r="5.5"/></g>
+<g><title>Adverse, mechanism, no ceiling: 13.7% backed; +40.6</title><circle class="o ls2" style="stroke:var(--s2)" cx="112.7" cy="147.0" r="5.5"/></g>
+<g><title>Adverse: programme inflation is 5% a year at 90% backed (break-even, rule 4)</title><path class="s2 d" d="M394.8 318.2l5 5l-5 5l-5-5z"/></g>
+<polyline class="ln ls3" points="62.0,245.9 154.5,269.8 247.0,294.8 339.5,321.0 432.0,348.0"/>
+<g><title>Stress, 0% backed: +20.6 (95% 20.5 to 20.7)</title><circle class="d s3" cx="62.0" cy="245.9" r="4"/><circle class="hit" cx="62.0" cy="245.9" r="10"/></g>
+<g><title>Stress, 25% backed: +15.8 (95% 15.7 to 15.9)</title><circle class="d s3" cx="154.5" cy="269.8" r="4"/><circle class="hit" cx="154.5" cy="269.8" r="10"/></g>
+<g><title>Stress, 50% backed: +10.7 (95% 10.7 to 10.8)</title><circle class="d s3" cx="247.0" cy="294.8" r="4"/><circle class="hit" cx="247.0" cy="294.8" r="10"/></g>
+<g><title>Stress, 75% backed: +5.5 (95% 5.4 to 5.5)</title><circle class="d s3" cx="339.5" cy="321.0" r="4"/><circle class="hit" cx="339.5" cy="321.0" r="10"/></g>
+<g><title>Stress, 100% backed: +0.00 (95% 0.00 to 0.00)</title><circle class="d s3" cx="432.0" cy="348.0" r="4"/><circle class="hit" cx="432.0" cy="348.0" r="10"/></g>
+<g><title>Stress, mechanism, main reading: 0.7% backed; +20.5</title><circle class="o ls3" style="stroke:var(--s3)" cx="64.7" cy="246.5" r="5.5"/></g>
+<g><title>Stress, mechanism, no ceiling: 13.7% backed; +18.0</title><circle class="o ls3" style="stroke:var(--s3)" cx="112.9" cy="258.6" r="5.5"/></g>
+<g><title>Stress: programme inflation is 5% a year at 77% backed (break-even, rule 4)</title><path class="s3 d" d="M347.2 318.2l5 5l-5 5l-5-5z"/></g>
+<text class="h" x="562" y="106">Wealth poverty, yearly average (points)</text>
+<line class="g" x1="562" x2="932" y1="348.0" y2="348.0"/><text class="tk" x="556" y="348.0" text-anchor="end" dominant-baseline="middle">−20</text>
+<line class="g" x1="562" x2="932" y1="290.5" y2="290.5"/><text class="tk" x="556" y="290.5" text-anchor="end" dominant-baseline="middle">−15</text>
+<line class="g" x1="562" x2="932" y1="233.0" y2="233.0"/><text class="tk" x="556" y="233.0" text-anchor="end" dominant-baseline="middle">−10</text>
+<line class="g" x1="562" x2="932" y1="175.5" y2="175.5"/><text class="tk" x="556" y="175.5" text-anchor="end" dominant-baseline="middle">−5</text>
+<line class="g" x1="562" x2="932" y1="118.0" y2="118.0"/><text class="tk" x="556" y="118.0" text-anchor="end" dominant-baseline="middle">0</text>
+<text class="tk" x="562.0" y="366" text-anchor="middle">0%</text>
+<text class="tk" x="654.5" y="366" text-anchor="middle">25%</text>
+<text class="tk" x="747.0" y="366" text-anchor="middle">50%</text>
+<text class="tk" x="839.5" y="366" text-anchor="middle">75%</text>
+<text class="tk" x="932.0" y="366" text-anchor="middle">100%</text>
+<text class="ax" x="747.0" y="386" text-anchor="middle">share of the payout backed by new output</text>
+<line class="z" x1="562" x2="932" y1="118.0" y2="118.0"/>
+<polyline class="ln ls1" points="562.0,277.4 654.5,281.7 747.0,285.7 839.5,287.9 932.0,266.4"/>
+<g><title>Reference, 0% backed: −13.9 (95% −14.0 to −13.7)</title><circle class="d s1" cx="562.0" cy="277.4" r="4"/><circle class="hit" cx="562.0" cy="277.4" r="10"/></g>
+<g><title>Reference, 25% backed: −14.2 (95% −14.3 to −14.1)</title><circle class="d s1" cx="654.5" cy="281.7" r="4"/><circle class="hit" cx="654.5" cy="281.7" r="10"/></g>
+<g><title>Reference, 50% backed: −14.6 (95% −14.7 to −14.5)</title><circle class="d s1" cx="747.0" cy="285.7" r="4"/><circle class="hit" cx="747.0" cy="285.7" r="10"/></g>
+<g><title>Reference, 75% backed: −14.8 (95% −14.9 to −14.7)</title><circle class="d s1" cx="839.5" cy="287.9" r="4"/><circle class="hit" cx="839.5" cy="287.9" r="10"/></g>
+<g><title>Reference, 100% backed: −12.9 (95% −13.0 to −12.8)</title><circle class="d s1" cx="932.0" cy="266.4" r="4"/><circle class="hit" cx="932.0" cy="266.4" r="10"/></g>
+<g><title>Reference, mechanism, main reading: 0.6% backed; −13.9</title><circle class="o ls1" style="stroke:var(--s1)" cx="564.2" cy="277.4" r="5.5"/></g>
+<g><title>Reference, mechanism, no ceiling: 13.8% backed; −14.1</title><circle class="o ls1" style="stroke:var(--s1)" cx="613.1" cy="280.4" r="5.5"/></g>
+<polyline class="ln ls2" points="562.0,280.1 654.5,286.3 747.0,293.9 839.5,301.9 932.0,241.1"/>
+<g><title>Adverse, 0% backed: −14.1 (95% −14.2 to −14.0)</title><circle class="d s2" cx="562.0" cy="280.1" r="4"/><circle class="hit" cx="562.0" cy="280.1" r="10"/></g>
+<g><title>Adverse, 25% backed: −14.6 (95% −14.8 to −14.5)</title><circle class="d s2" cx="654.5" cy="286.3" r="4"/><circle class="hit" cx="654.5" cy="286.3" r="10"/></g>
+<g><title>Adverse, 50% backed: −15.3 (95% −15.4 to −15.2)</title><circle class="d s2" cx="747.0" cy="293.9" r="4"/><circle class="hit" cx="747.0" cy="293.9" r="10"/></g>
+<g><title>Adverse, 75% backed: −16.0 (95% −16.1 to −15.9)</title><circle class="d s2" cx="839.5" cy="301.9" r="4"/><circle class="hit" cx="839.5" cy="301.9" r="10"/></g>
+<g><title>Adverse, 100% backed: −10.7 (95% −10.8 to −10.6)</title><circle class="d s2" cx="932.0" cy="241.1" r="4"/><circle class="hit" cx="932.0" cy="241.1" r="10"/></g>
+<g><title>Adverse, mechanism, main reading: 0.3% backed; −14.1</title><circle class="o ls2" style="stroke:var(--s2)" cx="563.1" cy="280.1" r="5.5"/></g>
+<g><title>Adverse, mechanism, no ceiling: 13.7% backed; −14.4</title><circle class="o ls2" style="stroke:var(--s2)" cx="612.7" cy="283.9" r="5.5"/></g>
+<polyline class="ln ls3" points="562.0,204.7 654.5,206.0 747.0,206.6 839.5,204.3 932.0,168.0"/>
+<g><title>Stress, 0% backed: −7.5 (95% −7.6 to −7.4)</title><circle class="d s3" cx="562.0" cy="204.7" r="4"/><circle class="hit" cx="562.0" cy="204.7" r="10"/></g>
+<g><title>Stress, 25% backed: −7.7 (95% −7.7 to −7.6)</title><circle class="d s3" cx="654.5" cy="206.0" r="4"/><circle class="hit" cx="654.5" cy="206.0" r="10"/></g>
+<g><title>Stress, 50% backed: −7.7 (95% −7.8 to −7.6)</title><circle class="d s3" cx="747.0" cy="206.6" r="4"/><circle class="hit" cx="747.0" cy="206.6" r="10"/></g>
+<g><title>Stress, 75% backed: −7.5 (95% −7.6 to −7.4)</title><circle class="d s3" cx="839.5" cy="204.3" r="4"/><circle class="hit" cx="839.5" cy="204.3" r="10"/></g>
+<g><title>Stress, 100% backed: −4.3 (95% −4.4 to −4.3)</title><circle class="d s3" cx="932.0" cy="168.0" r="4"/><circle class="hit" cx="932.0" cy="168.0" r="10"/></g>
+<g><title>Stress, mechanism, main reading: 0.7% backed; −7.5</title><circle class="o ls3" style="stroke:var(--s3)" cx="564.7" cy="204.6" r="5.5"/></g>
+<g><title>Stress, mechanism, no ceiling: 13.7% backed; −7.6</title><circle class="o ls3" style="stroke:var(--s3)" cx="612.9" cy="205.6" r="5.5"/></g>
+<text class="lab" x="942.0" y="168.0" dominant-baseline="middle">Stress</text>
+<text class="lab" x="942.0" y="241.1" dominant-baseline="middle">Adverse</text>
+<text class="lab" x="942.0" y="266.4" dominant-baseline="middle">Reference</text>
+</svg>
