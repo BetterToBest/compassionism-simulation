@@ -1,0 +1,19 @@
+environment,take_up_pct,outcome,variance_reduction_pct,lo95,hi95,interval_narrower_pct,correlation_programme_vs_none
+Reference,30,"below the cost of living, % of adult-years",78.4,74.9,81.4,53.5,0.789
+Reference,30,"too little wealth at year 20, %",47.5,41.4,53.2,27.5,0.522
+Reference,30,median real wealth,34.9,29.7,39.9,19.3,0.465
+Reference,90,"below the cost of living, % of adult-years",42.8,36.5,49.1,24.4,0.499
+Reference,90,"too little wealth at year 20, %",37.2,32.3,42.1,20.8,0.486
+Reference,90,median real wealth,13.9,11.8,16.0,7.2,0.485
+Adverse,30,"below the cost of living, % of adult-years",77.7,73.5,81.1,52.8,0.788
+Adverse,30,"too little wealth at year 20, %",33.2,27.6,38.6,18.3,0.426
+Adverse,30,median real wealth,30.6,26.8,34.2,16.7,0.536
+Adverse,90,"below the cost of living, % of adult-years",46.7,40.2,53.2,27.0,0.533
+Adverse,90,"too little wealth at year 20, %",34.6,28.3,41.0,19.1,0.390
+Adverse,90,median real wealth,10.8,9.2,12.3,5.6,0.520
+Stress,30,"below the cost of living, % of adult-years",85.7,83.1,87.9,62.2,0.862
+Stress,30,"too little wealth at year 20, %",41.3,35.7,46.3,23.4,0.502
+Stress,30,median real wealth,39.1,35.0,43.2,22.0,0.596
+Stress,90,"below the cost of living, % of adult-years",66.7,61.5,71.3,42.3,0.693
+Stress,90,"too little wealth at year 20, %",33.7,27.3,40.2,18.6,0.385
+Stress,90,median real wealth,12.1,10.5,13.6,6.2,0.544

@@ -115,7 +115,21 @@
       '<thead><tr><th>Environment</th><th>Savings</th><th>No programme</th><th>Programme</th><th>Change, points</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
       '<p class="fx-note">The wealth-poverty result of the release programme depends on what happens to savings. With ordinary savings it rises sharply; once savings keep their value it falls instead, and a positive real return on top changes it only slightly. So in this model the rise comes from inflation eroding savings, and the size of that inflation rests on the placeholder price rule above. Stress uses the same no-programme control as Adverse in the panel. These are model results, not forecasts.</p>';
   }
-  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], ['s7-spend-groups', spendGroups], ['s7-savings', savings], [null, holm]];
+  function pairing(d) {
+    var S = 's7-pairing', n = d.data[0].length, lo = 1e9, hi = -1e9, ilo = 0, ihi = 0;
+    function c(name, i) { return col(d, name)[i]; }
+    for (var i = 0; i < n; i++) { var x = c('variance_reduction_pct', i); if (x < lo) { lo = x; ilo = i; } if (x > hi) { hi = x; ihi = i; } }
+    var rows = '';
+    for (var j = 0; j < n; j++) {
+      rows += '<tr><td>' + esc(c('environment', j)) + '</td><td>' + c('take_up_pct', j) + '%</td><td>' + esc(c('outcome', j)) + '</td><td>' + snum(S, 'row ' + j + ' variance_reduction_pct', c('variance_reduction_pct', j).toFixed(0) + '% (' + c('lo95', j).toFixed(0) + ' to ' + c('hi95', j).toFixed(0) + ')') + '</td><td>' + snum(S, 'row ' + j + ' interval_narrower_pct', c('interval_narrower_pct', j).toFixed(0) + '%') + '</td></tr>';
+    }
+    return '<h3 class="fx-h3">What pairing the seeds buys</h3>' +
+      '<p>Each programme run is paired with a no-programme run that uses the same seed: the same adults and the same shocks. A difference between them then carries only the programme’s effect plus the noise that the two runs do not share. The reduction in variance is one minus the variance of the paired differences divided by the sum of the two runs’ own variances, which is what two independent samples would give. It was measured on study D (500 adults, 500 seeds, 20 years, release row, no raise), at 30% and 90% take-up.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Variance reduction from paired seeds"><table class="fx-table"><caption>Variance reduction from pairing, with a 95% bootstrap interval over seeds. “Interval narrower by” is the matching shrinkage of a confidence interval (its width follows the square root of the variance). Programme inflation and cost are left out: the no-programme run has none, so pairing cannot help them.</caption>' +
+      '<thead><tr><th>Environment</th><th>Take-up</th><th>Outcome</th><th>Variance reduction (95% interval)</th><th>Interval narrower by</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="fx-note">Across these rows pairing removes between ' + snum(S, 'row ' + ilo + ' variance_reduction_pct', lo.toFixed(0) + '%') + ' and ' + snum(S, 'row ' + ihi + ' variance_reduction_pct', hi.toFixed(0) + '%') + ' of the variance. It helps most for the share below the cost of living and least for median wealth at high take-up; the model does not say why, and the reasons were not tested. The reduction measured here is for the contrast of a programme run with its own no-programme run; contrasts between two programme designs were not measured.</p>';
+  }
+  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], ['s7-spend-groups', spendGroups], ['s7-savings', savings], ['s7-pairing', pairing], [null, holm]];
   function mount(host) {
     NOTES.forEach(function (n) {
       var blk = document.createElement('div'); blk.className = 'fx-note-block'; host.appendChild(blk);

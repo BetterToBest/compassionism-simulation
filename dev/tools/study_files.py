@@ -33,6 +33,9 @@ CSV_STUDIES = {
     's7-savings': ('Wealth poverty with ordinary and with inflation-protected savings (S7, item 3): each programme row against its own no-programme control',
                    'prereg/run-manifest.md (release panel rows sav, sav0)', 'dev/tools/s7_savings.py (no separate report; see the findings page note)', 's7-savings', 'ce8d030b8d16a752706c4ea2db71196e11e73831', 500,
                    'frozen release panel, three environments, rows release, sav0, sav and their no-programme controls', '(run on the session machine; files here are the record)'),
+    's7-pairing': ('Variance reduction from paired seeds (S7, item 9): programme run against no-programme run of the same seed',
+                   'prereg/2026-11-study-program.md', 'dev/tools/s7_pairing.py (no separate report; see the findings page note)', 's7-pairing', 'ce8d030b8d16a752706c4ea2db71196e11e73831', 500,
+                   'full batch, study D (500 adults), release row at 30% and 90% take-up, three environments', 'prog-d-ce8d030'),
     's55-open-access': ('Open PTF access (S55): anyone may buy at PTF prices, against members only',
                         'prereg/2026-11-ptf-access-addendum.md', 'dev/reports/s55-open-access.md', 's55-open-access', '0c93593e1ea502555387e42215b79f290a60f127', 500,
                         'full 500-seed runs, studies T-Y, paired with the frozen batch', 'prog-t-0c93593, prog-u-0c93593, prog-u10-0c93593, prog-v-0c93593, prog-v10-0c93593, prog-vj-0c93593, prog-w-0c93593, prog-w10-0c93593, prog-y-0c93593'),
@@ -68,7 +71,7 @@ def cell(s):
 
 
 def csv_file(sid):
-    csvname = {'s5-groups': 'groups.csv', 's7-spend-groups': 'groups.csv', 's7-savings': 'savings.csv'}.get(sid, 'estimates.csv')
+    csvname = {'s5-groups': 'groups.csv', 's7-spend-groups': 'groups.csv', 's7-savings': 'savings.csv', 's7-pairing': 'pairing.csv'}.get(sid, 'estimates.csv')
     title, pre, rep, folder, eng, seeds, rows, res = CSV_STUDIES[sid]
     p = os.path.join('dev', 'runs', folder, csvname)
     with open(os.path.join(ROOT, p), newline='', encoding='utf-8') as f:
