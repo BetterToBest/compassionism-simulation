@@ -169,7 +169,7 @@ footer p{margin:0 0 6px}
       $('version-changed').innerHTML = d.text && d.text['release.changed'] ? F.text(d, 'release.changed') : ''; $('version-changed').hidden = !(d.text && d.text['release.changed']);
       if (location.hash && document.getElementById(location.hash.slice(1))) document.getElementById(location.hash.slice(1)).scrollIntoView(); });
   }
-  window.CSS_STUDIES.mount($('study-list'));
+  if (window.CSS_STUDIES) window.CSS_STUDIES.mount($('study-list'));
   F.fetchJSON('data/manifest.json').then(function (m) {
     MAN = m; var sel = $('version'); sel.innerHTML = '';
     m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = 'v' + r.version + ' · ' + r.date + (r.status === 'latest' ? ' (latest; figures from v' + r.figuresFrom + ')' : r.figuresFrom ? ' (figures from v' + r.figuresFrom + ')' : r.status === 'current' ? ' (current figures)' : ''); sel.appendChild(o); });
