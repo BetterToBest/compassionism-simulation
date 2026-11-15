@@ -33,6 +33,10 @@ CSV_STUDIES = {
     's14-lw-pilot': ('Cost-of-living line weighted by where people live (S14): pilot cells',
                      'prereg/2026-11-lw-weighted-line.md', 'dev/reports/lw-weighted-line.md', 'lw-pilot', 'f66dc67', None,
                      'PILOT (study L)', 'pilot-l-f66dc67'),
+    's39-crosscheck': ('Outside cross-check of the price level (S39): the same new money in BeforeIT.jl, an outside whole-economy model (Austria calibration)',
+                       'prereg/2026-11-s39-outside-crosscheck.md (research-update)', 'dev/reports/s39-outside-crosscheck.md', 's39-crosscheck', 'ce8d030', None,
+                       'OUTSIDE ENGINE: BeforeIT 0.6.0, 80 quarters; full scale (1:1) has 5 runs per scenario, 1:1000 has 100',
+                       's39-full-ce8d030, s39-k1-ce8d030'),
 }
 S34 = ('The no-program baseline against outside data (S34)', 'prereg/s34-baseline-realism.md', 'dev/reports/baseline-realism.md', 'baseline-realism')
 ENVS = ['ref', 'adv', 'st']

@@ -20,10 +20,34 @@
       '<p class="fx-note">Every environment and design is in the study’s file (“The spending share”, under Every preregistered study below). A higher share leaves less saved, so wealth poverty rises most where the programme’s inflation erodes savings.</p>';
     return h;
   }
-  var NOTES = [['s47-spend', spend]];
+  function signed(x, d) { return (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(d === undefined ? 1 : d) + '%'; }
+  function xcheck(d) {
+    var S = 's39-crosscheck';
+    function at(sc, q) { var i = -1; for (var k = 0; k < d.data[0].length; k++) { if (col(d, 'scenario')[k] === sc && col(d, 'quarter')[k] === q && col(d, 'scale')[k].indexOf('full') === 0) i = k; } return i; }
+    function val(name, i, f) { return snum(S, 'row ' + i + ' ' + name, f(col(d, name)[i])); }
+    var a = at('c22-ref-ea', 12), b = at('c22-ref-ea', 80);
+    var h = '<h3 class="fx-h3">What the programme does to prices, and what that rests on</h3>' +
+      '<p>Every inflation figure on this page rests on the model’s <strong>placeholder price rule</strong>: all new money that is not matched by extra output reaches the general price level a year later. It is a stated assumption, swept from a quarter to the whole of the new money; it is not a measured pass-through. The evidence that does exist (cash-transfer trials, pandemic stimulus, the model literature) covers much smaller payouts than the programme’s 30–50% of household income a year, so none of it can set the value.</p>' +
+      '<p>As a cross-check, the same new money was run in a published outside model of a whole economy, BeforeIT.jl (calibrated to Austria, not the US). In it, after 3 years consumer prices end <strong>' + val('cpi', a, function (x) { return signed(x); }) + '</strong> against its own run without the payout (95% interval ' + val('lo', a, function (x) { return signed(x); }) + ' to ' + val('hi', a, function (x) { return signed(x); }) + '), and after 20 years <strong>' + val('cpi', b, function (x) { return signed(x); }) + '</strong> (' + val('lo', b, function (x) { return signed(x); }) + ' to ' + val('hi', b, function (x) { return signed(x); }) + '). The reason is in its price rule, not in the economy: its firms set prices from their own past prices, their costs and the inflation they expect, and nothing in the rule responds to demand. The money shows up instead as output (real GDP ' + val('gdp', a, function (x) { return signed(x); }) + ' after 3 years) and as government debt (' + val('debt', b, function (x) { return x.toFixed(1); }) + ' years of output after 20 years).</p>' +
+      '<p>So neither engine measures how much of the money would reach prices, and the zero is an assumption just as the quantity-theory rule is. The two engines mark out how far the answer depends on the price rule; they do not bound the real value, which for payouts this large could lie outside the range between them. Nothing here shows that the pass-through lies between 0 and 1. The engine’s published figures are unchanged (report: <code>' + esc(d.meta.report) + '</code>, sections 4–6).</p>';
+    return h;
+  }
+  function holm() {
+    return '<h3 class="fx-h3">Multiple comparisons: which tests form a family</h3>' +
+      '<p>Every interval on this page is a plain 95% interval, unadjusted. Where a statement rests on several tests at once, the studies also say whether it survives <strong>Holm’s step-down correction</strong> at the 5% level, applied to two-sided p-values from the same paired bootstrap over seeds. The families were fixed before any run (study programme, “Analysis”):</p>' +
+      '<ul><li><strong>The main effect:</strong> the five primary outcomes together (share below 30 days of basic living, share below the cost of living, share with too little wealth, programme cost per adult, cumulative inflation), for one environment, horizon and design.</li>' +
+      '<li><strong>A synergy:</strong> for each outcome, the 11 interaction contrasts together: the whole design’s synergy (the five parts together against the sum of the parts alone) and the 10 pair contrasts within the design.</li>' +
+      '<li><strong>A scale effect:</strong> for each outcome, the three larger populations (2,000, 10,000 and 50,000 adults) against 500 adults.</li></ul>' +
+      '<p>A synergy is claimed only where its own interval excludes zero; whether it also survives Holm is stated beside it. Studies added later (open access, the community layer, the policy levers) name their own family in their tables, and say whether their intervals are adjusted.</p>';
+  }
+  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], [null, holm]];
   function mount(host) {
-    NOTES.forEach(function (n) { F.fetchJSON('data/studies/' + n[0] + '.json').then(function (d) { var s = document.createElement('div'); s.className = 'fx-note-block'; s.innerHTML = n[1](d); host.appendChild(s); })
-      .catch(function (e) { host.insertAdjacentHTML('beforeend', '<p class="fx-banner">Could not load ' + esc(n[0]) + ' (' + esc(e.message) + ').</p>'); }); });
+    NOTES.forEach(function (n) {
+      var blk = document.createElement('div'); blk.className = 'fx-note-block'; host.appendChild(blk);
+      if (!n[0]) { blk.innerHTML = n[1](); return; }
+      F.fetchJSON('data/studies/' + n[0] + '.json').then(function (d) { blk.innerHTML = n[1](d); })
+        .catch(function (e) { blk.innerHTML = '<p class="fx-banner">Could not load ' + esc(n[0]) + ' (' + esc(e.message) + ').</p>'; });
+    });
   }
   root.CSS_NOTES = {mount: mount};
 })(window);
