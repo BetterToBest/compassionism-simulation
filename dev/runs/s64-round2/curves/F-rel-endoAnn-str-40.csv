@@ -1,0 +1,117 @@
+rank,point,reading,kind,estimate,lo95,hi95,excludes_zero,shift_from_main,shift_lo95,shift_hi95
+1,0,main row,main,0,0,0,0,0,0,0
+2,1,single.prK=0.2,single,0,0,0,0,0,0,0
+3,3,single.prA=0.5078,single,0,0,0,0,0,0,0
+4,4,single.prH=0.0446,single,0,0,0,0,0,0,0
+5,5,single.prBd=0.132,single,0,0,0,0,0,0,0
+6,6,single.sc=0.593,single,0,0,0,0,0,0,0
+7,7,single.wIdx=0.75,single,0,0,0,0,0,0,0
+8,8,single.rho=0.05,single,0,0,0,0,0,0,0
+9,9,single.rho=0.3,single,0,0,0,0,0,0,0
+10,10,single.paDem=1,single,0,0,0,0,0,0,0
+11,11,single.drLim=0,single,0,0,0,0,0,0,0
+12,12,single.drLim=10000,single,0,0,0,0,0,0,0
+13,13,single.lfConv=none,single,0,0,0,0,0,0,0
+14,14,single.lfFl=off,single,0,0,0,0,0,0,0
+15,15,single.lfPm=0,single,0,0,0,0,0,0,0
+16,16,single.lfPm=1,single,0,0,0,0,0,0,0
+17,17,single.rtPhi=0,single,0,0,0,0,0,0,0
+18,18,single.rtPhi=1,single,0,0,0,0,0,0,0
+19,19,single.rtNs=port,single,0,0,0,0,0,0,0
+20,20,single.rtIx=0.5,single,0,0,0,0,0,0,0
+21,21,single.rtChi=1,single,0,0,0,0,0,0,0
+22,22,single.bgPi=0.1,single,0,0,0,0,0,0,0
+23,23,single.bgM=1,single,0,0,0,0,0,0,0
+24,24,single.poCost=sector,single,0,0,0,0,0,0,0
+25,25,single.poCost=hub,single,0,0,0,0,0,0,0
+26,26,single.poTest=members,single,0,0,0,0,0,0,0
+27,27,single.poTest=capacity,single,0,0,0,0,0,0,0
+28,28,single.poHire=0.05,single,0,0,0,0,0,0,0
+29,29,single.poHire=0.02,single,0,0,0,0,0,0,0
+30,30,single.poBonus=members,single,0,0,0,0,0,0,0
+31,31,single.poPay=price,single,0,0,0,0,0,0,0
+32,32,single.gvSh=0,single,0,0,0,0,0,0,0
+33,34,single.gvBase=wc,single,0,0,0,0,0,0,0
+34,35,single.gvBase=all,single,0,0,0,0,0,0,0
+35,36,single.cap=0,single,0,0,0,0,0,0,0
+36,39,single.gvRr=0,single,0,0,0,0,0,0,0
+37,40,single.gvRr=0.0196,single,0,0,0,0,0,0,0
+38,41,single.gvDk=0,single,0,0,0,0,0,0,0
+39,42,single.gvR=rule,single,0,0,0,0,0,0,0
+40,43,single.gvA=0.25,single,0,0,0,0,0,0,0
+41,44,single.gvA=1,single,0,0,0,0,0,0,0
+42,45,single.gvB=0,single,0,0,0,0,0,0,0
+43,46,single.gvB=1,single,0,0,0,0,0,0,0
+44,47,single.gvRs=0,single,0,0,0,0,0,0,0
+45,48,single.gvRs=0.02,single,0,0,0,0,0,0,0
+46,49,single.gvIp=borrow,single,0,0,0,0,0,0,0
+47,51,pair.rtChi x rtIx,pair,0,0,0,0,0,0,0
+48,52,pair.rtIx x wIdx,pair,0,0,0,0,0,0,0
+49,53,pair.gvSh x wIdx,pair,0,0,0,0,0,0,0
+50,55,pair.gvSh x rho,pair,0,0,0,0,0,0,0
+51,56,pair.cap x gvSh,pair,0,0,0,0,0,0,0
+52,57,pair.gvSh x lfFl,pair,0,0,0,0,0,0,0
+53,58,pair.gvSh x rtIx,pair,0,0,0,0,0,0,0
+54,59,pair.gvSh x lfPm,pair,0,0,0,0,0,0,0
+55,60,pair.gvSh x prBd,pair,0,0,0,0,0,0,0
+56,61,pair.rtIx x rtPhi,pair,0,0,0,0,0,0,0
+57,62,pair.rtIx x sc,pair,0,0,0,0,0,0,0
+58,63,pair.rho x rtIx,pair,0,0,0,0,0,0,0
+59,64,pair.rtIx x rtNs,pair,0,0,0,0,0,0,0
+60,65,pair.lfFl x rtIx,pair,0,0,0,0,0,0,0
+61,72,pair.gvBase x gvSh,pair,0,0,0,0,0,0,0
+62,73,pair.gvSh x prK,pair,0,0,0,0,0,0,0
+63,75,pair.gvSh x prA,pair,0,0,0,0,0,0,0
+64,76,pair.gvDk x gvSh,pair,0,0,0,0,0,0,0
+65,78,pair.gvRr x gvSh,pair,0,0,0,0,0,0,0
+66,79,pair.gvR x gvSh,pair,0,0,0,0,0,0,0
+67,80,pair.gvSh x poHire,pair,0,0,0,0,0,0,0
+68,81,pair.gvSh x poCost,pair,0,0,0,0,0,0,0
+69,82,pair.gvRs x gvSh,pair,0,0,0,0,0,0,0
+70,83,pair.gvSh x poPay,pair,0,0,0,0,0,0,0
+71,84,pair.gvA x gvSh,pair,0,0,0,0,0,0,0
+72,85,pair.gvSh x poBonus,pair,0,0,0,0,0,0,0
+73,86,pair.drLim x gvSh,pair,0,0,0,0,0,0,0
+74,87,pair.bgPi x gvSh,pair,0,0,0,0,0,0,0
+75,88,pair.gvSh x prH,pair,0,0,0,0,0,0,0
+76,89,pair.gvSh x lfConv,pair,0,0,0,0,0,0,0
+77,90,pair.gvSh x paDem,pair,0,0,0,0,0,0,0
+78,91,pair.gvSh x poTest,pair,0,0,0,0,0,0,0
+79,92,pair.gvSh x rtChi,pair,0,0,0,0,0,0,0
+80,93,pair.rho x wIdx,pair,0,0,0,0,0,0,0
+81,94,pair.lfFl x wIdx,pair,0,0,0,0,0,0,0
+82,95,pair.gvIp x wIdx,pair,0,0,0,0,0,0,0
+83,96,pair.bgPi x wIdx,pair,0,0,0,0,0,0,0
+84,97,pair.gvDk x wIdx,pair,0,0,0,0,0,0,0
+85,98,pair.gvSh x rtPhi,pair,0,0,0,0,0,0,0
+86,99,pair.gvSh x rtNs,pair,0,0,0,0,0,0,0
+87,100,pair.gvSh x sc,pair,0,0,0,0,0,0,0
+88,101,pair.cap x wIdx,pair,0,0,0,0,0,0,0
+89,102,pair.lfPm x wIdx,pair,0,0,0,0,0,0,0
+90,103,pair.lfConv x wIdx,pair,0,0,0,0,0,0,0
+91,104,pair.poPay x wIdx,pair,0,0,0,0,0,0,0
+92,105,pair.prBd x wIdx,pair,0,0,0,0,0,0,0
+93,106,pair.prK x rtIx,pair,0,0,0,0,0,0,0
+94,2,single.prR=0.45,single,9.05171e-05,8.21824e-05,9.9397e-05,1,9.05171e-05,8.21824e-05,9.9397e-05
+95,77,pair.gvIp x gvSh,pair,0.000227184,0.000133832,0.000344842,1,0.000227184,0.000133832,0.000344842
+96,74,pair.gvSh x prR,pair,0.00027187,0.000258012,0.000285547,1,0.00027187,0.000258012,0.000285547
+97,111,pair.fin x prK,pair,0.405545,0.399822,0.411047,1,0.405545,0.399822,0.411047
+98,115,pair.bgPi x fin,pair,0.484023,0.473592,0.495746,1,0.484023,0.473592,0.495746
+99,109,pair.fin x gvBase,pair,0.488659,0.478184,0.499716,1,0.488659,0.478184,0.499716
+100,66,pair.fin x sc,pair,0.496529,0.485177,0.50913,1,0.496529,0.485177,0.50913
+101,70,pair.fin x rtNs,pair,0.496771,0.48541,0.509475,1,0.496771,0.48541,0.509475
+102,69,pair.fin x rtPhi,pair,0.496801,0.485415,0.509517,1,0.496801,0.485415,0.509517
+103,37,single.fin=money,single,0.496818,0.485419,0.509413,1,0.496818,0.485419,0.509413
+104,38,single.fin=cap,single,0.496818,0.485419,0.509413,1,0.496818,0.485419,0.509413
+105,71,pair.fin x gvIp,pair,0.496818,0.485419,0.509413,1,0.496818,0.485419,0.509413
+106,112,pair.cap x fin,pair,0.496818,0.485419,0.509413,1,0.496818,0.485419,0.509413
+107,107,pair.fin x lfFl,pair,0.497535,0.483345,0.511891,1,0.497535,0.483345,0.511891
+108,50,pair.fin x rtIx,pair,0.497541,0.486155,0.510253,1,0.497541,0.486155,0.510253
+109,68,pair.fin x rtChi,pair,0.498199,0.48685,0.510784,1,0.498199,0.48685,0.510784
+110,114,pair.fin x prR,pair,0.504265,0.494812,0.513793,1,0.504265,0.494812,0.513793
+111,110,pair.fin x rho,pair,0.505912,0.494319,0.518203,1,0.505912,0.494319,0.518203
+112,67,pair.fin x wIdx,pair,0.519562,0.505048,0.534578,1,0.519562,0.505048,0.534578
+113,113,pair.fin x prA,pair,0.522594,0.510988,0.534089,1,0.522594,0.510988,0.534089
+114,108,pair.fin x prBd,pair,0.603884,0.585755,0.624209,1,0.603884,0.585755,0.624209
+115,54,pair.fin x gvSh,pair,23.8516,23.7105,23.9912,1,23.8516,23.7105,23.9912
+116,125,"bound.rel.endoAnn [bgM=1, cap=0, drLim=0, fin=cap, gvIp=borrow, gvSh=0, lfFl=off, lfPm=0, paDem=1, poBonus=members, poCost=hub, poTest=capacity, prA=0.5078, prBd=0.132, prH=0.0446, prR=0.45, rho=0.3, wIdx=0.75]",bound,155.298,152.993,157.571,1,155.298,152.993,157.571
