@@ -22,12 +22,12 @@ Range across the curve first, then the main row with its seed interval. Referenc
 
 - **C2.2, basic living** (adult-years below 30 days of basic living): across the 62 readings, lowered by 16.5 to 19.7 points at 20 years; at the main row 18.7 (seed interval 18.6 to 18.8). Robust.
 - **C2.2, basket poverty:** lowered by 26.0 to 33.3 points; main row 32.4 (32.2 to 32.5). Robust.
-- **C2.2, wealth poverty** (yearly average): lowered by 15.7 to 19.7 points; main row 18.6 (18.5 to 18.7). Robust.
-- **C2.2, median real wealth:** raised by $187,600 to $659,600; main row $208,400 ($207,100 to $209,900). Robust. Rests on today's price rule.
+- **C2.2, wealth poverty** (yearly average): lowered by 15.7 to 19.7 points; main row 18.6 (18.5 to 18.7). Robust. Erosion share at the main row 1.0%.
+- **C2.2, median real wealth:** raised by $187,600 to $659,600; main row $208,400 ($207,100 to $209,900). Robust. Rests on today's price rule; 1.0% of the main row's figure is the erosion of opening balances (question 1's report).
 - **Release design, basic living:** lowered by 10.7 to 13.0 points; main row 12.3. Robust.
 - **Release design, basket poverty:** lowered by 16.2 to 22.3 points; main row 20.9. Robust.
-- **Release design, wealth poverty:** lowered by 9.0 to 12.7 points; main row 10.9. Robust.
-- **Release design, median real wealth:** raised by $84,600 to $282,100; main row $99,400. Robust. Rests on today's price rule.
+- **Release design, wealth poverty:** lowered by 9.0 to 12.7 points; main row 10.9. Robust. Erosion share 1.8%.
+- **Release design, median real wealth:** raised by $84,600 to $282,100; main row $99,400. Robust. Rests on today's price rule; erosion share 1.5%.
 - **Programme inflation, both designs:** 0.00 to 0.22 points a year across every curve: no material change.
 
 In Stress the release design's ranges are smaller but still robust: basket poverty lowered by 5.9 to 8.4 points at 20 and 40 years.
@@ -50,4 +50,4 @@ Every financed curve but programme inflation is fragile (C2.2's programme inflat
 
 ## What these figures do not cover
 
-The curve covers the readings S70's screen carried; the readings it held at main are listed in the freeze file ("Screened out"), and the Stress environment was not screened. Ranges are the preregistered ends, not every value between. The seed intervals do not cover the engine's structure. Wealth figures rest on today's price rule; their erosion share is computed in S64 part 3.
+The curve covers the readings S70's screen carried; the readings it held at main are listed in the freeze file ("Screened out"), and the Stress environment was not screened. Ranges are the preregistered ends, not every value between. The seed intervals do not cover the engine's structure. Wealth figures rest on today's price rule. Their erosion share (added Nov 15, S64 part 3) was traced at the main row only: 0.4 to 1.8% of the wealth-poverty effect and 0.0 to 1.5% of the median-wealth effect, in the programme's favour, in every environment and at both horizons (question 1's report). The other points of the curve were not traced. Their programme inflation is as small as the main row's (0.0 to 0.2 points a year on this report's inflation curves), so erosion shares of the same order are expected, but readings that change how wealth is held (for example fixed-rate debt that keeps up with prices) change who gains from it, and this is not measured. Below full backing inflation is large, so erosion may be large too; it was not traced there (question 4's backing curve).

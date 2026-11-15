@@ -6,7 +6,7 @@ Nov 15, 2026. The round-2 batch of the Compassionism Simulation, read as frozen.
 
 1. **Both designs lower all three poverty measures, in every environment and at both horizons, by large margins.** All 60 primary tests have intervals that exclude zero, and all 60 survive the Holm correction. 48 of them are material; the 12 that are not are all programme inflation, which stays below a fifth of a point a year.
 2. **C2.2 does about one and a half to five times as much as the release design.** In Reference at 20 years, C2.2 lowers basket poverty (income below the cost of the basket of essentials) by 32.4 points, from 36.1% of adult-years to 3.7%; the release design by 20.9 points, to 15.2%. In Stress the release design's effects shrink to a third of Reference's (basket poverty −7.7 points), while C2.2's grow.
-3. **Median real wealth roughly doubles under C2.2** (Reference, year 20: $223,900 without the programme, $432,300 with it) and rises by 44% under the release design ($323,300).
+3. **Median real wealth roughly doubles under C2.2** (Reference, year 20: $223,900 without the programme, $432,300 with it) and rises by 44% under the release design ($323,300). Less than 3% of any wealth figure is the erosion of the balances adults held at the start (added Nov 15, S64 part 3), and that small part helps the programme: slightly higher prices lower what net debtors owe.
 4. **These are the main row's figures, and the main row assumes full backing.** Every dollar the programme pays is matched by new output: that is the design's statement (ledger decision D25), a design parameter, not something the model estimates. Question 4's report shows what happens when it is not. The wealth figures rest on today's price rule (ledger decision D26).
 5. **Seed intervals here are narrow and cover only the model's randomness.** The range across the preregistered readings (question 2's report) comes first in any headline; this report gives the main row alone.
 
@@ -43,6 +43,31 @@ Every interval is within ±0.2 points of the estimate for the poverty measures a
 - **Basket poverty on the within-year count** (costs at the within-year price level, S68) is the same as the published measure to two decimals on the main row: at full backing prices barely move within a year.
 - **Programme cost** (cash, endowments, BU, conversions, capital and price cuts, per adult a year in year-0 dollars) is about $80,500 for C2.2 in Reference at 20 years and $38,100 for the release design. In Stress the release design's cost falls to $9,700: Stress sets the programme's take-up at 40% and a smaller PTF share.
 
+## How much of each wealth figure is the erosion of opening balances (added Nov 15, S64 part 3)
+
+The question (S66, preregistered in the freeze file's Q6 and decision rule 6): when the programme raises prices, the money adults held at the start buys less. How much of each wealth result is that, and nothing else? The main row holds wealth by asset class, so homes, shares and businesses keep up with prices and only money claims are eroded: deposits, bonds and the non-stock part of funds, less floating- and fixed-rate debt. The erosion term is the change in the real value of each adult's opening money claims, held untouched at the engine's own returns, between the programme run and the no-programme run (freeze file Amendment 4, written before the trace ran). The trace (`dev/tools/s64_erosion.js`) ran the batch's own rows, seeds 1-500, and reproduced the batch's stored figures in every seed.
+
+- **Under 3% everywhere, and in the programme's favour.** Erosion accounts for 0.4 to 1.8% of the headline wealth-poverty effect and 0.0 to 1.5% of the headline median-wealth effect; at most 2.9% of any wealth figure (median wealth as a yearly average, release design, Reference, 20 years). Without it, C2.2 lowers wealth poverty by 18.4 points instead of 18.6 (Reference, 20 years) and raises median real wealth by $206,400 instead of $208,400.
+- **Why it helps rather than hurts.** At full backing the programme's prices rise only 0.0 to 0.2 points a year faster, but over the years that lowers the real value of what adults owe. In each of the lowest four fifths of opening wealth, adults owe more in money terms than they hold on average (fixed-rate debt such as a mortgage, against a home that keeps its value), so the erosion term is a small gain there ($80 to $2,200 per adult at year 20, 0.5 to 1.7% of the fifth's wealth gain); it adds to the median and lifts some adults over the $25,000 line. Creditors lose: in the top fifth the erosion term is a loss.
+- **S66's all-cash term, as a bound.** If all opening wealth were cash, as before round 2, the sign reverses for median wealth (−0.0 to −5.3%) and is near zero for wealth poverty (−0.6 to +0.1%). Either way it is small.
+
+Erosion share of each wealth figure, the main reading, with the all-cash bound in brackets. A positive share means erosion is part of the published gain; every published effect here is material, so every share is read.
+
+| Figure | Design | Reference 20 y | Reference 40 y | Adverse 20 y | Adverse 40 y | Stress 20 y | Stress 40 y |
+|---|---|---|---|---|---|---|---|
+| wealth poverty, yearly average | C2.2 | 1.0% (0.1%) | 0.5% (0.1%) | 0.9% (0.1%) | 0.4% (0.0%) | 1.0% (0.1%) | 0.4% (0.0%) |
+| wealth poverty, yearly average | release | 1.8% (−0.2%) | 1.1% (−0.1%) | 1.6% (−0.3%) | 0.8% (−0.1%) | 1.6% (−0.6%) | 0.7% (−0.3%) |
+| median real wealth (weighted, end of run) | C2.2 | 1.0% (−1.7%) | 0.4% (−0.7%) | 0.8% (−1.6%) | 0.3% (−0.5%) | 0.9% (−1.8%) | 0.3% (−0.6%) |
+| median real wealth (weighted, end of run) | release | 1.5% (−2.8%) | 0.6% (−1.2%) | 1.0% (−1.8%) | 0.1% (−0.2%) | 0.5% (−0.9%) | 0.0% (0.0%) |
+| median real wealth, yearly average | C2.2 | 1.8% (−3.4%) | 0.9% (−1.6%) | 1.8% (−3.2%) | 0.8% (−1.5%) | 2.0% (−3.7%) | 0.9% (−1.7%) |
+| median real wealth, yearly average | release | 2.9% (−5.3%) | 1.4% (−2.6%) | 2.5% (−4.6%) | 1.0% (−1.9%) | 2.3% (−4.1%) | 0.8% (−1.3%) |
+| wealth poverty at the year | C2.2 | 0.2% (0.0%) | 0.0% (0.0%) | 0.1% (0.0%) | 0.0% (0.0%) | 0.1% (0.0%) | 0.0% (0.0%) |
+| wealth poverty at the year | release | 0.9% (0.0%) | 0.3% (0.0%) | 0.5% (−0.2%) | 0.0% (0.0%) | 0.3% (−0.2%) | 0.0% (0.0%) |
+| median real wealth at the year | C2.2 | 0.9% (−1.9%) | 0.4% (−0.7%) | 0.8% (−1.6%) | 0.3% (−0.5%) | 1.0% (−1.8%) | 0.3% (−0.6%) |
+| median real wealth at the year | release | 1.6% (−2.9%) | 0.6% (−1.2%) | 1.0% (−1.9%) | 0.1% (−0.2%) | 0.5% (−0.9%) | 0.0% (0.0%) |
+
+Full tables (intervals, the effect without erosion, the mean gap per adult and by fifth): `dev/runs/s64-erosion/tables.md`; results in compassionism-sim-results `r2-erosion-104691f/`.
+
 ## Unfavourable and null results
 
 - **Programme inflation is never material.** It is the one outcome where the programme is worse than no programme in every cell (the interval excludes zero), but by 0.00 to 0.18 points a year. Rule 3 calls this "no material change".
@@ -51,4 +76,4 @@ Every interval is within ±0.2 points of the estimate for the poverty measures a
 
 ## What these figures do not cover
 
-The seed intervals measure the model's randomness only. They do not cover the choice of main row (D26) or of full backing (D25), the readings question 2 sweeps, or the engine's structure: one price rule for the whole economy, no central bank, no migration, no value of care, community work or new ventures, PTFs modelled from the Hub's statements and S62's costs, 500 adults (the 10,000-adult pair in question 7's report agrees on hours and the tail). The erosion share of each wealth figure (S66) is computed in S64 part 3.
+The seed intervals measure the model's randomness only. They do not cover the choice of main row (D26) or of full backing (D25), the readings question 2 sweeps, or the engine's structure: one price rule for the whole economy, no central bank, no migration, no value of care, community work or new ventures, PTFs modelled from the Hub's statements and S62's costs, 500 adults (the 10,000-adult pair in question 7's report agrees on hours and the tail). The erosion share above covers the opening balances only: the creditor charge on shares (S71), which also moves with prices, is printed beside it in the tables as a check and not counted in it.

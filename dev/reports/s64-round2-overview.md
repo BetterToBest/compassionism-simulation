@@ -8,7 +8,7 @@ Nov 15, 2026. A guide to the seven reports on round 2, one per preregistered que
 
 **Basic living and wealth poverty.** Robust likewise: C2.2 lowers adult-years below 30 days of basic living by 16.5 to 19.7 points (main row 18.7) and wealth poverty by 15.7 to 19.7 points (main row 18.6); the release design by 10.7 to 13.0 (12.3) and 9.0 to 12.7 (10.9). Reference, 20 years. (Question 2.)
 
-**Median real wealth.** Across the 62 readings, C2.2 raises median real wealth by $188,000 to $660,000 in Reference at 20 years; at the main row, $208,400 ($207,100 to $209,900); the release design by $85,000 to $282,000 (main row $99,400). These figures rest on today's price rule (ledger decision D26) and on full backing; their erosion share is computed in S64 part 3. (Questions 1, 2.)
+**Median real wealth.** Across the 62 readings, C2.2 raises median real wealth by $188,000 to $660,000 in Reference at 20 years; at the main row, $208,400 ($207,100 to $209,900); the release design by $85,000 to $282,000 (main row $99,400). These figures rest on today's price rule (ledger decision D26) and on full backing. Less than 3% of any wealth figure is the erosion of the balances adults held at the start, and it works in the programme's favour: slightly higher prices lower what net debtors owe (1.0% of C2.2's median-wealth effect, 1.0% of its wealth-poverty effect; S64 part 3). (Questions 1, 2, 6.)
 
 **Inflation, with the backing statement beside it (rule 4).** At the main row, programme inflation is 0.0-0.2 points a year, no material change, at every reading. The main row assumes every dollar paid is matched by new output, as the design states (ledger decision D25; a design parameter). The model's own mechanism for new output matches 0.2-1.9% of it (14-20% with no ceiling); inflation stays under 5% a year only above about 86-90% backing (74-77% for the release design in Stress), and runs at 15-53 points a year at the mechanism's point. (Question 4.)
 
@@ -39,6 +39,9 @@ Programme inflation above no programme in every cell (immaterial at the main row
 
 Seed intervals measure the model's randomness only. They do not cover: the choice of main row (D26) and of full backing (D25, a design statement); the readings S70's screen held at main and the ranges it swept; Stress, which was not screened; 500 adults (the 10,000-adult pair covers hours and the tail); the engine's structure: one price rule for the economy, no central bank, no migration, no value of care, community work or new ventures, PTFs modelled from the Hub's statements and S62's costs, the creditor side's outside share left outside; the financed rows without the weighted tail. The model has not been reviewed by an independent economist.
 
-## Still to do (S64 part 3)
+## Added in S64 part 3 (Nov 15)
 
-The erosion share of each wealth figure (S66's trace on the frozen row), the charts the findings page needs, and the findings page text for S65.
+- **The erosion share of each wealth figure:** traced on the main row (`dev/tools/s64_erosion.js`, freeze file Amendment 4; the trace reproduced the batch in every seed). 0.0 to 2.9% of every wealth figure, in the programme's favour; S66's all-cash term, as a bound, has the opposite sign and stays within 5.3%. In question 1's report, with the fifths in question 6's.
+- **Basket poverty by labour-force reason:** adults outside the labour force stay far more often below the basket under both designs (C2.2: 8.5 to 16.6% of their adult-years, against 1.8% in the labour force; the release design: 28.8 to 58.5%, against 9.5%; Reference, 20 years). In question 6's report.
+- **The charts for the findings page:** `dev/runs/s64-round2/charts/` (`python3 dev/tools/s64_charts.py`): a specification-curve chart per headline outcome, design and horizon, with the financed rows beside, and the backing curve with the mechanism's point and the break-even share.
+- **The findings-page text for S65:** `dev/reports/s64-findings-page-text.md`.
