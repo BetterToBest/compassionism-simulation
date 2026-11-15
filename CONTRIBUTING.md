@@ -40,17 +40,18 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.6.0 Release Notes
+## v5.7.0 Release Notes
 
-**Released as v5.6.0 (Oct 2026): today's safety net in both runs.** The release figures come from a new 500-seed study (engine commit 5bf5bcc) in which both runs, with and without Compassionism, have today's safety net: SNAP (with its work rule for adults aged 18 to 64 with no child under 14, Public Law 119-21), the earned income tax credit and the refundable Child Tax Credit, paid on last year's income. "No program" now means today's US policy, and each change is what Compassionism adds to it. Plain-words report for Duke: `dev/reports/v5-34-v56-release.md`.
+Released Nov 15, 2026 (S7). Pages, data and tools only: no engine line changes, every figure of an earlier release is unchanged, and the validation (17 regressions) and 360 unit tests pass. The findings page lists each preregistered study with its report and its results folder in `BetterToBest/compassionism-sim-results`.
 
-- **Compassionism's measured gain moved little**: by under one point for adults in every environment and horizon, and by 0.7 to 1.7 points for children; no result changed sign. The Stress Test is where the gain shrinks on every measure (by 0.2 to 0.8 points).
-- **SNAP's work rule adds almost nothing** (at most 0.07 points on the gain); nearly all of the move is the safety net itself.
-- **SNAP's income limit is no longer read as a tax on all earnings** (`SNET.slope`): the safety net's marginal rate is the slope of the benefit schedule, not its cliff.
-- The attribution runs and the US-data check are still v5.3's, with no safety net; the pages say so.
-- Each switch is off by default in the engine, and with all three off every figure of v5.5 is reproduced exactly (`guard_test.js`, `snap_rule_check.js`).
-- `merge_panel.py` and `backing_chart.py` now keep the run's switches in the merged files' reproduce command.
-- v5.5.0's notes are in CHANGELOG.md.
+Pages and data only. No engine line and no figure of any release changes (`no_figure_change.py` shows only added numbers, each allowed; the guard test is untouched).
+- **Findings page: the notes of S7 part 2 and the studies' file browser.** Notes written from `data/studies/*.json` (no figure typed into a page): the saving-rate target, the 0.593 bridge, the inflation reading and its price-rule limit, the policy levers, participants and non-participants, saving and spending by income group, wealth poverty with ordinary and inflation-protected savings, the gain from paired seeds, open access beside members-only access, and the Holm families. New data files, each written by a reader in `dev/tools/` from a run recorded in `dev/runs/`: `s5-groups`, `s7-spend-groups`, `s7-savings`, `s7-pairing`; the file browser lists them with the earlier studies. No engine line changes.
+- **Navigation.** The top navigation of the findings, suite and replication pages says "Health Study" (the file is still `study.html`); the study page's navigation lists Findings, Health Study and Replication like the others; the simulation page's header gains Findings and Health Study beside Replication and Wiki.
+- **Findings page: "Reading the measures".** A collapsible section under the headline numbers carries the two reading notes from the simulation page: how to read "too little wealth", and what happens if savings kept up with prices. The second paragraph is filled from the release data, for the chosen environment and horizon, and reads word for word as the simulation page does. The release file (`data/releases/v5.6.json`) gains the savings-indexed run's thirty catalogue figures (with and without the program, the change and its interval, the interest and the part above inflation, in three environments at 20 and 40 years) and the real yield (`inputs.savRealYield`, read from the page's own constant); `check_figures.js` checks each against its panel and checks the two pages' words against each other.
+- **Suite page defaults.** `suite.html` opens at 40 years on the "Every dollar backed" reading, with one plain sentence saying this is the optimistic end and that the headline figures elsewhere stay at the cautious end. The Main and Middle readings and the 20-year view are one click away; the page still carries `noindex` and nothing links to it.
+- **Health Study page: "Tested against history: 2008 and 2020".** The 500-seed history check (`dev/reports/v5-34-history-check.md`) is now public: the seven comparisons fixed in advance, read as changes and not levels, with the verdicts as the file gives them, and the safety-net miss stated plainly with its three reasons. Every figure comes from `dev/runs/history/history-check.json` through `data/studies/s137.json` (`dev/tools/study_data.py`); `check_figures.js` checks the seven comparisons against the file. The replication page links to it.
+- **Tools.** `no_figure_change.py` now tells a number that moved from a number that was added to a data file: it keeps one hash per chunk of each data file, fails if an old chunk changed, and lists added chunks, which pass only when named in `no_figure_change_allow.txt`. domtest gains Phase 16 (links, reading notes, history section, pinned runners) and two suite-default checks; `check_figures.js` gains three.
+- **CI.** `apply-upload.yml` is pinned to ubuntu-24.04, like `checks.yml` and `release.yml`, ahead of the Oct 19 `ubuntu-latest` change.
 
 ---
 
@@ -458,7 +459,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.6.0*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.7.0*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
