@@ -2045,8 +2045,8 @@ function s74UnitSuite(){
     var d = hxIdx(4, 0.5), w = (1 + 0.5*HX.cpi[1]/100)*(1 + 0.5*HX.cpi[2]/100)*(1 + HX.cpi[3]/100)*(1 + 0.5*HX.cpi[4]/100);  /* year 3 is 2008 (-0.02%): not damped */
     var thrown = false; try { hxPi(21); } catch (e){ thrown = true; }
     return {pass:ok && worst < 1e-12 && Math.abs(d - w) < 1e-15 && HX.cpi[3] < 0 && thrown, detail:'2025 level ' + x.toFixed(4) + ' of 2005\'s; worst gap ' + worst.toExponential(1)}; });
-  t('S74: under hx, rtStep pays nominal assets phi x the federal funds rate, floating debt the rate plus fs, and real classes the year\'s real gains', function(){
-    var R = rtOpts({}), b = {r:[100, 0, 50, 0, 10], v:[100, 0, 50, 0, 10], n:200, dv:40, df:80, en:200, ed:40}, pi = 0.03, ry = hxYear({hx:{fs:0.02}}, 4), I = rtStep(b, 0, pi, R, null, ry);
+  t('S74: under hx, rtStep pays nominal assets phi x the federal funds rate, floating debt the rate plus sp, and real classes the year\'s real gains', function(){
+    var R = rtOpts({}), b = {r:[100, 0, 50, 0, 10], v:[100, 0, 50, 0, 10], n:200, dv:40, df:80, en:200, ed:40}, pi = 0.03, ry = hxYear({hx:{sp:0.02}}, 4), I = rtStep(b, 0, pi, R, null, ry);
     var fh = (1 + pi)*(1 + HX.hR[4]/100) - 1, fe = (1 + pi)*(1 + HX.eR[4]/100) - 1, want = 100*fh + 50*fe + 10*pi + 200*0.46*HX.ff[4]/100 - 40*(HX.ff[4]/100 + 0.02) - 0;
     return {pass:Math.abs(I - want) < 1e-9 && Math.abs(b.n - 200*(1 + 0.46*HX.ff[4]/100)) < 1e-9 && Math.abs(b.df - 80) < 1e-12, detail:'revaluation ' + I.toFixed(6) + ' (expected ' + want.toFixed(6) + ')'}; });
   t('S74: hx is refused past 2025, and the no-programme run of a History pair carries hx (tbComp via baselineFor)', function(){
@@ -2058,8 +2058,42 @@ function s74UnitSuite(){
       R.rows.forEach(function(x){ if (!x.pass) bad.push(d + ' ' + x.id + ': ' + (x.threw || JSON.stringify({acct:x.acct.nFail, draws:x.draws.bad, nf:x.nonFinite.slice(0, 3), own:x.own.slice(0, 3)}))); });
       if (!R.runOrder.mainSame || !R.runOrder.noneSame) bad.push(d + ' run order'); });
     return {pass:!bad.length, detail:bad.slice(0, 3).join('; ') || 'main row and rt alternative, both designs'}; });
+  var CB0 = {a:0, b:0, r:0, sp:0, lag:-1, qe:false, k:0, se:0, sh:0, su:0, fl:false};  /* the nesting: today's reading (i = the year's inflation) */
+  function frz(E, d){ var P = Object.assign({}, E, {years:20, nAgents:500}); return {P:P, cf:r2FreezePair(P, d)}; }
+  function same(A, B){ var k = Object.keys(A._s).filter(function(x){ return B._s[x] && !/^cb/.test(x); }), bad = k.filter(function(x){ return Array.prototype.join.call(A._s[x], ',') !== Array.prototype.join.call(B._s[x], ','); }); return bad; }
+  t('S74: cb at today\'s reading (a 0, b 0, r 0, sp 0, the year\'s own inflation, no purchases, refinancing, price or job-loss channels) gives today\'s figures exactly, both runs (the floor off: the programme lowers the price level in some Reference years; frozen C2.2 pair, Reference, Adverse, Stress, seed 1)', function(){
+    var bad = [];
+    [['ref', FULL_INTEGRATION], ['adv', ADVERSE_REFERENCE], ['st', STRESS_TEST]].forEach(function(e){ var F = frz(e[1], 'c22'), G = r2FreezePair(F.P, 'c22'); G.forEach(function(c){ c.cb = Object.assign({}, CB0); });
+      var R = tbStudy(F.cf.concat(G), 1, F.P, MS); [0, 1].forEach(function(i){ var m = same(R[i], R[i + 2]); if (m.length) bad.push(e[0] + ' run ' + i + ': ' + m.slice(0, 5).join(', ')); }); });
+    return {pass:!bad.length, detail:bad.slice(0, 3).join('; ') || 'every output identical in six runs'}; });
+  t('S74: the floor holds (i >= 0 every year), purchases start only in a year with i* < 0, and unwind by a fifth of their peak a year (main cb, Adverse and History, no programme and C2.2, seed 1)', function(){
+    var bad = [], log = [], n = 0, nq = 0; CB_HOOK = function(x){ log.push(x); };
+    try { [ADVERSE_REFERENCE, HISTORY_ENV].forEach(function(E){ var P = Object.assign({}, E, {nAgents:500}); if (!P.years || P.years > 21) P.years = 20; var cf = r2FreezePair(P, 'c22'); cf.forEach(function(c){ c.cb = {}; }); tbStudy(cf, 1, P, MS); }); }
+    finally { CB_HOOK = null; }
+    log.forEach(function(x, j){ n++; if (!(x.i >= 0)) bad.push('i ' + x.i + ' in year ' + x.yr); var pv = j && log[j - 1].yr === x.yr - 1 ? log[j - 1] : null;
+      if (pv && x.Y > pv.Y + 1e-15 && !(x.ist < 0)) bad.push('purchases rose with i* >= 0 in year ' + x.yr); if (x.ist < 0) nq++;
+      if (pv && x.ist >= 0 && pv.Y > 0 && x.Y > 0 && !(x.Y < pv.Y)) bad.push('no unwinding in year ' + x.yr); });
+    return {pass:!bad.length && nq > 0, detail:(bad.slice(0, 3).join('; ') || 'ok') + '; ' + n + ' run-years, ' + nq + ' below the floor'}; });
+  t('S74: refinancing reaches only households with home equity of at least 20% (the home-secured part of fixed-rate debt), and k 0 leaves fixed-rate debt unchanged', function(){
+    var R = rtOpts({}), ry = {rho:[0, 0, 0, 0, 0], rb:[0, 0, 0, 0, 0], i:0.02, sp:0.03, rf:0.1, eq:0.2, cb:true, def:1, n0:null, f0:null};
+    function bal(home, df){ return {r:[home, 0, 0, 0, 0], v:[home, 0, 0, 0, 0], n:0, dv:0, df:df, en:0, ed:0}; }
+    var A = bal(100, 80), B = bal(100, 85), C = bal(100, 150), D = bal(0, 50), E = bal(100, 80);
+    [A, B, C, D].forEach(function(b){ rtStep(b, 0, 0, R, null, ry); }); var k0 = Object.assign({}, ry, {rf:0}); rtStep(E, 0, 0, R, null, k0);
+    var ok = Math.abs(A.df - 72) < 1e-12 && B.df === 85 && C.df === 150 && D.df === 50 && E.df === 80 && Math.abs(A.cbR - 8) < 1e-12;
+    return {pass:ok, detail:'20% equity: ' + A.df.toFixed(2) + '; 15%: ' + B.df + '; under water: ' + C.df + '; no home: ' + D.df + '; k 0: ' + E.df}; });
+  t('S74: the job-loss chance is linear in unemployment through the CPS anchors and held in [0, 1]; with no stance change the anchors are exact', function(){
+    var m = (CB_U.n + CB_U.r)/2, ok = cbJob(CB_U.n) === CFG.EMPL_P && Math.abs(cbJob(CB_U.r) - CFG.EMPL_P_REC) < 1e-15 && Math.abs(cbJob(m) - (CFG.EMPL_P + CFG.EMPL_P_REC)/2) < 1e-15 && cbJob(-1) === 0 && cbJob(5) === 1;
+    return {pass:ok, detail:'anchors ' + CB_U.n + ' and ' + CB_U.r}; });
+  t('S74: with gv r \'rule\' and cb both on, the programme\'s borrowing pays cb\'s rate plus the debt premium (dk 0: exactly cb\'s rate; C2.2, fx.fin debt, Adverse, seed 1)', function(){
+    var P = Object.assign({}, ADVERSE_REFERENCE, {years:20, nAgents:500}), cf = r2FreezePair(P, 'c22'), c = cf[1], log = []; c.cb = {}; c.gv = {r:'rule', dk:0}; c.o = Object.assign({}, c.o, {fin:'tax'}); c.fx.fin = 'debt'; cf[0].cb = {};
+    CB_HOOK = function(x){ log.push(x); }; var R; try { R = tbStudy([c], 1, P, MS); } finally { CB_HOOK = null; }
+    var last = {}; log.forEach(function(x){ last[x.yr] = x.i; }); var ys = Object.keys(last), m = ys.reduce(function(u, y){ return u + last[y]; }, 0)/ys.length;
+    return {pass:Math.abs(R[0].gvRate - m*100) < 1e-9 && R[0].gvBor > 0, detail:'borrowing rate ' + R[0].gvRate.toFixed(4) + '%, the rule ' + (m*100).toFixed(4) + '%'}; });
+  t('S74: cb on in four environments: eight main-stream draws per adult-year, every output finite, the accounting identities hold (frozen-row rule, C2.2 candidate pair, seed 1)', function(){
+    var bad = []; ['ref', 'adv', 'st', 'hx'].forEach(function(e){ var R = r2PairCheck(e, 1, {only:['cb']}); R.rows.forEach(function(x){ if (!x.pass) bad.push(e + ' ' + x.id + ': ' + (x.threw || JSON.stringify({acct:x.acct.nFail, draws:x.draws.bad, nf:x.nonFinite.slice(0, 3), own:x.own.slice(0, 3)}))); }); });
+    return {pass:!bad.length, detail:bad.slice(0, 3).join('; ') || 'main and cb rows pass'}; });
   return out; }
-Object.assign(module.exports, { s74UnitSuite, HISTORY_ENV, HX, hxPi, hxIdx, hxRecPath, hxYear });  /* S74 */
+Object.assign(module.exports, { s74UnitSuite, HISTORY_ENV, HX, hxPi, hxIdx, hxRecPath, hxYear, cbOpts, cbYear, cbJob, CB_DEFAULTS, CB_U, CB_KEYS, setCbHook:function(f){ CB_HOOK = f; } });  /* S74 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3821,7 +3855,8 @@ var R2_ALT = [
   ['dr', 'the floor reading (dr fl fpl)', function(c){ c.dr = {lim:2500, fl:'fpl'}; }],
   ['ag', 'ageing (ag)', function(c){ c.ag = {}; }],
   ['cl', 'the community layer (cl)', function(c){ c.cl = {}; }],
-  ['ml', 'idle labour in normal years (ml nt)', function(c){ c.ml = {nt:{m:CFG.MULT_NORMAL, s:CFG.US_UNDERUSE}}; }]];
+  ['ml', 'idle labour in normal years (ml nt)', function(c){ c.ml = {nt:{m:CFG.MULT_NORMAL, s:CFG.US_UNDERUSE}}; }],
+  ['cb', 'the policy-rate rule at its main values (cb; S74)', function(c){ c.cb = {}; }]];
 function r2PairRows(only){ var A = R2_ALT.filter(function(x){ return !only || only.indexOf(x[0]) >= 0; }), rows = [{id:'main', alts:[]}];
   A.forEach(function(x){ rows.push({id:x[0], alts:[x]}); });
   A.forEach(function(x, i){ A.slice(i + 1).forEach(function(y){ rows.push({id:x[0] + '+' + y[0], alts:[x, y]}); }); }); return rows; }
