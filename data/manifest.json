@@ -2,12 +2,36 @@
  "about": "The releases of the Compassionism Simulation’s findings, newest first. Written by dev/tools/release_data.py; see dev/ADDING-A-RELEASE.md.",
  "releases": [
   {
+   "version": "5.8",
+   "date": "2026-11-15",
+   "tag": "v5.8.0",
+   "file": "releases/v5.6.json",
+   "summary": "Release 2: round 2 of the engine (engine 104691f, preregistered and frozen before it ran, registered on OSF), beside release 1. The release 1 panel is unchanged (v5.6’s data stays the data shown above), and the engine’s code is the same as v5.7’s: the round-2 switches (asset classes and the creditor side, the weighted top tail, the price rule, the backing mechanism, the financed rows, the distribution measures) are in the engine behind switches, off unless a study turns them on. What 5.8 adds is the findings page’s Release 2 section and its six data files in data/studies/ (r2-effects, r2-curves, r2-backing, r2-financed, r2-distribution, r2-work), with the 24 charts: the main effects of both designs in three environments at 20 and 40 years, every preregistered reading of each outcome, the backing curve with the model’s own mechanism and the break-even share, the financed rows (shown, never led with), who gains, and work. The unfavourable results are shown with the same prominence as the headline.",
+   "status": "latest",
+   "shownIn": null,
+   "figuresFrom": "5.6",
+   "round2": {
+    "engine": "104691f",
+    "studies": [
+     "r2-effects",
+     "r2-curves",
+     "r2-backing",
+     "r2-financed",
+     "r2-distribution",
+     "r2-work"
+    ],
+    "charts": "studies/r2-charts/",
+    "prereg": "prereg/2026-11-s63-round2-freeze.md",
+    "osf": "https://osf.io/msdzk/overview"
+   }
+  },
+  {
    "version": "5.7",
    "date": "2026-11-15",
    "tag": "v5.7.0",
    "file": "releases/v5.6.json",
    "summary": "No change to any headline figure: the merged published panel of the full study batch (engine ce8d030) equals v5.6’s panel in all 47,466 values, so v5.6’s data stays the data shown on this page. What 5.7 adds is the data of the preregistered studies behind their switches (S34 no-programme baseline against outside data, S36 synergy, S38 community layer, S5 participation, S55 open PTF access, S6 C2.2 coverage and adequacy, S14 cost-of-living line) in data/studies/, and the frozen C2.2 panel.",
-   "status": "latest",
+   "status": "earlier",
    "shownIn": null,
    "figuresFrom": "5.6"
   },

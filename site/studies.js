@@ -4,6 +4,12 @@
   'use strict';
   var F = root.CSF, esc = F.esc;
   var STUDIES = [
+    ['r2-effects', 'Round 2: the main effects (release 2)', 'Five outcomes, each design against no programme, at the main row, in three environments and two horizons, with the erosion share of each wealth figure. Engine 104691f, seeds 1-500.'],
+    ['r2-curves', 'Round 2: how sure we are (release 2)', 'Every outcome across the preregistered readings: range, how many keep the sign, robust or fragile; the financed rows are marked.'],
+    ['r2-backing', 'Round 2: how much new output backs the payout (release 2)', 'Effects at each backed share, the model’s own mechanism’s point and the break-even share.'],
+    ['r2-financed', 'Round 2: paid for by a contribution instead (release 2)', 'Shown, never led with: the contribution needed, debt and the effects. Fragile across readings.'],
+    ['r2-distribution', 'Round 2: who gains (release 2)', 'Wealth and income shares, percentiles, families in debt, mobility and labour’s share.'],
+    ['r2-work', 'Round 2: work (release 2)', 'Employment, hours, participation, leaving the labour force.'],
     ['s36-synergy', 'Synergy of the design’s five parts (S36)', 'Shapley shares and interactions, with 95% intervals; a synergy is claimed only where the interaction’s interval excludes zero.'],
     ['s38-layer', 'What the community and zone layer change (S38)', 'The layer on against off, and its interactions with the other parts.'],
     ['s5-participation', 'Participation threshold (S5)', 'Outcomes at each participation level and each level’s departure from a straight line.'],

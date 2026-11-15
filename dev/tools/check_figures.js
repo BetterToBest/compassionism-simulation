@@ -41,7 +41,7 @@ async function run(opts) {
     const R = rj(f); REL[r.version] = R; if (R.version !== r.version || R.date !== r.date || R.tag !== r.tag || R.status !== r.status) mp.push(r.version + ': file and manifest differ'); });
   M.releases.filter(FIG).forEach(r => { const src = M.releases.filter(x => x.version === r.figuresFrom && !FIG(x))[0];
     /* v5.6: once a later release has its own figures, a release with no figures of its own is "earlier" and names an earlier release */
-    const ok = src && src.file === r.file && REL[src.version] && (r.status === 'latest' ? src.status === 'current' : r.status === 'earlier' && src.status === 'earlier');
+    const ok = src && src.file === r.file && REL[src.version] && (r.status === 'latest' ? src.status === 'current' : r.status === 'earlier' && (src.status === 'earlier' || src.status === 'current'))  /* S65 (v5.8): v5.7, once superseded as latest, is earlier and still takes v5.6's figures, which stay current */;
     if (!ok) mp.push(r.version + ': a release with no figures of its own must name the release it takes its figures from, and its file (current if it is "latest", earlier if it is "earlier")'); else REL[r.version] = REL[src.version]; });
   if (M.releases.filter(r => r.status === 'latest').length > 1) mp.push('more than one latest release');
   const C = cur[0] && REL[cur[0].version];
