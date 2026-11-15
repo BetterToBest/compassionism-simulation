@@ -167,6 +167,12 @@ def s54_file():
                         m, lo, hi = cell_[(d, w, nm, e, k)]
                         sc = 100 if k == 'endoAnn' else 1
                         conf.append([d, w, nm, e, k, m * sc, lo * sc, hi * sc])
+        if d == 'c22' and w == 100:   # the tax-financed C2.2 (outside finance: flat wage contribution), reported beside the confirmed points though it fails no-harm
+            for e in ENVS:
+                for k in ['fgt0PY', 'pov', 'gNonF0', 'gNonW', 'secU25X', 'secM3X', 'endoAnn']:
+                    m, lo, hi = cell_[(d, w, 'fflat', e, k)]
+                    sc = 100 if k == 'endoAnn' else 1
+                    conf.append([d, w, 'fflat', e, k, m * sc, lo * sc, hi * sc])
         summary.append([d, w, sv['candidates'], sv['pass_noharm'], tested, passed, passed_inf])
     cols = ['design', 'wage', 'setting', 'environment', 'measure', 'change', 'lo', 'hi']
     return {'meta': {'id': 's54-levers', 'title': 'Policy levers (S54): the trade-off front on fresh seeds',
