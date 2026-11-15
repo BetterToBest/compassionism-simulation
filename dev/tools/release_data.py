@@ -45,9 +45,9 @@ CURRENT52 = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '
 # A release that changed no engine figure is listed on its own but carries the figures of the release it names (status "latest", figuresFrom): the page
 # names it as the newest release and keeps showing the earlier release's data file. v5.5.0 added the study page and changed no figure of v5.4.
 # v5.6 (session 10): with v5.6's own figures current, v5.5 stays listed with 5.4's figures, now as an earlier release.
-LATEST = {'version': '5.5', 'date': '2026-10-13', 'tag': 'v5.5.0', 'file': 'releases/v5.4.json',
-          'summary': 'No engine change: every figure is identical to 5.4\u2019s, so the 5.4 data stays the data shown on this page. What 5.5 adds is the 500-seed study of which settings the results are most sensitive to (the study page).',
-          'status': 'earlier', 'shownIn': None, 'figuresFrom': '5.4'}
+LATEST = {'version': '5.7', 'date': '2026-11-15', 'tag': 'v5.7.0', 'file': 'releases/v5.6.json',
+          'summary': 'No change to any headline figure: the merged published panel of the full study batch (engine ce8d030) equals v5.6\u2019s panel in all 47,466 values, so v5.6\u2019s data stays the data shown on this page. What 5.7 adds is the data of the preregistered studies behind their switches (S34 no-programme baseline against outside data, S36 synergy, S38 community layer, S5 participation, S55 open PTF access, S6 C2.2 coverage and adequacy, S14 cost-of-living line) in data/studies/, and the frozen C2.2 panel.',
+          'status': 'latest', 'shownIn': None, 'figuresFrom': '5.6'}
 
 def current():
     """the release the figures in dev/runs/ are: v5.6's once its panels carry today's safety net (--snab), v5.4's once its panels (labor and markets, harness.js --v54) are there, v5.3's for the v5.3 panels (households and children, --v53), else v5.2's"""
