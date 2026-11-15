@@ -5344,9 +5344,11 @@ function tbRepYear(R, agents, p, o, yr, T, ep){
     var th = a.age >= 65 ? CFG.POVERTY_THRESHOLD_SENIOR : thr, pf = c < th*lf, h = a._h52;  /* v5.2 step 5: the official threshold for 65 and over where adults age (a.age is undefined otherwise) */
     if (!h){ h = a._h52 = {f:[], c:[]}; R.hist.push(h); } h.f.push(pf ? 1 : 0); h.c.push((a._tbGap || 0) > 0 ? 1 : 0);  /* each adult's year-by-year record (a new adult starts its own) */
     if (RISK_MEASURE){ if (!h.w){ h.w = []; h.b = []; h.y = []; } h.w.push(a.wealth/lf); h.b.push(bo/lf); h.y.push(c/lf); }  /* v5.4 item 1 (reporting only) */
+    if (R.st){ if (!h.sw){ h.sw = []; h.sy = []; h.sc = []; h.st0 = yr; h.wt = a._w === undefined ? 1 : +a._w; } h.sw.push(a.wealth/lf); h.sy.push(c/lf); h.sc.push((a._tbGap || 0) > 0 ? 1 : 0); }  /* S74 o.stab (reporting only) */
     if (pf) s.fpl++; if (c < th) s.fplNom++; if ((a._tbExt || 0) < th*lf) s.fplX++; if ((a._tbGap || 0) > 0) s.f0++;
     if (bo/lf < L30) s.bO++; if (bn/lf < L30) s.bN++; if (bo < L30) s.bONom++; if (bn < L30) s.bNNom++;
     if (a.wealth < CFG.POVERTY_LINE*lf) s.pov++; if (a.wealth < CFG.POVERTY_LINE) s.povNom++; }
+  if (R.st){ R.st.lf[yr] = lf; R.st.bi[yr] = PRICE ? PRICE.bIdx : 1; R.st.dd[yr] = CB && CBS && CBS.dd ? CBS.dd[yr] : 0; }  /* S74 o.stab */
   R.n += n; R.fpl += s.fpl; R.fplX += s.fplX; R.fplNom += s.fplNom; R.bONom += s.bONom; R.bNNom += s.bNNom;
   var wk = agents.filter(function(a){ return !a._ret && a.yrWageUSD > 0; }).map(function(a){ return a.yrWageUSD/12/lf; });  /* v5.2 step 8: the year's path */
   R.path.f0[yr] = s.f0/n*100; R.path.pov[yr] = s.pov/n*100; R.path.bO[yr] = s.bO/n*100; R.path.medW[yr] = quantileOf(agents.map(function(a){ return a.wealth/lf; }), 0.5);
@@ -5358,6 +5360,34 @@ function tbRepYear(R, agents, p, o, yr, T, ep){
     q.giniW = giniOfArr(agents.map(function(a){ return a.wealth; }))*gc; q.giniWN = giniOfArrNeg(agents.map(function(a){ return a.wealth; }))*gc;
     if (yr === 0) R.y0 = q; if (yr === 6) R.y7 = q; if (yr === T - 1) R.end = q; }
 }
+/* S74 (Nov 15, 2026; prereg "Outcomes", P1-P5, and Amendment 1): THE STABILITY MEASURES, study option o.stab (reporting only; no draw; no adult's path
+ * changes; off, nothing is recorded). From the year-by-year record (tbRepYear, with o.rep52), weighted by a._w where the run has weights:
+ *  stP1   the spread (standard deviation over years 1..T-1) of the yearly change in the basket's price level (%; the price level the poverty line
+ *         moves with); stP1o its outside part (the environment's index) and stP1p the programme's own (the price module's basket index), each alone
+ *  stP2   per adult, the standard deviation over its years of the yearly change in real cash income (Year-0 dollars); the weighted mean over adults,
+ *         and stP2q1-5 by fifth of starting real wealth
+ *  stP3   per adult, the largest fall in real wealth from an earlier peak (Year-0 dollars); the weighted median, stP3q1-5 by fifth, stP3t1 the top 1%
+ *  stP5   of adults above the basket line in the year before a recession year, the % below it in that year (pooled over recession years; the same
+ *         years in every arm of a seed); stP5n the adult-years counted. stP5r and stP5rn the same for years in which the policy rule tightened its
+ *         stance by 1 point or more (cb only). P4, recovery times, is the existing risk measures (rk). */
+var STAB_KEYS = ['stP1', 'stP1o', 'stP1p', 'stP2', 'stP2q1', 'stP2q2', 'stP2q3', 'stP2q4', 'stP2q5', 'stP3', 'stP3q1', 'stP3q2', 'stP3q3', 'stP3q4', 'stP3q5', 'stP3t1', 'stP5', 'stP5n', 'stP5r', 'stP5rn'];
+function stSd(x){ var n = x.length; if (n < 2) return 0; var m = 0, v = 0, i; for (i = 0; i < n; i++) m += x[i]; m /= n; for (i = 0; i < n; i++) v += (x[i] - m)*(x[i] - m); return Math.sqrt(v/(n - 1)); }
+function stWq(v, w, q){ var o = v.map(function(x, i){ return i; }).sort(function(i, j){ return v[i] - v[j] || i - j; }), W = 0, c = 0, k; for (k = 0; k < w.length; k++) W += w[k];
+  for (k = 0; k < o.length; k++){ c += w[o[k]]; if (c >= q*W) return v[o[k]]; } return o.length ? v[o[o.length - 1]] : 0; }
+function stRes(R, out){
+  var L = R.st.lf, B = R.st.bi, ch = function(x){ var y = []; for (var t = 1; t < x.length; t++) y.push((x[t]/x[t - 1] - 1)*100); return y; };
+  out.stP1 = stSd(ch(L)); out.stP1p = stSd(ch(B)); out.stP1o = stSd(ch(L.map(function(x, t){ return x/B[t]; })));
+  var H = R.hist.filter(function(h){ return h.sw && h.sw.length; }), w = H.map(function(h){ return h.wt; }), w0 = H.map(function(h){ return h.sw[0]; });
+  var e = [0.2, 0.4, 0.6, 0.8, 0.99].map(function(q){ return stWq(w0, w, q); }), fifth = function(x){ var g = 0; while (g < 4 && x > e[g]) g++; return g; };
+  var p2 = H.map(function(h){ var d = []; for (var t = 1; t < h.sy.length; t++) d.push(h.sy[t] - h.sy[t - 1]); return stSd(d); });
+  var p3 = H.map(function(h){ var pk = -Infinity, dd = 0; h.sw.forEach(function(x){ pk = Math.max(pk, x); dd = Math.max(dd, pk - x); }); return dd; });
+  var W = 0, S2 = 0; H.forEach(function(h, i){ W += w[i]; S2 += w[i]*p2[i]; }); out.stP2 = W ? S2/W : 0; out.stP3 = H.length ? stWq(p3, w, 0.5) : 0;
+  for (var g = 0; g < 5; g++){ var I = [], a = 0, b = 0; H.forEach(function(h, i){ if (fifth(w0[i]) === g){ I.push(i); a += w[i]*p2[i]; b += w[i]; } });
+    out['stP2q' + (g + 1)] = b ? a/b : 0; out['stP3q' + (g + 1)] = I.length ? stWq(I.map(function(i){ return p3[i]; }), I.map(function(i){ return w[i]; }), 0.5) : 0; }
+  var T1 = []; H.forEach(function(h, i){ if (w0[i] > e[4]) T1.push(i); }); out.stP3t1 = T1.length ? stWq(T1.map(function(i){ return p3[i]; }), T1.map(function(i){ return w[i]; }), 0.5) : 0;
+  function p5(flag){ var n = 0, k = 0; H.forEach(function(h, i){ for (var t = 1; t < h.sc.length; t++){ var yr = h.st0 + t; if (!flag(yr)) continue; if (!h.sc[t - 1]){ n += w[i]; if (h.sc[t]) k += w[i]; } } }); return [n ? k/n*100 : 0, n]; }
+  var a5 = p5(function(yr){ return !!R.st.rec[yr]; }), r5 = p5(function(yr){ return (R.st.dd[yr] || 0) >= 0.01; });
+  out.stP5 = a5[0]; out.stP5n = a5[1]; out.stP5r = r5[0]; out.stP5rn = r5[1]; return out; }
 function tbRepSpells(hist, m, out, key){  /* spell counts on one measure (m: 'f' official line, 'c' cost of living) into out[key + ...] */
   var N = [0, 0, 0, 0, 0, 0], X = [0, 0, 0, 0, 0, 0], RN = 0, RR = 0;
   hist.forEach(function(h){ var x = h[m], L = x.length;
@@ -6227,6 +6257,7 @@ function tbRepRes(R, out){
   TB_REP_SNAP.forEach(function(k){ var K = k.charAt(0).toUpperCase() + k.slice(1); out['y7' + K] = R && R.y7 ? R.y7[k] : 0; out['e' + K] = R && R.end ? R.end[k] : 0; out['y0' + K] = R && R.y0 ? R.y0[k] : 0; });
   TB_PATH_M.forEach(function(m){ for (var t = 0; t < TB_PATH_N; t++){ var v = R && R.path[m][t]; out['p' + m + '_' + t] = typeof v === 'number' ? v : 0; } });  /* v5.2 step 8 */
   if (R && RISK_MEASURE) tbRiskRes(R.hist, out);  /* v5.4 item 1 */
+  if (R && R.st) stRes(R, out);  /* S74 o.stab */
   if (R){ tbRepSpells(R.hist, 'f', out, 'sf'); tbRepSpells(R.hist, 'c', out, 'sc'); out.everFpl = R.hist.length ? R.hist.filter(function(h){ return h.f.some(function(v){ return v; }); }).length/R.hist.length*100 : 0; }
   else { TB_REP_SPELL.forEach(function(k){ out[k] = 0; }); out.everFpl = 0; }
   return out;
@@ -7368,7 +7399,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var epD0 = housingDistressYear0(agents), epSum = 0;  /* plan step 9: unhoused person-years (reporting only) */
   var BG = tbBleiAcc();  /* session 21 (s41; i10-1): BLEI by group, every year (reporting only, no RNG) */
   var dbt20 = 0, dbt40 = 0;  /* S35: families in debt (reporting only) */
-  var R52 = o.rep52 ? tbRepAcc() : null;  /* v5.2 step 2: Year 7, the poverty line, fixed-dollar lines, the wealth Gini (reporting only, no RNG) */
+  var R52 = o.rep52 ? tbRepAcc() : null; if (R52 && o.stab) R52.st = {lf:[], bi:[], dd:[], rec:recPath ? recPath.map(function(r){ return !!r.active; }) : []};  /* S74: the stability measures (o.stab) */  /* v5.2 step 2: Year 7, the poverty line, fixed-dollar lines, the wealth Gini (reporting only, no RNG) */
   if (o.labor){ labAcc = newLabAcc(); LABOR = Object.assign({}, o.labor, {acc:labAcc}); }
   try {
     for (var yr = 0; yr < yMax; yr++){
@@ -7958,6 +7989,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.c22PY !== undefined) C22_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S6 */
         if (r.clN !== undefined) CL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S37 */
         if (r.poSub !== undefined) PO_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S62 */
+        if (r.stP1 !== undefined) STAB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S74 */
         if (r.cbI !== undefined) CB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S74 */
         if (r.gvPay !== undefined) GV_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S72 */
         if (r.finPay !== undefined) FIN_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S68 */
