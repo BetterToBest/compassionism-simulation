@@ -1,0 +1,82 @@
+{
+ "_meta": {
+  "what": "S7: saving and spending by income group, frozen no-programme row, Reference",
+  "seeds": "1-100",
+  "adults": 500,
+  "years": 20,
+  "groups": "fifths of disposable income summed over the run, within each seed",
+  "command": "node dev/tools/s7_saving_groups.js --seeds=100 --procs=4",
+  "total_saving_rate_pct": [
+   5.406416696245967,
+   5.350310007879067,
+   5.462523384612867
+  ]
+ },
+ "rows": [
+  {
+   "group": "lowest fifth",
+   "income_share_pct": 5.900890175018141,
+   "income_lo": 5.846603670560188,
+   "income_hi": 5.955176679476094,
+   "spending_share_pct": 10.890283173227457,
+   "spending_lo": 10.755865088953488,
+   "spending_hi": 11.024701257501427,
+   "saving_rate_pct": -74.80218290655581,
+   "saving_lo": -77.09206449086199,
+   "saving_hi": -72.51230132224964,
+   "income_per_adult_20y_usd": 507934.15199323744
+  },
+  {
+   "group": "second fifth",
+   "income_share_pct": 10.558288008309303,
+   "income_lo": 10.484482323110111,
+   "income_hi": 10.632093693508494,
+   "spending_share_pct": 14.1067787502259,
+   "spending_lo": 13.98783127339668,
+   "spending_hi": 14.22572622705512,
+   "saving_rate_pct": -26.46531860966325,
+   "saving_lo": -27.541434553466413,
+   "saving_hi": -25.389202665860086,
+   "income_per_adult_20y_usd": 908922.1123315468
+  },
+  {
+   "group": "middle fifth",
+   "income_share_pct": 15.544330026418939,
+   "income_lo": 15.44870940080602,
+   "income_hi": 15.639950652031857,
+   "spending_share_pct": 17.36237447661629,
+   "spending_lo": 17.22222922422928,
+   "spending_hi": 17.502519729003296,
+   "saving_rate_pct": -5.701734819650714,
+   "saving_lo": -6.5275850463149565,
+   "saving_hi": -4.875884592986471,
+   "income_per_adult_20y_usd": 1338396.4490074988
+  },
+  {
+   "group": "fourth fifth",
+   "income_share_pct": 22.891858791484665,
+   "income_lo": 22.7755802587692,
+   "income_hi": 23.00813732420013,
+   "spending_share_pct": 21.986772483562433,
+   "spending_lo": 21.843596562445896,
+   "spending_hi": 22.12994840467897,
+   "saving_rate_pct": 9.135289100565048,
+   "saving_lo": 8.662486674531014,
+   "saving_hi": 9.608091526599082,
+   "income_per_adult_20y_usd": 1971413.2753654604
+  },
+  {
+   "group": "highest fifth",
+   "income_share_pct": 45.10463299876894,
+   "income_lo": 44.85347504752016,
+   "income_hi": 45.35579095001772,
+   "spending_share_pct": 35.65379111636793,
+   "spending_lo": 35.42534956590796,
+   "spending_hi": 35.882232666827896,
+   "saving_rate_pct": 25.21887467764649,
+   "saving_lo": 24.89486951637621,
+   "saving_hi": 25.542879838916768,
+   "income_per_adult_20y_usd": 3886458.609522668
+  }
+ ]
+}
