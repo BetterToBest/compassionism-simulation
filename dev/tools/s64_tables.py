@@ -17,7 +17,7 @@ when the median year debt passes GDP is within 40 years; 7 no low-share optimum 
 
 Rule 7's test, as read here (written before any fixed-share figure was read): an optimum at a low share means the most favourable of the ten fixed shares
 is 10%, 20% or 30%, and its paired difference from the 100% share excludes zero in the favourable direction. Rule 3 (materiality) was added to this
-test after the first tables were read: without it, differences of a hundredth of a point of inflation and of $2,000-4,000 of median wealth qualified.
+test after the first tables were read: without it, differences of a hundredth of a point of inflation and of $1,400-7,200 of median wealth qualified.
 Both lists are printed (rule7 and rule7any in the summary).
 
 --bkm DIR: the replay of the backing curve's two mechanism points (S part points 75 and 76, programme rows) with the realised backed share bkA, files
@@ -148,6 +148,11 @@ def classify(points, mainS, k, thr):
 def sentence(design, k, cl, mainS, thr):
     """rule 1"""
     u = UNIT[k]; nm = SHORT[k]
+    if u == '$':  # dollars before the figure, not after
+        g = lambda x: '$' + f(x, k)
+        lead = ('no material change in %s at the main row ($%s; materiality $%s)' % (nm, f(mainS['est'], k), f(thr, k))) if not cl['material'] else None
+        return 'Across the %d preregistered readings, the %s design changes %s by %s to %s; %s (seed interval %s to %s).' % (
+            cl['n'], DESL[design], nm, g(cl['min']), g(cl['max']), lead or 'at the main row, ' + g(mainS['est']), g(mainS['lo']), g(mainS['hi']))
     if not cl['material']:
         lead = 'no material change in %s at the main row (%s %s; materiality %s)' % (nm, f(mainS['est'], k), u, f(thr, k))
         return 'Across the %d preregistered readings, the %s design changes %s by %s to %s %s; %s, seed interval %s to %s.' % (
