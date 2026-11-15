@@ -5,7 +5,7 @@ Nov 15, 2026. The backing curve of the round-2 batch, read as frozen, with round
 ## In short
 
 1. **The main row assumes full backing: every dollar the programme pays is matched by new output.** That is how the design is stated (ledger decision D25, Nov 14), so it is labelled a design parameter wherever the main row is shown. It is not something the model shows will happen.
-2. **The model's own mechanism for new output reaches about 1% backing, or about 20% without its ceiling.** At those points programme inflation runs at 31-53 points a year in C2.2 and 15-46 in the release design. Round 1 found the same (0.7-1.4%; 19.5% without the ceiling).
+2. **The model's own mechanism for new output reaches 0.2-1.9% backing, or 14-20% without its ceiling** (less at 40 years than at 20; why is not traced here). The replay of these two points reproduced every value the batch stored, exactly. At those points programme inflation runs at 31-53 points a year in C2.2 and 15-46 in the release design. Round 1 found the same at 20 years (0.7-1.4%; 19.5% without the ceiling).
 3. **Programme inflation passes 5 points a year once less than about 86-90% of the payout is backed** (74-77% for the release design in Stress). The mechanism's point lies far below this break-even in every cell. By the preregistered rule, the findings page says so in the same paragraph as any inflation headline.
 4. **The poverty effects barely depend on backing.** At no backing at all, C2.2 still lowers basket poverty by 30-44 points and wealth poverty by 18-22 points, against 31-46 and 19-24 at full backing. The release design's poverty effects at no backing are 0.9 to 2 times their size at full backing (larger in Adverse and Stress). Wealth poverty never becomes worse than with no programme at any point of the curve ("below 0" in every cell and every resample).
 5. **Median real wealth is what backing moves.** C2.2's gain in median real wealth falls from $208,400 at full backing to $86,800 at no backing (Reference, 20 years), and to $16,000 at 40 years; the release design's turns into a loss of $20,500 at 40 years with no backing.
@@ -42,7 +42,7 @@ Basic living and wealth poverty are slightly *better* below full backing than at
 
 The intervals of the crossings are within ±0.01 (tables). "Below 0": no point of the curve reaches the threshold; the share is not extrapolated below 0.
 
-**Rule 4, applied.** In every cell, the break-even share for 5% inflation (0.74-0.90) lies above the mechanism's point (about 0.01, or about 0.2 without the ceiling). The findings page must say so in the same paragraph as any inflation headline. Suggested wording: "The main row assumes every dollar paid is matched by new output, as the design states. The model's own mechanism for new output matches about 1% of it (about 20% with no ceiling); inflation stays under 5% a year only above about 86-90% backing."
+**Rule 4, applied.** In every cell, the break-even share for 5% inflation (0.74-0.90) lies above the mechanism's point (0.002-0.019, or 0.14-0.20 without the ceiling). The findings page must say so in the same paragraph as any inflation headline. Suggested wording: "The main row assumes every dollar paid is matched by new output, as the design states. The model's own mechanism for new output matches 0.2-1.9% of it (14-20% with no ceiling); inflation stays under 5% a year only above about 86-90% backing."
 
 ## The price rule's readings at no backing
 
@@ -54,7 +54,7 @@ At `a` = 0 the price rule matters to inflation and wealth, not to poverty. Its d
 |---|---|---|
 | Inflation at no backing, Reference, 20 y | C2.2 37.2, release 51.0 points a year | C2.2 40.3, release 35.3 |
 | Backed share where inflation reaches 5 points | C2.2 about 0.86, release about 0.90 | C2.2 0.88, release 0.87 |
-| Mechanism's backed share (main reading / no ceiling) | 0.7-1.4% / 19.5% | about 0.8-1.1% / 19.5% (replay) |
+| Mechanism's backed share (main reading / no ceiling) | 0.7-1.4% / 19.5% (20 years) | 0.5-1.9% / 19.4-19.6% at 20 years; 0.2-0.7% / 13.6-13.8% at 40 years |
 | Basket poverty at no backing, Reference | C2.2 −24.5, release −29.5 | C2.2 −31.0, release −19.1 |
 | Wealth poverty at the mechanism's point (round 1: wages 90% indexed, year 20) | C2.2 +47.2, release +65.0 points (worse than no programme) | C2.2 −19.1, release −13.8 (yearly average; better) |
 | Backed share where wealth poverty stops being worse (wages fully indexed) | C2.2 1%, release 71% | below 0 for both |
