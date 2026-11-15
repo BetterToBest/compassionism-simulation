@@ -84,7 +84,76 @@
       '<p class="fx-note">Read the two wealth columns together: from 30% take-up upward both groups end with more people short of wealth than without the programme, so the opt-in result does not come from non-participants alone. Non-participants are hit harder in every environment shown, which fits prices rising for everyone while only participants receive the programme’s help. Basket poverty falls for both groups at every level shown, far more for participants until take-up is very high. That the take-up flag is the same in both runs is a modelling assumption; it is read from the no-programme figures of the two groups being equal within a few tenths of a point, not from the engine’s own check. Other levels, the 500-adult study and the pay-raise rows are in the study’s file.</p>';
     return h;
   }
-  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], [null, holm]];
+  function spendGroups(d) {
+    var S = 's7-spend-groups', G = ['lowest fifth', 'second fifth', 'middle fifth', 'fourth fifth', 'highest fifth', 'all adults'];
+    function at(g, m) { for (var i = 0; i < d.data[0].length; i++) { if (col(d, 'group')[i] === g && col(d, 'measure')[i].indexOf(m) === 0) return i; } return -1; }
+    function money(g) { var i = at(g, 'income per'); return snum(S, 'row ' + i + ' ' + g + ' income', '$' + Math.round(col(d, 'mean')[i]).toLocaleString('en-US')); }
+    function rate(g) { var i = at(g, 'saving rate'); return snum(S, 'row ' + i + ' ' + g + ' saving', col(d, 'mean')[i].toFixed(1) + '% (' + col(d, 'lo95')[i].toFixed(1) + ' to ' + col(d, 'hi95')[i].toFixed(1) + ')'); }
+    function sp(g) { var i = at(g, 'spending as'); return snum(S, 'row ' + i + ' ' + g + ' spending', col(d, 'mean')[i].toFixed(0) + '%'); }
+    var h = '<h3 class="fx-h3">Saving and spending by income group, with no programme</h3>' +
+      '<p>The model lets people with less income spend less than their full cost of living (the income-graded spending rule), and sets one share of any cash surplus to be spent so that the whole population saves what US households save. This table shows what those two rules produce for five income groups. Adults are ranked within each run by their own disposable income over the 20 years; the table is the frozen no-programme run in the Reference environment, 500 adults, 20 years, 100 paired seeds, mean over seeds with a 95% interval.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Saving and spending by income group"><table class="fx-table"><caption>No programme, Reference environment. Saving rate is income less consumption, over income; a negative rate means the group draws down savings or borrows. Spending is shown against the cost-of-living basket (100% = exactly the basket), so it includes surplus the model spends above it.</caption>' +
+      '<thead><tr><th>Income group</th><th>Income per adult-year (year-0 dollars)</th><th>Saving rate (95% interval)</th><th>Spending as % of the basket</th></tr></thead><tbody>' +
+      G.map(function (g) { return '<tr><td>' + esc(g) + '</td><td>' + money(g) + '</td><td>' + rate(g) + '</td><td>' + sp(g) + '</td></tr>'; }).join('') +
+      '</tbody></table></div>' +
+      '<p class="fx-note">Read with care. The all-adults saving rate is the calibration target, set by construction, so it is not a finding. The spread across groups is the finding: the lowest fifth draws savings down and the highest fifth saves the most. Ranking by the same income that the saving rate divides by pushes the lowest fifth’s rate down and the highest fifth’s up (a year of low income is a year of low saving), so the spread overstates the gap between lifelong poor and rich households. Whether the model’s spread matches household surveys has not been checked against an outside source; it is a model output, not a measured behaviour.</p>';
+    return h;
+  }
+  function savings(d) {
+    var S = 's7-savings', ENVN = ['Reference', 'Adverse', 'Stress'];
+    function c(name, i) { return col(d, name)[i]; }
+    function sg(x) { return (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(1); }
+    var rows = '';
+    for (var i = 0; i < d.data[0].length; i++) {
+      var first = c('savings', i).indexOf('ordinary') === 0;
+      rows += '<tr><td>' + (first ? esc(c('environment', i)) : '') + '</td><td>' + esc(c('savings', i)) + '</td><td>' + snum(S, 'row ' + i + ' none', c('no_programme_pct', i).toFixed(1) + '%') + '</td><td>' +
+        snum(S, 'row ' + i + ' programme', c('programme_pct', i).toFixed(1) + '%') + '</td><td>' + snum(S, 'row ' + i + ' change', sg(c('change_pp', i)) + ' (' + sg(c('lo95', i)) + ' to ' + sg(c('hi95', i)) + ')') + '</td></tr>';
+    }
+    return '<h3 class="fx-h3">Wealth poverty with ordinary and with inflation-protected savings</h3>' +
+      '<p>The release programme raises prices, and prices eat savings that earn nothing. The model therefore reports three readings of what savings do, each run with and without the programme so that only the programme’s effect is compared. <strong>Ordinary savings</strong> earn no interest, so inflation erodes them. <strong>Zero real return</strong> pays interest equal to inflation in both runs: savings keep their value and earn nothing more. <strong>Positive real return</strong> pays inflation plus the average real yield on US inflation-protected Treasuries (TIPS, 2003-2025). The second reading is a test of protection, not of a positive return; the third adds the return.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Wealth poverty by savings reading"><table class="fx-table"><caption>Share of adults with too little wealth at year 20 (the wealth-poverty threshold is a design threshold, see the glossary). Change is in percentage points against the same savings reading with no programme, 95% interval over 500 paired seeds, 500 adults, 20 years.</caption>' +
+      '<thead><tr><th>Environment</th><th>Savings</th><th>No programme</th><th>Programme</th><th>Change, points</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="fx-note">The wealth-poverty result of the release programme depends on what happens to savings. With ordinary savings it rises sharply; once savings keep their value it falls instead, and a positive real return on top changes it only slightly. So in this model the rise comes from inflation eroding savings, and the size of that inflation rests on the placeholder price rule above. Stress uses the same no-programme control as Adverse in the panel. These are model results, not forecasts.</p>';
+  }
+  function pairing(d) {
+    var S = 's7-pairing', n = d.data[0].length, lo = 1e9, hi = -1e9, ilo = 0, ihi = 0;
+    function c(name, i) { return col(d, name)[i]; }
+    for (var i = 0; i < n; i++) { var x = c('variance_reduction_pct', i); if (x < lo) { lo = x; ilo = i; } if (x > hi) { hi = x; ihi = i; } }
+    var rows = '';
+    for (var j = 0; j < n; j++) {
+      rows += '<tr><td>' + esc(c('environment', j)) + '</td><td>' + c('take_up_pct', j) + '%</td><td>' + esc(c('outcome', j)) + '</td><td>' + snum(S, 'row ' + j + ' variance_reduction_pct', c('variance_reduction_pct', j).toFixed(0) + '% (' + c('lo95', j).toFixed(0) + ' to ' + c('hi95', j).toFixed(0) + ')') + '</td><td>' + snum(S, 'row ' + j + ' interval_narrower_pct', c('interval_narrower_pct', j).toFixed(0) + '%') + '</td></tr>';
+    }
+    return '<h3 class="fx-h3">What pairing the seeds buys</h3>' +
+      '<p>Each programme run is paired with a no-programme run that uses the same seed: the same adults and the same shocks. A difference between them then carries only the programme’s effect plus the noise that the two runs do not share. The reduction in variance is one minus the variance of the paired differences divided by the sum of the two runs’ own variances, which is what two independent samples would give. It was measured on study D (500 adults, 500 seeds, 20 years, release row, no raise), at 30% and 90% take-up.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Variance reduction from paired seeds"><table class="fx-table"><caption>Variance reduction from pairing, with a 95% bootstrap interval over seeds. “Interval narrower by” is the matching shrinkage of a confidence interval (its width follows the square root of the variance). Programme inflation and cost are left out: the no-programme run has none, so pairing cannot help them.</caption>' +
+      '<thead><tr><th>Environment</th><th>Take-up</th><th>Outcome</th><th>Variance reduction (95% interval)</th><th>Interval narrower by</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="fx-note">Across these rows pairing removes between ' + snum(S, 'row ' + ilo + ' variance_reduction_pct', lo.toFixed(0) + '%') + ' and ' + snum(S, 'row ' + ihi + ' variance_reduction_pct', hi.toFixed(0) + '%') + ' of the variance. It helps most for the share below the cost of living and least for median wealth at high take-up; the model does not say why, and the reasons were not tested. The reduction measured here is for the contrast of a programme run with its own no-programme run; contrasts between two programme designs were not measured.</p>';
+  }
+  function openAccess(d) {
+    var S = 's55-open-access', n = d.data[0].length, ix = {};
+    for (var i = 0; i < n; i++) { if (col(d, 'section')[i] === 'Q24 open access') ix[[col(d, 'setting')[i], col(d, 'outcome')[i], col(d, 'estimate')[i]].join('|')] = i; }
+    var OUT = [['bNAPy', 'Basic living (points)', 2], ['fgt0PY', 'Cost of living (points)', 2], ['ppov_19', 'Fewer adults with too little wealth, year 20 (points; negative = more)', 2], ['cost', 'Programme cost ($ per adult-year)', 0], ['plv_19.yr', 'Inflation (points a year)', 2]];
+    function num(x, dg) { return (x < 0 ? '−' : '') + Math.abs(x).toLocaleString('en-US', {minimumFractionDigits: dg, maximumFractionDigits: dg}); }
+    function cell(st, o, est, dg, ci) {
+      var k = ix[[st, o, est].join('|')], t = num(col(d, 'mean')[k], dg) + (ci ? ' (' + num(col(d, 'lo95')[k], dg) + ' to ' + num(col(d, 'hi95')[k], dg) + ')' : '');
+      return snum(S, 'row ' + k + ' ' + st + ' ' + o + ' ' + est, t);
+    }
+    function table(st, label) {
+      return '<tr><th colspan="4">' + label + '</th></tr>' + OUT.map(function (o) {
+        return '<tr><td>' + o[1] + '</td><td>' + cell(st, o[0], 'members vs none', o[2], true) + '</td><td>' + cell(st, o[0], 'open vs none', o[2], true) + '</td><td>' + cell(st, o[0], 'open - members', o[2], true) + '</td></tr>'; }).join('');
+    }
+    var CC = 'n10000.y20.c22.ref', RL = 'n10000.y20.rls.ref', k0 = ix[[CC, 'ppov_19', 'open - members'].join('|')];
+    var diff = snum(S, 'row ' + k0 + ' headline wealth', num(col(d, 'mean')[k0], 2) + ' points (' + num(col(d, 'lo95')[k0], 2) + ' to ' + num(col(d, 'hi95')[k0], 2) + ')');
+    return '<h3 class="fx-h3">Open access to community-owned providers, beside members-only access</h3>' +
+      '<p>In the simulation, a Provider Task Force (PTF) sells essentials at cost. Under <strong>members-only</strong> access only its members buy at those prices; under <strong>open access</strong> every adult may. The Hub’s PTF figures rest on open access, the reading confirmed in the study programme. The table puts the two side by side, each against no programme, for the C2.2 design and for the release design.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Open access and members-only access"><table class="fx-table"><caption>Reference environment, 10,000 adults, 20 years, CPS yardstick, no raise. Each cell is the programme’s change against the no-programme run, paired over 500 seeds, with a 95% interval; the last column is open access minus members-only access. For the first three outcomes a positive figure is better; cost and inflation are the amounts themselves.</caption>' +
+      '<thead><tr><th>Outcome</th><th>Members only against none</th><th>Open access against none</th><th>Open minus members only</th></tr></thead><tbody>' + table(CC, 'C2.2 design') + table(RL, 'Release design') + '</tbody></table></div>' +
+      '<p><strong>The wealth result, stated as it stands.</strong> In the simulation (C2.2 design, Reference, 10,000 adults, 20 years), open access left ' + diff + ' fewer adults with too little wealth than members-only access, where too little is below a design threshold, not an accepted poverty line. The difference rests on three things: the engine’s placeholder price rule; the PTFs growing toward a demand ceiling, which is a design parameter, at the design’s at-cost prices; and the share being able to keep growing. It disappears with a lower ceiling, with outside running costs or with growth switched off, and it grows with a higher ceiling; the 75% and 100% ceilings are stress tests, not readings of the design. Median real wealth is far below the no-programme run’s under either access rule. A threshold crossing is not a gain across the whole distribution.</p>' +
+      '<p><strong>Beside it, the release design.</strong> Under the release design open access changes wealth only slightly, and in the unfavourable direction; and against no programme both access rules leave many more adults with too little wealth, as the table shows beside the C2.2 design’s results. The wealth results under every design rest mostly on one assumption: all wealth is held as cash with no return, so the programme’s inflation erodes opening savings (see the savings note above, which reads the same rows with savings that keep their value).</p>' +
+      '<p><strong>The fixed-share curve is not used here.</strong> Under the C2.2 design in Reference and Adverse, holding a 10% share gives better wealth than 20% or 30%, with lower inflation. The trace (S66) found a timing effect in how the PTFs’ reinvestment is counted, which stops once their capital account is full; at 40 years the dip is gone. So no preferred small share is claimed, and this page does not show the curve’s low end as a result.</p>' +
+      '<p><strong>What the model cannot say.</strong> It cannot speak to power: it has no employer agents, no business ownership, no wage setting and no politics. The price rule can bias real-wealth results either way: too favourable where there is slack, too unfavourable where capacity binds locally. Any inflation figure above rests on the placeholder price rule (see the inflation note); an outside model’s lower pass-through is explained by its own prices, which follow expected inflation and cannot answer demand, and is not evidence that the programme’s pass-through lies between zero and one. The wealth Gini on the findings page counts debts as zero; the median and the debt measures sit beside it, and nothing here says inequality is halved.</p>';
+  }
+  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], ['s7-spend-groups', spendGroups], ['s7-savings', savings], ['s7-pairing', pairing], ['s55-open-access', openAccess], [null, holm]];
   function mount(host) {
     NOTES.forEach(function (n) {
       var blk = document.createElement('div'); blk.className = 'fx-note-block'; host.appendChild(blk);

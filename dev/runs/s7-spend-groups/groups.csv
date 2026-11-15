@@ -1,0 +1,19 @@
+group,measure,mean,lo95,hi95,seeds
+lowest fifth,"saving rate: income less consumption, over income, %",-74.8022,-77.0496,-72.4950,100
+lowest fifth,"spending as a share of the cost-of-living basket, %",92.8396,91.6510,94.0347,100
+lowest fifth,"income per adult-year, year-0 dollars",25396.7076,25177.5102,25622.8017,100
+second fifth,"saving rate: income less consumption, over income, %",-26.4653,-27.5234,-25.3859,100
+second fifth,"spending as a share of the cost-of-living basket, %",114.3987,113.1648,115.6546,100
+second fifth,"income per adult-year, year-0 dollars",45446.1056,45125.8485,45773.8875,100
+middle fifth,"saving rate: income less consumption, over income, %",-5.7017,-6.5338,-4.8906,100
+middle fifth,"spending as a share of the cost-of-living basket, %",144.1544,142.4822,145.9452,100
+middle fifth,"income per adult-year, year-0 dollars",66919.8225,66435.6600,67407.9099,100
+fourth fifth,"saving rate: income less consumption, over income, %",9.1353,8.6562,9.5963,100
+fourth fifth,"spending as a share of the cost-of-living basket, %",183.9841,182.2487,185.7437,100
+fourth fifth,"income per adult-year, year-0 dollars",98570.6638,97848.5795,99320.7669,100
+highest fifth,"saving rate: income less consumption, over income, %",25.2189,24.8991,25.5324,100
+highest fifth,"spending as a share of the cost-of-living basket, %",297.1873,293.7465,300.4789,100
+highest fifth,"income per adult-year, year-0 dollars",194322.9305,192315.8373,196248.3496,100
+all adults,"saving rate: income less consumption, over income, %",5.4064,5.3509,5.4615,100
+all adults,"spending as a share of the cost-of-living basket, %",166.4172,165.3264,167.4908,100
+all adults,"income per adult-year, year-0 dollars",86131.2460,85561.4898,86695.2220,100
