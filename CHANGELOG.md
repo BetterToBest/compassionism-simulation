@@ -6,7 +6,7 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
-## Unreleased (after v5.6.0; the version stays 5.6.0 until Duke assigns one)
+## v5.7.0 Release Notes (Nov 15, 2026)
 
 Pages and data only. No engine line and no figure of any release changes (`no_figure_change.py` shows only added numbers, each allowed; the guard test is untouched).
 - **Findings page: the notes of S7 part 2 and the studies' file browser.** Notes written from `data/studies/*.json` (no figure typed into a page): the saving-rate target, the 0.593 bridge, the inflation reading and its price-rule limit, the policy levers, participants and non-participants, saving and spending by income group, wealth poverty with ordinary and inflation-protected savings, the gain from paired seeds, open access beside members-only access, and the Holm families. New data files, each written by a reader in `dev/tools/` from a run recorded in `dev/runs/`: `s5-groups`, `s7-spend-groups`, `s7-savings`, `s7-pairing`; the file browser lists them with the earlier studies. No engine line changes.
