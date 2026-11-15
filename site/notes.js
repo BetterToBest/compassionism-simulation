@@ -99,7 +99,23 @@
       '<p class="fx-note">Read with care. The all-adults saving rate is the calibration target, set by construction, so it is not a finding. The spread across groups is the finding: the lowest fifth draws savings down and the highest fifth saves the most. Ranking by the same income that the saving rate divides by pushes the lowest fifth’s rate down and the highest fifth’s up (a year of low income is a year of low saving), so the spread overstates the gap between lifelong poor and rich households. Whether the model’s spread matches household surveys has not been checked against an outside source; it is a model output, not a measured behaviour.</p>';
     return h;
   }
-  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], ['s7-spend-groups', spendGroups], [null, holm]];
+  function savings(d) {
+    var S = 's7-savings', ENVN = ['Reference', 'Adverse', 'Stress'];
+    function c(name, i) { return col(d, name)[i]; }
+    function sg(x) { return (x >= 0 ? '+' : '−') + Math.abs(x).toFixed(1); }
+    var rows = '';
+    for (var i = 0; i < d.data[0].length; i++) {
+      var first = c('savings', i).indexOf('ordinary') === 0;
+      rows += '<tr><td>' + (first ? esc(c('environment', i)) : '') + '</td><td>' + esc(c('savings', i)) + '</td><td>' + snum(S, 'row ' + i + ' none', c('no_programme_pct', i).toFixed(1) + '%') + '</td><td>' +
+        snum(S, 'row ' + i + ' programme', c('programme_pct', i).toFixed(1) + '%') + '</td><td>' + snum(S, 'row ' + i + ' change', sg(c('change_pp', i)) + ' (' + sg(c('lo95', i)) + ' to ' + sg(c('hi95', i)) + ')') + '</td></tr>';
+    }
+    return '<h3 class="fx-h3">Wealth poverty with ordinary and with inflation-protected savings</h3>' +
+      '<p>The release programme raises prices, and prices eat savings that earn nothing. The model therefore reports three readings of what savings do, each run with and without the programme so that only the programme’s effect is compared. <strong>Ordinary savings</strong> earn no interest, so inflation erodes them. <strong>Zero real return</strong> pays interest equal to inflation in both runs: savings keep their value and earn nothing more. <strong>Positive real return</strong> pays inflation plus the average real yield on US inflation-protected Treasuries (TIPS, 2003-2025). The second reading is a test of protection, not of a positive return; the third adds the return.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Wealth poverty by savings reading"><table class="fx-table"><caption>Share of adults with too little wealth at year 20 (the wealth-poverty threshold is a design threshold, see the glossary). Change is in percentage points against the same savings reading with no programme, 95% interval over 500 paired seeds, 500 adults, 20 years.</caption>' +
+      '<thead><tr><th>Environment</th><th>Savings</th><th>No programme</th><th>Programme</th><th>Change, points</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<p class="fx-note">The wealth-poverty result of the release programme depends on what happens to savings. With ordinary savings it rises sharply; once savings keep their value it falls instead, and a positive real return on top changes it only slightly. So in this model the rise comes from inflation eroding savings, and the size of that inflation rests on the placeholder price rule above. Stress uses the same no-programme control as Adverse in the panel. These are model results, not forecasts.</p>';
+  }
+  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], ['s7-spend-groups', spendGroups], ['s7-savings', savings], [null, holm]];
   function mount(host) {
     NOTES.forEach(function (n) {
       var blk = document.createElement('div'); blk.className = 'fx-note-block'; host.appendChild(blk);
