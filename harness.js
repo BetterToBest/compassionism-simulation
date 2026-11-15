@@ -2058,10 +2058,10 @@ function s74UnitSuite(){
       R.rows.forEach(function(x){ if (!x.pass) bad.push(d + ' ' + x.id + ': ' + (x.threw || JSON.stringify({acct:x.acct.nFail, draws:x.draws.bad, nf:x.nonFinite.slice(0, 3), own:x.own.slice(0, 3)}))); });
       if (!R.runOrder.mainSame || !R.runOrder.noneSame) bad.push(d + ' run order'); });
     return {pass:!bad.length, detail:bad.slice(0, 3).join('; ') || 'main row and rt alternative, both designs'}; });
-  var CB0 = {a:0, b:0, r:0, sp:0, lag:-1, qe:false, k:0, se:0, sh:0, su:0, fl:false};  /* the nesting: today's reading (i = the year's inflation) */
+  var CB0 = {a:0, b:0, r:0, sp:0, lag:-1, qe:false, k:0, se:0, sh:0, su:0, fl:false, fs:false};  /* the nesting: today's reading (i = the year's inflation) */
   function frz(E, d){ var P = Object.assign({}, E, {years:20, nAgents:500}); return {P:P, cf:r2FreezePair(P, d)}; }
   function same(A, B){ var k = Object.keys(A._s).filter(function(x){ return B._s[x] && !/^cb/.test(x); }), bad = k.filter(function(x){ return Array.prototype.join.call(A._s[x], ',') !== Array.prototype.join.call(B._s[x], ','); }); return bad; }
-  t('S74: cb at today\'s reading (a 0, b 0, r 0, sp 0, the year\'s own inflation, no purchases, refinancing, price or job-loss channels) gives today\'s figures exactly, both runs (the floor off: the programme lowers the price level in some Reference years; frozen C2.2 pair, Reference, Adverse, Stress, seed 1)', function(){
+  t('S74: cb at today\'s reading (a 0, b 0, r 0, sp 0, the year\'s own inflation, no purchases, refinancing, price, job-loss or sale channels) gives today\'s figures exactly, both runs (the floor off: the programme lowers the price level in some Reference years; frozen C2.2 pair, Reference, Adverse, Stress, seed 1)', function(){
     var bad = [];
     [['ref', FULL_INTEGRATION], ['adv', ADVERSE_REFERENCE], ['st', STRESS_TEST]].forEach(function(e){ var F = frz(e[1], 'c22'), G = r2FreezePair(F.P, 'c22'); G.forEach(function(c){ c.cb = Object.assign({}, CB0); });
       var R = tbStudy(F.cf.concat(G), 1, F.P, MS); [0, 1].forEach(function(i){ var m = same(R[i], R[i + 2]); if (m.length) bad.push(e[0] + ' run ' + i + ': ' + m.slice(0, 5).join(', ')); }); });
@@ -2092,8 +2092,24 @@ function s74UnitSuite(){
   t('S74: cb on in four environments: eight main-stream draws per adult-year, every output finite, the accounting identities hold (frozen-row rule, C2.2 candidate pair, seed 1)', function(){
     var bad = []; ['ref', 'adv', 'st', 'hx'].forEach(function(e){ var R = r2PairCheck(e, 1, {only:['cb']}); R.rows.forEach(function(x){ if (!x.pass) bad.push(e + ' ' + x.id + ': ' + (x.threw || JSON.stringify({acct:x.acct.nFail, draws:x.draws.bad, nf:x.nonFinite.slice(0, 3), own:x.own.slice(0, 3)}))); }); });
     return {pass:!bad.length, detail:bad.slice(0, 3).join('; ') || 'main and cb rows pass'}; });
+  t('S74: forced sales: what sellers sell equals what buyers buy plus the part sent outside, by class and at the price paid; buyers are pro rata to their nominal assets (direct, discount 0.1)', function(){
+    var dr0 = DEBT_READ, P0 = DR_PL; DEBT_READ = {lim:2500}; DR_PL = 1;
+    try { CBS = {P:[1, 1], fq:[0, 0, 0, 0, 0], fc:0, fs:{q:0, n:0, ay:0, rec:0, out:0, yrs:0, paid:0, val:0, bought:0, gap:0, S:[0, 0, 0, 0, 0, 0, 0], B:[0, 0, 0, 0, 0, 0, 0]}};
+      var ry = {fd:0.1, def:1, rec:true}, mk = function(r, n, dv, ed){ return {r:r.slice(), v:r.slice(), n:n, dv:dv, ed:ed, g:2}; };
+      var s1 = mk([100, 50, 30, 10, 5], 0, 2600 + 60, 100), s2 = mk([0, 0, 0, 0, 0], 0, 9000, 0), b1 = mk([0, 0, 0, 0, 0], 300, 0, 0), b2 = mk([0, 0, 0, 0, 0], 100, 0, 0), b3 = mk([0, 0, 0, 0, 0], 50, 0, 0);
+      var A = [s1, s2, b1, b2, b3].map(function(b, i){ return {_rt:b, yrCostUSD:i === 4 ? 200 : 100}; }), L1 = cbSell(A[0], s1, ry), L2 = cbSell(A[1], s2, ry);
+      var want = 60/0.9, okS = Math.abs(s1.r[2] - (30 - want < 0 ? 0 : 30 - want)) < 1e-9, sold = [100 - s1.r[0], 50 - s1.r[1], 30 - s1.r[2]];
+      var okSell = Math.abs(sold[0] + sold[1] + sold[2] - want) < 1e-9 && s1.r[2] === 0 && Math.abs(sold[1] - (want - 30)) < 1e-9 && sold[0] === 0 && Math.abs(s1.dv - 2600) < 1e-9 && Math.abs(L1 + want*0.1) < 1e-9 && L2 === 0 && s2.dv === 9000;
+      cbSettle(CBS, A);  /* b3 has 50 < half of 200: not a buyer; b1 and b2 split 3:1; their 400 cannot pay the 60: no, it can (phi 1) */
+      var got1 = b1.r[1] + b1.r[2], got2 = b2.r[1] + b2.r[2], okB = Math.abs(got1 - 3*got2) < 1e-9 && Math.abs(got1 + got2 - want) < 1e-9 && b3.r[2] === 0 && Math.abs((300 - b1.n) + (100 - b2.n) - 60) < 1e-9 && Math.abs(b1.fsG - (got1 - (300 - b1.n))) < 1e-12 && Math.abs(CBS.fs.gap) < 1e-9 && CBS.fs.out < 1e-9;
+      return {pass:okS && okSell && okB, detail:'sold ' + want.toFixed(3) + ' for 60 (shares, then other real estate); bought ' + got1.toFixed(3) + ' and ' + got2.toFixed(3)}; }
+    finally { DEBT_READ = dr0; DR_PL = P0; CBS = null; } });
+  t('S74: forced sales off (cb fs false) moves no real asset; on, the ledger closes and the discount reading lowers the price paid (no programme, Adverse, seed 1)', function(){
+    var P = Object.assign({}, ADVERSE_REFERENCE, {years:20, nAgents:500}), rows = [{}, {fs:false}, {fd:0.1}].map(function(x){ var c = r2FreezePair(P, 'c22')[0]; c.cb = x; return c; }), R = tbStudy(rows, 1, P, MS);
+    var ok = R[1].fsQ === 0 && R[1].fsYrs === 0 && R[0].fsQ > 0 && Math.abs(R[0].fsGap) < 1e-6 && R[0].fsPx === 1 && Math.abs(R[2].fsPx - 0.9) < 1e-12 && Math.abs(R[2].fsGap) < 1e-6;
+    return {pass:ok, detail:'sold per adult-year ' + R[0].fsQ.toFixed(1) + ' (main), ' + R[1].fsQ + ' (off); price paid ' + R[2].fsPx.toFixed(3) + ' with the discount'}; });
   return out; }
-Object.assign(module.exports, { s74UnitSuite, HISTORY_ENV, HX, hxPi, hxIdx, hxRecPath, hxYear, cbOpts, cbYear, cbJob, CB_DEFAULTS, CB_U, CB_KEYS, setCbHook:function(f){ CB_HOOK = f; } });  /* S74 */
+Object.assign(module.exports, { cbSell, cbSettle, s74UnitSuite, HISTORY_ENV, HX, hxPi, hxIdx, hxRecPath, hxYear, cbOpts, cbYear, cbJob, CB_DEFAULTS, CB_U, CB_KEYS, setCbHook:function(f){ CB_HOOK = f; } });  /* S74 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];

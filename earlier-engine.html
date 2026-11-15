@@ -4426,10 +4426,11 @@ function rtPlace(b, flow, R){  /* a year's saving: repays floating debt, then no
   else { var d = Math.min(b.n, -flow); b.n -= d; b.dv += -flow - d; } }
 function rtStep(b, flow, pi, R, cr, ry){  /* one year: last year's saving, then the revaluation; returns the revaluation in dollars (what is added to the adult's wealth). cr (S71): the year's creditor charges, from crYear */
   var c, f, x, I = 0, cA = 0; rtPlace(b, flow, R);  /* S74: ry, this year's history or policy-rate paths (cbYear); rD, cA: the real classes' value less their value with the rule off (reporting) */
-  var rh, gy = 0; for (c = 0; c < 5; c++){ rh = ry ? ry.rho[c] : R.rho[RT_CLASSES[c]]; if (R.rg && b.g === 6 && c < 2) rh *= RT_RG[c]; gy += b.r[c]*rh*(1 + R.ix*pi); f = (1 + R.ix*pi)*(1 + rh) - 1; if (cr && c === 2){ b.ce = b.r[2]*cr.re; f -= cr.re; } if (ry && ry.cb){ if (!b.rD) b.rD = [0, 0, 0, 0, 0]; x = (1 + R.ix*pi)*(1 + ry.rb[c]*(R.rg && b.g === 6 && c < 2 ? RT_RG[c] : 1)) - 1 - (cr && c === 2 ? cr.re : 0); b.rD[c] = b.rD[c]*(1 + x) + b.r[c]*(f - x); cA += b.rD[c]; } I += b.r[c]*f; b.r[c] += b.r[c]*f; b.v[c] += b.v[c]*f; } b.gy = gy;  /* gy: the year's real gain at the year's prices (reporting) */
+  var rh, gy = 0; for (c = 0; c < 5; c++){ rh = ry ? ry.rho[c] : R.rho[RT_CLASSES[c]]; if (R.rg && b.g === 6 && c < 2) rh *= RT_RG[c]; gy += b.r[c]*rh*(1 + R.ix*pi); f = (1 + R.ix*pi)*(1 + rh) - 1; if (cr && c === 2){ b.ce = b.r[2]*cr.re; f -= cr.re; } if (b.fbV) b.fbV[c] += b.fbV[c]*f; if (ry && ry.cb){ if (!b.rD) b.rD = [0, 0, 0, 0, 0]; x = (1 + R.ix*pi)*(1 + ry.rb[c]*(R.rg && b.g === 6 && c < 2 ? RT_RG[c] : 1)) - 1 - (cr && c === 2 ? cr.re : 0); b.rD[c] = b.rD[c]*(1 + x) + b.r[c]*(f - x); cA += b.rD[c]; } I += b.r[c]*f; b.r[c] += b.r[c]*f; b.v[c] += b.v[c]*f; } b.gy = gy;  /* gy: the year's real gain at the year's prices (reporting) */
   x = R.phi*(ry ? ry.i : pi); if (R.ng === 'all' && b.ng) x *= b.ng; if (cr){ f = crT(b); f = f*cr.rb + (1 - f)*cr.rd; b.cn = b.n*f; x -= f; } if (ry && ry.cb){ var n0 = R.phi*(ry.n0 === null ? pi : ry.n0)*(R.ng === 'all' && b.ng ? b.ng : 1); b.cbN = (b.cbN || 0) + b.n*(x + (cr ? f : 0) - n0)*ry.def; }
   I += b.n*x; b.n += b.n*x; b.en += b.en*x; x = ry ? ry.i + ry.sp : R.psi*pi; if (ry && ry.cb) b.cbF = (b.cbF || 0) - b.dv*(x - (ry.f0 === null ? R.psi*pi : ry.f0))*ry.def; I -= b.dv*x; b.dv += b.dv*x; b.ed += b.ed*x; x = R.chi*pi; I -= b.df*x; b.df += b.df*x;
   if (ry && ry.cb) b.cbA = cA*ry.def;  /* a stock: this year's difference, Year-0 dollars */
+  if (b.fsG){ I += b.fsG; b.fsG = 0; }  /* S74: a buyer's gain from forced sales (the discount), at its next revaluation */
   if (ry && ry.rf > 0 && b.r[0] > 0 && b.df > 0){ var hM = Math.min(b.df, b.r[0]); if (b.r[0] - hM >= ry.eq*b.r[0]){ var cut = ry.rf*hM; b.df -= cut; I += cut; b.cbR = (b.cbR || 0) + cut*ry.def; } }  /* S74: refinancing (cbRefi) */
   return I; }
 function rtInit(agents, P, yr){  /* before the year's loop: adults seen for the first time (every adult in Year 0), from the household's net worth before any of its members' year */
@@ -4442,6 +4443,7 @@ function rtAdult(a, P){  /* in the year's loop, where SAVE pays its interest: re
   var b = a._rt; if (CRP){ CRY = crYear(CRP.agents, P, CRP.yr); CRP = null; }  /* S71: before any adult's year moves a balance */
   if (a._rtNew){ a._rtNew = false; if (RETURNS.ci) a._rtCk = rtCap(b); return 0; }
   var I = rtStep(b, a.wealth - b.w, P/b.p - 1, RETURNS, CRY, RTY);  /* S74: RTY, this year's history paths (null when off) */ if (CRY){ var cw = RETURNS.cr.w && a._w !== undefined ? +a._w : 1, cf = CRY.f, cx = (1 - RETURNS.chi)*CRY.pi*b.df; CRS.A.nom += cw*b.cn*cf/CRY.Wt; CRS.A.eq += cw*b.ce*cf/CRY.Wt; b.crn = (b.crn || 0) + (b.cn + b.ce)*cf; b.crr = (b.crr || 0) + cx*cf; }  /* S71 (reporting state) */
+  if (RTY && RTY.fs) I += cbSell(a, b, RTY);  /* S74: forced sales (cb.fs) */
   a.wealth += I; b.w = a.wealth; b.p = P; if (RETURNS.ci) a._rtCk = rtCap(b); return I; }
 function rtRep(S, agents, o, yr, T){  /* reporting only: the end of Year 0 and of the last year */
   var n = agents.length; if (!n || (yr !== 0 && yr !== T - 1)) return;
@@ -6387,7 +6389,7 @@ function runYear(agentSet,yr,p,recSt){
   var agP=oIdx*(PRICE?PRICE.bIdx:1);  // v5.2 step 4: the price level the benefit moves with (read only when AGE is on)
   if(DEBT_READ||LF_SCOPE)DR_PL=agP;  // S61: the borrowing limit and the own income of adults outside the labour force move with it
   var svF=0;if(SAVE){var svP=oIdx*(PRICE?PRICE.bIdx:1);if(yr===0||!SVS)SVS={prevP:svP,intR:0,realR:0};else svF=(svP/SVS.prevP)*(1+SAVE.r)-1;var svPp=SVS.prevP;SVS.prevP=svP;}  // v5.2 step 3: savings that keep up with prices (no RNG)
-  if(RETURNS){var rtP=oIdx*(PRICE?PRICE.bIdx:1);rtInit(agentSet,rtP,yr);if(p.hx||CB)RTY=cbYear(p,yr,rtP,recSt);}  // S74: the year's history or policy-rate paths (no draw)  // S59: wealth by asset class (no RNG)
+  if(RETURNS){var rtP=oIdx*(PRICE?PRICE.bIdx:1);rtInit(agentSet,rtP,yr);if(p.hx||CB)RTY=cbYear(p,yr,rtP,recSt,agentSet);}  // S74: the year's history or policy-rate paths (no draw)  // S59: wealth by asset class (no RNG)
   var tbY=(TB&&p.tb)?tbYear(p,colaF):null;  // session 6 (A4 testbed): null unless TB and p.tb are both set (harness-only; no RNG)
   if(SNET&&SNS&&tbY)snYear(agentSet,yr,HHON,inflRate,oIdx);  // session 2b: today's safety net (SNAP, EITC, the refundable CTC), set on last year's income; off by default; no stream drawn
   if(DIS&&DSS)disYear(agentSet,yr,agP);  // v5.4 item 5: who the disaster hits (and, later, who has recovered)
@@ -7220,26 +7222,41 @@ function hxYear(p, yr){ var o = hxOpts(p.hx), t = hxT(yr), h = HX.hR[t]/100, e =
  *       sources/unemp_flows.py), held in [0, 1]. The same draw is read, so the eight-draws rule holds. The gap does not read this rise, and the
  *       programme's own change in hours is not a gap (Claude's reading, as in S72).
  *  dm   (reading; main 0) the spending response to the stance: not built in part 2 (refused).
+ *  fs   (main on with cb; prereg item 5) FORCED SALES AND BUYING LOW. Today real assets are never sold. With fs, after the year's revaluation an adult
+ *       whose floating debt is above its starting floating debt (compounded at the floating rate, b.ed) plus its share of the household's borrowing
+ *       limit (dr.lim at the year's price level, split equally among the household's adults; Claude's reading of "needs more than its borrowing
+ *       limit") sells real assets at the year's price less fd (0 main; readings 0.1 and 0.27, design parameters until Campbell, Giglio and Pathak 2011
+ *       is opened) to repay the excess: shares first, then other real estate, then its home (business and vehicles are not sold). The year's sales are
+ *       settled at the start of the next year, before any revaluation, at the sale year's prices: the buyers are adults whose nominal assets are above
+ *       six months of their last year's spending, pro rata to those nominal assets (weighted), with no draw; a part the buyers' cash cannot pay goes
+ *       outside the model (fsOut). A buyer's gain (the discount) enters its wealth at its next revaluation. Reported (weighted; Year-0 dollars): fsQ
+ *       real assets sold per adult-year, fsN % of adult-years selling, fsRec % of sales in recession years, fsOut % sold outside, fsYrs years with a
+ *       sale, fsPx the price paid over the year's price, fsBuyG the buyers' gain on what they bought (its value at the last year less the price paid,
+ *       per adult who bought), fsGap sold less bought less outside (0 if the build is right), fsS0-6 and fsB0-6 the shares sold and bought by
+ *       wealth group (S59's groups, 0 below zero).
  * Channel tallies (reporting; Year-0 dollars per household balance, against the same year's reading with the rule off): asset prices (cbA, a stock:
  * the real classes' value less what the same holdings would be worth at the rule-off gains, at the last year), deposits (cbN), floating debt (cbF)
  * and refinancing (cbR) (flows summed over the years). Keys CB_KEYS. No draw is added; off, nothing here runs. */
-var CB_DEFAULTS = {a:0.5, b:0.5, pt:0.02, r:0.0097, lag:0, ok:2, qe:true, bL:0.5, uw:0.2, sp:0.03, th:0.5, mm:1, D:7, k:0.5, eq:0.2, mf:0.005, se:4.68, sh:3, su:0.5, dm:0, fs:false, fl:true},
+var CB_DEFAULTS = {a:0.5, b:0.5, pt:0.02, r:0.0097, lag:0, ok:2, qe:true, bL:0.5, uw:0.2, sp:0.03, th:0.5, mm:1, D:7, k:0.5, eq:0.2, mf:0.005, se:4.68, sh:3, su:0.5, dm:0, fs:true, fd:0, fl:true},
   CB_U = {n:0.042, r:0.094}, CB_GAGNON = 0.00044, CB_HOOK = null,
-  CB_KEYS = ['cbI', 'cbIst', 'cbFloor', 'cbQ', 'cbQmax', 'cbM', 'cbRfY', 'cbU', 'cbA', 'cbN', 'cbF', 'cbR', 'cbRfSh'];
+  CB_KEYS = ['cbI', 'cbIst', 'cbFloor', 'cbQ', 'cbQmax', 'cbM', 'cbRfY', 'cbU', 'cbA', 'cbN', 'cbF', 'cbR', 'cbRfSh', 'fsQ', 'fsN', 'fsRec', 'fsOut', 'fsYrs', 'fsPx', 'fsBuyG', 'fsGap',
+    'fsS0', 'fsS1', 'fsS2', 'fsS3', 'fsS4', 'fsS5', 'fsS6', 'fsB0', 'fsB1', 'fsB2', 'fsB3', 'fsB4', 'fsB5', 'fsB6'];
 function cbOpts(v){ if (!v) return null; var o = Object.assign({}, CB_DEFAULTS, v === true ? {} : v);
   ['a', 'b', 'pt', 'r', 'ok', 'bL', 'uw', 'sp', 'th', 'mm', 'D', 'k', 'eq', 'mf', 'se', 'sh', 'su', 'dm'].forEach(function(k){ o[k] = +o[k]; if (!isFinite(o[k])) throw new Error('cb.' + k + ' must be a number'); });
   if ([-1, 0, 1, 2, 3].indexOf(o.lag) < 0) throw new Error('cb.lag must be -1, 0, 1, 2 or 3'); if (!(o.k >= 0 && o.k <= 1)) throw new Error('cb.k is a share in [0, 1]');
-  if (o.dm !== 0) throw new Error('cb.dm (the spending response) is not built yet (S74 part 3)'); if (o.fs) throw new Error('cb.fs (forced sales) is not built yet'); return o; }
+  if (o.dm !== 0) throw new Error('cb.dm (the spending response) is not built yet (S74 part 3)'); o.fs = !!o.fs; o.fd = +o.fd; if (!(o.fd >= 0 && o.fd < 1)) throw new Error('cb.fd (the forced-sale discount) is a share in [0, 1)'); return o; }
 function cbJob(u){ return Math.max(0, Math.min(1, CFG.EMPL_P + (CFG.EMPL_P_REC - CFG.EMPL_P)*(u - CB_U.n)/(CB_U.r - CB_U.n))); }
 function cbRefi(S, m, o){ var rf = 0; if (S.mMin === null) S.mMin = m; else { if (m <= S.mMin - o.mf){ rf = Math.min(1, o.k*(S.mMin - m)*o.D); S.nRf++; } S.mMin = Math.min(S.mMin, m); } S.mP.push(m); return rf; }
 function cbYact(t){ return CB_GAGNON*Math.max(0, HX.fa[t] - HX.fa[0]); }  /* the actual purchases' effect on the 10-year yield in History (the balance sheet's rise since 2005, at Gagnon et al.'s slope) */
-function cbYear(p, yr, P, rec){  /* the year's rates and paths for rtStep (RTY), and the job-loss chances (CBJ); also History's actual path with the rule off */
+function cbYear(p, yr, P, rec, agents){  /* the year's rates and paths for rtStep (RTY), and the job-loss chances (CBJ); also History's actual path with the rule off; agents: last year's forced sales are settled first */
   var o = CB, H = !!p.hx, R = RETURNS, t = H ? hxT(yr) : yr;
-  if (yr === 0 || !CBS) CBS = {P:[], rec:[], d:[], dd:[], Y:0, Ypk:0, mMin:null, mP:[], nRf:0, iP:[], istP:[], QP:[], UP:[], fl:0, n:0, i0:null, pi0:H ? HX.cpi[0]/100 : (p.inflRate || 0)};
+  if (yr === 0 || !CBS) CBS = {P:[], rec:[], d:[], dd:[], Y:0, Ypk:0, mMin:null, mP:[], nRf:0, iP:[], istP:[], QP:[], UP:[], fl:0, n:0, i0:null, pi0:H ? HX.cpi[0]/100 : (p.inflRate || 0),
+    fq:[0, 0, 0, 0, 0], fc:0, fs:{q:0, n:0, ay:0, rec:0, out:0, yrs:0, paid:0, val:0, bought:0, gap:0, S:[0, 0, 0, 0, 0, 0, 0], B:[0, 0, 0, 0, 0, 0, 0]}};
   var S = CBS, base = H ? hxYear(p, yr) : {t:t, rho:RT_CLASSES.map(function(c){ return R.rho[c]; }), i:null, sp:null, rf:0}; S.P[yr] = P; S.rec[yr] = !!(rec && rec.active);
   base.def = 1/P; base.rb = base.rho.slice(); base.n0 = base.i; base.f0 = H ? base.i + base.sp : null;  /* the reading with the rule off (null: this year's inflation, x phi or psi) */
   CBJ = null; if (!o){ base.rf = cbRefi(S, HX.m30[t]/100, CB_DEFAULTS); base.eq = CB_DEFAULTS.eq; base.cb = false; return base; }
   if (!EMPL) throw new Error('cb (the policy-rate rule) needs job loss (the v5.4 empl switch)');
+  if (o.fs && yr > 0 && agents) cbSettle(S, agents);
   var piAt = function(u){ return u >= 1 ? S.P[u]/S.P[u - 1] - 1 : S.pi0; }, pq = o.lag < 0 ? piAt(yr) : piAt(yr - 1 - o.lag);
   var gap = H ? HX.yg[Math.max(0, t - 1)]/100 : (yr >= 1 && S.rec[yr - 1] ? -o.ok*(CB_U.r - CB_U.n) : 0);
   var ist = o.r + pq + o.a*(pq - o.pt) + o.b*gap, i = o.fl ? Math.max(0, ist) : ist;
@@ -7250,17 +7267,40 @@ function cbYear(p, yr, P, rec){  /* the year's rates and paths for rtStep (RTY),
   var mE = Math.exp(-o.se*dd), mH = Math.exp(-o.sh*((S.dd[yr - 1] || 0) + (S.dd[yr - 2] || 0))), M = [mH, mH, mE, mE, 1];
   base.rho = base.rho.map(function(r, c){ return M[c] === 1 ? r : (1 + r)*M[c] - 1; });
   var m = H ? HX.m30[t]/100 + o.mm*(o.th*(i - HX.ff[t]/100) - (S.Y - cbYact(t))) : o.mm*(o.th*(i - S.i0) - S.Y);
-  base.rf = cbRefi(S, m, o); base.eq = o.eq; base.i = i; base.sp = o.sp; base.cb = true;
+  base.rf = cbRefi(S, m, o); base.eq = o.eq; base.i = i; base.sp = o.sp; base.cb = true; base.fs = o.fs; base.fd = o.fd; base.rec = S.rec[yr];
   var U = o.su*(yr >= 1 ? S.d[yr - 1] : 0); CBJ = U === 0 ? {n:CFG.EMPL_P, r:CFG.EMPL_P_REC} : {n:cbJob(CB_U.n + U), r:cbJob(CB_U.r + U)};
   S.iP[yr] = i; S.istP[yr] = ist; S.QP[yr] = S.Y/CB_GAGNON; S.UP[yr] = U; if (ist < 0) S.fl++; S.n++;
   if (CB_HOOK) CB_HOOK({yr:yr, rec:S.rec[yr], i:i, ist:ist, d:d, mE:mE, mH:mH, m:m, rf:base.rf, U:U, Y:S.Y, pq:pq});  /* reporting hook (harness tools; null by default) */
   return base; }
+function cbSell(a, b, ry){  /* after the adult's revaluation (rtAdult): sell real assets for floating debt above the start's plus the limit; returns the wealth change (the discount) */
+  var F = CBS.fs, w = a._w === undefined ? 1 : +a._w, nA = a._hh && a._hh.a && a._hh.a.length ? a._hh.a.length : 1;
+  F.ay += w; var lim = DEBT_READ && DEBT_READ.lim ? DEBT_READ.lim*DR_PL/nA : 0, ex = b.dv - (b.ed + lim), loss = 0, sold = 0;
+  if (!(ex > 0)) return 0;
+  [2, 1, 0].forEach(function(c){ if (!(ex > 0) || !(b.r[c] > 0)) return; var q = Math.min(b.r[c], ex/(1 - ry.fd)), sh = q/b.r[c], pay = q*(1 - ry.fd);
+    b.r[c] -= q; b.v[c] -= b.v[c]*sh; if (b.rD) b.rD[c] -= b.rD[c]*sh; if (b.fbV) b.fbV[c] -= b.fbV[c]*sh; b.dv -= pay; ex -= pay; loss += q - pay; sold += q;
+    CBS.fq[c] += w*q; CBS.fc += w*pay; });
+  if (sold > 0){ F.n += w; F.q += w*sold*ry.def; if (ry.rec) F.rec += w*sold*ry.def; F.S[Math.max(0, b.g)] += w*sold*ry.def; F.paid += w*(sold - loss)*ry.def; F.val += w*sold*ry.def; F.sy = true; }
+  return -loss; }
+function cbSettle(S, agents){  /* the start of the year, before any revaluation: last year's sales to the buyers, at last year's prices (no draw) */
+  var F = S.fs, Q = S.fq.reduce(function(u, v){ return u + v; }, 0); if (F.sy){ F.yrs++; F.sy = false; } if (!(Q > 0)) return;
+  var def = 1/S.P[S.P.length - 2 >= 0 ? S.P.length - 2 : 0], W = 0, L = [];
+  agents.forEach(function(a){ var b = a._rt; if (!b || a._rtNew) return; var w = a._w === undefined ? 1 : +a._w; if (b.n > 0.5*(+a.yrCostUSD || 0) && b.n > 0){ L.push([a, b, w]); W += w*b.n; } });
+  var phi = W > 0 ? Math.min(1, W/S.fc) : 0, got = 0;
+  L.forEach(function(x){ var b = x[1], w = x[2], k = phi*b.n/W, pay = S.fc*k, gv = 0; if (!b.fbV) b.fbV = [0, 0, 0, 0, 0];
+    for (var c = 0; c < 5; c++){ var q = S.fq[c]*k; b.r[c] += q; b.v[c] += q; b.fbV[c] += q; gv += q; }
+    b.n -= pay; b.fsG = (b.fsG || 0) + gv - pay; b.fbP = (b.fbP || 0) + pay*def; got += w*gv; F.B[Math.max(0, b.g)] += w*gv*def; F.bought += w*gv*def; });
+  F.out += (Q - got)*def; F.gap += Q*def - got*def - (Q - got)*def; S.fq = [0, 0, 0, 0, 0]; S.fc = 0; }
 function cbRes(r, S, agents){  /* reporting only (CB_KEYS) */
   var mean = function(x){ var a = x.filter(function(v){ return v !== undefined; }); return a.length ? a.reduce(function(u, v){ return u + v; }, 0)/a.length : 0; };
   r.cbI = mean(S.iP)*100; r.cbIst = mean(S.istP)*100; r.cbFloor = S.n ? S.fl/S.n*100 : 0; r.cbQ = mean(S.QP); r.cbQmax = Math.max.apply(null, [0].concat(S.QP.filter(isFinite)));
   r.cbM = (S.mP.length ? S.mP[S.mP.length - 1] - S.mP[0] : 0)*100; r.cbRfY = S.nRf; r.cbU = mean(S.UP)*100;
   var W = 0, A = 0, N = 0, F = 0, Rf = 0, nR = 0; agents.forEach(function(a){ var b = a._rt; if (!b) return; var w = a._w === undefined ? 1 : +a._w; W += w; A += w*(b.cbA || 0); N += w*(b.cbN || 0); F += w*(b.cbF || 0); Rf += w*(b.cbR || 0); if (b.cbR > 0) nR += w; });
-  r.cbA = W ? A/W : 0; r.cbN = W ? N/W : 0; r.cbF = W ? F/W : 0; r.cbR = W ? Rf/W : 0; r.cbRfSh = W ? nR/W*100 : 0; return r; }
+  r.cbA = W ? A/W : 0; r.cbN = W ? N/W : 0; r.cbF = W ? F/W : 0; r.cbR = W ? Rf/W : 0; r.cbRfSh = W ? nR/W*100 : 0;
+  var X = S.fs, def = 1/S.P[S.P.length - 1], G = 0, nb = 0, pend = S.fq.reduce(function(u, v){ return u + v; }, 0)*1/S.P[S.P.length - 1];  /* sales of the last year are not settled (reported as outside) */
+  agents.forEach(function(a){ var b = a._rt; if (!b || !b.fbV) return; var w = a._w === undefined ? 1 : +a._w; G += w*(b.fbV.reduce(function(u, v){ return u + v; }, 0)*def - (b.fbP || 0)); nb += w; });
+  r.fsQ = X.ay ? X.q/X.ay : 0; r.fsN = X.ay ? X.n/X.ay*100 : 0; r.fsRec = X.q ? X.rec/X.q*100 : 0; r.fsOut = X.q ? (X.out + pend)/X.q*100 : 0; r.fsYrs = X.yrs + (X.sy ? 1 : 0);
+  r.fsPx = X.val ? X.paid/X.val : 1; r.fsBuyG = nb ? G/nb : 0; r.fsGap = X.gap;
+  for (var g = 0; g < 7; g++){ r['fsS' + g] = X.q ? X.S[g]/X.q*100 : 0; r['fsB' + g] = X.bought ? X.B[g]/X.bought*100 : 0; } return r; }
 /* Session 9 (Oct 14, 2026; ledger s146; dev/plans/s146-history-check.md; dev/reports/v5-34-history-check.md): A SCRIPTED RECESSION PATH for the history check.
  * REC_SCRIPT null (the default) adds nothing: the testbed draws its recessions as before (buildRecessionPath, its own stream). When an array of
  * {active, incomeMultiplier}, a testbed run with p.shock (and the price run that gives its supply path) uses it, year by year, for every seed and both
