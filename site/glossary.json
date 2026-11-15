@@ -46,5 +46,37 @@
  {
   "term": "FBS — Financial Bandwidth Score",
   "def": "Monthly residual resources above the basic-living threshold; gates an agent's probability of advancing an octave level."
+ },
+ {
+  "term": "Basket poverty",
+  "def": "The share of people (children counted in their households) whose household income falls short of that household’s cost of a basic living, the MIT living-wage basket for its adults and children. Shown as a share of person-years."
+ },
+ {
+  "term": "Wealth poverty",
+  "def": "The share of adults at the end of the run whose net wealth (what they own less what they owe; in a couple, half of what the two own) is below the threshold of <span class=\"num\" data-src=\"inputs.wealthLine\" data-f=\"usd\">$25,000</span> in today’s money. The threshold is a design threshold chosen for this page, not a measured line. It moves with inflation: with prices rising and savings earning nothing, more adults fall below it."
+ },
+ {
+  "term": "Programme inflation",
+  "def": "The yearly rise in the price level that the programme causes, as the model computes it. It rests on the model’s placeholder price rule: all new money the programme pays that is not matched by new output reaches prices. It is a result of that rule, not a forecast."
+ },
+ {
+  "term": "Backing and financing options",
+  "def": "Backing is how much of the money the Source pays out is matched by new output. The headline reading is cautious: none is. “If every dollar were backed” is a stated alternative. Financing options pay the programme by taxes instead of new money: a flat contribution on wages, or a land-value tax."
+ },
+ {
+  "term": "Participation",
+  "def": "The share of adults who take part in the programme. In the as-released design adults opt in; in the C2.2 design everyone is covered automatically, so a participation figure applies only to the first."
+ },
+ {
+  "term": "Inflation-protected savings",
+  "def": "Savings whose value keeps pace with prices: interest equals inflation (zero real return). It is a reading that removes the programme’s erosion of savings; it is not a test of a positive return. The page shows it beside ordinary savings, which earn nothing in real terms."
+ },
+ {
+  "term": "The three environments",
+  "def": "Reference: the model’s main settings, with no recessions and no outside inflation. Adverse: recessions, outside inflation and an automation wave. Stress Test: the Adverse environment with weaker settings (fewer take part, a smaller allowance). The figures for each are in the release file."
+ },
+ {
+  "term": "Percentage points",
+  "def": "A change in a share is given in percentage points (pts): the difference between two percentages, each measured against the same base, which is named next to the figure (usually the no-programme run of the same seeds). A fall from one share to a lower one is stated in points, never as a percentage of the first."
  }
 ]
