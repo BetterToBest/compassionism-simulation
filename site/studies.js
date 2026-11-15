@@ -11,7 +11,13 @@
     ['s6-c22-pilot', 'Coverage and adequacy of the tax-financed design (S6, pilot)', 'A 100-seed pilot, not the full study; the frozen full panel is in the release data.'],
     ['s14-lw-pilot', 'Cost-of-living line weighted by where people live (S14, pilot)', 'A pilot (study L); labelled as such.'],
     ['s47-spend', 'The spending share (S47)', 'What the earlier share, 0.593, and the share that gives the saving-rate target on the frozen model, 0.877, do to each outcome; the bridge between the published figures and the frozen ones.'],
-    ['s34-baseline', 'The no-programme baseline against outside data (S34)', 'The model without the programme set beside survey and national-accounts figures.']
+    ['s34-baseline', 'The no-programme baseline against outside data (S34)', 'The model without the programme set beside survey and national-accounts figures.'],
+    ['s5-groups', 'Participants and non-participants (S5)', 'Each group against its own no-programme figure, from the participation study.'],
+    ['s54-levers', 'Policy levers (S54)', 'Every lever a policymaker could set, the points that entered confirmation and those that survived; pilot seeds are labelled.'],
+    ['s39-crosscheck', 'Outside engine cross-check (S39)', 'The same questions put to an outside model (BeforeIT, Austria); its prices follow expected inflation, so it is not a test of the placeholder price rule.'],
+    ['s7-spend-groups', 'Saving and spending by income group (S7)', 'The frozen no-programme row split into five income groups; the all-adults rate is the calibration target.'],
+    ['s7-savings', 'Ordinary and inflation-protected savings (S7)', 'Wealth poverty under three readings of what savings do, each against its own no-programme control.'],
+    ['s7-pairing', 'Variance reduction from paired seeds (S7)', 'How much pairing a programme run with its no-programme run narrows the intervals.']
   ];
   var PAGE = 40;
   function fmt(v) { if (v === null || v === undefined) return ''; if (typeof v !== 'number') return String(v); var a = Math.abs(v); return a >= 100 ? v.toFixed(1) : a >= 1 ? v.toFixed(2) : a === 0 ? '0' : v.toPrecision(3); }
