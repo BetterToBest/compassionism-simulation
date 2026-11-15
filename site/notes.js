@@ -84,7 +84,22 @@
       '<p class="fx-note">Read the two wealth columns together: from 30% take-up upward both groups end with more people short of wealth than without the programme, so the opt-in result does not come from non-participants alone. Non-participants are hit harder in every environment shown, which fits prices rising for everyone while only participants receive the programme’s help. Basket poverty falls for both groups at every level shown, far more for participants until take-up is very high. That the take-up flag is the same in both runs is a modelling assumption; it is read from the no-programme figures of the two groups being equal within a few tenths of a point, not from the engine’s own check. Other levels, the 500-adult study and the pay-raise rows are in the study’s file.</p>';
     return h;
   }
-  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], [null, holm]];
+  function spendGroups(d) {
+    var S = 's7-spend-groups', G = ['lowest fifth', 'second fifth', 'middle fifth', 'fourth fifth', 'highest fifth', 'all adults'];
+    function at(g, m) { for (var i = 0; i < d.data[0].length; i++) { if (col(d, 'group')[i] === g && col(d, 'measure')[i].indexOf(m) === 0) return i; } return -1; }
+    function money(g) { var i = at(g, 'income per'); return snum(S, 'row ' + i + ' ' + g + ' income', '$' + Math.round(col(d, 'mean')[i]).toLocaleString('en-US')); }
+    function rate(g) { var i = at(g, 'saving rate'); return snum(S, 'row ' + i + ' ' + g + ' saving', col(d, 'mean')[i].toFixed(1) + '% (' + col(d, 'lo95')[i].toFixed(1) + ' to ' + col(d, 'hi95')[i].toFixed(1) + ')'); }
+    function sp(g) { var i = at(g, 'spending as'); return snum(S, 'row ' + i + ' ' + g + ' spending', col(d, 'mean')[i].toFixed(0) + '%'); }
+    var h = '<h3 class="fx-h3">Saving and spending by income group, with no programme</h3>' +
+      '<p>The model lets people with less income spend less than their full cost of living (the income-graded spending rule), and sets one share of any cash surplus to be spent so that the whole population saves what US households save. This table shows what those two rules produce for five income groups. Adults are ranked within each run by their own disposable income over the 20 years; the table is the frozen no-programme run in the Reference environment, 500 adults, 20 years, 100 paired seeds, mean over seeds with a 95% interval.</p>' +
+      '<div class="fx-tw" tabindex="0" role="region" aria-label="Saving and spending by income group"><table class="fx-table"><caption>No programme, Reference environment. Saving rate is income less consumption, over income; a negative rate means the group draws down savings or borrows. Spending is shown against the cost-of-living basket (100% = exactly the basket), so it includes surplus the model spends above it.</caption>' +
+      '<thead><tr><th>Income group</th><th>Income per adult-year (year-0 dollars)</th><th>Saving rate (95% interval)</th><th>Spending as % of the basket</th></tr></thead><tbody>' +
+      G.map(function (g) { return '<tr><td>' + esc(g) + '</td><td>' + money(g) + '</td><td>' + rate(g) + '</td><td>' + sp(g) + '</td></tr>'; }).join('') +
+      '</tbody></table></div>' +
+      '<p class="fx-note">Read with care. The all-adults saving rate is the calibration target, set by construction, so it is not a finding. The spread across groups is the finding: the lowest fifth draws savings down and the highest fifth saves the most. Ranking by the same income that the saving rate divides by pushes the lowest fifth’s rate down and the highest fifth’s up (a year of low income is a year of low saving), so the spread overstates the gap between lifelong poor and rich households. Whether the model’s spread matches household surveys has not been checked against an outside source; it is a model output, not a measured behaviour.</p>';
+    return h;
+  }
+  var NOTES = [['s47-spend', spend], ['s39-crosscheck', xcheck], ['s54-levers', levers], ['s5-groups', groups], ['s7-spend-groups', spendGroups], [null, holm]];
   function mount(host) {
     NOTES.forEach(function (n) {
       var blk = document.createElement('div'); blk.className = 'fx-note-block'; host.appendChild(blk);
