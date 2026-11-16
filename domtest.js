@@ -1221,6 +1221,10 @@ function phase14(done) {
     const sc = require(path.join(path.dirname(FILE), 'dev', 'tools', 'check_stale_claims.js')).run();
     check('v5.2.2 (audit A2): no retired claim reappears on a public page (dev/tools/check_stale_claims.js; the replication page\'s version history and the notes headed as describing the v4.22 engine are history and skipped)', sc.pass,
       sc.pass ? sc.claims + ' retired claims, ' + sc.files + ' files' : sc.hits.slice(0, 4).join('; '));
+    /* v5.9.3: the simulation page's guided sections must not start before the page's own script has parsed the release panels (REL.data, set in its DOMContentLoaded
+     * handler); starting on a bare timer raced it and left every chart and card below the headline blank on a slow load. */
+    const sp = fs.readFileSync(path.join(path.dirname(FILE), 'site', 'simpage.js'), 'utf8');
+    check('v5.9.3: site/simpage.js starts only once REL.data exists (waits for DOMContentLoaded while it is null; no bare timer race)', /readyState === 'loading' \|\| !REL\.data\) doc\.addEventListener\('DOMContentLoaded'/.test(sp), 'start line');
     phase15(done); })
     .catch(e => { check('v5.2.1: the figure check runs', false, String(e && e.stack || e).slice(0, 300)); phase15(done); });
 }
