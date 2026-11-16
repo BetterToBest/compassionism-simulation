@@ -43,29 +43,39 @@
  * implementation's fixes on every row, the no-programme run included, so each row's supply path is its own no-programme testbed run) on three rows: no programme
  * ('base'), the headline C2.2 design ('c22', harness.js c22Design) and the release design ('release'). Self-check (1) then needs a panel made the same way
  * (harness.js testbed N release ENV ... --frozen, merged) given with --panel=FILE; without one the bands are not compared, and the file says so. With --suite it
- * writes the visual suite's series (BLEI tiers, the median BLEI and its parts, relative income poverty, extreme poverty) for the three rows. */
+ * writes the visual suite's series (BLEI tiers, the median BLEI and its parts, relative income poverty, extreme poverty) for the three rows.
+ * S11 (Nov 16, 2026; research-update prereg/2026-11-x2-series-addendum.md, job X2, ledger D30): --r2 runs release 2's main row (harness.js r2FreezePair, as
+ * compassionism-sim-results runner/jobs/r2.js part M runs it: 500 adults, study options harness.js r2MainStudy, each row in its own study call, no
+ * change to CFG.WEALTH_FLOOR) on three rows: no programme ('base'), the C2.2 design ('c22') and the release design ('release'). The rows carry today's
+ * safety net with SNAP's work rule and its slope already (R2_MAIN.sn), so --r2 refuses --sn, --snab, --slope, --frozen, --v53, --v54 and --study.
+ * Self-check (1) under --r2 compares every engine output key of every row and seed 1..N with release 2's stored part M shard, given with
+ * --panel=FILE (r2-m-ENV-YEARS-104691f/shard-0000.json[.gz]; ENV str for st): equal values (non-finite stored as null) prove the run is release 2's
+ * main row on this engine; without --panel the file says it was not compared. Check (2) and the --suite checks are unchanged. */
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), V54 = process.argv.indexOf('--v54') >= 0, V53 = V54 || process.argv.indexOf('--v53') >= 0;
 const STUDY = process.argv.indexOf('--study') >= 0, SF = STUDY ? require('./study_fields.js') : null, SUITE = process.argv.indexOf('--suite') >= 0, SNAB = process.argv.indexOf('--snab') >= 0, SN = SNAB || process.argv.indexOf('--sn') >= 0, SLOPE = SN && process.argv.indexOf('--slope') >= 0, PANEL_ARG = (process.argv.find(a => a.startsWith('--panel=')) || '').slice(8);
+const R2 = process.argv.indexOf('--r2') >= 0;  /* S11: release 2's main row */
+if (R2 && ['--sn', '--snab', '--slope', '--frozen', '--v53', '--v54', '--study'].some(f => process.argv.indexOf(f) >= 0)) { console.error('--r2 runs release 2\'s main row as it is: no --sn, --snab, --slope, --frozen, --v53, --v54 or --study'); process.exit(1); }
 const env = ARG[0] || 'ref', YRS = +(ARG[1] || 20), N = +(ARG[2] || 500), LS = +(ARG[3] || 1);
 const NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME || (YRS !== 20 && YRS !== 40) || !(LS >= 1 && LS <= N)) { console.error('usage: explore_export.js ref|adv|st [20|40] [SEEDS] [LIFESEED]'); process.exit(1); }
 const ROOT = path.join(__dirname, '..', '..'), PANEL = PANEL_ARG ? path.resolve(PANEL_ARG) : path.join(ROOT, 'dev', 'runs', 'release-panel' + (YRS === 40 ? '-40' : '') + '.json');  /* the merged panel (with --v53, the v5.3 panel once it is merged) */
 const C = H.CFG, SC = H.SPEND_SOURCED, M = ['f0', 'pov', 'bO', 'medW'], Q = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
-const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it */
+const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; if (!R2) C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it (S11: the r2 job leaves it as it is) */
 const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
 const FRZ = process.argv.indexOf('--frozen') >= 0;  /* S47 */
-const ROWS = FRZ ? ['base', 'c22', 'release'] : ['base', 'release', 'h1', 'mid'];
+const ROWS = FRZ || R2 ? ['base', 'c22', 'release'] : ['base', 'release', 'h1', 'mid'];
 const out = {_meta: {what: 'year-by-year spread across seeds, savings deciles and one seed\'s adults, for the pages\' explore sections (presentation only)', env, years: YRS, seeds: N, lifeSeed: LS,
-  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V54 ? ' --v54' : V53 ? ' --v53' : '') + (SUITE ? ' --suite' : '') + (STUDY ? ' --study' : '') + (SNAB ? ' --snab' : SN ? ' --sn' : '') + (SLOPE ? ' --slope' : '') + (FRZ ? ' --frozen' : '') + (PANEL_ARG ? ' --panel=' + PANEL_ARG : ''),
+  rows: ROWS, manifest: H.runManifest(), command: 'node dev/tools/explore_export.js ' + env + ' ' + YRS + ' ' + N + ' ' + LS + (V54 ? ' --v54' : V53 ? ' --v53' : '') + (SUITE ? ' --suite' : '') + (STUDY ? ' --study' : '') + (SNAB ? ' --snab' : SN ? ' --sn' : '') + (SLOPE ? ' --slope' : '') + (FRZ ? ' --frozen' : '') + (R2 ? ' --r2' : '') + (PANEL_ARG ? ' --panel=' + PANEL_ARG : ''),
   flags: {1: 'below 30 days of basic living (BLEI paper)', 2: 'below the cost of living', 4: 'too little wealth', 8: 'taking part in the programme'}}, bands: {}, deciles: {}, lives: {}};
 let segs = [], cur = null;
 try {
-  const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P), rel = V54 ? H.releaseRowsV54(SC) : V53 ? H.releaseRowsV53(SC) : H.releaseRows(SC), byJ = {};
+  const P = Object.assign({}, H[NAME], {years: YRS}, R2 ? {nAgents: 500} : {}), PR = H.tbPresets(P), rel = V54 ? H.releaseRowsV54(SC) : V53 ? H.releaseRowsV53(SC) : H.releaseRows(SC), byJ = {};
   rel.forEach(r => { byJ[r.j] = r; });
   const cfg = [Object.assign({p: PR.baseline(), sc: SC}, V53 ? {hh: H.REL_V53.hh, sg: H.REL_V53.sg, g: H.REL_V53.g} : {}, V54 ? H.REL_V54 : {})].concat(ROWS.slice(1).map(j => { const r = byJ[j === 'c22' ? 'release' : j], c = H.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); return j === 'c22' ? H.c22Design(c) : c; }));
   if (FRZ) cfg.forEach(H.frozenRow);  /* S47: the frozen model, every row */
+  if (R2) { const pc = H.r2FreezePair(P, 'c22'); cfg.splice(0, cfg.length, pc[0], pc[1], H.r2FreezePair(P, 'rel')[1]); }  /* S11: as r2.js mainRows builds none, c22, rel */
   if (STUDY) cfg.forEach(c => { c.em = true; });  /* session 12: the measured EDC's rent and interest (reporting only) */
   if (SN) cfg.forEach(c => { c.sn = Object.assign(SNAB ? {abawd: true} : {}, SLOPE ? {slope: true} : {}); });  /* session 7: today's safety net, and SNAP's work rule; session 9: --slope, SNET.slope (i24-1) */
   const T = YRS, L30 = C.BLEI_PRECARIOUS_MAX, TB = [C.BLEI_CRISIS_MAX, C.BLEI_PRECARIOUS_MAX, C.BLEI_THRESHOLD_MAX, C.BLEI_STABLE_MAX, C.BLEI_SECURE_MAX];
@@ -89,7 +99,7 @@ try {
   H.setRepHook(function (agents, yr, TT, lf, ep) {
     if (yr === 0) close();
     if (yr === 0) cur = [];
-    const slot = segs.length, seed = Math.floor(slot/cfg.length) + 1, row = slot % cfg.length, rec = {};
+    const slot = segs.length, seed = R2 ? slot % N + 1 : Math.floor(slot/cfg.length) + 1, row = R2 ? Math.floor(slot/N) : slot % cfg.length, rec = {};  /* S11: under --r2 row outer, seed inner */
     if (yr === 6 || yr === T - 1) { const w = agents.map(a => a.wealth/lf); rec.dec = Q.map(q => H.quantileOf(w, q)); }
     if (seed === LS) { const p = cfg[row].p;
       rec.f = agents.map(a => { const bo = H.agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf);
@@ -104,10 +114,23 @@ try {
     cur.push(rec); k++;
   });
   if (STUDY) H.setAcct(H.acctNew());  /* session 12: the per-adult flows of the accounting check (reporting only) */
-  let R; try { R = H.tbStudy(cfg, N, P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: SC}, H.REL_V52_STUDY)); close(); } finally { H.setRepHook(null); }
+  let R; try {
+    if (R2) { R = cfg.map(c => { const r = H.tbStudy([c], N, P, H.r2MainStudy())[0]; close(); return r; });  /* S11: each row its own study call, as part M */
+      if (segs.length === N*cfg.length) { const o = []; for (let s = 0; s < N; s++) for (let i = 0; i < cfg.length; i++) o.push(segs[i*N + s]); segs = o; } }  /* back to seed outer, row inner */
+    else { R = H.tbStudy(cfg, N, P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: SC}, H.REL_V52_STUDY)); close(); }
+  } finally { H.setRepHook(null); }
   const ACC = STUDY ? H.getAcct() : null; if (STUDY) H.setAcct(null);
   if (segs.length !== N*cfg.length) throw new Error('expected ' + N*cfg.length + ' runs from the hook, saw ' + segs.length);
-  const PJ = FRZ && !PANEL_ARG ? null : JSON.parse(fs.readFileSync(PANEL, 'utf8')), panel = PJ ? PJ.envs[env] : null, full = !!PJ && N === PJ._meta.seeds, bad = [];  /* check (1) needs the panel's own seeds; S47: under --frozen, a frozen panel */
+  const readJ = f => JSON.parse(/\.gz$/.test(f) ? require('zlib').gunzipSync(fs.readFileSync(f)).toString('utf8') : fs.readFileSync(f, 'utf8'));
+  const PJ = (FRZ || R2) && !PANEL_ARG ? null : readJ(PANEL), panel = PJ && !R2 ? PJ.envs[env] : null, full = !R2 && !!PJ && N === PJ._meta.seeds, bad = [];
+  let r2Cmp = null;  /* S11: every key, row and seed against release 2's part M shard */
+  if (R2 && PJ) { const pe = env === 'st' ? 'str' : env, mt = PJ._meta, fin = x => Number.isFinite(x) ? x : null; let nv = 0, nk = 0;
+    if (mt.part !== 'M' || mt.env !== pe || mt.years !== YRS || mt.adults !== 500 || mt.seeds[0] !== 1 || mt.seeds[1] < N) throw new Error('--panel is not part M of release 2 for ' + pe + ', ' + YRS + ' years, 500 adults, seeds 1..' + N);
+    ['none', 'c22', 'rel'].forEach((nm, i) => { const ref = PJ.rows[pe + '.' + nm], ours = R[i]._s; if (!ref) { bad.push('panel has no row ' + pe + '.' + nm); return; }
+      Object.keys(ref).forEach(key => { if (!ours[key]) { bad.push(ROWS[i] + ': key ' + key + ' missing in this run'); return; } nk++;
+        for (let s = 0; s < N; s++) { const a = fin(ours[key][s]), b = ref[key][s]; nv++; if (a !== b) bad.push(ROWS[i] + ' ' + key + ' seed ' + (s + 1) + ': ' + a + ' vs release 2 ' + b); } });
+      Object.keys(ours).forEach(key => { if (!ref[key]) bad.push(ROWS[i] + ': key ' + key + ' not in the panel'); }); });
+    r2Cmp = {keys: nk, values: nv, engine: mt.manifest && mt.manifest.commit, engineBlockSha256: mt.manifest && mt.manifest.engineBlockSha256}; }  /* check (1) needs the panel's own seeds; S47: under --frozen, a frozen panel */
   ROWS.forEach((j, i) => {
     const r = R[i], pub = !full ? null : j === 'base' ? panel.base.path : panel.rows[j].path, b = out.bands[j] = {};
     M.forEach(m => { const d = m === 'medW' ? 0 : 1; b[m] = {p10: [], p50: [], p90: [], mean: []};
@@ -145,10 +168,12 @@ try {
         if (Math.abs(x - e[sd]) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' ' + g + ': ' + x + ' vs ' + e[sd]); } }); });
     delete out.bands; delete out.deciles; delete out.lives; }
   if (bad.length) { console.error('SELF-CHECK FAILED (' + bad.length + '):\n  ' + bad.slice(0, 20).join('\n  ')); process.exit(1); }
-  out._meta.selfCheck = (full ? '' : PJ ? 'NOT COMPARED WITH THE PANEL (seeds differ); ' : 'NOT COMPARED WITH A PANEL (--frozen without --panel); ') + 'yearly means equal the published path (' + PANEL.replace(ROOT + path.sep, '') + '); seed ' + LS + '\'s adults add up to the engine\'s yearly shares' + (STUDY ? '; study: no accounting identity failed, the adults\' below-30-days count equals the engine\'s bO, the wealth Gini equals the engine\'s at Year 7 and the last year, every adult has a twin, EPPM\'s parts add up' : '');
+  if (R2) out._meta.r2 = {rows: 'harness.js r2FreezePair: no programme, C2.2 and the release design (release 2\'s main row)', study: 'harness.js r2MainStudy', adults: 500, panelCheck: r2Cmp};
+  out._meta.selfCheck = R2 ? (r2Cmp ? 'every engine key of every row equals release 2\'s part M (' + PANEL_ARG + ', engine ' + String(r2Cmp.engine).slice(0, 7) + '): ' + r2Cmp.keys + ' row-keys, ' + r2Cmp.values + ' values, seeds 1..' + N : 'NOT COMPARED WITH RELEASE 2 (--r2 without --panel)') + '; seed ' + LS + '\'s adults add up to the engine\'s yearly shares' + (SUITE ? '; the suite\'s bO equals the engine\'s and the mean yearly ep its epPY' : '') :
+    (full ? '' : PJ ? 'NOT COMPARED WITH THE PANEL (seeds differ); ' : 'NOT COMPARED WITH A PANEL (--frozen without --panel); ') + 'yearly means equal the published path (' + PANEL.replace(ROOT + path.sep, '') + '); seed ' + LS + '\'s adults add up to the engine\'s yearly shares' + (STUDY ? '; study: no accounting identity failed, the adults\' below-30-days count equals the engine\'s bO, the wealth Gini equals the engine\'s at Year 7 and the last year, every adult has a twin, EPPM\'s parts add up' : '');
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const OUTF = (process.argv.find(a => a.startsWith('--out=')) || '').slice(6);  /* session 7: --out=FILE writes there (the s165 job keeps its worktree clean) */
-const file = OUTF ? path.resolve(OUTF) : path.join(ROOT, 'dev', 'runs', (STUDY ? 'explore-study-' : SUITE ? 'explore-suite-' : 'explore-') + env + '-' + YRS + (SNAB ? '-snab' : SN ? '-sn' : '') + '.json');
+const file = OUTF ? path.resolve(OUTF) : path.join(ROOT, 'dev', 'runs', (STUDY ? 'explore-study-' : SUITE ? 'explore-suite-' : 'explore-') + (R2 ? 'r2-' : '') + env + '-' + YRS + (SNAB ? '-snab' : SN ? '-sn' : '') + '.json');
 fs.writeFileSync(file, JSON.stringify(out));
 console.log('self-check passed; wrote ' + file + ' (' + out._meta.seconds + ' s)');
