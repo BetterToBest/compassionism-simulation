@@ -1,0 +1,8 @@
+st c22 off 25 s
+st c22 main 26 s
+st c22 fd0.034 26 s
+st c22 fd0.062 24 s
+st rel off 16 s
+st rel main 16 s
+st rel fd0.034 16 s
+st rel fd0.062 16 s
