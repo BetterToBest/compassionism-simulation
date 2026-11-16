@@ -910,6 +910,22 @@
    },
    "equal": true,
    "seconds": 183
+  },
+  {
+   "from": "bbdd929f9d914eadf46a2c81b45299d4a944a9c9b9a6ec7adbcc620db7d735e8",
+   "to": "9b3afc8fa3e0df6af96312def80c8b6dd52b479f777894f1805cf6dfe5b23573",
+   "date": "2026-11-16",
+   "change": "S75 part 2: era paths and settings in the history environment (hx.era, hx.T, hx.Tr, hx.H; off identical)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 144
   }
  ]
 }
