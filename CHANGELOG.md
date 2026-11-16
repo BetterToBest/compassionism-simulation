@@ -6,6 +6,14 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.1 Release Notes
+
+Released Nov 16, 2026 (S77, from Duke Johnson's report of the same day): **the sticky section bar on both pages.** Pages only: no engine line, data file or figure changes.
+- **Release 1's controls follow the section.** The bar at the top of the simulation page and the findings page carried release 1's environment and years switches, labelled "Release 1 panel", while release 2 was on screen. They now float under the section links and show only over release 1's sections; over release 2's sections (marked `data-r2`) they are hidden. They float, so showing or hiding them never moves the page.
+- **A section link lands on its section.** Sections stopped 120-130 px from the top, but on a phone the bar is about 190 px tall, so the clicked section's heading sat under it and the reader saw the end of the section before. Each section now stops below the bar's measured height (`--fx-stick`; release 2's sections, with no controls over them, `--fx-stick-r2`). On the findings page the Central bank and Studies links landed on the section above, because charts above them drew after the jump and pushed them down; a clicked section (or one named in the address) is now held in place for two seconds while the page draws, until the reader scrolls.
+- **Links to sections an earlier release does not have** (Release 2, Central bank, Studies, when v5.6 or earlier is open) are hidden.
+- Code: `site/stickynav.js` (new, on both pages), `site/findings.css`. Checked by clicking every section link at 1050x480 and 390x844 on both pages: each lands on its own section, below the bar, with its link highlighted.
+
 ## v5.9.0 Release Notes
 
 Released Nov 16, 2026 (S76): **release 2 leads both pages, with a central-bank switch.** Pages and data only: no engine line changes, and no figure of release 1 or release 2 changes.

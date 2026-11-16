@@ -211,7 +211,7 @@ async function run(opts) {
       if (row === 'base' && Z.tier0_part.mean.some(v => v !== null)) sf.push(y + 'y ' + e + ' no program has participants'); })));
     add('session 11: the visual suite series (data/releases/v' + (RS && RS.version) + '/suite-*.json) agree with the release: the share under 30 days equals the published path to its rounding, each year\'s six tiers add up to all adults, and no one takes part without the program', sf.length === 0,
       sf.length ? sf.slice(0, 5).join('; ') : Object.keys(S).length + ' horizons x 3 environments x 4 rows');
-    const dom = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html' }), w = dom.window;
+    const dom = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html?rel=1' }), w = dom.window;  /* S11: release 1's view (release 2's is checked below) */
     w.scrollTo = () => {}; serve(w); w.eval(chartsSrc); w.eval(findingsSrc); const inline = [...w.document.querySelectorAll('script')].filter(x => !x.src && !x.type); w.eval(inline[0].textContent);
     await settle(w); await settle(w);
     let n3 = 0;
@@ -227,7 +227,7 @@ async function run(opts) {
       sp3.length ? sp3.slice(0, 4).join('; ') : n3 + ' numbers checked in 12 views');
     /* session 12: the measures study's cards and tables, on a two-seed test fixture (not a result) when the release has no study yet, so the paths are checked before the data arrives */
     { const fx = Object.keys(Z).length ? null : JSON.parse(rd('dev/tools/fixtures/study-fixture-20.json')), RF = fx ? Object.assign({}, RW, { study: { 20: fx } }) : RW;
-      const d2 = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html?env=ref&years=20' }), w2 = d2.window; w2.scrollTo = () => {}; serve(w2);
+      const d2 = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html?rel=1&env=ref&years=20' }), w2 = d2.window; w2.scrollTo = () => {}; serve(w2);
       if (fx) { const f0 = w2.fetch; w2.fetch = url => f0(url).then(r => /data\/releases\/v[\d.]+\.json$/.test(String(url).split('?')[0]) ? { ok: true, status: 200, json: () => r.json().then(j => Object.assign(j, { explore: Object.assign({}, j.explore, { study: { 20: '../../dev/tools/fixtures/study-fixture-20.json' } }) })) } : r); }
       w2.eval(chartsSrc); w2.eval(findingsSrc); w2.eval([...w2.document.querySelectorAll('script')].filter(x => !x.src && !x.type)[0].textContent); await settle(w2); await settle(w2);
       let n4 = 0; const sp4 = [];
@@ -236,8 +236,26 @@ async function run(opts) {
         if (w2.document.querySelectorAll('#moves table').length !== 6) sp4.push('suite study ' + rd2 + ': the movement section drew ' + w2.document.querySelectorAll('#moves table').length + ' tables');
         scan.push(...unmarked(w2.document.getElementById('content'), 'suite study ' + rd2)); }
       add('session 12: on the visual suite page the measures study\'s numbers (cards and the six movement tables) equal the study data' + (fx ? ' (a two-seed test fixture: the release has no study yet)' : ''), sp4.length === 0 && n4 > 300, sp4.length ? sp4.slice(0, 4).join('; ') : n4 + ' numbers checked in 3 views'); }
+    /* S11 (Nov 16, 2026): release 2's view, from data/releases/r2/ (job X2). The folder is what dev/tools/suite_r2.py writes (its --check: index.json equals
+     * data/studies/r2-effects.json's rows and the suite files' hashes; the tiers add up; no participants without the programme; the year-average share under
+     * 30 days on the same rules equals release 2's published basic-living figure), and every number in the release 2 view equals the folder's data. */
+    { let g4 = { status: 1, stdout: '' }; try { g4 = { status: 0, stdout: cp.execFileSync('python3', [path.join('dev', 'tools', 'suite_r2.py'), '--check'], { cwd: ROOT, encoding: 'utf8' }) }; } catch (e) { g4 = { status: e.status || 1, stdout: String(e.stdout || e.message) }; }
+      add('S11: python3 dev/tools/suite_r2.py --check: release 2\'s suite folder (data/releases/r2/) carries release 2\'s published effects as data/studies/r2-effects.json has them, and its series agree with them', g4.status === 0, g4.stdout.trim().split('\n').pop());
+      const X = rj('data/releases/r2/index.json'), R2W = { version: X.release, idx: X, meta: { seeds: X.seeds, agents: X.agents, envs: X.envs }, suite: {}, effects: X.effects }, sp5 = []; let n5 = 0;
+      Object.entries(X.suite).forEach(([y, f]) => { R2W.suite[y] = rj(path.join('data/releases', f)); });
+      for (const [e, y, rd2] of [['ref', '20', 'c22'], ['adv', '40', 'release'], ['st', '20', 'release'], ['st', '40', 'c22']]) {
+        const d5 = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html?env=' + e + '&years=' + y + '&read=' + rd2 }), w5 = d5.window; w5.scrollTo = () => {}; serve(w5);
+        w5.eval(chartsSrc); w5.eval(findingsSrc); w5.eval([...w5.document.querySelectorAll('script')].filter(x => !x.src && !x.type)[0].textContent); await settle(w5); await settle(w5);
+        if (!w5.suiteState().R || w5.suiteState().st.rel !== '2') { sp5.push('suite r2 ' + e + ' ' + y + 'y: the page did not open on release 2'); continue; }
+        for (const g of ['all', 'part', 'non']) { const gb = [...w5.document.querySelectorAll('#tiers button')].filter(b => b.dataset.value === g)[0]; if (gb) { gb.click(); await settle(w5); }
+          w5.document.querySelectorAll('#suite details').forEach(d => { d.open = true; });
+          const x = spanProbs(w5.document, R2W, 'suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g); n5 += x.n; sp5.push(...x.bad);
+          if (w5.document.querySelectorAll('.su-sec').length !== 9 || w5.document.querySelectorAll('.su-sec svg.fx-svg').length !== 11) sp5.push('suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
+          scan.push(...unmarked(w5.document.getElementById('content'), 'suite r2 ' + e + ' ' + y + 'y')); } }
+      add('S11: on the visual suite page\'s release 2 view every number (texts, cards, tables and the quoted published effects) equals release 2\'s suite folder, in four views of environment, horizon and design and all three groups of adults', sp5.length === 0 && n5 > 1500,
+        sp5.length ? sp5.slice(0, 4).join('; ') : n5 + ' numbers checked in 12 views'); }
     const un3 = scan.filter(s => s.startsWith('suite'));
-    add('session 11: no percentage, dollar figure or price level is typed into the visual suite page', un3.length === 0, un3.length ? [...new Set(un3)].slice(0, 5).join('; ') : 'the whole page in 12 views'); }
+    add('session 11: no percentage, dollar figure or price level is typed into the visual suite page', un3.length === 0, un3.length ? [...new Set(un3)].slice(0, 5).join('; ') : 'the whole page in 24 views, both releases'); }
   return out;
 }
 

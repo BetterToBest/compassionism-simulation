@@ -1246,10 +1246,10 @@ function phase15(done) {
   const later = ms => new Promise(r => setTimeout(r, ms));
   (async () => {
     const M = JSON.parse(rd('data/manifest.json')), newest = M.releases.filter(r => r.status === 'latest')[0] || M.releases.filter(r => r.status === 'current')[0];
-    const a = open('?env=adv&years=40&read=h1&grp=non'); await later(400); const d = a.w.document, S = a.w.suiteState();
+    const a = open('?rel=1&env=adv&years=40&read=h1&grp=non'); await later(400); const d = a.w.document, S = a.w.suiteState();  /* S11: release 1's view (?rel=1); release 2's is checked below */
     const pressed = [...d.querySelectorAll('button[aria-pressed="true"]')].map(b => b.dataset.value).sort().join(',');
-    check('session 11: the suite page opens the newest release in the manifest (v' + newest.version + ') and reads the view from the address (environment, years, backing reading, group of adults)',
-      S.R && S.R.version === (newest.figuresFrom || newest.version) && pressed === '40,adv,h1,non' && a.errs.length === 0, 'release v' + (S.R && S.R.version) + '; pressed ' + pressed + (a.errs.length ? '; errors: ' + a.errs.join('; ') : ''));
+    check('session 11: the suite page\'s release 1 view opens the newest release in the manifest (v' + newest.version + ') and reads the view from the address (release, environment, years, backing reading, group of adults)',
+      S.R && S.R.version === (newest.figuresFrom || newest.version) && pressed === '1,40,adv,h1,non' && a.errs.length === 0, 'release v' + (S.R && S.R.version) + '; pressed ' + pressed + (a.errs.length ? '; errors: ' + a.errs.join('; ') : ''));
     const secs = d.querySelectorAll('.su-sec').length, svgs = d.querySelectorAll('.su-sec svg.fx-svg').length, tierCols = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length);
     const tables = d.querySelectorAll('#suite table').length, dl = d.querySelectorAll('#suite .fx-tools button').length;
     check('session 11: every section, chart and table draws; each ladder chart has one column a year; every table has CSV and JSON downloads',
@@ -1270,17 +1270,32 @@ function phase15(done) {
     const haveStudy = !!(S.R.study && S.R.study[S.st.years]);  /* the study may cover one horizon before the other */
     check('session 12: each of the six measures has a card with its status (Measured, Measured differently from the paper, Partly modelled), and a card the measures study fills says it is waiting when the study is not in the release',
       badges.length === 6 && badges.filter(x => x === 'Measured').length === 2 && badges.filter(x => x === 'Partly modelled').length === 1 && (haveStudy ? wait === 0 : wait === 2 && /Waiting/.test(d.querySelector('#moves').textContent)), badges.join(' | ') + '; waiting cards ' + wait);
-    const c = open('?env=ref&years=20', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) return Object.assign({}, j, { explore: Object.assign({}, j.explore, { study: { 20: '../../dev/tools/fixtures/study-fixture-20.json' } }) }); }); await later(400);
+    const c = open('?rel=1&env=ref&years=20', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) return Object.assign({}, j, { explore: Object.assign({}, j.explore, { study: { 20: '../../dev/tools/fixtures/study-fixture-20.json' } }) }); }); await later(400);
     const dc = c.w.document, mt = dc.querySelectorAll('#moves table').length, cw = [...dc.querySelectorAll('#indices .su-ans')].filter(x => /Waiting/.test(x.textContent)).length, nums = dc.querySelectorAll('#moves .num').length;
     check('session 12: with the measures study in the release, the cards fill in and the movement section draws its six tables, each with downloads', mt === 6 && cw === 0 && nums >= 90 && c.errs.length === 0 && dc.querySelectorAll('#moves .fx-tools button').length === 12, mt + ' tables, ' + nums + ' numbers, waiting cards ' + cw + (c.errs.length ? '; errors: ' + c.errs.join('; ') : ''));
     const b = open('', (u, j) => { if (/^data\/releases\/v[\d.]+\.json$/.test(u)) { j = Object.assign({}, j, { explore: Object.assign({}, j.explore) }); delete j.explore.suite; return j; } }); await later(300);
     const ban = b.w.document.querySelector('#suite .fx-banner');
     check('session 11: a release without the suite series shows a plain note, not a broken page', !!ban && /no suite series/.test(ban.textContent) && b.errs.length === 0, ban ? ban.textContent.slice(0, 90) : 'no note');
-    /* session 13: the page opens at 40 years on the "Every dollar backed" reading, says plainly that this is the optimistic end, and the other readings and 20 years are one click away; it stays out of search engines */
-    const e = open(''); await later(400); const de = e.w.document, SE = e.w.suiteState(), pr = [...de.querySelectorAll('#controls button[aria-pressed="true"]')].map(x => x.dataset.value).sort().join(',');
+    /* S11 (Nov 16, 2026): the page opens on release 2 (its series in data/releases/r2/, job X2) at 40 years on the C2.2 design; its sections, charts and tables draw,
+     * the release is written to the address, and a missing release 2 folder leaves release 1's page as it was, without the release switch */
+    const r2 = open(''); await later(400); const d2 = r2.w.document, S2 = r2.w.suiteState(), p2 = [...d2.querySelectorAll('#controls button[aria-pressed="true"]')].map(x => x.dataset.value).sort().join(',');
+    const t2 = d2.querySelectorAll('#suite table').length, l2 = [...d2.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();
+    check('S11: the suite page opens on release 2 (no program, C2.2 and the release design) at 40 years on the C2.2 design, labelled with its engine; every section, chart and table draws, each with its downloads',
+      S2.st.rel === '2' && S2.R && S2.R.version === '2' && p2 === '2,40,c22,ref' && d2.querySelectorAll('.su-sec').length === 9 && d2.querySelectorAll('.su-sec svg.fx-svg').length === 11 && l2 === '40,40' && t2 === 7 && d2.querySelectorAll('#suite .fx-tools button').length === 14 &&
+      /Release 2/.test(d2.getElementById('rel-note').textContent) && /104691f/.test(d2.getElementById('rel-note').textContent) && !d2.getElementById('optimistic') && r2.errs.length === 0,
+      'release ' + S2.st.rel + '; pressed ' + p2 + '; ' + d2.querySelectorAll('.su-sec').length + ' sections, ' + d2.querySelectorAll('.su-sec svg.fx-svg').length + ' charts, ' + t2 + ' tables' + (r2.errs.length ? '; errors: ' + r2.errs.join('; ') : ''));
+    [...d2.querySelectorAll('#controls button')].filter(x => x.dataset.value === 'release').forEach(x => x.click()); await later(100);
+    const q2 = new URLSearchParams(r2.w.location.search);
+    check('S11: choosing the release design writes it to the address (release 2 is the default, so the address needs no release)', r2.w.suiteState().st.rel === '2' && r2.w.suiteState().st.read === 'release' && q2.get('read') === 'release' && q2.get('rel') !== '1', r2.w.location.search);
+    const nr = open('', (u, j) => { if (u === 'data/releases/r2/index.json') return Object.assign({}, j, { suite: { 20: 'r2/missing-20.json', 40: 'r2/missing-40.json' } }); }); await later(400);
+    const nS = nr.w.suiteState(), nb = [...nr.w.document.querySelectorAll('#controls button')].filter(x => x.dataset.value === '2').length;
+    check('S11: without release 2\'s folder the page shows release 1 as before, with no release switch and no error', nS.R && nS.st.rel === '1' && nS.st.read === 'h1' && nb === 0 && nr.errs.length === 0, 'release ' + nS.st.rel + '/' + nS.st.read + '; release buttons ' + nb);
+    /* session 13: release 1's view opens at 40 years on the "Every dollar backed" reading, says plainly that this is the optimistic end, and the other readings and 20 years are one click away; it stays out of search engines */
+    const e = open(''); await later(400); const de = e.w.document; [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === '1').forEach(x => x.click()); await later(100);
+    const SE = e.w.suiteState(), pr = [...de.querySelectorAll('#controls button[aria-pressed="true"]')].map(x => x.dataset.value).sort().join(',');
     const opt = de.getElementById('optimistic');
-    check('session 13: the suite page opens at 40 years on "Every dollar backed", and in that view one plain sentence says it is the optimistic end and the headline figures elsewhere stay at the cautious end',
-      SE.st.years === '40' && SE.st.read === 'h1' && pr === '40,h1,ref' && !!opt && /optimistic end/.test(opt.textContent) && /cautious end/.test(opt.textContent) && e.errs.length === 0, 'state ' + SE.st.years + '/' + SE.st.read + '; pressed ' + pr + '; sentence ' + (opt ? opt.textContent.slice(0, 60) : 'missing'));
+    check('session 13: one click on "Release 1" opens release 1 at 40 years on "Every dollar backed", and in that view one plain sentence says it is the optimistic end and the headline figures elsewhere stay at the cautious end',
+      SE.st.years === '40' && SE.st.read === 'h1' && pr === '1,40,h1,ref' && !!opt && /optimistic end/.test(opt.textContent) && /cautious end/.test(opt.textContent) && new URLSearchParams(e.w.location.search).get('rel') === '1' && e.errs.length === 0, 'state ' + SE.st.years + '/' + SE.st.read + '; pressed ' + pr + '; sentence ' + (opt ? opt.textContent.slice(0, 60) : 'missing'));
     [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === 'release').forEach(x => x.click()); await later(100);
     const gone = !de.getElementById('optimistic'); [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === '20').forEach(x => x.click()); await later(100);
     check('session 13: one click on "Main reading" removes the sentence and one click on 20 years shows the 20-year view; the page is indexable (suite go-live)', gone && e.w.suiteState().st.years === '20' && e.w.suiteState().st.read === 'release' && !/noindex/.test(rd('suite.html').match(/<meta name="robots"[^>]*>/)[0]),
