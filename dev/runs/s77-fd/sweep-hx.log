@@ -1,0 +1,9 @@
+hx c22 off 60 s
+hx c22 main 67 s
+hx c22 fd0.034 64 s
+hx c22 fd0.062 69 s
+hx rel off 50 s
+hx rel main 52 s
+hx rel fd0.034 47 s
+hx rel fd0.062 23 s
+hx: 2 designs x 4 settings x 20 seeds, 431 s

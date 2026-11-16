@@ -1,0 +1,9 @@
+st c22 off 57 s
+st c22 main 60 s
+st c22 fd0.034 55 s
+st c22 fd0.062 63 s
+st rel off 42 s
+st rel main 39 s
+st rel fd0.034 39 s
+st rel fd0.062 47 s
+st: 2 designs x 4 settings x 20 seeds, 401 s

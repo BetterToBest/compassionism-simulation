@@ -1,0 +1,9 @@
+ref c22 off 58 s
+ref c22 main 65 s
+ref c22 fd0.034 54 s
+ref c22 fd0.062 57 s
+ref rel off 45 s
+ref rel main 43 s
+ref rel fd0.034 47 s
+ref rel fd0.062 40 s
+ref: 2 designs x 4 settings x 20 seeds, 409 s

@@ -1,0 +1,9 @@
+adv c22 off 62 s
+adv c22 main 64 s
+adv c22 fd0.034 62 s
+adv c22 fd0.062 65 s
+adv rel off 46 s
+adv rel main 41 s
+adv rel fd0.034 46 s
+adv rel fd0.062 32 s
+adv: 2 designs x 4 settings x 20 seeds, 418 s
