@@ -259,5 +259,8 @@
     whenVisible($('people') || doc.body, function () { people.visible = true; renderPeople(); });
     var nav = doc.querySelector('.fx-nav'); if (nav) F.spy(nav);
   }
-  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', function () { setTimeout(init, 0); }); else setTimeout(init, 0);
+  /* v5.9.3: the page's own script parses the embedded release panels (REL.data) in its DOMContentLoaded handler (relInit). This file is deferred, so it
+   * always runs before that event; starting on a bare timer raced it, and on a slow load the timer won, found no data, and left every card, chart and
+   * table below the headline blank. Wait for the event (the page's handler is registered first, so it has already run), then start. */
+  if (doc.readyState === 'loading' || !REL.data) doc.addEventListener('DOMContentLoaded', function () { setTimeout(init, 0); }); else setTimeout(init, 0);
 })();
