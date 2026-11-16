@@ -12,7 +12,7 @@ Nov 15, 2026. The specification curves of the round-2 batch, read as frozen. Eng
 
 ## What a curve is
 
-For each outcome, design, environment and horizon, the curve holds the programme's effect at 62 points on the Source rows: the main row; the 32 single readings S70's rules carry (each assumption moved to the end of its range, the others at main); the 28 pairs S70 flagged, at their joint point; and the least-favourable bound, every carried assumption at the end that works against the programme together. On the financed rows: 117 points (49 single readings, 66 pairs, the bound). Each point is a paired run on seeds 1-500 with its own no-programme run.
+For each outcome, design, environment and horizon, the curve holds the programme's effect at 62 points on the Source rows: the main row; the 32 single readings S70's rules carry (each assumption moved to the end of its range, the others at main); the 28 pairs S70 flagged, at their joint point; and the least-favourable bound, every carried assumption at the end that works against the programme together. On the financed rows: 116 points (49 single readings, 66 pairs, the bound; 115 for the year debt passes GDP). Each point is a paired run on seeds 1-500 with its own no-programme run.
 
 The preregistered rule (rule 2): **robust** when every point's interval excludes zero with the main row's sign; **mostly robust** when at least 90% do and none excludes zero with the opposite sign; **fragile** otherwise. An effect below materiality at the main row is "no material change" (rule 3).
 
@@ -21,7 +21,7 @@ The preregistered rule (rule 2): **robust** when every point's interval excludes
 Range across the curve first, then the main row with its seed interval. Reference shown; every environment and horizon is in the tables.
 
 - **C2.2, basic living** (adult-years below 30 days of basic living): across the 62 readings, lowered by 16.5 to 19.7 points at 20 years; at the main row 18.7 (seed interval 18.6 to 18.8). Robust.
-- **C2.2, basket poverty:** lowered by 26.0 to 33.3 points; main row 32.4 (32.2 to 32.5). Robust.
+- **C2.2, basket poverty:** lowered by 25.9 to 33.3 points; main row 32.4 (32.2 to 32.5). Robust.
 - **C2.2, wealth poverty** (yearly average): lowered by 15.7 to 19.7 points; main row 18.6 (18.5 to 18.7). Robust. Erosion share at the main row 1.0%.
 - **C2.2, median real wealth:** raised by $187,600 to $659,600; main row $208,400 ($207,100 to $209,900). Robust. Rests on today's price rule; 1.0% of the main row's figure is the erosion of opening balances (question 1's report).
 - **Release design, basic living:** lowered by 10.7 to 13.0 points; main row 12.3. Robust.
@@ -40,7 +40,7 @@ In Stress the release design's ranges are smaller but still robust: basket pover
 
 ## The financed rows
 
-Every financed curve but programme inflation is fragile (C2.2's programme inflation is robust in five cells, but immaterial at the main row; below 0.2 points a year there). Most frequent reversing readings (count of curve-cells, poverty and wealth outcomes): the contribution's base (33), the income effect (22), how the rest is met (20), the share the contribution must raise, alone and in its pairs (14 alone, 15-19 in each pair), the cap on the rate (17 in pairs). Debt passes GDP within the run (median) at 32-39 of the 117 readings in every cell, mostly where the contribution raises little and the rest is borrowed; at the main financed rows it stays below GDP (question 5's report).
+Every financed curve is fragile except programme inflation and the release design's basic-living effect in Reference (116 of 116 readings keep the sign) (C2.2's programme inflation is robust in five cells, but immaterial at the main row; below 0.2 points a year there). Most frequent reversing readings (count of curve-cells, poverty and wealth outcomes): the contribution's base (33), the income effect (22), how the rest is met (20), the share the contribution must raise, alone and in its pairs (14 alone, 15-19 in each pair), the cap on the rate (17 in pairs). Debt passes GDP within the run (median) at 32-39 of the 117 readings in every cell, mostly where the contribution raises little and the rest is borrowed; at the main financed rows it stays below GDP (question 5's report).
 
 ## Unfavourable and null results
 

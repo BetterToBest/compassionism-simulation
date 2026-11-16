@@ -12,14 +12,14 @@ Nov 15, 2026. A guide to the seven reports on round 2, one per preregistered que
 
 **Inflation, with the backing statement beside it (rule 4).** At the main row, programme inflation is 0.0-0.2 points a year, no material change, at every reading. The main row assumes every dollar paid is matched by new output, as the design states (ledger decision D25; a design parameter). The model's own mechanism for new output matches 0.2-1.9% of it (14-20% with no ceiling); inflation stays under 5% a year only above about 86-90% backing (74-77% for the release design in Stress), and runs at 15-53 points a year at the mechanism's point. (Question 4.)
 
-**Paid for by a contribution instead (never led with; D23).** C2.2 then needs a mean contribution of 63-77% of all money income and lowers basket poverty by at most 17.5 points (Stress, 20 years: +0.6, worse); the release design, at 46-71% of wages, raises basket poverty by up to 9.6 points. Debt stays under GDP at the main financed rows, but every financed result is fragile across its readings. Run without the weighted top tail. (Question 5.)
+**Paid for by a contribution instead (never led with; D23).** C2.2 then needs a mean contribution of 63-77% of all money income and lowers basket poverty by at most 17.5 points (Stress, 20 years: +0.6, worse); the release design, at 46-71% of wages, raises basket poverty by up to 9.6 points. Debt stays under GDP at the main financed rows, but 46 of the 48 financed poverty and wealth curves are fragile across their readings (the two that hold are the release design's basic-living effect in Reference). Run without the weighted top tail. (Question 5.)
 
 ## The seven reports
 
 | Question | Report | One line |
 |---|---|---|
 | 1 Main effects | `s64-round2-q1-main-effects.md` | All 60 primary tests exclude zero and survive Holm; 48 material, the 12 that are not are inflation. |
-| 2 Robustness | `s64-round2-q2-robustness.md` | Every Source-row poverty and wealth curve robust (48 of 48); every financed curve fragile. |
+| 2 Robustness | `s64-round2-q2-robustness.md` | Every Source-row poverty and wealth curve robust (48 of 48); 46 of 48 financed poverty and wealth curves fragile (the two that hold: the release design's basic-living effect in Reference). |
 | 3 Interactions | `s64-round2-q3-interactions.md` | 22 material interactions on the Source rows, all median wealth (how wealth is held, the spending share); none on poverty or inflation. |
 | 4 Backing | `s64-round2-q4-backing.md` | Poverty effects barely depend on backing; inflation and median wealth do; the mechanism falls far short of break-even. Round 1's curve beside it. |
 | 5 Financed rows | `s64-round2-q5-financed.md` | Contribution rates of 46-77%; much smaller poverty effects, some reversed; debt manageable at the main rows. |
@@ -33,7 +33,7 @@ Nov 15, 2026. A guide to the seven reports on round 2, one per preregistered que
 
 ## Unfavourable results, together
 
-Programme inflation above no programme in every cell (immaterial at the main row; 15-53 points a year without backing). Lower participation and employment (programme leavers 1-5% of adult-years) and their earnings forgone. Less movement out of the lowest wealth fifth. Labour's share of income down 10-30 points. The release design's effects shrink by two thirds in Stress. Every financed row fragile; the release design paid by a contribution on wages raises basket poverty. At no backing and 40 years, the release design lowers median real wealth.
+Programme inflation above no programme in every cell (immaterial at the main row; 18-53 points a year at no backing (15-53 at the model's own mechanism)). Lower participation and employment (programme leavers 1-5% of adult-years) and their earnings forgone. Less movement out of the lowest wealth fifth. Labour's share of income down 11.7 to 30.5 points in Reference at 20 years (1.1 to 32.1 across every cell). The release design's effects shrink by two thirds in Stress. 46 of 48 financed poverty and wealth curves fragile; the release design paid by a contribution on wages raises basket poverty. At no backing and 40 years, the release design lowers median real wealth.
 
 ## What no figure here covers
 
