@@ -1,0 +1,7 @@
+hx c22 infl 271 s
+hx c22 actual 252 s
+hx c22 cb 257 s
+hx rel infl 128 s
+hx rel actual 86 s
+hx rel cb 87 s
+hx: 2 designs x 3 arms x 100 seeds, 1081 s

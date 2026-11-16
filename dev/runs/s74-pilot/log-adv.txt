@@ -1,0 +1,5 @@
+adv c22 off 242 s
+adv c22 cb 265 s
+adv rel off 165 s
+adv rel cb 183 s
+adv: 2 designs x 2 arms x 100 seeds, 855 s
