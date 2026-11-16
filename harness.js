@@ -1319,9 +1319,9 @@ function s68UnitSuite(){
     [false, true].forEach(function(pe){ var c = frozenRow(relMainCfgs(tbPresets(P6))[1]); c.fx = {pthb:true, hb:true, ab:true, sp:true, pe:pe}; var r = tbStudy([c], 1, P6, SO)[0];
       sg.push(Object.keys(r._s).sort().map(function(k){ return k + ':' + Array.prototype.join.call(r._s[k], ','); }).join(';')); });
     return {pass:n[0] > 0 && n[1] === 0 && sg[0] === sg[1], detail:'PTH-books misses with ageing: ' + n[0] + ' without pe, ' + n[1] + ' with; without ageing identical: ' + (sg[0] === sg[1])}; });
-  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 44 places (39 at S68 part 2; S73 added 5, all its own handling of adults outside the labour force: lfOut, lfFlow, lfAcc, the margin\'s call) (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
+  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 45 places (39 at S68 part 2; S73 added 5, all its own handling of adults outside the labour force: lfOut, lfFlow, lfAcc, the margin\'s call; S75 added 1, hx.T\'s income base, which takes a._ssY as yrCashSurplus does: a retiree\'s benefit or the own income of an adult outside the labour force) (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
     var S = builtSource(), k = S.indexOf('/* ==== HARNESS' + '-ONLY CODE ==== */'), n = (S.slice(0, k).match(/\._ret\b/g) || []).length;
-    return {pass:n === 44, detail:'reads of a._ret in the engine: ' + n + ' (expected 44)'}; });
+    return {pass:n === 45, detail:'reads of a._ret in the engine: ' + n + ' (expected 45)'}; });
   t('S68 part 2: the on-together check (r2PairCheck) passes on the candidate main row and with the price rule counted in quarters, and the run-order test holds (Reference, seed 1)', function(){
     var R = r2PairCheck('ref', 1, {only:['q']}), f = R.rows.filter(function(x){ return !x.pass; });
     return {pass:f.length === 0 && R.runOrder.mainSame && R.runOrder.noneSame, detail:R.rows.length + ' rows, failed: ' + (f.map(function(x){ return x.id + (x.threw ? ' (' + x.threw + ')' : ''); }).join(', ') || 'none') + '; run order ' + JSON.stringify(R.runOrder)}; });
@@ -2130,7 +2130,61 @@ function s74UnitSuite(){
     var okI = Math.abs(H.stIc - c/20) < 1e-12 && H.stI10 <= H.stIo && H.stIo <= H.stI90 && H.stIo > 0 && H.stLy_1 !== 0 && H.stLy_0 === 0;
     return {pass:!bad.length && any && okI, detail:(bad.slice(0, 4).join(', ') || 'ok') + '; History own inflation ' + H.stIo.toFixed(3) + '% a year (CPI-U ' + H.stIc.toFixed(3) + '%)'}; });
   return out; }
-Object.assign(module.exports, { cbSell, cbSettle, s74UnitSuite, HISTORY_ENV, HX, hxPi, hxIdx, hxRecPath, hxYear, cbOpts, cbYear, cbJob, CB_DEFAULTS, CB_U, CB_KEYS, setCbHook:function(f){ CB_HOOK = f; } });  /* S74 */
+/* S75 part 2 (Nov 16, 2026; research-update prereg/2026-11-s75-deep-history.md, Part B "Unit tests", and Amendment 4): the era paths and settings
+ * (index.html HXE, HX0, hxRun, hxTax, hxTRes; options hx.era, hx.T, hx.Tr, hx.H). */
+function s75UnitSuite(){
+  var out = [], fs = require('fs'), path = require('path');
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), A0 = ACCT, mb = mulberry32;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { mulberry32 = mb; resetNR6(sv); tbSetG(g); ACCT = A0; TB = null; LABOR = null; PRICE = null; FX = null; RTY = null; HX = HX0; HXH = 0; HXTS = null; } }
+  var MS = Object.assign(r2MainStudy(), {stab:true}), LEN = {e1:27, e2:12, e3:25, e4:19};
+  function env(hx){ return Object.assign({}, HISTORY_ENV, {nAgents:500, years:hx && hx.era ? LEN[hx.era] : HISTORY_ENV.years, hx:hx || true}); }
+  function run(hx, d, cb, seeds){ var P = env(hx), cf = r2FreezePair(P, d || 'c22'); if (cb) cf.forEach(function(c){ c.cb = Object.assign({}, cb); }); return tbStudy(cf, seeds || 1, P, MS); }
+  function diff(A, B, skip){ var bad = []; A.forEach(function(r, i){ var k = Object.keys(r._s).filter(function(x){ return !(skip && skip.test(x)); });
+      if (k.length !== Object.keys(B[i]._s).filter(function(x){ return !(skip && skip.test(x)); }).length) bad.push(i + ': key sets differ');
+      k.forEach(function(x){ if (!B[i]._s[x] || Array.prototype.join.call(r._s[x], ',') !== Array.prototype.join.call(B[i]._s[x], ',')) bad.push(i + ':' + x); }); }); return bad; }
+  t('S75: the engine\'s era paths (HXE) equal sources/s75_hx.json, every era, year, series and setting', function(){
+    var J = JSON.parse(fs.readFileSync(path.join(__dirname, 'sources', 's75_hx.json'), 'utf8')), bad = [];
+    ['e1', 'e2', 'e3', 'e4'].forEach(function(e){ var x = HXE[e], j = J[e]; if (x.era !== e || x.y0 !== j.y0 || x.n !== j.n || x.n !== LEN[e]) bad.push(e + ' header');
+      Object.keys(j.series).forEach(function(k){ if (!x[k] || x[k].length !== x.n) bad.push(e + ' ' + k + ' length'); else x[k].forEach(function(v, i){ if (v !== j.series[k][i]) bad.push(e + ' ' + k + '[' + (j.y0 + i) + ']'); }); });
+      j.T.d.forEach(function(v, g){ if (Math.abs(x.T[g] - v/100) > 1e-15) bad.push(e + ' T' + g); }); if (Math.abs(x.hm - j.H.hm/100) > 1e-15) bad.push(e + ' hm');
+      if (x.R.a !== j.R.a || x.R.b !== j.R.b || x.R.r !== j.R.r || x.R.pt !== 0.02) bad.push(e + ' R'); });
+    return {pass:!bad.length && HX === HX0, detail:bad.slice(0, 6).join(', ') || '4 eras, ' + Object.keys(J.e1.series).length + ' series each, with T, H and R'}; });
+  t('S75: off is identical: hx without era is S74\'s History bit for bit (HX0), before and after era runs; and the era leaves no state behind', function(){
+    var A = run(null), B0 = run({era:'e2', T:true, H:true}), B = run({rp:'actual'}), C = run({}), bad = diff(A, B).concat(diff(A, C));
+    return {pass:!bad.length && HX === HX0 && HXTS === null && B0[0].hxTCh > 0, detail:bad.slice(0, 4).join(', ') || 'identical (both rows, every key)'}; });
+  t('S75: an era runs its own paths: the outside index is the product of its CPI-U changes, year 0 carries no recession, later years follow S74\'s rule, and a run past the era is refused', function(){
+    var bad = [], thrown = false;
+    ['e1', 'e2', 'e3', 'e4'].forEach(function(e){ HX = HXE[e]; var x = 1; for (var y = 1; y < HX.n; y++){ x *= 1 + HX.cpi[y]/100; if (Math.abs(hxIdx(y, 1) - x) > 1e-12*x) bad.push(e + ' idx ' + y); }
+      var R = hxRecPath(HX.n); if (R[0].active) bad.push(e + ' year 0'); for (var y2 = 1; y2 < HX.n; y2++) if (R[y2].active !== (HX.rm[y2] > 0 || HX.ug[y2] >= 2)) bad.push(e + ' rec ' + y2); });
+    HX = HXE.e3; var y0rec = HX.ug[0] >= 2; HX = HXE.e4; try { hxT(19); } catch (e){ thrown = true; } HX = HX0;
+    return {pass:!bad.length && thrown && y0rec, detail:(bad.slice(0, 4).join(', ') || 'ok') + '; 1983 (e3 year 0) has an unemployment gap over 2 points and is not flagged'}; });
+  t('S75: arm T with every group\'s change at 0 is arm P exactly; arm H with growth 0 is arm P exactly (both designs, e2, seed 1)', function(){
+    var bad = [];
+    ['c22', 'rel'].forEach(function(d){ var P0 = run({era:'e2'}, d), T0 = run({era:'e2', T:[0, 0, 0, 0]}, d), H0 = run({era:'e2', H:0}, d);
+      diff(P0, T0, /^hxT/).forEach(function(b){ bad.push(d + ' T ' + b); }); diff(P0, H0).forEach(function(b){ bad.push(d + ' H ' + b); }); if (T0[0].hxTCh !== 0) bad.push(d + ' charge'); });
+    return {pass:!bad.length, detail:bad.slice(0, 4).join(', ') || 'identical'}; });
+  t('S75: arm T charges each group its change on its income and returns about what it raises (revenue-neutral within 5% of the charges); without the rebate nothing is returned; hx.T true needs an era', function(){
+    var R = run({era:'e1', T:true}), N = run({era:'e1', T:true, Tr:false}), thrown = 0; [{T:true}, {H:true}, {era:'e9'}, {era:'e1', T:[1, 2]}].forEach(function(h){ try { hxOpts(h); } catch (e){ thrown++; } });
+    var ok = R[0].hxTCh > 0 && Math.abs(R[0].hxTGap) < 5 && R[0].hxTRb !== 0 && N[0].hxTRb === 0 && Math.abs(N[0].hxTNet - (N[0].hxTGap/100*N[0].hxTCh)) < 1e-9 && thrown === 4;
+    var S = {d:[0.1, 0.2, 0.3, 0.4], rb:true, cur:[], cut:null, R:0, yr:-1, ch:0, rbS:0, chA:0, n:0}, sv = HXTS; HXTS = S; var c0 = [];
+    for (var i = 0; i < 100; i++) c0.push(hxTax({}, 0, i, 1)); var c1 = hxTax({}, 1, 198, 2), c2 = hxTax({}, 1, 20, 2), c3 = hxTax({}, 1, 120, 2); HXTS = sv;  /* real incomes 99 (top 1%), 10 (bottom half), 60 (middle 40%) */
+    var want = (0.1*1225 + 0.2*2780 + 0.3*(90 + 91 + 92 + 93 + 94 + 95 + 96 + 97 + 98) + 0.4*99)/100;  /* last year's 0..99 at the four rates, per adult */
+    var okD = c0.every(function(x){ return x === 0; }) && S.cut[0] === 49 && S.cut[1] === 89 && S.cut[2] === 98 && Math.abs(S.R - want) < 1e-12 && Math.abs(c1 - (0.4*198 - want*2)) < 1e-12 && Math.abs(c2 - (0.1*20 - want*2)) < 1e-12 && Math.abs(c3 - (0.2*120 - want*2)) < 1e-12;
+    return {pass:ok && okD, detail:'e1 C2.2 none: charge ' + R[0].hxTCh.toFixed(0) + ' per adult-year, gap ' + R[0].hxTGap.toFixed(2) + '% (rebate on), ' + N[0].hxTGap.toFixed(1) + '% (off)'}; });
+  t('S75: arm H raises the basket\'s medical price by (1 + hm)^t against the rest each year and moves the run', function(){
+    var log = [], P = env({era:'e3', H:true}), cf = r2FreezePair(P, 'c22'), pm = pmBasketIdx; var R0 = run({era:'e3'});
+    pmBasketIdx = function(c){ log.push(c.medical/c.food); return pm(c); }; var R; try { R = tbStudy([cf[0]], 1, P, MS); } finally { pmBasketIdx = pm; }
+    var hm = HXE.e3.hm, ok = log.length > 2 && R[0].fgt0PY !== R0[0].fgt0PY;
+    return {pass:ok && hm > 0, detail:'hm ' + (hm*100).toFixed(3) + '% a year; ' + log.length + ' price steps logged; medical over food in the last step ' + log[log.length - 1].toFixed(4)}; });
+  t('S75: an era with every setting on (T, H; e1 with the main and cb rows, and arm A with the era\'s rule) keeps eight main-stream draws per adult-year, every output finite, and the accounting identities (main and cb rows, C2.2, seed 1)', function(){
+    var bad = [], E = Object.assign({}, HISTORY_ENV, {hx:{era:'e1', T:true, H:true}}), R = r2PairCheck('hx', 1, {only:['cb'], env:E, years:27});
+    R.rows.forEach(function(x){ if (!x.pass) bad.push(x.id + ': ' + (x.threw || JSON.stringify({acct:x.acct.nFail, draws:x.draws.bad, nf:x.nonFinite.slice(0, 3), own:x.own.slice(0, 3)}))); });
+    var A = run({era:'e1', T:true, H:true}, 'rel', HXE.e1.R), nf = []; A.forEach(function(r, i){ Object.keys(r._s).forEach(function(k){ if (Array.prototype.some.call(r._s[k], function(v){ return !isFinite(v); })) nf.push(i + ':' + k); }); });
+    return {pass:!bad.length && !nf.length && A[0].stP3e !== undefined, detail:bad.concat(nf).slice(0, 3).join('; ') || 'main and cb rows pass; arm A (e1, release design) finite'}; });
+  return out; }
+Object.assign(module.exports, { s75UnitSuite, HXE, HX0, hxRun, hxTax, cbSell, cbSettle, s74UnitSuite, HISTORY_ENV, HX, hxPi, hxIdx, hxRecPath, hxYear, cbOpts, cbYear, cbJob, CB_DEFAULTS, CB_U, CB_KEYS, setCbHook:function(f){ CB_HOOK = f; } });  /* S74 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */
 function prUnitSuite(){
   var out = [];
@@ -3916,7 +3970,7 @@ function r2Own(r, ids, i){ var bad = [], v = function(k){ return r[k]; };
   if (r.wyF0PY !== undefined && r.prAvg === undefined && r.wyF0PY !== r.fgt0PY) bad.push('wy: differs from the published measure without a split year');
   if (r.bgSh !== undefined && !(r.bgSh >= -1e-12)) bad.push('bg: negative share');
   return bad; }
-function r2PairCheck(env, seeds, opt){ opt = opt || {}; var E = {ref:FULL_INTEGRATION, adv:ADVERSE_REFERENCE, st:STRESS_TEST, hx:HISTORY_ENV}[env], out = {env:env, seeds:seeds, rows:[]};  /* S74: hx, the history environment (21 years) */
+function r2PairCheck(env, seeds, opt){ opt = opt || {}; var E = opt.env || {ref:FULL_INTEGRATION, adv:ADVERSE_REFERENCE, st:STRESS_TEST, hx:HISTORY_ENV}[env], out = {env:env, seeds:seeds, rows:[]};  /* S74: hx, the history environment (21 years) */
   var P = Object.assign({}, E, {years:opt.years || (env === 'hx' ? HISTORY_ENV.years : 20), nAgents:opt.n || 500}), so = r2MainStudy(), mb0 = mulberry32, core0 = tbRunCore, cnt = 0, live = {}, draws = [];
   return acctProfile(function(){
     mulberry32 = function(sd){ var g = mb0(sd); return live[sd] ? function(){ cnt++; return g(); } : g; };
@@ -4374,6 +4428,10 @@ if (require.main === module) {
     console.log('\n=== s74UnitSuite(): S74, the history environment and the central bank (harness-only) ===');
     S74U.forEach(function(x){ if (!x.pass) s74f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + S74U.length + ' run, ' + s74f + ' failed');
+    var S75U = s75UnitSuite(), s75f = 0;
+    console.log('\n=== s75UnitSuite(): S75, the era paths and settings (harness-only) ===');
+    S75U.forEach(function(x){ if (!x.pass) s75f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + S75U.length + ' run, ' + s75f + ' failed');
     var SXU = sxUnitSuite(), sxf = 0;
     console.log('\n=== sxUnitSuite(): S52, the outside supply shock (harness-only) ===');
     SXU.forEach(function(x){ if (!x.pass) sxf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
@@ -4422,7 +4480,7 @@ if (require.main === module) {
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || s74f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || s74f || s75f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
