@@ -2113,6 +2113,22 @@ function s74UnitSuite(){
     var want = 100*((1 + pi)*(1 + HX.hR[4]/100) - 1) + 50*((1 + pi)*(1 + HX.eR[4]/100) - 1) + 10*pi + 200*0.46*pi - 40*pi, thrown = false;
     var sv = CB; CB = cbOpts({}); try { cbYear({hx:{rp:'infl'}}, 0, 1, null, []); } catch (e){ thrown = true; } finally { CB = sv; CBS = null; CBJ = null; }
     return {pass:Math.abs(I - want) < 1e-9 && ry.i === null && thrown, detail:'revaluation ' + I.toFixed(6) + ' (expected ' + want.toFixed(6) + ')'}; });
+  /* S74 part 3 (Nov 16, 2026): the spending reading cb.dm and the who-gains reporting (study option stab) */
+  t('S74 part 3: cb dm 0 gives the main rule exactly; with dm 1 the share of the cash surplus consumed is the share less the year\'s stance deviation, held in [0, 1], and the run moves; a negative dm is refused (no programme, Adverse, seed 1)', function(){
+    var P = Object.assign({}, ADVERSE_REFERENCE, {years:20, nAgents:500}), rows = [{}, {dm:0}, {dm:1}].map(function(x){ var c = r2FreezePair(P, 'c22')[0]; c.cb = x; return c; }), log = [], bad = [];
+    CB_HOOK = function(x){ var want = Math.max(0, Math.min(1, SURPLUS_CONSUMPTION_SHARE - x.dm)); if (x.dm !== 0 && Math.abs(x.dm - x.d) > 1e-15) bad.push('dm ' + x.dm + ' against d ' + x.d + ' in year ' + x.yr); if (Math.abs(cbSc() - want) > 1e-15) bad.push('share in year ' + x.yr); log.push(x); };
+    var R; try { R = tbStudy(rows, 1, P, MS); } finally { CB_HOOK = null; }
+    var m = same(R[0], R[1]), nz = log.filter(function(x){ return x.dm !== 0; }).length, thrown = false; try { cbOpts({dm:-1}); } catch (e){ thrown = true; }
+    var moved = R[2].medWealthReal !== R[0].medWealthReal || R[2].fgt0PY !== R[0].fgt0PY;
+    return {pass:!m.length && !bad.length && nz > 0 && moved && thrown && CBDM === 0, detail:(m.slice(0, 3).join(', ') || bad.slice(0, 2).join('; ') || 'identical at 0') + '; ' + nz + ' run-years with a spending response'}; });
+  t('S74 part 3: the who-gains tallies by group: 0 with cb off (Adverse); with cb on, forced-sale gains are 0 with fs off and the job-loss tally is 0 with su 0; own inflation is History\'s only, inside its 10th-90th band, and CPI-U\'s mean is the series\' (no programme, seed 1)', function(){
+    var P = Object.assign({}, ADVERSE_REFERENCE, {years:20, nAgents:500}), S = Object.assign({}, MS, {stab:true});
+    var rows = [null, {}, {fs:false}, {su:0}].map(function(x){ var c = r2FreezePair(P, 'c22')[0]; if (x) c.cb = x; return c; }), R = tbStudy(rows, 1, P, S), bad = [], G = ['q1', 'q2', 'q3', 'q4', 'q5', 't1'];
+    G.forEach(function(g){ ['A', 'N', 'F', 'R', 'J', 'B', 'S'].forEach(function(c){ if (R[0]['wg' + c + g] !== 0) bad.push('off wg' + c + g); }); if (R[2]['wgB' + g] !== 0 || R[2]['wgS' + g] !== 0) bad.push('fs off ' + g); if (R[3]['wgJ' + g] !== 0) bad.push('su 0 ' + g); });
+    var any = G.some(function(g){ return R[1]['wgJ' + g] !== 0; }) && G.some(function(g){ return R[1]['wgB' + g] !== 0; }) && R[0].stIo === 0 && R[1].stIo === 0;
+    var PH2 = Object.assign({}, HISTORY_ENV, {nAgents:500}), H = tbStudy([r2FreezePair(PH2, 'c22')[0]], 1, PH2, S)[0], c = 0; for (var y = 1; y < 21; y++) c += HX.cpi[y];
+    var okI = Math.abs(H.stIc - c/20) < 1e-12 && H.stI10 <= H.stIo && H.stIo <= H.stI90 && H.stIo > 0 && H.stLy_1 !== 0 && H.stLy_0 === 0;
+    return {pass:!bad.length && any && okI, detail:(bad.slice(0, 4).join(', ') || 'ok') + '; History own inflation ' + H.stIo.toFixed(3) + '% a year (CPI-U ' + H.stIc.toFixed(3) + '%)'}; });
   return out; }
 Object.assign(module.exports, { cbSell, cbSettle, s74UnitSuite, HISTORY_ENV, HX, hxPi, hxIdx, hxRecPath, hxYear, cbOpts, cbYear, cbJob, CB_DEFAULTS, CB_U, CB_KEYS, setCbHook:function(f){ CB_HOOK = f; } });  /* S74 */
 /* S58 (Nov 9, 2026): the capacity price rule (index.html PRICE_RULE, PR_DEFAULTS, prStep, prComp, prRes; row option pr) and the money-flow table (study option mf). */

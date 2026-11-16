@@ -894,6 +894,22 @@
    },
    "equal": true,
    "seconds": 165
+  },
+  {
+   "from": "7b88cbad522e7e41db920615b91833f739fb1c8a33bd1da10ae5bea80d3f05ae",
+   "to": "bbdd929f9d914eadf46a2c81b45299d4a944a9c9b9a6ec7adbcc620db7d735e8",
+   "date": "2026-11-16",
+   "change": "S74 part 3: cb.dm (spending reading, off by default) and reporting under stab (who gains by group, own inflation, yearly paths); off identical",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 183
   }
  ]
 }
