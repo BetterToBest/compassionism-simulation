@@ -50,13 +50,25 @@
  * safety net with SNAP's work rule and its slope already (R2_MAIN.sn), so --r2 refuses --sn, --snab, --slope, --frozen, --v53, --v54 and --study.
  * Self-check (1) under --r2 compares every engine output key of every row and seed 1..N with release 2's stored part M shard, given with
  * --panel=FILE (r2-m-ENV-YEARS-104691f/shard-0000.json[.gz]; ENV str for st): equal values (non-finite stored as null) prove the run is release 2's
- * main row on this engine; without --panel the file says it was not compared. Check (2) and the --suite checks are unchanged. */
+ * main row on this engine; without --panel the file says it was not compared. Check (2) and the --suite checks are unchanged.
+ * S79 (Nov 16, 2026; research-update prereg/2026-11-x3-measures-addendum.md, job X3): --r2 --study adds the measures study and the BLEI paper's other
+ * measures to release 2's main row. Every row gets two reporting switches release 2 did not carry: em (the measured EDC: rent and interest paid) and fb
+ * {dist 'lambda', scale 1} (FBS50's tally with each adult's own lambda: the advancement rule as it is); the accounting check (ACCT) runs as under --study.
+ * Each seed's three rows run one after another, each its own study call on that seed (part M ran each row over all seeds in one call; a seed's run does
+ * not read the seeds before it), so the no-programme twin of every adult is at hand. Check (1) still compares every engine key of every row and seed with
+ * part M; the only keys allowed beyond part M's are the two switches' own (EDC_KEYS, FBS_KEYS). It writes out.study and out.studyRun as --study does,
+ * and out.measures: per row the mean and 10th-90th percentile over seeds of the EDC and FBS keys, cost, epPY, fgt0PY and fgt1PY; for the two designs the
+ * public costs avoided (IPBI's modelled part, computed from the means as release 1's panel does) and paired differences against no programme with 95%
+ * intervals (tbDiff). --r2 --study refuses --suite (job X2 has the suite series). */
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), V54 = process.argv.indexOf('--v54') >= 0, V53 = V54 || process.argv.indexOf('--v53') >= 0;
 const STUDY = process.argv.indexOf('--study') >= 0, SF = STUDY ? require('./study_fields.js') : null, SUITE = process.argv.indexOf('--suite') >= 0, SNAB = process.argv.indexOf('--snab') >= 0, SN = SNAB || process.argv.indexOf('--sn') >= 0, SLOPE = SN && process.argv.indexOf('--slope') >= 0, PANEL_ARG = (process.argv.find(a => a.startsWith('--panel=')) || '').slice(8);
 const R2 = process.argv.indexOf('--r2') >= 0;  /* S11: release 2's main row */
-if (R2 && ['--sn', '--snab', '--slope', '--frozen', '--v53', '--v54', '--study'].some(f => process.argv.indexOf(f) >= 0)) { console.error('--r2 runs release 2\'s main row as it is: no --sn, --snab, --slope, --frozen, --v53, --v54 or --study'); process.exit(1); }
+if (R2 && ['--sn', '--snab', '--slope', '--frozen', '--v53', '--v54'].some(f => process.argv.indexOf(f) >= 0)) { console.error('--r2 runs release 2\'s main row as it is: no --sn, --snab, --slope, --frozen, --v53 or --v54'); process.exit(1); }
+const R2S = R2 && STUDY;  /* S79: release 2's main row with the measures study, each seed's rows run one after another (seed outer) so every adult has its twin */
+if (R2S && SUITE) { console.error('--r2 --study does not take --suite (job X2 recorded the suite series)'); process.exit(1); }
+const R2_ADDED = R2S ? H.EDC_KEYS.concat(H.FBS_KEYS) : [];  /* S79: the keys the two reporting switches add (em, fb); every other key must equal release 2's */
 const env = ARG[0] || 'ref', YRS = +(ARG[1] || 20), N = +(ARG[2] || 500), LS = +(ARG[3] || 1);
 const NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME || (YRS !== 20 && YRS !== 40) || !(LS >= 1 && LS <= N)) { console.error('usage: explore_export.js ref|adv|st [20|40] [SEEDS] [LIFESEED]'); process.exit(1); }
@@ -77,6 +89,7 @@ try {
   if (FRZ) cfg.forEach(H.frozenRow);  /* S47: the frozen model, every row */
   if (R2) { const pc = H.r2FreezePair(P, 'c22'); cfg.splice(0, cfg.length, pc[0], pc[1], H.r2FreezePair(P, 'rel')[1]); }  /* S11: as r2.js mainRows builds none, c22, rel */
   if (STUDY) cfg.forEach(c => { c.em = true; });  /* session 12: the measured EDC's rent and interest (reporting only) */
+  if (R2S) cfg.forEach(c => { c.fb = {dist: 'lambda', scale: 1}; });  /* S79: FBS50's tally with each adult's own lambda, the rule unchanged (index.html FBS50; reporting only) */
   if (SN) cfg.forEach(c => { c.sn = Object.assign(SNAB ? {abawd: true} : {}, SLOPE ? {slope: true} : {}); });  /* session 7: today's safety net, and SNAP's work rule; session 9: --slope, SNET.slope (i24-1) */
   const T = YRS, L30 = C.BLEI_PRECARIOUS_MAX, TB = [C.BLEI_CRISIS_MAX, C.BLEI_PRECARIOUS_MAX, C.BLEI_THRESHOLD_MAX, C.BLEI_STABLE_MAX, C.BLEI_SECURE_MAX];
   const tierOf = d => { let k = 0; while (k < TB.length && d >= TB[k]) k++; return k; }, med = x => x.length ? H.quantileOf(x, 0.5) : null, mean = x => x.length ? x.reduce((s, v) => s + v, 0)/x.length : 0;
@@ -99,7 +112,7 @@ try {
   H.setRepHook(function (agents, yr, TT, lf, ep) {
     if (yr === 0) close();
     if (yr === 0) cur = [];
-    const slot = segs.length, seed = R2 ? slot % N + 1 : Math.floor(slot/cfg.length) + 1, row = R2 ? Math.floor(slot/N) : slot % cfg.length, rec = {};  /* S11: under --r2 row outer, seed inner */
+    const slot = segs.length, RO = R2 && !R2S, seed = RO ? slot % N + 1 : Math.floor(slot/cfg.length) + 1, row = RO ? Math.floor(slot/N) : slot % cfg.length, rec = {};  /* S11: under --r2 row outer, seed inner (S79: --r2 --study seed outer) */
     if (yr === 6 || yr === T - 1) { const w = agents.map(a => a.wealth/lf); rec.dec = Q.map(q => H.quantileOf(w, q)); }
     if (seed === LS) { const p = cfg[row].p;
       rec.f = agents.map(a => { const bo = H.agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf);
@@ -115,7 +128,11 @@ try {
   });
   if (STUDY) H.setAcct(H.acctNew());  /* session 12: the per-adult flows of the accounting check (reporting only) */
   let R; try {
-    if (R2) { R = cfg.map(c => { const r = H.tbStudy([c], N, P, H.r2MainStudy())[0]; close(); return r; });  /* S11: each row its own study call, as part M */
+    if (R2S) { R = cfg.map(() => ({_s: {}}));  /* S79: each row its own study call on one seed (part M's call is per row; a seed's run does not depend on the seeds before it, and check (1) proves it) */
+      for (let s = 1; s <= N; s++) cfg.forEach((c, i) => { const r = H.tbStudy([c], s, P, H.r2MainStudy(), s)[0]; close();
+        Object.keys(r._s).forEach(key => { const A = R[i]._s[key] || (R[i]._s[key] = new Float64Array(N)); A[s - 1] = r._s[key][0]; }); });
+      R.forEach(r => { Object.keys(r._s).forEach(key => { r[key] = r._s[key].reduce((a, v) => a + v, 0)/N; }); }); }
+    else if (R2) { R = cfg.map(c => { const r = H.tbStudy([c], N, P, H.r2MainStudy())[0]; close(); return r; });  /* S11: each row its own study call, as part M */
       if (segs.length === N*cfg.length) { const o = []; for (let s = 0; s < N; s++) for (let i = 0; i < cfg.length; i++) o.push(segs[i*N + s]); segs = o; } }  /* back to seed outer, row inner */
     else { R = H.tbStudy(cfg, N, P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: SC}, H.REL_V52_STUDY)); close(); }
   } finally { H.setRepHook(null); }
@@ -129,8 +146,8 @@ try {
     ['none', 'c22', 'rel'].forEach((nm, i) => { const ref = PJ.rows[pe + '.' + nm], ours = R[i]._s; if (!ref) { bad.push('panel has no row ' + pe + '.' + nm); return; }
       Object.keys(ref).forEach(key => { if (!ours[key]) { bad.push(ROWS[i] + ': key ' + key + ' missing in this run'); return; } nk++;
         for (let s = 0; s < N; s++) { const a = fin(ours[key][s]), b = ref[key][s]; nv++; if (a !== b) bad.push(ROWS[i] + ' ' + key + ' seed ' + (s + 1) + ': ' + a + ' vs release 2 ' + b); } });
-      Object.keys(ours).forEach(key => { if (!ref[key]) bad.push(ROWS[i] + ': key ' + key + ' not in the panel'); }); });
-    r2Cmp = {keys: nk, values: nv, engine: mt.manifest && mt.manifest.commit, engineBlockSha256: mt.manifest && mt.manifest.engineBlockSha256}; }  /* check (1) needs the panel's own seeds; S47: under --frozen, a frozen panel */
+      Object.keys(ours).forEach(key => { if (!ref[key] && R2_ADDED.indexOf(key) < 0) bad.push(ROWS[i] + ': key ' + key + ' not in the panel'); }); });
+    r2Cmp = {keys: nk, values: nv, engine: mt.manifest && mt.manifest.commit, engineBlockSha256: mt.manifest && mt.manifest.engineBlockSha256}; if (R2S) r2Cmp.added = R2_ADDED; }  /* check (1) needs the panel's own seeds; S47: under --frozen, a frozen panel */
   ROWS.forEach((j, i) => {
     const r = R[i], pub = !full ? null : j === 'base' ? panel.base.path : panel.rows[j].path, b = out.bands[j] = {};
     M.forEach(m => { const d = m === 'medW' ? 0 : 1; b[m] = {p10: [], p50: [], p90: [], mean: []};
@@ -167,6 +184,18 @@ try {
       [['y7GiniW', 6], ['eGiniW', T - 1]].forEach(([g, t]) => { const e = R[i]._s[g]; if (!e) return; for (let sd = 0; sd < N; sd++) { const n = segs[sd*cfg.length + i][t].stN, x = segs[sd*cfg.length + i][t].st[stKeys[i].indexOf('giniW')]*n/(n - 1);
         if (Math.abs(x - e[sd]) > 1e-9) bad.push(j + ' seed ' + (sd + 1) + ' ' + g + ': ' + x + ' vs ' + e[sd]); } }); });
     delete out.bands; delete out.deciles; delete out.lives; }
+  if (R2S) {  /* S79: the panel's measure keys for release 2's rows (EDC measured, FBS50's tally, the public costs avoided), as release 1's panel builds them */
+    const MK = H.EDC_KEYS.concat(H.FBS_KEYS, ['cost', 'epPY', 'fgt0PY', 'fgt1PY']), AH = H.avoidHomelessHl(), B0 = R[0], q = (v, x) => +H.quantileOf(v, x).toFixed(4);
+    out.measures = {}; out._meta.measures = {keys: MK, units: 'edc* and fbsAbove* in %; fbs50Med dollars a month; cost dollars per adult a year; epPY, fgt0PY in %; fgt1PY the poverty gap in % of the line',
+      ipbi: 'from the means over seeds, as release 1\'s panel (harness.js testbed release): unhoused person-years avoided per 1,000 adults a year, homelessness costs low and high (AVOID_HOMELESS), prisons and hospital and psychiatric stays (avoidWide, main and high), each row against the no-programme row',
+      d: 'paired difference row - no programme over the seeds, mean and 95% interval (harness.js tbDiff)'};
+    ROWS.forEach((j, i) => { const r = R[i], o = out.measures[j] = {};
+      MK.forEach(key => { if (r._s[key]) o[key] = {mean: +r[key].toFixed(4), p10: q(r._s[key], 0.1), p90: q(r._s[key], 0.9)}; });
+      if (i === 0) return;
+      const av = (B0.epPY - r.epPY)/100, aw = H.avoidWide((B0.fgt1PY - r.fgt1PY)/100*C.LIVING_WAGE_ANNUAL, (B0.fgt0PY - r.fgt0PY)/100);
+      o.ipbi = {unhousedAvoided: +(av*1000).toFixed(2), avoidLo: Math.round(av*AH.low), avoidHi: Math.round(av*AH.high), avoidW: Math.round(aw.main), avoidWHi: Math.round(aw.high), avoidJail: Math.round(aw.jail), avoidHealth: Math.round(aw.health)};
+      o.d = {}; ['edcM', 'edcMagg', 'cost', 'epPY', 'fgt0PY', 'fgt1PY'].forEach(key => { const x = H.tbDiff(r, B0, key); o.d[key] = [+x.m.toFixed(4), +x.lo.toFixed(4), +x.hi.toFixed(4)]; }); });
+    ['edcM', 'fbsAbove'].forEach(key => { ROWS.forEach((j, i) => { if (!R[i]._s[key]) bad.push(j + ': no ' + key + ' (the reporting switch did not run)'); }); }); }
   if (bad.length) { console.error('SELF-CHECK FAILED (' + bad.length + '):\n  ' + bad.slice(0, 20).join('\n  ')); process.exit(1); }
   if (R2) out._meta.r2 = {rows: 'harness.js r2FreezePair: no programme, C2.2 and the release design (release 2\'s main row)', study: 'harness.js r2MainStudy', adults: 500, panelCheck: r2Cmp};
   out._meta.selfCheck = R2 ? (r2Cmp ? 'every engine key of every row equals release 2\'s part M (' + PANEL_ARG + ', engine ' + String(r2Cmp.engine).slice(0, 7) + '): ' + r2Cmp.keys + ' row-keys, ' + r2Cmp.values + ' values, seeds 1..' + N : 'NOT COMPARED WITH RELEASE 2 (--r2 without --panel)') + '; seed ' + LS + '\'s adults add up to the engine\'s yearly shares' + (SUITE ? '; the suite\'s bO equals the engine\'s and the mean yearly ep its epPY' : '') :
