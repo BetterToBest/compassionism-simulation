@@ -13,7 +13,7 @@ const env = ARG[0], N = +(ARG[1] || 100), designs = (opt('design') || 'c22,rel')
 const ENV = {ref: H.FULL_INTEGRATION, adv: H.ADVERSE_REFERENCE, st: H.STRESS_TEST, hx: H.HISTORY_ENV}[env];
 if (!ENV) { console.error('ENV must be ref, adv, st or hx'); process.exit(1); }
 const ARMS = env === 'hx' ? ['infl', 'actual', 'cb'] : ['off', 'cb'];
-const KEEP = /^(fgt0PY|fgt0|pov|pf0_\d+|ppov_\d+|endoAnn|endoMax|medWealthReal|cost|st[A-Z]|rk[A-Z]|cb[A-Z]|fs[A-Z]|wt(T1|T10|B50|Mean|Med)[SE]$|gv(Rate|Debt))/;
+const KEEP = /^(fgt0PY|fgt0|pov|pf0_\d+|ppov_\d+|endoAnn|endoMax|medWealthReal|cost|st[A-Z]|rk[A-Z]|cb[A-Z]|fs[A-Z]|wg[A-Z]|wt(T1|T10|B50|Mean|Med)[SE]$|gv(Rate|Debt))/;
 const out = {_meta: {what: 'S74 pilot: the frozen round-2 main pair in each arm, with the stability measures', env, seeds: N, designs, arms: ARMS,
   command: 'node dev/tools/s74_pilot.js ' + process.argv.slice(2).join(' '), manifest: H.runManifest(), started: new Date().toISOString()}};
 designs.forEach(d => { out[d] = {}; ARMS.forEach(arm => {
