@@ -9,6 +9,9 @@
 'use strict';
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
+/* S76 (prereg Amendment 4): the release's global settings, as the round-2 runner sets them (compassionism-sim-results runner/jobs/r2.js); without them
+ * the main row's switches run under the engine's older defaults, not release 2's main row. */
+H.applyNR6(); H.tbSetG(H.TB_PROFILE_G);
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), opt = k => (process.argv.filter(a => a.indexOf('--' + k + '=') === 0)[0] || '').slice(k.length + 3);
 const env = ARG[0], N = +(ARG[1] || 20), designs = (opt('design') || 'c22,rel').split(','), dir = opt('out') || path.join(__dirname, '..', 'runs', 's74-sweep'), t0 = Date.now();
 const ENV = {ref: H.FULL_INTEGRATION, adv: H.ADVERSE_REFERENCE, st: H.STRESS_TEST, hx: H.HISTORY_ENV}[env];
