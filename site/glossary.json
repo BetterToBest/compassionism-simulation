@@ -1,5 +1,9 @@
 [
  {
+  "term": "OEIAS — Optional Equitable Integrated Assurance Systems",
+  "def": "The umbrella name for the five architectures taken together (CCO, PTF, PTH, SZH and CIP), with X-Cents. It supplements Compassionism and the label CCO-PTF-PTH-CIP-SZH; it replaces neither, and adds no new mechanism or result. The Normative Economic Evaluation (NEEC) uses CCO-PTF-PTH-CIP-SZH for the earlier version of this simulation and OEIAS for the latest."
+ },
+ {
   "term": "CCO — Creative Currency Octaves",
   "def": "Dual-currency layer. Participants get monthly Basic Units (BU), spent on essentials at essential-service providers (ESPs), community-owned or private; expired BU are converted to primary currency (dollars) at merit-scaled rates through the Creative Collectives."
  },
