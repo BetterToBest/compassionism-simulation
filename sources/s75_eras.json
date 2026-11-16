@@ -1,0 +1,3819 @@
+{
+ "eras": {
+  "E0": "1913-1946 (reading)",
+  "E1": "1947-1972",
+  "E2": "1973-1983",
+  "E3": "1984-2007",
+  "E4": "2008-2025",
+  "W": "2005-2025"
+ },
+ "A": {
+  "E0": {
+   "A1 inflation": {
+    "years": "1914-1946",
+    "n": 33,
+    "mean": 2.61,
+    "sd": 7.59,
+    "max": [
+     1918,
+     20.44
+    ],
+    "min": [
+     1921,
+     -10.82
+    ],
+    "years_above_5": [
+     1916,
+     1917,
+     1918,
+     1919,
+     1941,
+     1942,
+     1946
+    ],
+    "years_falling": [
+     1921,
+     1922,
+     1926,
+     1927,
+     1928,
+     1930,
+     1931,
+     1932,
+     1938
+    ]
+   },
+   "A2 food": null,
+   "A2 shelter": null,
+   "A2 medical": null,
+   "A3 unemployment": {
+    "years": "1913-1946",
+    "n": 34,
+    "mean": 8.83,
+    "sd": 7.24,
+    "max": [
+     1933,
+     24.9
+    ],
+    "min": [
+     1944,
+     1.2
+    ]
+   },
+   "A3 months in recession %": 34.1,
+   "A3 recessions starting": [
+    "1913-01",
+    "1918-08",
+    "1920-01",
+    "1923-05",
+    "1926-10",
+    "1929-08",
+    "1937-05",
+    "1945-02"
+   ],
+   "A4 growth per person": {
+    "years": "1913-1946",
+    "n": 34,
+    "mean": 2.54,
+    "sd": 8.22,
+    "max": [
+     1942,
+     17.43
+    ],
+    "min": [
+     1932,
+     -13.65
+    ]
+   },
+   "A5 shares real change": {
+    "years": "1913-1946",
+    "n": 34,
+    "mean": 1.89,
+    "sd": 23.65,
+    "max": [
+     1933,
+     45.08
+    ],
+    "min": [
+     1917,
+     -41.25
+    ]
+   },
+   "A5 homes real change": {
+    "years": "1913-1946",
+    "n": 34,
+    "mean": 0.37,
+    "sd": 7.31,
+    "max": [
+     1946,
+     21.37
+    ],
+    "min": [
+     1918,
+     -11.11
+    ]
+   },
+   "A5 shares drawdown (monthly)": {
+    "fall_pct": 80.6,
+    "peak": "1929-09",
+    "trough": "1932-06",
+    "recovered": "1958-11",
+    "months_to_recover": 317
+   },
+   "A5 homes drawdown (yearly)": {
+    "fall_pct": 32.3,
+    "peak": 1914,
+    "trough": 1921,
+    "recovered": 1946,
+    "years_to_recover": 25
+   },
+   "JST cross-check: mean real change, homes / shares (Shiller | JST)": [
+    0.37,
+    -0.09,
+    1.89,
+    2.34
+   ]
+  },
+  "E1": {
+   "A1 inflation": {
+    "years": "1947-1972",
+    "n": 26,
+    "mean": 2.68,
+    "sd": 2.43,
+    "max": [
+     1947,
+     8.84
+    ],
+    "min": [
+     1949,
+     -2.07
+    ],
+    "years_above_5": [
+     1947,
+     1950,
+     1951,
+     1969,
+     1970
+    ],
+    "years_falling": [
+     1949,
+     1954
+    ]
+   },
+   "A2 food": {
+    "years": "1948-1972",
+    "n": 25,
+    "mean": 1.9,
+    "sd": 3.31,
+    "max": [
+     1950,
+     9.8
+    ],
+    "min": [
+     1949,
+     -3.92
+    ],
+    "mean_minus_cpi": -0.54
+   },
+   "A2 shelter": {
+    "years": "1954-1972",
+    "n": 19,
+    "mean": 3.05,
+    "sd": 2.47,
+    "max": [
+     1970,
+     8.88
+    ],
+    "min": [
+     1962,
+     0.78
+    ],
+    "mean_minus_cpi": 0.6
+   },
+   "A2 medical": {
+    "years": "1948-1972",
+    "n": 25,
+    "mean": 4.11,
+    "sd": 1.7,
+    "max": [
+     1970,
+     7.67
+    ],
+    "min": [
+     1949,
+     1.36
+    ],
+    "mean_minus_cpi": 1.67
+   },
+   "A3 unemployment": {
+    "years": "1948-1972",
+    "n": 25,
+    "mean": 4.77,
+    "sd": 1.13,
+    "max": [
+     1958,
+     6.84
+    ],
+    "min": [
+     1953,
+     2.93
+    ]
+   },
+   "A3 months in recession %": 16.0,
+   "A3 recessions starting": [
+    "1948-11",
+    "1953-07",
+    "1957-08",
+    "1960-04",
+    "1969-12"
+   ],
+   "A4 growth per person": {
+    "years": "1948-1972",
+    "n": 25,
+    "mean": 2.53,
+    "sd": 3.14,
+    "max": [
+     1950,
+     11.52
+    ],
+    "min": [
+     1949,
+     -3.21
+    ]
+   },
+   "A5 shares real change": {
+    "years": "1947-1972",
+    "n": 26,
+    "mean": 6.46,
+    "sd": 15.31,
+    "max": [
+     1954,
+     41.89
+    ],
+    "min": [
+     1969,
+     -19.44
+    ]
+   },
+   "A5 homes real change": {
+    "years": "1947-1972",
+    "n": 26,
+    "mean": 0.15,
+    "sd": 2.99,
+    "max": [
+     1953,
+     9.86
+    ],
+    "min": [
+     1948,
+     -7.42
+    ]
+   },
+   "A5 shares drawdown (monthly)": {
+    "fall_pct": 35.3,
+    "peak": "1968-12",
+    "trough": "1970-07",
+    "recovered": "1992-01",
+    "months_to_recover": 258
+   },
+   "A5 homes drawdown (yearly)": {
+    "fall_pct": 9.1,
+    "peak": 1954,
+    "trough": 1968,
+    "recovered": 1978,
+    "years_to_recover": 10
+   },
+   "JST cross-check: mean real change, homes / shares (Shiller | JST)": [
+    0.15,
+    0.44,
+    6.46,
+    6.16
+   ]
+  },
+  "E2": {
+   "A1 inflation": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": 8.27,
+    "sd": 3.41,
+    "max": [
+     1979,
+     13.29
+    ],
+    "min": [
+     1983,
+     3.79
+    ],
+    "years_above_5": [
+     1973,
+     1974,
+     1975,
+     1977,
+     1978,
+     1979,
+     1980,
+     1981
+    ],
+    "years_falling": []
+   },
+   "A2 food": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": 7.95,
+    "sd": 6.51,
+    "max": [
+     1973,
+     22.1
+    ],
+    "min": [
+     1976,
+     -0.94
+    ],
+    "mean_minus_cpi": -0.32
+   },
+   "A2 shelter": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": 9.06,
+    "sd": 4.61,
+    "max": [
+     1979,
+     17.48
+    ],
+    "min": [
+     1982,
+     2.33
+    ],
+    "mean_minus_cpi": 0.79
+   },
+   "A2 medical": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": 9.57,
+    "sd": 2.22,
+    "max": [
+     1981,
+     12.47
+    ],
+    "min": [
+     1973,
+     5.28
+    ],
+    "mean_minus_cpi": 1.31
+   },
+   "A3 unemployment": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": 7.25,
+    "sd": 1.58,
+    "max": [
+     1982,
+     9.71
+    ],
+    "min": [
+     1973,
+     4.86
+    ]
+   },
+   "A3 months in recession %": 28.8,
+   "A3 recessions starting": [
+    "1973-11",
+    "1980-01",
+    "1981-07"
+   ],
+   "A4 growth per person": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": 1.67,
+    "sd": 3.18,
+    "max": [
+     1983,
+     6.94
+    ],
+    "min": [
+     1974,
+     -2.85
+    ]
+   },
+   "A5 shares real change": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": -2.94,
+    "sd": 18.79,
+    "max": [
+     1975,
+     23.67
+    ],
+    "min": [
+     1974,
+     -37.01
+    ]
+   },
+   "A5 homes real change": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": -0.01,
+    "sd": 4.18,
+    "max": [
+     1977,
+     7.45
+    ],
+    "min": [
+     1973,
+     -4.86
+    ]
+   },
+   "A5 shares drawdown (monthly)": {
+    "fall_pct": 59.6,
+    "peak": "1973-01",
+    "trough": "1982-07",
+    "recovered": "1987-08",
+    "months_to_recover": 61
+   },
+   "A5 homes drawdown (yearly)": {
+    "fall_pct": 10.8,
+    "peak": 1979,
+    "trough": 1982,
+    "recovered": 1986,
+    "years_to_recover": 4
+   },
+   "JST cross-check: mean real change, homes / shares (Shiller | JST)": [
+    -0.01,
+    0.05,
+    -2.94,
+    -2.76
+   ]
+  },
+  "E3": {
+   "A1 inflation": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 3.09,
+    "sd": 1.16,
+    "max": [
+     1990,
+     6.11
+    ],
+    "min": [
+     1986,
+     1.1
+    ],
+    "years_above_5": [
+     1990
+    ],
+    "years_falling": []
+   },
+   "A2 food": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 3.06,
+    "sd": 1.66,
+    "max": [
+     1989,
+     6.09
+    ],
+    "min": [
+     2002,
+     0.69
+    ],
+    "mean_minus_cpi": -0.03
+   },
+   "A2 shelter": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 3.74,
+    "sd": 1.03,
+    "max": [
+     1985,
+     5.92
+    ],
+    "min": [
+     2003,
+     2.23
+    ],
+    "mean_minus_cpi": 0.65
+   },
+   "A2 medical": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 5.34,
+    "sd": 1.83,
+    "max": [
+     1990,
+     9.62
+    ],
+    "min": [
+     1997,
+     2.85
+    ],
+    "mean_minus_cpi": 2.25
+   },
+   "A3 unemployment": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 5.69,
+    "sd": 1.04,
+    "max": [
+     1984,
+     7.51
+    ],
+    "min": [
+     2000,
+     3.97
+    ]
+   },
+   "A3 months in recession %": 5.6,
+   "A3 recessions starting": [
+    "1990-07",
+    "2001-03",
+    "2007-12"
+   ],
+   "A4 growth per person": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 2.16,
+    "sd": 1.42,
+    "max": [
+     1984,
+     4.65
+    ],
+    "min": [
+     2001,
+     -0.81
+    ]
+   },
+   "A5 shares real change": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 7.27,
+    "sd": 14.33,
+    "max": [
+     1995,
+     31.67
+    ],
+    "min": [
+     2002,
+     -23.29
+    ]
+   },
+   "A5 homes real change": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 2.16,
+    "sd": 4.87,
+    "max": [
+     2004,
+     10.05
+    ],
+    "min": [
+     2007,
+     -9.11
+    ]
+   },
+   "A5 shares drawdown (monthly)": {
+    "fall_pct": 46.8,
+    "peak": "2000-08",
+    "trough": "2003-02",
+    "recovered": "2014-11",
+    "months_to_recover": 141
+   },
+   "A5 homes drawdown (yearly)": {
+    "fall_pct": 13.4,
+    "peak": 1988,
+    "trough": 1996,
+    "recovered": 2000,
+    "years_to_recover": 4
+   },
+   "JST cross-check: mean real change, homes / shares (Shiller | JST)": [
+    2.16,
+    2.11,
+    7.27,
+    7.46
+   ]
+  },
+  "E4": {
+   "A1 inflation": {
+    "years": "2008-2025",
+    "n": 18,
+    "mean": 2.45,
+    "sd": 1.78,
+    "max": [
+     2021,
+     7.04
+    ],
+    "min": [
+     2008,
+     0.09
+    ],
+    "years_above_5": [
+     2021,
+     2022
+    ],
+    "years_falling": []
+   },
+   "A2 food": {
+    "years": "2008-2025",
+    "n": 18,
+    "mean": 2.49,
+    "sd": 3.47,
+    "max": [
+     2022,
+     11.74
+    ],
+    "min": [
+     2009,
+     -2.43
+    ],
+    "mean_minus_cpi": 0.04
+   },
+   "A2 shelter": {
+    "years": "2008-2025",
+    "n": 18,
+    "mean": 3.09,
+    "sd": 1.8,
+    "max": [
+     2022,
+     7.47
+    ],
+    "min": [
+     2010,
+     0.03
+    ],
+    "mean_minus_cpi": 0.64
+   },
+   "A2 medical": {
+    "years": "2008-2025",
+    "n": 18,
+    "mean": 2.79,
+    "sd": 0.98,
+    "max": [
+     2019,
+     4.51
+    ],
+    "min": [
+     2023,
+     0.44
+    ],
+    "mean_minus_cpi": 0.33
+   },
+   "A3 unemployment": {
+    "years": "2008-2025",
+    "n": 18,
+    "mean": 5.91,
+    "sd": 2.11,
+    "max": [
+     2010,
+     9.61
+    ],
+    "min": [
+     2023,
+     3.62
+    ]
+   },
+   "A3 months in recession %": 9.3,
+   "A3 recessions starting": [
+    "2020-02"
+   ],
+   "A4 growth per person": {
+    "years": "2008-2025",
+    "n": 18,
+    "mean": 1.31,
+    "sd": 1.86,
+    "max": [
+     2021,
+     5.5
+    ],
+    "min": [
+     2008,
+     -3.43
+    ]
+   },
+   "A5 shares real change": {
+    "years": "2008-2025",
+    "n": 18,
+    "mean": 7.87,
+    "sd": 17.01,
+    "max": [
+     2013,
+     25.22
+    ],
+    "min": [
+     2008,
+     -40.73
+    ]
+   },
+   "A5 homes real change": {
+    "years": "2008-2025",
+    "n": 18,
+    "mean": 1.3,
+    "sd": 6.01,
+    "max": [
+     2021,
+     11.05
+    ],
+    "min": [
+     2008,
+     -12.08
+    ]
+   },
+   "A5 shares drawdown (monthly)": {
+    "fall_pct": 45.5,
+    "peak": "2008-01",
+    "trough": "2009-03",
+    "recovered": "2013-03",
+    "months_to_recover": 48
+   },
+   "A5 homes drawdown (yearly)": {
+    "fall_pct": 17.5,
+    "peak": 2008,
+    "trough": 2011,
+    "recovered": 2015,
+    "years_to_recover": 4
+   },
+   "JST cross-check: mean real change, homes / shares (Shiller | JST)": [
+    1.3,
+    0.71,
+    7.87,
+    5.97
+   ]
+  },
+  "W": {
+   "A1 inflation": {
+    "years": "2005-2025",
+    "n": 21,
+    "mean": 2.58,
+    "sd": 1.69,
+    "max": [
+     2021,
+     7.04
+    ],
+    "min": [
+     2008,
+     0.09
+    ],
+    "years_above_5": [
+     2021,
+     2022
+    ],
+    "years_falling": []
+   },
+   "A2 food": {
+    "years": "2005-2025",
+    "n": 21,
+    "mean": 2.56,
+    "sd": 3.29,
+    "max": [
+     2022,
+     11.74
+    ],
+    "min": [
+     2009,
+     -2.43
+    ],
+    "mean_minus_cpi": -0.02
+   },
+   "A2 shelter": {
+    "years": "2005-2025",
+    "n": 21,
+    "mean": 3.12,
+    "sd": 1.68,
+    "max": [
+     2022,
+     7.47
+    ],
+    "min": [
+     2010,
+     0.03
+    ],
+    "mean_minus_cpi": 0.54
+   },
+   "A2 medical": {
+    "years": "2005-2025",
+    "n": 21,
+    "mean": 3.01,
+    "sd": 1.09,
+    "max": [
+     2007,
+     5.19
+    ],
+    "min": [
+     2023,
+     0.44
+    ],
+    "mean_minus_cpi": 0.43
+   },
+   "A3 unemployment": {
+    "years": "2005-2025",
+    "n": 21,
+    "mean": 5.74,
+    "sd": 1.99,
+    "max": [
+     2010,
+     9.61
+    ],
+    "min": [
+     2023,
+     3.62
+    ]
+   },
+   "A3 months in recession %": 7.9,
+   "A3 recessions starting": [
+    "2007-12",
+    "2020-02"
+   ],
+   "A4 growth per person": {
+    "years": "2005-2025",
+    "n": 21,
+    "mean": 1.36,
+    "sd": 1.72,
+    "max": [
+     2021,
+     5.5
+    ],
+    "min": [
+     2008,
+     -3.43
+    ]
+   },
+   "A5 shares real change": {
+    "years": "2005-2025",
+    "n": 21,
+    "mean": 7.3,
+    "sd": 15.83,
+    "max": [
+     2013,
+     25.22
+    ],
+    "min": [
+     2008,
+     -40.73
+    ]
+   },
+   "A5 homes real change": {
+    "years": "2005-2025",
+    "n": 21,
+    "mean": 1.11,
+    "sd": 6.32,
+    "max": [
+     2021,
+     11.05
+    ],
+    "min": [
+     2008,
+     -12.08
+    ]
+   },
+   "A5 shares drawdown (monthly)": {
+    "fall_pct": 51.7,
+    "peak": "2007-10",
+    "trough": "2009-03",
+    "recovered": "2013-11",
+    "months_to_recover": 56
+   },
+   "A5 homes drawdown (yearly)": {
+    "fall_pct": 34.6,
+    "peak": 2005,
+    "trough": 2011,
+    "recovered": 2021,
+    "years_to_recover": 10
+   },
+   "JST cross-check: mean real change, homes / shares (Shiller | JST)": [
+    1.11,
+    1.2,
+    7.3,
+    5.6
+   ]
+  }
+ },
+ "B": {
+  "E0": {
+   "B1 top 10% income share": {
+    "years": "1913-1946",
+    "start": 42.85,
+    "end": 36.99,
+    "change": -5.87,
+    "mean": 44.89,
+    "max": [
+     1940,
+     48.7
+    ]
+   },
+   "B1 top 1% income share": {
+    "years": "1913-1946",
+    "start": 20.22,
+    "end": 14.4,
+    "change": -5.82,
+    "mean": 19.34,
+    "max": [
+     1928,
+     22.22
+    ]
+   },
+   "B1 top 10% wealth share": {
+    "years": "1913-1946",
+    "start": 79.36,
+    "end": 72.12,
+    "change": -7.23,
+    "mean": 80.2,
+    "max": [
+     1932,
+     85.59
+    ]
+   },
+   "B1 top 1% wealth share": {
+    "years": "1913-1946",
+    "start": 46.62,
+    "end": 30.88,
+    "change": -15.74,
+    "mean": 40.79,
+    "max": [
+     1929,
+     48.67
+    ]
+   },
+   "B1 bottom 50% wealth share": null,
+   "B2 official poverty %": null,
+   "B2 anchored SPM poverty %": null,
+   "B3 health spending % of GDP": null,
+   "B3 out-of-pocket % of health spending": null,
+   "B3 real health spending per person, yearly growth": null,
+   "B3 hospital ownership mix": "not opened (Amendment 1, item 9)",
+   "B4 average tax rate, All": {
+    "years": "1913-1946",
+    "start": 7.86,
+    "end": 25.26,
+    "change": 17.4,
+    "mean": 14.26,
+    "max": [
+     1945,
+     25.6
+    ]
+   },
+   "B4 average tax rate, Bottom 50%": {
+    "years": "1913-1946",
+    "start": 7.12,
+    "end": 19.94,
+    "change": 12.82,
+    "mean": 11.87,
+    "max": [
+     1946,
+     19.94
+    ]
+   },
+   "B4 average tax rate, Middle 40%": null,
+   "B4 average tax rate, Top 10%": {
+    "years": "1913-1946",
+    "start": 9.39,
+    "end": 32.91,
+    "change": 23.52,
+    "mean": 18.69,
+    "max": [
+     1943,
+     37.69
+    ]
+   },
+   "B4 average tax rate, Top 1%": {
+    "years": "1913-1946",
+    "start": 12.97,
+    "end": 45.31,
+    "change": 32.34,
+    "mean": 27.54,
+    "max": [
+     1943,
+     48.57
+    ]
+   },
+   "B4 average tax rate, Top 0.1%": {
+    "years": "1913-1946",
+    "start": 16.81,
+    "end": 60.7,
+    "change": 43.89,
+    "mean": 39.59,
+    "max": [
+     1945,
+     60.77
+    ]
+   },
+   "B4 top statutory rate (context; IRS SOI)": {
+    "years": "1913-1946",
+    "start": 7.0,
+    "end": 86.45,
+    "change": 79.45,
+    "mean": 55.91,
+    "max": [
+     1944,
+     94.0
+    ]
+   }
+  },
+  "E1": {
+   "B1 top 10% income share": {
+    "years": "1947-1972",
+    "start": 36.49,
+    "end": 34.39,
+    "change": -2.1,
+    "mean": 35.97,
+    "max": [
+     1950,
+     38.73
+    ]
+   },
+   "B1 top 1% income share": {
+    "years": "1947-1972",
+    "start": 14.85,
+    "end": 11.02,
+    "change": -3.82,
+    "mean": 13.39,
+    "max": [
+     1950,
+     16.54
+    ]
+   },
+   "B1 top 10% wealth share": {
+    "years": "1947-1972",
+    "start": 70.8,
+    "end": 68.91,
+    "change": -1.89,
+    "mean": 69.66,
+    "max": [
+     1962,
+     71.22
+    ]
+   },
+   "B1 top 1% wealth share": {
+    "years": "1947-1972",
+    "start": 29.75,
+    "end": 26.23,
+    "change": -3.52,
+    "mean": 28.26,
+    "max": [
+     1947,
+     29.75
+    ]
+   },
+   "B1 bottom 50% wealth share": {
+    "years": "1962-1972",
+    "start": 1.32,
+    "end": 1.12,
+    "change": -0.2,
+    "mean": 1.07,
+    "max": [
+     1962,
+     1.32
+    ]
+   },
+   "B2 official poverty %": {
+    "years": "1959-1972",
+    "start": 22.4,
+    "end": 11.9,
+    "change": -10.5,
+    "mean": 16.72,
+    "max": [
+     1959,
+     22.4
+    ]
+   },
+   "B2 anchored SPM poverty %": {
+    "years": "1967-1972",
+    "start": 25.83,
+    "end": 20.42,
+    "change": -5.41,
+    "mean": 22.8,
+    "max": [
+     1967,
+     25.83
+    ]
+   },
+   "B3 health spending % of GDP": {
+    "years": "1960-1972",
+    "start": 5.0,
+    "end": 7.2,
+    "change": 2.2,
+    "mean": 5.96,
+    "max": [
+     1972,
+     7.2
+    ]
+   },
+   "B3 out-of-pocket % of health spending": {
+    "years": "1960-1972",
+    "start": 47.11,
+    "end": 30.1,
+    "change": -17.02,
+    "mean": 38.74,
+    "max": [
+     1960,
+     47.11
+    ]
+   },
+   "B3 real health spending per person, yearly growth": {
+    "years": "1961-1972",
+    "n": 12,
+    "mean": 6.31,
+    "sd": 1.11,
+    "max": [
+     1968,
+     7.75
+    ],
+    "min": [
+     1961,
+     4.36
+    ]
+   },
+   "B3 hospital ownership mix": "not opened (Amendment 1, item 9)",
+   "B4 average tax rate, All": {
+    "years": "1947-1972",
+    "start": 25.64,
+    "end": 29.99,
+    "change": 4.35,
+    "mean": 26.94,
+    "max": [
+     1969,
+     30.56
+    ]
+   },
+   "B4 average tax rate, Bottom 50%": {
+    "years": "1947-1972",
+    "start": 19.53,
+    "end": 24.94,
+    "change": 5.41,
+    "mean": 21.56,
+    "max": [
+     1969,
+     25.71
+    ]
+   },
+   "B4 average tax rate, Middle 40%": {
+    "years": "1962-1972",
+    "start": 25.3,
+    "end": 28.51,
+    "change": 3.21,
+    "mean": 26.12,
+    "max": [
+     1972,
+     28.51
+    ]
+   },
+   "B4 average tax rate, Top 10%": {
+    "years": "1947-1972",
+    "start": 33.96,
+    "end": 34.91,
+    "change": 0.95,
+    "mean": 33.64,
+    "max": [
+     1969,
+     36.56
+    ]
+   },
+   "B4 average tax rate, Top 1%": {
+    "years": "1947-1972",
+    "start": 46.21,
+    "end": 44.08,
+    "change": -2.12,
+    "mean": 44.29,
+    "max": [
+     1951,
+     48.51
+    ]
+   },
+   "B4 average tax rate, Top 0.1%": {
+    "years": "1947-1972",
+    "start": 59.64,
+    "end": 52.43,
+    "change": -7.21,
+    "mean": 54.94,
+    "max": [
+     1951,
+     60.47
+    ]
+   },
+   "B4 top statutory rate (context; IRS SOI)": {
+    "years": "1947-1972",
+    "start": 86.45,
+    "end": 70.0,
+    "change": -16.45,
+    "mean": 83.5,
+    "max": [
+     1952,
+     92.0
+    ]
+   }
+  },
+  "E2": {
+   "B1 top 10% income share": {
+    "years": "1973-1983",
+    "start": 34.3,
+    "end": 35.34,
+    "change": 1.04,
+    "mean": 34.25,
+    "max": [
+     1983,
+     35.34
+    ]
+   },
+   "B1 top 1% income share": {
+    "years": "1973-1983",
+    "start": 10.8,
+    "end": 11.48,
+    "change": 0.69,
+    "mean": 10.69,
+    "max": [
+     1983,
+     11.48
+    ]
+   },
+   "B1 top 10% wealth share": {
+    "years": "1973-1983",
+    "start": 68.02,
+    "end": 63.02,
+    "change": -5.0,
+    "mean": 65.37,
+    "max": [
+     1973,
+     68.02
+    ]
+   },
+   "B1 top 1% wealth share": {
+    "years": "1973-1983",
+    "start": 25.25,
+    "end": 23.97,
+    "change": -1.27,
+    "mean": 23.61,
+    "max": [
+     1973,
+     25.25
+    ]
+   },
+   "B1 bottom 50% wealth share": {
+    "years": "1973-1983",
+    "start": 0.95,
+    "end": 1.75,
+    "change": 0.8,
+    "mean": 1.06,
+    "max": [
+     1983,
+     1.75
+    ]
+   },
+   "B2 official poverty %": {
+    "years": "1973-1983",
+    "start": 11.1,
+    "end": 15.2,
+    "change": 4.1,
+    "mean": 12.57,
+    "max": [
+     1983,
+     15.2
+    ]
+   },
+   "B2 anchored SPM poverty %": {
+    "years": "1973-1983",
+    "start": 19.12,
+    "end": 21.43,
+    "change": 2.31,
+    "mean": 19.15,
+    "max": [
+     1983,
+     21.43
+    ]
+   },
+   "B3 health spending % of GDP": {
+    "years": "1973-1983",
+    "start": 7.2,
+    "end": 10.0,
+    "change": 2.8,
+    "mean": 8.51,
+    "max": [
+     1983,
+     10.0
+    ]
+   },
+   "B3 out-of-pocket % of health spending": {
+    "years": "1973-1983",
+    "start": 29.94,
+    "end": 20.46,
+    "change": -9.48,
+    "mean": 24.28,
+    "max": [
+     1973,
+     29.94
+    ]
+   },
+   "B3 real health spending per person, yearly growth": {
+    "years": "1973-1983",
+    "n": 11,
+    "mean": 3.78,
+    "sd": 2.23,
+    "max": [
+     1976,
+     7.43
+    ],
+    "min": [
+     1980,
+     0.5
+    ]
+   },
+   "B3 hospital ownership mix": "not opened (Amendment 1, item 9)",
+   "B4 average tax rate, All": {
+    "years": "1973-1983",
+    "start": 29.96,
+    "end": 29.98,
+    "change": 0.03,
+    "mean": 30.36,
+    "max": [
+     1981,
+     31.38
+    ]
+   },
+   "B4 average tax rate, Bottom 50%": {
+    "years": "1973-1983",
+    "start": 25.59,
+    "end": 26.57,
+    "change": 0.98,
+    "mean": 25.38,
+    "max": [
+     1981,
+     26.66
+    ]
+   },
+   "B4 average tax rate, Middle 40%": {
+    "years": "1973-1983",
+    "start": 29.0,
+    "end": 30.59,
+    "change": 1.59,
+    "mean": 30.28,
+    "max": [
+     1981,
+     32.09
+    ]
+   },
+   "B4 average tax rate, Top 10%": {
+    "years": "1973-1983",
+    "start": 33.78,
+    "end": 30.96,
+    "change": -2.81,
+    "mean": 33.38,
+    "max": [
+     1974,
+     34.66
+    ]
+   },
+   "B4 average tax rate, Top 1%": {
+    "years": "1973-1983",
+    "start": 41.39,
+    "end": 34.23,
+    "change": -7.16,
+    "mean": 38.99,
+    "max": [
+     1974,
+     42.51
+    ]
+   },
+   "B4 average tax rate, Top 0.1%": {
+    "years": "1973-1983",
+    "start": 48.71,
+    "end": 37.17,
+    "change": -11.55,
+    "mean": 44.14,
+    "max": [
+     1974,
+     50.49
+    ]
+   },
+   "B4 top statutory rate (context; IRS SOI)": {
+    "years": "1973-1983",
+    "start": 70.0,
+    "end": 50.0,
+    "change": -20.0,
+    "mean": 65.56,
+    "max": [
+     1973,
+     70.0
+    ]
+   }
+  },
+  "E3": {
+   "B1 top 10% income share": {
+    "years": "1984-2007",
+    "start": 36.49,
+    "end": 44.03,
+    "change": 7.54,
+    "mean": 40.35,
+    "max": [
+     2006,
+     44.31
+    ]
+   },
+   "B1 top 1% income share": {
+    "years": "1984-2007",
+    "start": 12.15,
+    "end": 18.38,
+    "change": 6.23,
+    "mean": 15.34,
+    "max": [
+     2006,
+     18.54
+    ]
+   },
+   "B1 top 10% wealth share": {
+    "years": "1984-2007",
+    "start": 63.25,
+    "end": 69.63,
+    "change": 6.38,
+    "mean": 66.64,
+    "max": [
+     2007,
+     69.63
+    ]
+   },
+   "B1 top 1% wealth share": {
+    "years": "1984-2007",
+    "start": 24.19,
+    "end": 33.32,
+    "change": 9.13,
+    "mean": 29.59,
+    "max": [
+     2007,
+     33.32
+    ]
+   },
+   "B1 bottom 50% wealth share": {
+    "years": "1984-2007",
+    "start": 1.41,
+    "end": -0.39,
+    "change": -1.8,
+    "mean": 0.99,
+    "max": [
+     1987,
+     1.91
+    ]
+   },
+   "B2 official poverty %": {
+    "years": "1984-2007",
+    "start": 14.4,
+    "end": 12.5,
+    "change": -1.9,
+    "mean": 13.18,
+    "max": [
+     1993,
+     15.1
+    ]
+   },
+   "B2 anchored SPM poverty %": {
+    "years": "1984-2007",
+    "start": 20.47,
+    "end": 14.75,
+    "change": -5.73,
+    "mean": 16.92,
+    "max": [
+     1984,
+     20.47
+    ]
+   },
+   "B3 health spending % of GDP": {
+    "years": "1984-2007",
+    "start": 10.0,
+    "end": 15.9,
+    "change": 5.9,
+    "mean": 13.1,
+    "max": [
+     2007,
+     15.9
+    ]
+   },
+   "B3 out-of-pocket % of health spending": {
+    "years": "1984-2007",
+    "start": 20.51,
+    "end": 12.77,
+    "change": -7.74,
+    "mean": 15.91,
+    "max": [
+     1986,
+     21.1
+    ]
+   },
+   "B3 real health spending per person, yearly growth": {
+    "years": "1984-2007",
+    "n": 24,
+    "mean": 3.72,
+    "sd": 1.56,
+    "max": [
+     2002,
+     7.3
+    ],
+    "min": [
+     1996,
+     1.21
+    ]
+   },
+   "B3 hospital ownership mix": "not opened (Amendment 1, item 9)",
+   "B4 average tax rate, All": {
+    "years": "1984-2007",
+    "start": 29.53,
+    "end": 30.51,
+    "change": 0.98,
+    "mean": 30.9,
+    "max": [
+     1996,
+     32.2
+    ]
+   },
+   "B4 average tax rate, Bottom 50%": {
+    "years": "1984-2007",
+    "start": 27.68,
+    "end": 27.43,
+    "change": -0.25,
+    "mean": 27.97,
+    "max": [
+     1991,
+     29.36
+    ]
+   },
+   "B4 average tax rate, Middle 40%": {
+    "years": "1984-2007",
+    "start": 30.47,
+    "end": 29.63,
+    "change": -0.83,
+    "mean": 30.71,
+    "max": [
+     1989,
+     31.83
+    ]
+   },
+   "B4 average tax rate, Top 10%": {
+    "years": "1984-2007",
+    "start": 29.28,
+    "end": 32.22,
+    "change": 2.94,
+    "mean": 32.17,
+    "max": [
+     2001,
+     34.1
+    ]
+   },
+   "B4 average tax rate, Top 1%": {
+    "years": "1984-2007",
+    "start": 32.09,
+    "end": 33.93,
+    "change": 1.84,
+    "mean": 34.74,
+    "max": [
+     1996,
+     38.35
+    ]
+   },
+   "B4 average tax rate, Top 0.1%": {
+    "years": "1984-2007",
+    "start": 34.94,
+    "end": 34.35,
+    "change": -0.59,
+    "mean": 37.26,
+    "max": [
+     1996,
+     42.69
+    ]
+   },
+   "B4 top statutory rate (context; IRS SOI)": {
+    "years": "1984-2007",
+    "start": 50.0,
+    "end": 35.0,
+    "change": -15.0,
+    "mean": 39.05,
+    "max": [
+     1984,
+     50.0
+    ]
+   }
+  },
+  "E4": {
+   "B1 top 10% income share": {
+    "years": "2008-2019",
+    "start": 43.55,
+    "end": 45.7,
+    "change": 2.15,
+    "mean": 44.85,
+    "max": [
+     2018,
+     45.84
+    ]
+   },
+   "B1 top 1% income share": {
+    "years": "2008-2019",
+    "start": 17.94,
+    "end": 19.08,
+    "change": 1.14,
+    "mean": 18.56,
+    "max": [
+     2012,
+     19.5
+    ]
+   },
+   "B1 top 10% wealth share": {
+    "years": "2008-2019",
+    "start": 71.14,
+    "end": 71.42,
+    "change": 0.29,
+    "mean": 72.68,
+    "max": [
+     2012,
+     74.35
+    ]
+   },
+   "B1 top 1% wealth share": {
+    "years": "2008-2019",
+    "start": 33.9,
+    "end": 34.88,
+    "change": 0.98,
+    "mean": 35.16,
+    "max": [
+     2012,
+     36.66
+    ]
+   },
+   "B1 bottom 50% wealth share": {
+    "years": "2008-2019",
+    "start": -1.23,
+    "end": 0.22,
+    "change": 1.45,
+    "mean": -0.91,
+    "max": [
+     2019,
+     0.22
+    ]
+   },
+   "B2 official poverty %": {
+    "years": "2008-2025",
+    "start": 13.2,
+    "end": 10.2,
+    "change": -3.0,
+    "mean": 12.76,
+    "max": [
+     2010,
+     15.1
+    ]
+   },
+   "B2 anchored SPM poverty %": {
+    "years": "2008-2024",
+    "start": 14.64,
+    "end": 10.09,
+    "change": -4.55,
+    "mean": 13.29,
+    "max": [
+     2012,
+     15.99
+    ]
+   },
+   "B3 health spending % of GDP": {
+    "years": "2008-2024",
+    "start": 16.3,
+    "end": 18.0,
+    "change": 1.7,
+    "mean": 17.56,
+    "max": [
+     2020,
+     19.7
+    ]
+   },
+   "B3 out-of-pocket % of health spending": {
+    "years": "2008-2024",
+    "start": 12.54,
+    "end": 10.54,
+    "change": -2.0,
+    "mean": 11.22,
+    "max": [
+     2008,
+     12.54
+    ]
+   },
+   "B3 real health spending per person, yearly growth": {
+    "years": "2008-2024",
+    "n": 17,
+    "mean": 1.74,
+    "sd": 2.61,
+    "max": [
+     2020,
+     8.67
+    ],
+    "min": [
+     2022,
+     -3.52
+    ]
+   },
+   "B3 hospital ownership mix": "not opened (Amendment 1, item 9)",
+   "B4 average tax rate, All": {
+    "years": "2008-2019",
+    "start": 30.66,
+    "end": 29.38,
+    "change": -1.28,
+    "mean": 29.14,
+    "max": [
+     2008,
+     30.66
+    ]
+   },
+   "B4 average tax rate, Bottom 50%": {
+    "years": "2008-2019",
+    "start": 26.72,
+    "end": 26.01,
+    "change": -0.71,
+    "mean": 25.21,
+    "max": [
+     2008,
+     26.72
+    ]
+   },
+   "B4 average tax rate, Middle 40%": {
+    "years": "2008-2019",
+    "start": 29.32,
+    "end": 29.24,
+    "change": -0.08,
+    "mean": 28.44,
+    "max": [
+     2016,
+     29.43
+    ]
+   },
+   "B4 average tax rate, Top 10%": {
+    "years": "2008-2019",
+    "start": 33.21,
+    "end": 30.47,
+    "change": -2.74,
+    "mean": 30.95,
+    "max": [
+     2008,
+     33.21
+    ]
+   },
+   "B4 average tax rate, Top 1%": {
+    "years": "2008-2019",
+    "start": 36.01,
+    "end": 32.37,
+    "change": -3.63,
+    "mean": 32.89,
+    "max": [
+     2008,
+     36.01
+    ]
+   },
+   "B4 average tax rate, Top 0.1%": {
+    "years": "2008-2019",
+    "start": 37.88,
+    "end": 34.55,
+    "change": -3.33,
+    "mean": 34.81,
+    "max": [
+     2008,
+     37.88
+    ]
+   },
+   "B4 top statutory rate (context; IRS SOI)": {
+    "years": "2008-2018",
+    "start": 35.0,
+    "end": 37.0,
+    "change": 2.0,
+    "mean": 37.27,
+    "max": [
+     2013,
+     39.6
+    ]
+   }
+  },
+  "W": {
+   "B1 top 10% income share": {
+    "years": "2005-2019",
+    "start": 43.59,
+    "end": 45.7,
+    "change": 2.11,
+    "mean": 44.68,
+    "max": [
+     2018,
+     45.84
+    ]
+   },
+   "B1 top 1% income share": {
+    "years": "2005-2019",
+    "start": 18.08,
+    "end": 19.08,
+    "change": 1.0,
+    "mean": 18.52,
+    "max": [
+     2012,
+     19.5
+    ]
+   },
+   "B1 top 10% wealth share": {
+    "years": "2005-2019",
+    "start": 68.6,
+    "end": 71.42,
+    "change": 2.82,
+    "mean": 71.94,
+    "max": [
+     2012,
+     74.35
+    ]
+   },
+   "B1 top 1% wealth share": {
+    "years": "2005-2019",
+    "start": 32.25,
+    "end": 34.88,
+    "change": 2.63,
+    "mean": 34.68,
+    "max": [
+     2012,
+     36.66
+    ]
+   },
+   "B1 bottom 50% wealth share": {
+    "years": "2005-2019",
+    "start": 0.47,
+    "end": 0.22,
+    "change": -0.25,
+    "mean": -0.71,
+    "max": [
+     2005,
+     0.47
+    ]
+   },
+   "B2 official poverty %": {
+    "years": "2005-2025",
+    "start": 12.6,
+    "end": 10.2,
+    "change": -2.4,
+    "mean": 12.71,
+    "max": [
+     2010,
+     15.1
+    ]
+   },
+   "B2 anchored SPM poverty %": {
+    "years": "2005-2024",
+    "start": 14.54,
+    "end": 10.09,
+    "change": -4.45,
+    "mean": 13.56,
+    "max": [
+     2012,
+     15.99
+    ]
+   },
+   "B3 health spending % of GDP": {
+    "years": "2005-2024",
+    "start": 15.5,
+    "end": 18.0,
+    "change": 2.5,
+    "mean": 17.28,
+    "max": [
+     2020,
+     19.7
+    ]
+   },
+   "B3 out-of-pocket % of health spending": {
+    "years": "2005-2024",
+    "start": 13.08,
+    "end": 10.54,
+    "change": -2.53,
+    "mean": 11.48,
+    "max": [
+     2005,
+     13.08
+    ]
+   },
+   "B3 real health spending per person, yearly growth": {
+    "years": "2005-2024",
+    "n": 20,
+    "mean": 1.86,
+    "sd": 2.41,
+    "max": [
+     2020,
+     8.67
+    ],
+    "min": [
+     2022,
+     -3.52
+    ]
+   },
+   "B3 hospital ownership mix": "not opened (Amendment 1, item 9)",
+   "B4 average tax rate, All": {
+    "years": "2005-2019",
+    "start": 29.81,
+    "end": 29.38,
+    "change": -0.43,
+    "mean": 29.35,
+    "max": [
+     2008,
+     30.66
+    ]
+   },
+   "B4 average tax rate, Bottom 50%": {
+    "years": "2005-2019",
+    "start": 26.61,
+    "end": 26.01,
+    "change": -0.6,
+    "mean": 25.57,
+    "max": [
+     2007,
+     27.43
+    ]
+   },
+   "B4 average tax rate, Middle 40%": {
+    "years": "2005-2019",
+    "start": 29.29,
+    "end": 29.24,
+    "change": -0.05,
+    "mean": 28.65,
+    "max": [
+     2007,
+     29.63
+    ]
+   },
+   "B4 average tax rate, Top 10%": {
+    "years": "2005-2019",
+    "start": 31.28,
+    "end": 30.47,
+    "change": -0.81,
+    "mean": 31.12,
+    "max": [
+     2008,
+     33.21
+    ]
+   },
+   "B4 average tax rate, Top 1%": {
+    "years": "2005-2019",
+    "start": 32.94,
+    "end": 32.37,
+    "change": -0.57,
+    "mean": 33.01,
+    "max": [
+     2008,
+     36.01
+    ]
+   },
+   "B4 average tax rate, Top 0.1%": {
+    "years": "2005-2019",
+    "start": 33.9,
+    "end": 34.55,
+    "change": 0.65,
+    "mean": 34.68,
+    "max": [
+     2008,
+     37.88
+    ]
+   },
+   "B4 top statutory rate (context; IRS SOI)": {
+    "years": "2005-2018",
+    "start": 35.0,
+    "end": 37.0,
+    "change": 2.0,
+    "mean": 36.79,
+    "max": [
+     2013,
+     39.6
+    ]
+   }
+  }
+ },
+ "checks": {
+  "planning figures (PSZ average tax rate, all taxes)": {
+   "top 1% 1950-1959 mean": [
+    45.5,
+    42.0
+   ],
+   "top 0.1% 1950-1959 mean": [
+    57.3,
+    50.6
+   ],
+   "top 1% 2014": [
+    33.9,
+    36.4
+   ],
+   "top 0.1% 2014": [
+    36.4,
+    39.8
+   ],
+   "note": "[file, planning]"
+  },
+  "PSZ last year": {
+   "income": 2019,
+   "wealth": 2019,
+   "tax": 2019
+  },
+  "CPI-U 2005-2025 NSA vs SA (S74): mean, sd": [
+   [
+    2.58,
+    1.69
+   ],
+   [
+    2.57,
+    1.72
+   ]
+  ],
+  "home link: Shiller vs Case-Shiller real change 2015-2022": {
+   "2015": [
+    4.44,
+    4.43
+   ],
+   "2016": [
+    3.16,
+    3.16
+   ],
+   "2017": [
+    4.01,
+    4.01
+   ],
+   "2018": [
+    2.56,
+    2.56
+   ],
+   "2019": [
+    1.37,
+    1.36
+   ],
+   "2020": [
+    8.95,
+    8.94
+   ],
+   "2021": [
+    11.05,
+    11.05
+   ],
+   "2022": [
+    -0.77,
+    -0.78
+   ]
+  }
+ },
+ "B5 estimated rule": {
+  "E1": {
+   "quarters": "1949Q1-1972Q4",
+   "n": 96,
+   "c": 2.14,
+   "phi": 0.45,
+   "beta": 0.08,
+   "se": [
+    0.39,
+    0.25,
+    0.11
+   ],
+   "r2": 0.29,
+   "a": -0.55,
+   "b": 0.08,
+   "rstar_at_2pct": 1.03,
+   "smoothed": {
+    "rho": 0.96,
+    "c": 2.99,
+    "phi": -0.9,
+    "beta": 2.77
+   }
+  },
+  "E1 from 1951Q2": {
+   "quarters": "1951Q2-1972Q4",
+   "n": 87,
+   "c": 2.01,
+   "phi": 0.55,
+   "beta": 0.1,
+   "se": [
+    0.54,
+    0.28,
+    0.11
+   ],
+   "r2": 0.35,
+   "a": -0.45,
+   "b": 0.1,
+   "rstar_at_2pct": 1.1,
+   "smoothed": {
+    "rho": 0.96,
+    "c": 2.65,
+    "phi": -0.54,
+    "beta": 2.3
+   }
+  },
+  "E2": {
+   "quarters": "1973Q1-1983Q4",
+   "n": 44,
+   "c": 3.98,
+   "phi": 0.65,
+   "beta": -0.18,
+   "se": [
+    1.79,
+    0.2,
+    0.24
+   ],
+   "r2": 0.29,
+   "a": -0.35,
+   "b": -0.18,
+   "rstar_at_2pct": 3.28,
+   "smoothed": {
+    "rho": 0.91,
+    "c": 12.78,
+    "phi": 0.28,
+    "beta": 2.87
+   }
+  },
+  "E3": {
+   "quarters": "1984Q1-2007Q4",
+   "n": 96,
+   "c": 1.24,
+   "phi": 1.3,
+   "beta": 0.48,
+   "se": [
+    0.99,
+    0.29,
+    0.23
+   ],
+   "r2": 0.42,
+   "a": 0.3,
+   "b": 0.48,
+   "rstar_at_2pct": 1.83,
+   "smoothed": {
+    "rho": 0.91,
+    "c": 0.31,
+    "phi": 1.38,
+    "beta": 2.12
+   }
+  },
+  "E4": {
+   "quarters": "2008Q1-2025Q3",
+   "n": 71,
+   "c": 1.52,
+   "phi": -0.05,
+   "beta": 0.67,
+   "se": [
+    0.85,
+    0.21,
+    0.25
+   ],
+   "r2": 0.34,
+   "a": -1.05,
+   "b": 0.67,
+   "rstar_at_2pct": -0.58,
+   "smoothed": {
+    "rho": 0.92,
+    "c": -0.44,
+    "phi": 0.89,
+    "beta": 1.08
+   }
+  },
+  "E4 effective rate (reading)": {
+   "quarters": "2008Q1-2025Q3",
+   "n": 71,
+   "c": 2.03,
+   "phi": -0.05,
+   "beta": 0.57,
+   "se": [
+    0.66,
+    0.16,
+    0.19
+   ],
+   "r2": 0.43,
+   "a": -1.05,
+   "b": 0.57,
+   "rstar_at_2pct": -0.07,
+   "smoothed": {
+    "rho": 0.9,
+    "c": 0.7,
+    "phi": 0.55,
+    "beta": 0.75
+   }
+  },
+  "W": {
+   "quarters": "2005Q1-2025Q3",
+   "n": 83,
+   "c": 2.12,
+   "phi": -0.11,
+   "beta": 0.84,
+   "se": [
+    0.84,
+    0.24,
+    0.24
+   ],
+   "r2": 0.42,
+   "a": -1.11,
+   "b": 0.84,
+   "rstar_at_2pct": -0.1,
+   "smoothed": {
+    "rho": 0.93,
+    "c": 0.01,
+    "phi": 0.99,
+    "beta": 1.36
+   }
+  }
+ },
+ "comparisons": {
+  "E4 vs E1": [
+   {
+    "measure": "A1 inflation mean",
+    "earlier": 2.68,
+    "later": 2.45,
+    "diff": -0.23,
+    "ci95": [
+     -1.34,
+     1.57
+    ],
+    "p": 0.9646,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A1 inflation sd",
+    "earlier": 2.43,
+    "later": 1.78,
+    "diff": -0.65,
+    "ci95": [
+     -1.91,
+     0.65
+    ],
+    "p": 0.4052,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food mean",
+    "earlier": 1.9,
+    "later": 2.49,
+    "diff": 0.59,
+    "ci95": [
+     -1.5,
+     2.74
+    ],
+    "p": 0.6528,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food sd",
+    "earlier": 3.31,
+    "later": 3.47,
+    "diff": 0.16,
+    "ci95": [
+     -1.74,
+     1.88
+    ],
+    "p": 0.854,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter mean",
+    "earlier": 3.05,
+    "later": 3.09,
+    "diff": 0.04,
+    "ci95": [
+     -2.01,
+     1.96
+    ],
+    "p": 0.913,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter sd",
+    "earlier": 2.47,
+    "later": 1.8,
+    "diff": -0.66,
+    "ci95": [
+     -2.07,
+     1.04
+    ],
+    "p": 0.3884,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 medical mean",
+    "earlier": 4.11,
+    "later": 2.79,
+    "diff": -1.32,
+    "ci95": [
+     -2.3,
+     -0.47
+    ],
+    "p": 0.0014,
+    "p_holm": 0.0196,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 medical sd",
+    "earlier": 1.7,
+    "later": 0.98,
+    "diff": -0.72,
+    "ci95": [
+     -1.11,
+     -0.06
+    ],
+    "p": 0.0288,
+    "p_holm": 0.3456,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment mean",
+    "earlier": 4.77,
+    "later": 5.91,
+    "diff": 1.14,
+    "ci95": [
+     -0.28,
+     2.79
+    ],
+    "p": 0.1198,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment sd",
+    "earlier": 1.13,
+    "later": 2.11,
+    "diff": 0.98,
+    "ci95": [
+     0.03,
+     1.46
+    ],
+    "p": 0.0428,
+    "p_holm": 0.4708,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth mean",
+    "earlier": 2.53,
+    "later": 1.31,
+    "diff": -1.21,
+    "ci95": [
+     -2.24,
+     0.17
+    ],
+    "p": 0.107,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth sd",
+    "earlier": 3.14,
+    "later": 1.86,
+    "diff": -1.28,
+    "ci95": [
+     -2.97,
+     -0.15
+    ],
+    "p": 0.0254,
+    "p_holm": 0.3302,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 shares real change sd",
+    "earlier": 15.31,
+    "later": 17.01,
+    "diff": 1.71,
+    "ci95": [
+     -7.99,
+     5.96
+    ],
+    "p": 0.7116,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 homes real change sd",
+    "earlier": 2.99,
+    "later": 6.01,
+    "diff": 3.02,
+    "ci95": [
+     -0.54,
+     4.82
+    ],
+    "p": 0.1214,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   }
+  ],
+  "E4 vs E2": [
+   {
+    "measure": "A1 inflation mean",
+    "earlier": 8.27,
+    "later": 2.45,
+    "diff": -5.81,
+    "ci95": [
+     -8.45,
+     -3.74
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A1 inflation sd",
+    "earlier": 3.41,
+    "later": 1.78,
+    "diff": -1.63,
+    "ci95": [
+     -2.74,
+     -0.21
+    ],
+    "p": 0.021,
+    "p_holm": 0.189,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food mean",
+    "earlier": 7.95,
+    "later": 2.49,
+    "diff": -5.46,
+    "ci95": [
+     -8.91,
+     -1.45
+    ],
+    "p": 0.0048,
+    "p_holm": 0.048,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 food sd",
+    "earlier": 6.51,
+    "later": 3.47,
+    "diff": -3.05,
+    "ci95": [
+     -4.43,
+     0.41
+    ],
+    "p": 0.1252,
+    "p_holm": 0.7532,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter mean",
+    "earlier": 9.06,
+    "later": 3.09,
+    "diff": -5.96,
+    "ci95": [
+     -10.0,
+     -3.48
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 shelter sd",
+    "earlier": 4.61,
+    "later": 1.8,
+    "diff": -2.81,
+    "ci95": [
+     -4.05,
+     -0.83
+    ],
+    "p": 0.0016,
+    "p_holm": 0.0176,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 medical mean",
+    "earlier": 9.57,
+    "later": 2.79,
+    "diff": -6.79,
+    "ci95": [
+     -8.08,
+     -6.44
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 medical sd",
+    "earlier": 2.22,
+    "later": 0.98,
+    "diff": -1.24,
+    "ci95": [
+     -1.65,
+     0.35
+    ],
+    "p": 0.2332,
+    "p_holm": 0.9328,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment mean",
+    "earlier": 7.25,
+    "later": 5.91,
+    "diff": -1.34,
+    "ci95": [
+     -2.9,
+     0.46
+    ],
+    "p": 0.1578,
+    "p_holm": 0.789,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment sd",
+    "earlier": 1.58,
+    "later": 2.11,
+    "diff": 0.53,
+    "ci95": [
+     -0.2,
+     1.51
+    ],
+    "p": 0.1076,
+    "p_holm": 0.7532,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth mean",
+    "earlier": 1.67,
+    "later": 1.31,
+    "diff": -0.36,
+    "ci95": [
+     -1.71,
+     1.81
+    ],
+    "p": 0.9096,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth sd",
+    "earlier": 3.18,
+    "later": 1.86,
+    "diff": -1.33,
+    "ci95": [
+     -2.34,
+     0.08
+    ],
+    "p": 0.0622,
+    "p_holm": 0.4976,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 shares real change sd",
+    "earlier": 18.79,
+    "later": 17.01,
+    "diff": -1.78,
+    "ci95": [
+     -13.21,
+     7.0
+    ],
+    "p": 0.5714,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 homes real change sd",
+    "earlier": 4.18,
+    "later": 6.01,
+    "diff": 1.83,
+    "ci95": [
+     -1.56,
+     3.92
+    ],
+    "p": 0.3928,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   }
+  ],
+  "E4 vs E3": [
+   {
+    "measure": "A1 inflation mean",
+    "earlier": 3.09,
+    "later": 2.45,
+    "diff": -0.64,
+    "ci95": [
+     -1.61,
+     0.76
+    ],
+    "p": 0.417,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A1 inflation sd",
+    "earlier": 1.16,
+    "later": 1.78,
+    "diff": 0.62,
+    "ci95": [
+     -0.63,
+     1.45
+    ],
+    "p": 0.3862,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food mean",
+    "earlier": 3.06,
+    "later": 2.49,
+    "diff": -0.57,
+    "ci95": [
+     -2.26,
+     1.43
+    ],
+    "p": 0.537,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food sd",
+    "earlier": 1.66,
+    "later": 3.47,
+    "diff": 1.81,
+    "ci95": [
+     0.2,
+     2.97
+    ],
+    "p": 0.0218,
+    "p_holm": 0.2704,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter mean",
+    "earlier": 3.74,
+    "later": 3.09,
+    "diff": -0.65,
+    "ci95": [
+     -1.83,
+     0.86
+    ],
+    "p": 0.4424,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter sd",
+    "earlier": 1.03,
+    "later": 1.8,
+    "diff": 0.77,
+    "ci95": [
+     -0.25,
+     1.57
+    ],
+    "p": 0.1366,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 medical mean",
+    "earlier": 5.34,
+    "later": 2.79,
+    "diff": -2.55,
+    "ci95": [
+     -3.82,
+     -1.39
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 medical sd",
+    "earlier": 1.83,
+    "later": 0.98,
+    "diff": -0.86,
+    "ci95": [
+     -1.4,
+     0.09
+    ],
+    "p": 0.0684,
+    "p_holm": 0.7524,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment mean",
+    "earlier": 5.69,
+    "later": 5.91,
+    "diff": 0.21,
+    "ci95": [
+     -1.19,
+     1.9
+    ],
+    "p": 0.752,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment sd",
+    "earlier": 1.04,
+    "later": 2.11,
+    "diff": 1.07,
+    "ci95": [
+     0.18,
+     1.66
+    ],
+    "p": 0.0208,
+    "p_holm": 0.2704,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth mean",
+    "earlier": 2.16,
+    "later": 1.31,
+    "diff": -0.85,
+    "ci95": [
+     -1.5,
+     0.27
+    ],
+    "p": 0.1926,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth sd",
+    "earlier": 1.42,
+    "later": 1.86,
+    "diff": 0.44,
+    "ci95": [
+     -0.8,
+     1.11
+    ],
+    "p": 0.6458,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 shares real change sd",
+    "earlier": 14.33,
+    "later": 17.01,
+    "diff": 2.69,
+    "ci95": [
+     -6.83,
+     7.0
+    ],
+    "p": 0.902,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 homes real change sd",
+    "earlier": 4.87,
+    "later": 6.01,
+    "diff": 1.14,
+    "ci95": [
+     -2.12,
+     3.2
+    ],
+    "p": 0.6138,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   }
+  ],
+  "W vs E1": [
+   {
+    "measure": "A1 inflation mean",
+    "earlier": 2.68,
+    "later": 2.58,
+    "diff": -0.1,
+    "ci95": [
+     -1.24,
+     1.4
+    ],
+    "p": 0.9498,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A1 inflation sd",
+    "earlier": 2.43,
+    "later": 1.69,
+    "diff": -0.74,
+    "ci95": [
+     -1.71,
+     0.54
+    ],
+    "p": 0.3494,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food mean",
+    "earlier": 1.9,
+    "later": 2.56,
+    "diff": 0.66,
+    "ci95": [
+     -1.19,
+     2.65
+    ],
+    "p": 0.4964,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food sd",
+    "earlier": 3.31,
+    "later": 3.29,
+    "diff": -0.02,
+    "ci95": [
+     -1.53,
+     1.74
+    ],
+    "p": 0.8416,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter mean",
+    "earlier": 3.05,
+    "later": 3.12,
+    "diff": 0.07,
+    "ci95": [
+     -2.08,
+     1.77
+    ],
+    "p": 0.9978,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter sd",
+    "earlier": 2.47,
+    "later": 1.68,
+    "diff": -0.78,
+    "ci95": [
+     -2.03,
+     0.98
+    ],
+    "p": 0.3566,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 medical mean",
+    "earlier": 4.11,
+    "later": 3.01,
+    "diff": -1.1,
+    "ci95": [
+     -2.15,
+     -0.22
+    ],
+    "p": 0.0122,
+    "p_holm": 0.1708,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 medical sd",
+    "earlier": 1.7,
+    "later": 1.09,
+    "diff": -0.6,
+    "ci95": [
+     -1.02,
+     0.01
+    ],
+    "p": 0.0538,
+    "p_holm": 0.538,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment mean",
+    "earlier": 4.77,
+    "later": 5.74,
+    "diff": 0.97,
+    "ci95": [
+     -0.16,
+     2.57
+    ],
+    "p": 0.0904,
+    "p_holm": 0.7232,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment sd",
+    "earlier": 1.13,
+    "later": 1.99,
+    "diff": 0.86,
+    "ci95": [
+     0.03,
+     1.38
+    ],
+    "p": 0.0444,
+    "p_holm": 0.5328,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth mean",
+    "earlier": 2.53,
+    "later": 1.36,
+    "diff": -1.17,
+    "ci95": [
+     -2.54,
+     0.03
+    ],
+    "p": 0.0546,
+    "p_holm": 0.538,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth sd",
+    "earlier": 3.14,
+    "later": 1.72,
+    "diff": -1.42,
+    "ci95": [
+     -2.77,
+     -0.02
+    ],
+    "p": 0.0452,
+    "p_holm": 0.5328,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 shares real change sd",
+    "earlier": 15.31,
+    "later": 15.83,
+    "diff": 0.52,
+    "ci95": [
+     -6.98,
+     7.74
+    ],
+    "p": 0.8822,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 homes real change sd",
+    "earlier": 2.99,
+    "later": 6.32,
+    "diff": 3.32,
+    "ci95": [
+     0.36,
+     5.53
+    ],
+    "p": 0.0276,
+    "p_holm": 0.3588,
+    "verdict": "no clear difference"
+   }
+  ],
+  "W vs E2": [
+   {
+    "measure": "A1 inflation mean",
+    "earlier": 8.27,
+    "later": 2.58,
+    "diff": -5.68,
+    "ci95": [
+     -8.37,
+     -3.86
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A1 inflation sd",
+    "earlier": 3.41,
+    "later": 1.69,
+    "diff": -1.72,
+    "ci95": [
+     -2.54,
+     -0.31
+    ],
+    "p": 0.0186,
+    "p_holm": 0.1674,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food mean",
+    "earlier": 7.95,
+    "later": 2.56,
+    "diff": -5.39,
+    "ci95": [
+     -8.72,
+     -1.25
+    ],
+    "p": 0.0048,
+    "p_holm": 0.048,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 food sd",
+    "earlier": 6.51,
+    "later": 3.29,
+    "diff": -3.23,
+    "ci95": [
+     -4.29,
+     0.32
+    ],
+    "p": 0.1016,
+    "p_holm": 0.6874,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter mean",
+    "earlier": 9.06,
+    "later": 3.12,
+    "diff": -5.93,
+    "ci95": [
+     -9.98,
+     -3.6
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 shelter sd",
+    "earlier": 4.61,
+    "later": 1.68,
+    "diff": -2.93,
+    "ci95": [
+     -4.04,
+     -0.88
+    ],
+    "p": 0.0008,
+    "p_holm": 0.0088,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 medical mean",
+    "earlier": 9.57,
+    "later": 3.01,
+    "diff": -6.56,
+    "ci95": [
+     -7.96,
+     -6.17
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 medical sd",
+    "earlier": 2.22,
+    "later": 1.09,
+    "diff": -1.12,
+    "ci95": [
+     -1.57,
+     0.42
+    ],
+    "p": 0.331,
+    "p_holm": 0.993,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment mean",
+    "earlier": 7.25,
+    "later": 5.74,
+    "diff": -1.51,
+    "ci95": [
+     -2.8,
+     0.23
+    ],
+    "p": 0.0982,
+    "p_holm": 0.6874,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment sd",
+    "earlier": 1.58,
+    "later": 1.99,
+    "diff": 0.4,
+    "ci95": [
+     -0.19,
+     1.43
+    ],
+    "p": 0.111,
+    "p_holm": 0.6874,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth mean",
+    "earlier": 1.67,
+    "later": 1.36,
+    "diff": -0.32,
+    "ci95": [
+     -1.98,
+     1.63
+    ],
+    "p": 0.8962,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth sd",
+    "earlier": 3.18,
+    "later": 1.72,
+    "diff": -1.46,
+    "ci95": [
+     -2.16,
+     0.18
+    ],
+    "p": 0.0846,
+    "p_holm": 0.6768,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 shares real change sd",
+    "earlier": 18.79,
+    "later": 15.83,
+    "diff": -2.96,
+    "ci95": [
+     -11.91,
+     9.15
+    ],
+    "p": 0.845,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 homes real change sd",
+    "earlier": 4.18,
+    "later": 6.32,
+    "diff": 2.13,
+    "ci95": [
+     -0.66,
+     4.68
+    ],
+    "p": 0.1202,
+    "p_holm": 0.6874,
+    "verdict": "no clear difference"
+   }
+  ],
+  "W vs E3": [
+   {
+    "measure": "A1 inflation mean",
+    "earlier": 3.09,
+    "later": 2.58,
+    "diff": -0.51,
+    "ci95": [
+     -1.53,
+     0.63
+    ],
+    "p": 0.367,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A1 inflation sd",
+    "earlier": 1.16,
+    "later": 1.69,
+    "diff": 0.53,
+    "ci95": [
+     -0.46,
+     1.38
+    ],
+    "p": 0.3198,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food mean",
+    "earlier": 3.06,
+    "later": 2.56,
+    "diff": -0.5,
+    "ci95": [
+     -2.02,
+     1.4
+    ],
+    "p": 0.654,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food sd",
+    "earlier": 1.66,
+    "later": 3.29,
+    "diff": 1.63,
+    "ci95": [
+     0.45,
+     2.82
+    ],
+    "p": 0.004,
+    "p_holm": 0.052,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter mean",
+    "earlier": 3.74,
+    "later": 3.12,
+    "diff": -0.62,
+    "ci95": [
+     -1.77,
+     0.63
+    ],
+    "p": 0.3456,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter sd",
+    "earlier": 1.03,
+    "later": 1.68,
+    "diff": 0.65,
+    "ci95": [
+     -0.17,
+     1.46
+    ],
+    "p": 0.12,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 medical mean",
+    "earlier": 5.34,
+    "later": 3.01,
+    "diff": -2.33,
+    "ci95": [
+     -3.68,
+     -1.19
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "more stable"
+   },
+   {
+    "measure": "A2 medical sd",
+    "earlier": 1.83,
+    "later": 1.09,
+    "diff": -0.74,
+    "ci95": [
+     -1.31,
+     0.16
+    ],
+    "p": 0.094,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment mean",
+    "earlier": 5.69,
+    "later": 5.74,
+    "diff": 0.05,
+    "ci95": [
+     -1.1,
+     1.61
+    ],
+    "p": 0.8042,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment sd",
+    "earlier": 1.04,
+    "later": 1.99,
+    "diff": 0.95,
+    "ci95": [
+     0.18,
+     1.59
+    ],
+    "p": 0.0236,
+    "p_holm": 0.2832,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth mean",
+    "earlier": 2.16,
+    "later": 1.36,
+    "diff": -0.8,
+    "ci95": [
+     -1.78,
+     0.12
+    ],
+    "p": 0.0954,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth sd",
+    "earlier": 1.42,
+    "later": 1.72,
+    "diff": 0.3,
+    "ci95": [
+     -0.62,
+     1.19
+    ],
+    "p": 0.378,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 shares real change sd",
+    "earlier": 14.33,
+    "later": 15.83,
+    "diff": 1.5,
+    "ci95": [
+     -5.8,
+     8.67
+    ],
+    "p": 0.6498,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 homes real change sd",
+    "earlier": 4.87,
+    "later": 6.32,
+    "diff": 1.44,
+    "ci95": [
+     -1.2,
+     3.92
+    ],
+    "p": 0.2136,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   }
+  ],
+  "E2 vs E1": [
+   {
+    "measure": "A1 inflation mean",
+    "earlier": 2.68,
+    "later": 8.27,
+    "diff": 5.58,
+    "ci95": [
+     3.92,
+     8.52
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A1 inflation sd",
+    "earlier": 2.43,
+    "later": 3.41,
+    "diff": 0.99,
+    "ci95": [
+     -0.28,
+     1.97
+    ],
+    "p": 0.1216,
+    "p_holm": 0.8512,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 food mean",
+    "earlier": 1.9,
+    "later": 7.95,
+    "diff": 6.05,
+    "ci95": [
+     2.12,
+     9.4
+    ],
+    "p": 0.0004,
+    "p_holm": 0.004,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 food sd",
+    "earlier": 3.31,
+    "later": 6.51,
+    "diff": 3.2,
+    "ci95": [
+     -0.26,
+     4.42
+    ],
+    "p": 0.0852,
+    "p_holm": 0.6816,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 shelter mean",
+    "earlier": 3.05,
+    "later": 9.06,
+    "diff": 6.0,
+    "ci95": [
+     3.35,
+     10.35
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 shelter sd",
+    "earlier": 2.47,
+    "later": 4.61,
+    "diff": 2.15,
+    "ci95": [
+     0.05,
+     3.85
+    ],
+    "p": 0.044,
+    "p_holm": 0.396,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A2 medical mean",
+    "earlier": 4.11,
+    "later": 9.57,
+    "diff": 5.47,
+    "ci95": [
+     4.68,
+     7.05
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 medical sd",
+    "earlier": 1.7,
+    "later": 2.22,
+    "diff": 0.52,
+    "ci95": [
+     -0.99,
+     1.06
+    ],
+    "p": 0.9746,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment mean",
+    "earlier": 4.77,
+    "later": 7.25,
+    "diff": 2.48,
+    "ci95": [
+     1.46,
+     3.51
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A3 unemployment sd",
+    "earlier": 1.13,
+    "later": 1.58,
+    "diff": 0.45,
+    "ci95": [
+     -0.42,
+     0.66
+    ],
+    "p": 0.676,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth mean",
+    "earlier": 2.53,
+    "later": 1.67,
+    "diff": -0.85,
+    "ci95": [
+     -3.02,
+     0.9
+    ],
+    "p": 0.3034,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth sd",
+    "earlier": 3.14,
+    "later": 3.18,
+    "diff": 0.05,
+    "ci95": [
+     -1.76,
+     0.98
+    ],
+    "p": 0.6946,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 shares real change sd",
+    "earlier": 15.31,
+    "later": 18.79,
+    "diff": 3.49,
+    "ci95": [
+     -6.93,
+     10.5
+    ],
+    "p": 0.7306,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 homes real change sd",
+    "earlier": 2.99,
+    "later": 4.18,
+    "diff": 1.19,
+    "ci95": [
+     -1.22,
+     3.08
+    ],
+    "p": 0.2934,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   }
+  ],
+  "E2 vs E3": [
+   {
+    "measure": "A1 inflation mean",
+    "earlier": 3.09,
+    "later": 8.27,
+    "diff": 5.17,
+    "ci95": [
+     3.51,
+     7.81
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A1 inflation sd",
+    "earlier": 1.16,
+    "later": 3.41,
+    "diff": 2.25,
+    "ci95": [
+     1.0,
+     2.73
+    ],
+    "p": 0.0014,
+    "p_holm": 0.014,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 food mean",
+    "earlier": 3.06,
+    "later": 7.95,
+    "diff": 4.89,
+    "ci95": [
+     1.22,
+     8.23
+    ],
+    "p": 0.0048,
+    "p_holm": 0.0336,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 food sd",
+    "earlier": 1.66,
+    "later": 6.51,
+    "diff": 4.86,
+    "ci95": [
+     1.73,
+     5.71
+    ],
+    "p": 0.0026,
+    "p_holm": 0.0208,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 shelter mean",
+    "earlier": 3.74,
+    "later": 9.06,
+    "diff": 5.31,
+    "ci95": [
+     3.19,
+     9.34
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 shelter sd",
+    "earlier": 1.03,
+    "later": 4.61,
+    "diff": 3.58,
+    "ci95": [
+     1.69,
+     4.47
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 medical mean",
+    "earlier": 5.34,
+    "later": 9.57,
+    "diff": 4.24,
+    "ci95": [
+     3.22,
+     6.08
+    ],
+    "p": 0.0,
+    "p_holm": 0.0,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A2 medical sd",
+    "earlier": 1.83,
+    "later": 2.22,
+    "diff": 0.38,
+    "ci95": [
+     -1.2,
+     1.12
+    ],
+    "p": 0.8514,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A3 unemployment mean",
+    "earlier": 5.69,
+    "later": 7.25,
+    "diff": 1.56,
+    "ci95": [
+     0.5,
+     2.61
+    ],
+    "p": 0.0016,
+    "p_holm": 0.0144,
+    "verdict": "less stable"
+   },
+   {
+    "measure": "A3 unemployment sd",
+    "earlier": 1.04,
+    "later": 1.58,
+    "diff": 0.54,
+    "ci95": [
+     -0.28,
+     0.87
+    ],
+    "p": 0.3254,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth mean",
+    "earlier": 2.16,
+    "later": 1.67,
+    "diff": -0.49,
+    "ci95": [
+     -2.37,
+     1.16
+    ],
+    "p": 0.4734,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A4 growth sd",
+    "earlier": 1.42,
+    "later": 3.18,
+    "diff": 1.77,
+    "ci95": [
+     0.44,
+     2.18
+    ],
+    "p": 0.0134,
+    "p_holm": 0.0804,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 shares real change sd",
+    "earlier": 14.33,
+    "later": 18.79,
+    "diff": 4.46,
+    "ci95": [
+     -5.9,
+     11.68
+    ],
+    "p": 0.5968,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   },
+   {
+    "measure": "A5 homes real change sd",
+    "earlier": 4.87,
+    "later": 4.18,
+    "diff": -0.69,
+    "ci95": [
+     -2.75,
+     1.35
+    ],
+    "p": 0.6464,
+    "p_holm": 1.0,
+    "verdict": "no clear difference"
+   }
+  ]
+ },
+ "dukes_view": [
+  {
+   "measure": "A1 inflation mean",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "more stable",
+   "vs 1984-2007": "no clear difference",
+   "reading": "against it"
+  },
+  {
+   "measure": "A1 inflation sd",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  },
+  {
+   "measure": "A2 food mean",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "more stable",
+   "vs 1984-2007": "no clear difference",
+   "reading": "against it"
+  },
+  {
+   "measure": "A2 food sd",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  },
+  {
+   "measure": "A2 shelter mean",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "more stable",
+   "vs 1984-2007": "no clear difference",
+   "reading": "against it"
+  },
+  {
+   "measure": "A2 shelter sd",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "more stable",
+   "vs 1984-2007": "no clear difference",
+   "reading": "against it"
+  },
+  {
+   "measure": "A2 medical mean",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "more stable",
+   "vs 1984-2007": "more stable",
+   "reading": "against it"
+  },
+  {
+   "measure": "A2 medical sd",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  },
+  {
+   "measure": "A3 unemployment mean",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  },
+  {
+   "measure": "A3 unemployment sd",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  },
+  {
+   "measure": "A4 growth mean",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  },
+  {
+   "measure": "A4 growth sd",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  },
+  {
+   "measure": "A5 shares real change sd",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  },
+  {
+   "measure": "A5 homes real change sd",
+   "vs 1947-1972": "no clear difference",
+   "vs 1973-1983": "no clear difference",
+   "vs 1984-2007": "no clear difference",
+   "reading": "mixed"
+  }
+ ],
+ "_meta": {
+  "built_by": "sources/s75_eras.py",
+  "downloaded": {
+   "s74_history/raw": "2026-11-14",
+   "s75_eras/raw": "2026-11-16"
+  },
+  "sha256": {
+   "s59_shiller/ie_data.xls": "0df9392b7dacf91f756e92c8db508ad903c4588b43f3253680eec3dd8b40db68",
+   "s74_history/raw/CPIAUCSL.csv": "c9be2d4909ffd28d91f07df5d113151b0fe7ba602144ee6fd453d3bc8426efde",
+   "s74_history/raw/CPIMEDSL.csv": "61676484eedf00700b777ab37363737438d9d6429abbeb897bf353c08a6fe095",
+   "s74_history/raw/CSUSHPINSA.csv": "c7ae914665e244fcab38f3fe511e763178d5b505a040d7cab5fda108bf5169da",
+   "s74_history/raw/CUSR0000SAF11.csv": "a91e0c76d8d3c5cf6403e0c0ddba3c43c6fb8e5c70b8a85ff5315707a2cd24fc",
+   "s74_history/raw/CUSR0000SAH1.csv": "89c97bc90b34493720e5d93a4733bd0ecb0772b427787495cce36d82cad1742a",
+   "s74_history/raw/FEDFUNDS.csv": "06ded1625e05391a1407f1d7d721e482e8b62916c6c5fe9491b76d74285ddd69",
+   "s74_history/raw/GDPC1.csv": "1c6c6e9f59e383e20c849dd299175c7a307526c09abdc18f18da9754fc5b3343",
+   "s74_history/raw/GDPPOT.csv": "4902611191d6df6cf8bffba4025c31d0aedfc878a47acc6e9ed1c7da48112b22",
+   "s74_history/raw/SP500.csv": "6e092f266c10be5d347599680067e3563d7d9545dc4ed2815a45fea8d8acf272",
+   "s74_history/raw/TB3MS.csv": "33fae406051a658c316580f8e8b5e461157e6663bc03b35648cc7cd3e89ee26b",
+   "s74_history/raw/UNRATE.csv": "fb669461abc34e00324b940be6bad1c7f89117652f28587196a7b8bf4a9f56a1",
+   "s74_history/raw/USREC.csv": "7d28698513be7460870afa883c2325d3502ddaecd6b1e781ed5f655126341b44",
+   "s74_history/raw/WuXiaShadowRate.xlsx": "3cbd34d08a2a6fac2cbbe7376bba7a3047a0aa361bb700abd8ee6c422de3672d",
+   "s75_eras/raw/A939RX0Q048SBEA.csv": "46b8b14bb322d0b8c0fa65df15569ea0e8af0ed785de59bcc86c663d2d3c6320",
+   "s75_eras/raw/CPIAUCNS.csv": "0e1fc35d62c4b76698418b4e6a8f259ca23407a52bf3f5971597afe0388cadfc",
+   "s75_eras/raw/CPIUFDSL.csv": "7ffea92e32d6c9d44e12ec8aced4f7eb33a9ff4baabd1116d5b1dcd5a63192f7",
+   "s75_eras/raw/Columbia-SPM-1967-2024.xlsx": "e1e5411b994a1727ccdf9ccbd7281a5ed474e39b01f1326b8f16cf742984aacf",
+   "s75_eras/raw/Fig3-1.xls": "d664da26a5abefb3071b6f9e46a7e2bffde05b3c4deb748481d00b0f8a1b3c17",
+   "s75_eras/raw/JSTdatasetR6.xlsx": "c1bb91fe56ea50d4f27af5c0fc897d481e89ae38ce41eaecab62134c9354981d",
+   "s75_eras/raw/PSZ2022AppendixTablesII(Distrib).xlsx": "6f71ce01a9990ebeaf6c7f173be3d803ff3266591ef64a82f41663e9e16e679e",
+   "s75_eras/raw/hstpov2.xlsx": "291be705f17706b9d9ce34467afd7a65e65a4745d8d7ca969c0206f24b8d438b",
+   "s75_eras/raw/irs_soi_histab23.xls": "57aed4c02ac6c6dcd39d0fea18ca231ebe22085acedf098b3b993fb154399557",
+   "s75_eras/raw/nber_business_cycle_dates.json": "675edfab232057b6d05dc460afee504013d40d12dd206ea70bb73a79e6481551",
+   "s75_eras/raw/nhe-summary-1960-2024.zip": "ef92c5602a96ffebd5ec0d313f0e7dc55bca979178ca53d8e519cfd51bd99256",
+   "s75_eras/raw/nhe-type-service-source-funds-1960-2024.zip": "b6a9e26774ca36931d42add46204947d6335fc4898011780563196898f964746"
+  },
+  "partial": {
+   "unemployment": "11 of 12 months in 2025",
+   "rule": "the last quarter fitted is the last with three CPI months (October 2025 is missing from the CPI file)"
+  },
+  "bootstrap": {
+   "replicates": 10000,
+   "block": 3,
+   "seed": 75
+  }
+ }
+}
