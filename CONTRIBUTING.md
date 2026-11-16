@@ -40,13 +40,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.1 Release Notes
+## v5.9.2 Release Notes
 
-Released Nov 16, 2026 (S77, from Duke Johnson's report of the same day): **the sticky section bar on both pages.** Pages only: no engine line, data file or figure changes.
-- **Release 1's controls follow the section.** The bar at the top of the simulation page and the findings page carried release 1's environment and years switches, labelled "Release 1 panel", while release 2 was on screen. They now float under the section links and show only over release 1's sections; over release 2's sections (marked `data-r2`) they are hidden. They float, so showing or hiding them never moves the page.
-- **A section link lands on its section.** Sections stopped 120-130 px from the top, but on a phone the bar is about 190 px tall, so the clicked section's heading sat under it and the reader saw the end of the section before. Each section now stops below the bar's measured height (`--fx-stick`; release 2's sections, with no controls over them, `--fx-stick-r2`). On the findings page the Central bank and Studies links landed on the section above, because charts above them drew after the jump and pushed them down; a clicked section (or one named in the address) is now held in place for two seconds while the page draws, until the reader scrolls.
-- **Links to sections an earlier release does not have** (Release 2, Central bank, Studies, when v5.6 or earlier is open) are hidden.
-- Code: `site/stickynav.js` (new, on both pages), `site/findings.css`. Checked by clicking every section link at 1050x480 and 390x844 on both pages: each lands on its own section, below the bar, with its link highlighted.
+Released Nov 16, 2026 (S11, ledger I1): **the visual suite on release 2.** No engine line changes; release 1's data and figures are unchanged.
+- **The visual suite page opens on release 2.** `suite.html` (the BLEI ladder year by year, what the days are made of, who takes part, four poverty lines, the spread across runs and environments) shows release 2's main row: no programme, the C2.2 design and the release design, 500 paired runs, Reference, Adverse and Stress, 20 and 40 years. Release 1's view is unchanged and one click away (the Release switch, or `suite.html?rel=1`); the two are never drawn on one chart.
+- **New data folder `data/releases/r2/`**, from job X2 (BetterToBest/compassionism-sim-results `x2-5b62481`; research-update `prereg/2026-11-x2-series-addendum.md`): release 2's main row re-run at engine commit 5b62481 and checked equal to release 2's stored results (engine 104691f), every engine output of every row and seed. `dev/tools/suite_r2.py` writes the folder; `--check` checks it against `data/studies/r2-effects.json`. v5.6's files are untouched.
+- **Differences are release 2's published effects.** The series are levels with the 10th-90th percentile across runs; where the release 2 view states a difference it quotes release 2's published effect with its 95% interval. The year-average of the series' same-rules share under 30 days equals release 2's published basic-living figure in every row, environment and horizon.
+- Release 2 recorded the BLEI series only: the other five BLEI-paper measures and the measures study stay in the release 1 view, and the release 2 view says so.
+- Checks: the figure check covers the release 2 view (four views, all three groups of adults) and `suite_r2.py --check`; Phase 15 checks that the page opens on release 2, draws every section, and falls back to release 1 without the folder. Report: `dev/reports/s11-suite-release2.md`.
 
 ## How to Contribute
 
@@ -358,7 +359,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. *(v5.3: the engine has one copy. `harness.js` reads it out of `index.html` when it loads, so an engine change is made once, in `index.html`; `dev/tools/port_engine.py` and the five listed differences between the two files are retired. `domtest.js` still compares the page with the script `harness.js` runs.)* If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->153<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->384<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->158<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->384<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -452,7 +453,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.1*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.2*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
