@@ -40,14 +40,13 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.0 Release Notes
+## v5.9.1 Release Notes
 
-Released Nov 16, 2026 (S76): **release 2 leads both pages, with a central-bank switch.** Pages and data only: no engine line changes, and no figure of release 1 or release 2 changes.
-- **Simulation page.** It opens on release 2's main row (full backing, the design's statement; a design parameter), with three switches: the design (C2.2 or the release design), the central bank (off: release 2 as frozen, 500 seeds, `data/studies/r2-effects.json`; on: the policy-rate rule of study S74, 100 seeds, `data/studies/s74-cb.json`, with what turning it on changes on the same seeds) and the environment. Release 1's panel follows, labelled as the earlier panel, and its control strip is labelled "Release 1 panel". The limits no longer say there is no central bank: the main rows have none, and a switch adds one. A short summary of S74 and a link to the Research Hub's US policy eras page sit in the opening section.
-- **Findings page.** Release 2 and a new central-bank section come first (every S74 outcome, both designs, four environments, each arm, with intervals; the rule's own effect in each run; how the Federal Reserve is governed; Duke Johnson's note on the design's aim); release 1 follows. The release list shows release 2 (v5.9), release 1 (v5.6) and v5.4; the other releases stay reachable by address and are linked under "What this release is", which now folds the release's notes away. Each release shows only its own figures: the release 2 sections no longer appear under release 1 or earlier releases.
-- **Both pages:** a back-to-top button (`site/totop.js`).
-- **S74 corrected.** S74's tools did not set the release's global settings (`applyNR6`, `TB_PROFILE_G`) that the round-2 runner sets, so its "no central bank" arm was not release 2's main row. The tools now set them (research-update preregistration Amendment 4, written before the rerun); the 100-seed rerun (`s74-final-3beb5ff`) reproduces release 2 per seed in its no-central-bank arm, and the report carries a dated correction. The forward sweep, the discount readings and S75's engine readings have the same omission and are rerun in a later step; the pages say so.
-- **Data and tools:** `dev/tools/s76_cb_data.py` writes `data/studies/s74-cb.json` from the results folder and checks the no-central-bank arm against release 2 (`--check-r2`). `data/manifest.json` lists v5.9 as the latest release (`cb` names the study).
+Released Nov 16, 2026 (S77, from Duke Johnson's report of the same day): **the sticky section bar on both pages.** Pages only: no engine line, data file or figure changes.
+- **Release 1's controls follow the section.** The bar at the top of the simulation page and the findings page carried release 1's environment and years switches, labelled "Release 1 panel", while release 2 was on screen. They now float under the section links and show only over release 1's sections; over release 2's sections (marked `data-r2`) they are hidden. They float, so showing or hiding them never moves the page.
+- **A section link lands on its section.** Sections stopped 120-130 px from the top, but on a phone the bar is about 190 px tall, so the clicked section's heading sat under it and the reader saw the end of the section before. Each section now stops below the bar's measured height (`--fx-stick`; release 2's sections, with no controls over them, `--fx-stick-r2`). On the findings page the Central bank and Studies links landed on the section above, because charts above them drew after the jump and pushed them down; a clicked section (or one named in the address) is now held in place for two seconds while the page draws, until the reader scrolls.
+- **Links to sections an earlier release does not have** (Release 2, Central bank, Studies, when v5.6 or earlier is open) are hidden.
+- Code: `site/stickynav.js` (new, on both pages), `site/findings.css`. Checked by clicking every section link at 1050x480 and 390x844 on both pages: each lands on its own section, below the bar, with its link highlighted.
 
 ## How to Contribute
 
@@ -453,7 +452,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.0*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.1*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

@@ -64,7 +64,7 @@
 .fx-nav .fx-strip-bar{padding:4px 0 8px;border-top:1px solid var(--fx-rule-2)}
 
 /* Sections */
-.fx-sec{padding:34px 0 10px;scroll-margin-top:120px}
+.fx-sec{padding:34px 0 10px;scroll-margin-top:var(--fx-stick,120px)}
 .fx-sec+.fx-sec{border-top:1px solid var(--fx-rule-2)}
 .fx-kicker{font-size:12px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--fx-accent);margin:0 0 6px}
 .fx-h2{font-size:clamp(1.35rem,2.6vw,1.75rem);font-weight:650;line-height:1.2;letter-spacing:-.01em;margin:0 0 8px}
@@ -209,7 +209,7 @@ rect.fx-bar{stroke:none;fill-opacity:.9}
 .fd-ctl-view{display:inline-flex;align-items:center;gap:.5rem}
 @media (max-width:760px){.fx-people[data-view="with"] .fx-people-run[data-run="base"],.fx-people[data-view="without"] .fx-people-run[data-run="release"]{display:none}}
 #explore{margin-top:1.2rem}
-#explore .fx-sec{scroll-margin-top:130px}
+#explore .fx-sec{scroll-margin-top:var(--fx-stick,130px)}
 /* the introduction beside "Limits, in short": balanced columns so the answer starts close to the first screen */
 @media (min-width:1181px){.fd-grid{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}.fd-side .fd-cav ul{columns:2 220px;column-gap:1.2rem}.fd-side .fd-cav li{break-inside:avoid}}
 .fx a{color:var(--fx-accent)}
@@ -234,3 +234,11 @@ rect.fx-bar{stroke:none;fill-opacity:.9}
 .fx-cards.fx-c4{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (min-width:1100px){.fx-cards.fx-c4{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:560px){.fx-cards.fx-c4{grid-template-columns:1fr}}
+/* S77: release 1's controls float under the section links (site/stickynav.js) and hide over release 2's sections; the page never moves when they do */
+.fx-nav .fx-ctl-float{position:absolute;left:0;right:0;top:calc(100% + 1px);margin:0;border-top:0;background:var(--fx-surface);border-bottom:1px solid var(--fx-rule);box-shadow:0 4px 10px -8px rgba(0,0,0,.25);transition:opacity .15s ease,visibility .15s}
+.fx-nav .fx-ctl-float.fx-ctl-off{opacity:0;visibility:hidden;pointer-events:none}
+.fx-nav>.wrap>.fx-ctl-float{padding-left:calc(max(0px,(100% - 1120px)/2) + 20px);padding-right:calc(max(0px,(100% - 1120px)/2) + 20px)}
+@media (max-width:560px){.fx-nav>.wrap>.fx-ctl-float{padding-left:16px;padding-right:16px}}
+@media (prefers-reduced-motion:reduce){.fx-nav .fx-ctl-float{transition:none}}
+@media print{.fx-ctl-space{display:none}}
+.fx-sec[data-r2],#explore .fx-sec[data-r2]{scroll-margin-top:var(--fx-stick-r2,var(--fx-stick,120px))}
