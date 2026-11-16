@@ -77,7 +77,7 @@ def index(suite_sha, study_sha=None):
         'effectsFrom': {'file': 'data/studies/r2-effects.json', 'engine': em['engine'], 'seeds': em['seeds'], 'intervals': em['intervals'], 'report': em['report']},
         'effects': eff}
     if study_sha:  # S79: job X3
-        X['study'] = {'20': 'r2/study-20.json', '40': 'r2/study-40.json'}
+        X['studyFiles'] = {'20': 'r2/study-20.json', '40': 'r2/study-40.json'}
         X['studySha256'] = study_sha
         X['studyFrom'] = {'study': 'x3', 'rerunAt': STUDY_RERUN, 'results': {'repo': 'BetterToBest/compassionism-sim-results', 'folder': STUDY_FOLDER, 'workflow': STUDY_RUN},
                           'prereg': 'prereg/2026-11-x3-measures-addendum.md (BetterToBest/research-update)',
