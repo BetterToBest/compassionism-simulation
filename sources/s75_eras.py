@@ -17,6 +17,11 @@ No engine. Every figure is read from files kept in the repository (SHA-256 of ea
     real housing and equity capital gains (a cross-check of Shiller by era).
   IRS Statistics of Income, Historical Table 23 (irs_soi_histab23.xls): the top statutory income tax rate, 1913-2018 (context only).
   NBER business cycle dates (nber_business_cycle_dates.json, https://data.nber.org/data/cycles/business_cycle_dates.json).
+  Supplied by Duke Johnson, Nov 16 (prereg Amendments 2 and 3): the Historical Statistics of the United States table Bd144-157 (hospitals and
+    beds by ownership, 1946-1997; hsus_Bd144-157_paste.txt, as received); Health, United States 2017, Table 82 (hus2017_table82.pdf);
+    Pettengill, Social Security Bulletin, Nov 1973 (ssa_bulletin_1973-11_pettengill.pdf); Kuhn, Schularick and Steins, Minneapolis Fed
+    Institute Working Paper 9, 2018 (kss_2018_iwp9.pdf). The rows used from the three PDFs are transcribed in transcribed_ownership_and_scf.json,
+    and each table is checked against its own totals here before use.
 
 Rules (fixed in the preregistration and Amendment 1, before any figure here was computed):
 - Eras: E0 1913-1946 (reading only), E1 1947-1972, E2 1973-1983, E3 1984-2007, E4 2008-2025; W 2005-2025 (S74's window) beside E4.
@@ -81,6 +86,7 @@ def chg(levels):
 
 
 PARTIAL = {}
+HSUS_FLAGS = {}
 
 
 def ymean(rows, name=None, last=2025):
@@ -239,6 +245,50 @@ def load():
     wx = os.path.join(RAW74, 'WuXiaShadowRate.xlsx'); sha(wx)
     ws = openpyxl.load_workbook(wx, read_only=True, data_only=True).worksheets[0]
     S['wx'] = {(row[0].year, row[0].month): (float(row[2]), float(row[1])) for row in ws.iter_rows(min_row=2, values_only=True) if row[0] is not None and row[2] is not None}
+    # hospital ownership (Amendment 2) and SCF+ (Amendment 3)
+    for f in ('hus2017_table82.pdf', 'ssa_bulletin_1973-11_pettengill.pdf', 'kss_2018_iwp9.pdf'):
+        sha(os.path.join(RAW, f))
+    hp_ = os.path.join(RAW, 'hsus_Bd144-157_paste.txt'); sha(hp_)
+    own = {}
+    for line in open(hp_):
+        if line.startswith('#'):
+            continue
+        c = [x.strip() for x in line.rstrip('\n').split('\t') if x.strip() != '']
+        if len(c) >= 16 and re.match(r'^\d{4}$', c[1]):
+            v = [None if x == '----' else int(x.replace(',', '')) for x in c[2:16]]
+            if v[12] is None:
+                continue  # 1994 on: only total and federal
+            z = lambda k: v[k] or 0
+            for off, tag in ((0, 'hosp'), (1, 'beds')):
+                gov = z(2 + off) + z(4 + off) + z(6 + off); np_ = z(8 + off) + z(10 + off); pr = z(12 + off)
+                if gov + np_ + pr != v[off]:  # shares are over the groups' sum; a row whose stated total differs is flagged (1957 beds: 30,000)
+                    HSUS_FLAGS['%s %s' % (c[1], tag)] = {'groups': gov + np_ + pr, 'stated total': v[off]}
+                tot = gov + np_ + pr
+                own.setdefault(tag, {}).setdefault('government', {})[int(c[1])] = 100.0 * gov / tot
+                own[tag].setdefault('non-profit', {})[int(c[1])] = 100.0 * np_ / tot
+                own[tag].setdefault('proprietary', {})[int(c[1])] = 100.0 * pr / tot
+    S['own'] = own
+    tj = os.path.join(RAW, 'transcribed_ownership_and_scf.json'); sha(tj); T = json.load(open(tj))
+    t82 = T['hus2017_table82']; adm = {}
+    for k, y in enumerate(t82['years']):
+        a, b, c_, tot = t82['nonprofit'][k], t82['forprofit'][k], t82['state_local'][k], t82['community'][k]
+        assert abs(a + b + c_ - tot) <= 2, ('Table 82 does not add up', y)
+        adm[y] = {'non-profit': r(100.0 * a / tot, 1), 'for-profit': r(100.0 * b / tot, 1), 'state-local government': r(100.0 * c_ / tot, 1)}
+    S['adm82'] = adm
+    pt = T['pettengill1973_table2']; pet = {}
+    for k, y in enumerate(pt['years']):
+        n_, f_, tot = pt['revenue_nonprofit'][k], pt['revenue_forprofit'][k], pt['revenue_total'][k]
+        assert abs(n_ + f_ - tot) <= 1, ('Pettengill Table 2 does not add up', y)
+        pet[y] = {'for-profit % of revenue': r(100.0 * f_ / tot), 'net income % of revenue, non-profit': r(100.0 * pt['net_income_nonprofit'][k] / n_),
+                  'net income % of revenue, for-profit': r(100.0 * pt['net_income_forprofit'][k] / f_)}
+    for y in set(pt['estimated_by_source']['revenue_nonprofit']) | set(pt['estimated_by_source']['revenue_forprofit']):
+        pet[y]['note'] = "the source's estimate: 1969's split assumed, so the for-profit share is not an observation"
+    S['pet'] = pet; S['pet_estimated'] = pt['estimated_by_source']
+    kf = T['kss2018_tableF']; scf = {'top10': {}, 'bottom50': {}, 'gini': {}}
+    for k, y in enumerate(kf['years']):
+        assert abs(kf['wealth_bottom50'][k] + kf['wealth_50to90'][k] + kf['wealth_top10'][k] - 100) <= 0.2, ('SCF+ Table F does not add up', y)
+        scf['top10'][y] = kf['wealth_top10'][k]; scf['bottom50'][y] = kf['wealth_bottom50'][k]; scf['gini'][y] = float(kf['wealth_gini'][k])
+    S['scf'] = scf
     return S
 
 
@@ -424,11 +474,18 @@ def build():
                         ('B3 health spending % of GDP', S['nhe_gdp']), ('B3 out-of-pocket % of health spending', S['nhe_oop'])):
             B[nm] = level_summary(src, e)
         B['B3 real health spending per person, yearly growth'] = describe(S['nhe_real_pc'], e)
-        B['B3 hospital ownership mix'] = 'not opened (Amendment 1, item 9)'
+        for tag, lab in (('hosp', 'hospitals'), ('beds', 'beds')):
+            for g in ('government', 'non-profit', 'proprietary'):
+                B['B3 all hospitals (HSUS): %s %% of %s' % (g, lab)] = level_summary(S['own'][tag][g], e)
+        B['B1 SCF+ top 10% wealth share (survey years)'] = level_summary(S['scf']['top10'], e)
+        B['B1 SCF+ bottom 50% wealth share (survey years)'] = level_summary(S['scf']['bottom50'], e)
+        B['B1 SCF+ wealth Gini x100 (survey years)'] = level_summary(S['scf']['gini'], e)
         for g in ('All', 'Bottom 50%', 'Middle 40%', 'Top 10%', 'Top 1%', 'Top 0.1%'):
             B['B4 average tax rate, ' + g] = level_summary(S['psz_tax'][g], e)
         B['B4 top statutory rate (context; IRS SOI)'] = level_summary(S['top_stat'], e)
         out['B'][e] = B
+    out['B3 community hospital admissions by ownership, % (Health, United States 2017, Table 82)'] = S['adm82']
+    out['B3 private community hospitals, 1961-1971 (Pettengill 1973, Table 2)'] = dict(S['pet'], estimated_by_source=S['pet_estimated'])
     out['B5 estimated rule'] = rule_fit(S)
     out['comparisons'], out['dukes_view'] = compare(S)
     tx = S['psz_tax']
@@ -437,6 +494,7 @@ def build():
         'top 0.1% 1950-1959 mean': [r(np.mean([tx['Top 0.1%'][y] for y in range(1950, 1960)]), 1), 50.6],
         'top 1% 2014': [r(tx['Top 1%'][2014], 1), 36.4], 'top 0.1% 2014': [r(tx['Top 0.1%'][2014], 1), 39.8],
         'note': '[file, planning]'}
+    out['checks']['HSUS rows whose stated total differs from the sum of its ownership groups (shares use the sum)'] = HSUS_FLAGS
     out['checks']['PSZ last year'] = {'income': max(S['psz_inc']['Top 1%']), 'wealth': max(S['psz_wealth']['Top 1%']), 'tax': max(S['psz_tax']['Top 1%'])}
     out['checks']['CPI-U 2005-2025 NSA vs SA (S74): mean, sd'] = [[r(np.mean([v for _, v in era_vals(S['cpi'], 'W')])), r(np.std([v for _, v in era_vals(S['cpi'], 'W')], ddof=1))],
                                                                     [r(np.mean([v for _, v in era_vals(S['cpi_sa_W'], 'W')])), r(np.std([v for _, v in era_vals(S['cpi_sa_W'], 'W')], ddof=1))]]
@@ -466,6 +524,10 @@ def table(o):
     L += ['', '## B. Policy and distribution by era', '', '| measure | ' + ' | '.join(ERA_NAME[e] for e in eras) + ' |', '|---|' + '---|' * len(eras)]
     for k in o['B']['E1']:
         L.append('| %s | %s |' % (k, ' | '.join(fmt(o['B'][e].get(k)) for e in eras)))
+    for k in ('B3 community hospital admissions by ownership, % (Health, United States 2017, Table 82)', 'B3 private community hospitals, 1961-1971 (Pettengill 1973, Table 2)'):
+        L += ['', '### ' + k, '']
+        for y, v in o[k].items():
+            L.append('- %s: %s' % (y, fmt(v)))
     L += ['', '## B5. The central bank\'s rule as estimated in each era', '', 'i = c + phi x inflation + beta x gap (quarterly OLS, Newey-West 4 lags); S74 terms a = phi - 1, b = beta; r* at a 2% target = c + 2a.', '',
           '| fit | quarters | n | c | phi | beta | se (c, phi, beta) | R2 | a | b | r* | smoothed (rho, c, phi, beta) |', '|---|---|---|---|---|---|---|---|---|---|---|---|']
     for k, f in o['B5 estimated rule'].items():
