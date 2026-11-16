@@ -5370,7 +5370,7 @@ function tbRepYear(R, agents, p, o, yr, T, ep){
  *  stP5   of adults above the basket line in the year before a recession year, the % below it in that year (pooled over recession years; the same
  *         years in every arm of a seed); stP5n the adult-years counted. stP5r and stP5rn the same for years in which the policy rule tightened its
  *         stance by 1 point or more (cb only). P4, recovery times, is the existing risk measures (rk). */
-var STAB_KEYS = ['stP1', 'stP1o', 'stP1p', 'stP2', 'stP2q1', 'stP2q2', 'stP2q3', 'stP2q4', 'stP2q5', 'stP3', 'stP3q1', 'stP3q2', 'stP3q3', 'stP3q4', 'stP3q5', 'stP3t1', 'stP5', 'stP5n', 'stP5r', 'stP5rn'];
+var ST74_KEYS = ['stP1', 'stP1o', 'stP1p', 'stP2', 'stP2q1', 'stP2q2', 'stP2q3', 'stP2q4', 'stP2q5', 'stP3', 'stP3q1', 'stP3q2', 'stP3q3', 'stP3q4', 'stP3q5', 'stP3t1', 'stP5', 'stP5n', 'stP5r', 'stP5rn'];
 function stSd(x){ var n = x.length; if (n < 2) return 0; var m = 0, v = 0, i; for (i = 0; i < n; i++) m += x[i]; m /= n; for (i = 0; i < n; i++) v += (x[i] - m)*(x[i] - m); return Math.sqrt(v/(n - 1)); }
 function stWq(v, w, q){ var o = v.map(function(x, i){ return i; }).sort(function(i, j){ return v[i] - v[j] || i - j; }), W = 0, c = 0, k; for (k = 0; k < w.length; k++) W += w[k];
   for (k = 0; k < o.length; k++){ c += w[o[k]]; if (c >= q*W) return v[o[k]]; } return o.length ? v[o[o.length - 1]] : 0; }
@@ -7991,7 +7991,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.c22PY !== undefined) C22_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S6 */
         if (r.clN !== undefined) CL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S37 */
         if (r.poSub !== undefined) PO_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S62 */
-        if (r.stP1 !== undefined) STAB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S74 */
+        if (r.stP1 !== undefined) ST74_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S74 */
         if (r.cbI !== undefined) CB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S74 */
         if (r.gvPay !== undefined) GV_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S72 */
         if (r.finPay !== undefined) FIN_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S68 */
