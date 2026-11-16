@@ -216,3 +216,21 @@ rect.fx-bar{stroke:none;fill-opacity:.9}
 .fx-kv b .num{white-space:nowrap}
 .fx-skip{position:absolute;left:-999px;top:8px;z-index:400;background:#fff;color:#0F6E56;padding:6px 12px;border-radius:8px;font:600 14px system-ui,sans-serif}
 .fx-skip:focus{left:12px}
+/* S76: back to top (site/totop.js), the release notes under the dropdown, and the switches of the release 2 lead */
+.fx-top{position:fixed;right:16px;bottom:16px;z-index:300;font:600 13px var(--fx-sans);color:var(--fx-ink);background:var(--fx-surface);border:1px solid var(--fx-rule);border-radius:999px;padding:9px 14px;min-height:40px;box-shadow:0 2px 10px rgba(0,0,0,.14);cursor:pointer}
+.fx-top:hover{background:var(--fx-surface-2)}
+.fx-top[hidden]{display:none}
+@media print{.fx-top{display:none}}
+.fx-about{margin:10px 0 0;max-width:80ch}
+.fx-about>summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--fx-ink-2)}
+.fx-about[open]>summary{margin-bottom:6px}
+.fx-earlier{font-size:13px;color:var(--fx-ink-2);margin:6px 0 0}
+.fx-switches{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:10px 0 14px}
+.fx-switches .fx-seg{display:inline-flex}
+.fx-sw-l{font-size:13px;font-weight:600;color:var(--fx-ink-2);margin-right:6px}
+.fx-cbnote{font-size:13.5px;color:var(--fx-ink-2);max-width:80ch}
+.fx-ci{font-size:12px;color:var(--fx-ink-3);white-space:nowrap}
+.fd-ctl-tag{font-weight:650;color:var(--fx-ink-2);text-transform:uppercase;letter-spacing:.05em}
+.fx-cards.fx-c4{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:1100px){.fx-cards.fx-c4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:560px){.fx-cards.fx-c4{grid-template-columns:1fr}}
