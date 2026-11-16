@@ -1,0 +1,5 @@
+ref c22 off 258 s
+ref c22 cb 268 s
+ref rel off 183 s
+ref rel cb 163 s
+ref: 2 designs x 2 arms x 100 seeds, 872 s

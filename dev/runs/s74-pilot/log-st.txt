@@ -1,0 +1,5 @@
+st c22 off 247 s
+st c22 cb 251 s
+st rel off 168 s
+st rel cb 176 s
+st: 2 designs x 2 arms x 100 seeds, 842 s

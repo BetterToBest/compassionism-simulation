@@ -862,6 +862,38 @@
    },
    "equal": true,
    "seconds": 295
+  },
+  {
+   "from": "3426ee3611d27897425f18a76da7e5dd00255ec2780acfc771cc75e5a14aad81",
+   "to": "f43fec6bb799fe29f7fcc866a9d39c6ed8229d46792b4f8f7f8ce20628a80614",
+   "date": "2026-11-15",
+   "change": "S74 part 2: history environment (hx), policy-rate rule (cb), forced sales (cb.fs), stability measures (stab); all off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 167
+  },
+  {
+   "from": "f43fec6bb799fe29f7fcc866a9d39c6ed8229d46792b4f8f7f8ce20628a80614",
+   "to": "7b88cbad522e7e41db920615b91833f739fb1c8a33bd1da10ae5bea80d3f05ae",
+   "date": "2026-11-16",
+   "change": "S74 part 2: history environment (hx), policy-rate rule (cb), forced sales (cb.fs), stability measures (stab, ST74_KEYS); all off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 165
   }
  ]
 }
