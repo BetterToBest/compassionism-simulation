@@ -15,7 +15,7 @@ const LABEL = {off: 'no central bank', actual: 'actual rate path', 'actual-sp1.5
   a1: 'a 1', 'a1.5': 'a 1.5', a2: 'a 2', b0: 'b 0', b1: 'b 1', pt3: 'target 3%', r0: 'neutral rate 0', 'r1.5': 'neutral rate 1.5%', 'bL0.25': 'purchases 0.25', bL1: 'purchases 1', noqe: 'no purchases',
   lag1: 'lag 1 year', lag2: 'lag 2 years', 'th0.25': 'yield response 0.25', th1: 'yield response 1', 'dm0.5': 'spending response 0.5', dm1: 'spending response 1',
   reg2008: '2008-style', reg2020: '2020-style', reg2022: '2022-style', 'sp1.5': 'floating spread 1.5', 'sp4.5': 'floating spread 4.5', 'mm0.75': 'mortgage link 0.75', D4: 'D 4 years', D10: 'D 10 years',
-  'k0.25': 'take-up 0.25', k1: 'take-up 1', 'fd0.1': 'sale discount 0.1', 'fd0.27': 'sale discount 0.27', 'ok1.5': 'Okun 1.5', nofs: 'no forced sales'};
+  'k0.25': 'take-up 0.25', k1: 'take-up 1', 'fd0.1': 'sale discount 0.1', 'fd0.27': 'sale discount 0.27', 'fd0.034': 'sale discount 0.034', 'fd0.062': 'sale discount 0.062', 'ok1.5': 'Okun 1.5', nofs: 'no forced sales'};
 const PRIM = [['stP1', 'P1'], ['stP2', 'P2'], ['stP3', 'P3'], ['rkRecM', 'P4'], ['stP5', 'P5'], ['fgt0PY', 'basket pov.'], ['pov', 'wealth pov.']];
 const mean = a => a.reduce((u, v) => u + v, 0)/a.length;
 const q = (a, p) => { const s = a.slice().sort((x, y) => x - y), h = (s.length - 1)*p, i = Math.floor(h); return s[i] + (h - i)*((s[i + 1] === undefined ? s[i] : s[i + 1]) - s[i]); };

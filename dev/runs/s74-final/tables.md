@@ -132,7 +132,7 @@ Engine: a60ecd1f2c0a72c6e36ce4f5becf2b24ea4ee0db; command `node dev/tools/s74_pi
 | stP2sq4 | 29.75 | 26.90 | -2.85 [-3.36, -2.34] | -2.52 [-3.04, -1.99] |
 | stP2sq5 | 23.80 | 23.52 | -0.29 [-0.62, 0.05] | 0.75 [0.33, 1.17] |
 
-**Each household's own inflation, 2006-2025** (% a year; its basket by household type, food, housing and medical care at their CPI-U components, the rest at CPI-U; no-programme run, actual rate path). CPI-U 2.537; all households 2.766 (10th-90th percentile 2.748 to 2.784); by fifth 2.771, 2.767, 2.764, 2.765, 2.764; top 1% 2.775. Not checked against R-CPI-I (not opened).
+**Each household's own inflation, 2006-2025** (% a year; its basket by household type, food, housing and medical care at their CPI-U components, the rest at CPI-U; no-programme run, actual rate path). CPI-U 2.537; all households 2.766 (10th-90th percentile 2.748 to 2.784); by fifth 2.771, 2.767, 2.764, 2.765, 2.764; top 1% 2.775. BLS's R-CPI-I check: dev/runs/s74-rcpi/rcpi.md (Amendment 3).
 
 **Decision rule 3: does the central bank's response offset the programme's gain?** (programme run, central bank on minus no central bank, points; 95% and Holm-adjusted across the three; the reading uses the Holm interval)
 
@@ -268,7 +268,7 @@ Engine: a60ecd1f2c0a72c6e36ce4f5becf2b24ea4ee0db; command `node dev/tools/s74_pi
 | stP2sq4 | 29.75 | 29.28 | -0.46 [-0.80, -0.12] | -0.27 [-0.61, 0.07] |
 | stP2sq5 | 23.80 | 23.63 | -0.18 [-0.37, 0.02] | 0.23 [-0.03, 0.50] |
 
-**Each household's own inflation, 2006-2025** (% a year; its basket by household type, food, housing and medical care at their CPI-U components, the rest at CPI-U; no-programme run, actual rate path). CPI-U 2.537; all households 2.766 (10th-90th percentile 2.748 to 2.784); by fifth 2.771, 2.767, 2.764, 2.765, 2.764; top 1% 2.775. Not checked against R-CPI-I (not opened).
+**Each household's own inflation, 2006-2025** (% a year; its basket by household type, food, housing and medical care at their CPI-U components, the rest at CPI-U; no-programme run, actual rate path). CPI-U 2.537; all households 2.766 (10th-90th percentile 2.748 to 2.784); by fifth 2.771, 2.767, 2.764, 2.765, 2.764; top 1% 2.775. BLS's R-CPI-I check: dev/runs/s74-rcpi/rcpi.md (Amendment 3).
 
 **Decision rule 3: does the central bank's response offset the programme's gain?** (programme run, central bank on minus no central bank, points; 95% and Holm-adjusted across the three; the reading uses the Holm interval)
 

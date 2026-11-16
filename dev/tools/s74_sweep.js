@@ -26,7 +26,7 @@ const S = {
   'dm0.5': [{dm: 0.5}], dm1: [{dm: 1}],
   reg2008: [{a: 1.5, b: 1, bL: 1}], reg2020: [{b: 1, bL: 1, lag: 0}], reg2022: [{lag: 2, a: 2}],
   'sp1.5': [{sp: 0.015}], 'sp4.5': [{sp: 0.045}], 'mm0.75': [{mm: 0.75}], D4: [{D: 4}], D10: [{D: 10}], 'k0.25': [{k: 0.25}], k1: [{k: 1}],
-  'fd0.1': [{fd: 0.1}], 'fd0.27': [{fd: 0.27}], 'ok1.5': [{ok: 1.5}], nofs: [{fs: false}]
+  'fd0.1': [{fd: 0.1}], 'fd0.27': [{fd: 0.27}], 'fd0.034': [{fd: 0.034}], 'fd0.062': [{fd: 0.062}], 'ok1.5': [{ok: 1.5}], nofs: [{fs: false}]  /* fd0.034, fd0.062: Amendment 3, Campbell, Giglio and Pathak 2011's bankruptcy-related discounts (all sales; one seller) */
 };
 if (env === 'hx'){ Object.assign(S, {actual: [null, {rp: 'actual'}], 'actual-sp1.5': [null, {rp: 'actual', sp: 0.015}], 'actual-sp4.5': [null, {rp: 'actual', sp: 0.045}]});
   delete S['ok1.5']; }  /* Okun's reading acts only outside History (History reads CBO's gap) */

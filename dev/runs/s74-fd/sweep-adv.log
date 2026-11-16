@@ -1,0 +1,8 @@
+adv c22 off 27 s
+adv c22 main 27 s
+adv c22 fd0.034 26 s
+adv c22 fd0.062 25 s
+adv rel off 17 s
+adv rel main 18 s
+adv rel fd0.034 18 s
+adv rel fd0.062 17 s
