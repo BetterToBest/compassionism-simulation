@@ -66,3 +66,7 @@ Per-report counts: `python3 dev/tools/reader_codes.py | grep dev/reports`. Most 
 ## Out of scope
 
 Code comments, `dev/DECISIONS.md`, test and check names, preregistrations, commit history, the research-update repository, and data keys and labels stored in data files (pages map stored labels to the plain names when they print them).
+
+## Part 2 (Nov 17, 2026): CHANGELOG.md and the reports
+
+Before: 1,516 occurrences that fail the check in CHANGELOG.md (129) and the reports in `dev/reports/` (1,387): `C2.2` 596, step and ledger codes 605, session numbers 137, `release 1/2` 84, `round 2` 61, job ids 25, part letters 8. After: none. Most were reworded by a rule pass (the same names as the pages); every change was then read, and the rest were reworded by hand. Where a code stood for a decision of Duke's, the text says "Duke's decision"; where it stood for a working session, it gives the date or names the build (for example "the first v5.0 candidate"). A report that numbers its own statements or parts keeps those labels; they are listed with a reason in `dev/tools/reader_codes_allow.txt`. The check now covers both, with no files pending. Only the reports in subfolders of `dev/reports/` (the second implementation's packet notes) are outside it.

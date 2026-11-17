@@ -32,8 +32,6 @@ PRESETS = {
         'js': ['site/*.js'],
         'md': ['README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'REPRODUCE.md', 'dev/reports/*.md'],
         'json': {'data/manifest.json': ['summary', 'about'], 'site/glossary.json': None},
-        # --check covers every file above except these, which are reworded in the step's second part (CHANGELOG.md and the reports)
-        'pending': ['CHANGELOG.md', 'dev/reports/*.md'],
     },
     'hub': {
         'html': ['*.html', 'wiki/*.html', 'papers/*.html'],
@@ -55,6 +53,7 @@ PRESETS = {
 PATTERNS = [
     ('step/ledger code', True, re.compile(
         r'(?<![\w./#?=&-])(?:N-S\d+|H-S\d+|S\d{1,3}[a-z]?(?:\.\d+)?|D\d{1,3}|I\d{1,2}|i\d{1,2})(?![\w/-]|\.\w)')),
+    ('step/ledger code', True, re.compile(r'(?<![\w./#?=&-])S\d{1,3}/S\d{1,3}\b')),  # a pair such as S47/S7
     ('session number', True, re.compile(r'\b[Ss]ession \d+[a-z]?\b')),
     ('part letter', True, re.compile(r'\b[Pp]art (?![IVX]\b)[A-Z]\b')),
     ('job id', True, re.compile(r'(?<![\w./-])(?:job )?X\d\b')),

@@ -21,10 +21,10 @@ Not for two of the three outcomes (departure from the straight line through the 
 ## What this does not tell us
 The engine has no network effect and no collapse below a minimum share of participants (its own warning says so). So the Hub's "30% viability", "55% minimum" and "75% minimum viable participation" can be neither confirmed nor refuted by this engine, and no run supports them: none was produced by any code (`audits/early-figures.md`). The 40% and 55% tests the engine does run are about the PTFs' share of a zone's essential sales, not about how many adults join the programme.
 
-## What the Hub should say (lands through S24/S25)
+## What the Hub should say (lands through the Hub corrections and the paper rewrite)
 - Replace every statement of a participation threshold (30%, 55%, 60-65%, 75%) with: *in the simulation, the as-released design lowers poverty on all three measures only while a small share joins, and the wealth result turns negative as participation grows; the model has no minimum-participation threshold, so none is claimed.* Cite this report and the headline row (Reference, CPS, raise off).
 - Where a paper needs one number: "2% is the smallest share in the study at which every measure improved; wealth stays improved up to 5%" (Reference, 20 years, CPS yardstick, raise off), plus the decision rule's words that it is a detection level.
-- Papers and pages known to state one: CCO-PTF integrated framework (30% viability), economic modelling and simulation paper and BLEI paper section 6.1 (55%; the BLEI text's 40% and 55% density tests are about PTF merchant share and are covered by S55/S25), replication page (75%). "60-65%" was not found in the audits here; the Hub corrections greps the Hub corpus for it and every other form.
+- Papers and pages known to state one: CCO-PTF integrated framework (30% viability), economic modelling and simulation paper and BLEI paper section 6.1 (55%; the BLEI text's 40% and 55% density tests are about PTF merchant share and are covered by the open-access study and the rewrite of the Hub papers), replication page (75%). "60-65%" was not found in the audits here; the Hub corrections greps the Hub corpus for it and every other form.
 - Do not carry the grid over to the full-coverage design: there everyone is covered, so participation is not a choice. The rewrite of the Hub papers says so beside any participation figure.
 
 ## Checks run
