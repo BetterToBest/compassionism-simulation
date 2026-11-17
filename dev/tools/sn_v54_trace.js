@@ -21,7 +21,7 @@ const r3 = x => +(+x).toFixed(3);
 function ci(d){ const n = d.length; let m = 0, s = 0; d.forEach(x => { m += x/n; }); d.forEach(x => { s += (x - m)*(x - m)/(n - 1); }); const h = 1.96*Math.sqrt(s/n); return [r3(m), r3(m - h), r3(m + h)]; }
 const pdiff = (a, b, k) => a._s[k] && b._s[k] ? ci(Array.from(a._s[k]).map((x, j) => x - b._s[k][j])) : null;
 const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 const out = {_meta: {what: 'today\'s safety net in the v5.4 main row and its no-programme run: its paired effect (row with sn minus the same row without), with SNAP\'s cliff in the marginal rate (sn, as released) and without (slope), under four engines (as released, work response off, prices flat, both off)', env, seeds: N, command: 'node dev/tools/sn_v54_trace.js ' + process.argv.slice(2).join(' '), manifest: H.runManifest()}, eng: {}};
 try {
   const P = Object.assign({}, P0), PR = H.tbPresets(P), base = {sc: SC, so: H.REL_V52_STUDY, hh: H.REL_V53.hh, sg: true, g: H.ACCT_V53, em: true, fb: true, v54: H.REL_V54.v54};
@@ -41,5 +41,5 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = OUTF ? path.resolve(OUTF) : path.join(__dirname, '..', 'runs', 'sn', 'v54trace-' + env + '.json'); fs.mkdirSync(path.dirname(file), {recursive: true});
-fs.writeFileSync(file, JSON.stringify(out, null, 1) + '\n');
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1) + '\n');
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

@@ -11,7 +11,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), NOWT = process.argv.indexOf('--nowt') >= 0;  /* --nowt: the same frontier without the weighted tail (Amendment 2) */
 const E = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}, env = ARG[0] || 'ref', N = +(ARG[1] || 20);
 const OUT = ARG[2] || path.join(__dirname, '..', 'runs', 's72-government');
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 try {
   const P = Object.assign({}, H[E[env]], {years: 20, nAgents: 500});
   const row = (d, f, sh, base, cap) => { const c = H.r2MainPair(P, d === 'none' ? 'c22' : d)[d === 'none' ? 0 : 1]; c.gv = {sh, base}; if (NOWT) delete c.wt;
@@ -26,6 +26,6 @@ try {
   fs.mkdirSync(OUT, {recursive: true});
   const res = {env, seeds: N, nowt: NOWT, manifest: H.runManifest(), secs: (Date.now() - t0) / 1000,
     rows: L.map((x, i) => ({id: x.id, d: x.d, f: x.f, sh: x.sh, base: x.base, cap: x.cap, s: Object.fromEntries(K.map(k => [k, R[i]._s[k] ? Array.from(R[i]._s[k]) : null]))}))};
-  fs.writeFileSync(path.join(OUT, 's72-frontier-' + (NOWT ? 'nowt-' : '') + env + '.json'), JSON.stringify(res));
+  fs.writeFileSync(path.join(OUT, 's72-frontier-' + (NOWT ? 'nowt-' : '') + env + '.json'), JSON.stringify(svS.withSettings(res)));
   console.log(env + ': done in ' + res.secs.toFixed(0) + ' s');
 } finally { H.resetNR6(svN); H.tbSetG(svG); }

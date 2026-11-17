@@ -25,7 +25,7 @@ function run(env){
   const H = require(path.join(ROOT, 'harness.js')), C = H.CFG, SC = H.SPEND_SOURCED, t0 = Date.now(), file = path.join(DIR, 'snap-' + env + '.json');
   const ref = WRITE || OUT ? null : JSON.parse(fs.readFileSync(file, 'utf8')), KEYS = ref ? ref._meta.keyList : H.TB_KEYS.slice();
   const P0 = {ref: H.FULL_INTEGRATION, adv: H.ADVERSE_REFERENCE, st: H.STRESS_TEST}[env];
-  const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000; const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), out = {};
+  const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000; const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, out = {};
   let S;
   try {
     const P = Object.assign({}, P0, YRS ? {years: YRS} : {}), PR = H.tbPresets(P), base = {sc: SC, so: H.REL_V52_STUDY, hh: H.REL_V53.hh, sg: true, g: H.ACCT_V53, em: true, fb: true, v54: H.REL_V54.v54};

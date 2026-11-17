@@ -21,7 +21,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), OUTA = process.argv.filter(a => /^--out=/.test(a))[0];
 const env = ARG[0] || 'ref', N = +(ARG[1] || 500), YRS = +(ARG[2] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
-const C = H.CFG, SC = H.SPEND_SOURCED, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const C = H.CFG, SC = H.SPEND_SOURCED, svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 const SN = {abawd: true, slope: true};
 const EXPLORE = process.argv.indexOf('--explore') >= 0;  /* exploratory rows, added after the first results (prereg amendment, Oct 30): readings that might close the gaps */
 const ROWS = [['sn', {sn: SN}], ['none', {}]].concat(EXPLORE ? [['snCpsAll', {sn: SN, lt: {s: 'all', m: 'all'}}], ['snCpsFt', {sn: SN, lt: {s: 'ft', m: 'ft'}}],
@@ -67,5 +67,5 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = OUTA ? OUTA.slice(6) : path.join(__dirname, '..', 'runs', 'baseline-realism', 'baseline-realism-' + env + (EXPLORE ? '-explore' : '') + '.json');
-fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(out, null, 1));
+fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1));
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

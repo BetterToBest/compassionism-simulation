@@ -23,6 +23,7 @@
  * Item 2 of part 3: basket poverty (adult-years whose income is below their basket, fgt0PY's count) by labour-force status in the year: in the labour
  * force, or outside it for disability, early retirement, care or school (a._lf, S61; the status moves year to year under lf.fl, S73). */
 'use strict';
+let RUNSET = null;  /* the run's start (harness.js startRelease), kept for the output's _settings */
 const fs = require('fs'), path = require('path'), zlib = require('zlib');
 const ROOT = path.join(__dirname, '..', '..'), H = require(path.join(ROOT, 'harness.js'));
 const arg = (k, d) => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : d; };
@@ -99,7 +100,7 @@ function runSeed(P, sd, hooked) {
   return hooked ? out : keys;
 }
 
-function withEngine(f) { const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G); try { return f(); } finally { H.resetNR6(svN); H.tbSetG(svG); } }
+function withEngine(f) { const svS = RUNSET = H.startRelease(), svN = svS.svN, svG = svS.svG; try { return f(); } finally { H.resetNR6(svN); H.tbSetG(svG); } }
 
 /* --check: the hook changes no output (seed 1, Reference, 20 years: every key of the three rows, with and without the hook) */
 function check() {
@@ -123,7 +124,7 @@ if (require.main === module) {
   const out = {_meta: {what: 'S64 part 3 erosion trace (research-update prereg/2026-11-s63-round2-freeze.md, Amendment 4)', env, years, seeds: sd, manifest: H.runManifest(),
     command: 'node dev/tools/s64_erosion.js ' + process.argv.slice(2).join(' '), seconds: Math.round((Date.now() - t0)/1000)}, seeds};
   const file = arg('out', path.join(ROOT, 'dev', 'runs', 's64-erosion', 'raw', 'ero-' + env + '-' + years + '-' + sd.join('-') + '.json.gz'));
-  fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, zlib.gzipSync(JSON.stringify(out)));
+  fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, zlib.gzipSync(JSON.stringify(RUNSET.withSettings(out))));
   console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');
 }
 module.exports = {rowsFor, runSeed};

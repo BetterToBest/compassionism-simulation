@@ -9,7 +9,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), opt = k => (process.argv.filter(a => a.indexOf('--' + k + '=') === 0)[0] || '').slice(k.length + 3);
 const env = ARG[0] || 'ref', N = +(ARG[1] || 100), YRS = +(ARG[2] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 const Y = {sn: {abawd: true, slope: true}, lt: {s: 'all', m: 'all'}};
 /* name, programme (0 none, 1 release, 2 C2.2), price rule (undefined = today's) */
 const ROWS = [['np', 0], ['np-cap', 0, true], ['rel', 1], ['rel-cap', 1, true], ['rel-k25', 1, {k: 0.25}],
@@ -27,7 +27,7 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = opt('out') || path.join(__dirname, '..', 'runs', 's58-price', 's58-price-' + env + '.json');
-fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(out));
+fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(svS.withSettings(out)));
 const m = (r, k) => { const v = out.rows[r][k]; return v ? v.reduce((s, x) => s + x, 0)/v.length : NaN; };
 console.log(env, 'programme inflation (points a year): C2.2 today ' + (100*m('c22', 'endoAnn')).toFixed(1) + ', capacity ' + (100*m('c22-cap', 'endoAnn')).toFixed(1) +
   '; pass-through after 19 years ' + m('c22-cap', 'prPT19').toFixed(3) + '; wrote ' + file + ' (' + out._meta.seconds + ' s)');

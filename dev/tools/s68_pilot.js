@@ -9,7 +9,7 @@ const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const E = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}, env = process.argv[2] || 'ref', N = +(process.argv[3] || 100);
 const OUT = process.argv[4] || path.join(__dirname, '..', 'runs', 's68-financing');
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 try {
   const P = Object.assign({}, H[E[env]], {years: 20, nAgents: 500});
   const SO = Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: H.SPEND_SOURCED}, H.REL_V52_STUDY);
@@ -28,6 +28,6 @@ try {
   const dump = (R, L, K) => L.map((x, i) => ({row: x[0], s: Object.fromEntries(K.map(k => [k, R[i]._s[k] ? Array.from(R[i]._s[k]) : null]))}));
   fs.mkdirSync(OUT, {recursive: true});
   const res = {env, seeds: N, manifest: H.runManifest(), secs: (Date.now() - t0)/1000, A: dump(RA, A, KA), B: dump(RB, B, KB)};
-  fs.writeFileSync(path.join(OUT, 's68-' + env + '.json'), JSON.stringify(res));
+  fs.writeFileSync(path.join(OUT, 's68-' + env + '.json'), JSON.stringify(svS.withSettings(res)));
   console.log(env + ': done in ' + res.secs.toFixed(0) + ' s');
 } finally { H.resetNR6(svN); H.tbSetG(svG); }

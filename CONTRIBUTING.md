@@ -40,17 +40,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.12 Release Notes
+## v5.9.13 Release Notes
 
-Released Nov 17, 2026: **the documentation rebuilt for v5.9.** No engine line changes and no stored figure changes.
-- **Why.** The release reviews found the documentation behind the release: ODD.md still described v5.2, the test bed's "main" lines said nothing was backed, the specification had no section for the central-bank and history studies, and REPRODUCE.md had no v5.9 commands.
-- **ODD.md** is rewritten for v5.9: a dynamic microsimulation with a reduced-form price level; the headline condition (every dollar paid is matched by new output, and below that the model has no limit on supply); entities, schedule and design concepts as v5.9 runs them; what v5.9 changes in the parameter table (the v5.2 table is kept as written); verification; what the model is not.
-- **MODEL_SPEC.md** has a v5.9 title and reading guide, v5.9's main row in section 10, and new sections for the central-bank study (15) and the history study (16).
-- **TESTBED_SPEC.md** opens with v5.9's main row, option by option, beside v5.6's; every line that called "nothing backed" the main result now says it was v5.6's.
-- **REPRODUCE.md** has a v5.9 section: the command for each results folder, a fingerprint for each, the scripts from the results to the pages, the central-bank and history studies, and the headline values to compare.
-- **A one-page model card** (`model-card.html`), linked from the top of the simulation and findings pages: what the model is and is not, what the main row assumes, how each measure counts the simulated adults, how it was checked.
-- **Each measure says how it counts the adults:** the poverty and basic-living shares count each simulated adult once; median wealth, the distribution and stability measures are counted by population weight; the government's and creditors' books are weighted sums while the payout and prices are not. The cards and tables of v5.9 and the central-bank section now say so, and every central-bank figure names its 100 paired runs.
-- **Also:** the README's first screen (what it is, both sides of the findings, what it is not); ECONOMIST-REVIEW.md for v5.9, leading with full backing, the missing supply limit, wage indexation and asset returns under high inflation; CITATION.cff's abstract; BLEI described as the days of basic living that savings, income and Basic Units cover; the manifest records what the documentation describes; the wording check now covers ODD.md, the review checklist and the model card.
+Released Nov 17, 2026: **one start for every study runner, a baseline check, and three new CI checks.** No engine line changes and no stored figure changes: the guard test is identical.
+- **Why.** The release reviews found that 43 of the 71 tools in `dev/tools` repeated the release's two global settings by hand, and that the central-bank study's first runs had left them out (preregistration Amendment 4). Nothing stopped a run that started wrongly, and no run recorded the settings it ran under.
+- **`startRelease()`** (harness.js) applies the release's two global settings once and returns the start (`svN`, `svG`, `restore()`, `checkBaseline()`, `withSettings()`). All 43 tools use it; none calls `applyNR6` itself (`dev/tools/start_test.js` checks).
+- **Effective settings are written to every output** as `_settings`: the version, every top-level constant of the engine (28), the accounting and testbed profiles, the labour response, the PTF framework and pathway switches, the price-model defaults, the frozen spending share, every scalar in CFG, and a SHA-256 of the whole of CFG. The reference files of the guard test and of the SNAP-rule guard are left as they were.
+- **Baseline check.** `data/baseline.json` holds the release's published no-programme rows (seeds 1-20, Reference, Adverse, Stress, 20 years; basket poverty, wealth poverty, median real wealth) read from compassionism-sim-results by `dev/tools/make_baseline.js`. `startRelease({baseline: true})` runs the frozen no-programme arm for seeds 1-2 under the settings now in force and stops the run on any difference. The central-bank pilot and sweep and the policy-eras runner use it. Without the start, the check fails (5 of 6 values differ); with the accounting share moved from 0.9 to 0.89, it fails (6 of 6).
+- **CI** (`.github/workflows/checks.yml`): `start_test.js` (the start, the baseline check passing and failing); `check_docs_agree.js` (the version, the specification's, the test bed's and the other documents' "which release" lines, the manifest's `docs` field and the engine's main row agree); `weight_tests.js` (weights sum to the adults; hand-computed weighted totals, means, tail shares and quantiles; scale; unit weights; zero weights; extreme weights; effective sample size 472.6 of 500 and a largest weight of 3.47, 0.69% of the total, in the main row).
 
 ## How to Contribute
 
@@ -456,7 +453,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.12*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.13*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

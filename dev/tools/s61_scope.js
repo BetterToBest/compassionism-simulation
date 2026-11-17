@@ -13,7 +13,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), opt = k => (process.argv.filter(a => a.indexOf('--' + k + '=') === 0)[0] || '').slice(k.length + 3);
 const env = ARG[0] || 'ref', N = +(ARG[1] || 100), YRS = +(ARG[2] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
-const PROG = process.argv.indexOf('--prog') >= 0, C = H.CFG, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const PROG = process.argv.indexOf('--prog') >= 0, C = H.CFG, svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 const Y = {sn: {abawd: true, slope: true}, lt: {s: 'all', m: 'all'}}, CAP = {lim: 2500}, FLR = {lim: 2500, fl: 'fpl'};
 const ROWS = [['F0', {}], ['DC', {dr: CAP}], ['DF', {dr: FLR}], ['DC0', {dr: {lim: 0}}], ['DC5', {dr: {lim: 5000}}], ['DC87', {dr: {lim: 8700}}], ['DC10', {dr: {lim: 10000}}],
   ['DCL', {dr: {lim: 2500, liq: 0.046}}], ['L', {lf: {}}], ['LC', {lf: {}, dr: CAP}], ['LF', {lf: {}, dr: FLR}], ['LCn', {lf: {conv: 'none'}, dr: CAP}],
@@ -71,5 +71,5 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = opt('out') || path.join(__dirname, '..', 'runs', 's61-scope', 's61-scope-' + env + (PROG ? '-prog' : '') + '.json');
-fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(out, null, 1));
+fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1));
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

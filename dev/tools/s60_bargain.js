@@ -18,7 +18,7 @@ const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), opt = k => (proce
 const VAL = process.argv.indexOf('--validate') >= 0;
 const env = ARG[0] || 'ref', N = +(ARG[1] || 100), YRS = +(ARG[2] || (VAL ? 3 : 20)), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now(), SN = {abawd: true, slope: true}, LT = {s: 'all', m: 'all'};  /* today's safety net and CPS earnings, as S71's rows */
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now(), SN = {abawd: true, slope: true}, LT = {s: 'all', m: 'all'};  /* today's safety net and CPS earnings, as S71's rows */
 const RT = {bo: true, ci: true, ng: 'base', cr: true}, MD = 1/1.21, MY = 1/1.53;
 const ROWS = [['off', null, 'no bargaining (S71 main row with adults outside the labour force)'], ['bg0', {pi: 0, m: MD}, 'pass-through 0 (the central estimate): must equal off'],
   ['bg03', {pi: 0.03, m: MD}, 'pass-through 0.03 (Jager et al.: larger ruled out)'], ['bg10', {pi: 0.10, m: MD}, 'pass-through 0.10 (Vivalt et al.: hourly pay above +$0.58 ruled out)'],
@@ -61,5 +61,5 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = opt('out') || path.join(__dirname, '..', 'runs', 's60-bargain', (VAL ? 's60-validate-' : 's60-bargain-') + env + '.json');
-fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file + '.tmp', JSON.stringify(out)); fs.renameSync(file + '.tmp', file);
+fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file + '.tmp', JSON.stringify(svS.withSettings(out))); fs.renameSync(file + '.tmp', file);
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

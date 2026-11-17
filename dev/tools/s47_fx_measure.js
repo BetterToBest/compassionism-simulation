@@ -39,14 +39,14 @@ function rows(H, P) {
 
 function run(env, lo, hi, file) {
   const H = require(path.join(__dirname, '..', '..', 'harness.js'));
-  const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+  const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
   try {
     const P = Object.assign({}, H[ENVN[env]], {years: 20, nAgents: 500}), R0 = rows(H, P);
     const so = Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: H.SPEND_SOURCED}, H.REL_V52_STUDY);
     const R = H.tbStudy(R0.map(r => r[1]), hi, P, so, lo), out = {env, seeds: [lo, hi], rows: {}};
     R0.forEach((r, i) => { out.rows[r[0]] = {}; KEYS.forEach(k => { out.rows[r[0]][k] = Array.from(R[i]._s[k]); }); });
     out.seconds = (Date.now() - t0)/1000;
-    fs.writeFileSync(file, JSON.stringify(out));
+    fs.writeFileSync(file, JSON.stringify(svS.withSettings(out)));
     console.log(env + ': ' + R0.length + ' rows, seeds ' + lo + '-' + hi + ', ' + out.seconds.toFixed(0) + ' s -> ' + file);
   } finally { H.resetNR6(svN); H.tbSetG(svG); }
 }

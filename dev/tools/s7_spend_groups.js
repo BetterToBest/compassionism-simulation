@@ -10,7 +10,7 @@ const fs = require('fs'), path = require('path'), cp = require('child_process');
 const ROOT = path.join(__dirname, '..', '..');
 const arg = (k, d) => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : d; };
 function runSeeds(lo, hi) {
-  const H = require(path.join(ROOT, 'harness.js')), svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), res = [];
+  const H = require(path.join(ROOT, 'harness.js')), svS = H.startRelease(), svN = svS.svN, svG = svS.svG, res = [];
   try {
     const P = Object.assign({}, H.FULL_INTEGRATION, {years: 20, nAgents: 500}), c = H.relMainCfgs(H.tbPresets(P))[0];
     H.frozenRow(c); Object.assign(c, {sn: {abawd: true, slope: true}, lt: {s: 'all', m: 'all'}});
@@ -41,9 +41,9 @@ const per = Math.ceil(N/K), jobs = [];
 for (let k = 0; k < K; k++) { const lo = k*per + 1, hi = Math.min(N, (k + 1)*per); if (lo > hi) continue;
   jobs.push(new Promise((res, rej) => { const c = cp.fork(__filename, ['--child', String(lo), String(hi)]); let got = null;
     c.on('message', m => { got = m; }); c.on('exit', code => code === 0 && got ? res(got) : rej(new Error('child ' + lo + '-' + hi + ' exited ' + code))); })); }
-Promise.all(jobs).then(rs => { const H = require(path.join(ROOT, 'harness.js'));
+Promise.all(jobs).then(rs => { const H = require(path.join(ROOT, 'harness.js')), svS = H.startRelease();  /* the children started the same way */
   const all = [].concat(...rs).sort((a, b) => a.seed - b.seed);
   fs.mkdirSync(path.dirname(OUT), {recursive: true});
   fs.writeFileSync(OUT, JSON.stringify({_meta: {what: 'S7 part 2 item 2: saving and spending by income group, frozen no-programme row, Reference, 500 adults, 20 years', seeds: '1-' + N,
-    groupBy: 'five equal groups of adults by disposable income over the 20 years, per seed', command: 'node dev/tools/s7_spend_groups.js --seeds=' + N + ' --procs=' + K, manifest: H.runManifest()}, seeds: all}));
+    groupBy: 'five equal groups of adults by disposable income over the 20 years, per seed', command: 'node dev/tools/s7_spend_groups.js --seeds=' + N + ' --procs=' + K, manifest: H.runManifest(), settings: svS.settings}, seeds: all}));
   console.log('wrote ' + OUT + ' (' + all.length + ' seeds)'); }).catch(e => { console.error(e); process.exit(1); });

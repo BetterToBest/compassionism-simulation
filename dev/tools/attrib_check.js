@@ -14,7 +14,7 @@ if (!NAME || !(N >= 2) || (YRS !== 20 && YRS !== 40)) { console.error('usage: at
 const ROOT = path.join(__dirname, '..', '..'), t0 = Date.now(), SC = H.SPEND_SOURCED, C = H.CFG;
 const K = ['fgt0PY', 'pov', 'bOAPy', 'hhCostKidPY', 'hhWlthEnd', 'endoAnn', 'cost', 'gPartRes', 'gNonRes', 'gLowRes', 'gTopRes'];
 const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it */
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 const out = {_meta: {what: 'v5.3 B9: what each part of the design does on the v5.3 main row (main minus the row without it), paired by seed', env, seeds: N, years: YRS,
   manifest: H.runManifest(), command: 'node dev/tools/attrib_check.js ' + env + ' ' + N + ' ' + YRS}, whole: {}, parts: {}, interaction: {}};
 try {
@@ -29,7 +29,7 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = path.join(ROOT, 'dev', 'runs', 'attrib-check-' + env + (YRS === 40 ? '-40' : '') + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1) + '\n');
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1) + '\n');
 const f = x => (x >= 0 ? '+' : '') + (Math.abs(x) >= 100 ? x.toFixed(0) : x.toFixed(2));
 console.log('v5.3 B9 attribution, ' + env + ', seeds 1-' + N + ', ' + YRS + ' years (' + out._meta.seconds + ' s) -> ' + path.relative(ROOT, file));
 console.log('the whole programme (main row against no programme): ' + K.map(k => k + ' ' + f(out.whole[k][0])).join('; '));

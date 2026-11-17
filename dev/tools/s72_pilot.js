@@ -10,7 +10,7 @@ const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const E = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}, env = process.argv[2] || 'ref', N = +(process.argv[3] || 100);
 const OUT = process.argv[4] || path.join(__dirname, '..', 'runs', 's72-government');
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 try {
   const P = Object.assign({}, H[E[env]], {years: 20, nAgents: 500});
   const row = (d, fin, f, gv) => { const c = H.r2MainPair(P, d === 'none' ? 'c22' : d)[d === 'none' ? 0 : 1]; if (fin) c.o = Object.assign({}, c.o, {fin}); if (f) c.fx.fin = f; c.gv = Object.assign({}, gv || {}); return c; };
@@ -26,6 +26,6 @@ try {
   fs.mkdirSync(OUT, {recursive: true});
   const res = {env, seeds: N, manifest: H.runManifest(), secs: (Date.now() - t0) / 1000,
     rows: L.map((x, i) => ({row: x[0], s: Object.fromEntries(K.map(k => [k, R[i]._s[k] ? Array.from(R[i]._s[k]) : null]))}))};
-  fs.writeFileSync(path.join(OUT, 's72-pilot-' + env + '.json'), JSON.stringify(res));
+  fs.writeFileSync(path.join(OUT, 's72-pilot-' + env + '.json'), JSON.stringify(svS.withSettings(res)));
   console.log(env + ': done in ' + res.secs.toFixed(0) + ' s');
 } finally { H.resetNR6(svN); H.tbSetG(svG); }

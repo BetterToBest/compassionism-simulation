@@ -12,7 +12,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const env = process.argv[2] || 'adv', N = +(process.argv[3] || 200), YRS = +(process.argv[4] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
 const KEEP = ['release', 'hcap', 'hcaphi', 'rev5', 'rev10', 'rev20', 'rev20n', 'giftrun', 'tax', 'progtax', 'landtax'];
-const SC = H.SPEND_SOURCED, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const SC = H.SPEND_SOURCED, svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 const out = {_meta: {what: 'the v5.2 robustness readings (release row, Source financing unless stated)', env, seeds: N, years: YRS, manifest: H.runManifest(), command: 'node dev/tools/robust_check.js ' + env + ' ' + N + ' ' + YRS}, base: {}, rows: {}};
 try {
   const P = Object.assign({}, H[NAME], {years: YRS}), PR = H.tbPresets(P), rows = H.releaseRows(SC).filter(r => KEEP.indexOf(r.j) >= 0);
@@ -30,6 +30,6 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = path.join(__dirname, '..', 'runs', 'robust-check-' + env + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1));
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1));
 console.log('no programme: too little wealth', out.base.pov, 'cost of living', out.base.fgt0PY, 'BLEI', out.base.bOAPy);
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

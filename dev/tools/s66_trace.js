@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+let RUNSET = null;  /* the run's start (harness.js startRelease), kept for the output's _settings */
 /* S66 (Nov 10, 2026; research-update prereg/2026-11-s66-low-share-trace.md): the trace of the low end of S55's fixed-share curve, the erosion of opening
  * balances, and the wealth harm with adults outside the labour force. No engine change: index.html is not edited.
  *
@@ -99,7 +100,7 @@ function hookFor(E, rec, part) {
 /* ---- a block: one environment, one part, a range of seeds; rows run seed by seed as tbStudy runs them ---- */
 function runPart(E, part, env, lo, hi) {
   const years = part === 'A40' ? 40 : 20, P = Object.assign({}, E[ENVN[env]], {years, nAgents: 500}), rows = rowsFor(E, P, part), S = E._s66.S66, out = {};
-  const svN = E.applyNR6(), svG = E.tbSetG(E.TB_PROFILE_G);
+  const svS = RUNSET = E.startRelease(), svN = svS.svN, svG = svS.svG;
   try {
     S.on = true; const groups = {}; rows.forEach(r => { (groups[r.k || ''] = groups[r.k || ''] || []).push(r); });
     Object.keys(groups).forEach(k => {
@@ -132,7 +133,7 @@ function compact(rec) {  /* year arrays per measure */
 function check() {
   const E = engineCopy(), P = Object.assign({}, H.FULL_INTEGRATION, {years: 20, nAgents: 500}), bad = [];
   const rowsE = rowsFor(E, P, 'A').filter(r => !r.k), rowsH = rowsFor(H, P, 'A').filter(r => !r.k);
-  const run = (M, rows, probe) => { const svN = M.applyNR6(), svG = M.tbSetG(M.TB_PROFILE_G); if (probe) { M._s66.S66.on = true; M.setRepHook(function () {}); }
+  const run = (M, rows, probe) => { const svS = RUNSET = M.startRelease(), svN = svS.svN, svG = svS.svG; if (probe) { M._s66.S66.on = true; M.setRepHook(function () {}); }
     try { return M.tbStudy(rows.map(r => r.c), 5, P, SO(M)); } finally { if (probe) { M._s66.S66.on = false; M.setRepHook(null); } M.resetNR6(svN); M.tbSetG(svG); } };
   const a = run(H, rowsH, false), b = run(E, rowsE, true);
   let nk = 0; rowsH.forEach((r, i) => Object.keys(a[i]._s).forEach(k => { nk++; const x = Array.from(a[i]._s[k]), y = b[i]._s[k] ? Array.from(b[i]._s[k]) : null;
@@ -153,7 +154,7 @@ if (require.main === module) {
   const out = {_meta: {what: 'S66 trace (research-update prereg/2026-11-s66-low-share-trace.md)', part, env, seeds: sd, manifest: H.runManifest(), patches: PATCH.map(p => p[0]),
     command: 'node dev/tools/s66_trace.js ' + process.argv.slice(2).join(' '), seconds: Math.round((Date.now() - t0)/1000)}, rows};
   const file = arg('out', path.join(ROOT, 'dev', 'runs', 's66-trace', 's66-' + part + '-' + env + '-' + sd.join('-') + '.json.gz'));
-  fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, zlib.gzipSync(JSON.stringify(out)));
+  fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, zlib.gzipSync(JSON.stringify(RUNSET.withSettings(out))));
   console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');
 }
 module.exports = {engineCopy, rowsFor, runPart};
