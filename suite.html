@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The visual suite | Compassionism Framework Simulation v5.9.8</title>
+<title>The visual suite | Compassionism Framework Simulation v5.9.9</title>
 <meta name="description" content="Beyond one poverty line: the BLEI ladder year by year, what the days of basic living are made of, who takes part and who does not, and how the measures disagree. Every number comes from the latest release's data.">
 <meta name="author" content="Duke Johnson, Claude (Anthropic)">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="sim-version" content="5.9.8">
+<meta name="sim-version" content="5.9.9">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/suite.html">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://bettertobest.github.io/compassionism-simulation/suite.html">
@@ -17,9 +17,9 @@
 <meta name="theme-color" content="#1D9E75">
 <link rel="icon" type="image/svg+xml" href="https://bettertobest.github.io/research-hub/assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
-<link rel="stylesheet" href="site/findings.css?v=5.9.8">
+<link rel="stylesheet" href="site/findings.css?v=5.9.9">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: the visual suite","softwareVersion":"5.9.8","url":"https://bettertobest.github.io/compassionism-simulation/suite.html",
+{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: the visual suite","softwareVersion":"5.9.9","url":"https://bettertobest.github.io/compassionism-simulation/suite.html",
  "description":"The BLEI ladder, the parts of BLEI, participants and non-participants, and four poverty measures, year by year over 500 paired runs, with and without Compassionism.",
  "creator":[{"@type":"Person","name":"Duke Johnson"},{"@type":"Organization","name":"Claude (Anthropic)"}],"license":"https://creativecommons.org/licenses/by/4.0/","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2",
  "distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://bettertobest.github.io/compassionism-simulation/data/manifest.json"}]}
@@ -104,13 +104,13 @@ footer p{margin:0 0 6px}
 </div></main>
 
 <footer><div class="wrap">
-  <p>Compassionism Simulation <span class="meta-ver">v5.9.8</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
+  <p>Compassionism Simulation <span class="meta-ver">v5.9.9</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
   <p><a href="./">Simulation</a> &middot; <a href="findings.html">Findings explorer</a> &middot; <a href="replication.html">Replication framework</a> &middot; <a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a> &middot; <a href="https://doi.org/10.17605/OSF.IO/QWTE2">DOI: 10.17605/OSF.IO/QWTE2</a></p>
   <p class="cite">Suggested citation: Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. <a href="https://doi.org/10.17605/OSF.IO/QWTE2">https://doi.org/10.17605/OSF.IO/QWTE2</a></p>
 </div></footer>
 
-<script src="site/charts.js?v=5.9.8"></script>
-<script src="site/findings.js?v=5.9.8"></script>
+<script src="site/charts.js?v=5.9.9"></script>
+<script src="site/findings.js?v=5.9.9"></script>
 <script>
 /* The visual suite (session 11, ledger step s161; dev/reports/v5-33-visual-suite.md). A stand-alone page: it reads data/manifest.json, opens the newest
  * release, and loads that release's suite series (explore.suite: data/releases/v<version>/suite-20.json and suite-40.json, written by
@@ -302,15 +302,16 @@ footer p{margin:0 0 6px}
   }
 
   /* 4. what the days are made of. Nov 17, 2026 correction: each part on its own scale, typical (median) adult. The columns used to be shares of the
-   * average adult's days: savings were over 99% of every column, so pay and the allowance could not be seen, and v5.9's stored averages count its
-   * 18 top-tail adults once each instead of at their population weight (as the wealth Gini did before v5.9.5), so they are not shown for v5.9. */
+   * average adult's days: savings were over 99% of every column, so pay and the allowance could not be seen, and v5.9's plain averages count its
+   * 18 top-tail adults once each instead of at their population weight (as the wealth Gini did before v5.9.5). S81 (Nov 17, 2026): v5.9's medians and
+   * averages here are job X4's weighted keys (wmed*, wmean*: every adult at its population weight); v5.6 has no weights and keeps the plain keys. */
   function parts() {
-    var r = st.read, L = LAST(), P = [['meanSav', 'medSav', 'From savings (a share of wealth)', 's-e1'], ['meanInc', 'medInc', 'From pay (a share of a month’s income)', 's-e2'], ['meanBu', 'medBu', 'From the allowance (a month of BU spent on essentials)', 's-e3']];
+    var r = st.read, L = LAST(), W = isR2() ? 'w' : '', P = [[W + 'meanSav', W + 'medSav', 'From savings (a share of wealth)', 's-e1'], [W + 'meanInc', W + 'medInc', 'From pay (a share of a month’s income)', 's-e2'], [W + 'meanBu', W + 'medBu', 'From the allowance (a month of BU spent on essentials)', 's-e3']];
     var s = section('parts', 'What the days are made of',
       'The BLEI adds three things: part of what a person has saved, part of a month’s pay, and a month of the allowance. Two adults with the same days can be in very different positions: savings are owned and stay through a bad year; the allowance lasts as long as the program does. <span class="su-reading">Claude’s reading of the design</span>');
     var cols = [['base', Y7], [r, Y7], ['base', L], [r, L]];
     function colName(c) { return (c[0] === 'base' ? 'No program' : 'Compassionism') + ', ' + tsel(c[1]); }  /* short, so the year is never cut; the design is in the tooltip */
-    var f = figure('Where the typical adult’s days come from', 'The median adult’s days from each part, each part on its own scale; bars are the mean over the runs, lines the 10th to 90th percentile across runs. Hover or use the arrow keys for the days.'); s.appendChild(f);
+    var f = figure('Where the typical adult’s days come from', 'The median adult’s days from each part' + (isR2() ? ' (every adult counted at its population weight)' : '') + ', each part on its own scale; bars are the mean over the runs, lines the 10th to 90th percentile across runs. Hover or use the arrow keys for the days.'); s.appendChild(f);
     var host = f.querySelector('.fx-chart');
     P.forEach(function (p) {
       var h = document.createElement('div'); h.className = 'su-part'; host.appendChild(h);
@@ -318,11 +319,11 @@ footer p{margin:0 0 6px}
         label: p[2] + ': the median adult’s days, no program and Compassionism, Year 7 and Year ' + T(),
         rows: cols.map(function (c) { return {label: colName(c), sub: c[0] === 'base' ? '' : rowName(c[0]), marks: [{v: get(sp(c[0], p[1], 'mean', c[1])), lo: get(sp(c[0], p[1], 'p10', c[1])), hi: get(sp(c[0], p[1], 'p90', c[1])), cls: p[3], name: p[2]}]}; })}); });
     });
-    s.appendChild(para('The median adult’s days from savings: ' + N(sp('base', 'medSav', 'mean', L), 'int') + ' with no program, ' + N(sp(r, 'medSav', 'mean', L), 'int') + ' with Compassionism; from pay: ' + N(sp('base', 'medInc', 'mean', L), 'int') + ' and ' + N(sp(r, 'medInc', 'mean', L), 'int') + '; from the allowance: ' + N(sp(r, 'medBu', 'mean', L), 'int') + ' (Year ' + T() + '). ' +
+    s.appendChild(para('The median adult’s days from savings: ' + N(sp('base', P[0][1], 'mean', L), 'int') + ' with no program, ' + N(sp(r, P[0][1], 'mean', L), 'int') + ' with Compassionism; from pay: ' + N(sp('base', P[1][1], 'mean', L), 'int') + ' and ' + N(sp(r, P[1][1], 'mean', L), 'int') + '; from the allowance: ' + N(sp(r, P[2][1], 'mean', L), 'int') + ' (Year ' + T() + '). ' +
       'The parts can differ in size a hundredfold, so each has its own scale; on one shared scale the smaller ones could not be seen. The medians of the parts do not add up to the median total. A measure that counts only the total would rate a household living on the allowance and one living on its savings the same; a policy maker weighing how durable a program is should not.' +
-      (isR2() ? ' Averages are not shown for v5.9. Its runs give 18 simulated adults the place of very rich families and count each at its share of the population (a weight); the stored averages of these parts count those adults once each, so the average days from savings come out at hundreds of thousands and describe those few, not the average adult. An earlier version of this page drew those averages (corrected Nov 17, 2026).' : ' The table also gives the averages, which add up but are pulled up by the few with large savings.')));
-    s.appendChild(tableBox({id: 'suite-parts', title: 'The parts of BLEI in days: median adult' + (isR2() ? '' : ' (average below)') + ', mean over the runs', columns: ['Part', 'No program, Year 7', 'Compassionism, Year 7', 'No program, Year ' + T(), 'Compassionism, Year ' + T()],
-      rows: P.map(function (p) { return [{p: [p[2]]}].concat(cols.map(function (c) { var m = sp(c[0], p[0], 'mean', c[1]); return cell(sp(c[0], p[1], 'mean', c[1]), 'int', !isR2() && isN(m) ? ['average ', {src: m, f: 'int'}] : undefined); })); })}, false));
+      (isR2() ? ' The table also gives the averages, which add up but are pulled up by the few with large savings: the average adult’s days from savings are ' + N(sp('base', P[0][0], 'mean', L), 'int') + ' with no program and ' + N(sp(r, P[0][0], 'mean', L), 'int') + ' with Compassionism, against the medians above. Both the medians and the averages here count every adult at its population weight: v5.9’s runs give 18 simulated adults the place of very rich families, who are rare, and each stands for its small share of the population. Counting those 18 once each, as an earlier version of this page did (corrected Nov 17, 2026), made the average days from savings come out at hundreds of thousands and described those few, not the average adult. The other sections’ shares and medians of the whole ladder still count each simulated adult once; counted by weight, every share moves by about a point or less and every median by less than one part in twenty (report dev/reports/s81-suite-weighted.md lists each).' : ' The table also gives the averages, which add up but are pulled up by the few with large savings.')));
+    s.appendChild(tableBox({id: 'suite-parts', title: 'The parts of BLEI in days: median adult' + (isR2() ? ' (every adult counted at its population weight; average below)' : ' (average below)') + ', mean over the runs', columns: ['Part', 'No program, Year 7', 'Compassionism, Year 7', 'No program, Year ' + T(), 'Compassionism, Year ' + T()],
+      rows: P.map(function (p) { return [{p: [p[2]]}].concat(cols.map(function (c) { var m = sp(c[0], p[0], 'mean', c[1]); return cell(sp(c[0], p[1], 'mean', c[1]), 'int', isN(m) ? ['average ', {src: m, f: 'int'}] : undefined); })); })}, false));
     return s;
   }
 
