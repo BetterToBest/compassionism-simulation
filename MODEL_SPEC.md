@@ -7,7 +7,7 @@
 
 Two studies run v5.9's main row with more switches on and fewer seeds (100 paired seeds, not 500): **the central-bank study** (section 15: a policy-rate rule in both runs, 2005-2025's actual paths as a fourth environment) and **the history study** (section 16: today's households under the measured settings of four US policy eras). Each is a model counterfactual, not a forecast or a backtest.
 
-Results: compassionism-sim-results folders `r2-<part>-<env>-<years>-104691f` (main rows, readings, financed rows, 10,000 adults), `s74-final-3beb5ff` (central bank) and `s75-eras-e5649ef` (history), each with `run.txt` (the exact command and commit) and `SHA256SUMS`; the commands and fingerprints are in [REPRODUCE.md](REPRODUCE.md), section "v5.9". A one-page summary of what the model is and is not: [MODEL-CARD.md](MODEL-CARD.md).
+Results: compassionism-sim-results folders `r2-<part>-<env>-<years>-104691f` (main rows, readings, financed rows, 10,000 adults), `s74-final-3beb5ff` (central bank) and `s75-eras-e5649ef` (history), each with `run.txt` (the exact command and commit) and `SHA256SUMS`; the commands and fingerprints are in [REPRODUCE.md](REPRODUCE.md), section "v5.9". A one-page summary of what the model is and is not: [model-card.html](model-card.html).
 
 **Earlier wording kept as history.** The two paragraphs below ("This document describes...", "Which model...") were written for v5.6 and the frozen model, and are kept as they were.
 
