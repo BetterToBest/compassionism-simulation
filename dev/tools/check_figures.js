@@ -221,7 +221,7 @@ async function run(opts) {
       for (const g of ['all', 'part', 'non']) { const gb = [...w.document.querySelectorAll('#tiers button')].filter(b => b.dataset.value === g)[0]; if (gb) { gb.click(); await settle(w); }
         w.document.querySelectorAll('#suite details').forEach(d => { d.open = true; });
         const x = spanProbs(w.document, RW, 'suite ' + e + ' ' + y + 'y ' + rd2 + ' ' + g); n3 += x.n; sp3.push(...x.bad);
-        if (w.document.querySelectorAll('.su-sec').length !== 9 || w.document.querySelectorAll('.su-sec svg.fx-svg').length !== 11) sp3.push('suite ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
+        if (w.document.querySelectorAll('.su-sec').length !== 9 || w.document.querySelectorAll('.su-sec svg.fx-svg').length !== 13) sp3.push('suite ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
         scan.push(...unmarked(w.document.getElementById('content'), 'suite ' + e + ' ' + y + 'y')); } }
     add('session 11: on the visual suite page every number (texts, cards and all tables) equals the newest release\'s data and suite series, in four views of environment, horizon and backing reading and all three groups of adults', sp3.length === 0 && n3 > 2000,
       sp3.length ? sp3.slice(0, 4).join('; ') : n3 + ' numbers checked in 12 views');
@@ -257,7 +257,7 @@ async function run(opts) {
         for (const g of ['all', 'part', 'non']) { const gb = [...w5.document.querySelectorAll('#tiers button')].filter(b => b.dataset.value === g)[0]; if (gb) { gb.click(); await settle(w5); }
           w5.document.querySelectorAll('#suite details').forEach(d => { d.open = true; });
           const x = spanProbs(w5.document, R2W, 'suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g); n5 += x.n; sp5.push(...x.bad);
-          if (w5.document.querySelectorAll('.su-sec').length !== 9 || w5.document.querySelectorAll('.su-sec svg.fx-svg').length !== 11) sp5.push('suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
+          if (w5.document.querySelectorAll('.su-sec').length !== 9 || w5.document.querySelectorAll('.su-sec svg.fx-svg').length !== 13) sp5.push('suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
           if (w5.document.querySelectorAll('#moves table').length !== nMoves) sp5.push('suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': the movement section drew ' + w5.document.querySelectorAll('#moves table').length + ' tables, not ' + nMoves);
           scan.push(...unmarked(w5.document.getElementById('content'), 'suite r2 ' + e + ' ' + y + 'y')); } }
       add('S11, S79: on the visual suite page\'s release 2 view every number (texts, cards, tables, the quoted published effects and, from job X3, the other five measures and the measures study\'s six movement tables) equals release 2\'s suite folder, in four views of environment, horizon and design and all three groups of adults', sp5.length === 0 && n5 > (X.studyFiles ? 3000 : 1500),
