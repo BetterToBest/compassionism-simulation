@@ -59,7 +59,7 @@
   }
   function table(caption, head, rows) {
     return '<div class="fx-tw" tabindex="0" role="region" aria-label="' + esc(caption) + '"><table class="fx-table"><caption>' + esc(caption) + '</caption><thead><tr>' +
-      head.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+      head.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + (c === 'C2.2' ? 'Full-coverage design' : c === 'release design' ? 'Opt-in design' : c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
   }
   var C = 'C2.2', RL = 'release design';
 
@@ -95,7 +95,7 @@
         });
       });
     });
-    return table('Round 2, ' + years + ' years: the effect at each preregistered reading (lowest to highest), the main row with its seed interval, and whether every reading keeps its sign',
+    return table('v5.9, ' + years + ' years: the effect at each preregistered reading (lowest to highest), the main row with its seed interval, and whether every reading keeps its sign',
       ['Design', 'Environment', 'Outcome', 'Across the readings', 'Main row (95% seed interval)', 'Readings keeping the sign', 'Class'], rows);
   }
   function backingTable(design) {
@@ -118,7 +118,7 @@
     });
     var be = find('r2-backing', Object.assign({}, base, {row: 'break-even: inflation 5% a year'}), 'backed share (fraction of the payout)');
     rows.push(['Break-even: programme inflation 5% a year', snum('r2-backing', be.i, 'backed share (fraction of the payout)', fmtN(be.v * 100, 0) + '%'), '', '', '']);
-    return table((design === C ? 'C2.2' : 'Release design') + ', Reference, 20 years: effects against no programme at each backed share (change in points, change in $, programme inflation in points a year)',
+    return table((design === C ? 'Full-coverage design' : 'Opt-in design') + ', Reference, 20 years: effects against no programme at each backed share (change in points, change in $, programme inflation in points a year)',
       ['Reading', 'Backed share', 'Cost of living (points)', 'Median real wealth', 'Programme inflation'], rows);
   }
   function financedTable() {
@@ -163,42 +163,42 @@
     var mr = find('r2-backing', {design: C, environment: 'Reference', years: 20, row: 'the model\'s own mechanism', outcome: OUT.bk}, 'backed share (fraction of the payout)');
     var mechShare = snum('r2-backing', mr.i, 'backed share (fraction of the payout)', fmtN(mr.v * 100, 1) + '%');
     var nread = find('r2-curves', {design: C, environment: 'Reference', years: 20, outcome: OUT.bk}, 'readings');
-    var h = '<h3 class="fx-h3">Release 2: the answer in ten seconds</h3>' +
-      '<p>With Compassionism (the C2.2 design), against no programme, Reference, 20 years, main row:</p>' + cards() +
+    var h = '<h3 class="fx-h3">v5.9: the answer in ten seconds</h3>' +
+      '<p>With Compassionism (the full-coverage design), against no programme, Reference, 20 years, main row:</p>' + cards() +
       '<p class="fx-note"><strong>Main row:</strong> every dollar the programme pays is matched by new output, as the design states (a design parameter, not a model estimate). The model’s own mechanism for new output reaches about ' + mechShare + ' of that. See “How much new output backs the payout”, below.</p>' +
       '<p><strong>One sentence.</strong> Across the ' + snum('r2-curves', nread.i, 'readings', String(nread.v)) + ' preregistered readings, both designs lower all three poverty measures and raise median real wealth, in every environment and at both horizons (the table “How sure we are” gives the count for each). These results hold when every dollar paid is matched by new output, which is the design’s statement and not something the model shows; with the model’s own backing mechanism (with or without its ceiling), prices rise ' + inflMech.lo + ' to ' + inflMech.hi + ' points a year across the environments and designs at 20 and 40 years.</p>';
     h += '<h3 class="fx-h3">How sure we are: the range across readings</h3>' +
       '<p>Each preregistered reading changes one setting the design leaves open (how much of their spare cash adults spend, how wealth is held, the price rule’s settings, and others). For each outcome, the curve below shows every reading’s effect. The table gives the range, the main row with its seed interval, and whether every reading keeps its sign. The seed interval covers the model’s randomness only, not the choice of reading; the spread across readings shows that. The wealth figures rest on today’s price rule and on full backing, and only a small part of any of them is the erosion of the balances adults held at the start (in the programme’s favour; if all wealth were cash, against it).</p>' +
       sureTable(20) + '<details class="fx-more"><summary>The same at 40 years</summary>' + sureTable(40) + '</details>' +
       '<p class="fx-note">Each dot in a chart is one preregistered reading, sorted by its effect, with its 95% seed interval. The seed interval covers the model’s randomness only, not the choice of reading; the spread of the dots shows that.</p>' +
-      '<details class="fx-more"><summary>The curves, one chart per outcome (C2.2, then the release design; the financed rows beside each)</summary>' +
+      '<details class="fx-more"><summary>The curves, one chart per outcome (the full-coverage design, then the opt-in design; the financed rows beside each)</summary>' +
       [['fgt0PY', 'Cost of living (basket poverty)'], ['bNAPy', 'Basic living'], ['ppovA', 'Wealth poverty, yearly average'], ['wtMedE', 'Median real wealth'], ['endoAnn', 'Programme inflation']].map(function (o) {
-        return ['c22', 'rel'].map(function (d) { return [20, 40].map(function (y) { return chartFig('spec-' + d + '-' + o[0] + '-' + y, o[1] + ', ' + (d === 'c22' ? 'C2.2' : 'release design') + ', ' + y + ' years: effect at each preregistered reading, three environments, with the financed rows beside. The numbers are in the table above and in the file r2-curves.'); }).join(''); }).join('');
+        return ['c22', 'rel'].map(function (d) { return [20, 40].map(function (y) { return chartFig('spec-' + d + '-' + o[0] + '-' + y, o[1] + ', ' + (d === 'c22' ? 'full-coverage design' : 'opt-in design') + ', ' + y + ' years: effect at each preregistered reading, three environments, with the financed rows beside. The numbers are in the table above and in the file r2-curves.'); }).join(''); }).join('');
       }).join('') + '</details>';
     h += '<h3 class="fx-h3">Prices, and how much new output backs the payout</h3>' +
-      '<p>At the main row, programme inflation is ' + show('r2-effects', {design: C, environment: 'Reference', years: 20, outcome: OUT.inf}, 'effect', 'x', 2) + ' points a year above no programme in Reference at 20 years (C2.2): no material change. <strong>The main row assumes that every dollar the programme pays is matched by new output</strong>, as the design states (a design parameter). The model’s own mechanism for new output reaches only the share shown below (and the second figure with its ceiling removed). The poverty effects barely depend on backing; inflation and median wealth do. All inflation figures rest on the model’s placeholder price rule (all unmatched new money reaches prices); they are not a forecast.</p>' +
-      backingTable('C2.2') + '<details class="fx-more"><summary>The release design, and the backing charts</summary>' + backingTable(RL) +
+      '<p>At the main row, programme inflation is ' + show('r2-effects', {design: C, environment: 'Reference', years: 20, outcome: OUT.inf}, 'effect', 'x', 2) + ' points a year above no programme in Reference at 20 years (full-coverage design): no material change. <strong>The main row assumes that every dollar the programme pays is matched by new output</strong>, as the design states (a design parameter). The model’s own mechanism for new output reaches only the share shown below (and the second figure with its ceiling removed). The poverty effects barely depend on backing; inflation and median wealth do. All inflation figures rest on the model’s placeholder price rule (all unmatched new money reaches prices); they are not a forecast.</p>' +
+      backingTable('C2.2') + '<details class="fx-more"><summary>The opt-in design, and the backing charts</summary>' + backingTable(RL) +
       ['backing-c22-20', 'backing-c22-40', 'backing-rel-20', 'backing-rel-40'].map(function (n) { return chartFig(n, 'Programme inflation by backed share, with the break-even share and the mechanism’s own points marked (' + n + '); the numbers are in the table above and in the file r2-backing.'); }).join('') + '</details>';
     h += '<h3 class="fx-h3">Paid for by a contribution instead (shown, never led with)</h3>' +
-      '<p>If the programme is paid for by a contribution, with the rest borrowed, the contribution needed is far larger and the poverty effects are much smaller, and in some cells they reverse. Nearly every financed result is fragile: 46 of the 48 poverty and wealth curves change sign or lose significance at some reading, depending on how the contribution is set up. The two that hold are the release design’s basic-living effect in Reference, at both horizons. These rows were run without the weighted top tail.</p>' + financedTable();
+      '<p>If the programme is paid for by a contribution, with the rest borrowed, the contribution needed is far larger and the poverty effects are much smaller, and in some cells they reverse. Nearly every financed result is fragile: 46 of the 48 poverty and wealth curves change sign or lose significance at some reading, depending on how the contribution is set up. The two that hold are the opt-in design’s basic-living effect in Reference, at both horizons. These rows were run without the weighted top tail.</p>' + financedTable();
     h += '<h3 class="fx-h3">Who gains</h3>' +
-      '<p>The programme lowers the top 1%’s share of wealth, raises the bottom half’s, and sharply reduces the share of families in debt; the release design moves them about half as far. Below the top fifth of starting wealth, slightly higher prices lower what adults owe (a small gain); at the top, where money is lent, they are a loss. Adults outside the labour force stay far more often below the cost of living than adults in it; the Question 6 report and the erosion tables (r2-erosion-104691f/tables.md in the results repository) give the split.</p>' + distTable();
+      '<p>The programme lowers the top 1%’s share of wealth, raises the bottom half’s, and sharply reduces the share of families in debt; the opt-in design moves them about half as far. Below the top fifth of starting wealth, slightly higher prices lower what adults owe (a small gain); at the top, where money is lent, they are a loss. Adults outside the labour force stay far more often below the cost of living than adults in it; the Question 6 report and the erosion tables (r2-erosion-104691f/tables.md in the results repository) give the split.</p>' + distTable();
     h += '<h3 class="fx-h3">Unfavourable results, together</h3><ul>' +
       '<li><strong>Prices:</strong> programme inflation is above no programme in every cell: immaterial at the main row, tens of points a year without backing (table above).</li>' +
       '<li><strong>Work:</strong> fewer adults work: participation falls (adults who leave work for the programme), with their earnings forgone.</li>' +
       '<li><strong>Mobility:</strong> less movement out of the lowest wealth fifth (“stayed in the lowest wealth fifth”, above).</li>' +
       '<li><strong>Labour’s share</strong> of money income falls, because the programme’s payments are income that is not wages.</li>' +
-      '<li><strong>Stress:</strong> the release design’s effects shrink by about two thirds in the Stress environment.</li>' +
-      '<li><strong>Financing:</strong> 46 of 48 financed poverty and wealth curves are fragile (the release design’s basic-living effect in Reference holds at both horizons), and the release design paid by a contribution on wages raises basket poverty.</li></ul>' + workTable();
+      '<li><strong>Stress:</strong> the opt-in design’s effects shrink by about two thirds in the Stress environment.</li>' +
+      '<li><strong>Financing:</strong> 46 of 48 financed poverty and wealth curves are fragile (the opt-in design’s basic-living effect in Reference holds at both horizons), and the opt-in design paid by a contribution on wages raises basket poverty.</li></ul>' + workTable();
     h += '<h3 class="fx-h3">What no figure here covers</h3>' +
       '<p>The seed intervals measure the model’s randomness only. They do not cover the choice of main row or full backing (a design statement); the readings the screen held fixed; Stress, which was not screened; or the engine’s structure: one price rule for the whole economy, no central bank, no migration, no value of care, community work or new ventures, PTFs modelled from the Hub’s statements and measured costs, and 500 adults (a 10,000-adult pair agrees on hours and the top of the wealth distribution). The financed rows leave out the weighted top tail. The model has not been reviewed by an independent economist.</p>' +
-      '<p class="fx-note">Where each figure comes from (basis class: simulation release and command): engine <code>104691f</code>, round-2 batch, seeds 1-500, run on GitHub Actions Nov 14-15, 2026, as frozen in the preregistration <code>prereg/2026-11-s63-round2-freeze.md</code> (registered on OSF: <a href="https://osf.io/msdzk/overview">osf.io/msdzk</a>). Results: <code>r2-&lt;part&gt;-&lt;env&gt;-&lt;years&gt;-104691f</code> in compassionism-sim-results; tables <code>r2-tables-104691f</code>; erosion trace <code>r2-erosion-104691f</code>. Commands: <code>dev/tools/s64_tables.py</code>, <code>dev/tools/s64_erosion.js</code>, <code>dev/tools/s64_charts.py</code>, <code>dev/tools/r2_study_files.py</code>. Every row is also in “Every preregistered study” below.</p>';
+      '<p class="fx-note">Where each figure comes from (basis class: simulation release and command): engine <code>104691f</code>, v5.9 batch of runs, seeds 1-500, run on GitHub Actions Nov 14-15, 2026, as frozen in the preregistration <code>prereg/2026-11-s63-round2-freeze.md</code> (registered on OSF: <a href="https://osf.io/msdzk/overview">osf.io/msdzk</a>). Results: <code>r2-&lt;part&gt;-&lt;env&gt;-&lt;years&gt;-104691f</code> in compassionism-sim-results; tables <code>r2-tables-104691f</code>; erosion trace <code>r2-erosion-104691f</code>. Commands: <code>dev/tools/s64_tables.py</code>, <code>dev/tools/s64_erosion.js</code>, <code>dev/tools/s64_charts.py</code>, <code>dev/tools/r2_study_files.py</code>. Every row is also in “Every preregistered study” below.</p>';
     return h;
   }
   function mount(host) {
     Promise.all(FILES.map(function (f) { return F.fetchJSON('data/studies/' + f + '.json').then(function (d) { D[f] = d; }); }))
       .then(function () { host.innerHTML = build(); })
-      .catch(function (e) { host.innerHTML = '<p class="fx-banner">Could not load round 2’s data (' + esc(e.message) + ').</p>'; });
+      .catch(function (e) { host.innerHTML = '<p class="fx-banner">Could not load the v5.9 data (' + esc(e.message) + ').</p>'; });
   }
   root.CSS_R2 = {mount: mount};
 })(window);

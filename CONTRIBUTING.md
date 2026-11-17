@@ -40,12 +40,13 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.5 Release Notes
+## v5.9.6 Release Notes
 
-Released Nov 17, 2026: **a correction to the wealth Gini in the visual suite's release 2 view.** No engine line changes; no other figure changes.
-- **What was wrong.** v5.9.4 showed release 2's wealth Gini at about 0.985 in every row, with or without the programme, and its report called that a null result. Release 2's runs give 18 of the 500 simulated adults the place of very rich families, who are rare in the population, and count each at its share of the population (a weight). The plain Gini counts each simulated adult once, so those few adults swamp the rest and the figure says nothing about the programme. It is not valid for release 2's rows.
-- **Now.** The release 2 view shows the weighted wealth Gini that release 2's results store (debts counted as zero, and debts kept), with the spread across runs and the change against no programme with its 95% interval. C2.2 lowers it by 0.10 to 0.13 in every environment and horizon; the release design by 0.05 to 0.06 in Reference, 0.03 to 0.04 in Adverse and about 0.01 in Stress. Wealth net of a year's drain has no weighted figure in release 2's runs and is no longer shown there; the page says so.
-- `dev/tools/suite_r2.py --study` copies the weighted Gini from release 2's stored results into `data/releases/r2/study-*.json`; the figure check covers it; the report `dev/reports/s79-r2-measures.md` carries a dated correction.
+Released Nov 17, 2026: **reader-facing wording.** The pages no longer carry the project's internal bookkeeping. No engine line changes and no figure changes.
+- **Versions by number.** The two model generations are called v5.6 (its panel published Oct 14, 2026) and v5.9 (its engine frozen Nov 14, 2026, results first shown in v5.8 and leading since v5.9) instead of `release 1` and `release 2`; `round 2 of the engine` is the v5.9 model. Links that use `?rel=1` still open the v5.6 view.
+- **Plain names for the designs.** `C2.2` is now the full-coverage design: every adult is covered automatically and paid enough to reach the cost of the basket of essentials. The page says once, where it is introduced, that it is built to meet NEEC's criterion C2.2. "The release design" is now the opt-in design: adults choose to take part, and it pays the allowance the Hub's papers set. Labels stored in the data files are unchanged. The pages map them to these names when they print them, and downloads keep each file as written.
+- **Studies by subject.** Studies are named by what they ask (the central-bank study, open access, the synergy study, …), not by step codes. Sentences that only recorded project history are cut.
+- **A check.** `dev/tools/reader_check.js` opens every page in each view with its data. `dev/tools/reader_codes.py --check` reads the static pages, `site/*.js`, README, CONTRIBUTING, REPRODUCE, the manifest's summaries and the glossary. Both fail on a step or ledger code, a session or part label, a job id, `round 2`, `release 1/2` or `C2.2` (domtest Phase 17). The inventory before the edit is in `dev/reports/reader-wording.md`; the names and the reasons are in `dev/DECISIONS.md`. CHANGELOG.md and the reports in `dev/reports/` are reworded next; `reader_codes.py --check --all` lists what remains in them.
 
 ## How to Contribute
 
@@ -205,7 +206,7 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 | Item (as named below) | Status | Where it stands |
 |---|---|---|
 | A consumption rule (v4.21) | Settled by v5 | Spending share 0.593 of income above the cost of living, from BEA's 2025 saving rate (plan step 7, `dev/reports/07-spending-rule.md`); every release row and the no-programme run use it. |
-| Poverty lines under inflation (v4.21) | Settled by v5 | The release engine's wealth line and BLEI move with the price level (decision D2, session 2; testbed option `lines`). The earlier engine still reads nominal lines. Step 2 shows the fixed-dollar reading beside it so the size of the difference is visible. |
+| Poverty lines under inflation (v4.21) | Settled by v5 | The release engine's wealth line and BLEI move with the price level (testbed option `lines`). The earlier engine still reads nominal lines. Step 2 shows the fixed-dollar reading beside it so the size of the difference is visible. |
 | The Gini small-sample bias (v4.21) | Settled by v5.2 | Step 2 applies the n/(n − 1) correction to every Gini of the release engine; a reading within 0.002 of a target line is labelled as on the line, and `domtest` checks that the uncorrected reading gives a different verdict only where that label is shown. The earlier engine's Gini is left as v4.22 documented it. |
 | The BLEI floor for CCO+PTH members (v4.21) | Settled by v5 | Both readings are reported: the BLEI paper's own definition and the design-neutral BLEI, which uses the Baseline's daily cost for everyone (plan step 8, `dev/reports/08-blei.md`). Whether a month of flows should count is a question for the BLEI paper. |
 | Settled in v4.20 (four items) | Settled | Still in force: automation-risk sampler, CI on every push, single file with a parity check, tagged releases. |
@@ -221,10 +222,10 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 | Settled in v4.18 (the name "extreme poverty"; wellness zones) | Settled | Still in force. |
 | Reconcile the papers' headline with the engine (v4.17) | Settled by v5 | The page reads the Hub's own Year 7 targets beside the model's figures (Hub-target table, v5.1); step 2 adds the federal poverty line, Year 7 and a wealth Gini. |
 | The wage distribution versus the living-wage basket (v4.17) | Open in v5 | Step 5: the model's median wage ($39,945) is below both the basket ($49,370) and the comparable US group's median ($54,698, SCF 2022), and every adult pays the full basket, so with no programme 46% are in debt by Year 7 against 12.6% in the survey (the largest gap with US data). Readings: wages centred on the survey's median, the survey's wage spread, starting savings drawn conditional on wage (this item's option D). |
-| SZH θ read realised PTF density (v4.17) | Settled by v5 | On in the testbed profile (`THETA_GATE 'density'`, decision d12, session 5). |
+| SZH θ read realised PTF density (v4.17) | Settled by v5 | On in the testbed profile (`THETA_GATE 'density'`). |
 | The 55% participation threshold as a dynamic (v4.17) | Open in v5 | Later. Participation is endogenous since plan step 4 (open enrolment), but nothing collapses below 55%. |
-| An endogenous price channel (v4.17) | Settled by v5 | The price module (session 2) and the Source's backing share (plan step 3; the backing-share chart, v5.1). |
-| The PTF/PTH inflation damping (v4.14, v4.15) | Earlier engine only | Off in the release engine's main row since session 23 (ledger d86): the price module sets prices instead. It appears once on the release page, in the theoretical reading "the two former stand-ins on". Step 5 found no source for the damping's size; it stays labelled unsourced. |
+| An endogenous price channel (v4.17) | Settled by v5 | The price module and the Source's backing share (the backing-share chart, v5.1). |
+| The PTF/PTH inflation damping (v4.14, v4.15) | Earlier engine only | Off in the release engine's main row since v5.0: the price module sets prices instead. It appears once on the release page, in the theoretical reading "the two former stand-ins on". Step 5 found no source for the damping's size; it stays labelled unsourced. |
 | Baseline at the scenario's own inflation (v4.16) | Settled by v5 | The no-programme run is compared at each environment's own inflation (release gate; `tbComp`). |
 | PTH appreciation accounting (v4.16) | Open in v5 | Later; it applies to the release engine too (the switch `PTH_APPR_CONSERVE` exists; off). |
 | Tag and release each version (v4.15) | Settled | `release.yml` tags each new version when its pull request merges. |
@@ -357,7 +358,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. *(v5.3: the engine has one copy. `harness.js` reads it out of `index.html` when it loads, so an engine change is made once, in `index.html`; `dev/tools/port_engine.py` and the five listed differences between the two files are retired. `domtest.js` still compares the page with the script `harness.js` runs.)* If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->160<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->384<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->162<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->384<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -451,7 +452,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.5*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.6*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

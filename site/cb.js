@@ -1,5 +1,5 @@
 /* Release 2 with the central-bank switch (S76). Two mounts:
- *   CSS_CB.lead(host)      the simulation page's opening section: release 2's main row (full backing), C2.2 or the release design, three environments,
+ *   CSS_CB.lead(host)      the simulation page's opening section: v5.9's main row (full backing), C2.2 or the release design, three environments,
  *                          with the central bank off (release 2 as frozen, 500 seeds: data/studies/r2-effects.json) or on (the policy-rate rule, S74's
  *                          corrected 100-seed rerun: data/studies/s74-cb.json), and what turning it on changes on the same 100 seeds.
  *   CSS_CB.section(host)   the findings page's central-bank section: every outcome of S74, both designs, four environments, each arm, with intervals.
@@ -45,8 +45,8 @@
   function load(files) { return Promise.all(files.filter(function (f) { return !D[f]; }).map(function (f) { return F.fetchJSON('data/studies/' + f + '.json').then(function (d) { D[f] = d; }); })); }
   function basis(cbOn) {
     var m = D['s74-cb'].meta, r = D['r2-effects'].meta;
-    return '<p class="fx-note"><strong>Where these figures come from</strong> (simulation release and command). Central bank off: release 2 as frozen, engine <code>' + esc(r.engine) + '</code>, seeds 1-' + esc(String(r.seeds)) +
-      ', results <code>r2-m-&lt;env&gt;-20-' + esc(r.engine) + '</code> (file <code>data/studies/r2-effects.json</code>). Central bank on: S74’s rerun with the release’s settings, engine <code>' + esc(m.engine) + '</code>, seeds 1-' + esc(String(m.seeds)) +
+    return '<p class="fx-note"><strong>Where these figures come from</strong> (simulation release and command). Central bank off: v5.9 as frozen, engine <code>' + esc(r.engine) + '</code>, seeds 1-' + esc(String(r.seeds)) +
+      ', results <code>r2-m-&lt;env&gt;-20-' + esc(r.engine) + '</code> (file <code>data/studies/r2-effects.json</code>). Central bank on: the central-bank study’s rerun with the release’s settings, engine <code>' + esc(m.engine) + '</code>, seeds 1-' + esc(String(m.seeds)) +
       ', results <code>' + esc(m.resultsFolder) + '</code> (file <code>data/studies/s74-cb.json</code>; <code>' + esc(m.command) + '</code>). Both in BetterToBest/compassionism-sim-results. Intervals cover the model’s randomness only.</p>';
   }
 
@@ -78,7 +78,7 @@
       leadCard('Too little wealth (yearly average)', 'wp', 'pt', 'Share of adults whose net wealth is below six months of their own cost of living, averaged over the years.') +
       leadCard('Median real wealth at year 20', 'mw', 'usd', 'In today’s dollars. Rests on today’s price rule.') + '</div>';
     var inf = on ? show('s74-cb', {design: des, environment: e, 'central bank': RULE, outcome: O.inf}, 'effect', 'sg2') : show('r2-effects', {design: des, environment: e, years: 20, outcome: O.inf}, 'effect', 'sg2');
-    h += '<p class="fx-static-note">' + esc(e) + ' environment, 20 years, ' + (des === C ? 'the C2.2 design' : 'the release design') + ', release 2’s main row. Averages over ' +
+    h += '<p class="fx-static-note">' + esc(e) + ' environment, 20 years, ' + (des === C ? 'the full-coverage design' : 'the opt-in design') + ', v5.9’s main row. Averages over ' +
       (on ? '<span class="snum" data-study="s74-cb" data-src="meta seeds">' + esc(String(D['s74-cb'].meta.seeds)) + '</span>' : '<span class="snum" data-study="r2-effects" data-src="meta seeds">' + esc(String(D['r2-effects'].meta.seeds)) + '</span>') +
       ' paired runs of 500 simulated adults and their children. The program’s own inflation: ' + inf + ' points a year above no program.' +
       (on && e !== 'Reference' ? ' In a recession year, ' + show('s74-cb', p5, 'no programme', 'pc') + ' of households are pushed below the basket line with no program and ' + show('s74-cb', p5, 'programme', 'pc') + ' with it.' : '') + '</p>';
@@ -87,7 +87,7 @@
   function leadRender(host) {
     var sw = host.querySelector('#r2l-sw'), body = host.querySelector('#r2l-body');
     sw.innerHTML = '';
-    sw.appendChild(seg('Design', [[C, 'C2.2 (everyone)'], [RL, 'Release design']], LS.design, function (v) { LS.design = v; leadRender(host); }));
+    sw.appendChild(seg('Design', [[C, 'Full coverage (everyone)'], [RL, 'Opt-in design']], LS.design, function (v) { LS.design = v; leadRender(host); }));
     sw.appendChild(seg('Central bank', [['off', 'Off'], ['on', 'On']], LS.cb, function (v) { LS.cb = v; leadRender(host); }));
     sw.appendChild(seg('Environment', [['Reference', 'Reference'], ['Adverse', 'Adverse'], ['Stress', 'Stress']], LS.env, function (v) { LS.env = v; leadRender(host); }));
     body.innerHTML = leadBody();
@@ -98,7 +98,7 @@
     try { var q = new URL(location.href).searchParams.get('r2'); if (q) { var p = q.split('.'); if (p[0] === 'rel') LS.design = RL; if (p[1] === 'on') LS.cb = 'on'; var en = {ref: 'Reference', adv: 'Adverse', str: 'Stress'}[p[2]]; if (en) LS.env = en; } } catch (e) { /* ignore */ }
     var body = host.querySelector('#r2l-body');
     return load(['r2-effects', 's74-cb']).then(function () { leadRender(host); host.querySelector('#r2l-basis').innerHTML = basis(); })
-      .catch(function (e) { body.innerHTML = '<p class="fx-banner">Release 2’s data could not be loaded (' + esc(e.message) + '). The figures are on the <a href="findings.html#round2">findings page</a>.</p>'; });
+      .catch(function (e) { body.innerHTML = '<p class="fx-banner">v5.9’s data could not be loaded (' + esc(e.message) + '). The figures are on the <a href="findings.html#round2">findings page</a>.</p>'; });
   }
 
   /* ---- the findings page's central-bank section ---- */
@@ -114,13 +114,13 @@
     var body = ROWS.map(function (r) {
       var cells = arms.map(function (a) { var f = {design: des, environment: e, 'central bank': a, outcome: O[r[0]]}; if (!find('s74-cb', f, 'effect')) return '<td>—</td>'; return '<td>' + show('s74-cb', f, 'effect', r[2]) + '<br><span class="fx-ci">' + ci('s74-cb', f, r[2]) + '</span></td>'; }).join('');
       var cc = ['no programme', 'programme'].map(function (run) { var f = {design: des, environment: e, run: run, outcome: O[r[0]]}; if (!find('s74-cb', f, 'change', 'cb')) return '<td>—</td>'; return '<td>' + show('s74-cb', f, 'change', r[2], 'cb') + '<br><span class="fx-ci">' + ci('s74-cb', f, r[2], 'cb') + '</span></td>'; }).join('');
-      return '<tr><th scope="row">' + esc(r[1]) + '</th>' + cells + cc + '</tr>';
+      return '<tr><th scope="row">' + esc(r[1] === 'C2.2' ? 'Full-coverage design' : r[1] === 'release design' ? 'Opt-in design' : r[1]) + '</th>' + cells + cc + '</tr>';
     }).join('');
-    return '<div class="fx-tw" tabindex="0" role="region" aria-label="Central bank table"><table class="fx-table"><caption>' + esc(des === C ? 'C2.2' : 'Release design') + ', ' + esc(e) + ': the programme’s effect with no central bank and with the rule, and the rule’s own effect (with the rule minus without it) in each run. Same paired seeds.</caption><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+    return '<div class="fx-tw" tabindex="0" role="region" aria-label="Central bank table"><table class="fx-table"><caption>' + esc(des === C ? 'Full-coverage design' : 'Opt-in design') + ', ' + esc(e) + ': the programme’s effect with no central bank and with the rule, and the rule’s own effect (with the rule minus without it) in each run. Same paired seeds.</caption><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
   }
   function sectionRender(host) {
     var sw = host.querySelector('#cb-sw'); sw.innerHTML = '';
-    sw.appendChild(seg('Design', [[C, 'C2.2'], [RL, 'Release design']], SS.design, function (v) { SS.design = v; sectionRender(host); }));
+    sw.appendChild(seg('Design', [[C, 'Full coverage'], [RL, 'Opt-in design']], SS.design, function (v) { SS.design = v; sectionRender(host); }));
     sw.appendChild(seg('Environment', [['History 2005-2025', 'History 2005-2025'], ['Adverse', 'Adverse'], ['Stress', 'Stress'], ['Reference', 'Reference']], SS.env, function (v) { SS.env = v; sectionRender(host); }));
     host.querySelector('#cb-table').innerHTML = effTable();
   }
@@ -138,12 +138,12 @@
     function eff(des, e, k, kind) { return show('s74-cb', {design: des, environment: e, 'central bank': RULE, outcome: O[k]}, 'effect', kind); }
     var H = 'History 2005-2025';
     return '<ul>' +
-      '<li><strong>Steadier at the bottom.</strong> With the central bank on, a recession year pushes ' + p5(C, 'Adverse', 'no programme') + ' of households below the basket line with no programme, ' + p5(C, 'Adverse', 'programme') + ' with C2.2 and ' + p5(RL, 'Adverse', 'programme') + ' with the release design (Adverse). With C2.2 the median adult’s largest fall in real wealth changes by ' + eff(C, 'Adverse', 'p3', 'sgusd') + ' against no programme.</li>' +
-      '<li><strong>Less steady in prices.</strong> Both designs widen the year-to-year spread of the basket’s price level (C2.2: ' + eff(C, 'Adverse', 'p1', 'sg2') + ' points in Adverse; ' + eff(C, H, 'p1', 'sg2') + ' in History). In Reference, Adverse and Stress outside inflation is fixed, so the programme’s own price changes are the larger source of price swings there.</li>' +
+      '<li><strong>Steadier at the bottom.</strong> With the central bank on, a recession year pushes ' + p5(C, 'Adverse', 'no programme') + ' of households below the basket line with no programme, ' + p5(C, 'Adverse', 'programme') + ' with the full-coverage design and ' + p5(RL, 'Adverse', 'programme') + ' with the opt-in design (Adverse). With the full-coverage design the median adult’s largest fall in real wealth changes by ' + eff(C, 'Adverse', 'p3', 'sgusd') + ' against no programme.</li>' +
+      '<li><strong>Less steady in prices.</strong> Both designs widen the year-to-year spread of the basket’s price level (full-coverage design: ' + eff(C, 'Adverse', 'p1', 'sg2') + ' points in Adverse; ' + eff(C, H, 'p1', 'sg2') + ' in History). In Reference, Adverse and Stress outside inflation is fixed, so the programme’s own price changes are the larger source of price swings there.</li>' +
       '<li><strong>The damping claim is not supported.</strong> The design says its share of essentials should damp what the central bank and outside shocks do to the cost of basic living. In this engine the rule moves rates, asset prices and job loss, not the price of essentials, so it cannot show that damping, for either design. That is a limit of the model, not evidence about the world.</li>' +
-      '<li><strong>The rule moves wealth up the ladder; the programme shrinks that.</strong> Over 2005-2025 with no programme, the rule changes the top 1%’s share of net worth by ' + cbn(H, 't1', 'sg2') + ' points and the bottom half’s by ' + cbn(H, 'b50', 'sg2') + '; with C2.2 on, by ' + cbp(H, 't1', 'sg2') + ' and ' + cbp(H, 'b50', 'sg2') + '.</li>' +
-      '<li><strong>Forced sales.</strong> With the rule and no programme, ' + show('s74-cb', {design: C, environment: H, 'central bank': RULE, outcome: O.fs}, 'no programme', 'pc') + ' of adult-years in History involve a forced sale of real assets by a household past its borrowing limit, bought by households with cash; with C2.2, ' + show('s74-cb', {design: C, environment: H, 'central bank': RULE, outcome: O.fs}, 'programme', 'pc') + '.</li>' +
-      '<li><strong>The poverty results barely move.</strong> Turning the rule on changes C2.2’s basket poverty by ' + cbp(H, 'bk', 'sg2') + ' points in History and ' + cbp('Adverse', 'bk', 'sg2') + ' in Adverse; under full backing the programme’s own inflation is near zero, so the rule rarely responds to it.</li></ul>';
+      '<li><strong>The rule moves wealth up the ladder; the programme shrinks that.</strong> Over 2005-2025 with no programme, the rule changes the top 1%’s share of net worth by ' + cbn(H, 't1', 'sg2') + ' points and the bottom half’s by ' + cbn(H, 'b50', 'sg2') + '; with the full-coverage design on, by ' + cbp(H, 't1', 'sg2') + ' and ' + cbp(H, 'b50', 'sg2') + '.</li>' +
+      '<li><strong>Forced sales.</strong> With the rule and no programme, ' + show('s74-cb', {design: C, environment: H, 'central bank': RULE, outcome: O.fs}, 'no programme', 'pc') + ' of adult-years in History involve a forced sale of real assets by a household past its borrowing limit, bought by households with cash; with the full-coverage design, ' + show('s74-cb', {design: C, environment: H, 'central bank': RULE, outcome: O.fs}, 'programme', 'pc') + '.</li>' +
+      '<li><strong>The poverty results barely move.</strong> Turning the rule on changes the full-coverage design’s basket poverty by ' + cbp(H, 'bk', 'sg2') + ' points in History and ' + cbp('Adverse', 'bk', 'sg2') + ' in Adverse; under full backing the programme’s own inflation is near zero, so the rule rarely responds to it.</li></ul>';
   }
   root.CSS_CB = {lead: lead, section: section};
   /* the simulation page mounts its opening section itself (its inline script is shared with earlier-engine.html and is not changed) */

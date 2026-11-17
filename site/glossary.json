@@ -69,7 +69,7 @@
  },
  {
   "term": "Participation",
-  "def": "The share of adults who take part in the programme. In the as-released design adults opt in; in the C2.2 design everyone is covered automatically, so a participation figure applies only to the first."
+  "def": "The share of adults who take part in the programme. In the opt-in design adults choose to take part; in the full-coverage design everyone is covered automatically, so a participation figure applies only to the first."
  },
  {
   "term": "Inflation-protected savings",

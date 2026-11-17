@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Findings explorer | Compassionism Framework Simulation v5.9.5</title>
+<title>Findings explorer | Compassionism Framework Simulation v5.9.6</title>
 <meta name="description" content="The Compassionism Simulation's findings, release by release: the headline results, a guided read of each one with a chart, and every table behind them with downloads. 500 simulated adults and their children over 20 or 40 years, with Compassionism and with no program, in three environments.">
 <meta name="author" content="Duke Johnson, Claude (Anthropic)">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="sim-version" content="5.9.5">
+<meta name="sim-version" content="5.9.6">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/findings.html">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://bettertobest.github.io/compassionism-simulation/findings.html">
@@ -18,10 +18,10 @@
 <meta name="theme-color" content="#1D9E75">
 <link rel="icon" type="image/svg+xml" href="https://bettertobest.github.io/research-hub/assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
-<link rel="stylesheet" href="site/findings.css?v=5.9.5">
+<link rel="stylesheet" href="site/findings.css?v=5.9.6">
 <link rel="preload" href="data/manifest.json" as="fetch" crossorigin>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: findings","softwareVersion":"5.9.5","url":"https://bettertobest.github.io/compassionism-simulation/findings.html",
+{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: findings","softwareVersion":"5.9.6","url":"https://bettertobest.github.io/compassionism-simulation/findings.html",
  "description":"Release data of the Compassionism Framework Simulation: 500 paired runs of 500 simulated adults and their children, with Compassionism and with no program, in three environments over 20 or 40 years.",
  "creator":[{"@type":"Person","name":"Duke Johnson"},{"@type":"Organization","name":"Claude (Anthropic)"}],"license":"https://creativecommons.org/licenses/by/4.0/","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2",
  "distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://bettertobest.github.io/compassionism-simulation/data/manifest.json"}]}
@@ -69,7 +69,7 @@ footer p{margin:0 0 6px}
 <div class="hero"><div class="wrap">
   <h1>What the simulation finds</h1>
   <p class="attr" id="attribution">The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson's book <cite>Better To Best</cite> and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.</p>
-  <p class="lede" id="lede">The newest model comes first: release 2, with a switch for the central bank. Release 1, the earlier panel, follows for comparison, then the preregistered studies and every table, with downloads. Pick a release, an environment and 20 or 40 years; the address keeps your choice, so any view can be shared.</p>
+  <p class="lede" id="lede">The newest model comes first: v5.9, with a switch for the central bank. v5.6, the earlier panel, follows for comparison, then the preregistered studies and every table, with downloads. Pick a release, an environment and 20 or 40 years; the address keeps your choice, so any view can be shared.</p>
   <div class="fx-version" id="version-box"><label for="version" class="fx-ctl">Release</label> <select id="version" class="fx-select" aria-describedby="version-sum"><option>loading&hellip;</option></select> <span id="version-badge" class="fx-badge">current</span></div>
   <details class="fx-about" id="version-about"><summary>What this release is, and what changed</summary>
   <p class="fx-note" id="version-sum"></p>
@@ -79,7 +79,7 @@ footer p{margin:0 0 6px}
 </div></div>
 
 <nav class="fx-nav" aria-label="Sections and view"><div class="wrap">
-  <div class="fx-nav-in" id="nav-links"><a href="#round2">Release 2</a><a href="#cb" class="cb-only">Central bank</a><a href="#headline">Release 1</a><a href="#results">By environment</a><a href="#hh">Children</a><a href="#work">Jobs and risk</a><a href="#targets">Hub targets</a><a href="#fixed">Fixed lines</a><a href="#backing">Backing</a><a href="#readings">How far it moves</a><a href="#attrib">Each part</a><a href="#us">Against US data</a><a href="#notes">Method notes</a><a href="#studies">Studies</a><a href="#tables">All tables</a></div>
+  <div class="fx-nav-in" id="nav-links"><a href="#round2">v5.9</a><a href="#cb" class="cb-only">Central bank</a><a href="#headline">v5.6</a><a href="#results">By environment</a><a href="#hh">Children</a><a href="#work">Jobs and risk</a><a href="#targets">Hub targets</a><a href="#fixed">Fixed lines</a><a href="#backing">Backing</a><a href="#readings">How far it moves</a><a href="#attrib">Each part</a><a href="#us">Against US data</a><a href="#notes">Method notes</a><a href="#studies">Studies</a><a href="#tables">All tables</a></div>
   <div class="fx-strip-bar" id="controls"></div>
 </div></nav>
 
@@ -103,21 +103,21 @@ footer p{margin:0 0 6px}
       <div class="gloss-item"><div class="gloss-term">Wealth poverty</div><p class="gloss-def">The share of adults at the end of the run whose net wealth (what they own less what they owe; in a couple, half of what the two own) is below the threshold of <span class="num" data-src="inputs.wealthLine" data-f="usd">$25,000</span> in today’s money. The threshold is a design threshold chosen for this page, not a measured line. It moves with inflation: with prices rising and savings earning nothing, more adults fall below it.</p></div>
       <div class="gloss-item"><div class="gloss-term">Programme inflation</div><p class="gloss-def">The yearly rise in the price level that the programme causes, as the model computes it. It rests on the model’s placeholder price rule: all new money the programme pays that is not matched by new output reaches prices. It is a result of that rule, not a forecast.</p></div>
       <div class="gloss-item"><div class="gloss-term">Backing and financing options</div><p class="gloss-def">Backing is how much of the money the Source pays out is matched by new output. The headline reading is cautious: none is. “If every dollar were backed” is a stated alternative. Financing options pay the programme by taxes instead of new money: a flat contribution on wages, or a land-value tax.</p></div>
-      <div class="gloss-item"><div class="gloss-term">Participation</div><p class="gloss-def">The share of adults who take part in the programme. In the as-released design adults opt in; in the C2.2 design everyone is covered automatically, so a participation figure applies only to the first.</p></div>
+      <div class="gloss-item"><div class="gloss-term">Participation</div><p class="gloss-def">The share of adults who take part in the programme. In the opt-in design adults choose to take part; in the full-coverage design everyone is covered automatically, so a participation figure applies only to the first.</p></div>
       <div class="gloss-item"><div class="gloss-term">Inflation-protected savings</div><p class="gloss-def">Savings whose value keeps pace with prices: interest equals inflation (zero real return). It is a reading that removes the programme’s erosion of savings; it is not a test of a positive return. The page shows it beside ordinary savings, which earn nothing in real terms.</p></div>
       <div class="gloss-item"><div class="gloss-term">The three environments</div><p class="gloss-def">Reference: the model’s main settings, with no recessions and no outside inflation. Adverse: recessions, outside inflation and an automation wave. Stress Test: the Adverse environment with weaker settings (fewer take part, a smaller allowance). The figures for each are in the release file.</p></div>
       <div class="gloss-item"><div class="gloss-term">Percentage points</div><p class="gloss-def">A change in a share is given in percentage points (pts): the difference between two percentages, each measured against the same base, which is named next to the figure (usually the no-programme run of the same seeds). A fall from one share to a lower one is stated in points, never as a percentage of the first.</p></div>
       <!-- /glossary:items -->
   </details>
-  <p class="layer-h r2-only">Release 2 &middot; the newest model</p>
+  <p class="layer-h r2-only">v5.9 &middot; the newest model</p>
   <section class="fx-sec r2-only" id="round2" data-r2 aria-labelledby="round2-h">
-    <h2 class="fx-h2" id="round2-h">Release 2: round 2 of the engine <a class="fx-anchor" href="#round2" aria-label="Link to this section">#</a></h2>
-    <p class="fx-lead">Release 2 is round 2 of the engine, preregistered and frozen before it ran (registered on OSF). Its main row takes the design’s statement that every dollar paid is matched by new output (full backing); the model’s own backing mechanism is shown beside it, and the financed rows are shown but never led with. Every result, the unfavourable ones included, is here and in the study files. Release 1, the earlier panel, is further down. Every number is read from a data file when the page loads.</p>
-    <div id="round2-body"><p class="fx-note">Round 2 loads with its data files.</p></div>
+    <h2 class="fx-h2" id="round2-h">v5.9: the newer model <a class="fx-anchor" href="#round2" aria-label="Link to this section">#</a></h2>
+    <p class="fx-lead">v5.9 is the newer model, preregistered and frozen before it ran (registered on OSF). Its main row takes the design’s statement that every dollar paid is matched by new output (full backing); the model’s own backing mechanism is shown beside it, and the financed rows are shown but never led with. Every result, the unfavourable ones included, is here and in the study files. v5.6, the earlier panel, is further down. Every number is read from a data file when the page loads.</p>
+    <div id="round2-body"><p class="fx-note">The v5.9 results load with their data files.</p></div>
   </section>
   <section class="fx-sec r2-only cb-only" id="cb" data-r2 aria-labelledby="cb-h">
     <h2 class="fx-h2" id="cb-h">The central bank switch <a class="fx-anchor" href="#cb" aria-label="Link to this section">#</a></h2>
-    <p class="fx-lead">Release 2 has no central bank in its main row. Study S74 adds one as a switch: a policy rate set by a Taylor rule (floored at zero, with bond purchases below the floor), which moves deposit and loan rates, refinancing, share and home prices and job loss, and lets households past their borrowing limit sell homes and shares to households with cash. It asks two questions: does the central bank steady households, and does the programme’s share of essentials damp what the central bank and outside shocks do to the cost of basic living? The rule is the same with and without the programme. History follows the actual US path of 2005-2025.</p>
+    <p class="fx-lead">v5.9 has no central bank in its main row. The central-bank study adds one as a switch: a policy rate set by a Taylor rule (floored at zero, with bond purchases below the floor), which moves deposit and loan rates, refinancing, share and home prices and job loss, and lets households past their borrowing limit sell homes and shares to households with cash. It asks two questions: does the central bank steady households, and does the programme’s share of essentials damp what the central bank and outside shocks do to the cost of basic living? The rule is the same with and without the programme. History follows the actual US path of 2005-2025.</p>
     <div id="cb-words"><p class="fx-note">The central-bank study loads with its data file.</p></div>
     <div class="fx-switches" id="cb-sw"></div>
     <div id="cb-table"></div>
@@ -125,12 +125,12 @@ footer p{margin:0 0 6px}
       <p>The Board of Governors is appointed by the President and confirmed by the Senate. Each of the twelve Reserve Banks has nine directors, six of them elected by the member banks of its district; since the Dodd-Frank Act (2010), the directors who represent banks no longer vote on choosing the Reserve Bank’s president. The model does not represent these choices: its rule is a fixed formula of inflation and unemployment, the same in every run, so the comparison is between rules, not institutions.</p>
       <p>Duke Johnson’s note on the design’s aim: central-bank decisions made by an unelected board, with private banks’ influence over it, shape millions of lives; quantitative easing supported Wall Street more than homeowners; official inflation is an average that misses what many households face; and citizens collectively ensuring essential markets would remove the volatility that wealthy interests can exploit by buying low and selling high. Compassionism’s stated aim is stability and prosperity rather than exploitation and extraction. The model tests the parts it can measure (who gains and who pays, forced sales, the stability measures above).</p>
     </div></details>
-    <p class="fx-note">Earlier eras: the Research Hub’s page <a href="https://bettertobest.github.io/research-hub/us-policy-eras.html">US Policy Eras and Stability, 1947-2025</a> compares the postwar eras’ inflation, unemployment, prices, tax rates and health care with 2005-2025, and runs today’s households under each era’s settings. Its engine readings were run without the release’s global settings (the same omission found in S74) and are being rerun; its descriptive panel is not affected.</p>
+    <p class="fx-note">Earlier eras: the Research Hub’s page <a href="https://bettertobest.github.io/research-hub/us-policy-eras.html">US Policy Eras and Stability, 1947-2025</a> compares the postwar eras’ inflation, unemployment, prices, tax rates and health care with 2005-2025, and runs today’s households under each era’s settings. Its engine readings were run without the release’s global settings (the same omission found in the central-bank study) and are being rerun; its descriptive panel is not affected.</p>
     <div id="cb-basis"></div>
   </section>
-  <p class="layer-h" id="rel1-label">Release 1 &middot; the earlier panel, for comparison</p>
+  <p class="layer-h" id="rel1-label">v5.6 &middot; the earlier panel, for comparison</p>
   <section class="fx-sec" id="headline" aria-labelledby="headline-h">
-    <h2 class="fx-h2" id="headline-h">Release 1: the answer in numbers <a class="fx-anchor" href="#headline" aria-label="Link to this section">#</a></h2>
+    <h2 class="fx-h2" id="headline-h">v5.6: the answer in numbers <a class="fx-anchor" href="#headline" aria-label="Link to this section">#</a></h2>
     <div id="cards"><!-- figs:headline --><div class="fx-cards"><div class="fx-card"><p class="fx-card-k">Below 30 days of basic living</p><p class="fx-card-v"><span class="num" data-src="panels.20.envs.ref.rows.release.bOAPy" data-f="p1">11.7%</span></p><p class="fx-card-vs">with Compassionism, against <span class="num" data-src="panels.20.envs.ref.base.bOAPy" data-f="p1">26.5%</span> with no program</p><p class="fx-card-d">Change: <span class="num" data-src="panels.20.envs.ref.rows.release.dBO.0" data-f="s1">−14.8</span> points</p><p class="fx-card-m" data-rel-text="meaning">In a typical year, the share of adults whose savings, pay and support would cover fewer than 30 days of basic living (the BLEI paper’s measure; in a household, its savings, pay and costs).</p></div><div class="fx-card"><p class="fx-card-k">Below the cost of living</p><p class="fx-card-v"><span class="num" data-src="panels.20.envs.ref.rows.release.fgt0PY" data-f="p1">19.5%</span></p><p class="fx-card-vs">with Compassionism, against <span class="num" data-src="panels.20.envs.ref.base.fgt0PY" data-f="p1">49.3%</span> with no program</p><p class="fx-card-d">Change: <span class="num" data-src="panels.20.envs.ref.rows.release.dF0.0" data-f="s1">−29.7</span> points</p><p class="fx-card-m" data-rel-text="meaning">In a typical year, the share of adults whose household’s income falls short of the household’s cost of a basic living (the MIT living-wage basket for its adults and children).</p></div><div class="fx-card fx-worse"><p class="fx-card-k">Too little wealth</p><p class="fx-card-v"><span class="num" data-src="panels.20.envs.ref.rows.release.pov" data-f="p1">44.4%</span></p><p class="fx-card-vs">with Compassionism, against <span class="num" data-src="panels.20.envs.ref.base.pov" data-f="p1">32.7%</span> with no program</p><p class="fx-card-d">Worse: <span class="num" data-src="panels.20.envs.ref.rows.release.dPov.0" data-f="s1">+11.7</span> points</p><p class="fx-card-m" data-rel-text="meaning">At the end of the run, the share of adults with less than <span class="num" data-src="inputs.wealthLine" data-f="usd">$25,000</span> of net wealth (what someone owns minus what they owe; in a couple, half of what the two own) in today’s money.</p></div><div class="fx-card"><p class="fx-card-k">Children below the cost of living</p><p class="fx-card-v"><span class="num" data-src="panels.20.envs.ref.rows.release.hhCostKidPY" data-f="p1">32.2%</span></p><p class="fx-card-vs">with Compassionism, against <span class="num" data-src="panels.20.envs.ref.base.hhCostKidPY" data-f="p1">76.4%</span> with no program</p><p class="fx-card-d">Change: <span class="num" data-src="panels.20.envs.ref.rows.release.d53.hhCostKidPY.0" data-f="s1">−44.2</span> points</p><p class="fx-card-m" data-rel-text="meaning">In a typical year, the share of children whose household’s income falls short of the household’s cost of a basic living (the MIT living-wage basket for its adults and children).</p></div></div><p class="fx-static-note">Reference environment, 20 years; averages over <span class="num" data-src="meta.seeds" data-f="int">500</span> paired runs of <span class="num" data-src="meta.agents" data-f="int">500</span> simulated adults and their children, in households (release v5.6 data); both runs include today’s safety net.</p><!-- /figs:headline --></div>
     <div id="under"></div>
     <noscript><p class="fx-banner">The charts and tables on this page need JavaScript. The numbers above are the Reference environment over 20 years; every figure is in the release data file, <a href="data/releases/v5.4.json">data/releases/v5.4.json</a>, which <a href="data/manifest.json">data/manifest.json</a> lists with the other releases.</p></noscript>
@@ -139,7 +139,7 @@ footer p{margin:0 0 6px}
       <div id="measures-sav" data-rel-text="1"></div>
     </div></details>
   </section>
-  <p class="layer-h" id="rel1-label2">Release 1 &middot; a guided read of each result</p>
+  <p class="layer-h" id="rel1-label2">v5.6 &middot; a guided read of each result</p>
   <div id="stories"><span id="results"></span><span id="hh"></span><span id="work"></span><span id="targets"></span><span id="fixed"></span><span id="backing"></span><span id="readings"></span><span id="attrib"></span><span id="us"></span><p class="fx-note">The guided reads load with the release data.</p></div>
   <section class="fx-sec" id="notes" aria-labelledby="notes-h">
     <h2 class="fx-h2" id="notes-h">Method notes <a class="fx-anchor" href="#notes" aria-label="Link to this section">#</a></h2>
@@ -149,7 +149,7 @@ footer p{margin:0 0 6px}
   <p class="layer-h r2-only">Preregistered studies since v5.6</p>
   <section class="fx-sec r2-only" id="studies" data-r2 aria-labelledby="studies-h">
     <h2 class="fx-h2" id="studies-h">Every preregistered study, every estimate <a class="fx-anchor" href="#studies" aria-label="Link to this section">#</a></h2>
-    <p class="fx-lead">These studies were preregistered before they ran and all of their results are published, including the ones that found nothing. Each opens on demand; filter by environment, horizon or outcome, and download the rows or the whole file. The numbers are printed exactly as each study wrote them. Studies S6 and S14 are 100-seed pilots and say so.</p>
+    <p class="fx-lead">These studies were preregistered before they ran and all of their results are published, including the ones that found nothing. Each opens on demand; filter by environment, horizon or outcome, and download the rows or the whole file. The numbers are printed exactly as each study wrote them. Two of them, on the tax-financed full-coverage design and on the cost-of-living line weighted by where people live, are 100-seed pilots and say so.</p>
     <div id="study-list"></div>
   </section>
   <p class="layer-h">Every table, with downloads</p>
@@ -161,19 +161,19 @@ footer p{margin:0 0 6px}
 </div></main>
 
 <footer><div class="wrap">
-  <p>Compassionism Simulation <span class="meta-ver">v5.9.5</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
+  <p>Compassionism Simulation <span class="meta-ver">v5.9.6</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
   <p><a href="./">Simulation</a> &middot; <a href="suite.html">Visual suite</a> &middot; <a href="compare.html">Compare designs</a> &middot; <a href="replication.html">Replication framework</a> &middot; <a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a> &middot; <a href="https://doi.org/10.17605/OSF.IO/QWTE2">DOI: 10.17605/OSF.IO/QWTE2</a></p>
   <p class="cite">Suggested citation: Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. <a href="https://doi.org/10.17605/OSF.IO/QWTE2">https://doi.org/10.17605/OSF.IO/QWTE2</a></p>
 </div></footer>
 
-<script src="site/charts.js?v=5.9.5"></script>
-<script src="site/findings.js?v=5.9.5"></script>
-<script src="site/studies.js?v=5.9.5"></script>
-<script src="site/notes.js?v=5.9.5"></script>
+<script src="site/charts.js?v=5.9.6"></script>
+<script src="site/findings.js?v=5.9.6"></script>
+<script src="site/studies.js?v=5.9.6"></script>
+<script src="site/notes.js?v=5.9.6"></script>
 <script src="site/round2.js?v=5.9.0"></script>
-<script src="site/cb.js?v=5.9.5"></script>
-<script src="site/totop.js?v=5.9.5" defer></script>
-<script src="site/stickynav.js?v=5.9.5" defer></script>
+<script src="site/cb.js?v=5.9.6"></script>
+<script src="site/totop.js?v=5.9.6" defer></script>
+<script src="site/stickynav.js?v=5.9.6" defer></script>
 <script>
 /* The explorer: loads data/manifest.json, opens the current release (or ?v=), and renders the three layers from it. The address carries the release,
  * the environment, the horizon and the section, so any view can be shared. Everything shown comes from the release file (site/findings.js). */
@@ -183,7 +183,7 @@ footer p{margin:0 0 6px}
   var $ = function (id) { return document.getElementById(id); };
   function controls() {
     var c = $('controls'); c.innerHTML = '';
-    if (!$('round2').hidden) { var tg = document.createElement('span'); tg.className = 'fd-ctl-tag'; tg.textContent = 'Release 1 panel'; c.appendChild(tg); }
+    if (!$('round2').hidden) { var tg = document.createElement('span'); tg.className = 'fd-ctl-tag'; tg.textContent = 'v5.6 panel'; c.appendChild(tg); }
     c.appendChild(F.seg('Environment', F.ENVS, st.env, function (v) { st.env = v; F.writeState(st, ['env']); render(); }));
     var yrs = Object.keys(R.panels).sort(function (a, b) { return a - b; }).map(function (y) { return [y, y + ' years']; });
     if (yrs.length > 1) c.appendChild(F.seg('Years', yrs, st.years, function (v) { st.years = v; F.writeState(st, ['years']); render(); }));
@@ -209,9 +209,9 @@ footer p{margin:0 0 6px}
     $('release-file').href = 'data/' + ent.file; $('release-file').textContent = 'data/' + ent.file;
     /* S76: release 2's sections (round 2, the central bank, the studies since v5.6) belong to the newest release only; an earlier release shows its own panel alone */
     var r2 = !!ent.round2; Array.prototype.forEach.call(document.querySelectorAll('.r2-only'), function (el) { el.hidden = !r2; }); Array.prototype.forEach.call(document.querySelectorAll('.cb-only'), function (el) { el.hidden = !ent.cb; });
-    $('rel1-label').textContent = r2 ? 'Release 1 \u00b7 the earlier panel, for comparison' : (ent.status === 'current' ? 'Release 1 (v' + ent.version + ')' : 'v' + ent.version) + ' \u00b7 the answer';
-    $('rel1-label2').textContent = r2 ? 'Release 1 \u00b7 a guided read of each result' : 'v' + ent.version + ' \u00b7 a guided read of each result';
-    $('headline-h').firstChild.nodeValue = r2 ? 'Release 1: the answer in numbers ' : 'The answer in numbers ';
+    $('rel1-label').textContent = r2 ? 'v5.6 \u00b7 the earlier panel, for comparison' : (ent.status === 'current' ? 'v5.6 (v' + ent.version + ')' : 'v' + ent.version) + ' \u00b7 the answer';
+    $('rel1-label2').textContent = r2 ? 'v5.6 \u00b7 a guided read of each result' : 'v' + ent.version + ' \u00b7 a guided read of each result';
+    $('headline-h').firstChild.nodeValue = r2 ? 'v5.6: the answer in numbers ' : 'The answer in numbers ';
     Array.prototype.forEach.call($('version').options, function (o) { if (o.value === ent.version) { o.hidden = false; o.disabled = false; } });
     return F.fetchJSON('data/' + ent.file).then(function (d) { R = d; st.v = ent.version; F.writeState(st, ['v']); controls(); render();
       $('version-changed').innerHTML = d.text && d.text['release.changed'] ? F.text(d, 'release.changed') : ''; $('version-changed').hidden = !(d.text && d.text['release.changed']);
@@ -227,9 +227,9 @@ footer p{margin:0 0 6px}
      * rest stay reachable by address (?v=) and are linked under "What this release is" (each still opens its own figures) */
     var cur0 = MAN.releases.filter(function (r) { return r.status === 'current'; })[0], SHOW = {};
     m.releases.forEach(function (r) { if (r.status === 'latest' || r.status === 'current' || r.version === '5.4') SHOW[r.version] = true; });
-    var NAME = function (r) { return r.status === 'latest' ? 'Release 2 \u00b7 v' + r.version + ' (latest)' : r.status === 'current' ? 'Release 1 \u00b7 v' + r.version : 'v' + r.version + (r.version === '5.4' ? ' (before today\u2019s safety net)' : r.figuresFrom ? ' (figures of v' + r.figuresFrom + ')' : ''); };
+    var NAME = function (r) { return r.status === 'latest' ? 'v5.9 \u00b7 v' + r.version + ' (latest)' : r.status === 'current' ? 'v5.6 \u00b7 v' + r.version : 'v' + r.version + (r.version === '5.4' ? ' (before today\u2019s safety net)' : r.figuresFrom ? ' (figures of v' + r.figuresFrom + ')' : ''); };
     m.releases.forEach(function (r) { var o = document.createElement('option'); o.value = r.version; o.textContent = NAME(r) + ' \u00b7 ' + r.date; if (!SHOW[r.version]) { o.hidden = true; o.disabled = true; } sel.appendChild(o); });
-    $('version-earlier').innerHTML = 'Earlier releases: ' + m.releases.filter(function (r) { return !SHOW[r.version]; }).map(function (r) { return '<a href="?v=' + F.esc(r.version) + '">v' + F.esc(r.version) + '</a>'; }).join(', ') + '. Releases 5.8 and 5.7 show the same panel as release 1 (v' + F.esc(cur0.version) + '); 5.5 shows that of 5.4.';
+    $('version-earlier').innerHTML = 'Earlier releases: ' + m.releases.filter(function (r) { return !SHOW[r.version]; }).map(function (r) { return '<a href="?v=' + F.esc(r.version) + '">v' + F.esc(r.version) + '</a>'; }).join(', ') + '. Releases 5.8 and 5.7 show the same panel as v5.6 (v' + F.esc(cur0.version) + '); 5.5 shows that of 5.4.';
     var cur = (m.releases.filter(function (r) { return r.version === st.v; })[0] || newest()).version; sel.value = cur;
     sel.onchange = function () { open(sel.value); };
     return open(cur);

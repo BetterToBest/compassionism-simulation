@@ -6,6 +6,13 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.5 Release Notes
+
+Released Nov 17, 2026: **a correction to the wealth Gini in the visual suite's v5.9 view.** No engine line changes; no other figure changes.
+- **What was wrong.** v5.9.4 showed v5.9's wealth Gini at about 0.985 in every row, with or without the programme, and its report called that a null result. v5.9's runs give 18 of the 500 simulated adults the place of very rich families, who are rare in the population, and count each at its share of the population (a weight). The plain Gini counts each simulated adult once, so those few adults swamp the rest and the figure says nothing about the programme. It is not valid for v5.9's rows.
+- **Now.** The v5.9 view shows the weighted wealth Gini that v5.9's results store (debts counted as zero, and debts kept), with the spread across runs and the change against no programme with its 95% interval. The full-coverage design lowers it by 0.10 to 0.13 in every environment and horizon; the opt-in design by 0.05 to 0.06 in Reference, 0.03 to 0.04 in Adverse and about 0.01 in Stress. Wealth net of a year's drain has no weighted figure in v5.9's runs and is no longer shown there; the page says so.
+- `dev/tools/suite_r2.py --study` copies the weighted Gini from v5.9's stored results into `data/releases/r2/study-*.json`; the figure check covers it; the report `dev/reports/s79-r2-measures.md` carries a dated correction.
+
 ## v5.9.4 Release Notes
 
 Released Nov 17, 2026 (S79): **release 2's other BLEI-paper measures and the measures study on the visual suite.** No engine line changes; no figure of release 1 or release 2 changes.
