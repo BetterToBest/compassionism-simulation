@@ -40,14 +40,15 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.9 Release Notes
+## v5.9.11 Release Notes
 
-Released Nov 17, 2026: **the visual suite shows v5.9's averages counted by weight.** No engine line changes and no stored figure changes.
-- **What was missing.** v5.9's runs give 18 simulated adults the place of very rich families and count each at its share of the population (a weight). The suite's earlier series counted every adult once, so the average days of basic living from savings came out at hundreds of thousands and the page showed no v5.9 averages (v5.9.8).
-- **Now.** A second run of v5.9's main row (500 simulated adults, 500 paired seeds, all three environments, 20 and 40 years) also records every mean, median, tier share, share below 30 days, relative poverty and share taking part counted by weight. Every plain value equals the earlier series exactly; the weighted ones sit beside them in `data/releases/r2/`. The "what the days are made of" section of the suite page now shows v5.9's medians and averages counted by weight, with the table giving the average beside each median.
-- **Other plain figures.** Counted by weight, every share moves by at most about 1 point and every median by at most 5%; only the savings average was wrong in kind. The plain shares and tiers stay on the page. The report `dev/reports/s81-suite-weighted.md` lists each.
-- **Not changed.** The engine's own share below 30 days (behind v5.9's headline basic-living effects) is also counted once per adult; counted by weight it differs by at most 0.61 points in a year. Whether to weight it in a later release is Duke's decision.
-- `dev/tools/suite_r2.py` writes the suite files from the new run and checks again that every plain value equals the earlier one. domtest and the figure check still expect 13 charts.
+Released Nov 17, 2026: **dated notes from the release reviews.** No engine line changes and no stored figure changes. v5.9.10 is skipped so that it cannot be confused with v5.9.1. A change to the engine's behaviour will be v6.
+- **Why.** Four reviews of v5.9.9 were read together: one written in-house in a fresh session, and three by outside AI systems, none of them an economist. The triage is research-update `audits/2026-11-release-review-triage.md`.
+- **"The poverty effects barely depend on backing."** A dated note now says why. Below full backing, the model has no limit on what the economy can supply: demand never runs into what can be produced, wages follow prices in full, and the Basic Unit and the basket follow the same prices. With no new output, the programme's recipients' gains are paid for only by holders of savings and lenders, through higher prices. So these figures are not evidence that the design works without backing. The note is on the findings page and in the backing report, the overview and the findings-page text. The main row's headlines are unchanged: they assume full backing, the design's statement.
+- **"Rests on today's price rule" corrected.** At full backing almost no unmatched money reaches prices, so the price rule is barely tested there. The median-wealth cards (findings page and central-bank page) and four report sentences now say the wealth figures rest on full backing.
+- **What no figure covers.** The list now names the fixed population: the main row has no ageing, births or deaths.
+- **The second implementation.** ODD.md and a note on its report now describe it as written from the description, with the engine's code and results to check against, not as an independent model.
+- **Which release each document describes.** ODD.md, TESTBED_SPEC.md, MODEL_SPEC.md and REPRODUCE.md open with a dated line naming the current release, its main row and where its results and commands are; their older sections are kept as they were. CITATION.cff no longer says every figure averages 500 paired runs: the central-bank and history studies use 100.
 
 ## How to Contribute
 
@@ -453,7 +454,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.9*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.11*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

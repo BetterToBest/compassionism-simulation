@@ -6,6 +6,15 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.9 Release Notes
+
+Released Nov 17, 2026: **the visual suite shows v5.9's averages counted by weight.** No engine line changes and no stored figure changes.
+- **What was missing.** v5.9's runs give 18 simulated adults the place of very rich families and count each at its share of the population (a weight). The suite's earlier series counted every adult once, so the average days of basic living from savings came out at hundreds of thousands and the page showed no v5.9 averages (v5.9.8).
+- **Now.** A second run of v5.9's main row (500 simulated adults, 500 paired seeds, all three environments, 20 and 40 years) also records every mean, median, tier share, share below 30 days, relative poverty and share taking part counted by weight. Every plain value equals the earlier series exactly; the weighted ones sit beside them in `data/releases/r2/`. The "what the days are made of" section of the suite page now shows v5.9's medians and averages counted by weight, with the table giving the average beside each median.
+- **Other plain figures.** Counted by weight, every share moves by at most about 1 point and every median by at most 5%; only the savings average was wrong in kind. The plain shares and tiers stay on the page. The report `dev/reports/s81-suite-weighted.md` lists each.
+- **Not changed.** The engine's own share below 30 days (behind v5.9's headline basic-living effects) is also counted once per adult; counted by weight it differs by at most 0.61 points in a year. Whether to weight it in a later release is Duke's decision.
+- `dev/tools/suite_r2.py` writes the suite files from the new run and checks again that every plain value equals the earlier one. domtest and the figure check still expect 13 charts.
+
 ## v5.9.8 Release Notes
 
 Released Nov 17, 2026: **a correction to the chart of what the days are made of on the visual suite page.** No engine line changes and no stored figure changes.

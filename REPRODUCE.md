@@ -1,5 +1,7 @@
 # Reproduce every published table and figure
 
+**Which release this describes (Nov 17, 2026).** The current release is v5.9 (engine `104691f`, frozen Nov 14; shown in v5.9.11). Its main row: the parts added for v5.9 (MODEL_SPEC.md section 14), full backing on the programme run (every dollar paid is matched by new output, the design's statement; a design parameter), the spending share 0.877, no ageing. Its results: compassionism-sim-results folders `r2-<part>-<env>-<years>-104691f` (each with `run.txt`, the exact command and commit, and `SHA256SUMS`), and `data/releases/r2/` and `data/studies/r2-*.json` here. The central-bank and history studies use 100 paired seeds (`dev/reports/s74-central-bank.md`, `s75-deep-history.md`). The sections below cover the v5.3 release data and earlier diagnostics; a v5.9 section with its commands and fingerprints is still to be written. Until then, each v5.9 result folder's `run.txt` is the command to rerun it.
+
 Every number on the simulation page (`index.html`), the findings explorer (`findings.html`) and the replication page comes from one data file per release (`data/releases/v<version>.json`), which `dev/tools/release_data.py` writes from the run files in `dev/runs/`. This page lists, for each group of published tables and figures, the command that makes the run file, the file, and a fingerprint to compare with. The model is described in [MODEL_SPEC.md](MODEL_SPEC.md); the switches in [TESTBED_SPEC.md](TESTBED_SPEC.md).
 
 ## Set-up
