@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The visual suite | Compassionism Framework Simulation v5.9.4</title>
+<title>The visual suite | Compassionism Framework Simulation v5.9.5</title>
 <meta name="description" content="Beyond one poverty line: the BLEI ladder year by year, what the days of basic living are made of, who takes part and who does not, and how the measures disagree. Every number comes from the latest release's data.">
 <meta name="author" content="Duke Johnson, Claude (Anthropic)">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="sim-version" content="5.9.4">
+<meta name="sim-version" content="5.9.5">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/suite.html">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://bettertobest.github.io/compassionism-simulation/suite.html">
@@ -17,9 +17,9 @@
 <meta name="theme-color" content="#1D9E75">
 <link rel="icon" type="image/svg+xml" href="https://bettertobest.github.io/research-hub/assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
-<link rel="stylesheet" href="site/findings.css?v=5.9.4">
+<link rel="stylesheet" href="site/findings.css?v=5.9.5">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: the visual suite","softwareVersion":"5.9.4","url":"https://bettertobest.github.io/compassionism-simulation/suite.html",
+{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: the visual suite","softwareVersion":"5.9.5","url":"https://bettertobest.github.io/compassionism-simulation/suite.html",
  "description":"The BLEI ladder, the parts of BLEI, participants and non-participants, and four poverty measures, year by year over 500 paired runs, with and without Compassionism.",
  "creator":[{"@type":"Person","name":"Duke Johnson"},{"@type":"Organization","name":"Claude (Anthropic)"}],"license":"https://creativecommons.org/licenses/by/4.0/","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2",
  "distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://bettertobest.github.io/compassionism-simulation/data/manifest.json"}]}
@@ -103,13 +103,13 @@ footer p{margin:0 0 6px}
 </div></main>
 
 <footer><div class="wrap">
-  <p>Compassionism Simulation <span class="meta-ver">v5.9.4</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
+  <p>Compassionism Simulation <span class="meta-ver">v5.9.5</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
   <p><a href="./">Simulation</a> &middot; <a href="findings.html">Findings explorer</a> &middot; <a href="replication.html">Replication framework</a> &middot; <a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a> &middot; <a href="https://doi.org/10.17605/OSF.IO/QWTE2">DOI: 10.17605/OSF.IO/QWTE2</a></p>
   <p class="cite">Suggested citation: Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. <a href="https://doi.org/10.17605/OSF.IO/QWTE2">https://doi.org/10.17605/OSF.IO/QWTE2</a></p>
 </div></footer>
 
-<script src="site/charts.js?v=5.9.4"></script>
-<script src="site/findings.js?v=5.9.4"></script>
+<script src="site/charts.js?v=5.9.5"></script>
+<script src="site/findings.js?v=5.9.5"></script>
 <script>
 /* The visual suite (session 11, ledger step s161; dev/reports/v5-33-visual-suite.md). A stand-alone page: it reads data/manifest.json, opens the newest
  * release, and loads that release's suite series (explore.suite: data/releases/v<version>/suite-20.json and suite-40.json, written by
@@ -386,6 +386,13 @@ footer p{margin:0 0 6px}
     s.appendChild(tableBox({id: 'suite-eppm', title: 'EPPM and its parts, Year ' + T() + ' (each part’s share of the twins’ resources; they add up to EPPM minus 1)', columns: ['Group', 'EPPM', 'Cash income', 'Allowance', 'Community prices and other basket changes', 'Interest'],
       rows: [['part', 'Participants'], ['pq1', 'Participants in the poorest fifth'], ['non', 'Not taking part'], ['all', 'All adults']].map(function (g) { return [{p: [g[1]]}, cell(sy(r, 'eppm_' + g[0], 'mean', L), 'n2')].concat(['eD_', 'eB_', 'eP_', 'eI_'].map(function (k) { return cell(sy(r, k + g[0], 'mean', L), 's2'); })); })}, false));
     s.appendChild(para('Each run is valued at its own price level, so a general rise in prices caused by the program shows inside the cash part. The price level in Year ' + T() + ' is ' + N(sy(r, 'lf', 'mean', L), 'lev') + ' its starting level with Compassionism and ' + N(sy('base', 'lf', 'mean', L), 'lev') + ' with no program.'));
+    if (isR2()) {  /* S79 correction (Nov 17, 2026): release 2's rows carry the weighted top tail, so only the weighted wealth Gini is valid there */
+      var wg = function (row, k, stat) { return 'study.' + st.years + '.envs.' + st.env + '.wgini.' + row + '.' + k + '.' + stat; }, wd = function (k, i) { return 'study.' + st.years + '.envs.' + st.env + '.wgini.' + r + '.d.' + k + '.' + i; };
+      s.appendChild(tableBox({id: 'suite-gini', title: 'The wealth Gini, end of Year ' + T() + ' (weighted; mean over the runs, 10th to 90th percentile)', columns: ['Measure', 'No program', 'Compassionism', 'Change (95% interval)'], rows: [
+        [{p: ['Gini of wealth (debts counted as zero)']}, cell(wg('base', 'gz', 'mean'), 'n3', [{src: wg('base', 'gz', 'p10'), f: 'n3'}, ' to ', {src: wg('base', 'gz', 'p90'), f: 'n3'}]), cell(wg(r, 'gz', 'mean'), 'n3', [{src: wg(r, 'gz', 'p10'), f: 'n3'}, ' to ', {src: wg(r, 'gz', 'p90'), f: 'n3'}]), cell(wd('gz', 0), 'n3', [{src: wd('gz', 1), f: 'n3'}, ' to ', {src: wd('gz', 2), f: 'n3'}])],
+        [{p: ['Gini of wealth (debts kept)']}, cell(wg('base', 'gn', 'mean'), 'n3', [{src: wg('base', 'gn', 'p10'), f: 'n3'}, ' to ', {src: wg('base', 'gn', 'p90'), f: 'n3'}]), cell(wg(r, 'gn', 'mean'), 'n3', [{src: wg(r, 'gn', 'p10'), f: 'n3'}, ' to ', {src: wg(r, 'gn', 'p90'), f: 'n3'}]), cell(wd('gn', 0), 'n3', [{src: wd('gn', 1), f: 'n3'}, ' to ', {src: wd('gn', 2), f: 'n3'}])]]}, false));
+      s.appendChild(para('Release 2’s runs give a few simulated households the place of very rich families, who are rare in the population, and count each of them at its share of the population (a weight). The Gini above uses those weights, as release 2’s results store it. Counting every simulated adult once instead puts the wealth Gini near 0.99 in every row, with or without the program, which says nothing about the program; an earlier version of this page showed that figure (corrected Nov 17, 2026). Wealth net of a year’s drain has no weighted figure in release 2’s runs, so it is not shown here; the Release 1 view has it for release 1’s rows.'));
+      return s; }
     s.appendChild(tableBox({id: 'suite-gini', title: 'What the wealth Gini misses: wealth net of a year’s drain (rent and interest), Year ' + T(), columns: ['Measure', 'No program', 'Compassionism'], rows: [
       [{p: ['Gini of wealth (debts counted as zero)']}, cell(sy('base', 'giniW', 'mean', L), 'n3'), cell(sy(r, 'giniW', 'mean', L), 'n3')],
       [{p: ['Gini of wealth net of drain (debts counted as zero)']}, cell(sy('base', 'giniWnet', 'mean', L), 'n3'), cell(sy(r, 'giniWnet', 'mean', L), 'n3')],

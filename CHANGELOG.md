@@ -1,10 +1,17 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1, the v5.4.1 notes at v5.5.0, the v5.5.0 notes at v5.6.0, the v5.6.0 notes at v5.7.0, the v5.9.2 notes at v5.9.4) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1, the v5.4.1 notes at v5.5.0, the v5.5.0 notes at v5.6.0, the v5.6.0 notes at v5.7.0, the v5.9.2 notes at v5.9.4, the v5.9.4 notes at v5.9.5) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
 
 ---
+
+## v5.9.4 Release Notes
+
+Released Nov 17, 2026 (S79): **release 2's other BLEI-paper measures and the measures study on the visual suite.** No engine line changes; no figure of release 1 or release 2 changes.
+- **The release 2 view of `suite.html` now draws its own EDC, EPPM, FBS, CSI and IPBI cards and the measures study** (who gains, how people move between tiers, wealth net of drain), where it used to say they were release 1's only. EDC carries its paired change against no programme with a 95% interval; IPBI's public costs avoided come from the means and carry none, and the card says so.
+- **New files `data/releases/r2/study-20.json` and `study-40.json`**, from job X3 (BetterToBest/compassionism-sim-results `x3-6d095a1`, run-study run 126; research-update `prereg/2026-11-x3-measures-addendum.md`): release 2's main rows re-run at engine commit 6d095a1 with two reporting switches (the measured EDC and the FBS50 tally), checked equal to release 2's stored results in every engine output of every row and seed. `dev/tools/suite_r2.py --study` writes them; `--check` also ties each row's share below the cost of living to release 2's published basket-poverty figure (exact in all 18 cells). v5.6's files are untouched; the two releases are never drawn on one chart.
+- Checks: the figure check reads the X3 files for the release 2 view (cards, tables and the six movement tables, in four views and three groups of adults); a new Phase 15 check covers the cards and the fallback to the old wording without the files. Report: `dev/reports/s79-r2-measures.md`, with every preregistered outcome, the null result on the wealth Gini, and the release design's weak results under Stress.
 
 ## v5.9.3 Release Notes
 
