@@ -1,6 +1,6 @@
 # Correction: privately owned essential-service businesses pass the conversion premium to customers
 
-Session 31, Oct 2, 2026. Design note before code (ledger step s66, decision d140). Written by Claude.
+Oct 2, 2026. Design note before code. Written by Claude.
 
 ## What changes, in plain words
 
@@ -21,7 +21,7 @@ So the premium becomes **lower prices for the customer**, not profit for the own
 
 ## Switches and checks
 
-- New switch `SURP_PRIV`: `'owners'` (the session-30 behaviour) or `'prices'` (the correction, used for v5.0). With `'owners'` every output is bit-identical to session 30 (proved by a full-output diff).
+- New switch `SURP_PRIV`: `'owners'` (the first v5.0 candidate's behaviour) or `'prices'` (the correction, used for v5.0). With `'owners'` every output is bit-identical to the first v5.0 candidate (proved by a full-output diff).
 - No new random draws (the eight-draws-per-adult-year guarantee holds).
 - Unit tests: (a) an ESP's dollar revenue per unit is the same in both branches; (b) at rate r, 1 BU buys r dollars of essentials at a private ESP; (c) no premium reaches owners under `'prices'`; (d) a participating private-ESP worker gets the same profit share as a community-ESP worker; (e) the margin-capped row never pays more than the margin on added sales.
 - Restudy: seeds 1-500, paired, Reference, Adverse and Stress; poverty below the cost of living (basket), wealth poverty, days of basic living covered (BLEI), cost, work, prices, and participants against non-participants.
@@ -30,13 +30,13 @@ So the premium becomes **lower prices for the customer**, not profit for the own
 
 Only this: is "the premium becomes lower prices for BU customers, and private-ESP workers are paid like profit-share workers" what you meant? Everything else is a modelling decision recorded in `dev/DECISIONS.md`.
 
-## Built (session 31, Oct 2, 2026), and one change from the plan above
+## Built (Oct 2, 2026), and one change from the plan above
 
-Built as switch `SURP.priv = 'prices'` in `harness.js`, with 6 unit tests (`privUnitSuite`). With the old setting every output is identical to session 30 (full output of `testbed 10 release` in all three environments diffed).
+Built as switch `SURP.priv = 'prices'` in `harness.js`, with 6 unit tests (`privUnitSuite`). With the old setting every output is identical to the first v5.0 candidate (full output of `testbed 10 release` in all three environments diffed).
 
 **One change from point 6 above.** I planned to fund the workers' pay match from "the extra sales lower prices bring", with a row capping it at the profit margin on those sales. The model has a fixed basket: lower BU prices let participants buy the same essentials with fewer BU, so there are no extra sales to fund anything. Instead, the match comes out of the premium itself: a private ESP gives its workers the same fraction of its premium that a community ESP gives its workers (one third until there is enough community capacity, then 40%), and the rest becomes lower BU prices. Every worker who takes part then gets the same profit share, wherever they work, and every dollar stays accounted for. A second row gives the whole premium to lower prices (no match), so you can see the difference.
 
-## Results: 500 paired runs, against session 30's build (`dev/runs/step14-priv-500-*.txt`)
+## Results: 500 paired runs, against the first v5.0 candidate (`dev/runs/step14-priv-500-*.txt`)
 
 | | Reference | Adverse | Stress |
 |---|---|---|---|
@@ -48,5 +48,5 @@ In everyday words:
 
 - **At Reference the correction helps on every measure.** Participants' BU go further at private businesses, so fewer people live below the cost of living and fewer end with too little savings.
 - **In Adverse and Stress it lowers income poverty but slightly raises wealth poverty**, because the BU freed by lower prices go on to pay project work, which adds new money and prices rise a little faster.
-- **Adults who do not take part lose the most.** Under session 30's build, they received part of the premium as business owners. Now they receive none of it, and at Reference they end up with slightly less real income than with no programme (−$1,071 a year), because prices still rise. This is what the corrected design implies in the model, and the page says so.
+- **Adults who do not take part lose the most.** Under the first v5.0 candidate, they received part of the premium as business owners. Now they receive none of it, and at Reference they end up with slightly less real income than with no programme (−$1,071 a year), because prices still rise. This is what the corrected design implies in the model, and the page says so.
 - I expected the correction to slow price rises (point 2 above). It did not: the model already counted the owners' dollars as new money, and the freed BU add a little more. I report this as it came out.

@@ -1,4 +1,4 @@
-# The spending share, re-derived for the frozen model (S47, Nov 6, 2026)
+# The spending share, re-derived for the frozen model (Nov 6, 2026)
 
 Outside audit item E17 (`dev/reports/s13-engine-audit.md`) asked for this before the design freeze (research-update `prereg/run-manifest.md` section 6 item 4). The share was derived on an earlier engine and never re-derived for the model the batch will run.
 
@@ -32,10 +32,10 @@ This is a re-derivation of a constant by its own method, on the model being froz
 - **Almost nothing in poverty against the cost of living or in prices.** Basket poverty moves by at most 0.1 point, with and without a programme. Programme inflation does not move.
 - **Savings fall.** Median real wealth at year 20 with no programme drops from $409,000 to $212,000 in Reference. The lower figure is closer to the Survey of Consumer Finances, though still above it.
 - **Wealth poverty with no programme rises 1.8 points** (Reference).
-- **The programme's effect on wealth poverty changes most.** The programme's inflation erodes savings, and with more of each surplus spent there is less saving for the programme's own income to add to. For the C2.2 design the year-20 effect goes from −17.4 points at 0.593 to +0.5 at 0.877 in Reference, from −17.4 to +30.1 in Adverse, and from −7.8 to +41.7 in Stress. For the release design it goes from −3.5 to +21.4 points in Reference. Every one of these changes is far outside its interval.
-- The design-neutral BLEI effect moves by under 1 point (C2.2's cut grows slightly; the release design's shrinks slightly).
+- **The programme's effect on wealth poverty changes most.** The programme's inflation erodes savings, and with more of each surplus spent there is less saving for the programme's own income to add to. For the full-coverage design, built to meet NEEC's criterion C2.2, the year-20 effect goes from −17.4 points at 0.593 to +0.5 at 0.877 in Reference, from −17.4 to +30.1 in Adverse, and from −7.8 to +41.7 in Stress. For the opt-in design it goes from −3.5 to +21.4 points in Reference. Every one of these changes is far outside its interval.
+- The design-neutral BLEI effect moves by under 1 point (the full-coverage design's cut grows slightly; the opt-in design's shrinks slightly).
 
-So at the re-derived share, the C2.2 design still cuts poverty against the cost of living by about 25-35 points. But it no longer cuts wealth poverty, and in Adverse and Stress it raises it. This is a measured result of the frozen model, not a target. It goes into the record as it is.
+So at the re-derived share, the full-coverage design still cuts poverty against the cost of living by about 25-35 points. But it no longer cuts wealth poverty, and in Adverse and Stress it raises it. This is a measured result of the frozen model, not a target. It goes into the record as it is.
 
 ## What the batch does with it
 - Every frozen row uses 0.877.

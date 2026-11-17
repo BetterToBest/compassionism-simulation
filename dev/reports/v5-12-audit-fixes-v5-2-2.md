@@ -22,7 +22,7 @@ Three outside reviews of v5.2.1 (by GPT, Grok and Muse) found no mistake in the 
 - **A full description of the model for outside experts.** Four documents: `MODEL_SPEC.md` (exactly what the main result does, step by step through a simulated year, and what each headline number measures), `TESTBED_SPEC.md` (every alternative switch and labelled reading, with its status and the decision behind it), `REPRODUCE.md` (the command behind every published table and a fingerprint to check a rerun against) and `ODD.md` (the standard format model libraries ask for, with every setting marked as sourced, derived, a design choice of yours, or an assumption).
 - **For outside reviewers on GitHub**: a citation file (so GitHub shows "Cite this repository"), an archive of everything needed to reproduce each release attached automatically when a release is tagged, and three "good first issue" tasks for volunteers (the population-weighted living wage, a table of jobs with their automation risk and wages, and cost-of-living figures by region).
 
-## Decisions made this round (one line each; full reasons in `dev/DECISIONS.md`, Session 37)
+## Decisions made this round (one line each; full reasons in `dev/DECISIONS.md`)
 
 - The wording fixes above (items 1 to 5) are corrections: each was wrong.
 - The Known Limitations items were rewritten, not deleted, so the history stays visible.

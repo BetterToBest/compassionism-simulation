@@ -1,32 +1,32 @@
 # Today's safety net in every run: the six-cell grid with costs, government's share fixed, and the prevention link
 
-Session 2c, Oct 13, 2026. Engine work only: the page does not change. Every new part sits behind a switch, off by default. Switched off, every released figure stays the same, and the guard test proves it. Choices, sources and alternatives are in `dev/DECISIONS.md`, Session 2c. This builds on session 2b's report (`dev/reports/v5-27-health-financing.md`).
+Oct 13, 2026. Engine work only: the page does not change. Every new part sits behind a switch, off by default. Switched off, every released figure stays the same, and the guard test proves it. Choices, sources and alternatives are in `dev/DECISIONS.md`. This builds on the health-financing report (`dev/reports/v5-27-health-financing.md`).
 
-How to read the labels on figures: **sourced** (taken from a published source), **simulated** (an output of the model's runs), **derived** (arithmetic on sourced or simulated figures), **target** (a figure the model was set to match, so it is not a finding). "Points" means percentage points. "Paired" means the same 20 simulated populations (seeds 1-20) with and without the change, so the difference is not noise from different draws. Intervals are 95%. Dollars are at year-0 prices. These are 20-seed readings, not release figures; the 500-seed runs are the Runpod study's (ledger step s137).
+How to read the labels on figures: **sourced** (taken from a published source), **simulated** (an output of the model's runs), **derived** (arithmetic on sourced or simulated figures), **target** (a figure the model was set to match, so it is not a finding). "Points" means percentage points. "Paired" means the same 20 simulated populations (seeds 1-20) with and without the change, so the difference is not noise from different draws. Intervals are 95%. Dollars are at year-0 prices. These are 20-seed readings, not release figures; the 500-seed runs are the Runpod study's.
 
-The three health settings: **A**, today's health system; **B**, single payer with one public plan, paid by a flat health tax; **C**, single payer plus Medicaid kept and a private layer paid per person (as Medicare pays Medicare Advantage). "Compassionism" means the v5.4 release row.
+The three health settings: **A**, today's health system; **B**, single payer with one public plan, paid by a flat health tax; **C**, single payer plus Medicaid kept and a private layer paid per person (as Medicare pays Medicare Advantage). "Compassionism" means the v5.4 opt-in row.
 
 ## 1. What changed
 
-- **Today's safety net is on in every Compassionism comparison** (Duke's decision, ledger d192). SNAP, the earned income tax credit (EITC) and the refundable part of the Child Tax Credit (CTC) are paid in every cell of the grid, with and without Compassionism. Every comparison in sections 3 and 5 reads "against today's safety net". On the Hub, Compassionism *adds to* these programmes, and no savings from replacing them are claimed. The run with no programme and no safety net stays only as a reference line. The switch stays off by default, so released figures do not move.
-- **Government's share under single payer is fixed** (Duke's decision, d194). Under B and C the government keeps paying what it pays today for Medicaid, the premium tax credits and Medicare; the health tax pays the rest. In the main runs that share is now held, year by year and per person, at its level in the same seed's run without the programme. The old floating share is kept as a sensitivity row (section 6).
-- **Setting C's payment gap, in Duke's wording** (d193): MedPAC estimates private plans are paid about 14% more than the same people would cost in traditional Medicare (2026; 20% in 2025) (sourced). The model splits this into coding (central 4%, range 0-8%) and selection (central 11%, range 5.5-16.5%). The values are session 2b's; only the wording is new. Correction after the outside audit: the coding high case with selection central is 1.08 x 1.11 = 19.9%, and both high is 1.08 x 1.165 = 25.8%; the central 15.4% sits 1.4 points above MedPAC's 14% total, which also carries a part of Medicare Advantage's payment rules the model has no counterpart for (`dev/reports/v5-29-outside-audit.md`).
-- **The prevention link** (ledger step s141) is a new switch, off by default (section 4).
-- **The speed pass** (s142) was tried and stopped: no change to the engine (section 7).
+- **Today's safety net is on in every Compassionism comparison** (Duke's decision). SNAP, the earned income tax credit (EITC) and the refundable part of the Child Tax Credit (CTC) are paid in every cell of the grid, with and without Compassionism. Every comparison in sections 3 and 5 reads "against today's safety net". On the Hub, Compassionism *adds to* these programmes, and no savings from replacing them are claimed. The run with no programme and no safety net stays only as a reference line. The switch stays off by default, so released figures do not move.
+- **Government's share under single payer is fixed** (Duke's decision). Under B and C the government keeps paying what it pays today for Medicaid, the premium tax credits and Medicare; the health tax pays the rest. In the main runs that share is now held, year by year and per person, at its level in the same seed's run without the programme. The old floating share is kept as a sensitivity row (section 6).
+- **Setting C's payment gap, in Duke's wording**: MedPAC estimates private plans are paid about 14% more than the same people would cost in traditional Medicare (2026; 20% in 2025) (sourced). The model splits this into coding (central 4%, range 0-8%) and selection (central 11%, range 5.5-16.5%). The values are the health-financing report's; only the wording is new. Correction after the outside audit: the coding high case with selection central is 1.08 x 1.11 = 19.9%, and both high is 1.08 x 1.165 = 25.8%; the central 15.4% sits 1.4 points above MedPAC's 14% total, which also carries a part of Medicare Advantage's payment rules the model has no counterpart for (`dev/reports/v5-29-outside-audit.md`).
+- **The prevention link** is a new switch, off by default (section 4).
+- **The speed pass** was tried and stopped: no change to the engine (section 7).
 
 ## 2. Why the safety net seemed to raise basket poverty under setting A
 
-Session 2b's report (section 5) said adding the safety net to setting A raised basket poverty without the programme by 0.4 points. Three causes were tested, each with a paired run (`dev/tools/sn_trace.js`, Reference, 20 seeds; simulated):
+The health-financing report (section 5) said adding the safety net to setting A raised basket poverty without the programme by 0.4 points. Three causes were tested, each with a paired run (`dev/tools/sn_trace.js`, Reference, 20 seeds; simulated):
 
 | What the safety net does to basket poverty, no programme | As released | Work response off | Prices held flat |
 |---|---|---|---|
 | With no health setting | +0.04 (0.03 to 0.05) | +0.11 (0.09 to 0.13) | +0.01 (-0.01 to 0.02) |
 | Under setting A, against setting A | **+0.07** (0.04 to 0.09) | +0.10 (0.08 to 0.13) | +0.00 (-0.01 to 0.02) |
-| Setting A with the safety net, against neither (session 2b's comparison) | +0.43 (0.33 to 0.52) | +0.46 | +0.31 |
+| Setting A with the safety net, against neither (the health-financing report's comparison) | +0.43 (0.33 to 0.52) | +0.46 | +0.31 |
 
 **Finding.**
 
-1. **Most of the 0.4 was the comparison.** Session 2b's tool compared "setting A with the safety net" with "no health setting, no safety net", so its figure included setting A's own +0.36. Against setting A without the safety net, the safety net's own effect is +0.07 points. The tool now uses that comparison.
+1. **Most of the 0.4 was the comparison.** The health-financing report's tool compared "setting A with the safety net" with "no health setting, no safety net", so its figure included setting A's own +0.36. Against setting A without the safety net, the safety net's own effect is +0.07 points. The tool now uses that comparison.
 2. **The work response is not the cause.** Switched off, the rise gets larger, because recipients then keep the whole benefit.
 3. **What is left comes through prices.** With prices held flat it is zero. The benefits let poor households buy more of the essentials they were going without. The model's price rule raises essentials' prices when more of them is bought, so the cost of living rises a little for everyone. Some households just above the line (MIT's living wage, $49,370 for one adult; derived: the unweighted average of MIT's 51 state figures, February 2026 data) fall below it. Recipients themselves are mostly far below the line, so their gain shows as less depth: poverty depth (FGT2) falls by 0.57 under A and 0.35 with no health setting.
 
@@ -127,7 +127,7 @@ How much Compassionism's own effect changes when B or C replaces today's system,
 | C: too little wealth | -2.2 (-3.1 to -1.4) | +0.6 (-0.0 to 1.2) | +0.5 (-0.1 to 1.0) |
 | C: child basket poverty | +2.1 (1.4 to 2.8) | +0.0 (-1.0 to 1.1) | -1.5 (-2.5 to -0.6) |
 
-Against today's safety net the overlap is larger than session 2b found without it (B, basket poverty: Reference +1.5, Adverse +0.4, Stress -0.3). Single payer and the safety net both help the same households, so less is left for Compassionism to do. Even so, Compassionism's effect under B and C stays between 14.5 and 37.7 points in every environment (section 3). Guardrail 6 asks for gains confirmed on basket poverty and wealth poverty, not depth alone. Against setting A, B and C lower basket poverty, depth, BLEI poverty and too little wealth without the programme in every environment (section 3, and the Adverse and Stress files).
+Against today's safety net the overlap is larger than the health-financing report found without it (B, basket poverty: Reference +1.5, Adverse +0.4, Stress -0.3). Single payer and the safety net both help the same households, so less is left for Compassionism to do. Even so, Compassionism's effect under B and C stays between 14.5 and 37.7 points in every environment (section 3). Guardrail 6 asks for gains confirmed on basket poverty and wealth poverty, not depth alone. Against setting A, B and C lower basket poverty, depth, BLEI poverty and too little wealth without the programme in every environment (section 3, and the Adverse and Stress files).
 
 ## 6. Government's share: fixed against floating
 
@@ -137,13 +137,13 @@ Against today's safety net the overlap is larger than session 2b found without i
 | Health tax per adult-year | $6,264 | $6,243 | $6,836 | $6,813 |
 | Compassionism's effect on basket poverty | -29.94 | -29.94 | -30.47 | -30.49 |
 
-In the main runs the programme slightly *raises* Medicaid enrolment, because its income effects lower earnings a little. So fixing the share moves the health tax by $20-35 a year and Compassionism's effect by under 0.1 point in every environment. The fix matters where session 2b found it: with the BU allowance counted in the Medicaid test (`countBU`, off in every main run), the floating share made the household bill under B rise by about $700. Fixed, there is no rise (Reference, 20 seeds: $2,011 fixed against $3,051 floating; `dev/runs/health/s2cgov-ref.json`). With the share floating, every figure of session 2b's B, C and countBU rows reproduces exactly.
+In the main runs the programme slightly *raises* Medicaid enrolment, because its income effects lower earnings a little. So fixing the share moves the health tax by $20-35 a year and Compassionism's effect by under 0.1 point in every environment. The fix matters where the health-financing report found it: with the BU allowance counted in the Medicaid test (`countBU`, off in every main run), the floating share made the household bill under B rise by about $700. Fixed, there is no rise (Reference, 20 seeds: $2,011 fixed against $3,051 floating; `dev/runs/health/s2cgov-ref.json`). With the share floating, every figure of the health-financing report's B, C and countBU rows reproduces exactly.
 
 ## 7. The speed pass: stopped, no change
 
 A profile of a grid run (four seeds, four rows) shows the time spread across the yearly loop. The per-person loop takes 26.5% of it, and no single line takes more than 7.3%. The per-person records stay in V8's fast storage mode, so there is no structural fix to make. Memoising the expected out-of-pocket cost (2.4%) and similar steps would gain a few percent each, well under the 2x the plan asks for, so by the plan's rule the pass stopped with no engine change. The guard baseline is untouched.
 
-**Time per run, for the Runpod estimate** (one row and one seed: 500 adults over 20 years, households, a health setting and the safety net on, the one-year pre-pass included; three runs in parallel on four cores; `_meta.perRun`): **0.375-0.427 s** with prices free, 0.376-0.436 s with prices flat, and 0.385-0.427 s with the prevention link on. The Runpod study (s137) can use **0.43 s per run per core** for health rows. Rows without a health setting are 0.35 s.
+**Time per run, for the Runpod estimate** (one row and one seed: 500 adults over 20 years, households, a health setting and the safety net on, the one-year pre-pass included; three runs in parallel on four cores; `_meta.perRun`): **0.375-0.427 s** with prices free, 0.376-0.436 s with prices flat, and 0.385-0.427 s with the prevention link on. The Runpod study can use **0.43 s per run per core** for health rows. Rows without a health setting are 0.35 s.
 
 ## Limits
 

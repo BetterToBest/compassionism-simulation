@@ -84,7 +84,7 @@ Compassionism against no programme, the same families in both, paired run by run
 
    So the children's figures for later years describe the families first drawn, followed over time, not a typical American population in those years. The figures for the first years, and those added up over all years, are the more reliable ones. Fixing this needs couples forming and separating at rates from data, which I have recorded as a candidate for a later round.
 
-## Decisions made (full reasons in `dev/DECISIONS.md`, Session 39)
+## Decisions made (full reasons in `dev/DECISIONS.md`)
 
 - A child stops being a dependant at 18. From 18 to 24 they are outside the model; at 25 they can enter as an adult. The model has no wages or costs for 18-to-24-year-olds, and by the Census most young adults have left home by their mid-twenties.
 - A grown child takes the place of an adult who has died; an unrelated newcomer comes only when no grown child is waiting. The population stays the same size, as in v5.2's ageing reading. A grown child starts with the same chances as any newcomer: the model does not pass earnings from parents to children, a stated limit.

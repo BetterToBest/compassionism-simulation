@@ -1,14 +1,14 @@
 # Creative-output backing, capacity speed and the octave limit: Claude's reading of the design
 
-Session 31, Oct 2, 2026. Ledger step s67; Duke's answers to three questions (Oct 2): how fast the essential-service providers add capacity (d137), what backs a creative payment (d138) and what limits an octave (d139). Written by Claude before any code. Everything below headed "Claude's reading of the design" is labelled that way wherever it appears on the page.
+Oct 2, 2026. Duke's answers to three questions (Oct 2): how fast the essential-service providers add capacity, what backs a creative payment and what limits an octave. Written by Claude before any code. Everything below headed "Claude's reading of the design" is labelled that way wherever it appears on the page.
 
 ## Duke's three answers (quoted)
 
-- **How fast ESPs add capacity (d137):** show both. On the main run, ESPs add enough capacity within a year to serve underserved demand. The 5-year rule (capacity built only as fast as reinvestment reaches today's capital per adult) is shown as a labelled other reading.
-- **What backs a creative payment (d138):** "New output is offered to the public like a community chest of sorts, both belonging to the citizens, and offered a lower price than private market goods/services. This is the difference between price and value. For example, open-source software is free, but closed software costs 100/month. ... Collective contributors get a higher conversion rate and unlimited octave capacity for offering their software for free or for 1 dollar per month. Likewise, a band can sell out a stadium for ticket prices at $100, but they can offer tickets to collective members for 6 expired BUs. If the band has an earned conversion rate of 9*Phi or 14.56, they stay revenue neutral."
-- **What the octave limits (d139):** "ESPs who accept BUs have octave caps based on their capacity. Individuals and Creative Collective member groups have unlimited octave caps, but they must show their work to earn an elevated conversion rate."
+- **How fast ESPs add capacity:** show both. On the main run, ESPs add enough capacity within a year to serve underserved demand. The 5-year rule (capacity built only as fast as reinvestment reaches today's capital per adult) is shown as a labelled other reading.
+- **What backs a creative payment:** "New output is offered to the public like a community chest of sorts, both belonging to the citizens, and offered a lower price than private market goods/services. This is the difference between price and value. For example, open-source software is free, but closed software costs 100/month. ... Collective contributors get a higher conversion rate and unlimited octave capacity for offering their software for free or for 1 dollar per month. Likewise, a band can sell out a stadium for ticket prices at $100, but they can offer tickets to collective members for 6 expired BUs. If the band has an earned conversion rate of 9*Phi or 14.56, they stay revenue neutral."
+- **What the octave limits:** "ESPs who accept BUs have octave caps based on their capacity. Individuals and Creative Collective member groups have unlimited octave caps, but they must show their work to earn an elevated conversion rate."
 
-The Research Hub agrees with Duke's answer on what limits an octave (d139): "For PTF businesses, octave capacity tracks market throughput" (Glossary, Octave Levels), and Creative Collectives "manage peer-reviewed conversion processes" (Research Summary).
+The Research Hub agrees with Duke's answer on what limits an octave: "For PTF businesses, octave capacity tracks market throughput" (Glossary, Octave Levels), and Creative Collectives "manage peer-reviewed conversion processes" (Research Summary).
 
 ## Claude's reading of the design
 
@@ -28,15 +28,15 @@ The design counts a creative payout as backed by the market value of what member
 
 All three are shown; the page says which is the design's reading and which is the cautious one.
 
-## Capacity speed (d137), as it will be built
+## Capacity speed, as it will be built
 
 - **Main run, within a year:** when BU spending at ESPs in a year exceeds their capacity, capacity rises the next year to meet it. Faster capacity is not free: the new capital is charged every year at its depreciation plus interest, from sourced figures (BEA Fixed Asset Tables, current-cost depreciation and net stock for retail trade, food services and utilities; the interest rate from the Federal Reserve H.15 release). Its capital per adult is the same $18,862 the 5-year rule uses (BEA and Census 2025, already in the session-30 build).
-- **Other reading, the 5-year rule:** capacity grows only as fast as ESP reinvestment pays for it (session 30's rule, about year 5 at Reference).
+- **Other reading, the 5-year rule:** capacity grows only as fast as ESP reinvestment pays for it (the rule of the first v5.0 candidate, about year 5 at Reference).
 - In both, when BU demand exceeds capacity in a year, participants spend the BU they can and pay cash for the rest; the unspent BU expire to the Source (or, under point 5, partly to Collectives).
 
 ## Switches, tests and the restudy
 
-- Switches: `CAPSPEED` (`'reinvest'` = session 30, `'oneyear'` = main), `CREATIVE` (`'cost'` = session 30, `'market'` = main, `'all'` = H1), `ESPCAP` (ESP octave cap from capacity, on/off), `EXPIRED_TO_CC` (share 0 = session 30). With all switches at their session-30 values every output is bit-identical (full-output diff).
+- Switches: `CAPSPEED` (`'reinvest'` = the first v5.0 candidate, `'oneyear'` = main), `CREATIVE` (`'cost'` = the first v5.0 candidate, `'market'` = main, `'all'` = H1), `ESPCAP` (ESP octave cap from capacity, on/off), `EXPIRED_TO_CC` (share 0 = the first v5.0 candidate). With all switches at their first v5.0 candidate's values every output is bit-identical (full-output diff).
 - No new random draws.
 - Tests: total BU converted at ESPs never exceeds ESP capacity; a group with no delivered output converts at 1x; under `'market'` the counted output equals the elevated part of the payout; capital charge under `'oneyear'` equals capital x (depreciation + interest); expired BU directed to Collectives never exceed expired BU.
 - Restudy: seeds 1-500, Reference, Adverse and Stress; basket and wealth poverty confirmed, not only the severity index.
@@ -45,11 +45,11 @@ All three are shown; the page says which is the design's reading and which is th
 
 Duke's answers settle the design questions. If any line above misreads him, say which.
 
-## Built (session 31, Oct 2, 2026): what the code does, and what the model already had
+## Built (Oct 2, 2026): what the code does, and what the model already had
 
 - **Creative output at market value:** `PROD.match = 'market'`. Each project worker's whole payout counts as new output, beyond essentials. In the model, a project payout always comes with hours worked, which is the model's version of "showing the work".
 - **Capacity within a year:** `PROD.speed = 'oneyear'`. Adults who were turned away from a community business for lack of capacity are served the next year. The capacity reinvestment has not yet paid for is borrowed and charged every year at **8.20%**: depreciation of 4.53% (BEA Fixed Assets Tables 3.4ESI and 3.1ESI, 2025, grocers, food services and utilities) plus a real interest rate of 3.67% (2025 averages from FRED: Moody's Baa 6.00% less the 10-year Treasury 4.29% plus the 10-year inflation-protected Treasury 1.96%). Community businesses pay it out of their earnings before the rest is split.
-- **The ESP octave cap (d139)** holds in the model without new code. BU can only buy the essentials people already consume, which businesses already supply, so no business converts more BU than it sells. A unit test checks this.
+- **The ESP octave cap** holds in the model without new code. BU can only buy the essentials people already consume, which businesses already supply, so no business converts more BU than it sells. A unit test checks this.
 - **Individuals and Collectives uncapped, and expired BU paying Collectives:** the model already worked this way (project hiring has no conversion cap, and every expired BU pays project work). No new switch was needed, so the parameter I said I would sweep in point 5 is not needed.
 - 5 unit tests (`v5ProdUnitSuite`). With the session-30 settings, output is identical.
 

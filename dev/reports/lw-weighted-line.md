@@ -1,6 +1,6 @@
-# The cost-of-living line, weighted by where people live (S14)
+# The cost-of-living line, weighted by where people live
 
-Oct 31, 2026 · S14 · Claude · engine switch `LW` (study row option `lw`), off by default · preregistration: research-update `prereg/2026-11-lw-weighted-line.md` (study L)
+Oct 31, 2026 · the weighted cost-of-living line · Claude · engine switch `LW` (study row option `lw`), off by default · preregistration: research-update `prereg/2026-11-lw-weighted-line.md` (study L)
 
 ## Why this step
 
@@ -45,9 +45,9 @@ Three sets of constants were fitted at $49,370 from the eight MIT state pages: e
 | Housing share (with utilities) | 27.61% | 28.81% | 29.20% |
 | Food share | 9.01% | 8.84% | 8.78% |
 | Medical share | 6.85% | 6.53% | 6.43% |
-| C2.2 needs (food, housing, medical), share | 43.47% | 44.18% | 44.41% |
+| Full-coverage needs (food, housing, medical), share | 43.47% | 44.18% | 44.41% |
 | One adult's housing, food, medical, $ a year | 13,631 · 4,448 · 3,382 | 14,751 · 4,526 · 3,343 | 15,137 · 4,551 · 3,333 |
-| BU at the C2.2 needs level, $ a month | 1,788.43 | 1,885.06 | 1,918.43 |
+| BU at the full-coverage needs level, $ a month | 1,788.43 | 1,885.06 | 1,918.43 |
 | Childcare, first child, $ a year | 12,914 | 13,342 | 13,490 |
 | One parent, one child: total budget, $ a year | 74,688 | 77,671 | 78,713 |
 | Couple, two children: total budget, $ a year | 97,340 | 100,852 | 102,078 |
@@ -65,7 +65,7 @@ Every place in `index.html` and `harness.js` that reads `CFG.LIVING_WAGE_ANNUAL`
 - The cost-of-joining test (`jnM`), the share of income spent, and the CCO and PTH price cuts (shares of the budget).
 - SNAP's shelter cost (the household's housing need) and the health module's medical line (`hlLine`).
 - The traditional-welfare comparison (`idx`) and every reporting line scaled by the price level (`lf`: the year's budget over the line, a ratio).
-- The C2.2 needs level `c22NeedsBU()` and its yearly index (`c22Share`).
+- The full-coverage needs level `c22NeedsBU()` and its yearly index (`c22Share`).
 - The poverty gap in dollars used for public costs avoided (`avoidWide`: the gap × the line).
 - The "below the cost of living" and "basket" counts (income against the line).
 
@@ -73,7 +73,7 @@ Every place in `index.html` and `harness.js` that reads `CFG.LIVING_WAGE_ANNUAL`
 
 **C. Does not follow, and should not.** These come from their own sources, which already describe the whole country:
 - Wages (CPS, `WAGE_TO_USD`, `CFG.CPS_EARN`), starting wealth (Survey of Consumer Finances), Social Security, taxes, SNAP, the EITC and the Child Tax Credit (federal schedules), health costs (CMS, Medicare, the employer and marketplace surveys), disaster aid (FEMA), and the official poverty lines (`CFG.POVERTY_THRESHOLD_ONE`, `CFG.HH_FPL`). They are federal schedules or national survey figures, and a different cost line does not change them.
-- The BU at $1,200 a month: a design value, which stays $1,200 at any line. Only the C2.2 needs level follows the line.
+- The BU at $1,200 a month: a design value, which stays $1,200 at any line. Only the full-coverage needs level follows the line.
 - The BLEI paper's daily cost ($68.33, `BASE_DAILY_COST`) and the member daily cost ($31.67): the BLEI paper's own figures, a separate concept from the MIT budget. The household's BLEI daily cost multiplier is a ratio of fitted items, so it follows the line in part.
 - One reporting threshold, flagged: the adult-only "too little wealth" line of $25,000 (`POVERTY_LINE`). From v5.3 it is read as six months of one adult's cost of living (half the line is $24,685), but it is kept at $25,000 so figures stay comparable across releases. At the weighted lines, half the line is $25,601 (ext) or $25,919 (bea). The household reading (`CFG.HH_WEALTH_MONTHS`: six months of each household's own costs; `hhWlthPY`, `hhWlthEnd`) follows the line. The study programme's primary wealth outcome `pov` is the fixed $25,000 reading, so study L reports both: `pov` does not move with the line by construction, and `hhWlthPY` does.
 
@@ -81,17 +81,17 @@ No path was found that should follow the line and does not, apart from group B, 
 
 ## 4. What the switch does
 
-`lw: 'ext'` or `lw: 'bea'` on a study row sets, for that row only, the line and the three refitted sets from `CFG.LW_SETS` (printed by `sources/lw_line.py`), and project pay. It writes them into the existing objects, so every reference sees them, and puts the values back after the row. The no-programme reference path (the price module's supply path) is keyed by the line, so a weighted row never reuses the current line's path. No random draw is added. Off (no `lw` option) changes nothing. Checks: unit test (`v54UnitSuite`, S14): a row at another line moves that row only. Rows run after it equal rows run alone, all four sets come back exactly, and the needs level follows the line. Also the guard test, the 12-seed release panels (engine lineage) and `runner/jobs/lw.js --check`.
+`lw: 'ext'` or `lw: 'bea'` on a study row sets, for that row only, the line and the three refitted sets from `CFG.LW_SETS` (printed by `sources/lw_line.py`), and project pay. It writes them into the existing objects, so every reference sees them, and puts the values back after the row. The no-programme reference path (the price module's supply path) is keyed by the line, so a weighted row never reuses the current line's path. No random draw is added. Off (no `lw` option) changes nothing. Checks: unit test (`v54UnitSuite`): a row at another line moves that row only. Rows run after it equal rows run alone, all four sets come back exactly, and the needs level follows the line. Also the guard test, the 12-seed release panels (engine lineage) and `runner/jobs/lw.js --check`.
 
-The released line stays $49,370. Changing it would be a calibration change for S47 (design freeze) to consider. It needs the study's results, and ideally MIT's own weighted figure.
+The released line stays $49,370. Changing it would be a calibration change for the design freeze to consider. It needs the study's results, and ideally MIT's own weighted figure.
 
 ## 5. The study
 
-Study L (preregistration: research-update `prereg/2026-11-lw-weighted-line.md`). There are three lines (base, ext, bea), each with three rows: no programme, the release row, and the C2.2 design (automatic, all residents, BU at the needs level of that line, indexed to the needs). It runs in all three environments at 20 and 40 years, with 500 adults and the CPS yardstick. Pilot: seeds 1-100 on GitHub Actions. Full: seeds 1-500 in the S48 batch. The questions: how much does the no-programme world's poverty change with the line, and does the programme's effect against no programme depend on the line? Pilot results: section 6.
+Study L (preregistration: research-update `prereg/2026-11-lw-weighted-line.md`). There are three lines (base, ext, bea), each with three rows: no programme, the opt-in row, and the full-coverage design (built to meet NEEC's criterion C2.2; automatic, all residents, BU at the needs level of that line, indexed to the needs). It runs in all three environments at 20 and 40 years, with 500 adults and the CPS yardstick. Pilot: seeds 1-100 on GitHub Actions. Full: seeds 1-500 in the full study batch. The questions: how much does the no-programme world's poverty change with the line, and does the programme's effect against no programme depend on the line? Pilot results: section 6.
 
 ## 6. Results (pilot, 100 seeds)
 
-**These are pilot figures** (seeds 1-100). The full study reruns every row at 500 seeds in the S48 batch, and the report will say if any label below changes. Source: compassionism-sim-results `pilot-l-f66dc67` (engine `f66dc67`, all 10 shards checked, SHA256SUMS verified), analysed by `dev/tools/lw_pilot.py`. Every cell (three environments, 20 and 40 years) with 95% intervals is in `dev/runs/lw-pilot/tables.md` and `estimates.csv`. "Headline" means Reference, 20 years, CPS earnings, octave raise off. Intervals are 95% paired bootstrap intervals over seeds; every one quoted here excludes zero unless it says otherwise.
+**These are pilot figures** (seeds 1-100). The full study reruns every row at 500 seeds in the full study batch, and the report will say if any label below changes. Source: compassionism-sim-results `pilot-l-f66dc67` (engine `f66dc67`, all 10 shards checked, SHA256SUMS verified), analysed by `dev/tools/lw_pilot.py`. Every cell (three environments, 20 and 40 years) with 95% intervals is in `dev/runs/lw-pilot/tables.md` and `estimates.csv`. "Headline" means Reference, 20 years, CPS earnings, octave raise off. Intervals are 95% paired bootstrap intervals over seeds; every one quoted here excludes zero unless it says otherwise.
 
 ### What the higher line does to the world with no programme (Q14a)
 
@@ -111,44 +111,44 @@ The $25,000 wealth line does not follow the cost-of-living line, yet it moves to
 
 The test is the difference in differences: the programme's effect against no programme at the higher line, minus its effect at $49,370. Rule 1 labels it *not changed by the line* when its interval lies inside ±1 point.
 
-**The release row ($1,200, opt-in): not changed by the line, in the headline cell.** On all four primary share outcomes, at both ext and bea, the interval lies inside ±1 point:
+**The opt-in row ($1,200, opt-in): not changed by the line, in the headline cell.** On all four primary share outcomes, at both ext and bea, the interval lies inside ±1 point:
 
-| Release row, headline cell | Effect at $49,370 | ext | bea | Difference in differences (bea) | Label |
+| Opt-in row, headline cell | Effect at $49,370 | ext | bea | Difference in differences (bea) | Label |
 |---|---|---|---|---|---|
 | Basic living, design-neutral (points fewer below) | 10.6 | 10.6 | 10.6 | -0.1 (-0.2 to 0.0, includes zero) | not changed |
 | Basic living, the design's reading | 11.4 | 11.7 | 11.8 | +0.4 (0.3 to 0.4) | not changed |
 | Cost of living | 17.1 | 17.4 | 17.5 | +0.3 (0.3 to 0.4) | not changed |
 | Wealth at the end ($25,000) | 3.8 | 3.3 | 3.2 | -0.6 (-0.8 to -0.4) | not changed |
 
-So, under rule 2, **the release row's headline findings are robust to the line.** Stated with the range across the three lines: it cuts the share of adult-years below 30 days of basic living by 10.6 points at every line, the share below the cost of living by 17.1-17.5 points, and the share of adults with too little wealth by 3.2-3.8 points.
+So, under rule 2, **the opt-in row's headline findings are robust to the line.** Stated with the range across the three lines: it cuts the share of adult-years below 30 days of basic living by 10.6 points at every line, the share below the cost of living by 17.1-17.5 points, and the share of adults with too little wealth by 3.2-3.8 points.
 
-Outside the headline cell, the release row's effect is *changed by the line* in five comparisons, all in the Adverse environment and all smaller at the higher line: wealth at 20 years (-1.2 points at ext, -1.5 at bea), basic living at 40 years (-1.1, -1.4), and the cost of living at 40 years at bea (-1.0). Everywhere else (Reference and Stress Test, both horizons; Adverse on the other outcomes) it is not changed by the line. On the household wealth reading, which follows the line, the release row's effect is about 1 point smaller at the higher lines in the headline cell (bea: -0.9, small change; at the end of the run: -1.0, changed).
+Outside the headline cell, the opt-in row's effect is *changed by the line* in five comparisons, all in the Adverse environment and all smaller at the higher line: wealth at 20 years (-1.2 points at ext, -1.5 at bea), basic living at 40 years (-1.1, -1.4), and the cost of living at 40 years at bea (-1.0). Everywhere else (Reference and Stress Test, both horizons; Adverse on the other outcomes) it is not changed by the line. On the household wealth reading, which follows the line, the opt-in row's effect is about 1 point smaller at the higher lines in the headline cell (bea: -0.9, small change; at the end of the run: -1.0, changed).
 
-**The C2.2 design: changed by the line, mostly by construction.** The C2.2 design sets the BU at the needs level of whichever line is used, so at a higher line it pays more ($1,885 or $1,918 a month instead of $1,788) and still keeps almost everyone above the line (basic living 0.0-0.2%, cost of living 1.8% at every line, headline). Its effect therefore grows by about as much as the no-programme share rises: in the headline cell +1.1 and +1.4 points on basic living, +1.7 and +2.2 on the cost of living, +1.4 and +1.8 on wealth at the end (all *changed*, except the design's own basic-living reading at ext, +0.9, *small change*). These are not a finding about the design's strength; they say the design closes whatever gap the line defines. In the Adverse and Stress Test environments, the wealth effect grows by more than the gap (for example Adverse, 40 years, bea: +7.5 points against a rise of 2.3 in the no-programme share), because a higher BU also lets households save more. Under rule 2, the C2.2 design's headline figures are **not** robust to the line, so every one is stated with its range: it cuts the share below 30 days of basic living by 17.3-18.7 points, below the cost of living by 25.4-27.6 points, and with too little wealth by 19.8-21.6 points (base to bea).
+**The full-coverage design: changed by the line, mostly by construction.** The full-coverage design sets the BU at the needs level of whichever line is used, so at a higher line it pays more ($1,885 or $1,918 a month instead of $1,788) and still keeps almost everyone above the line (basic living 0.0-0.2%, cost of living 1.8% at every line, headline). Its effect therefore grows by about as much as the no-programme share rises: in the headline cell +1.1 and +1.4 points on basic living, +1.7 and +2.2 on the cost of living, +1.4 and +1.8 on wealth at the end (all *changed*, except the design's own basic-living reading at ext, +0.9, *small change*). These are not a finding about the design's strength; they say the design closes whatever gap the line defines. In the Adverse and Stress Test environments, the wealth effect grows by more than the gap (for example Adverse, 40 years, bea: +7.5 points against a rise of 2.3 in the no-programme share), because a higher BU also lets households save more. Under rule 2, the full-coverage design's headline figures are **not** robust to the line, so every one is stated with its range: it cuts the share below 30 days of basic living by 17.3-18.7 points, below the cost of living by 25.4-27.6 points, and with too little wealth by 19.8-21.6 points (base to bea).
 
 ### Cost and inflation (Q14c)
 
 | Headline cell | Cost per adult-year at $49,370 | Cost at ext, % of base | at bea | Inflation effect at ext, % of base | at bea |
 |---|---|---|---|---|---|
-| Release row | $32,583 | 99.7% | 99.7% | 105.9% | 107.9% |
-| C2.2 design | $61,278 | 105.9% | 107.9% | 109.1% | 112.4% |
+| Opt-in row | $32,583 | 99.7% | 99.7% | 105.9% | 107.9% |
+| Full-coverage design | $61,278 | 105.9% | 107.9% | 109.1% | 112.4% |
 
-- The release row's BU is $1,200 at every line, so its cost hardly moves (99.4-100.4% of the base cost in every cell). Its inflation is 6-8% higher at 20 years in Reference (14-19% at 40 years, up to 26% in Adverse at 40 years), because project pay follows the line. In the Stress Test it barely moves (+1%).
-- The C2.2 design's cost rises 5.5-6.0% at ext and 7.4-8.1% at bea, in step with its BU (the needs level rises 5.4% and 7.3%). Its inflation rises more: 9-18% at 20 years, 12-37% at 40 years (the most in the Stress Test at 40 years, bea).
-- Rule 1 labels every inflation comparison *changed by the line*. That label carries little information: cumulative inflation compounds and runs to tens of thousands of points (the release row's prices are about 195 times their start after 20 years in Reference), so a ±1-point band is far narrower than any seed-to-seed spread. The percentages above are the readable scale. The pilot studies report (section 9) already proposed reading inflation on its yearly rate; that is for S47 to settle for every study.
+- The opt-in row's BU is $1,200 at every line, so its cost hardly moves (99.4-100.4% of the base cost in every cell). Its inflation is 6-8% higher at 20 years in Reference (14-19% at 40 years, up to 26% in Adverse at 40 years), because project pay follows the line. In the Stress Test it barely moves (+1%).
+- The full-coverage design's cost rises 5.5-6.0% at ext and 7.4-8.1% at bea, in step with its BU (the needs level rises 5.4% and 7.3%). Its inflation rises more: 9-18% at 20 years, 12-37% at 40 years (the most in the Stress Test at 40 years, bea).
+- Rule 1 labels every inflation comparison *changed by the line*. That label carries little information: cumulative inflation compounds and runs to tens of thousands of points (the opt-in row's prices are about 195 times their start after 20 years in Reference), so a ±1-point band is far narrower than any seed-to-seed spread. The percentages above are the readable scale. The pilot studies report (section 9) already proposed reading inflation on its yearly rate; that is for the design freeze to settle for every study.
 
 ### The released line (decision rule 3)
 
-ext and bea differ by 1.2% ($51,201 and $51,838), more than the 1% the rule allows. Rule 3's other route is a weighted figure that is MIT's own, from licensed data. Since Oct 31, ext is known to be the weighted mean of MIT's own figures (section 1), but they come from a published third-party table, not a licence. The current line, $49,370, comes from the same kind of table. The rule leaves the choice to S47 (design freeze), so this study adopts nothing: the release keeps $49,370 for now, and study L's rows are published beside it.
+ext and bea differ by 1.2% ($51,201 and $51,838), more than the 1% the rule allows. Rule 3's other route is a weighted figure that is MIT's own, from licensed data. Since Oct 31, ext is known to be the weighted mean of MIT's own figures (section 1), but they come from a published third-party table, not a licence. The current line, $49,370, comes from the same kind of table. The rule leaves the choice to the design freeze, so this study adopts nothing: the release keeps $49,370 for now, and study L's rows are published beside it.
 
-**Claude's recommendation to S47:** adopt ext ($51,201) as the line, with the $49,370 rows kept beside it. It uses MIT's data the same way the current line does, as one national mean of the 51 state figures, so it needs a licence no more than the current line does. It is the consistent comparison for wages drawn from a national survey. And the release row's findings do not change between the two lines in the headline cell (above). If S47 adopts it, the fitted sets are those `sources/lw_line.py` prints for ext, and the release keeps the base rows as a sensitivity.
+**Claude's recommendation to the design freeze:** adopt ext ($51,201) as the line, with the $49,370 rows kept beside it. It uses MIT's data the same way the current line does, as one national mean of the 51 state figures, so it needs a licence no more than the current line does. It is the consistent comparison for wages drawn from a national survey. And the opt-in row's findings do not change between the two lines in the headline cell (above). If the design freeze adopts it, the fitted sets are those `sources/lw_line.py` prints for ext, and the release keeps the base rows as a sensitivity.
 
-**Where the 51 state figures are (Oct 31).** Duke's answer to decision D9 was to look in the project's own repositories first. They were searched on Oct 31: the Simulation (every file and its whole history), NEEC (every file, and file names across its history) and the Research Hub. None holds the 51 state figures. Each holds only the two summary means from the outside review in v4.11: $23.7355 an hour unweighted (the current line) and $24.6160 weighted (ext). The 51 figures were in that review's reply and were never committed. Duke then found the review's source page (decision D10), and ext was re-derived from it (section 1).
+**Where the 51 state figures are (Oct 31).** Duke's decision was to look in the project's own repositories first. They were searched on Oct 31: the Simulation (every file and its whole history), NEEC (every file, and file names across its history) and the Research Hub. None holds the 51 state figures. Each holds only the two summary means from the outside review in v4.11: $23.7355 an hour unweighted (the current line) and $24.6160 weighted (ext). The 51 figures were in that review's reply and were never committed. Duke then found the review's source page, and ext was re-derived from it (section 1).
 
 ### What this means
 
-- The release row's findings do not depend on which of the three lines is used, in the headline cell and in 2 of the 3 environments. In the Adverse environment its wealth effect (20 years) and its basic-living effect (40 years) are 1-1.5 points smaller at a higher line.
-- The C2.2 design's measured effect is larger at a higher line, by about the gap the higher line opens, and it costs about as much more as the line rises. Its findings are stated with their range across the lines.
+- The opt-in row's findings do not depend on which of the three lines is used, in the headline cell and in 2 of the 3 environments. In the Adverse environment its wealth effect (20 years) and its basic-living effect (40 years) are 1-1.5 points smaller at a higher line.
+- The full-coverage design's measured effect is larger at a higher line, by about the gap the higher line opens, and it costs about as much more as the line rises. Its findings are stated with their range across the lines.
 - At a higher line the no-programme world is worse off by 1-3 points on every poverty measure. Any figure quoted as "people below the cost of living" depends on the line by about that much.
 
 

@@ -1,6 +1,6 @@
 # The measures study and the visual suite's second pass
 
-Oct 14, 2026. Plain-words report for Duke. The plans behind this work are `dev/plans/suite-v2-plan.md` and `dev/plans/next-study-plan.md`; the choices are in `dev/DECISIONS.md`, Session 12.
+Oct 14, 2026. Plain-words report for Duke. The plans behind this work are `dev/plans/suite-v2-plan.md` and `dev/plans/next-study-plan.md`; the choices are in `dev/DECISIONS.md`.
 
 ## What was done
 

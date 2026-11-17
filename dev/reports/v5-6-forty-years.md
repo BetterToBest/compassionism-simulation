@@ -1,6 +1,6 @@
 # The 40-year horizon
 
-Session 33, Oct 2, 2026. Written by Claude for Duke. Plain words; labels in parentheses are for the code.
+Oct 2, 2026. Written by Claude for Duke. Plain words; labels in parentheses are for the code.
 
 ## What changed
 

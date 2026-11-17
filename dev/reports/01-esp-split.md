@@ -68,7 +68,7 @@ So this is not a final verdict on the split. It is the split's cost, measured be
 
 - The model has no individual businesses, so "PTF" versus "private" is measured through PTF members' spending.
 - Ownership of private businesses is read as wealth.
-- There are no places, so the split cannot vary by location (your charters, S4).
+- There are no places, so the split cannot vary by location (your charters).
 
 ## Exact commands and files
 

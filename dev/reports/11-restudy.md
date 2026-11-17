@@ -57,7 +57,7 @@ Every 95% interval is narrow (within about ±0.2 points), so these differences a
 
 At the optimistic end the gain is confirmed in all three environments, and no group is worse off on any test. At the cautious end it is confirmed at reference only. The truth lies between, and the model cannot place it: it would need evidence on how much new production conversion rewards bring.
 
-## Other readings (reference; change against the release row on poverty severity, basket poverty, wealth poverty)
+## Other readings (reference; change against the opt-in row on poverty severity, basket poverty, wealth poverty)
 
 - **Paid for by a wage contribution instead of the Source:** much worse (+22.4 severity; basket poverty 76.8%, wealth poverty 77.7%). The 84% contribution this needs is what made earlier versions look bad.
 - **One split for every business (no private owners keeping their earnings):** better on income measures, slightly worse on wealth in Adverse and Stress (more new money).

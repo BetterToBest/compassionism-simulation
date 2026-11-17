@@ -9,7 +9,7 @@ This note comes first so that the design is fixed, and the expected results writ
 ### 1.1 Who receives Basic Units, and how many a child gets
 
 - **The Hub's words.** *Integrated Implementation Roadmap*, Appendix A (the American Economic Renaissance Act), Section 102: "Every citizen and legal resident 18 years or older shall receive 1,200 basic units monthly". *BLEI paper*, section 1: "Basic Units (BU) are allocated monthly at approximately $1,200 per adult". *BLEI paper*, Table 4, Profile B (a median family of four, two adults): "BU allocation (2 adults, EPPM effective) ... $5,004/mo", that is, two adults' allowances and none for the two children. *Risk Mitigation Framework*, section 3.5 (child protection in financially abusive households): "Youth CCO Accounts: Independent financial resources for older children".
-- **Duke's answer on the dashboard (Oct 6, decision d167):** a child receives a quarter of the adult allowance ($300 a month at the reference), the same at every age; labelled a design choice and tested from none to half.
+- **Duke's answer on the dashboard (Oct 6):** a child receives a quarter of the adult allowance ($300 a month at the reference), the same at every age; labelled a design choice and tested from none to half.
 - **Claude's reading.** The Hub's written design gives the allowance to adults only; Duke's Oct 6 answer adds a small child allowance, which is the more recent statement of intent, so the model follows it. The Hub's text corresponds to the low end of the sweep (none), which will be shown beside it. "Youth CCO Accounts" read as a safeguard for older children in abusive households, not as an allowance size; abuse is not modelled, so neither are these accounts.
 - **What the model does.** Child allowance = s × the adult BU, with s = 0.25 (main reading of the household model), swept over 0, 0.25 and 0.5 (`CHILD_BU_SHARE`, a design parameter). The allowance is indexed like the adult BU and, under pooling (1.4), joins the household's BU budget.
 - **Question for Duke (design intent).** The Roadmap's draft Act says 18 or older; on Oct 6 you chose a quarter for children. Should the Act's text change to include the child allowance, or is it a later addition you would like shown as an option? Until you answer, the model uses your Oct 6 choice and shows "no child allowance" beside it.
@@ -17,9 +17,9 @@ This note comes first so that the design is fixed, and the expected results writ
 ### 1.2 What Basic Units can buy (childcare and schooling included)
 
 - **The Hub's words.** Glossary, "Basic Units": "restricted to essential expenditures — housing, food, healthcare, education, and transportation", with the example "She uses them to pay rent at PTH housing, buy groceries at a PTF grocer, and cover her transit pass." Act, Section 103: "Permitted: Housing, Food, Transportation (non-luxury), Healthcare, Education, PTF services". Glossary, "Public Trust Foundations": "PTF businesses — grocers, counter-service restaurants, utility providers, transportation services, childcare centers, healthcare ...". *Research Summary*: PTF "provides foundational goods — grocers, utilities, childcare".
-- **What the model does today.** Since session 2 (decision N10) BU buy food, housing (with utilities) and medical care only: 43.5% of the basket. Transportation (19.6% of the basket) and education are not BU purchases.
+- **What the model does today.** Since the early engine, BU buy food, housing (with utilities) and medical care only: 43.5% of the basket. Transportation (19.6% of the basket) and education are not BU purchases.
 - **Claude's reading.** The Hub is explicit: BU may buy transportation and education too, and childcare is a PTF service, so it is a BU purchase at PTF providers and PTF members' childcare gets the PTF price cut. The present essentials set is narrower than the design. This is a finding about the current model, not only about households.
-- **What the model will do.** Childcare and schooling costs enter as their own basket components for households with children (1.3). A switch `BU_SCOPE` with values 'core' (food, housing, medical: today, bit-identical) and 'hub' (adds transportation, education and childcare) is added; 'hub' first appears as a labelled reading, and whether it joins the main result is decided at the v5.3 restudy with everything else. The price module's essentials (which BU demand moves) follow the same set under each value. *Revised Oct 7 (DECISIONS Session 39, B3f): transport and childcare keep the general price level under either value, since no source gives their own response to demand.*
+- **What the model will do.** Childcare and schooling costs enter as their own basket components for households with children (1.3). A switch `BU_SCOPE` with values 'core' (food, housing, medical: today, bit-identical) and 'hub' (adds transportation, education and childcare) is added; 'hub' first appears as a labelled reading, and whether it joins the main result is decided at the v5.3 restudy with everything else. The price module's essentials (which BU demand moves) follow the same set under each value. *Revised Oct 7 (`dev/DECISIONS.md`, B3f): transport and childcare keep the general price level under either value, since no source gives their own response to demand.*
 
 ### 1.3 Households, their costs and childcare
 
@@ -30,25 +30,25 @@ This note comes first so that the design is fixed, and the expected results writ
 ### 1.4 Pooling within the household
 
 - **The Hub's words.** None on how a household shares its money or its BU.
-- **Duke's dashboard decision (d168):** pooled within the household as the main reading; each adult keeping their own as the comparison.
+- **Duke's dashboard decision:** pooled within the household as the main reading; each adult keeping their own as the comparison.
 - **What the model does.** `POOL` 'household' (main): earnings, BU (adults' and children's) and conversion income go into one household budget that pays the household's costs; 'individual' (reading): each adult pays their own share of the household's costs from their own income and BU. Pooling changes who counts as poor mechanically, so both are shown.
 
 ### 1.5 Inheritance
 
 - **The Hub's words.** *Transforming the US Real Estate Market*, section 2.1 (Acre Equity): "Inheritance Rights: Intergenerational wealth transfer without market exposure"; "Transferability: Accumulated equity transfers between properties within trust networks". No inheritance tax appears anywhere on the Hub (searched every page).
-- **Duke's dashboard decision (d169):** with ageing on, an estate passes to a surviving partner, otherwise to the children in equal shares, otherwise it leaves the model as now; no inheritance tax unless the Hub specifies one.
+- **Duke's dashboard decision:** with ageing on, an estate passes to a surviving partner, otherwise to the children in equal shares, otherwise it leaves the model as now; no inheritance tax unless the Hub specifies one.
 - **Claude's reading.** Acre Equity passes to heirs without being sold; if the heir lives in PTH it stays as Acre Equity, otherwise it is paid out at the liquid share the model already uses. Other wealth passes as money.
 - **What the model does.** As above, when ageing and households are both on (estates have no heir in the adult-only model, which keeps today's rule).
 
 ### 1.6 Children's lives
 
 - **The Hub's words.** *Economic Modeling and Simulation Analysis*, section 6 (results of an earlier simulation, not a design rule): "Families with children: Maximum benefit from housing security". FAQ: "Non-traditional forms of value creation are recognized — emotional support, childcare, eldercare ... all qualify for conversion at the 1× baseline".
-- **Claude's reading.** Children are dependants in the design; nothing on the Hub gives them economic choices. Unpaid care at home could convert expired BU at par under the FAQ's rule; the model has no time use, so in v5.3 this is a stated limit, not a mechanism (a candidate for the later "what money does not capture" step, ledger s117).
+- **Claude's reading.** Children are dependants in the design; nothing on the Hub gives them economic choices. Unpaid care at home could convert expired BU at par under the FAQ's rule; the model has no time use, so in v5.3 this is a stated limit, not a mechanism (a candidate for the later "what money does not capture" step).
 - **What the model does.** Children have an age, a childcare need by age, schooling (ages 5-17, no fee in public school; the cost enters only through MIT's basket), a share of household resources, and no choices. They age on the ageing stream; births follow US fertility by the mother's age on their own stream; at a sourced leaving-home age a child forms their own household and enters the adult population in place of the unrelated 25-year-old entrants. Partnerships stay as first drawn (no marriages or separations in v5.3; said on the page).
 
 ## 2. The question for Duke
 
-*Answered Oct 6, 2026 (dashboard d172, d173): children get a quarter of the adult BU and the Act's text should be updated to include it (the model shows "no child allowance" beside it); the glossary's full list of what BU can buy is the design, added first as a labelled reading, with the restudy deciding whether it joins the main result.*
+*Answered Oct 6, 2026: children get a quarter of the adult BU and the Act's text should be updated to include it (the model shows "no child allowance" beside it); the glossary's full list of what BU can buy is the design, added first as a labelled reading, with the restudy deciding whether it joins the main result.*
 
 The dashboard's one open question (the child allowance) was answered on Oct 6 (d167: a quarter, flat by age). Two new design questions came up while reading the Hub, both about what the framework is meant to do:
 
@@ -88,4 +88,4 @@ For each headline measure, the direction expected when households and children a
 
 ## 5. What stays the same
 
-Every new mechanism sits behind a switch (`HOUSEHOLDS`, `POOL`, `CHILD_BU_SHARE`, `BU_SCOPE`, `ESTATES`, household shocks), off by default, and with every switch off the output is bit-identical to v5.2's panels (proved with the panel fingerprints, `dev/tools/panel_hash.py`). The main stream's eight draws per adult-year are untouched: household composition, births, leaving home and household shocks each get their own random stream, registered in one table in the code and in MODEL_SPEC.md. Households appear first as a labelled reading beside the adult-only main result (d170); promotion is decided from the 500-seed restudy.
+Every new mechanism sits behind a switch (`HOUSEHOLDS`, `POOL`, `CHILD_BU_SHARE`, `BU_SCOPE`, `ESTATES`, household shocks), off by default, and with every switch off the output is bit-identical to v5.2's panels (proved with the panel fingerprints, `dev/tools/panel_hash.py`). The main stream's eight draws per adult-year are untouched: household composition, births, leaving home and household shocks each get their own random stream, registered in one table in the code and in MODEL_SPEC.md. Households appear first as a labelled reading beside the adult-only main result; promotion is decided from the 500-seed restudy.

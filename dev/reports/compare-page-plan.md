@@ -1,6 +1,6 @@
 # The compare page: plan for the next session
 
-Session 33, Oct 2, 2026. Written by Claude for Duke. Not built yet; this note is so the next session can start straight away.
+Oct 2, 2026. Written by Claude for Duke. Not built yet; this note is so the next session can start straight away.
 
 ## Why it was not built this session
 

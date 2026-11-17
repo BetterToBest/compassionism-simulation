@@ -1,4 +1,4 @@
-# The community and zone layer (S37): Claude's reading of the design, and what was built
+# The community and zone layer: Claude's reading of the design, and what was built
 
 **Claude's reading of the design.** This note says what the Research Hub's papers make depend on local density, how the simulation now models it, and what it leaves out. Where the papers are silent, the most cautious reading is taken and labelled a modelling assumption. It changes the model of the design, not the design: if anything here misrepresents the framework, that is Duke's call.
 
@@ -45,7 +45,7 @@ The switch `COMM` (per study row: option `cl`; `{}` for the main values) in `ind
 In all three environments, at 2 seeds:
 - One community (60 adults, k 100) equals the layer off on every measure, at 20 years, and at 40 years with ageing.
 - The no-programme row, and a row with CCO but no PTF (k 10), are identical with the layer on and off.
-- At 400 adults the layer changes the release row, runs with every swept setting, and gives identical results when run twice.
+- At 400 adults the layer changes the opt-in row, runs with every swept setting, and gives identical results when run twice.
 - Zones form with SZH and PTF on. With `zc: true` and CIP off, none form; with SZH off, none form.
 - With the layer off, the guard test (every earlier output bit-identical) and the validate, unit and page tests pass.
 

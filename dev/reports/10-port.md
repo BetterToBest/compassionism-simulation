@@ -18,7 +18,7 @@ The code is copied **verbatim** by a script (`dev/tools/port_engine.py`), not re
 Two new checks run on every change (`node domtest.js`, phase 12):
 
 1. Every one of the 45 ported functions in the page is a character-for-character copy of `harness.js`.
-2. The release run (every mechanism, paid for by the Source, at the sourced spending share) gives **identical results** in the page and in the harness on the same seeds, for every one of the 1,386 measure-rows compared, in all three environments, for no programme, the release row and H1.
+2. The release run (every mechanism, paid for by the Source, at the sourced spending share) gives **identical results** in the page and in the harness on the same seeds, for every one of the 1,386 measure-rows compared, in all three environments, for no programme, the opt-in row and H1.
 
 All 95 earlier checks still pass, so with the new switches off the page behaves exactly as v4.22: same presets, same seed-42 figures, same front door.
 

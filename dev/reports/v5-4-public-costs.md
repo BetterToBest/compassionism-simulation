@@ -1,10 +1,10 @@
 # Wider public costs avoided: prisons, emergency and hospital care, mental health, policing, child welfare
 
-Session 31, Oct 2, 2026. Design note before code (ledger step s69). Written by Claude.
+Oct 2, 2026. Design note before code. Written by Claude.
 
 ## What it is, in plain words
 
-Poverty costs governments money beyond welfare: more people in prison, more emergency and hospital visits, more psychiatric care, more child welfare cases. If Compassionism lowers poverty, some of those costs fall. Session 30 counted one of them, homelessness (with the health and justice costs of homeless people), and found it saves $22 to $209 per adult a year at Reference, under 1% of the program's cost. This step adds the others Duke listed.
+Poverty costs governments money beyond welfare: more people in prison, more emergency and hospital visits, more psychiatric care, more child welfare cases. If Compassionism lowers poverty, some of those costs fall. The first v5.0 candidate counted one of them, homelessness (with the health and justice costs of homeless people), and found it saves $22 to $209 per adult a year at Reference, under 1% of the program's cost. This step adds the others Duke listed.
 
 ## The rule for every figure
 
@@ -24,7 +24,7 @@ Where no causal estimate exists, the main figure is zero and the descriptive gap
 | **Emergency rooms and ambulances** | $660 (ages 18-44) and $880 (45-64) per treat-and-release visit, 2021 (AHRQ HCUP Statistical Brief 311) | No causal estimate found for adults' income | Zero; Forget's 8.5% shown as an upper bound, labelled |
 | **State psychiatric hospitals** | $14.8 billion of $61.4 billion state mental health spending, FY2024 (NRI, State Mental Health Agency Expenditures and Funding Sources, FY2001-FY2024) | Forget 2011 (mental health admissions among the 8.5%) | Applied only to state psychiatric care, which the hospital row does not cover |
 | **Policing and courts** | $135 billion police, $52 billion courts, 2021 (Urban Institute from Census state and local finance data) | Cash lowered property crime 8% but raised substance-related incidents 10% in the four weeks after Alaska's dividend, with no change in violence (Watson, Guettabi and Reimer 2020, Review of Economics and Statistics) | Zero main: police and court budgets are mostly fixed salaries that do not fall with a few fewer incidents. Both directions of the Alaska finding shown as a range |
-| **Child welfare** | $31.4 billion, state fiscal year 2020 (Child Trends, Child Welfare Financing Survey) | Extra income randomly given to low-income mothers lowered child maltreatment risk (Cancian, Yang and Slack 2013, Social Service Review 87(3)) | Not costed: the model has no children yet (ledger step s52). Named on the page as a limit |
+| **Child welfare** | $31.4 billion, state fiscal year 2020 (Child Trends, Child Welfare Financing Survey) | Extra income randomly given to low-income mothers lowered child maltreatment risk (Cancian, Yang and Slack 2013, Social Service Review 87(3)) | Not costed: the model has no children yet. Named on the page as a limit |
 
 ## Not counting things twice
 
@@ -39,11 +39,11 @@ A row beside the program's cost: public costs avoided per adult a year, with the
 
 ## Switches and checks
 
-- Switch `AVOID_WIDE` (off = session 30's homelessness-only figure). Off is bit-identical. It only reads the model's results; it changes no adult's income, so it cannot move poverty figures.
+- Switch `AVOID_WIDE` (off = the first v5.0 candidate's homelessness-only figure). Off is bit-identical. It only reads the model's results; it changes no adult's income, so it cannot move poverty figures.
 - Tests: zero income gain gives zero avoided cost; no row applies an effect beyond its study's income range; homeless adults are excluded from the new rows; the ranges' low end is never above the main figure.
 - To extract at build time and cite in the code: the dollar size of the SSI loss in Deshpande and Mueller-Smith (to scale the effect per dollar), the HCUP public-payer share for adults 18-64, and the prisoner-year figure's inflation to 2025 dollars (BLS CPI-U).
 
-## Built (session 31, Oct 2, 2026), and results
+## Built (Oct 2, 2026), and results
 
 Built as `avoidWide()` in `harness.js` (reporting only: it changes nobody's income), with 3 unit tests. Two refinements to the plan above:
 
@@ -56,7 +56,7 @@ Results for v5.0, per adult a year (500 runs; `dev/runs/release-panel.json`):
 |---|---|---|---|
 | Prisons (main) | $771 | $1,462 | $668 |
 | Hospitals and psychiatric care | $34 | $37 | $13 |
-| Homelessness (session 30's low-high) | $29-$283 | $27-$262 | $6-$59 |
+| Homelessness (the first v5.0 candidate's low-high) | $29-$283 | $27-$262 | $6-$59 |
 | **All, main reading** | **$834-$1,088** | **$1,526-$1,761** | **$686-$739** |
 | Share of the programme's cost | 2.8-3.7% | 5.5-6.4% | 6.5-7.0% |
 | High figure (the prison study applied to everyone, plus emergency rooms) | about $7,100 | about $13,400 | about $6,100 |

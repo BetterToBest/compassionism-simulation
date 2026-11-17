@@ -1,6 +1,6 @@
 # The plain-language pass over the pages and reports
 
-Oct 13, 2026 (ledger step s147). No engine code changed and no figure changed. This note says what was reworded, how we know no number moved, and the wording questions that are Duke's to decide (section 3). None of those was applied.
+Oct 13, 2026. No engine code changed and no figure changed. This note says what was reworded, how we know no number moved, and the wording questions that are Duke's to decide (section 3). None of those was applied.
 
 ## 1. What changed, in plain words
 
@@ -16,7 +16,7 @@ The rule for the pass: keep every fact and every number; shorten long sentences;
 | README | The two long opening paragraphs became short sentences. The attribution paragraph is untouched. |
 | Economist checklist (`dev/tools/review_rows.py`, regenerated) | Rows 1, 2, 6 and 10 spell out CCO, PTF, PTH, BU, basket poverty and wealth poverty. |
 | Notes on stale records | `CONTRIBUTING.md` now says its open-items table shows where each item stood at v5.2 and has not been re-checked against v5.3 to v5.5. `dev/PROGRESS.md` now says to start from `HANDOFF.md` because some boxes were left unticked after the work was done. Neither table was re-judged row by row (see section 3, item 6). |
-| Reports | Three lines in two reports named a bare label (d137 to d139, d194); each now says what the label stands for. The other reports already put every label after words. |
+| Reports | Three lines in two reports named a bare label (d137 to d139); each now says what the label stands for. The other reports already put every label after words. |
 
 Left as they were, on purpose: `earlier-engine.html` (the frozen v4.22 page, "as coded"); the technical body of `replication.html` (about 60,000 words of formulas and parameters; its opening, "What is being replicated", was read and already reads plainly); the data tables' row labels; and release data for v5.0 to v5.3 (archives of what those releases said).
 

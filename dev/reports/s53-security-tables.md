@@ -1,8 +1,8 @@
-# S53 security outcomes: tables (pilot, 50 seeds; labelled pilot, not figures of the model)
+# Security outcomes: tables (pilot, 50 seeds; labelled pilot, not figures of the model)
 
 Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the seed mean and its 95% paired bootstrap interval (2000 replicates, seed 53). Basis: E emergent, M mixed, C by construction (accounting: a difference there is the design working as written, not evidence). Decision rule 1 credits a gain only where the interval excludes zero in the favourable direction on an E or M measure.
 
-## Reference: release row, no outside shock
+## Reference: opt-in row, no outside shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -26,7 +26,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 48.80 | -15.23 (-16.07, -14.43) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 31.88 | +27.20 (+25.87, +28.59) | | |
 
-## Reference: C2.2 design, no outside shock
+## Reference: full-coverage design, no outside shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -50,7 +50,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 26.75 | -24.99 (-26.12, -23.95) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 19.82 | -19.38 (-20.48, -18.37) | | |
 
-## Reference: release row, main supply shock
+## Reference: opt-in row, main supply shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -74,7 +74,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 50.11 | -15.56 (-16.42, -14.71) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 32.66 | +29.40 (+28.03, +30.77) | | |
 
-## Reference: C2.2 design, main supply shock
+## Reference: full-coverage design, main supply shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -98,7 +98,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 27.51 | -25.68 (-26.83, -24.63) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 20.48 | -19.85 (-21.02, -18.80) | | |
 
-## Reference: release row, savings that keep up with prices
+## Reference: opt-in row, savings that keep up with prices
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -122,7 +122,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 48.78 | -15.20 (-16.05, -14.40) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 31.09 | -9.71 (-10.48, -8.99) | | |
 
-## Adverse: release row, no outside shock
+## Adverse: opt-in row, no outside shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -146,7 +146,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 65.56 | -17.74 (-18.82, -16.69) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 44.13 | +44.81 (+43.37, +46.34) | | |
 
-## Adverse: C2.2 design, no outside shock
+## Adverse: full-coverage design, no outside shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -170,7 +170,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 37.92 | -35.58 (-36.85, -34.41) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 28.44 | -23.28 (-24.59, -22.07) | | |
 
-## Adverse: release row, main supply shock
+## Adverse: opt-in row, main supply shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -194,7 +194,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 66.81 | -18.02 (-19.13, -16.94) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 44.91 | +45.30 (+43.84, +46.87) | | |
 
-## Adverse: C2.2 design, main supply shock
+## Adverse: full-coverage design, main supply shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -218,7 +218,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 38.82 | -36.35 (-37.63, -35.18) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 29.43 | -21.39 (-22.51, -20.34) | | |
 
-## Adverse: release row, savings that keep up with prices
+## Adverse: opt-in row, savings that keep up with prices
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -242,7 +242,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 65.56 | -17.65 (-18.75, -16.59) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 38.90 | -11.32 (-12.28, -10.37) | | |
 
-## Stress: release row, no outside shock
+## Stress: opt-in row, no outside shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -266,7 +266,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 66.46 | -4.54 (-5.06, -4.04) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 44.86 | +39.05 (+38.12, +39.93) | | |
 
-## Stress: C2.2 design, no outside shock
+## Stress: full-coverage design, no outside shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -290,7 +290,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 38.70 | -35.27 (-36.00, -34.60) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 29.36 | -10.94 (-11.86, -10.03) | | |
 
-## Stress: release row, main supply shock
+## Stress: opt-in row, main supply shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -314,7 +314,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 67.65 | -4.62 (-5.15, -4.11) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 45.77 | +39.70 (+38.79, +40.54) | | |
 
-## Stress: C2.2 design, main supply shock
+## Stress: full-coverage design, main supply shock
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -338,7 +338,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 39.58 | -35.91 (-36.63, -35.23) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 30.22 | -7.92 (-8.79, -6.99) | | |
 
-## Stress: release row, savings that keep up with prices
+## Stress: opt-in row, savings that keep up with prices
 
 | Measure | Basis | No programme (all) | Change: all adults | Change: took part | Change: chose not to take part |
 |---|---|---|---|---|---|
@@ -362,7 +362,7 @@ Engine f15eaf6. Each cell: the design minus no programme on the same seeds, the 
 | basket poverty of non-participants, % (guardrail 6) | E | 66.45 | -4.49 (-5.01, -3.99) | | |
 | wealth poverty of non-participants, % (guardrail 6) | E | 39.83 | -2.77 (-3.15, -2.37) | | |
 
-## Difference in differences: Savings that keep up with prices against plain savings (release row, no outside shock; Q19, decision rule 3)
+## Difference in differences: Savings that keep up with prices against plain savings (opt-in row, no outside shock; Q19, decision rule 3)
 
 Each cell: the change with the programme in the first reading minus the change in the second, on the same seeds, with its 95% paired bootstrap interval; an interval that excludes zero means the reading moves the result.
 
@@ -414,7 +414,7 @@ Each cell: the change with the programme in the first reading minus the change i
 | Stress | basket poverty of non-participants, % | E | +0.05 (+0.04, +0.06) | | |
 | Stress | wealth poverty of non-participants, % | E | -41.82 (-42.79, -40.81) | | |
 
-## Difference in differences: Main supply shock against no shock (release row; descriptive: how much the change moves under the shock)
+## Difference in differences: Main supply shock against no shock (opt-in row; descriptive: how much the change moves under the shock)
 
 Each cell: the change with the programme in the first reading minus the change in the second, on the same seeds, with its 95% paired bootstrap interval; an interval that excludes zero means the reading moves the result.
 
@@ -466,7 +466,7 @@ Each cell: the change with the programme in the first reading minus the change i
 | Stress | basket poverty of non-participants, % | E | -0.08 (-0.15, -0.00) | | |
 | Stress | wealth poverty of non-participants, % | E | +0.65 (+0.39, +0.93) | | |
 
-## Difference in differences: Main supply shock against no shock (C2.2 design; descriptive: how much the change moves under the shock)
+## Difference in differences: Main supply shock against no shock (full-coverage design; descriptive: how much the change moves under the shock)
 
 Each cell: the change with the programme in the first reading minus the change in the second, on the same seeds, with its 95% paired bootstrap interval; an interval that excludes zero means the reading moves the result.
 

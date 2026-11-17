@@ -40,13 +40,11 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.6 Release Notes
+## v5.9.7 Release Notes
 
-Released Nov 17, 2026: **reader-facing wording.** The pages no longer carry the project's internal bookkeeping. No engine line changes and no figure changes.
-- **Versions by number.** The two model generations are called v5.6 (its panel published Oct 14, 2026) and v5.9 (its engine frozen Nov 14, 2026, results first shown in v5.8 and leading since v5.9) instead of `release 1` and `release 2`; `round 2 of the engine` is the v5.9 model. Links that use `?rel=1` still open the v5.6 view.
-- **Plain names for the designs.** `C2.2` is now the full-coverage design: every adult is covered automatically and paid enough to reach the cost of the basket of essentials. The page says once, where it is introduced, that it is built to meet NEEC's criterion C2.2. "The release design" is now the opt-in design: adults choose to take part, and it pays the allowance the Hub's papers set. Labels stored in the data files are unchanged. The pages map them to these names when they print them, and downloads keep each file as written.
-- **Studies by subject.** Studies are named by what they ask (the central-bank study, open access, the synergy study, …), not by step codes. Sentences that only recorded project history are cut.
-- **A check.** `dev/tools/reader_check.js` opens every page in each view with its data. `dev/tools/reader_codes.py --check` reads the static pages, `site/*.js`, README, CONTRIBUTING, REPRODUCE, the manifest's summaries and the glossary. Both fail on a step or ledger code, a session or part label, a job id, `round 2`, `release 1/2` or `C2.2` (domtest Phase 17). The inventory before the edit is in `dev/reports/reader-wording.md`; the names and the reasons are in `dev/DECISIONS.md`. CHANGELOG.md and the reports in `dev/reports/` are reworded next; `reader_codes.py --check --all` lists what remains in them.
+Released Nov 17, 2026: **reader-facing wording, second part: CHANGELOG.md and the reports.** No engine line changes, no page changes, and no figure changes.
+- **The release notes and the plain-words reports** in `dev/reports/` now use the same names as the pages: v5.6 and v5.9 for the two model generations, the full-coverage design and the opt-in design, and studies named by what they ask. Each report that uses the full-coverage design says once that it is built to meet NEEC's criterion C2.2. Sentences that cited a step, a ledger decision, a job or a working session now say what was meant (Duke's decision, the measures run, the first v5.0 candidate) or drop the code. Dates, figures, findings, limits and correction notes are unchanged. Labels that a report defines for its own use (the financing reading's numbered statements, the supply-shock reading's numbered readings, the low-share trace's three parts, the pilots' lettered studies, and a v4 table's wealth deciles) stay, listed in `dev/tools/reader_codes_allow.txt`.
+- **The check covers them.** `dev/tools/reader_codes.py --check` (domtest Phase 17) now reads CHANGELOG.md and every report in `dev/reports/`, so no file a reader opens is left out. It also catches two forms it missed: a version label at the end of a sentence (`release 2.`) and a pair of codes joined by a slash. The counts before and after are in `dev/reports/reader-wording.md`.
 
 ## How to Contribute
 
@@ -452,7 +450,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.6*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.7*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

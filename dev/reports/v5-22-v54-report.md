@@ -39,7 +39,7 @@ Every interval is within ±0.3 points of the figure shown.
 
 ## 2. PTH as a housing balance sheet (`PTHB`)
 
-**What changed.** Each PTH home now has the trust's books: its value (18.2 years of its market housing cost; Federal Reserve and BEA), land (38%), upkeep (2.3% of the building a year), property tax (0.65%), debt (at 1.8% above the price rise), the member's Acre Equity and the community's equity. The identity "homes − debt = members' equity + community equity" is checked for every home every year and holds. Acre Equity grows with the home but at most at the price rise + 2% (your cap; you confirmed it, d175). Members leave the network at renters' rate of moving to another county (6.2% a year) and take 40% of their equity in cash (your Real Estate paper's figures; you confirmed it, d174); the next household waiting moves in.
+**What changed.** Each PTH home now has the trust's books: its value (18.2 years of its market housing cost; Federal Reserve and BEA), land (38%), upkeep (2.3% of the building a year), property tax (0.65%), debt (at 1.8% above the price rise), the member's Acre Equity and the community's equity. The identity "homes − debt = members' equity + community equity" is checked for every home every year and holds. Acre Equity grows with the home but at most at the price rise + 2% (your cap; you confirmed it). Members leave the network at renters' rate of moving to another county (6.2% a year) and take 40% of their equity in cash (your Real Estate paper's figures; you confirmed it); the next household waiting moves in.
 
 **Results (Reference, end of year 20, year-0 dollars per home).**
 

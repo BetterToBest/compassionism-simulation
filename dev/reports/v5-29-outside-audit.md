@@ -1,13 +1,13 @@
 # The outside audit before the Runpod study: what was fixed, what waits, what was turned down
 
-Oct 13, 2026 (ledger step s154). Two outside AI reviewers (GPT and Grok) read the health-financing reports (v5-27 and v5-28), the decision log, the handoff note and the engine before the paid 500-seed study on a rented server (Runpod; ledger step s137). This note sorts every finding into three groups: **fix before the study** (done in this session), **fix later** (recorded, with the reason it can wait) and **turned down** (with the reason). No engine code changed; the changes are to the study's design, the tools that run it, and the wording of two reports. Choices are recorded in `dev/DECISIONS.md`, Session 2d.
+Oct 13, 2026. Two outside AI reviewers (GPT and Grok) read the health-financing reports (v5-27 and v5-28), the decision log, the handoff note and the engine before the paid 500-seed study on a rented server (Runpod). This note sorts every finding into three groups: **fix before the study** (done in this session), **fix later** (recorded, with the reason it can wait) and **turned down** (with the reason). No engine code changed; the changes are to the study's design, the tools that run it, and the wording of two reports. Choices are recorded in `dev/DECISIONS.md`.
 
 Labels as in the other reports: **sourced** (from a published source), **simulated** (an output of the model's runs), **derived** (arithmetic on sourced or simulated figures), **design value** (a modelling choice, swept).
 
 ## What the reviewers got right that matters most
 
 - **The cost-of-living line is derived, not a published MIT number.** The $49,370 a year for one adult is the plain (unweighted) average of the 51 state figures in MIT's Living Wage Calculator (its February 2026 data, one adult, no children; checked by hand for five states in an earlier session). MIT publishes no single national figure. Weighting the states by population would give about $51,210, 3.7% higher (an outside recomputation, partly checked; not adopted). The reports called the figure "sourced"; they now say "derived" and give the rule.
-- **Setting C's arithmetic sentence was wrong.** Setting C is single payer with a private layer, paid like Medicare Advantage. The report said "20% is the high case of both together (1.08 x 1.11)". But 1.08 x 1.11 is the coding high case with selection at its central value (19.9%). Both high together is 1.08 x 1.165, which is 25.8%, and that is what the table's "both high" row ran. Also, the central case (1.04 x 1.11 = 15.4%) does not reproduce MedPAC's 14% total. MedPAC's total also carries a part of Medicare Advantage's payment rules (bids and bonuses) that, by these figures, comes to about 1% below traditional Medicare (derived: 1.14 / 1.154 = 0.988). The model has no counterpart to that part. So the central case sits 1.4 points above MedPAC's total by construction; it is not a match. The wording is corrected. Duke accepted the earlier wording (ledger decision d193); this is an arithmetic correction to it, flagged for his reading.
+- **Setting C's arithmetic sentence was wrong.** Setting C is single payer with a private layer, paid like Medicare Advantage. The report said "20% is the high case of both together (1.08 x 1.11)". But 1.08 x 1.11 is the coding high case with selection at its central value (19.9%). Both high together is 1.08 x 1.165, which is 25.8%, and that is what the table's "both high" row ran. Also, the central case (1.04 x 1.11 = 15.4%) does not reproduce MedPAC's 14% total. MedPAC's total also carries a part of Medicare Advantage's payment rules (bids and bonuses) that, by these figures, comes to about 1% below traditional Medicare (derived: 1.14 / 1.154 = 0.988). The model has no counterpart to that part. So the central case sits 1.4 points above MedPAC's total by construction; it is not a match. The wording is corrected. Duke accepted the earlier wording; this is an arithmetic correction to it, flagged for his reading.
 
 ## Fix before the study (done)
 
@@ -41,7 +41,7 @@ Labels as in the other reports: **sourced** (from a published source), **simulat
 - **"Morris can miss interactions; go straight to Sobol" (Grok 5).** Morris's spread measure (sigma) flags interactions, and Sobol follows on the leaders. Kept as designed, with the noise check added.
 - **A separate engine option charging the overpayment only for people 65 and over (Grok 1).** The study's no-overpayment row bounds it from below and the central row from above, so the option would add engine code without widening the range shown.
 
-## What the study runs (ledger step s137)
+## What the study runs
 
 All from one pinned commit, seeds 1-500, paired, in the Reference, Adverse and Stress environments (`dev/tools/s137_jobs.sh`):
 

@@ -17,7 +17,7 @@
 | Gini, disposable income | 0.3353 | 0.3355 | 0.0002 ± 0.0000 | 0.3357 | 0.0004 ± 0.0000 |
 | families with net worth below zero, year 20 (%) | 21.14 | 21.55 | 0.40 ± 0.11 | 21.91 | 0.77 ± 0.13 |
 
-**Release design** (frozen engine)
+**Opt-in design** (frozen engine)
 
 | Measure | share 0.593 | share 0.779 | change | share 0.877 | change |
 |---|---|---|---|---|---|
@@ -34,7 +34,7 @@
 | Gini, disposable income | 0.3492 | 0.3493 | 0.0001 ± 0.0001 | 0.3494 | 0.0002 ± 0.0001 |
 | families with net worth below zero, year 20 (%) | 9.21 | 9.30 | 0.09 ± 0.05 | 9.47 | 0.26 ± 0.07 |
 
-**C2.2 design** (frozen engine)
+**Full-coverage design** (frozen engine)
 
 | Measure | share 0.593 | share 0.779 | change | share 0.877 | change |
 |---|---|---|---|---|---|
@@ -85,7 +85,7 @@
 | Gini, disposable income | 0.3418 | 0.3420 | 0.0002 ± 0.0000 | 0.3422 | 0.0004 ± 0.0000 |
 | families with net worth below zero, year 20 (%) | 29.23 | 29.85 | 0.63 ± 0.10 | 30.53 | 1.30 ± 0.16 |
 
-**Release design** (frozen engine)
+**Opt-in design** (frozen engine)
 
 | Measure | share 0.593 | share 0.779 | change | share 0.877 | change |
 |---|---|---|---|---|---|
@@ -102,7 +102,7 @@
 | Gini, disposable income | 0.3672 | 0.3674 | 0.0002 ± 0.0001 | 0.3675 | 0.0003 ± 0.0001 |
 | families with net worth below zero, year 20 (%) | 20.34 | 20.99 | 0.65 ± 0.14 | 21.62 | 1.28 ± 0.21 |
 
-**C2.2 design** (frozen engine)
+**Full-coverage design** (frozen engine)
 
 | Measure | share 0.593 | share 0.779 | change | share 0.877 | change |
 |---|---|---|---|---|---|
@@ -153,7 +153,7 @@
 | Gini, disposable income | 0.3418 | 0.3420 | 0.0002 ± 0.0000 | 0.3422 | 0.0004 ± 0.0000 |
 | families with net worth below zero, year 20 (%) | 29.23 | 29.85 | 0.63 ± 0.10 | 30.53 | 1.30 ± 0.16 |
 
-**Release design** (frozen engine)
+**Opt-in design** (frozen engine)
 
 | Measure | share 0.593 | share 0.779 | change | share 0.877 | change |
 |---|---|---|---|---|---|
@@ -170,7 +170,7 @@
 | Gini, disposable income | 0.3565 | 0.3567 | 0.0001 ± 0.0000 | 0.3569 | 0.0003 ± 0.0000 |
 | families with net worth below zero, year 20 (%) | 32.37 | 33.23 | 0.87 ± 0.13 | 34.16 | 1.79 ± 0.20 |
 
-**C2.2 design** (frozen engine)
+**Full-coverage design** (frozen engine)
 
 | Measure | share 0.593 | share 0.779 | change | share 0.877 | change |
 |---|---|---|---|---|---|

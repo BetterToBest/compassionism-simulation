@@ -1,16 +1,16 @@
 # Duke's answers to the seven wording questions, applied
 
-Oct 14, 2026 (ledger step s160, with issue i20). Wording only: no engine code changed and no figure changed. This note says what each answer changed, one place where a later decision changed the meaning of Duke's pick, and how we know no number moved.
+Oct 14, 2026 (with one issue). Wording only: no engine code changed and no figure changed. This note says what each answer changed, one place where a later decision changed the meaning of Duke's pick, and how we know no number moved.
 
-The questions were in `dev/reports/v5-31-clarity-pass.md`, section 3. Duke answered them in the project ledger (decisions d201 to d207), and one more decision (d213) was added before this session.
+The questions were in `dev/reports/v5-31-clarity-pass.md`, section 3. Duke answered them in the project ledger (decisions d201 to d207), and one more decision was added before this session.
 
 ## 1. Where d213 changed the meaning of Duke's pick for d201 (read this first)
 
-The question (d201) was which programs the inflation-damping constant belongs to. Duke picked the second option, which described community housing (PTH) as the program "which holds rents down".
+The question was which programs the inflation-damping constant belongs to. Duke picked the second option, which described community housing (PTH) as the program "which holds rents down".
 
 That description is not what the model does. In the engine, PTH membership lowers the **overall** inflation rate of the whole simulated economy (the inflation rate is multiplied by one minus 0.10 times the share of people who are PTH members). No rent calculation uses that constant. Writing "which holds rents down" on the study page would have claimed a mechanism the code does not have.
 
-So a follow-up decision (d213) was put to Duke in the ledger, and confirmed: name both programs without a claim about rents, and say the damping applies to the overall inflation rate. The study page and the economist checklist now read:
+So a follow-up decision was put to Duke in the ledger, and confirmed: name both programs without a claim about rents, and say the damping applies to the overall inflation rate. The study page and the economist checklist now read:
 
 > Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH): how much of outside inflation they absorb, applied to the overall inflation rate
 
@@ -28,7 +28,7 @@ What this changes from Duke's pick: the page no longer says PTH holds rents down
 | d205 | No change to the front page's header strip | Nothing changed (the strip already shows each name on hover, with a link). |
 | d206 | Mark the old open-items table and progress boxes as dated historical records | `CONTRIBUTING.md`'s table and `dev/PROGRESS.md`'s tick boxes are now labelled "historical record, closed on October 14, 2026; read-only", pointing to HANDOFF.md and the ledger as the live record. No row was re-checked. |
 | d207 | Keep the "What would have to be true" panel, labelled Claude's reading, and name it for the outside audits | The study page's panel title now says "(Claude's reading)" and its first line says it is not yet checked by an outside reader. The economist checklist has a new row (13) asking a reviewer to check it. |
-| i20 | (issue, not a question) | The checks and release workflows are pinned to the ubuntu-24.04 runner image, Node 22.22.0 (the version the 500-seed runs record) and, for the checks, Python 3.13. The default runner image moves to Ubuntu 26 on Oct 19; pinning keeps the bit-identical tests meaningful. |
+| The runner image | (issue, not a question) | The checks and release workflows are pinned to the ubuntu-24.04 runner image, Node 22.22.0 (the version the 500-seed runs record) and, for the checks, Python 3.13. The default runner image moves to Ubuntu 26 on Oct 19; pinning keeps the bit-identical tests meaningful. |
 
 Not changed on purpose: the column names in the downloadable CSV and JSON files (for example `design_neutral_change_pts`) stay as they are, because they are names other people's scripts may read.
 

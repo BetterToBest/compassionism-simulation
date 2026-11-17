@@ -1,6 +1,6 @@
 # Spending layer: new spending raises output and jobs where there is idle capacity
 
-Session 31, Oct 2, 2026. Design note before code (ledger step s68). Written by Claude.
+Oct 2, 2026. Design note before code. Written by Claude.
 
 ## What it is, in plain words
 
@@ -40,11 +40,11 @@ The ledger's expectation, kept as a hypothesis: the biggest help comes in the Ad
 
 ## Switches and checks
 
-- Switch `MULT` (`'off'` = session 30, `'main'`, `'low'`, `'high'`). With `'off'` every output is bit-identical (full-output diff). No new random draws.
+- Switch `MULT` (`'off'` = the first v5.0 candidate, `'main'`, `'low'`, `'high'`). With `'off'` every output is bit-identical (full-output diff). No new random draws.
 - Tests: added output is zero when the push is zero; it never exceeds idle capacity; with the normal multiplier at 0 nothing is added in normal years; the earnings added equal the labour share of the added output; adults who lost no work get none of the re-employment earnings.
 - Restudy: seeds 1-500, paired, three environments, all three rows; basket and wealth poverty, work, prices, cost and groups.
 
-## Built (session 31, Oct 2, 2026), and one change from the plan above
+## Built (Oct 2, 2026), and one change from the plan above
 
 Built as switch `MULT` in `harness.js`, with 4 unit tests (`multUnitSuite`). With it off, output is identical.
 

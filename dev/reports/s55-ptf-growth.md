@@ -1,6 +1,6 @@
-# Open PTF access, part 2: how far the PTFs' share of sales grows (S55, Nov 8, 2026)
+# Open PTF access, part 2: how far the PTFs' share of sales grows (Nov 8, 2026)
 
-Claude's reading of the design, and what it adds to the model. Part 1 (`dev/reports/s55-ptf-access-reading.md`) let every adult buy at PTF prices for their zone's PTF share of essential sales, and held that share at its start. This part lets the share grow, as Duke asked on Nov 7 (research-update `audits/2026-11-ptf-access.md`, reading 6 and ledger D16): with capacity, and with capital, operations and market demand as factors too. Nothing here is a result: no study has run, and the rows are preregistered before any run.
+Claude's reading of the design, and what it adds to the model. Part 1 (`dev/reports/s55-ptf-access-reading.md`) let every adult buy at PTF prices for their zone's PTF share of essential sales, and held that share at its start. This part lets the share grow, as Duke asked on Nov 7 (research-update `audits/2026-11-ptf-access.md`, reading 6, and Duke's answers): with capacity, and with capital, operations and market demand as factors too. Nothing here is a result: no study has run, and the rows are preregistered before any run.
 
 ## The rule
 Each year, before anything reads the share, every zone's PTF share of essential sales grows as far as three limits allow, whichever binds first. It never falls: the limits stop expansion, and nothing here closes a PTF.
@@ -12,8 +12,8 @@ Each year, before anything reads the share, every zone's PTF share of essential 
 With zones (the community layer), capacity is counted for the whole population. Where the zones together want more growth than the capacity left, every growing zone gets the same fraction of what it wants. Capacity by zone is not modelled.
 
 ## What a first look shows (diagnostics only, two seeds, no outcome read)
-- Reference environment, release design: the share follows capacity for about eight years, from 18% to about 33% at year 5, then stops at the 49% demand ceiling. So zones pass the 40% test partway through the run, and never reach the 55% test.
-- Stress environment, release design: capacity binds the whole run (about 12% at year 5, 19% at year 10, 40% at year 20).
+- Reference environment, opt-in design: the share follows capacity for about eight years, from 18% to about 33% at year 5, then stops at the 49% demand ceiling. So zones pass the 40% test partway through the run, and never reach the 55% test.
+- Stress environment, opt-in design: capacity binds the whole run (about 12% at year 5, 19% at year 10, 40% at year 20).
 - With no demand ceiling, the Reference share reaches 100% by year 20. With outside running costs, it stays at its start.
 
 These are a check that the rule runs as written. The preregistered rows, on 500 seeds, will say what open access does to poverty, cost and prices.
