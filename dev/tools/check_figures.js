@@ -243,6 +243,13 @@ async function run(opts) {
       add('S11: python3 dev/tools/suite_r2.py --check: release 2\'s suite folder (data/releases/r2/) carries release 2\'s published effects as data/studies/r2-effects.json has them, and its series agree with them', g4.status === 0, g4.stdout.trim().split('\n').pop());
       const X = rj('data/releases/r2/index.json'), R2W = { version: X.release, idx: X, meta: { seeds: X.seeds, agents: X.agents, envs: X.envs }, suite: {}, effects: X.effects }, sp5 = []; let n5 = 0;
       Object.entries(X.suite).forEach(([y, f]) => { R2W.suite[y] = rj(path.join('data/releases', f)); });
+      /* S79: job X3's files (data/releases/r2/study-*.json), in the layout the page reads: study.Y as stored, and panels.Y.envs.E.base / .rows.ROW with each
+       * measure's mean over the runs, the public costs avoided (ipbi) flattened in, and the paired differences d.KEY = [mean, lo95, hi95] */
+      if (X.studyFiles) { R2W.study = {}; R2W.panels = {}; Object.entries(X.studyFiles).forEach(([y, f]) => { const Sy = R2W.study[y] = rj(path.join('data/releases', f)), P = R2W.panels[y] = { envs: {} };
+        Object.entries(Sy.envs).forEach(([e, E]) => { const o = P.envs[e] = { rows: {} };
+          Object.entries(E.measures).forEach(([row, Mr]) => { const r = {}; Object.entries(Mr).forEach(([k, v]) => { if (k === 'ipbi') Object.assign(r, v); else if (k === 'd') r.d = v; else r[k] = v.mean; });
+            if (row === 'base') o.base = r; else o.rows[row] = r; }); }); }); }
+      const nMoves = X.studyFiles ? 6 : 0;
       for (const [e, y, rd2] of [['ref', '20', 'c22'], ['adv', '40', 'release'], ['st', '20', 'release'], ['st', '40', 'c22']]) {
         const d5 = new JSDOM(rd('suite.html'), { runScripts: 'outside-only', url: 'https://bettertobest.github.io/compassionism-simulation/suite.html?env=' + e + '&years=' + y + '&read=' + rd2 }), w5 = d5.window; w5.scrollTo = () => {}; serve(w5);
         w5.eval(chartsSrc); w5.eval(findingsSrc); w5.eval([...w5.document.querySelectorAll('script')].filter(x => !x.src && !x.type)[0].textContent); await settle(w5); await settle(w5);
@@ -251,8 +258,9 @@ async function run(opts) {
           w5.document.querySelectorAll('#suite details').forEach(d => { d.open = true; });
           const x = spanProbs(w5.document, R2W, 'suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g); n5 += x.n; sp5.push(...x.bad);
           if (w5.document.querySelectorAll('.su-sec').length !== 9 || w5.document.querySelectorAll('.su-sec svg.fx-svg').length !== 11) sp5.push('suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': a section or chart did not render');
+          if (w5.document.querySelectorAll('#moves table').length !== nMoves) sp5.push('suite r2 ' + e + ' ' + y + 'y ' + rd2 + ' ' + g + ': the movement section drew ' + w5.document.querySelectorAll('#moves table').length + ' tables, not ' + nMoves);
           scan.push(...unmarked(w5.document.getElementById('content'), 'suite r2 ' + e + ' ' + y + 'y')); } }
-      add('S11: on the visual suite page\'s release 2 view every number (texts, cards, tables and the quoted published effects) equals release 2\'s suite folder, in four views of environment, horizon and design and all three groups of adults', sp5.length === 0 && n5 > 1500,
+      add('S11, S79: on the visual suite page\'s release 2 view every number (texts, cards, tables, the quoted published effects and, from job X3, the other five measures and the measures study\'s six movement tables) equals release 2\'s suite folder, in four views of environment, horizon and design and all three groups of adults', sp5.length === 0 && n5 > (X.studyFiles ? 3000 : 1500),
         sp5.length ? sp5.slice(0, 4).join('; ') : n5 + ' numbers checked in 12 views'); }
     const un3 = scan.filter(s => s.startsWith('suite'));
     add('session 11: no percentage, dollar figure or price level is typed into the visual suite page', un3.length === 0, un3.length ? [...new Set(un3)].slice(0, 5).join('; ') : 'the whole page in 24 views, both releases'); }

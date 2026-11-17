@@ -1285,7 +1285,7 @@ function phase15(done) {
     const r2 = open(''); await later(400); const d2 = r2.w.document, S2 = r2.w.suiteState(), p2 = [...d2.querySelectorAll('#controls button[aria-pressed="true"]')].map(x => x.dataset.value).sort().join(',');
     const t2 = d2.querySelectorAll('#suite table').length, l2 = [...d2.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();
     check('S11: the suite page opens on release 2 (no program, C2.2 and the release design) at 40 years on the C2.2 design, labelled with its engine; every section, chart and table draws, each with its downloads',
-      S2.st.rel === '2' && S2.R && S2.R.version === '2' && p2 === '2,40,c22,ref' && d2.querySelectorAll('.su-sec').length === 9 && d2.querySelectorAll('.su-sec svg.fx-svg').length === 11 && l2 === '40,40' && t2 === 7 && d2.querySelectorAll('#suite .fx-tools button').length === 14 &&
+      S2.st.rel === '2' && S2.R && S2.R.version === '2' && p2 === '2,40,c22,ref' && d2.querySelectorAll('.su-sec').length === 9 && d2.querySelectorAll('.su-sec svg.fx-svg').length === 11 && l2 === '40,40' && t2 === 13 && d2.querySelectorAll('#suite .fx-tools button').length === 26 &&
       /Release 2/.test(d2.getElementById('rel-note').textContent) && /104691f/.test(d2.getElementById('rel-note').textContent) && !d2.getElementById('optimistic') && r2.errs.length === 0,
       'release ' + S2.st.rel + '; pressed ' + p2 + '; ' + d2.querySelectorAll('.su-sec').length + ' sections, ' + d2.querySelectorAll('.su-sec svg.fx-svg').length + ' charts, ' + t2 + ' tables' + (r2.errs.length ? '; errors: ' + r2.errs.join('; ') : ''));
     [...d2.querySelectorAll('#controls button')].filter(x => x.dataset.value === 'release').forEach(x => x.click()); await later(100);
@@ -1294,6 +1294,16 @@ function phase15(done) {
     const nr = open('', (u, j) => { if (u === 'data/releases/r2/index.json') return Object.assign({}, j, { suite: { 20: 'r2/missing-20.json', 40: 'r2/missing-40.json' } }); }); await later(400);
     const nS = nr.w.suiteState(), nb = [...nr.w.document.querySelectorAll('#controls button')].filter(x => x.dataset.value === '2').length;
     check('S11: without release 2\'s folder the page shows release 1 as before, with no release switch and no error', nS.R && nS.st.rel === '1' && nS.st.read === 'h1' && nb === 0 && nr.errs.length === 0, 'release ' + nS.st.rel + '/' + nS.st.read + '; release buttons ' + nb);
+    /* S79 (Nov 17, 2026): with job X3's files listed in index.json (studyFiles), release 2's view fills the five other measures' cards (EDC with its paired change and
+     * 95% interval) and the measures study's six movement tables, and no longer says they are release 1's; without them it keeps the old wording */
+    { const cards = d => [...d.querySelectorAll('#indices .su-cards li .su-ans')].map(x => x.textContent);
+      const sw = open('?years=20&read=release'); await later(400); const dw = sw.w.document, cw = cards(dw), mw = dw.querySelectorAll('#moves table').length;
+      const ns = open('?years=20&read=release', (u, j) => { if (u === 'data/releases/r2/index.json') { const k = Object.assign({}, j); delete k.studyFiles; delete k.studyFrom; return k; } }); await later(400);
+      const dn = ns.w.document, cn = cards(dn), mn = dn.querySelectorAll('#moves table').length;
+      check('S79: release 2\'s view draws its own EDC, EPPM, FBS, CSI and IPBI cards and the measures study from job X3 (EDC with a paired change and its 95% interval; IPBI said to have no interval); without the X3 files it says, as before, that they are release 1\'s',
+        sw.w.suiteState().st.rel === '2' && cw.length === 6 && !cw.some(t => /Not in release 2/.test(t)) && /95% interval/.test(cw[1]) && /no interval/.test(cw[5]) && mw === 6 && /job X3/.test(dw.getElementById('content').textContent) &&
+        cn.length === 6 && cn.slice(1).every(t => /Not in release 2/.test(t)) && mn === 0 && /no run of the measures study/.test(dn.getElementById('moves').textContent) && sw.errs.length === 0 && ns.errs.length === 0,
+        'with X3: ' + cw.length + ' cards, ' + mw + ' movement tables; without: ' + cn.filter(t => /Not in release 2/.test(t)).length + ' cards say release 1, ' + mn + ' tables' + (sw.errs.length + ns.errs.length ? '; errors: ' + sw.errs.concat(ns.errs).join('; ') : '')); }
     /* session 13: release 1's view opens at 40 years on the "Every dollar backed" reading, says plainly that this is the optimistic end, and the other readings and 20 years are one click away; it stays out of search engines */
     const e = open(''); await later(400); const de = e.w.document; [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === '1').forEach(x => x.click()); await later(100);
     const SE = e.w.suiteState(), pr = [...de.querySelectorAll('#controls button[aria-pressed="true"]')].map(x => x.dataset.value).sort().join(',');
