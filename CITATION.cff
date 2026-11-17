@@ -10,7 +10,7 @@ title: Compassionism Framework Simulation
 abstract: >-
   An open, in-browser dynamic microsimulation, with a reduced-form price level, of the Compassionism framework (Creative Currency
   Octaves, Public Trust Foundations, Public Trust Housing, Social Zone Harmonization and the Citizens Internet Portal). Release v5.9
-  (engine 104691f, frozen and registered on OSF before it ran, Nov 14, 2026) follows 500 simulated US adults and their children, in
+  (engine 104691f, frozen and registered on OSF before it ran, Nov 14, 2026, without a central bank; the central-bank study came with v5.9, preregistered separately) follows 500 simulated US adults and their children, in
   households with SCF 2022 balance sheets and a weighted top tail of wealth, for 20 or 40 years, with the programme and with no
   programme on the same random draws, in three environments, and reports poverty, basic living, wealth, work, prices and cost. Its
   main row assumes that every dollar the programme pays is matched by new output (the design's statement, a design parameter); below
