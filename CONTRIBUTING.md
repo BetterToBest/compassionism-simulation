@@ -40,14 +40,11 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.14 Release Notes
+## v5.9.15 Release Notes
 
-Released Nov 17, 2026: **the spread of the population weights is stated where the weights are used, and the model card says what was frozen.** No engine line changes and no stored figure changes (the guard test is identical).
-- **Why.** v5.9.13's checks measured the weights but the pages did not state them, so a reader of a weighted figure could not see how uneven the weights are. The model card also said the frozen model was "v5.9", which blurred what the OSF registration covers.
-- **The weights, stated.** Of the 500 simulated adults, 18 stand for the very top of the wealth distribution: 13 carry weights under 0.1, 4 carry weights above 2 (the largest is 3.47) and one carries about 1; they hold 2.6% of the total weight. The other 482 carry 0.99 to 1.13. The effective sample size is 472.6 of 500 and the largest single weight is 0.69% of the total (an adult counted once is 0.2%). The set of weights is the same in every seed and environment checked; which adults carry them depends on the seed. Stated in the model card, MODEL_SPEC.md (section 14.8), ODD.md, and on the findings page beside the central-bank and v5.9 results, where the numbers are read from `data/manifest.json` (`docs.weights`), not typed into the page. The model card's earlier line that the tail adults carry "small" weights is corrected: most do, four carry large ones.
-- **Recorded in every run.** `_settings.weights` in each output file holds the main row's weight summary. `check_docs_agree.js` fails if the manifest's figures differ from the engine's or a document stops printing them; `weight_tests.js` fails if the set of weights changes between seeds or environments.
-- **Model card: what was frozen.** The model frozen and registered on OSF (Nov 14) is the engine `104691f` without a central bank, first published as v5.8 (Nov 15). v5.9 (Nov 16) added the central-bank switch and the central-bank study, preregistered separately and not part of the OSF registration; the policy-eras study likewise.
-- **Said everywhere.** ODD.md, MODEL_SPEC.md, TESTBED_SPEC.md, REPRODUCE.md, CITATION.cff, the manifest's v5.9 summary and the findings page's central-bank note now say the frozen model has no central bank, instead of "v5.9 as frozen".
+Released Nov 17, 2026: **Duke Johnson's note on the design's aim, in his fuller wording.** Text only: no engine line changes and no stored figure changes.
+- **Findings page, central-bank section** ("How the Federal Reserve is governed"): the note now says that his concern is market cycles that can be engineered (bubbles, panics and crashes that let the wealthiest sell high and buy back low), wars and false-flag events used the same way, and a news media now owned by a handful of companies; and it says plainly that these are his views, not model outputs, and that the model does not represent war, the media, or whether market swings are engineered.
+- **The central-bank study's report** keeps the note as first recorded and adds the fuller wording beside it, dated.
 
 ## How to Contribute
 
@@ -453,7 +450,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.14*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.15*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
