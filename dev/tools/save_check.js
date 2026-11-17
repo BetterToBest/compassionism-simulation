@@ -9,7 +9,7 @@ const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const env = process.argv[2] || 'adv', N = +(process.argv[3] || 200), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
-const SC = H.SPEND_SOURCED, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const SC = H.SPEND_SOURCED, svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 const out = {_meta: {what: 'wealth-poverty gap closed by savings that keep up with prices and by the BU indexed every year', env, seeds: N, years: 20, manifest: H.runManifest(), command: 'node dev/tools/save_check.js ' + env + ' ' + N}, rows: {}};
 try {
   const P = Object.assign({}, H[NAME]), PR = H.tbPresets(P), ALL = Object.assign({fin: 'source', a: 0, jn: {}, cs: {}, sc: SC}, H.REL_V5), W = x => Object.assign({}, ALL, x);
@@ -27,6 +27,6 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0) / 1000);
 const file = path.join(__dirname, '..', 'runs', 'save-check-' + env + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1));
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1));
 Object.keys(out.rows).forEach(k => console.log(env, k, JSON.stringify(out.rows[k])));
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

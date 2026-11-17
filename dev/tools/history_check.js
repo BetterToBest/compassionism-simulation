@@ -31,7 +31,7 @@ function stat(v){ const n = v.length, s = Array.from(v).sort((a, b) => a - b), q
   return {mean: r3(v.reduce((a, b) => a + b, 0)/n), p5: r3(q(0.05)), p95: r3(q(0.95))}; }
 
 const C = H.CFG, SC = H.SPEND_SOURCED, t0 = Date.now(), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), out = {_meta: {what: 'the history check (ledger s146): the v5.4 no-programme run at Reference, without and with today\'s safety net, through a scripted 2008-2012 recession and 2020-2021, each seed paired with the same run without a recession; figures are shock minus no shock, percentage points of adults below the cost-of-living basket', seeds: N, command: 'node dev/tools/history_check.js ' + process.argv.slice(2).join(' '), series: path.relative(ROOT, SER), engine: ENG, manifest: H.runManifest(), rule: 'income multiplier = real median household income / base year; recession flag where below 1'}, episodes: {}};
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, out = {_meta: {what: 'the history check (ledger s146): the v5.4 no-programme run at Reference, without and with today\'s safety net, through a scripted 2008-2012 recession and 2020-2021, each seed paired with the same run without a recession; figures are shock minus no shock, percentage points of adults below the cost-of-living basket', seeds: N, command: 'node dev/tools/history_check.js ' + process.argv.slice(2).join(' '), series: path.relative(ROOT, SER), engine: ENG, manifest: H.runManifest(), rule: 'income multiplier = real median household income / base year; recession flag where below 1'}, episodes: {}};
 let sv0 = null;
 try {
   Object.keys(EPIS).forEach(k => {
@@ -73,7 +73,7 @@ const R2 = out.episodes.c20, n20 = R2.model.noSN.basket[1].mean, s20 = R2.model.
 V.push({n: 6, what: '2020, official-style measure (as amended before any run: basket poverty without SNAP and tax credits, which the official measure leaves out): higher in 2020 than in 2019', model: r2(n20), data: R2.data[2020].official, verdict: n20 > 0 ? 'matches' : 'does not match'});
 V.push({n: 7, what: '2020, supplemental measure (reported, no verdict: the data fell because of payments the engine does not have)', model: r2(s20), data: R2.data[2020].spmCensus, verdict: 'reported'});
 out.comparisons = V; out._meta.seconds = Math.round((Date.now() - t0)/1000);
-fs.mkdirSync(path.dirname(OUT), {recursive: true}); fs.writeFileSync(OUT, JSON.stringify(out, null, 1) + '\n');
+fs.mkdirSync(path.dirname(OUT), {recursive: true}); fs.writeFileSync(OUT, JSON.stringify(svS.withSettings(out), null, 1) + '\n');
 const f = x => x === null || x === undefined ? '-' : Array.isArray(x) ? x.join(' / ') : String(x);
 console.log('history check, ' + N + ' seeds, ' + out._meta.seconds + ' s; model = shock minus no shock (points), data = change from the base year');
 ['rec', 'c20'].forEach(k => { const E = out.episodes[k]; console.log('  ' + k + ': ' + E.years.map((y, t) => y + ' x' + E.script[t].incomeMultiplier.toFixed(3) + ' noSN ' + E.model.noSN.basket[t].mean.toFixed(2) + ' SN ' + E.model.SN.basket[t].mean.toFixed(2) + ' [' + E.model.SN.basket[t].p5.toFixed(2) + ', ' + E.model.SN.basket[t].p95.toFixed(2) + '] off ' + f(E.data[y].official)).join('; ')); });

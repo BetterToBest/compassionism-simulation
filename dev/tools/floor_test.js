@@ -7,6 +7,7 @@
  * Configuration: the v5.3 main row with the v5.4 parts (job loss, the PTH balance sheet, PTF by sector), SEEDS paired seeds.
  * Usage: node dev/tools/floor_test.js ref|adv|st [SEEDS]   Output: dev/runs/v54/floor-ENV.json */
 'use strict';
+let RUNSET = null;  /* the run's start (harness.js startRelease), kept for the output's _settings */
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const C = H.CFG, ROOT = path.join(__dirname, '..', '..');
@@ -18,7 +19,7 @@ const out = {_meta: {what: 'v5.4 item 6: the programme\'s paired effect as the P
 try {
   FLOORS.forEach(fl => { C.SZH_THETA_THRESHOLD = fl;
     CAPS.forEach(cap => { const P = Object.assign({}, H[NAME], {ptfShare: cap}), PR = H.tbPresets(P), M = H.relMainCfgs(PR), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;
-      const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+      const svS = RUNSET = H.startRelease(), svN = svS.svN, svG = svS.svG;
       try { const R = H.tbStudy([Object.assign(M[0], {sc: H.SPEND_SOURCED, v54: V54}), Object.assign(M[1], {v54: V54})], S, P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: H.SPEND_SOURCED}, H.REL_V52_STUDY));
         const row = {floor: fl, cap};
         K.forEach(k => { const f = k === 'endoAnn' ? 100 : 1, q = H.tbDiff(R[1], R[0], k); row[k] = k === 'pfMem' ? +R[1][k].toFixed(2) : [+(q.m*f).toFixed(3), +(q.lo*f).toFixed(3), +(q.hi*f).toFixed(3)]; });
@@ -27,6 +28,6 @@ try {
 } finally { C.SZH_THETA_THRESHOLD = th0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const dir = path.join(ROOT, 'dev', 'runs', 'v54'); fs.mkdirSync(dir, {recursive: true});
-const file = path.join(dir, 'floor-' + env + '.json'); fs.writeFileSync(file, JSON.stringify(out, null, 1) + '\n');
+const file = path.join(dir, 'floor-' + env + '.json'); fs.writeFileSync(file, JSON.stringify(RUNSET.withSettings(out), null, 1) + '\n');
 console.log('floor test ' + env + ' (' + out._meta.seconds + ' s) -> ' + path.relative(ROOT, file));
 out.rows.forEach(r => console.log('floor ' + r.floor + ' cap ' + r.cap + ' members ' + r.pfMem + '%: ' + ['fgt0PY', 'pov', 'bOAPy', 'cost'].map(k => k + ' ' + r[k][0]).join(', ')));

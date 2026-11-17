@@ -4200,6 +4200,68 @@ function v52UnitSuite(){
   return out;
 }
 
+/* ─── S84 (Nov 17, 2026; research-update PLAN S84): ONE START FOR EVERY STUDY RUNNER ─────────────────────────────────────────────
+ * Until v5.9.12 each tool in dev/tools repeated the release's two global settings (the next-round accounting profile, applyNR6, and the testbed
+ * profile, tbSetG(TB_PROFILE_G)) by hand; the central-bank study's first runs left them out (S74, preregistration Amendment 4). Now:
+ *   startRelease()          applies both and returns {svN, svG, settings, restore(), checkBaseline(), withSettings()};
+ *   releaseSettings()       every setting that shapes a run, defaults included, as plain data (see below);
+ *   S.checkBaseline(o)      runs the frozen no-programme arm for a few seeds with the settings now in force and compares it per seed with the
+ *                           release's published rows (data/baseline.json); throws on any difference, so a run that started wrongly stops;
+ *   S.withSettings(out)     the run's output object with its effective settings added as `_settings` (every tool writes through this).
+ * Nothing here changes a run: it reads state and applies the same two settings the tools applied. Outputs are unchanged (guard test identical). */
+var S84_SCALAR_RE = /\bvar ([A-Z][A-Z0-9_]{2,})\s*=\s*(?:true|false|null|-?\d+(?:\.\d+)?(?:e[+-]?\d+)?|'[^'\n]*'|"[^"\n]*")\s*[;,]/g;
+var S84_NAMES = null;
+function s84Names(){ if (S84_NAMES) return S84_NAMES; var src = typeof builtSource === 'function' ? builtSource() : '', m, seen = {}; S84_NAMES = [];
+  while ((m = S84_SCALAR_RE.exec(src))) if (!seen[m[1]]){ seen[m[1]] = 1; S84_NAMES.push(m[1]); } S84_NAMES.sort(); return S84_NAMES; }
+function s84Plain(x){ return JSON.parse(JSON.stringify(x === undefined ? null : x)); }
+/* Every setting in force, as plain data: the engine version; every top-level boolean, number and string constant of the engine (the switches and
+ * default values, found in the engine's own source and read as they stand now); the objects the tools set (accounting rule and re-study switches,
+ * the testbed profile, the labour response, the PTF framework, the pathway switches, the price-model defaults); and a SHA-256 of the whole CFG
+ * (its scalar entries are also listed, so a changed constant shows by name). */
+function releaseSettings(){
+  var g = {}; s84Names().forEach(function(n){ try { var v = eval(n); if (typeof v === 'boolean' || typeof v === 'number' || typeof v === 'string') g[n] = v; } catch (e) { /* not in scope: left out */ } });
+  var cfgScalars = {}; Object.keys(CFG).forEach(function(k){ var v = CFG[k]; if (typeof v === 'number' || typeof v === 'boolean' || typeof v === 'string') cfgScalars[k] = v; });
+  return {
+    version: (/var META = \{\s*VERSION:'([^']+)'/.exec(require('fs').readFileSync(require('path').join(__dirname, 'index.html'), 'utf8')) || [])[1] || null,
+    engineSwitches: g,
+    accounting: {SURPLUS_CONSUMPTION_SHARE: SURPLUS_CONSUMPTION_SHARE, SURPLUS_CONSUMPTION_BASE: SURPLUS_CONSUMPTION_BASE, THETA_GATE: THETA_GATE, PTH_MODE: PTH_MODE, DISC_BASE: DISC_BASE},
+    testbedProfile: {FBS_BU_ONCE: FBS_BU_ONCE, PTH_APPR_CONSERVE: PTH_APPR_CONSERVE, N7_BLEI: N7_BLEI, SURP_CUT_MARKUP: SURP_CUT_MARKUP},
+    tbRun: s84Plain(TB_RUN), laborDefaults: s84Plain(LABOR_DEFAULTS), fw: s84Plain(FW), pathwayOff: s84Plain(PATHWAY_OFF), pmDefaults: s84Plain(PM_DEFAULTS),
+    spend: {SPEND_SOURCED: SPEND_SOURCED, SPEND_FROZEN: SPEND_FROZEN},
+    cfgScalars: cfgScalars, cfgSha256: sha256Of(JSON.stringify(CFG)),
+    node: process.version
+  };
+}
+/* The release's published no-programme rows, seeds 1-20 (data/baseline.json, written by dev/tools/make_baseline.js from compassionism-sim-results). */
+function baselineFile(){ return require('path').join(__dirname, 'data', 'baseline.json'); }
+function checkBaselineWith(o){
+  o = Object.assign({env: 'ref', seeds: 2}, o || {});
+  var B = JSON.parse(require('fs').readFileSync(baselineFile(), 'utf8')), R = B.rows[o.env];
+  if (!R) throw new Error('baseline check: no reference rows for environment ' + o.env);
+  var N = Math.min(o.seeds, R.seeds), P = Object.assign({}, {ref: FULL_INTEGRATION, adv: ADVERSE_REFERENCE, st: STRESS_TEST}[o.env], {years: B.years, nAgents: 500});
+  var out = tbStudy(r2FreezePair(P, 'rel'), N, P, r2MainStudy()), bad = [], n = 0;
+  B.keys.forEach(function(k){ var a = Array.from(out[0]._s[k]); a.forEach(function(x, s){ n++; var y = R[k][s]; if (Math.abs(x - y) > 1e-9*Math.max(1, Math.abs(y))) bad.push(o.env + ' ' + k + ' seed ' + (s + 1) + ': ' + x + ' against the release ' + y); }); });
+  if (bad.length){ var e = new Error('baseline check FAILED: the no-programme arm does not equal the release per seed, so the run stops (' + bad.length + ' of ' + n + ' values differ)\n  ' + bad.slice(0, 8).join('\n  ')); e.differences = bad; throw e; }
+  return {checked: true, env: o.env, seeds: N, values: n, keys: B.keys, engine: B.engine, years: B.years};
+}
+/* The one start: the release's two global settings, applied and recorded. `restore()` puts both back. */
+function startRelease(o){
+  o = o || {};
+  var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), S = {svN: svN, svG: svG, baseline: null};
+  S.settings = releaseSettings();
+  S.restore = function(){ resetNR6(svN); tbSetG(svG); };
+  S.checkBaseline = function(b){ S.baseline = checkBaselineWith(b); S.settings.baseline = S.baseline; return S.baseline; };
+  S.withSettings = function(out){ if (!out || typeof out !== 'object' || Array.isArray(out)) return out;
+    return Object.assign({}, out, {_settings: S.settings}); };
+  if (o.baseline) S.checkBaseline(o.baseline === true ? {} : o.baseline);
+  return S;
+}
+/* Weight diagnostics: n, total weight, effective sample size (sum w)^2 / sum w^2, the largest single weight and its share of the total, and
+ * how many weights are zero. Used by the weight tests and available to any study that reports weighted figures. */
+function weightDiag(w){ var n = w.length, s = 0, s2 = 0, mx = 0, z = 0, i; for (i = 0; i < n; i++){ var x = +w[i]; s += x; s2 += x*x; if (x > mx) mx = x; if (x === 0) z++; }
+  return {n: n, sum: s, ess: s2 > 0 ? s*s/s2 : 0, maxW: mx, maxShare: s > 0 ? mx/s : 0, zeros: z}; }
+Object.assign(module.exports, { startRelease, releaseSettings, checkBaselineWith, weightDiag, baselineFile });
+
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 
 

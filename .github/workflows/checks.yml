@@ -32,6 +32,13 @@ jobs:
         run: node domtest.js
       - name: One glossary on the front page and the findings page (site/glossary.json)
         run: python3 dev/tools/glossary.py --check
+      # S84 (Nov 17, 2026): one start for every study runner; the documents, the manifest and the engine agree; weights.
+      - name: The one start (harness.js startRelease), and the baseline check against the release's published rows
+        run: node dev/tools/start_test.js
+      - name: The specification, the test bed, the other documents and the manifest's docs field agree with the engine
+        run: node dev/tools/check_docs_agree.js
+      - name: Weight tests (weights sum to the adults; weighted means and quantiles; zero and extreme weights; effective sample size; largest weight)
+        run: node dev/tools/weight_tests.js
 
   # Session 2a (Oct 13, 2026): the guard test. 20 fixed seeds of the v5.4 panel's main rows in the three environments, compared output by output
   # with the reference in dev/runs/guard (made before any engine edit). A switched-off mechanism must leave it identical. Runs beside the checks above.

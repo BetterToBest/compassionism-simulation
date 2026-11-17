@@ -31,7 +31,7 @@ const US = {
   psid: {exit1: 0.53, exit2: 0.36, exit5: 0.2, reentry1: 0.269, source: 'Stevens (1994), AER Papers and Proceedings 84(2): 34-37, PSID 1970-1987'},
   scfHH: {all: {neg: 7.71, median: 196749}, coupleKids: {neg: 4.9, median: 272609}, coupleNoKids: {neg: 4.4, median: 357505}, singleParent: {neg: 16.3, median: 49503}, single: {neg: 12.6, median: 74422},
     source: 'Federal Reserve, 2022 Survey of Consumer Finances: families with a head aged 25-66 and wage income, by type (sources/scf_households.py), 2025 dollars'}};
-const SC = H.SPEND_SOURCED, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const SC = H.SPEND_SOURCED, svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 const V = V53 ? {hh: H.REL_V53.hh, sg: H.REL_V53.sg, g: H.REL_V53.g} : {}, X = x => Object.assign({}, V, x);
 const ROWS = V53 ? [['none', X({})], ['v52', {g: H.REL_V53.g}], ['ltr', X({lt: {r: 1}})], ['lts', X({lt: {s: 1}})], ['ltm', X({lt: {m: 1}})], ['lta', X({lt: {r: 1, s: 1, m: 1}})], ['ag', X({ag: {}})]]
   : [['none', {}], ['ltw', {lt: {w: 1}}], ['ltr', {lt: {r: 1}}], ['lts', {lt: {s: 1}}], ['ltm', {lt: {m: 1}}], ['lta', {lt: {w: 1, r: 1, s: 1, m: 1}}], ['ag', {ag: {}}]];
@@ -67,5 +67,5 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = path.join(__dirname, '..', 'runs', 'us-check-' + env + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1));
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1));
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

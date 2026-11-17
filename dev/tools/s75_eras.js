@@ -11,7 +11,7 @@ const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 /* S77 (prereg Amendment 5): the release's global settings, as the round-2 runner sets them (compassionism-sim-results runner/jobs/r2.js) and as the
  * corrected S74 tools do; without them the main row's switches run under the engine's older defaults, not release 2's main row. */
-H.applyNR6(); H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease({baseline: true});  /* S84: and the no-programme arm must equal the release per seed (data/baseline.json), or the run stops */
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), opt = k => (process.argv.filter(a => a.indexOf('--' + k + '=') === 0)[0] || '').slice(k.length + 3);
 const era = ARG[0], N = +(ARG[1] || 100), designs = (opt('design') || 'c22,rel').split(','), arms = (opt('arms') || 'P,R,S,T,H,A,Tn').split(','),
   dir = opt('out') || path.join(__dirname, '..', 'runs', 's75-eras'), t0 = Date.now();
@@ -28,5 +28,5 @@ designs.forEach(d => { out[d] = {}; arms.forEach(arm => {
   out[d][arm] = R.map(r => { const o = {}; Object.keys(r._s).filter(k => KEEP.test(k)).forEach(k => { o[k] = Array.from(r._s[k]); }); return o; });
   process.stderr.write(era + ' ' + d + ' ' + arm + ' ' + ((Date.now() - t)/1000).toFixed(0) + ' s\n'); }); });
 out._meta.secs = (Date.now() - t0)/1000;
-fs.mkdirSync(dir, {recursive: true}); fs.writeFileSync(path.join(dir, 's75-eras-' + era + '.json'), JSON.stringify(out));
+fs.mkdirSync(dir, {recursive: true}); fs.writeFileSync(path.join(dir, 's75-eras-' + era + '.json'), JSON.stringify(svS.withSettings(out)));
 console.log(era + ': ' + designs.length + ' designs x ' + arms.length + ' arms x ' + N + ' seeds, ' + out._meta.secs.toFixed(0) + ' s');

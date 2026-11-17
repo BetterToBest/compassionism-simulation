@@ -35,7 +35,7 @@ function run(env){
   const R = H.releaseRowsV54(SC), B = H.releaseBasesV54(SC), pick = (L, j) => { const x = L.filter(r => r.j === j)[0]; if (!x) throw new Error('no panel row ' + j); return x; };
   /* As the testbed's release section builds them (harness.js stepSection): the debt floor, the NR6 profile and TB_PROFILE_G; the no-programme
    * run with the panel's shared settings; each programme row through n1Row (framework model); the study options of the v5.4 panel. */
-  const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000; const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), out = {};
+  const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000; const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, out = {};
   try {
     const P = Object.assign({}, P0), PR = H.tbPresets(P), base = {sc: SC, so: H.REL_V52_STUDY, hh: H.REL_V53.hh, sg: true, g: H.ACCT_V53, em: true, fb: true, v54: H.REL_V54.v54};
     const names = ['base'], cfg = [Object.assign({p: PR.baseline()}, base)];

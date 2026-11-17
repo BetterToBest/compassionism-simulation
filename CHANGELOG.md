@@ -6,6 +6,18 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.12 Release Notes
+
+Released Nov 17, 2026: **the documentation rebuilt for v5.9.** No engine line changes and no stored figure changes.
+- **Why.** The release reviews found the documentation behind the release: ODD.md still described v5.2, the test bed's "main" lines said nothing was backed, the specification had no section for the central-bank and history studies, and REPRODUCE.md had no v5.9 commands.
+- **ODD.md** is rewritten for v5.9: a dynamic microsimulation with a reduced-form price level; the headline condition (every dollar paid is matched by new output, and below that the model has no limit on supply); entities, schedule and design concepts as v5.9 runs them; what v5.9 changes in the parameter table (the v5.2 table is kept as written); verification; what the model is not.
+- **MODEL_SPEC.md** has a v5.9 title and reading guide, v5.9's main row in section 10, and new sections for the central-bank study (15) and the history study (16).
+- **TESTBED_SPEC.md** opens with v5.9's main row, option by option, beside v5.6's; every line that called "nothing backed" the main result now says it was v5.6's.
+- **REPRODUCE.md** has a v5.9 section: the command for each results folder, a fingerprint for each, the scripts from the results to the pages, the central-bank and history studies, and the headline values to compare.
+- **A one-page model card** (`model-card.html`), linked from the top of the simulation and findings pages: what the model is and is not, what the main row assumes, how each measure counts the simulated adults, how it was checked.
+- **Each measure says how it counts the adults:** the poverty and basic-living shares count each simulated adult once; median wealth, the distribution and stability measures are counted by population weight; the government's and creditors' books are weighted sums while the payout and prices are not. The cards and tables of v5.9 and the central-bank section now say so, and every central-bank figure names its 100 paired runs.
+- **Also:** the README's first screen (what it is, both sides of the findings, what it is not); ECONOMIST-REVIEW.md for v5.9, leading with full backing, the missing supply limit, wage indexation and asset returns under high inflation; CITATION.cff's abstract; BLEI described as the days of basic living that savings, income and Basic Units cover; the manifest records what the documentation describes; the wording check now covers ODD.md, the review checklist and the model card.
+
 ## v5.9.11 Release Notes
 
 Released Nov 17, 2026: **dated notes from the release reviews.** No engine line changes and no stored figure changes. v5.9.10 is skipped so that it cannot be confused with v5.9.1. A change to the engine's behaviour will be v6.

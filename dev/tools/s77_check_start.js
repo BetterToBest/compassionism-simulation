@@ -6,7 +6,7 @@
 'use strict';
 const fs = require('fs'), path = require('path'), zlib = require('zlib');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
-H.applyNR6(); H.tbSetG(H.TB_PROFILE_G);  /* the same two lines as s75_eras.js */
+const svS = H.startRelease();  /* the same two lines as s75_eras.js */
 const dir = process.argv[2], N = +(process.argv[3] || 2);
 const R = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(dir, 'r2-m-ref-20-104691f', 'shard-0000.json.gz'))).toString('utf8')).rows;
 let n = 0; const bad = [];

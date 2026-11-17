@@ -22,7 +22,7 @@ const KL = {fgt0PY: 'basket poverty (% of person-years)', pov: 'wealth poverty, 
   giniD: 'Gini, disposable income', hhDebt20: 'families with net worth below zero, year 20 (%)'};
 
 function run(env, lo, hi, shares, file) {
-  const H = require(path.join(__dirname, '..', '..', 'harness.js')), svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now(), out = {env, seeds: [lo, hi], shares, rows: {}};
+  const H = require(path.join(__dirname, '..', '..', 'harness.js')), svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now(), out = {env, seeds: [lo, hi], shares, rows: {}};
   try {
     const P = Object.assign({}, H[ENVN[env]], {years: 20, nAgents: 500});
     shares.forEach(s => {
@@ -32,7 +32,7 @@ function run(env, lo, hi, shares, file) {
       R0.forEach((r, i) => { out.rows[r[0]] = {}; KEYS.forEach(k => { out.rows[r[0]][k] = Array.from(R[i]._s[k]); }); });
     });
     out.seconds = (Date.now() - t0)/1000;
-    fs.writeFileSync(file, JSON.stringify(out));
+    fs.writeFileSync(file, JSON.stringify(svS.withSettings(out)));
     console.log(env + ': seeds ' + lo + '-' + hi + ', shares ' + shares.join(', ') + ', ' + out.seconds.toFixed(0) + ' s -> ' + file);
   } finally { H.resetNR6(svN); H.tbSetG(svG); }
 }

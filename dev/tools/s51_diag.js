@@ -18,7 +18,7 @@ console.error('cola on release row:', JSON.stringify({cola: pair()[1].p && pair(
   add('a' + a + ' w100', pair()[1], c => { c.o.wIdx = 1; c.o.a = a/100; });
   add('a' + a + ' w100 colaAll', pair()[1], c => { c.o.wIdx = 1; c.o.a = a/100; c.p = Object.assign({}, c.p, {colaThresh: -1}); });
 });
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 try {
   const S = H.tbStudy(R.map(r => r[1]), N, P, so, 1);
   const m = (i, k) => { const a = S[i]._s[k]; return a ? Array.from(a).reduce((s, x) => s + x, 0)/a.length : NaN; };

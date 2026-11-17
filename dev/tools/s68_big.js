@@ -11,7 +11,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const env = process.argv[2] || 'ref', N = +(process.argv[3] || 2), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env], t0 = Date.now();
 const K = ['fgt0PY', 'pov', 'endoAnn', 'pLev20', 'cost', 'hrs', 'medWealthReal', 'wtPovE', 'wtT1E', 'wtT10E', 'wtB50E', 'wtGnE', 'wtW', 'wtTailW', 'crRel', 'crBook', 'crNom', 'crEq', 'crGap', 'crUn', 'crOutG', 'crOutF', 'crOutH', 'crOutS'];
 const out = {env, seeds: N, keys: K, manifest: H.runManifest(), command: 'node dev/tools/s68_big.js ' + process.argv.slice(2).join(' '), runs: {}};
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 try {
   [500, 10000].forEach(n => [true, false].forEach(wt => {
     const P = Object.assign({}, H[NAME], {years: 20, nAgents: n}), cf = H.r2MainPair(P, 'c22');
@@ -24,5 +24,5 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out.secs = (Date.now() - t0)/1000;
 fs.mkdirSync(path.join(__dirname, '..', 'runs', 's68-pairs'), {recursive: true});
-fs.writeFileSync(path.join(__dirname, '..', 'runs', 's68-pairs', 's68-big-' + env + '.json'), JSON.stringify(out, null, 1));
+fs.writeFileSync(path.join(__dirname, '..', 'runs', 's68-pairs', 's68-big-' + env + '.json'), JSON.stringify(svS.withSettings(out), null, 1));
 console.log(env + ': done in ' + out.secs.toFixed(0) + ' s');

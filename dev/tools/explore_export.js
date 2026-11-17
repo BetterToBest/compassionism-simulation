@@ -75,7 +75,7 @@ if (!NAME || (YRS !== 20 && YRS !== 40) || !(LS >= 1 && LS <= N)) { console.erro
 const ROOT = path.join(__dirname, '..', '..'), PANEL = PANEL_ARG ? path.resolve(PANEL_ARG) : path.join(ROOT, 'dev', 'runs', 'release-panel' + (YRS === 40 ? '-40' : '') + '.json');  /* the merged panel (with --v53, the v5.3 panel once it is merged) */
 const C = H.CFG, SC = H.SPEND_SOURCED, M = ['f0', 'pov', 'bO', 'medW'], Q = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9];
 const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; if (!R2) C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it (S11: the r2 job leaves it as it is) */
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 const FRZ = process.argv.indexOf('--frozen') >= 0;  /* S47 */
 const ROWS = FRZ || R2 ? ['base', 'c22', 'release'] : ['base', 'release', 'h1', 'mid'];
 const out = {_meta: {what: 'year-by-year spread across seeds, savings deciles and one seed\'s adults, for the pages\' explore sections (presentation only)', env, years: YRS, seeds: N, lifeSeed: LS,
@@ -217,5 +217,5 @@ try {
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const OUTF = (process.argv.find(a => a.startsWith('--out=')) || '').slice(6);  /* session 7: --out=FILE writes there (the s165 job keeps its worktree clean) */
 const file = OUTF ? path.resolve(OUTF) : path.join(ROOT, 'dev', 'runs', (STUDY ? 'explore-study-' : SUITE ? 'explore-suite-' : 'explore-') + (R2 ? 'r2-' : '') + env + '-' + YRS + (SNAB ? '-snab' : SN ? '-sn' : '') + '.json');
-fs.writeFileSync(file, JSON.stringify(out));
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out)));
 console.log('self-check passed; wrote ' + file + ' (' + out._meta.seconds + ' s)');

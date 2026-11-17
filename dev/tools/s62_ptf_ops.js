@@ -18,7 +18,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), opt = k => (process.argv.filter(a => a.indexOf('--' + k + '=') === 0)[0] || '').slice(k.length + 3);
 const env = ARG[0] || 'ref', N = +(ARG[1] || 100), YRS = +(ARG[2] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now(), SN = {abawd: true, slope: true}, LT = {s: 'all', m: 'all'};
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now(), SN = {abawd: true, slope: true}, LT = {s: 'all', m: 'all'};
 const RT = {bo: true, ci: true, ng: 'base', cr: true}, MD = 1/1.21, BG = {pi: 0, m: MD};
 const ID = {cost: 'full', res: 0, bonus: 'members', curve: 'step', test: 'sales'};
 const ROWS = [['open', null, null, 'open access, no po (S55 main readings)'], ['hub0', ID, null, 'po at the step-5 accounting, bonus on members, the step, tests on sales: must equal open'],
@@ -55,5 +55,5 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = opt('out') || path.join(__dirname, '..', 'runs', 's62-ptf-ops', 's62-ptf-ops-' + env + '.json');
-fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file + '.tmp', JSON.stringify(out)); fs.renameSync(file + '.tmp', file);
+fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file + '.tmp', JSON.stringify(svS.withSettings(out))); fs.renameSync(file + '.tmp', file);
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

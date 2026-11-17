@@ -19,7 +19,7 @@ const ROWS = [['release', {}], ['h1', {a: 1}]]
   .concat([0.04, 0.08, 0.12, 0.16, 0.24].map(k => ['aK' + Math.round(k*100), {aK: k}]))
   .concat([[s1, 'slack'], [C.US_UNDERUSE, 'u6']].reduce((r, s) => r.concat([0.3, C.MULT_NORMAL, 1.0].map(m => [s[1] + '_m' + Math.round(m*10), {ml: {nt: {m: m, s: s[0]}}}])), []))
   .concat([['mid+slack', {aK: C.KENYA_ABSORB_ROLLOUT, ml: {nt: {m: C.MULT_NORMAL, s: s1}}}]]);
-const SC = H.SPEND_SOURCED, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now();
+const SC = H.SPEND_SOURCED, svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now();
 const out = {_meta: {what: 'the middle backing reading and the spending layer in normal years, swept (release row, Source financing)', env, seeds: N, years: YRS, manifest: H.runManifest(),
   command: 'node dev/tools/backing_check.js ' + env + ' ' + N + ' ' + YRS, idleMain: s1, idleAll: C.US_UNDERUSE, multNormal: C.MULT_NORMAL}, base: {}, rows: {}};
 try {
@@ -37,6 +37,6 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = path.join(__dirname, '..', 'runs', 'backing-check-' + env + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1));
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1));
 console.log('no programme: too little wealth', out.base.pov, 'cost of living', out.base.fgt0PY, 'BLEI', out.base.bOAPy);
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

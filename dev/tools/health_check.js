@@ -80,7 +80,7 @@ const FLAT = process.argv.includes('--flat'), PMX = FLAT ? {lamG: 0, theta: {foo
   : TX !== null ? {theta: {food: T0.food*TX, housing: T0.housing*TX, medical: T0.medical*TX}} : {};
 const MERGE = arg('merge'), DUMP = process.argv.includes('--dump');
 const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 const cmd = 'node dev/tools/health_check.js ' + env + ' ' + N + ' --rows=' + rows.join(',') + (arg('out') ? ' --out=' + arg('out') : '') + (LO > 1 ? ' --lo=' + LO : '') + (FLAT ? ' --flat' : TX !== null ? ' --thetaX=' + TX : PMX.theta ? ' --theta=' + arg('theta') : '');
 const out = {_meta: {prev: H.PREV_CASES, what: 'health settings: the v5.4 release row and its no-programme run under each variant, paired by seed; vsRef: the change in the programme\'s paired effect against the reference row (A against off, B and C against A); baseVsRef, progVsRef: the paired difference of the levels from the reference row, without and with the programme; offProgVsBase (safety-net rows): the release row without the safety net against this row\'s no-programme run, paired; erodeB (setting C rows): the share of setting B\'s savings per person-year that the row loses, no programme; avoided: public costs avoided per adult-year (2025 $), main and high, with the emergency-room part counted once under B and C', env, seeds: N, manifest: H.runManifest(), command: cmd, health: H.HEALTH_DEFAULTS, snet: H.SNET_DEFAULTS}, rows: {}};
 const r3 = x => +(+x).toFixed(3);
@@ -126,7 +126,7 @@ try {
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const dir = path.join(ROOT, 'dev', 'runs', 'health'); fs.mkdirSync(dir, {recursive: true});
 const file = path.join(dir, (arg('out') || 'check') + '-' + env + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1) + '\n');
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1) + '\n');
 const f = x => (x >= 0 ? '+' : '') + (Math.abs(x) >= 100 ? x.toFixed(0) : x.toFixed(2));
 console.log('health check, ' + env + ', seeds ' + LO + '-' + N + (MERGE ? ', merged' : '') + ' (' + out._meta.seconds + ' s; ' + out._meta.perRun + ' s per run) -> ' + path.relative(ROOT, file));
 rows.forEach(v => { const o = out.rows[v]; console.log('[' + v + ']' + (o.erodeB ? '  erodes setting B\'s savings by ' + o.erodeB[0].toFixed(1) + '% [' + o.erodeB[1].toFixed(1) + ', ' + o.erodeB[2].toFixed(1) + ']' : ''));

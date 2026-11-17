@@ -28,6 +28,7 @@
  * Usage: node dev/tools/s47_spend.js [--seeds=100] [--procs=4] [--tol=0.0001] [--out=FILE]
  * Writes FILE (default dev/runs/s47-spend/rederive.json): the rate at 0.593 in both runs, each bisection step, the derived share for the frozen run. */
 'use strict';
+let RUNSET = null;  /* the run's start (harness.js startRelease), kept for the output's _settings */
 const fs = require('fs'), path = require('path'), cp = require('child_process');
 const ROOT = path.join(__dirname, '..', '..');
 const arg = (k, d) => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : d; };
@@ -35,7 +36,7 @@ const TARGET = 0.054;
 const DPI0 = () => ({I: 0, C: 0, W: 0, runs: 0});
 
 function sums(variant, share, lo, hi) {
-  const H = require(path.join(ROOT, 'harness.js')), svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), out = {W: 0, C: 0, F: 0, X: 0, dpi: DPI0()};
+  const H = require(path.join(ROOT, 'harness.js')), svS = RUNSET = H.startRelease(), svN = svS.svN, svG = svS.svG, out = {W: 0, C: 0, F: 0, X: 0, dpi: DPI0()};
   try {
     const FI = H.FULL_INTEGRATION;
     let cfg, P, so;
@@ -91,5 +92,5 @@ function rate(variant, share) {
     R.derived = +((a + b)/2).toFixed(3); R.derivedExact = (a + b)/2;
     console.log('derived share on the frozen no-programme run (' + ({rate: 'the method\'s ledger, over wages', rateW: 'the method\'s formula on the row\'s own years, over wages', rateDPI: 'over disposable income'}[key]) + '): ' + R.derived + ' (current ' + cur + ')'); }
   rec._meta.seconds = Math.round((Date.now() - t0)/1000);
-  fs.mkdirSync(path.dirname(OUT), {recursive: true}); fs.writeFileSync(OUT, JSON.stringify(rec, null, 1)); console.log('wrote ' + OUT + ' (' + rec._meta.seconds + ' s)');
+  fs.mkdirSync(path.dirname(OUT), {recursive: true}); fs.writeFileSync(OUT, JSON.stringify(RUNSET.withSettings(rec), null, 1)); console.log('wrote ' + OUT + ' (' + rec._meta.seconds + ' s)');
 })().catch(e => { console.error(e); process.exit(1); });

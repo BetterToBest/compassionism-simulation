@@ -11,7 +11,7 @@ const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const env = process.argv[2] || 'adv', NAME = {adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be adv or st (Reference has no outside inflation, so the rule never binds)'); process.exit(1); }
-const N = 500, SC = H.SPEND_SOURCED, orig = H.CFG.COLA_HUB_THRESH, svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const N = 500, SC = H.SPEND_SOURCED, orig = H.CFG.COLA_HUB_THRESH, svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 const out = {_meta: {what: 'a = 0.75 and a = 1 with the BU indexed only above 5% a year (as modelled) and indexed every year', env, seeds: N, years: 20, manifest: H.runManifest(), command: 'node dev/tools/cola_check.js ' + env}, rows: {}};
 try {
   [['modelled', orig], ['every_year', -1]].forEach(function (t) {
@@ -25,6 +25,6 @@ try {
   });
 } finally { H.CFG.COLA_HUB_THRESH = orig; H.resetNR6(svN); H.tbSetG(svG); }
 const file = path.join(__dirname, '..', 'runs', 'cola-check-' + env + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1));
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1));
 Object.keys(out.rows).forEach(k => { const r = out.rows[k]; console.log(env, k, 'cost', r.cost, 'cost-of-living poverty', r.fgt0PY, 'BLEI', r.bOAPy, 'wealth poverty', r.pov, 'change vs none', r.dPov[0], 'inflation', r.infl); });
 console.log('wrote ' + file);

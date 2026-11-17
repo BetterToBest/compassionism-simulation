@@ -18,7 +18,7 @@ const r3 = x => +(+x).toFixed(3);
 function ci(d){ const n = d.length; let m = 0, s = 0; d.forEach(x => { m += x/n; }); d.forEach(x => { s += (x - m)*(x - m)/(n - 1); }); const h = 1.96*Math.sqrt(s/n); return [r3(m), r3(m - h), r3(m + h)]; }
 const pdiff = (a, b, k) => ci(Array.from(a._s[k]).map((x, j) => x - b._s[k][j]));
 const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 const out = {_meta: {what: 'today\'s safety net under no health setting and setting A: its paired effect (sn against the same row without it) under three engines, without (base) and with (prog) the programme', env, seeds: N, command: 'node dev/tools/sn_trace.js ' + env + ' ' + N, manifest: H.runManifest()}, eng: {}};
 try {
   const P = Object.assign({}, H[NAME]), PR = H.tbPresets(P), names = Object.keys(ROWS), cfg = [];
@@ -41,4 +41,4 @@ try {
   });
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 const dir = path.join(__dirname, '..', 'runs', 'health'); fs.mkdirSync(dir, {recursive: true});
-fs.writeFileSync(path.join(dir, 'sntrace-' + env + '.json'), JSON.stringify(out, null, 1) + '\n');
+fs.writeFileSync(path.join(dir, 'sntrace-' + env + '.json'), JSON.stringify(svS.withSettings(out), null, 1) + '\n');

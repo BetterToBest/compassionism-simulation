@@ -19,7 +19,7 @@ const NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TES
 if (!NAME || !(N >= 1)) { console.error('usage: phi_check.js ref|adv|st [SEEDS]'); process.exit(1); }
 const ROOT = path.join(__dirname, '..', '..'), C = H.CFG, SC = H.SPEND_SOURCED, TH = C.PHI_QUALITY_THRESH, PHI = C.PHI_RATIO;
 const t0 = Date.now(), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 /* the engine's rate and tax (runYear's framework branch and pjOwnRate; restated here, checked against each other below) */
 function rateOf(p, q, oct, pb) { const oc = 1 + (oct/Math.max(1, p.maxOct))*(Math.max(1, p.maxMult) - 1), qf = Math.min(1, q/Math.max(1, p.maxMult)), ph = (p.phi && q > p.maxMult*TH) ? PHI : 1;
   return Math.min((1 + qf*(oc - 1))*ph*(pb || 1), p.maxMult*(p.phi ? PHI : 1)); }
@@ -61,6 +61,6 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); C.WEALTH_FLOOR = wf0; }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = path.join(ROOT, 'dev', 'runs', 'phi-check-' + env + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1));
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1));
 console.log(JSON.stringify({step: out.step, population: Object.assign({}, out.population, {bins: undefined}), income: out.income, params: out.params}, null, 1));
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');

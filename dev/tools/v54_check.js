@@ -19,7 +19,7 @@ rows.forEach(v => { if (!VAR[v]) { console.error('unknown variant ' + v + ' (kno
 const ROOT = path.join(__dirname, '..', '..'), t0 = Date.now(), SC = H.SPEND_SOURCED, C = H.CFG;
 const K = ['fgt0PY', 'pov', 'bOAPy', 'fgt2PY', 'endoAnn', 'cost', 'giniD', 'medWealthReal', 'hrs', 'pLev20'].concat(H.RISK_KEYS, H.EMPL_KEYS, H.PTHB_KEYS, H.PTFS_KEYS, H.DIS_KEYS);
 const wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000;  /* as the testbed command sets it */
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG;
 const PMX = Object.assign(arg('lamG') !== null ? {lamG: +arg('lamG')} : {}, process.argv.includes('--theta0') ? {theta: {food: 0, housing: 0, medical: 0}} : {});
 const cmd = 'node dev/tools/v54_check.js ' + env + ' ' + N + ' ' + YRS + ' --rows=' + rows.join(',') + (arg('out') ? ' --out=' + arg('out') : '') + (arg('lamG') !== null ? ' --lamG=' + arg('lamG') : '') + (PMX.theta ? ' --theta0' : '');
 const out = {_meta: {what: 'v5.4: the v5.3 main row and its no-programme run under each variant, paired by seed', env, seeds: N, years: YRS, manifest: H.runManifest(), command: cmd}, rows: {}};
@@ -36,7 +36,7 @@ try {
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const dir = path.join(ROOT, 'dev', 'runs', 'v54'); fs.mkdirSync(dir, {recursive: true});
 const file = path.join(dir, (arg('out') || 'check') + '-' + env + (YRS === 40 ? '-40' : '') + '.json');
-fs.writeFileSync(file, JSON.stringify(out, null, 1) + '\n');
+fs.writeFileSync(file, JSON.stringify(svS.withSettings(out), null, 1) + '\n');
 const f = x => (x >= 0 ? '+' : '') + (Math.abs(x) >= 100 ? x.toFixed(0) : x.toFixed(2));
 console.log('v5.4 check, ' + env + ', seeds 1-' + N + ', ' + YRS + ' years (' + out._meta.seconds + ' s) -> ' + path.relative(ROOT, file));
 rows.forEach(v => { const o = out.rows[v]; console.log('[' + v + ']'); K.filter(k => o.base[k] !== undefined).forEach(k => console.log('  ' + k.padEnd(14) + String(o.base[k]).padStart(10) + ' -> ' + String(o.prog[k]).padEnd(10) + ' ' + f(o.d[k][0]) + ' [' + f(o.d[k][1]) + ', ' + f(o.d[k][2]) + ']')); });

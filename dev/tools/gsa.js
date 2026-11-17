@@ -23,6 +23,7 @@
  * range is the study's choice and is printed with the results. The engine is not changed; every input is restored after each point.
  * Output: dev/runs/v54/gsa-MODE-ENV.json */
 'use strict';
+let RUNSET = null;  /* the run's start (harness.js startRelease), kept for the output's settings */
 const fs = require('fs'), path = require('path');
 const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const C = H.CFG, ROOT = path.join(__dirname, '..', '..');
@@ -62,7 +63,7 @@ function evalPoint(x, seeds) {
   const s = {P: Object.assign({}, H[NAME]), sc: H.SPEND_SOURCED, v54: JSON.parse(JSON.stringify(V54))};
   try {
     IN.forEach(([, , , , set], i) => set(s, x[i]));
-    const PR = H.tbPresets(s.P), M = H.relMainCfgs(PR), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000; const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G);
+    const PR = H.tbPresets(s.P), M = H.relMainCfgs(PR), wf0 = C.WEALTH_FLOOR; C.WEALTH_FLOOR = -10000; const svS = RUNSET = H.startRelease(), svN = svS.svN, svG = svS.svG;
     try {
       const cfg = [Object.assign(M[0], {sc: s.sc, v54: s.v54}), Object.assign(M[1], {sc: s.sc, v54: s.v54})];
       const R = H.tbStudy(cfg, LO + seeds - 1, s.P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0, sc: s.sc}, H.REL_V52_STUDY), LO), out = {}, per = {};
@@ -141,7 +142,7 @@ if (MODE === 'morris') {
 } else { console.error('usage: gsa.js morris|sobol|noise|morrisjoin|sobjoin ENV ...'); process.exit(1); }
 meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = path.join(dir, (arg('out') || 'gsa-' + MODE + '-' + env) + '.json');
-fs.writeFileSync(file, JSON.stringify({_meta: meta, result: res}, null, 1) + '\n');
+fs.writeFileSync(file, JSON.stringify({_meta: Object.assign({}, meta, {settings: RUNSET.settings}), result: res}, null, 1) + '\n');
 console.log('gsa ' + MODE + ' ' + env + ' (' + meta.seconds + ' s) -> ' + path.relative(ROOT, file));
 if (MODE === 'morrisjoin') K.forEach(m => console.log(m + ': leaders ' + res.leaders[m].joined.join(', ') + (res.leaders[m].same ? ' (same in every block)' : ' (blocks differ: ' + res.leaders[m].blocks.map(l => l.join('/')).join(' | ') + ')') + '; inputs not measured: ' + (IN.filter(([n]) => !res.check[n][m].measured).map(([n]) => n).join(', ') || 'none')));
 if (MODE === 'morris') K.forEach(m => { console.log(m + ': ' + IN.map(q => q[0]).sort((a, b) => res.inputs[b][m].muStar - res.inputs[a][m].muStar).slice(0, 6).map(n => n + ' ' + res.inputs[n][m].muStar.toFixed(2)).join(', ')); });

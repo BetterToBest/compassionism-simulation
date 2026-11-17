@@ -14,7 +14,7 @@ const H = require(path.join(__dirname, '..', '..', 'harness.js'));
 const ARG = process.argv.slice(2).filter(a => !/^--/.test(a)), opt = k => (process.argv.filter(a => a.indexOf('--' + k + '=') === 0)[0] || '').slice(k.length + 3);
 const env = ARG[0] || 'ref', N = +(ARG[1] || 100), YRS = +(ARG[2] || 20), NAME = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'}[env];
 if (!NAME) { console.error('environment must be ref, adv or st'); process.exit(1); }
-const svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), t0 = Date.now(), SN = {abawd: true, slope: true}, LT = {s: 'all', m: 'all'};  /* today's safety net and CPS earnings, as S66's rows */
+const svS = H.startRelease(), svN = svS.svN, svG = svS.svG, t0 = Date.now(), SN = {abawd: true, slope: true}, LT = {s: 'all', m: 'all'};  /* today's safety net and CPS earnings, as S66's rows */
 const R2 = {bo: true, ci: true}, MN = {bo: true, ci: true, ng: 'base'}, X = (o, x) => Object.assign({}, o, x);
 const ROWS = [['off', null, null, null, 'all wealth is one number of dollars'], ['p1', true, null, null, 'part 1: by asset class (corrected group edges)'],
   ['p1chi', {chi: 1}, null, null, 'part 1 with fixed-rate debt repricing (no debt relief)'], ['r2', R2, null, null, 'part 1 with business owners and capital income'],
@@ -56,5 +56,5 @@ try {
 } finally { H.resetNR6(svN); H.tbSetG(svG); }
 out._meta.seconds = Math.round((Date.now() - t0)/1000);
 const file = opt('out') || path.join(__dirname, '..', 'runs', 's59-tail', 's59-tail-' + env + '.json');
-fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(out));
+fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, JSON.stringify(svS.withSettings(out)));
 console.log('wrote ' + file + ' (' + out._meta.seconds + ' s)');
