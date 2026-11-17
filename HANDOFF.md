@@ -1,8 +1,9 @@
-# Handoff (Nov 17, 2026): engine state after S82 part 1 (the v6 readings built, off by default)
+# Handoff (Nov 17, 2026): engine state after S82 part 2a (the supply limit's sourced values, v5.9.17)
 
 The project is coordinated from BetterToBest/research-update (its HANDOFF.md and PLAN.md come first); this file records this repository's state. The full Nov 10 handoff, with every shipped item from S6 to S66, is kept word for word in `dev/handoff-archive/2026-11-10-handoff-full.md`. Pitfalls are in `dev/PITFALLS.md`.
 
 ## What shipped (latest first)
+- S82 part 2a (Nov 17, pull request 152, v5.9.17): `SL_SRC` from opened sources (`sources/s82_supply.py` -> `sources/s82_supply.json`; `sources/s82_fred/`): v 0 in every sector; housing m 0.7914, eta 0.697, lam 0.2; medical m 0, eta 0.2, lam 0.25 (design); food m 0, eta 0.5 and lam 0.25 (design; theta food 0). `fx.eb` (PTH equity base from the basket, `mainLoopCostUSD` in place of `dcA` in `pthSaving`; `fx.pe` is the PTH estate fix, a different option). `WT_CUTS.p95` (`sources/s59_tail.py` with `cut(95)`). `acctDrawCheck` in harness.js (accounts, draws, finite outputs for any rows; the S82 job's checks 6-7). `fs` stays refused (rows dropped, preregistration Amendment 2). One more test in `s82UnitSuite` (390 in all). Decisions: `dev/DECISIONS.md`, "S82 part 2".
 - S82 part 1 (Nov 17, pull request 151, v5.9.16): price options `sl` (the essentials supply limit: `SL_SECT`, `SL_SRC` placeholders, `slVals`, `slNew`, `slStep`, `slCut` called from `tbPov`, `slRes`, `SL_KEYS`; readings 'full', 'sourced', 'restricted', 'strict'; rules 'pay', 'even', 'bu'; `fs` refused until built), `wc` (wage catch-up) and `bl` (`blLag`, the BU's delay); `s82UnitSuite`. Next: sources for `SL_SRC` (research-update S82 preregistration, Amendment 2), the job `runner/jobs/s82.js` in compassionism-sim-results, the dry run, the batch. Units: `v` and `m` are shares of the no-programme needs consumption, not of sector output.
 - S75 part 2 (Nov 16, pull request 129): options of `hx`: `era` ('e1'-'e4': `HXE`, generated from `sources/s75_hx.json` by `dev/tools/s75_hx_copy.py`; `HX0` keeps S74's paths; `hxRun` at each run's start; year 0 is the December before the era, with no recession), `T` and `Tr` (the era's PSZ tax schedule on earnings and Social Security, revenue-neutral; `hxTax`, `hxTRes`, keys `HXT_KEYS`), `H` (the basket's medical price at the era's real growth); `stP3e` (P3 over years 0-11, `ST75_KEYS`). The Baseline's supply path runs the era's length (`s3BaseS`). The era's rule is passed to `cb` by the study (`HXE[era].R`). Off identical (guard; lineage proved). 7 unit tests (`s75UnitSuite`; 384 in all). Sources `sources/s75_hx.py` (+ Census Table F-7, `sources/s75_eras/raw/f07ar.xlsx`); tools `dev/tools/s75_eras.js`, `s75_table.js`; report `dev/reports/s75-deep-history.md` (parts 1 and 2); tables `dev/runs/s75-eras/`; results compassionism-sim-results `s75-eras-77a85d6`.
 - S74 part 3 (Nov 16, pull request 124): `cb.dm`, the spending reading (`cbSc`, `CBDM`; main 0); reporting under study option `stab`: who gains and who pays by fifth of starting real wealth and the top 1% (`stResW`, `ST74W_KEYS`: `wgA/N/F/R/J/B/S/W` + `q1-q5`, `t1`; the job-loss tally `a._cbJ` in `emplYear`; sellers' `b.fsV`, `b.fsP` in `cbSell` and `rtStep`), P2 as a share of income (`stP2s`), own inflation in History (`stIo`, `stIc`, `stI10`, `stI90`), the basket price path (`stLy_t`); the rule's yearly paths (`CBY_KEYS`: `cbIy_t`, `cbQy_t`, `cbMy_t`, `cbUy_t`, `cbDy_t`). Off identical (guard; `s74_offsig.js`); the pilot's 542,000 saved values reproduce exactly (`dev/tools/s74_repro.js`). 2 unit tests (`s74UnitSuite` 17; 377 in all). Tools `dev/tools/s74_sweep.js`, `s74_sweep_table.js`, `s74_repro.js`; `s74_table.js` gains the who-gains tables, P2 as a share, own inflation, wealth shares and decision rule 3 (Holm). Report `dev/reports/s74-central-bank.md`; tables `dev/runs/s74-final/`, `dev/runs/s74-sweep/`; results compassionism-sim-results `s74-final-a60ecd1`, `s74-sweep-a60ecd1`.
@@ -22,13 +23,14 @@ The project is coordinated from BetterToBest/research-update (its HANDOFF.md and
 - Earlier work (S6, S13, S35 to S39, S47 to S57, S61; S61's report is `dev/reports/s61-baseline-scope.md`): see the archive file above.
 
 ## Branch and pull request state
-- Branch `claude/s75-part2`, pull request 129 (S75 part 2): see research-update HANDOFF.md for whether it merged.
+- Branch `claude/s82-part2-sources`, pull request 152 (S82 part 2a): see research-update HANDOFF.md for whether it merged.
 
 ## Long jobs in flight: none.
 
 ## Next 3 actions
-1. S75 part 3 (the Hub page) reads `dev/reports/s75-deep-history.md` and `dev/runs/s75-eras/tables.md`; no engine change. See research-update PLAN.md, S75.
-2. Before any engine change, run `node dev/tools/guard_test.js`, resync `earlier-engine.html` (`python3 dev/tools/sync_earlier.py`) and record the change with `node dev/tools/engine_lineage.js prove "what changed"`.
+1. S82 part 2b: study option `s82` (section D's reporting keys: real BU and real wage at year 20, the no-programme run's unmet need by fifth, the weighted share below 30 days, wages over factor income, wealth poverty at half the paired no-programme median; the weights comment near `index.html` 4237), behind the study option, reporting only, guard test identical.
+2. Then the dry run of compassionism-sim-results `runner/jobs/s82.js` (`--dry --seeds=1-2 --procs=4`) on the merged commit.
+3. See research-update PLAN.md, S82, for the screen (question 7) and the dispatch.
 
 ## Files to touch
 - `index.html`: grep `WEALTH_TAIL`, `WT_`, `RT_`, `rtCap`, `spBase`, `PRICE_RULE`; look the line ranges up in `dev/CODEMAP.md`.
