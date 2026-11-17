@@ -568,5 +568,24 @@
     }
    }
   }
+ },
+ "studyFiles": {
+  "20": "r2/study-20.json",
+  "40": "r2/study-40.json"
+ },
+ "studySha256": {
+  "20": "17c948685f94495595980677a51c78dca89914310fa20608dfd2af79f868ce9f",
+  "40": "3f405cab7d74bacaaed8e5884c6b1a1d29a8b9d3c479d3d2ff57e95ff30d969a"
+ },
+ "studyFrom": {
+  "study": "x3",
+  "rerunAt": "6d095a1eefe71abbb025b82e8942cd80cfe9a34a",
+  "results": {
+   "repo": "BetterToBest/compassionism-sim-results",
+   "folder": "x3-6d095a1",
+   "workflow": "run-study run 126, Nov 17, 2026 (GitHub Actions)"
+  },
+  "prereg": "prereg/2026-11-x3-measures-addendum.md (BetterToBest/research-update)",
+  "about": "The measures study and the BLEI paper’s other measures (EDC, FBS, IPBI’s public costs avoided) for release 2’s main row, re-run by job X3 with two reporting switches (the measured EDC and the FBS50 tally) and checked equal to release 2’s stored results, every key, row and seed."
  }
 }

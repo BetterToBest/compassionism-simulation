@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The visual suite | Compassionism Framework Simulation v5.9.3</title>
+<title>The visual suite | Compassionism Framework Simulation v5.9.4</title>
 <meta name="description" content="Beyond one poverty line: the BLEI ladder year by year, what the days of basic living are made of, who takes part and who does not, and how the measures disagree. Every number comes from the latest release's data.">
 <meta name="author" content="Duke Johnson, Claude (Anthropic)">
 <meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="sim-version" content="5.9.3">
+<meta name="sim-version" content="5.9.4">
 <link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/suite.html">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://bettertobest.github.io/compassionism-simulation/suite.html">
@@ -17,9 +17,9 @@
 <meta name="theme-color" content="#1D9E75">
 <link rel="icon" type="image/svg+xml" href="https://bettertobest.github.io/research-hub/assets/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="https://bettertobest.github.io/research-hub/assets/favicon-32.png">
-<link rel="stylesheet" href="site/findings.css?v=5.9.3">
+<link rel="stylesheet" href="site/findings.css?v=5.9.4">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: the visual suite","softwareVersion":"5.9.3","url":"https://bettertobest.github.io/compassionism-simulation/suite.html",
+{"@context":"https://schema.org","@type":"Dataset","name":"Compassionism Framework Simulation: the visual suite","softwareVersion":"5.9.4","url":"https://bettertobest.github.io/compassionism-simulation/suite.html",
  "description":"The BLEI ladder, the parts of BLEI, participants and non-participants, and four poverty measures, year by year over 500 paired runs, with and without Compassionism.",
  "creator":[{"@type":"Person","name":"Duke Johnson"},{"@type":"Organization","name":"Claude (Anthropic)"}],"license":"https://creativecommons.org/licenses/by/4.0/","identifier":"https://doi.org/10.17605/OSF.IO/QWTE2",
  "distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://bettertobest.github.io/compassionism-simulation/data/manifest.json"}]}
@@ -103,13 +103,13 @@ footer p{margin:0 0 6px}
 </div></main>
 
 <footer><div class="wrap">
-  <p>Compassionism Simulation <span class="meta-ver">v5.9.3</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
+  <p>Compassionism Simulation <span class="meta-ver">v5.9.4</span> &middot; <a href="https://bettertobest.github.io/research-hub/">Better To Best Research Hub</a> &middot; Code: Apache License 2.0 &middot; Content: CC BY 4.0</p>
   <p><a href="./">Simulation</a> &middot; <a href="findings.html">Findings explorer</a> &middot; <a href="replication.html">Replication framework</a> &middot; <a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a> &middot; <a href="https://doi.org/10.17605/OSF.IO/QWTE2">DOI: 10.17605/OSF.IO/QWTE2</a></p>
   <p class="cite">Suggested citation: Johnson, D. &amp; Claude (Anthropic). (2026). Compassionism Framework Simulation. Better To Best Research Hub. <a href="https://doi.org/10.17605/OSF.IO/QWTE2">https://doi.org/10.17605/OSF.IO/QWTE2</a></p>
 </div></footer>
 
-<script src="site/charts.js?v=5.9.3"></script>
-<script src="site/findings.js?v=5.9.3"></script>
+<script src="site/charts.js?v=5.9.4"></script>
+<script src="site/findings.js?v=5.9.4"></script>
 <script>
 /* The visual suite (session 11, ledger step s161; dev/reports/v5-33-visual-suite.md). A stand-alone page: it reads data/manifest.json, opens the newest
  * release, and loads that release's suite series (explore.suite: data/releases/v<version>/suite-20.json and suite-40.json, written by
@@ -211,9 +211,12 @@ footer p{margin:0 0 6px}
        paper: 'The paper’s five channels add to ' + pq('$22,800 to $59,900') + ' a year for a non-participant household, with no causal identification claimed. The model covers only the public-cost side of two of them and does not reproduce those dollars.',
        not: 'Crime victims’ losses; child welfare savings.',
        need: 'Market expansion needs a sourced demand multiplier from participants’ spending to other people’s incomes; productivity needs employers in the model; property values need places and a housing market, and an expert.'}];
-    if (isR2()) {  /* release 2's runs recorded the BLEI series (job X2); the other five measures were run for release 1 only */
+    if (isR2()) {  /* S79: job X3 recorded the other five measures for release 2's rows; without its files the cards say they are release 1's */
       C6[0].ans += ' Release 2’s published effect of ' + esc(READ_LONG[r]) + ' on ' + R2OUT.bl + ', over the ' + T() + ' years: ' + effect(r, 'bl', 's1') + ' points.';
-      C6.slice(1).forEach(function (c) { c.ans = 'Not in release 2’s runs: release 2 recorded the BLEI series only. The Release 1 view (the switch above) shows this measure for release 1’s rows; the method below is release 1’s.'; }); }
+      if (S) { var dp = function (k, i) { return pp(r, 'd.' + k + '.' + i); };
+        C6[1].ans += ' Paired change over the same runs: ' + N(dp('edcM', 0), 's1') + ' points (95% interval ' + N(dp('edcM', 1), 's1') + ' to ' + N(dp('edcM', 2), 's1') + ').';
+        C6[5].ans += ' Computed from the means over the runs, so it has no interval.'; }
+      else C6.slice(1).forEach(function (c) { c.ans = 'Not in release 2’s runs: release 2 recorded the BLEI series only. The Release 1 view (the switch above) shows this measure for release 1’s rows; the method below is release 1’s.'; }); }
     var ul = document.createElement('ul'); ul.className = 'su-key su-cards';
     C6.forEach(function (c) { var li = document.createElement('li');
       li.innerHTML = '<b>' + esc(c.name) + '</b><span class="su-badge su-b-' + c.st + '">' + STATUS[c.st] + '</span><p class="su-q">' + esc(c.q) + '</p><p class="su-ans">' + c.ans + '</p>' +
@@ -223,14 +226,14 @@ footer p{margin:0 0 6px}
     var t = {id: 'suite-indices', title: 'The six BLEI-paper measures in this model', columns: ['Measure', 'Status', 'What it asks', 'No program', 'Compassionism'], rows: [
       [{p: ['BLEI: median days']}, {p: [STATUS.m]}, {p: [C6[0].q]}, cell(sp('base', 'med_all', 'mean', L), 'int', [{src: sp('base', 'bO', 'mean', L), f: 'p1'}, ' under 30 days']), cell(sp(r, 'med_all', 'mean', L), 'int', [{src: sp(r, 'bO', 'mean', L), f: 'p1'}, ' under 30 days'])],
       [{p: ['EDC']}, {p: [STATUS.m]}, {p: [C6[1].q]}, cell(pp('base', 'edcM'), 'p1'), cell(pp(r, 'edcM'), 'p1')],
-      [{p: ['EPPM, participants']}, {p: [STATUS.d]}, {p: [C6[2].q]}, {p: [isR2() ? '–' : '1 (the comparison)']}, S ? cell(sy(r, 'eppm_part', 'mean', L), 'n2') : {p: ['–']}],
+      [{p: ['EPPM, participants']}, {p: [STATUS.d]}, {p: [C6[2].q]}, {p: [S ? '1 (the comparison)' : '–']}, S ? cell(sy(r, 'eppm_part', 'mean', L), 'n2') : {p: ['–']}],
       [{p: ['FBS: participant-years at even odds of advancing']}, {p: [STATUS.d]}, {p: [C6[3].q]}, {p: ['–']}, cell(pp(r, 'fbsAbove'), 'p1')]]
       .concat(S ? [[{p: ['FBS: median monthly surplus']}, {p: [STATUS.d]}, {p: [C6[3].q]}, cell(sy('base', 'sur_all', 'mean', L), 'usd'), cell(sy(r, 'sur_all', 'mean', L), 'usd')],
         [{p: ['CSI: two years or more, with Acre Equity']}, {p: [STATUS.d]}, {p: [C6[4].q]}, cell(sy('base', 'c730_all', 'mean', L), 'p1'), cell(sy(r, 'c730_all', 'mean', L), 'p1')]] : [[{p: ['CSI']}, {p: [STATUS.d]}, {p: [C6[4].q]}, {p: ['–']}, {p: ['–']}]])
       .concat([[{p: ['IPBI: prisons and hospital stays avoided, per adult a year']}, {p: [STATUS.p]}, {p: [C6[5].q]}, {p: ['–']}, cell(pp(r, 'avoidW'), 'usd')]])};
     s.appendChild(tableBox(t, false));
     s.appendChild(para('Of the six, two are measured as the paper defines them (BLEI and EDC), three are measured in the model’s own terms (EPPM, FBS and CSI, each card says how and why), and one is only partly modelled (IPBI: the public costs avoided; its market, productivity and property channels are not in the model). A gap is a limit of this model, not evidence for or against the measure.' +
-      (isR2() ? ' In release 2 only the BLEI was recorded year by year; the table’s other rows are empty here and filled in the Release 1 view.' : '')));
+      (isR2() && !S ? ' In release 2 only the BLEI was recorded year by year; the table’s other rows are empty here and filled in the Release 1 view.' : '')));
     return s;
   }
 
@@ -362,7 +365,7 @@ footer p{margin:0 0 6px}
   function moves() {
     var r = st.read, L = LAST(), s = section('moves', 'Who gains, and how people move',
       'Shares can hide movement: a ladder with the same shares every year can mean people churning through Crisis or one group stuck there. This section follows the same simulated adults, and compares each adult with the same adult in the no-program run (their “twin”), so the groups are the same people in both runs.');
-    if (isR2()) { s.appendChild(para('Release 2 has no run of the measures study. The Release 1 view (the switch above) shows it for release 1’s rows.')); return s; }
+    if (isR2() && !hasStudy()) { s.appendChild(para('Release 2 has no run of the measures study. The Release 1 view (the switch above) shows it for release 1’s rows.')); return s; }
     if (!hasStudy()) { s.appendChild(para(WAIT)); return s; }
     var tn = R.study[st.years]._meta.study.tiers, cl = function (row, k) { return cell(sr(row, k, 'mean'), 'p1'); };
     s.appendChild(tableBox({id: 'suite-moves', title: 'Adults who start in Crisis: where they are 5 and 10 years later (share of those adults, mean over the runs)', columns: ['Step', 'No program, Year 6', 'Compassionism, Year 6', 'No program, Year 11', 'Compassionism, Year 11'],
@@ -430,10 +433,12 @@ footer p{margin:0 0 6px}
   function limits2(s, ul, M) {
     var X = R.idx;
     ['It is not a forecast. It shows what the model’s rules imply over ' + F.num(R, 'meta.seeds', 'int') + ' paired runs of ' + F.num(R, 'meta.agents', 'int') + ' simulated adults; the model has not been reviewed by an independent economist.',
-     'Each figure is one row’s level: the mean over the runs, with the 10th to 90th percentile across them. The page does not subtract one row from another; where it states a difference it quotes release 2’s published effects, with their 95% intervals over the seeds (the model’s randomness only, not the choice of main row or of full backing).',
+     'Each figure is one row’s level: the mean over the runs, with the 10th to 90th percentile across them. The page does not subtract one row from another; where it states a difference it quotes release 2’s published effects, with their 95% intervals over the seeds (the model’s randomness only, not the choice of main row or of full backing)' +
+       (R.study ? ', or, for the drain to rent and interest (EDC), the paired change over the same runs of job X3 with its 95% interval. EPPM compares each adult with the same adult in the no-program run, so it is a paired measure in itself.' : '.'),
      'Release 2’s main row assumes that every dollar the program pays is matched by new output (full backing, as the design states; a design parameter), with today’s price rule. The findings page shows what changes with less backing.',
      'The BLEI tiers use the BLEI paper’s reading in today’s prices. The paper names the top tier “Flourishing” where community prices make it durable; this page uses the one name for all rows, as the data file does.',
-     'Release 2 recorded the BLEI series only: EDC, EPPM, FBS, CSI, IPBI and the measures study are in the Release 1 view, for release 1’s rows, and are not release 2’s.',
+     R.study ? 'EDC, EPPM, FBS, CSI, IPBI and the measures study come from job X3, a second re-run of release 2’s main row with two reporting switches on (the measured drain and the FBS50 tally), checked equal to release 2’s stored results in every engine output of every row and seed. EPPM, FBS and CSI are measured in the model’s own terms; IPBI only for the public costs avoided.' :
+       'Release 2 recorded the BLEI series only: EDC, EPPM, FBS, CSI, IPBI and the measures study are in the Release 1 view, for release 1’s rows, and are not release 2’s.',
      'The ladder is adults only. Households and children are in the model, but children are not on this ladder.',
      'Participants and non-participants are self-selected groups under the release design; differences between them are not effects of the program alone. The C2.2 design reaches every adult.',
      'Release 2’s rows are built on release 1’s settings, so they carry today’s safety net in both arms (SNAP with its work rule, the earned income tax credit and the refundable Child Tax Credit).'].forEach(function (t) { var li = document.createElement('li'); li.innerHTML = t; ul.appendChild(li); });
@@ -441,6 +446,7 @@ footer p{margin:0 0 6px}
     var cmds = Object.keys(M.commands).map(function (e) { return '<code>' + esc(M.commands[e]) + '</code>'; }).join('<br>');
     s.appendChild(para('Data: release 2’s suite series (<a href="data/releases/r2/index.json">data/releases/r2/index.json</a> and <a href="data/releases/' + esc(X.suite[st.years]) + '">data/releases/' + esc(X.suite[st.years]) + '</a>): release 2’s main row (engine <code>' + esc(X.engine.slice(0, 7)) + '</code>) re-run at engine commit <code>' + esc(M.manifest.commit) + '</code> by job ' + esc(X.study.toUpperCase()) +
       ' and checked equal to release 2’s stored results, every engine output of every row and seed. Results: ' + esc(X.results.repo) + ', folder <code>' + esc(X.results.folder) + '</code> (' + esc(X.results.workflow) + '); preregistration: ' + esc(X.prereg) + '. Each environment by:<br>' + cmds +
+      (X.studyFrom ? '<br>The six measures’ cards (but the BLEI) and the measures study: <a href="data/releases/' + esc(X.studyFiles[st.years]) + '">data/releases/' + esc(X.studyFiles[st.years]) + '</a>, job X3 (re-run at engine commit <code>' + esc(X.studyFrom.rerunAt.slice(0, 7)) + '</code>; results ' + esc(X.studyFrom.results.repo) + ', folder <code>' + esc(X.studyFrom.results.folder) + '</code>, ' + esc(X.studyFrom.results.workflow) + '; preregistration: ' + esc(X.studyFrom.prereg) + '). The plain-words report is <a href="dev/reports/s79-r2-measures.md">dev/reports/s79-r2-measures.md</a>.' : '') +
       '<br>The published effects are copied from <a href="' + esc(X.effectsFrom.file) + '">' + esc(X.effectsFrom.file) + '</a> (report ' + esc(X.effectsFrom.report) + '). Each table has CSV and JSON downloads; the JSON gives every number with its path in the data. The plain-words report on this view is <a href="dev/reports/s11-suite-release2.md">dev/reports/s11-suite-release2.md</a>.'));
     return s;
   }
@@ -468,9 +474,17 @@ footer p{margin:0 0 6px}
   function loadR2() {
     return F.fetchJSON('data/releases/r2/index.json').then(function (X) { var ys = Object.keys(X.suite);
       return Promise.all(ys.map(function (y) { return F.fetchJSON('data/releases/' + X.suite[y]); })).then(function (fs) {
-        var o = {version: X.release, idx: X, meta: {seeds: X.seeds, agents: X.agents, envs: X.envs}, suite: {}, effects: X.effects}; ys.forEach(function (y, i) { o.suite[y] = fs[i]; }); return o; }); })
+        var o = {version: X.release, idx: X, meta: {seeds: X.seeds, agents: X.agents, envs: X.envs}, suite: {}, effects: X.effects}; ys.forEach(function (y, i) { o.suite[y] = fs[i]; });
+        var zs = X.studyFiles ? Object.keys(X.studyFiles) : [];  /* S79: job X3's measures study and the BLEI paper's other measures, when index.json lists them */
+        return Promise.all(zs.map(function (y) { return F.fetchJSON('data/releases/' + X.studyFiles[y]); })).then(function (gs) {
+          if (zs.length) { o.study = {}; o.panels = {}; zs.forEach(function (y, i) { o.study[y] = gs[i]; o.panels[y] = r2Panels(gs[i]); }); } return o; }); }); })
       .catch(function () { return null; });
   }
+  /* S79: release 2's measures in the panel layout the cards read (panels.Y.envs.E.base and .rows.ROW): each key's mean over the runs, the public
+   * costs avoided (ipbi) and the paired differences with 95% intervals (d.KEY = [mean, lo, hi]) */
+  function r2Panels(S) { var out = {envs: {}}; Object.keys(S.envs).forEach(function (e) { var M = S.envs[e].measures, o = out.envs[e] = {rows: {}};
+    Object.keys(M).forEach(function (row) { var r = {}; Object.keys(M[row]).forEach(function (k) { if (k === 'ipbi') Object.assign(r, M[row].ipbi); else if (k === 'd') r.d = M[row].d; else r[k] = M[row][k].mean; });
+      if (row === 'base') o.base = r; else o.rows[row] = r; }); }); return out; }
   function newest(m) { return m.releases.filter(function (r) { return r.status === 'latest'; })[0] || m.releases.filter(function (r) { return r.status === 'current'; })[0]; }
   F.fetchJSON('data/manifest.json').then(function (m) {
     ENT = newest(m);

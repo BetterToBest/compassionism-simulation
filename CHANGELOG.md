@@ -1,10 +1,23 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1, the v5.4.1 notes at v5.5.0, the v5.5.0 notes at v5.6.0, the v5.6.0 notes at v5.7.0) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1, the v5.4.1 notes at v5.5.0, the v5.5.0 notes at v5.6.0, the v5.6.0 notes at v5.7.0, the v5.9.2 notes at v5.9.4) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
 
 ---
+
+## v5.9.3 Release Notes
+
+Released Nov 16, 2026 (written at v5.9.4; v5.9.3 shipped without notes): **blank cards and charts on the simulation page fixed.** The guided sections started on a bare timer, but the page's own script parses the embedded release panels when the page finishes loading; on a slow load the timer ran first, found no data and quit, leaving every card and chart below the headline blank. The start now waits for the page to load while the data is empty (`site/simpage.js`). A domtest check covers it.
+
+## v5.9.2 Release Notes
+
+Released Nov 16, 2026 (S11, ledger I1): **the visual suite on release 2.** No engine line changes; release 1's data and figures are unchanged.
+- **The visual suite page opens on release 2.** `suite.html` (the BLEI ladder year by year, what the days are made of, who takes part, four poverty lines, the spread across runs and environments) shows release 2's main row: no programme, the C2.2 design and the release design, 500 paired runs, Reference, Adverse and Stress, 20 and 40 years. Release 1's view is unchanged and one click away (the Release switch, or `suite.html?rel=1`); the two are never drawn on one chart.
+- **New data folder `data/releases/r2/`**, from job X2 (BetterToBest/compassionism-sim-results `x2-5b62481`; research-update `prereg/2026-11-x2-series-addendum.md`): release 2's main row re-run at engine commit 5b62481 and checked equal to release 2's stored results (engine 104691f), every engine output of every row and seed. `dev/tools/suite_r2.py` writes the folder; `--check` checks it against `data/studies/r2-effects.json`. v5.6's files are untouched.
+- **Differences are release 2's published effects.** The series are levels with the 10th-90th percentile across runs; where the release 2 view states a difference it quotes release 2's published effect with its 95% interval. The year-average of the series' same-rules share under 30 days equals release 2's published basic-living figure in every row, environment and horizon.
+- Release 2 recorded the BLEI series only: the other five BLEI-paper measures and the measures study stay in the release 1 view, and the release 2 view says so.
+- Checks: the figure check covers the release 2 view (four views, all three groups of adults) and `suite_r2.py --check`; Phase 15 checks that the page opens on release 2, draws every section, and falls back to release 1 without the folder. Report: `dev/reports/s11-suite-release2.md`.
 
 ## v5.9.1 Release Notes
 
