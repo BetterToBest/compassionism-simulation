@@ -24,9 +24,9 @@ OUT = os.path.join(ROOT, 'data', 'releases', 'r2')
 EFFECTS = os.path.join(ROOT, 'data', 'studies', 'r2-effects.json')
 ENGINE = '104691f3993ac6f37d6ff1b8ccd4690120cfe949'
 RERUN = '5b62481326f3b82cc714e20e4cd4ec3726357dd2'
-STUDY_RERUN = 'X3ENGINE40'  # S79: job X3's engine commit (compassionism-simulation PR 138's merge)
+STUDY_RERUN = '6d095a1eefe71abbb025b82e8942cd80cfe9a34a'  # S79: job X3's engine commit (compassionism-simulation PR 138's merge)
 STUDY_FOLDER = 'x3-' + STUDY_RERUN[:7]
-STUDY_RUN = 'X3WORKFLOW'  # S79: the run-study workflow run that wrote it
+STUDY_RUN = 'run-study run 126, Nov 17, 2026 (GitHub Actions)'  # S79: the run-study workflow run that wrote it
 TEST = os.environ.get('SUITE_R2_TEST') == '1'
 OUT = os.environ.get('SUITE_R2_OUT') or OUT
 ROWS = ['base', 'c22', 'release']
