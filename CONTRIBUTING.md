@@ -40,12 +40,12 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.4 Release Notes
+## v5.9.5 Release Notes
 
-Released Nov 17, 2026 (S79): **release 2's other BLEI-paper measures and the measures study on the visual suite.** No engine line changes; no figure of release 1 or release 2 changes.
-- **The release 2 view of `suite.html` now draws its own EDC, EPPM, FBS, CSI and IPBI cards and the measures study** (who gains, how people move between tiers, wealth net of drain), where it used to say they were release 1's only. EDC carries its paired change against no programme with a 95% interval; IPBI's public costs avoided come from the means and carry none, and the card says so.
-- **New files `data/releases/r2/study-20.json` and `study-40.json`**, from job X3 (BetterToBest/compassionism-sim-results `x3-6d095a1`, run-study run 126; research-update `prereg/2026-11-x3-measures-addendum.md`): release 2's main rows re-run at engine commit 6d095a1 with two reporting switches (the measured EDC and the FBS50 tally), checked equal to release 2's stored results in every engine output of every row and seed. `dev/tools/suite_r2.py --study` writes them; `--check` also ties each row's share below the cost of living to release 2's published basket-poverty figure (exact in all 18 cells). v5.6's files are untouched; the two releases are never drawn on one chart.
-- Checks: the figure check reads the X3 files for the release 2 view (cards, tables and the six movement tables, in four views and three groups of adults); a new Phase 15 check covers the cards and the fallback to the old wording without the files. Report: `dev/reports/s79-r2-measures.md`, with every preregistered outcome, the null result on the wealth Gini, and the release design's weak results under Stress.
+Released Nov 17, 2026: **a correction to the wealth Gini in the visual suite's release 2 view.** No engine line changes; no other figure changes.
+- **What was wrong.** v5.9.4 showed release 2's wealth Gini at about 0.985 in every row, with or without the programme, and its report called that a null result. Release 2's runs give 18 of the 500 simulated adults the place of very rich families, who are rare in the population, and count each at its share of the population (a weight). The plain Gini counts each simulated adult once, so those few adults swamp the rest and the figure says nothing about the programme. It is not valid for release 2's rows.
+- **Now.** The release 2 view shows the weighted wealth Gini that release 2's results store (debts counted as zero, and debts kept), with the spread across runs and the change against no programme with its 95% interval. C2.2 lowers it by 0.10 to 0.13 in every environment and horizon; the release design by 0.05 to 0.06 in Reference, 0.03 to 0.04 in Adverse and about 0.01 in Stress. Wealth net of a year's drain has no weighted figure in release 2's runs and is no longer shown there; the page says so.
+- `dev/tools/suite_r2.py --study` copies the weighted Gini from release 2's stored results into `data/releases/r2/study-*.json`; the figure check covers it; the report `dev/reports/s79-r2-measures.md` carries a dated correction.
 
 ## How to Contribute
 
@@ -451,7 +451,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.4*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.5*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

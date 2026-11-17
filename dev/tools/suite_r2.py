@@ -17,7 +17,7 @@ layout (envs.ENV.series, envs.ENV.run) plus envs.ENV.measures. Again only a re-a
 row's share below the cost of living (person-years) equals release 2's published basket-poverty figure.
 SUITE_R2_OUT=DIR writes to DIR instead, and SUITE_R2_TEST=1 accepts a test folder (other seeds or engine commit); both are for testing the tool.
 """
-import hashlib, json, os, sys
+import gzip, hashlib, json, math, os, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(ROOT, 'data', 'releases', 'r2')
@@ -45,6 +45,45 @@ ENV_TEXT = {  # the page's environment notes for release 2 (Reference and Advers
 def sha(p):
     with open(p, 'rb') as f:
         return hashlib.sha256(f.read()).hexdigest()
+
+
+# S79 correction (Nov 17, 2026): release 2's main rows carry the weighted top tail (S59, WEALTH_TAIL): 18 of the 500 adults stand for rare, very rich
+# families and carry small weights. The plain per-adult wealth Gini is not valid with the tail on (index.html WT_KEYS; dev/DECISIONS.md S59 part 2);
+# release 2 stored the weighted one per seed (wtGzE debts as zero, wtGnE debts kept; the end of the last year). It is copied here from release 2's own
+# part M shards, with the paired difference against no programme and its 95% interval as harness.js tbDiff computes it.
+PARTM_ENV = {'ref': 'ref', 'adv': 'adv', 'st': 'str'}
+PARTM_ROW = {'base': 'none', 'c22': 'c22', 'release': 'rel'}
+WGINI = {'gz': 'wtGzE', 'gn': 'wtGnE'}
+
+
+def quantile(v, q):  # harness.js quantileOf: linear between order statistics
+    v = sorted(v); h = (len(v) - 1)*q; lo, hi = math.floor(h), math.ceil(h)
+    return v[lo] + (v[hi] - v[lo])*(h - lo)
+
+
+def tbdiff(x, y):  # harness.js tbDiff: mean paired difference and 1.96 standard errors
+    n = len(x); d = [a - b for a, b in zip(x, y)]; m = sum(d)/n
+    v = sum((e - m)**2 for e in d)/(n - 1); h = 1.96*math.sqrt(v/n)
+    return [round(m, 4), round(m - h, 4), round(m + h, 4)]
+
+
+def weighted_gini(res, Y):
+    out, files = {}, {}
+    for e in ENVS:
+        f = os.path.join(os.path.dirname(os.path.abspath(res)), 'r2-m-%s-%s-%s' % (PARTM_ENV[e], Y, ENGINE[:7]), 'shard-0000.json.gz')
+        with gzip.open(f, 'rt') as g:
+            d = json.load(g)
+        R = d['rows']; files[e] = {'file': os.path.relpath(f, os.path.dirname(os.path.dirname(os.path.abspath(f)))), 'sha256': sha(f)}
+        o = out[e] = {}
+        for row in ROWS:
+            x = R[PARTM_ENV[e] + '.' + PARTM_ROW[row]]
+            if len(x['wtN']) != 500 or not all(n > 0 for n in x['wtN']):
+                raise SystemExit('%s %s %s: not the tail rows (wtN)' % (Y, e, row))
+            o[row] = {k: {'mean': round(sum(x[c])/len(x[c]), 4), 'p10': round(quantile(x[c], 0.1), 4), 'p90': round(quantile(x[c], 0.9), 4)} for k, c in WGINI.items()}
+            if row != 'base':
+                b = R[PARTM_ENV[e] + '.none']
+                o[row]['d'] = {k: tbdiff(x[c], b[c]) for k, c in WGINI.items()}
+    return out, files
 
 
 def effects():
@@ -152,7 +191,10 @@ def build_study(res):  # S79: job X3
                 'results': {e: STUDY_FOLDER + '/' + envs[e][3] for e in ENVS},
                 'resultsSha256': {e: envs[e][2] for e in ENVS},
                 'engine': ENGINE, 'rerunAt': m0['manifest']['commit']}
-        out = {'_meta': meta, 'envs': {e: {'series': envs[e][0]['study'], 'run': envs[e][0]['studyRun'], 'measures': envs[e][0]['measures']} for e in ENVS}}
+        wg, wf = weighted_gini(res, Y)
+        meta['wgini'] = {'what': 'the weighted wealth Gini at the end of the last year (gz debts counted as zero, gn debts kept), from release 2’s own stored results; the plain per-adult Gini in series (giniW, giniWnet and their N forms) is not valid with the top tail on, and the page does not show it',
+                         'from': wf}
+        out = {'_meta': meta, 'envs': {e: {'series': envs[e][0]['study'], 'run': envs[e][0]['studyRun'], 'measures': envs[e][0]['measures'], 'wgini': wg[e]} for e in ENVS}}
         with open(os.path.join(OUT, 'study-%s.json' % Y), 'w') as f:
             json.dump(out, f, ensure_ascii=False, separators=(',', ':'))
             f.write('\n')
@@ -205,6 +247,9 @@ def check():
                             bad.append('%s %s %s: no %s' % (Y, e, row, k))
                     if row == 'base' and (M['cost']['mean'] != 0 or M['fbsAbove']['mean'] != 0):
                         bad.append('%s %s: no programme has a cost or participant-years' % (Y, e))
+                    W = S['envs'][e].get('wgini', {}).get(row)
+                    if not W or not all(0 < W[k]['p10'] <= W[k]['mean'] <= W[k]['p90'] < 1 for k in WGINI) or (row != 'base' and not all(W['d'][k][1] <= W['d'][k][0] <= W['d'][k][2] for k in WGINI)):
+                        bad.append('%s %s %s: no weighted wealth Gini' % (Y, e, row))
                     if row != 'base' and 'ipbi' not in M:
                         bad.append('%s %s %s: no public costs avoided' % (Y, e, row))
                     # each row's share below the cost of living (person-years) is release 2's published basket-poverty figure
@@ -217,7 +262,7 @@ def check():
         print('  ' + b)
     print('release 2 suite files: ' + ('%d problems' % len(bad) if bad else 'index matches r2-effects and the suite files; tiers add up; no participants without the programme; '
                                        'the year-average share under 30 days (same rules) equals release 2’s published basic-living figure for 3 rows, 3 environments and 2 horizons' +
-                                       ('; study files: every measure present, and the share below the cost of living equals release 2’s published basket-poverty figure in all %d cells' % nS if ssh else '')))
+                                       ('; study files: every measure present (with the weighted wealth Gini), and the share below the cost of living equals release 2’s published basket-poverty figure in all %d cells' % nS if ssh else '')))
     return not bad
 
 
