@@ -4232,6 +4232,18 @@ function releaseSettings(){
     node: process.version
   };
 }
+/* The main row's weights, summarised: how many adults stand for the top tail, how the weights are spread, the effective sample size and the largest
+ * weight. Read from a one-seed, one-year run of the frozen main row in Reference (the weights are set from the household type and the tail layer, not
+ * from the random draws, so they are the same in every seed and environment; weight_tests.js checks all three). */
+function weightSummary(){
+  var P = Object.assign({}, FULL_INTEGRATION, {years: 2, nAgents: 500}), W = null, J = null;
+  REP_HOOK = function(agents, yr){ if (yr === 0 && !W){ W = agents.map(function(a){ return a._w === undefined ? 1 : +a._w; }); J = agents.map(function(a){ return a._wtJ > 0; }); } };
+  try { tbStudy(r2FreezePair(P, 'rel'), 1, P, r2MainStudy()); } finally { REP_HOOK = null; }
+  var d = weightDiag(W), tail = W.filter(function(w, i){ return J[i]; }), tw = tail.reduce(function(x, y){ return x + y; }, 0);
+  return {adults: d.n, sum: d.sum, ess: d.ess, maxWeight: d.maxW, maxSharePct: d.maxShare*100, tailAdults: tail.length, tailBelowTenth: tail.filter(function(w){ return w < 0.1; }).length,
+    tailAboveTwo: tail.filter(function(w){ return w > 2; }).length, tailWeightSharePct: tw/d.sum*100, others: d.n - tail.length,
+    othersMin: Math.min.apply(null, W.filter(function(w, i){ return !J[i]; })), othersMax: Math.max.apply(null, W.filter(function(w, i){ return !J[i]; }))};
+}
 /* The release's published no-programme rows, seeds 1-20 (data/baseline.json, written by dev/tools/make_baseline.js from compassionism-sim-results). */
 function baselineFile(){ return require('path').join(__dirname, 'data', 'baseline.json'); }
 function checkBaselineWith(o){
@@ -4248,7 +4260,7 @@ function checkBaselineWith(o){
 function startRelease(o){
   o = o || {};
   var svN = applyNR6(), svG = tbSetG(TB_PROFILE_G), S = {svN: svN, svG: svG, baseline: null};
-  S.settings = releaseSettings();
+  S.settings = releaseSettings(); S.settings.weights = weightSummary();
   S.restore = function(){ resetNR6(svN); tbSetG(svG); };
   S.checkBaseline = function(b){ S.baseline = checkBaselineWith(b); S.settings.baseline = S.baseline; return S.baseline; };
   S.withSettings = function(out){ if (!out || typeof out !== 'object' || Array.isArray(out)) return out;
@@ -4260,7 +4272,7 @@ function startRelease(o){
  * how many weights are zero. Used by the weight tests and available to any study that reports weighted figures. */
 function weightDiag(w){ var n = w.length, s = 0, s2 = 0, mx = 0, z = 0, i; for (i = 0; i < n; i++){ var x = +w[i]; s += x; s2 += x*x; if (x > mx) mx = x; if (x === 0) z++; }
   return {n: n, sum: s, ess: s2 > 0 ? s*s/s2 : 0, maxW: mx, maxShare: s > 0 ? mx/s : 0, zeros: z}; }
-Object.assign(module.exports, { startRelease, releaseSettings, checkBaselineWith, weightDiag, baselineFile });
+Object.assign(module.exports, { startRelease, releaseSettings, checkBaselineWith, weightDiag, weightSummary, baselineFile });
 
 /* ─── CLI modes ──────────────────────────────────────────────────────── */
 

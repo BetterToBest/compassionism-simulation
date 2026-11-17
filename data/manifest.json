@@ -6,7 +6,7 @@
    "date": "2026-11-16",
    "tag": "v5.9.0",
    "file": "releases/v5.6.json",
-   "summary": "v5.9 leads both pages, with a central-bank switch. The simulation page opens on v5.9’s main row (full backing, the design’s statement), for the full-coverage design or the opt-in design, with the central bank off (v5.9 as frozen, 500 seeds) or on (a policy-rate rule, the central-bank study, 100 seeds). The central-bank study’s runs were repeated with the release’s global settings, which its first runs had left out (preregistration Amendment 4), and the findings page shows every outcome of the corrected study. The v5.6 panel is unchanged (v5.6’s data stays the data shown in its sections), and the engine is unchanged.",
+   "summary": "v5.9 leads both pages, with a central-bank switch. The simulation page opens on v5.9’s main row (full backing, the design’s statement), for the full-coverage design or the opt-in design, with the central bank off (the frozen model, registered on OSF without a central bank, 500 seeds) or on (a policy-rate rule, the central-bank study, 100 seeds). The central-bank study’s runs were repeated with the release’s global settings, which its first runs had left out (preregistration Amendment 4), and the findings page shows every outcome of the corrected study. The v5.6 panel is unchanged (v5.6’s data stays the data shown in its sections), and the engine is unchanged.",
    "status": "latest",
    "shownIn": null,
    "figuresFrom": "5.6",
@@ -58,7 +58,19 @@
      "cb": "s74-final-3beb5ff",
      "eras": "s75-eras-e5649ef"
     },
-    "resultsRepo": "BetterToBest/compassionism-sim-results"
+    "resultsRepo": "BetterToBest/compassionism-sim-results",
+    "weights": {
+     "adults": 500,
+     "ess": 472.6,
+     "maxWeight": 3.47,
+     "maxSharePct": 0.69,
+     "tailAdults": 18,
+     "tailBelowTenth": 13,
+     "tailAboveTwo": 4,
+     "tailWeightSharePct": 2.6,
+     "othersMin": 0.99,
+     "othersMax": 1.13
+    }
    }
   },
   {

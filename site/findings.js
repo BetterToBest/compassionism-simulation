@@ -358,7 +358,19 @@
   }
   function fetchJSON(url) { return fetch(url, {cache: 'no-cache'}).then(function (r) { if (!r.ok) throw new Error(url + ': ' + r.status); return r.json(); }); }
 
+  /* v5.9.14: how the population weights are spread, read from data/manifest.json (the newest release's docs.weights), so no figure is typed in here. */
+  var WTSUM = null;
+  function loadWeights() { return fetchJSON('data/manifest.json').then(function (m) { var r = (m.releases || [])[0]; WTSUM = (r && r.docs && r.docs.weights) || null; }, function () { WTSUM = null; }); }
+  function weightNote() {
+    var w = WTSUM; if (!w) return '';
+    return '<p class="fx-note"><strong>How the weights are spread.</strong> ' + esc(String(w.tailAdults)) + ' of the ' + esc(String(w.adults)) + ' simulated adults stand for the very top of the wealth distribution, and their weights differ widely: ' +
+      esc(String(w.tailBelowTenth)) + ' carry less than 0.1 each, ' + esc(String(w.tailAboveTwo)) + ' carry more than 2 (the largest is ' + esc(String(w.maxWeight)) + '), and one carries about 1. Together they hold ' + esc(String(w.tailWeightSharePct)) +
+      '% of the total weight. The other ' + esc(String(w.adults - w.tailAdults)) + ' adults count about once (' + esc(String(w.othersMin)) + ' to ' + esc(String(w.othersMax)) + '). Counted this way the ' + esc(String(w.adults)) +
+      ' adults are as informative as ' + esc(String(w.ess)) + ' adults counted once (the effective sample size), and no adult carries more than ' + esc(String(w.maxSharePct)) + '% of the total weight (an adult counted once carries ' + esc(String(100/w.adults)) +
+      '%). The set of weights is the same in every seed and environment checked; which adults carry them depends on the seed. Measures counted per adult (unweighted) do not use them.</p>';
+  }
+
   root.CSF = {fmt: fmt, get: get, has: has, num: num, text: text, esc: esc, cellHTML: cellHTML, tableHTML: tableHTML, tableById: tableById, csvOf: csvOf, jsonOf: jsonOf, download: download, tableTools: tableTools,
     cardsHTML: cardsHTML, MEANINGS: MEANINGS, MEANINGS53: MEANINGS53, meaningOf: meaningOf, fillPlain: fillPlain, underCards: underCards, animateCounts: animateCounts, readState: readState, writeState: writeState, seg: seg, spy: spy, charts: CHARTS, storyEl: storyEl, allTables: allTables,
-    readingsRows: readingsRows, savingsNote: savingsNote, fetchJSON: fetchJSON, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, SHORT53: SHORT53, GROUPS: GROUPS, hasKids: hasKids, avoidSmall: avoidSmall, HHM: HHM, WKM: WKM, AT: AT};
+    readingsRows: readingsRows, savingsNote: savingsNote, fetchJSON: fetchJSON, loadWeights: loadWeights, weightNote: weightNote, envName: envName, ENVS: ENVS, MEAS: MEAS, SHORT: SHORT, SHORT53: SHORT53, GROUPS: GROUPS, hasKids: hasKids, avoidSmall: avoidSmall, HHM: HHM, WKM: WKM, AT: AT};
 })(typeof window !== 'undefined' ? window : this);

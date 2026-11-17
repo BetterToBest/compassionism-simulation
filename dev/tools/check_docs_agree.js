@@ -49,6 +49,17 @@ if (D) {
     const a = rows[1].o && rows[1].o.a;
     need(a === D.backing, 'docs.backing is ' + D.backing + ', the main row\'s programme arm has full backing (o.a) ' + a);
     need(H.SPEND_FROZEN === D.spendingShare, 'docs.spendingShare is ' + D.spendingShare + ', the engine\'s frozen share is ' + H.SPEND_FROZEN);
+    /* v5.9.14: the weights the documents state are the engine's (manifest docs.weights, rounded as printed) */
+    const ws = S.settings.weights, W = D.weights, r2 = (x, n) => +x.toFixed(n);
+    need(!!W, 'manifest docs.weights is missing');
+    if (W) {
+      const eng = {adults: ws.adults, ess: r2(ws.ess, 1), maxWeight: r2(ws.maxWeight, 2), maxSharePct: r2(ws.maxSharePct, 2), tailAdults: ws.tailAdults, tailBelowTenth: ws.tailBelowTenth, tailAboveTwo: ws.tailAboveTwo,
+        tailWeightSharePct: r2(ws.tailWeightSharePct, 1), othersMin: r2(ws.othersMin, 2), othersMax: r2(ws.othersMax, 2)};
+      Object.keys(eng).forEach(k => need(W[k] === eng[k], 'docs.weights.' + k + ' is ' + W[k] + ', the engine\'s main row gives ' + eng[k]));
+      /* each document that states them prints the figures (model card, specification, ODD) */
+      [['model-card.html', [W.ess, W.maxWeight, W.maxSharePct, W.tailWeightSharePct, W.tailBelowTenth, W.tailAboveTwo]], ['MODEL_SPEC.md', [W.ess, W.maxWeight, W.maxSharePct, W.tailWeightSharePct, W.tailBelowTenth, W.tailAboveTwo]],
+        ['ODD.md', [W.ess, W.maxWeight, W.maxSharePct, W.tailBelowTenth, W.tailAboveTwo]]].forEach(([f, vals]) => { const t = read(f); vals.forEach(v => need(t.indexOf(String(v)) >= 0, f + ' does not print the weight figure ' + v + ' (docs.weights)')); });
+    }
   } finally { S.restore(); }
   ['MODEL_SPEC.md', 'ECONOMIST-REVIEW.md'].forEach(f => need(read(f).indexOf(String(D.spendingShare)) >= 0, f + ' does not print the spending share ' + D.spendingShare));
   note.push('docs.ageing (' + D.ageing + ') is stated in the manifest and not checked against the engine');
