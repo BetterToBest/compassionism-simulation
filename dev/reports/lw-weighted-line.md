@@ -87,7 +87,7 @@ The released line stays $49,370. Changing it would be a calibration change for t
 
 ## 5. The study
 
-Study L (preregistration: research-update `prereg/2026-11-lw-weighted-line.md`). There are three lines (base, ext, bea), each with three rows: no programme, the opt-in row, and the full-coverage design (automatic, all residents, BU at the needs level of that line, indexed to the needs). It runs in all three environments at 20 and 40 years, with 500 adults and the CPS yardstick. Pilot: seeds 1-100 on GitHub Actions. Full: seeds 1-500 in the full study batch. The questions: how much does the no-programme world's poverty change with the line, and does the programme's effect against no programme depend on the line? Pilot results: section 6.
+Study L (preregistration: research-update `prereg/2026-11-lw-weighted-line.md`). There are three lines (base, ext, bea), each with three rows: no programme, the opt-in row, and the full-coverage design (built to meet NEEC's criterion C2.2; automatic, all residents, BU at the needs level of that line, indexed to the needs). It runs in all three environments at 20 and 40 years, with 500 adults and the CPS yardstick. Pilot: seeds 1-100 on GitHub Actions. Full: seeds 1-500 in the full study batch. The questions: how much does the no-programme world's poverty change with the line, and does the programme's effect against no programme depend on the line? Pilot results: section 6.
 
 ## 6. Results (pilot, 100 seeds)
 

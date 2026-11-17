@@ -1,6 +1,6 @@
 # Duke's answers to the seven wording questions, applied
 
-Oct 14, 2026 (with issue i20). Wording only: no engine code changed and no figure changed. This note says what each answer changed, one place where a later decision changed the meaning of Duke's pick, and how we know no number moved.
+Oct 14, 2026 (with one issue). Wording only: no engine code changed and no figure changed. This note says what each answer changed, one place where a later decision changed the meaning of Duke's pick, and how we know no number moved.
 
 The questions were in `dev/reports/v5-31-clarity-pass.md`, section 3. Duke answered them in the project ledger (decisions d201 to d207), and one more decision was added before this session.
 
@@ -28,7 +28,7 @@ What this changes from Duke's pick: the page no longer says PTH holds rents down
 | d205 | No change to the front page's header strip | Nothing changed (the strip already shows each name on hover, with a link). |
 | d206 | Mark the old open-items table and progress boxes as dated historical records | `CONTRIBUTING.md`'s table and `dev/PROGRESS.md`'s tick boxes are now labelled "historical record, closed on October 14, 2026; read-only", pointing to HANDOFF.md and the ledger as the live record. No row was re-checked. |
 | d207 | Keep the "What would have to be true" panel, labelled Claude's reading, and name it for the outside audits | The study page's panel title now says "(Claude's reading)" and its first line says it is not yet checked by an outside reader. The economist checklist has a new row (13) asking a reviewer to check it. |
-| i20 | (issue, not a question) | The checks and release workflows are pinned to the ubuntu-24.04 runner image, Node 22.22.0 (the version the 500-seed runs record) and, for the checks, Python 3.13. The default runner image moves to Ubuntu 26 on Oct 19; pinning keeps the bit-identical tests meaningful. |
+| The runner image | (issue, not a question) | The checks and release workflows are pinned to the ubuntu-24.04 runner image, Node 22.22.0 (the version the 500-seed runs record) and, for the checks, Python 3.13. The default runner image moves to Ubuntu 26 on Oct 19; pinning keeps the bit-identical tests meaningful. |
 
 Not changed on purpose: the column names in the downloadable CSV and JSON files (for example `design_neutral_change_pts`) stay as they are, because they are names other people's scripts may read.
 

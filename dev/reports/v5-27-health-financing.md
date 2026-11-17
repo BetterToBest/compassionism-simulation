@@ -1,6 +1,6 @@
 # Health financing: today's safety net, single payer with a private layer, the benefit cliff, and the six-result test
 
-Session 2b, Oct 13, 2026. Engine work only: the page does not change. Every new part is a switch, off by default; switched off, every released figure stays the same (the guard test proves it). Choices, sources and alternatives are in `dev/DECISIONS.md`, Session 2b. This builds on today's health system (setting A, `dev/reports/v5-25-health-today.md`) and single payer with a public plan only (setting B, `dev/reports/v5-26-single-payer.md`).
+Oct 13, 2026. Engine work only: the page does not change. Every new part is a switch, off by default; switched off, every released figure stays the same (the guard test proves it). Choices, sources and alternatives are in `dev/DECISIONS.md`. This builds on today's health system (setting A, `dev/reports/v5-25-health-today.md`) and single payer with a public plan only (setting B, `dev/reports/v5-26-single-payer.md`).
 
 How to read the labels on figures: **sourced** (taken from a published source), **simulated** (an output of the model's runs), **derived** (arithmetic on sourced or simulated figures), **target** (a figure the model was set to match, so it is not a finding). "Points" means percentage points. "Paired" means the same 20 simulated populations (seeds 1-20) with and without the change, so the difference is not noise from different draws. Dollars are at year-0 prices.
 
@@ -30,7 +30,7 @@ Eligibility uses the same income test as Medicaid (income against the poverty gu
 
 Today's safety net makes poverty shallower but almost never lifts a household above the cost of living. That line is MIT's living wage ($49,370 for one adult; derived: the unweighted average of the 51 state figures in MIT's Living Wage Calculator, February 2026 data, one adult and no children; MIT publishes no national figure, and weighting by population would give about $51,210), far above what these programmes pay. **Compassionism against the safety-net row** (simulated, Reference): basket poverty -30.3 points (interval -31.5 to -29.0), depth -5.8, child basket poverty -43.9. That is almost the same as against no programme (-30.2), because the safety net changes the headcount so little.
 
-Decided since (Duke, Oct 13): the safety net stays on in every Compassionism run, so every comparison reads "against today's safety net", and the Hub says Compassionism adds to these programmes; no savings from replacing them are claimed. The six-cell grid is in session 2c's report, `dev/reports/v5-28-safety-net-grid.md`.
+Decided since (Duke, Oct 13): the safety net stays on in every Compassionism run, so every comparison reads "against today's safety net", and the Hub says Compassionism adds to these programmes; no savings from replacing them are claimed. The six-cell grid is in the safety-net grid report, `dev/reports/v5-28-safety-net-grid.md`.
 
 ## 2. Setting C: single payer with a private layer
 
@@ -76,7 +76,7 @@ Under today's system, a household that earns one dollar over the Medicaid limit 
 
 Under B and C the household's bill is the health tax on its income less the employer share returned to it. Nothing in it depends on Medicaid, so the cliff disappears. Under C, people on Medicaid and on the public base both pay nothing at the point of care. (Both settings report a small positive figure, 3-4 points of the line, which is year 0: today's system runs in year 0, before the plan starts.)
 
-**Whether the BU counts as income in the Medicaid test** (`HEALTH.countBU`; off in every main run, the cautious reading chosen in session 2a). The sweep, with Compassionism:
+**Whether the BU counts as income in the Medicaid test** (`HEALTH.countBU`; off in every main run, the cautious reading chosen in the first health report). The sweep, with Compassionism:
 
 | Reference, with the programme | Setting A, BU not counted | Setting A, BU counted |
 |---|---|---|
@@ -88,7 +88,7 @@ Under B and C the household's bill is the health tax on its income less the empl
 
 Adverse: Medicaid 12.0% to 2.6%, basket poverty 30.4% to 32.7%. Stress: 10.9% to 6.8%, and 52.7% to 53.4%.
 
-Under B and C, counting the BU removes no one's coverage. But one effect remains, and it is not a cliff. The government keeps paying what it pays for Medicaid today, so if fewer people qualified, government would pay less and the flat health tax would rise for everyone. The household bill in Reference rises by about $700 per adult-year under B and $770 under C, and basket poverty by 0.4 points. The cost is spread over every taxpayer instead of falling on the households near the limit. Fixing government's share at its no-programme level would remove it. (Since applied in the main runs, Duke's decision d194; the floating share is a sensitivity row: session 2c's report, section 6.)
+Under B and C, counting the BU removes no one's coverage. But one effect remains, and it is not a cliff. The government keeps paying what it pays for Medicaid today, so if fewer people qualified, government would pay less and the flat health tax would rise for everyone. The household bill in Reference rises by about $700 per adult-year under B and $770 under C, and basket poverty by 0.4 points. The cost is spread over every taxpayer instead of falling on the households near the limit. Fixing government's share at its no-programme level would remove it. (Since applied in the main runs, Duke's decision d194; the floating share is a sensitivity row: the safety-net grid report, section 6.)
 
 ## 4. Nothing counted twice
 
@@ -130,9 +130,9 @@ Twenty paired seeds per setting: A, B and C, each without and with Compassionism
 
 In short, in Reference single payer takes over part of what Compassionism does for basket poverty and depth, and C, which saves less, takes over less. In the harder environments the interaction on basket poverty is small and not distinguishable from zero. For children it runs the other way: Compassionism does more under single payer. Depth (FGT2) moves the same way in all three. Guardrail 6 asks for gains confirmed on basket poverty and wealth poverty, not depth alone, so the B and C gains are reported on all of them above, and they hold on basket poverty, depth and BLEI poverty in all three environments. Too little wealth, the measure the price rule decides, improves under B and C without the programme in every environment.
 
-**Today's safety net under A** (simulated, Reference): adding SNAP, the EITC and the CTC to setting A raises basket poverty without the programme by 0.4 points (interval 0.3 to 0.5), against +0.04 without health coverage, while depth falls by 0.5. Traced in session 2c (`dev/reports/v5-28-safety-net-grid.md`, section 2): most of the 0.4 was this comparison, which set the A-with-safety-net row against the row with no health setting and so folded in setting A's own +0.36. Against setting A, the safety net's own effect is +0.07 points (0.04 to 0.09), and it comes through prices.
+**Today's safety net under A** (simulated, Reference): adding SNAP, the EITC and the CTC to setting A raises basket poverty without the programme by 0.4 points (interval 0.3 to 0.5), against +0.04 without health coverage, while depth falls by 0.5. Traced in the safety-net grid report (`dev/reports/v5-28-safety-net-grid.md`, section 2): most of the 0.4 was this comparison, which set the A-with-safety-net row against the row with no health setting and so folded in setting A's own +0.36. Against setting A, the safety net's own effect is +0.07 points (0.04 to 0.09), and it comes through prices.
 
-**Time per run** (one row and one seed: 500 adults over 20 years, households, a health setting on, the one-year pre-pass for the tax rate included; three runs in parallel on four cores): **0.31 to 0.36 seconds** with prices free and 0.35 to 0.40 with prices flat (`_meta.perRun` in each file). The whole test took 4 to 5 minutes per environment for 20 rows. Session 3's Runpod estimate can use 0.36 seconds per run per core.
+**Time per run** (one row and one seed: 500 adults over 20 years, households, a health setting on, the one-year pre-pass for the tax rate included; three runs in parallel on four cores): **0.31 to 0.36 seconds** with prices free and 0.35 to 0.40 with prices flat (`_meta.perRun` in each file). The whole test took 4 to 5 minutes per environment for 20 rows. The Runpod study's estimate can use 0.36 seconds per run per core.
 
 ## Limits
 
@@ -141,7 +141,7 @@ In short, in Reference single payer takes over part of what Compassionism does f
 - The safety-net row leaves out TANF, housing assistance, WIC, SSI and SNAP's time limit for adults who must work, which the 2025 law (Public Law 119-21) widened to adults up to 64 and to parents whose youngest child is 14 or older. Leaving it out makes today's safety net more generous than it is, in both runs. It reads SNAP on last year's income.
 - Dollars are 2025 dollars: MIT's February 2026 data, SNAP's fiscal-2026 amounts and the 2025 tax year's credits.
 - The model charges every household the cost of living's tax line whatever its income, so low earners' taxes are overstated (a limit of the basket, as before).
-- Twenty seeds per setting. These are readings, not release figures; the 500-seed runs are session 3's.
+- Twenty seeds per setting. These are readings, not release figures; the 500-seed runs are the Runpod study's.
 - Health does not yet improve with the care people get (the prevention link).
 
 ## Reproduce

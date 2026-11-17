@@ -3,7 +3,7 @@
 Nov 8, 2026. Reads the full batch's participation studies (D at 500 adults, D10 at 10,000 adults; engine `ce8d030`, results `prog-d-ce8d030` and `prog-d10-ce8d030`, 500 seeds each, all checks pass). Rule: `prereg/2026-11-study-program.md`, decision rule 5. Tool: `dev/tools/s5_participation.py`. Every estimate: `dev/runs/s5-participation/estimates.csv`; every table: `dev/runs/s5-participation/tables.md`. No engine change.
 
 ## What was asked
-How do the programme's effects change as the share of adults who join goes from 2% to 90%, and what one participation figure can the Hub state? The grid is for the as-released design (opt-in, $1,200 payout); under the full-coverage design everyone is covered automatically, so the grid does not apply to it (study programme, Amendment 4).
+How do the programme's effects change as the share of adults who join goes from 2% to 90%, and what one participation figure can the Hub state? The grid is for the as-released design (opt-in, $1,200 payout); under the full-coverage design, built to meet NEEC's criterion C2.2, everyone is covered automatically, so the grid does not apply to it (study programme, Amendment 4).
 
 ## The one figure
 **By the preregistered rule the figure is 2%: the lowest level in the grid, and the lowest level in every environment, horizon and 10,000-adult cell where anything is detected.** At 2% the opt-in row lowers all three of: the share below 30 days of basic living (design-neutral reading), the share below the cost of living, and the share with too little wealth at the last year, with intervals that exclude zero (Reference, 500 adults, 20 years, CPS yardstick, raise off: +0.71, +2.15, +0.95 points).

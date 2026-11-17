@@ -10,7 +10,7 @@ The external audit of v5.0 found one real timing error in the model, several thi
 
 1. Read sections 3 and 4. Say if anything misrepresents your vision; section 4a is a design question, not a code one.
 2. Merge pull request 3 (v5.0.1) first, then pull request 4 (v5.1). Merging is the release; the release workflow tags each version. The `v5.0` tag stays where it is.
-3. Optional, by hand: the old "apply a zip" workflow fails at its last step because of a `.gitignore` added in session 33. Deleting the two `':(exclude)...'` pieces from the `git add` line in `.github/workflows/apply-upload.yml` fixes it (details in `dev/PROGRESS.md`). I did not change workflow files.
+3. Optional, by hand: the old "apply a zip" workflow fails at its last step because of a `.gitignore` added on Oct 2. Deleting the two `':(exclude)...'` pieces from the `git add` line in `.github/workflows/apply-upload.yml` fixes it (details in `dev/PROGRESS.md`). I did not change workflow files.
 4. There is a stray branch called `v5-1` on GitHub, made by a mistyped command of mine; the connection refused my attempt to delete it. It points at the same work as the real branch and does nothing. Delete it under Branches whenever convenient.
 
 ## 3. What the timing fix changed (V5-02)

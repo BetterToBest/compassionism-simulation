@@ -1,3 +1,33 @@
 replication.html:D0  # a formula's symbol (the share at year 0), not a code
 index.html:S72  # an engine error message, shown only to someone who calls the engine with an impossible option; engine text is not edited for wording
 earlier-engine.html:S72  # the same message in the earlier engine's frozen copy
+CHANGELOG.md:D0  # the same formula symbol (housing distress at year 0)
+CHANGELOG.md:D1  # final-wealth deciles D1-D10 in a v4 table, not codes
+CHANGELOG.md:D3
+CHANGELOG.md:D5
+CHANGELOG.md:D8
+CHANGELOG.md:D10
+dev/reports/pilot-studies.md:D10  # pilot study D run at 10,000 adults (the pilots are lettered A-J in the report)
+dev/reports/s47-fx.md:D10  # the same pilot study
+dev/reports/s5-participation.md:D10  # the same pilot study
+dev/reports/03a-financing-reading.md:S2  # the reading's own numbered statements S1-S6
+dev/reports/03a-financing-reading.md:S3
+dev/reports/03a-financing-reading.md:S4
+dev/reports/03a-financing-reading.md:S5
+dev/reports/03a-financing-reading.md:S6
+dev/reports/s66-low-share-trace.md:Part A  # the report's own three parts
+dev/reports/s66-low-share-trace.md:Part B
+dev/reports/s66-low-share-trace.md:Part C
+dev/reports/s52-supply-shock-reading.md:X1
+dev/reports/s52-supply-shock-reading.md:X2
+dev/reports/s52-supply-shock-reading.md:X3
+dev/reports/s52-supply-shock-reading.md:X4
+dev/reports/s52-supply-shock-reading.md:X5
+dev/reports/s52-supply-shock-reading.md:X6
+dev/reports/s52-supply-shock-reading.md:X7
+dev/reports/s52-supply-shock-reading.md:X8
+dev/reports/s52-supply-shock-reading.md:X9  # the reading's own numbered statements X1-X9
+dev/reports/s52-supply-shock.md:X1  # cites the reading's statements
+dev/reports/s52-supply-shock.md:X5  # cites the reading's statements
+dev/reports/s52-supply-shock.md:X7  # cites the reading's statements
+dev/reports/s52-supply-shock.md:X9  # cites the reading's statements

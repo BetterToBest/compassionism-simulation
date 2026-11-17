@@ -1,6 +1,6 @@
 # Open PTF access, part 2: how far the PTFs' share of sales grows (Nov 8, 2026)
 
-Claude's reading of the design, and what it adds to the model. Part 1 (`dev/reports/s55-ptf-access-reading.md`) let every adult buy at PTF prices for their zone's PTF share of essential sales, and held that share at its start. This part lets the share grow, as Duke asked on Nov 7 (research-update `audits/2026-11-ptf-access.md`, reading 6 and ledger D16): with capacity, and with capital, operations and market demand as factors too. Nothing here is a result: no study has run, and the rows are preregistered before any run.
+Claude's reading of the design, and what it adds to the model. Part 1 (`dev/reports/s55-ptf-access-reading.md`) let every adult buy at PTF prices for their zone's PTF share of essential sales, and held that share at its start. This part lets the share grow, as Duke asked on Nov 7 (research-update `audits/2026-11-ptf-access.md`, reading 6, and Duke's answers): with capacity, and with capital, operations and market demand as factors too. Nothing here is a result: no study has run, and the rows are preregistered before any run.
 
 ## The rule
 Each year, before anything reads the share, every zone's PTF share of essential sales grows as far as three limits allow, whichever binds first. It never falls: the limits stop expansion, and nothing here closes a PTF.

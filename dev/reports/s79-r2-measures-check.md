@@ -1,6 +1,6 @@
 # Can v5.9 report the BLEI paper's other measures? (Nov 16, 2026)
 
-**The question.** The visual suite's v5.9 view shows the BLEI series (job X2), but its cards for the BLEI paper's other five measures (the Extractive Drain Coefficient, EDC; the Effective Purchasing Power Multiplier, EPPM; the Financial Bandwidth Score, FBS; the Compound Stability Index, CSI; the Indirect Participant Benefit Index, IPBI) and the measures study (who gains, how people move between tiers, wealth net of drain) say they exist for v5.6 only. Before any run, this note checks which of them the engine can report for v5.9's main row (no programme, the full-coverage design and the opt-in design) without changing the model.
+**The question.** The visual suite's v5.9 view shows the BLEI series, but its cards for the BLEI paper's other five measures (the Extractive Drain Coefficient, EDC; the Effective Purchasing Power Multiplier, EPPM; the Financial Bandwidth Score, FBS; the Compound Stability Index, CSI; the Indirect Participant Benefit Index, IPBI) and the measures study (who gains, how people move between tiers, wealth net of drain) say they exist for v5.6 only. Before any run, this note checks which of them the engine can report for v5.9's main row (no programme, the full-coverage design, built to meet NEEC's criterion C2.2, and the opt-in design) without changing the model.
 
 **The answer: all of them.**
 - **EDC** (share of income paid as rent to landlords and interest on debt). The engine measures it when the measured-EDC switch is on. v5.9's rows did not have it on. It is a reporting switch: it records payments and changes nothing that happens.
@@ -12,4 +12,4 @@
 
 **What still holds back.** Nothing needs a switch that v5.9 does not have, so no card keeps "v5.6 only". The limits that each card already states still apply: EPPM, FBS and CSI are measured in the model's own terms, not with the paper's formulas; IPBI covers only public costs; the FBS's "even odds" level is a model rule with a provisional range, not an observed rate.
 
-**Next.** A preregistered run of 500 seeds in all three environments at 20 and 40 years on GitHub Actions (job X3; research-update `prereg/2026-11-x3-measures-addendum.md`), checked against v5.9 key by key, then the v5.9 cards and the measures study on the suite page.
+**Next.** A preregistered run of 500 seeds in all three environments at 20 and 40 years on GitHub Actions (research-update `prereg/2026-11-x3-measures-addendum.md`), checked against v5.9 key by key, then the v5.9 cards and the measures study on the suite page.

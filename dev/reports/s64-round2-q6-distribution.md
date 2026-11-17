@@ -4,7 +4,7 @@ Nov 15, 2026. The distribution measures' distribution measures on the v5.9 main 
 
 ## In short
 
-1. **Both designs make wealth and income more equal.** The full-coverage design lowers the top 1%'s share of wealth by 4.6 points (from 31.6% to 27.0%, Reference, 20 years) and the top 10%'s by 9.4 points; the opt-in design by 2.3 and 4.7 points. The bottom half's share of wealth rises from 2.9% to 9.2% (full coverage) and 5.8% (opt-in design).
+1. **Both designs make wealth and income more equal.** The full-coverage design, built to meet NEEC's criterion C2.2, lowers the top 1%'s share of wealth by 4.6 points (from 31.6% to 27.0%, Reference, 20 years) and the top 10%'s by 9.4 points; the opt-in design by 2.3 and 4.7 points. The bottom half's share of wealth rises from 2.9% to 9.2% (full coverage) and 5.8% (opt-in design).
 2. **Income inequality falls under the full-coverage design, and barely moves under the opt-in design.** The full-coverage design lowers the Palma ratio (the top 10%'s income over the bottom 40%'s) from 2.68 to 1.64; the opt-in design raises it slightly, to 2.75 (+0.07, interval +0.06 to +0.08), and leaves the top 10%'s income share unchanged (+0.03 points, interval includes zero).
 3. **Families in debt fall sharply:** from 21.9% to 0.7% under the full-coverage design and to 7.4% under the opt-in design.
 4. **Gains are spread across the distribution in dollars, so they are largest in proportion at the bottom.** The full-coverage design raises real wealth by $128,000 at the 10th percentile (from −$2,300), $208,400 at the median and $218,800 at the 90th; real income by $32,300 at the 10th percentile (from $21,100) and $82,900 at the 90th.

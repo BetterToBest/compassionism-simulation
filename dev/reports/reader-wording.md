@@ -1,12 +1,12 @@
 # Reader-facing wording: what readers saw that they did not need (inventory, Nov 17, 2026)
 
-Duke asked (Nov 17, 2026) that what readers see should not carry the project's internal bookkeeping: step and ledger codes (S55, D26), job ids (X3), "session 12", "part M", "round 2", "release 1" and "release 2" for the two model generations, and "C2.2" (NEEC's criterion code) as the name of a design. This note counts every such occurrence in the text a reader opens, before any edit. The names that replace them are recorded in `dev/DECISIONS.md` (reader-facing names, Nov 17): release 1 is v5.6, release 2 is v5.9, "C2.2" is the full-coverage design, the release design is the opt-in design, and a study is named by what it asks.
+Duke asked (Nov 17, 2026) that what readers see should not carry the project's internal bookkeeping: step and ledger codes (`S55`, `D26`), job ids (`X3`), `session 12`, `part M`, `round 2`, `release 1` and `release 2` for the two model generations, and `C2.2` (NEEC's criterion code) as the name of a design. This note counts every such occurrence in the text a reader opens, before any edit. The names that replace them are recorded in `dev/DECISIONS.md` (reader-facing names, Nov 17): `release 1` is v5.6, `release 2` is v5.9, `C2.2` is the full-coverage design, the release design is the opt-in design, and a study is named by what it asks.
 
 **How it was counted.** `python3 dev/tools/reader_codes.py` (this repository), with `--root ../research-hub --preset hub` and `--root ../bettertobest.github.io --preset root` for the Research Hub and the root site. Reader-visible text is a page's text outside scripts, styles and `<code>`, its title, alt, aria-label and placeholder attributes, the prose strings of its scripts and `site/*.js`, Markdown outside code, and the text fields of the JSON files pages render. A path or file name in `<code>` or backticks is where a reader finds something and is not counted. The last column (row ids such as `c22` and `rel`, key and switch names such as `giniW` or `CFG.*`) is listed for the edit pass and not failed by the check; most of its matches on the simulation page are HTML `rel=` attributes inside script strings. `node dev/tools/reader_check.js` counts the same codes in each page as rendered with its data, which adds the labels the scripts print: 428 occurrences in 10 views before the edit.
 
 ## The Simulation's pages and documents
 
-| file | step/ledger code | session number | part letter | job id | round 2 | release 1/2 | C2.2 | row id or key | total |
+| file | step/ledger code | session number | part letter | job id | `round 2` | `release 1/2` | `C2.2` | row id or key | total |
 |---|---|---|---|---|---|---|---|---|---|
 | CHANGELOG.md | 31 | 55 | 0 | 3 | 4 | 35 | 2 | 0 | 130 |
 | CONTRIBUTING.md | 1 | 5 | 0 | 0 | 0 | 5 | 1 | 0 | 12 |
@@ -24,7 +24,7 @@ Duke asked (Nov 17, 2026) that what readers see should not carry the project's i
 
 ## The Simulation's reports (`dev/reports/`, 95 files)
 
-| file | step/ledger code | session number | part letter | job id | round 2 | release 1/2 | C2.2 | row id or key | total |
+| file | step/ledger code | session number | part letter | job id | `round 2` | `release 1/2` | `C2.2` | row id or key | total |
 |---|---|---|---|---|---|---|---|---|---|
 | all 95 reports | 572 | 81 | 7 | 21 | 52 | 45 | 589 | 30 | 1397 |
 
@@ -32,7 +32,7 @@ Per-report counts: `python3 dev/tools/reader_codes.py | grep dev/reports`. Most 
 
 ## The Research Hub (pages and papers; the frozen `/v1/` archive excluded)
 
-| file | step/ledger code | session number | part letter | job id | round 2 | release 1/2 | C2.2 | row id or key | total |
+| file | step/ledger code | session number | part letter | job id | `round 2` | `release 1/2` | `C2.2` | row id or key | total |
 |---|---|---|---|---|---|---|---|---|---|
 | basic-living-economic-index.html | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 4 |
 | cco-ptf-integrated-framework.html | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 2 |
@@ -55,7 +55,7 @@ Per-report counts: `python3 dev/tools/reader_codes.py | grep dev/reports`. Most 
 
 ## The root site (bettertobest.github.io)
 
-| file | step/ledger code | session number | part letter | job id | round 2 | release 1/2 | C2.2 | row id or key | total |
+| file | step/ledger code | session number | part letter | job id | `round 2` | `release 1/2` | `C2.2` | row id or key | total |
 |---|---|---|---|---|---|---|---|---|---|
 | ai-index.json | 3 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 4 |
 | ai-manifest.json | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 3 |

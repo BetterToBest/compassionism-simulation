@@ -65,7 +65,7 @@ Every row is the frozen yardstick (the frozen engine, US earnings, today's safet
 
 ### 3. Does the programme's effect depend on the reading? (criterion C4; pilot, not a result)
 
-The full-coverage design against its own no-programme row, Reference, points (95% paired bootstrap interval):
+The full-coverage design, built to meet NEEC's criterion C2.2, against its own no-programme row, Reference, points (95% paired bootstrap interval):
 
 | Reading | Basket poverty | Wealth poverty | Cost-of-living measure |
 |---|---|---|---|

@@ -4,7 +4,7 @@ Nov 15, 2026. A guide to the seven reports on the v5.9 model, one per preregiste
 
 ## The statements the rules allow
 
-**Basket poverty (the cost of living).** Across the 62 preregistered readings, the full-coverage design lowers basket poverty by 26 to 33 points in Reference at 20 years; at the main row, 32.4 points (seed interval 32.2 to 32.5). The opt-in design lowers it by 16 to 22 points; at the main row, 20.9 (20.8 to 21.1). Robust in every environment and at both horizons. (Question 2.)
+**Basket poverty (the cost of living).** Across the 62 preregistered readings, the full-coverage design, built to meet NEEC's criterion C2.2, lowers basket poverty by 26 to 33 points in Reference at 20 years; at the main row, 32.4 points (seed interval 32.2 to 32.5). The opt-in design lowers it by 16 to 22 points; at the main row, 20.9 (20.8 to 21.1). Robust in every environment and at both horizons. (Question 2.)
 
 **Basic living and wealth poverty.** Robust likewise: the full-coverage design lowers adult-years below 30 days of basic living by 16.5 to 19.7 points (main row 18.7) and wealth poverty by 15.7 to 19.7 points (main row 18.6); the opt-in design by 10.7 to 13.0 (12.3) and 9.0 to 12.7 (10.9). Reference, 20 years. (Question 2.)
 

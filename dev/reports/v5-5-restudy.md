@@ -1,12 +1,12 @@
 # The v5.0 restudy: every mechanism, including your four new items
 
-Oct 2, 2026 · Claude, session 31 · 500 paired runs, three environments · **this replaces `11-restudy.md` as the report the release gate asks Duke to read**
+Oct 2, 2026 · Claude · 500 paired runs, three environments · **this replaces `11-restudy.md` as the report the release gate asks Duke to read**
 
 ## What was run
 
 The same 500 simulated adults for 20 years, 500 times, with Compassionism and with no programme (the same random draws for both), in three environments: Reference (no recessions), Adverse (recessions, 2% outside inflation, an automation wave) and Stress (Adverse with weaker settings: 40% take part, a smaller allowance).
 
-v5.0 is session 30's release candidate plus your four items:
+v5.0 is the first v5.0 candidate plus your four items:
 
 1. **Private essential-service businesses** pass what conversion adds to their BU customers as lower prices, and pay their workers what community-business workers earn (your correction).
 2. **Creative projects' output counts at market value**, because they offer it to members below the market price and are paid at their earned rate (Claude's reading of your d138 answer). **Community businesses add capacity within a year**, paying for the capital they borrow. **Only businesses' conversion is capped by their capacity**; individuals and Collectives are not.
@@ -28,13 +28,13 @@ v5.0 is session 30's release candidate plus your four items:
 
 Every 95% interval is narrow (within about ±0.2 points), so these differences are not chance.
 
-**Against session 30's release candidate**, v5.0 is better on every poverty measure at Reference (below the cost of living 30.0% → 22.0%; too little wealth 47.5% → 35.7%) and on income and BLEI poverty in Adverse and Stress. Wealth poverty in Adverse and Stress is about the same or slightly worse (Adverse 87.0% → 87.1%; Stress 89.3% → 90.6%).
+**Against the first v5.0 candidate**, v5.0 is better on every poverty measure at Reference (below the cost of living 30.0% → 22.0%; too little wealth 47.5% → 35.7%) and on income and BLEI poverty in Adverse and Stress. Wealth poverty in Adverse and Stress is about the same or slightly worse (Adverse 87.0% → 87.1%; Stress 89.3% → 90.6%).
 
 **In everyday words:**
 
-- **At Reference, Compassionism cuts poverty on every measure, by more than in session 30's build.** Fewer than half as many adult-years fall below the cost of living, and about a third fewer adults end with too little savings.
+- **At Reference, Compassionism cuts poverty on every measure, by more than in the first v5.0 candidate.** Fewer than half as many adult-years fall below the cost of living, and about a third fewer adults end with too little savings.
 - **In Adverse and Stress it cuts income poverty and BLEI poverty, but more adults end with too little savings than with no programme**, because prices still rise fast (24-46% a year in the model) and savings are not protected from inflation.
-- **Who gains.** At Reference, adults who take part gain about $30,300 a year in real resources, the poorest third $22,500, the richest third $24,300. **Adults who do not take part lose about $800 a year** against no programme, and more of them end with too little wealth. In session 30's build they gained $3,167, because as business owners they received part of the conversion premium; under your correction that premium goes to BU customers instead, while prices still rise. In Adverse and Stress everyone has more real income than with no programme, but every group ends with less wealth.
+- **Who gains.** At Reference, adults who take part gain about $30,300 a year in real resources, the poorest third $22,500, the richest third $24,300. **Adults who do not take part lose about $800 a year** against no programme, and more of them end with too little wealth. In the first v5.0 candidate they gained $3,167, because as business owners they received part of the conversion premium; under your correction that premium goes to BU customers instead, while prices still rise. In Adverse and Stress everyone has more real income than with no programme, but every group ends with less wealth.
 - **Work** falls less than before (−3.1% at Reference against −6.7%), mainly because the private-business correction gives workers profit shares instead of giving owners unconditional dollars.
 
 ## What each new item did (500 runs each; reports `v5-1` to `v5-4`)
@@ -54,7 +54,7 @@ Every 95% interval is narrow (within about ±0.2 points), so these differences a
 - **Capacity only as fast as reinvestment pays (the 5-year rule):** 35.7% (the same: the capacity limit rarely binds).
 - **Everyone joins:** 27.4%, and nobody is worse off.
 - **Paid for by a flat contribution on wages instead of the Source:** 72.8% (much worse).
-- **Session 30's build:** 47.5%.
+- **The first v5.0 candidate:** 47.5%.
 
 ## Model limits that matter for these results
 

@@ -141,7 +141,7 @@ Tests (7 added to `prUnitSuite`; 304 unit tests pass): the options off give the 
 
 ## 7. The pilot (item 6)
 
-Rows: the no-programme run under both rules; the opt-in row and the full-coverage design under both rules (these six also ran in the price-rule study and reproduce its published values exactly: 52,200 of 52,200 per-seed values in each environment); the full-coverage design under each reading above; the opt-in row under `wy`, `vel` and `drift`. Paired seeds 1-100; exploratory; 95% paired-bootstrap intervals, not adjusted; of 712 estimates 660 exclude zero and 629 survive Holm at 5% (with 100 paired seeds almost any difference does). All cells are in `dev/runs/s67-price/tables.md`.
+Rows: the no-programme run under both rules; the opt-in row and the full-coverage design, built to meet NEEC's criterion C2.2, under both rules (these six also ran in the price-rule study and reproduce its published values exactly: 52,200 of 52,200 per-seed values in each environment); the full-coverage design under each reading above; the opt-in row under `wy`, `vel` and `drift`. Paired seeds 1-100; exploratory; 95% paired-bootstrap intervals, not adjusted; of 712 estimates 660 exclude zero and 629 survive Holm at 5% (with 100 paired seeds almost any difference does). All cells are in `dev/runs/s67-price/tables.md`.
 
 **Prices, full-coverage design (Reference; Adverse; Stress).**
 

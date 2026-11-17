@@ -1,6 +1,6 @@
 # Creative-output backing, capacity speed and the octave limit: Claude's reading of the design
 
-Session 31, Oct 2, 2026. Ledger step s67; Duke's answers to three questions (Oct 2): how fast the essential-service providers add capacity, what backs a creative payment and what limits an octave. Written by Claude before any code. Everything below headed "Claude's reading of the design" is labelled that way wherever it appears on the page.
+Oct 2, 2026. Duke's answers to three questions (Oct 2): how fast the essential-service providers add capacity, what backs a creative payment and what limits an octave. Written by Claude before any code. Everything below headed "Claude's reading of the design" is labelled that way wherever it appears on the page.
 
 ## Duke's three answers (quoted)
 
@@ -31,12 +31,12 @@ All three are shown; the page says which is the design's reading and which is th
 ## Capacity speed, as it will be built
 
 - **Main run, within a year:** when BU spending at ESPs in a year exceeds their capacity, capacity rises the next year to meet it. Faster capacity is not free: the new capital is charged every year at its depreciation plus interest, from sourced figures (BEA Fixed Asset Tables, current-cost depreciation and net stock for retail trade, food services and utilities; the interest rate from the Federal Reserve H.15 release). Its capital per adult is the same $18,862 the 5-year rule uses (BEA and Census 2025, already in the session-30 build).
-- **Other reading, the 5-year rule:** capacity grows only as fast as ESP reinvestment pays for it (session 30's rule, about year 5 at Reference).
+- **Other reading, the 5-year rule:** capacity grows only as fast as ESP reinvestment pays for it (the rule of the first v5.0 candidate, about year 5 at Reference).
 - In both, when BU demand exceeds capacity in a year, participants spend the BU they can and pay cash for the rest; the unspent BU expire to the Source (or, under point 5, partly to Collectives).
 
 ## Switches, tests and the restudy
 
-- Switches: `CAPSPEED` (`'reinvest'` = session 30, `'oneyear'` = main), `CREATIVE` (`'cost'` = session 30, `'market'` = main, `'all'` = H1), `ESPCAP` (ESP octave cap from capacity, on/off), `EXPIRED_TO_CC` (share 0 = session 30). With all switches at their session-30 values every output is bit-identical (full-output diff).
+- Switches: `CAPSPEED` (`'reinvest'` = the first v5.0 candidate, `'oneyear'` = main), `CREATIVE` (`'cost'` = the first v5.0 candidate, `'market'` = main, `'all'` = H1), `ESPCAP` (ESP octave cap from capacity, on/off), `EXPIRED_TO_CC` (share 0 = the first v5.0 candidate). With all switches at their first v5.0 candidate's values every output is bit-identical (full-output diff).
 - No new random draws.
 - Tests: total BU converted at ESPs never exceeds ESP capacity; a group with no delivered output converts at 1x; under `'market'` the counted output equals the elevated part of the payout; capital charge under `'oneyear'` equals capital x (depreciation + interest); expired BU directed to Collectives never exceed expired BU.
 - Restudy: seeds 1-500, Reference, Adverse and Stress; basket and wealth poverty confirmed, not only the severity index.

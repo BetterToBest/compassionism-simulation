@@ -25,7 +25,7 @@ Duke's rule picks the best setting:
 
 Each test must hold in all three environments: Reference, Adverse and Stress.
 
-Two designs: **the opt-in row** as released, and **the full-coverage design** (the BU indexed to the price of basic needs and given to everyone automatically). Two wage readings: wages keep up 100% or 90% with the programme's prices.
+Two designs: **the opt-in row** as released, and **the full-coverage design** (built to meet NEEC's criterion C2.2; the BU indexed to the price of basic needs and given to everyone automatically). Two wage readings: wages keep up 100% or 90% with the programme's prices.
 
 Each lever was compared with its own design under "joining that sees what joining pays". This is the test reading: an adult's decision to join also counts the conversion income they can expect after tax. At the released tax it is calibrated to give today's participation.
 
@@ -160,7 +160,7 @@ Self-funding cannot be reached because the BU are spent at face value, and that 
 - In the opt-in row, the factors that move basket poverty most over their full ranges are the protected account (11 points), the BU amount (7 points in Reference, 3 in Stress), then the issuance cap, the business rate and the business tax (under 1 point each, with large spreads).
 - Everything else moves basket poverty by less than half a point once the other levers vary: indexation, the rent cap, the tax, the multiplier, phase-in, octaves, Phi tier, progression and recycling.
 - Inflation is dominated by the protected account (its runaway) and the BU amount.
-- Full-coverage looks the same, with the BU amount first.
+- The full-coverage design looks the same, with the BU amount first.
 
 **Recycling does nothing in combination.** In the opt-in row, the share of expired BU recycled to projects changed nothing in any trajectory. That is not a fault of the job: BU expire unspent only when the BU is near its full amount (seed 1: 548 at the full BU, 109 at 87%). Most combinations leave nothing for the share to act on. These were seed-1 checks on the session machine, not preregistered, and they explain the null result.
 

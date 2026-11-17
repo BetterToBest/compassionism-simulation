@@ -1,10 +1,10 @@
 # Today's health coverage, made explicit (setting A)
 
-Session 2a, Oct 13, 2026. Engine work only: the page does not change. Sources: `sources/health/README.md`. Choices and alternatives: `dev/DECISIONS.md`, Session 2a.
+Oct 13, 2026. Engine work only: the page does not change. Sources: `sources/health/README.md`. Choices and alternatives: `dev/DECISIONS.md`.
 
 ## Why this was needed
 
-Until now the model charged every household the same medical cost: 6.85% of the MIT living-cost basket, scaled by household type. No one was uninsured or underinsured, no one's medical need varied, and no one took on medical debt. Single payer's expected gains come from exactly those people. So today's system had to be built first, before single payer could be measured against it. It also gives the Medicaid income limits that session 2b's benefit-cliff check needs.
+Until now the model charged every household the same medical cost: 6.85% of the MIT living-cost basket, scaled by household type. No one was uninsured or underinsured, no one's medical need varied, and no one took on medical debt. Single payer's expected gains come from exactly those people. So today's system had to be built first, before single payer could be measured against it. It also gives the Medicaid income limits that the health-financing report's benefit-cliff check needs.
 
 ## What the setting does
 
@@ -54,11 +54,11 @@ This is a reading, not a release figure. It shows the change in the programme's 
 
 All the changes are small next to the effects themselves (for example, basket poverty falls by about 31 points in Reference). The programme lowers basket poverty slightly more once bills vary. It deepens FGT2 somewhat in Adverse, because a few people with large bills fall further below the line. With the non-expansion limits, the changes are similar. With the medical price response to extra demand at 0 or at 1 (it is 0.5, an unsourced placeholder), the readings move by less than 0.2 points.
 
-The programme run has about 1.3 points more adult-years on Medicaid. In the Medicaid income test the programme's guaranteed income is not counted as cash (the cautious assumption for today's rules; session 2b tests the other reading), and hours fall slightly.
+The programme run has about 1.3 points more adult-years on Medicaid. In the Medicaid income test the programme's guaranteed income is not counted as cash (the cautious assumption for today's rules; the health-financing report tests the other reading), and hours fall slightly.
 
 ## What is not modelled
 
-Health does not yet change with care received: skipping care does not make next year's need larger. That is session 2b's prevention link. There are no adults with disabilities, no Medicare before 65 and no dual Medicare and Medicaid coverage. A child's marketplace premium is set at half an adult's (a design value). Plan choice is simplified: everyone on the marketplace buys the benchmark silver plan.
+Health does not yet change with care received: skipping care does not make next year's need larger. That is the later prevention link. There are no adults with disabilities, no Medicare before 65 and no dual Medicare and Medicaid coverage. A child's marketplace premium is set at half an adult's (a design value). Plan choice is simplified: everyone on the marketplace buys the benchmark silver plan.
 
 ## Reproduce
 

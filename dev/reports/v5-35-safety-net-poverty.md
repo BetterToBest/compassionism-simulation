@@ -1,6 +1,6 @@
 # Why today's safety net slightly raises basket poverty (issue i24-1)
 
-Session 9, Oct 14, 2026. A 20-seed trace, made before the 500-seed study was launched; the 500-seed figures are in section 5. Tool: `dev/tools/sn_v54_trace.js`; results: `dev/runs/sn/v54trace-ENV.json`.
+Oct 14, 2026. A 20-seed trace, made before the 500-seed study was launched; the 500-seed figures are in section 5. Tool: `dev/tools/sn_v54_trace.js`; results: `dev/runs/sn/v54trace-ENV.json`.
 
 ## 1. The question
 
@@ -42,7 +42,7 @@ The model reads each household's marginal rate as "benefits lost if it earned $1
 
 The study job adds a cheap 500-seed version of this trace (`sn-trace-ENV.json`: as released, work response off, prices flat; about 1.4 core-hours), so the v5.6 report can give these two lines with 500-seed figures.
 
-**500-seed figures (added in session 10, Oct 14, 2026).** The study ran this trace on seeds 1-500 (engine commit 5bf5bcc, clean tree), with the section 4 fix on in every safety-net run (`--slope`); files `dev/runs/sn/sn-trace-ENV.json`. Figures are the safety net's effect (with it minus without it) on the share of adult-years below the cost of living, in points, with the 95% interval over seeds. The two lines of section 2, at 500 seeds:
+**500-seed figures (added Oct 14, 2026).** The study ran this trace on seeds 1-500 (engine commit 5bf5bcc, clean tree), with the section 4 fix on in every safety-net run (`--slope`); files `dev/runs/sn/sn-trace-ENV.json`. Figures are the safety net's effect (with it minus without it) on the share of adult-years below the cost of living, in points, with the 95% interval over seeds. The two lines of section 2, at 500 seeds:
 
 1. **It is mostly behaviour.** With the work response off, the safety net with Compassionism lowers basket poverty in every environment: −1.26 [−1.30, −1.22] at Reference, −2.48 [−2.54, −2.43] Adverse, −0.44 [−0.46, −0.42] Stress Test. With it on (as released) the effect is −0.08 [−0.11, −0.05], −0.26 [−0.29, −0.23] and +0.48 [+0.46, +0.50]: hours fall 2.7% (Reference) to 3.8% (Adverse, Stress Test), and some people near the line land just below it. With no program the safety net raises basket poverty by +0.05 (Reference) and +0.02 (Adverse and Stress Test); with the work response off, by +0.10 and −0.01. The depth of poverty falls in every case (−0.13 to −2.09 on the severity measure).
 2. **A smaller part is prices.** Holding essential prices flat moves the as-released figures by 0.03 to 0.21 points: with Compassionism −0.15 (Reference, against −0.08), −0.09 (Adverse, against −0.26) and +0.27 (Stress Test, against +0.48); with no program +0.02 at Reference (against +0.05). The direction of the price channel is not the same in every environment (at Adverse, flat prices make the safety net's effect slightly less favourable), so it is a small, mixed channel, not a constant push.
@@ -57,4 +57,4 @@ What changed from the 20 seeds: with the section 4 fix on, the safety net with C
 
 ## 7. For Duke
 
-Nothing on the pages changes. The question for you is unchanged (issue i23: whether v5.6's main results include today's safety net). This note means that if they do, a reader will see the safety net lower the depth of poverty but not the share below the line, and the two lines above say why.
+Nothing on the pages changes. The question for you is unchanged (whether v5.6's main results include today's safety net). This note means that if they do, a reader will see the safety net lower the depth of poverty but not the share below the line, and the two lines above say why.

@@ -1,12 +1,12 @@
 # The v5.9 model on the findings page: the text for the v5.9 release
 
-Nov 15, 2026. The words the v5.9 release puts on the findings page for v5.9 (the v5.9 model), beside release 1. Every sentence comes from the v5.9 reports (`dev/reports/s64-round2-overview.md` and the seven question reports) and follows the preregistered rules of research-update `prereg/2026-11-s63-round2-freeze.md`: the range across the preregistered readings comes before the main row's figure (rule 1); every wealth figure names the price rule it rests on and has its erosion share beside it (rule 6); every inflation figure has the backing statement beside it (rule 4); the financed rows are never led with. Figures are Reference at 20 years unless a sentence says otherwise; the tables give every environment and horizon. Charts: `dev/runs/s64-round2/charts/` (made by `python3 dev/tools/s64_charts.py`; `index.html` previews them with their captions).
+Nov 15, 2026. The words the v5.9 release puts on the findings page for v5.9, beside v5.6. Every sentence comes from the v5.9 reports (`dev/reports/s64-round2-overview.md` and the seven question reports) and follows the preregistered rules of research-update `prereg/2026-11-s63-round2-freeze.md`: the range across the preregistered readings comes before the main row's figure (rule 1); every wealth figure names the price rule it rests on and has its erosion share beside it (rule 6); every inflation figure has the backing statement beside it (rule 4); the financed rows are never led with. Figures are Reference at 20 years unless a sentence says otherwise; the tables give every environment and horizon. Charts: `dev/runs/s64-round2/charts/` (made by `python3 dev/tools/s64_charts.py`; `index.html` previews them with their captions).
 
 The v5.9 release may shorten any paragraph; it may not drop a qualifier that a rule attaches to a figure, or any of the unfavourable results.
 
 ## The answer in ten seconds (v5.9)
 
-**Headline cards.** With Compassionism (the full-coverage design), against no programme, Reference, 20 years, main row:
+**Headline cards.** With Compassionism (the full-coverage design, built to meet NEEC's criterion C2.2), against no programme, Reference, 20 years, main row:
 - *Below 30 days of basic living:* 0.9% of adult-years, against 19.6% (−18.7 points).
 - *Below the cost of living (the basket of essentials):* 3.7% of adult-years, against 36.1% (−32.4 points).
 - *Too little wealth (under $25,000), yearly average:* 6.0% of adults, against 24.6% (−18.6 points).

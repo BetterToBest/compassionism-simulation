@@ -1,6 +1,6 @@
 # The outside audit before the Runpod study: what was fixed, what waits, what was turned down
 
-Oct 13, 2026. Two outside AI reviewers (GPT and Grok) read the health-financing reports (v5-27 and v5-28), the decision log, the handoff note and the engine before the paid 500-seed study on a rented server (Runpod). This note sorts every finding into three groups: **fix before the study** (done in this session), **fix later** (recorded, with the reason it can wait) and **turned down** (with the reason). No engine code changed; the changes are to the study's design, the tools that run it, and the wording of two reports. Choices are recorded in `dev/DECISIONS.md`, Session 2d.
+Oct 13, 2026. Two outside AI reviewers (GPT and Grok) read the health-financing reports (v5-27 and v5-28), the decision log, the handoff note and the engine before the paid 500-seed study on a rented server (Runpod). This note sorts every finding into three groups: **fix before the study** (done in this session), **fix later** (recorded, with the reason it can wait) and **turned down** (with the reason). No engine code changed; the changes are to the study's design, the tools that run it, and the wording of two reports. Choices are recorded in `dev/DECISIONS.md`.
 
 Labels as in the other reports: **sourced** (from a published source), **simulated** (an output of the model's runs), **derived** (arithmetic on sourced or simulated figures), **design value** (a modelling choice, swept).
 

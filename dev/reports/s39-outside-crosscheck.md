@@ -12,7 +12,7 @@ Part 1, Nov 8, 2026: the design, the engine side, the outside engine built and c
 **What follows (preregistration rule 4):** the engine and its published figures stay as they are. Hub sentences about the programme's inflation should say the figure rests on the engine's placeholder rule (all unmatched new money reaches prices). They may say that a published outside model shows no price rise, but only together with the reason: its prices cannot answer demand. The engine's pass-through needs an outside source in the next engine round. This goes to the ledger as a decision for Duke.
 
 ## In plain words (part 1, as written before the results)
-The Compassionism Simulation's prices rise fast under the programme. Under the full-coverage design (automatic BU at the cost of food, housing and medical care) the price level is about 410 times its starting level by year 20 in the Reference environment, and the figure is the same at 500 and at 50,000 adults (study A). This step asks an outside, published model of a whole economy what it does with the same money.
+The Compassionism Simulation's prices rise fast under the programme. Under the full-coverage design (built to meet NEEC's criterion C2.2; automatic BU at the cost of food, housing and medical care) the price level is about 410 times its starting level by year 20 in the Reference environment, and the figure is the same at 500 and at 50,000 adults (study A). This step asks an outside, published model of a whole economy what it does with the same money.
 
 The engine's reason for the rise is one rule. Each year it counts the money the programme pays out that is not matched by new output, divides it by the year's cash income, and raises the general price level by that share. It is the quantity theory of money with a pass-through of 1, and the engine's own notes call it "a logged placeholder, swept 0.25-1". Under the full-coverage design the Source pays about $61,500 per adult a year in today's dollars (BU and conversion pay), the engine counts about 37% of it as matched by new output, and the rest, about $38,700, is new money: 30% to 50% of the year's cash income, every year. So prices rise by about that much each year.
 
@@ -93,7 +93,7 @@ All figures: BeforeIT's price level (consumer price index, CPI) in the payout ru
 | Full coverage Adverse amounts | full | -0.80% (-3.24 to +1.70) | -0.008 (-0.034 to 0.017) | +1.59% (-8.91 to +13.31) | 0.002 (-0.013 to 0.017) | +15.2% / +5.2% | 11.58 |
 | Full coverage Stress amounts | full | -0.49% (-3.53 to +2.64) | -0.005 (-0.036 to 0.026) | -5.18% (-16.06 to +7.11) | -0.007 (-0.023 to 0.009) | +15.3% / +5.6% | 12.45 |
 | Opt-in design, Reference | full | -1.39% (-5.12 to +2.49) | -0.020 (-0.074 to 0.034) | +2.06% (-13.09 to +19.86) | 0.004 (-0.026 to 0.033) | +14.7% / +3.6% | 7.15 |
-| Full-coverage gross (whole payout new money) | full | -0.69% (-6.33 to +5.29) | -0.005 (-0.050 to 0.039) | +2.76% (-7.13 to +13.71) | 0.003 (-0.009 to 0.015) | +15.8% / +4.6% | 17.76 |
+| Full coverage, gross (whole payout new money) | full | -0.69% (-6.33 to +5.29) | -0.005 (-0.050 to 0.039) | +2.76% (-7.13 to +13.71) | 0.003 (-0.009 to 0.015) | +15.8% / +4.6% | 17.76 |
 | Full coverage, income-tax financed | full | +0.40% (-2.81 to +3.71) | 0.004 (-0.030 to 0.038) | +0.38% (-12.56 to +15.22) | 0.001 (-0.021 to 0.023) | +0.8% / -3.8% | 1.21 |
 | Dose 1% of income a year | full | -0.25% (-1.85 to +1.38) | -0.083 (-0.625 to 0.460) | +3.52% (-4.73 to +12.48) | 0.174 (-0.243 to 0.591) | +0.7% / -1.0% | 1.25 |
 | Dose 3% | full | +2.72% (+0.11 to +5.39) | 0.302 (0.013 to 0.592) | +7.37% (-0.22 to +15.54) | 0.120 (-0.004 to 0.244) | +3.4% / +2.5% | 1.50 |
@@ -103,7 +103,7 @@ All figures: BeforeIT's price level (consumer price index, CPI) in the payout ru
 | Full coverage Adverse amounts | 1:1000 | -0.39% (-0.87 to +0.09) | -0.004 (-0.009 to 0.001) | -0.94% (-2.69 to +0.88) | -0.001 (-0.004 to 0.001) | +14.0% / +3.0% | 11.63 |
 | Full coverage Stress amounts | 1:1000 | -0.36% (-0.88 to +0.15) | -0.004 (-0.009 to 0.002) | -1.46% (-3.37 to +0.57) | -0.002 (-0.005 to 0.001) | +14.2% / +3.2% | 12.64 |
 | Opt-in design, Reference | 1:1000 | -0.33% (-0.85 to +0.18) | -0.005 (-0.012 to 0.003) | -0.25% (-2.15 to +1.66) | -0.000 (-0.004 to 0.003) | +13.8% / +2.5% | 7.28 |
-| Full-coverage gross | 1:1000 | +0.04% (-0.47 to +0.56) | 0.000 (-0.004 to 0.004) | -0.28% (-2.40 to +1.87) | -0.000 (-0.003 to 0.002) | +14.8% / +3.1% | 17.86 |
+| Full coverage, gross | 1:1000 | +0.04% (-0.47 to +0.56) | 0.000 (-0.004 to 0.004) | -0.28% (-2.40 to +1.87) | -0.000 (-0.003 to 0.002) | +14.8% / +3.1% | 17.86 |
 | Full coverage, income-tax financed | 1:1000 | -0.20% (-0.76 to +0.39) | -0.002 (-0.008 to 0.004) | -0.25% (-2.20 to +1.75) | -0.000 (-0.004 to 0.003) | +1.5% / -1.1% | 1.13 |
 | Dose 1% | 1:1000 | -0.10% (-0.59 to +0.38) | -0.035 (-0.198 to 0.127) | -0.08% (-2.11 to +2.01) | -0.004 (-0.107 to 0.100) | +1.3% / +0.5% | 1.24 |
 | Dose 3% | 1:1000 | -0.24% (-0.74 to +0.24) | -0.027 (-0.084 to 0.028) | -0.16% (-2.21 to +1.81) | -0.003 (-0.038 to 0.030) | +3.0% / +2.0% | 1.41 |

@@ -1,6 +1,6 @@
 # Single payer, public plan only (setting B)
 
-Session 2a, Oct 13, 2026. Engine work only: the page does not change. It builds on today's system made explicit (setting A, `dev/reports/v5-25-health-today.md`). Choices, sources and alternatives: `dev/DECISIONS.md`, Session 2a.
+Oct 13, 2026. Engine work only: the page does not change. It builds on today's system made explicit (setting A, `dev/reports/v5-25-health-today.md`). Choices, sources and alternatives: `dev/DECISIONS.md`.
 
 ## What the setting does
 
@@ -55,8 +55,8 @@ Adverse and Stress show the same pattern. The no-programme gains are similar, an
 - The administrative job figure comes from secondary summaries of a 2018 study; the study itself was not read.
 - Waits come from a design parameter, not from country data. The attached country comparison failed three of five spot checks, so it was not used.
 - The health tax is flat. A progressive health tax, Medicare for All's transition years, and how providers respond to Medicare rates over time are not modelled, beyond the costs-run-higher case.
-- With PTF's health-sector price cut switched on, single payer would count that cut twice. Its figures hold only with the cut at 0, as in the main row; session 2b fixes this.
-- Health does not yet improve with care received. That is session 2b's prevention link.
+- With PTF's health-sector price cut switched on, single payer would count that cut twice. Its figures hold only with the cut at 0, as in the main row; a later step fixes this.
+- Health does not yet improve with care received. That is the later prevention link.
 
 ## Reproduce
 

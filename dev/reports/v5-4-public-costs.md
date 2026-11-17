@@ -1,10 +1,10 @@
 # Wider public costs avoided: prisons, emergency and hospital care, mental health, policing, child welfare
 
-Session 31, Oct 2, 2026. Design note before code. Written by Claude.
+Oct 2, 2026. Design note before code. Written by Claude.
 
 ## What it is, in plain words
 
-Poverty costs governments money beyond welfare: more people in prison, more emergency and hospital visits, more psychiatric care, more child welfare cases. If Compassionism lowers poverty, some of those costs fall. Session 30 counted one of them, homelessness (with the health and justice costs of homeless people), and found it saves $22 to $209 per adult a year at Reference, under 1% of the program's cost. This step adds the others Duke listed.
+Poverty costs governments money beyond welfare: more people in prison, more emergency and hospital visits, more psychiatric care, more child welfare cases. If Compassionism lowers poverty, some of those costs fall. The first v5.0 candidate counted one of them, homelessness (with the health and justice costs of homeless people), and found it saves $22 to $209 per adult a year at Reference, under 1% of the program's cost. This step adds the others Duke listed.
 
 ## The rule for every figure
 
@@ -39,7 +39,7 @@ A row beside the program's cost: public costs avoided per adult a year, with the
 
 ## Switches and checks
 
-- Switch `AVOID_WIDE` (off = session 30's homelessness-only figure). Off is bit-identical. It only reads the model's results; it changes no adult's income, so it cannot move poverty figures.
+- Switch `AVOID_WIDE` (off = the first v5.0 candidate's homelessness-only figure). Off is bit-identical. It only reads the model's results; it changes no adult's income, so it cannot move poverty figures.
 - Tests: zero income gain gives zero avoided cost; no row applies an effect beyond its study's income range; homeless adults are excluded from the new rows; the ranges' low end is never above the main figure.
 - To extract at build time and cite in the code: the dollar size of the SSI loss in Deshpande and Mueller-Smith (to scale the effect per dollar), the HCUP public-payer share for adults 18-64, and the prisoner-year figure's inflation to 2025 dollars (BLS CPI-U).
 
@@ -56,7 +56,7 @@ Results for v5.0, per adult a year (500 runs; `dev/runs/release-panel.json`):
 |---|---|---|---|
 | Prisons (main) | $771 | $1,462 | $668 |
 | Hospitals and psychiatric care | $34 | $37 | $13 |
-| Homelessness (session 30's low-high) | $29-$283 | $27-$262 | $6-$59 |
+| Homelessness (the first v5.0 candidate's low-high) | $29-$283 | $27-$262 | $6-$59 |
 | **All, main reading** | **$834-$1,088** | **$1,526-$1,761** | **$686-$739** |
 | Share of the programme's cost | 2.8-3.7% | 5.5-6.4% | 6.5-7.0% |
 | High figure (the prison study applied to everyone, plus emergency rooms) | about $7,100 | about $13,400 | about $6,100 |

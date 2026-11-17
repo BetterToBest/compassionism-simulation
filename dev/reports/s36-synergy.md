@@ -2,7 +2,7 @@
 
 **Full study batch.** Every figure here comes from the preregistered batch: seeds 1-500, run once as frozen. These are not pilot figures.
 
-- Preregistration: research-update `prereg/2026-11-study-program.md` (question Q2, the Analysis section, decision rules 2, 3, 6 and 7), with Amendments 4 (the full-coverage design is the headline design), 9 (the design freeze; materiality for inflation read on the yearly rate) and 10 (the frozen spending share). How the rows are built: research-update `prereg/run-manifest.md`, section 3 (B and B10).
+- Preregistration: research-update `prereg/2026-11-study-program.md` (question Q2, the Analysis section, decision rules 2, 3, 6 and 7), with Amendments 4 (the full-coverage design, built to meet NEEC's criterion C2.2, is the headline design), 9 (the design freeze; materiality for inflation read on the yearly rate) and 10 (the frozen spending share). How the rows are built: research-update `prereg/run-manifest.md`, section 3 (B and B10).
 - Engine: `ce8d030b8d16a752706c4ea2db71196e11e73831`, the frozen engine (the outside audit's three corrections, the second implementation's four fixes, the re-derived spending share) on every row, the no-programme rows included.
 - Results: BetterToBest/compassionism-sim-results, folders `prog-b-ce8d030` (study B, 500 adults, 20 and 40 years) and `prog-b10-ce8d030` (study B10, 10,000 adults, 20 years). Each has `run.txt` (the exact command and its workflow run), `SHA256SUMS` and `DONE`.
 - Every table behind this report: `dev/runs/s36-synergy/tables.md`. Every estimate with its interval and flags (about 25,600): `dev/runs/s36-synergy/estimates.csv`. Both are written by `python3 dev/tools/s36_synergy.py <compassionism-sim-results checkout> dev/runs/s36-synergy` (about 30 seconds).

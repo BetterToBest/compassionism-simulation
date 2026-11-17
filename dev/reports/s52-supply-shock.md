@@ -20,7 +20,7 @@ For each group, the study measures **the share of the shock that reaches what it
 - adults in none of the three;
 - adults who chose not to take part at the start. These are the same people in every design and in the no-programme run. Some of them join later under the opt-in row.
 
-Two designs are tested: the opt-in row as released, and the full-coverage design (automatic distribution, the BU indexed to the cost of needs). Each runs in three environments. The Stress environment shares the Adverse economy and differs in the programme's own conditions, so its no-programme figures equal Adverse's.
+Two designs are tested: the opt-in row as released, and the full-coverage design (built to meet NEEC's criterion C2.2; automatic distribution, the BU indexed to the cost of needs). Each runs in three environments. The Stress environment shares the Adverse economy and differs in the programme's own conditions, so its no-programme figures equal Adverse's.
 
 ## What the pilot shows
 

@@ -17,9 +17,9 @@ The model already reports poverty and wealth. This study asks about security as 
 - How many hours of work do the basics cost, how often are people pushed out by price, and how much of the budget is exposed to market prices for essentials? (mostly the design's accounting)
 - Do the answers hold under the outside supply shock, and how much of the savings result is savings losing value to inflation?
 
-Two designs: **the opt-in row** as released, and **the full-coverage design** (the BU indexed to the price of food, housing and medical care, distributed to everyone automatically). Three environments: Reference, Adverse, Stress. Three groups: all adults; the adults who take part; the adults who choose not to. The two groups are fixed at the start from each adult's drawn willingness to join, so they are the same people in every design and in the no-programme run. Under the full-coverage design everyone receives the BU automatically, so there the two groups differ little; under the opt-in row some of those who chose not to still belong to PTF or PTH, which are drawn separately.
+Two designs: **the opt-in row** as released, and **the full-coverage design** (built to meet NEEC's criterion C2.2; the BU indexed to the price of food, housing and medical care, distributed to everyone automatically). Three environments: Reference, Adverse, Stress. Three groups: all adults; the adults who take part; the adults who choose not to. The two groups are fixed at the start from each adult's drawn willingness to join, so they are the same people in every design and in the no-programme run. Under the full-coverage design everyone receives the BU automatically, so there the two groups differ little; under the opt-in row some of those who chose not to still belong to PTF or PTH, which are drawn separately.
 
-The opt-in row and full-coverage rows measure need against different cost-of-living lines (full-coverage uses the CPS yardstick), so their no-programme levels differ; each design is compared only with its own no-programme run.
+The opt-in row and full-coverage rows measure need against different cost-of-living lines (the full-coverage design uses the CPS yardstick), so their no-programme levels differ; each design is compared only with its own no-programme run.
 
 ## What the pilot shows
 

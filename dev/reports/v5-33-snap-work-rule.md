@@ -54,7 +54,7 @@ So the study job runs three things on the same engine:
 2. the rule's own effect: the main row and its no-program run, with the safety net, rule off and on, 500 seeds;
 3. the v5.5 panel already published, which has neither.
 
-Together these let the v5.6 report separate what the safety net does from what the rule does. Whether v5.6's main results include the safety net is part of the decision in issue i23. This note flags it for Duke rather than settling it.
+Together these let the v5.6 report separate what the safety net does from what the rule does. Whether v5.6's main results include the safety net is part of the open decision on the safety net. This note flags it for Duke rather than settling it.
 
 ## 6. Tests
 
@@ -66,4 +66,4 @@ Together these let the v5.6 report separate what the safety net does from what t
 ## 7. For Duke
 
 - Nothing on the pages changes with this pull request.
-- Issue i23 is the decision that matters: whether, after seeing the 500-seed figures, the rule should be part of the main results (a v5.6 release). Section 5 adds one thing to it: the rule brings today's safety net into the main results too.
+- The open decision on the safety net is the one that matters: whether, after seeing the 500-seed figures, the rule should be part of the main results (a v5.6 release). Section 5 adds one thing to it: the rule brings today's safety net into the main results too.

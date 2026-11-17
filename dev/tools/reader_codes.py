@@ -58,8 +58,8 @@ PATTERNS = [
     ('session number', True, re.compile(r'\b[Ss]ession \d+[a-z]?\b')),
     ('part letter', True, re.compile(r'\b[Pp]art (?![IVX]\b)[A-Z]\b')),
     ('job id', True, re.compile(r'(?<![\w./-])(?:job )?X\d\b')),
-    ('round 2', True, re.compile(r'(?<![\w/-])[Rr]ound[ -]?[12](?![\w.])')),
-    ('release 1/2', True, re.compile(r'(?<![\w/-])[Rr]elease[ -]?[12](?![\w.])|\b[Rr]eleases? 1 and 2\b|\b[Rr]elease 1/2\b')),
+    ('round 2', True, re.compile(r'(?<![\w/-])[Rr]ound[ -]?[12](?!\w|\.\d)')),
+    ('release 1/2', True, re.compile(r'(?<![\w/-])[Rr]elease[ -]?[12](?!\w|\.\d)|\b[Rr]eleases? 1 and 2\b|\b[Rr]elease 1/2\b')),
     ('C2.2', True, re.compile(r'(?<!criterion )\bC2\.2\b')),
     ('row id or key', False, re.compile(r'(?<![\w./-])(?:c22|rel|giniW|giniD|gTop\d*|wt[A-Z]\w*|dm[A-Z]\w*|CFG\.\w+)(?![\w/.-])')),
 ]

@@ -8,7 +8,7 @@ Every figure is the programme minus no programme, on the same 50 seeds, in perce
 
 ## In short
 
-1. **The full-coverage design needs no backing for basket poverty to fall.** At every wage indexation tested (100% down to 75%) and in all three environments, basket poverty falls with nothing backed. Its basic unit is raised every year to the price of basic needs, so inflation does not wear it down.
+1. **The full-coverage design, built to meet NEEC's criterion C2.2, needs no backing for basket poverty to fall.** At every wage indexation tested (100% down to 75%) and in all three environments, basket poverty falls with nothing backed. Its basic unit is raised every year to the price of basic needs, so inflation does not wear it down.
 2. **The opt-in row needs backing only when wages lag prices badly.** Basket poverty falls with nothing backed when wages keep up 95% or 90%. When they keep up only 75%, it falls only if about half the payout is backed: 46% in Reference, 31% in Adverse, 54% in Stress.
 3. **Wealth poverty is where backing bites.** For the opt-in row, wealth poverty at year 20 (too little wealth) is below no programme only if 32% (Reference), 63% (Adverse) or 75% (Stress) of the payout is backed, even with wages keeping up in full. With wages at 90% the shares are 66%, 75% and 81%.
 4. **Under the main reading, the mechanism backs about 1% of the opt-in row's payout.** The main reading: only added output absorbs new money, and added output is capped at 8% of earned income. That is far short of what wealth poverty needs. **No main-reading setting reaches break-even for the opt-in row, in any environment (0 of 36).** Basket poverty falls in all of them; wealth poverty rises in all of them. This is the outcome the reading note warned of.
