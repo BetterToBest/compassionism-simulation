@@ -42,10 +42,10 @@ The notes for the current release stay here (the release workflow reads them fro
 
 ## v5.9.5 Release Notes
 
-Released Nov 17, 2026: **a correction to the wealth Gini in the visual suite's release 2 view.** No engine line changes; no other figure changes.
-- **What was wrong.** v5.9.4 showed release 2's wealth Gini at about 0.985 in every row, with or without the programme, and its report called that a null result. Release 2's runs give 18 of the 500 simulated adults the place of very rich families, who are rare in the population, and count each at its share of the population (a weight). The plain Gini counts each simulated adult once, so those few adults swamp the rest and the figure says nothing about the programme. It is not valid for release 2's rows.
-- **Now.** The release 2 view shows the weighted wealth Gini that release 2's results store (debts counted as zero, and debts kept), with the spread across runs and the change against no programme with its 95% interval. C2.2 lowers it by 0.10 to 0.13 in every environment and horizon; the release design by 0.05 to 0.06 in Reference, 0.03 to 0.04 in Adverse and about 0.01 in Stress. Wealth net of a year's drain has no weighted figure in release 2's runs and is no longer shown there; the page says so.
-- `dev/tools/suite_r2.py --study` copies the weighted Gini from release 2's stored results into `data/releases/r2/study-*.json`; the figure check covers it; the report `dev/reports/s79-r2-measures.md` carries a dated correction.
+Released Nov 17, 2026: **a correction to the wealth Gini in the visual suite's v5.9 view.** No engine line changes; no other figure changes.
+- **What was wrong.** v5.9.4 showed v5.9's wealth Gini at about 0.985 in every row, with or without the programme, and its report called that a null result. v5.9's runs give 18 of the 500 simulated adults the place of very rich families, who are rare in the population, and count each at its share of the population (a weight). The plain Gini counts each simulated adult once, so those few adults swamp the rest and the figure says nothing about the programme. It is not valid for v5.9's rows.
+- **Now.** The v5.9 view shows the weighted wealth Gini that v5.9's results store (debts counted as zero, and debts kept), with the spread across runs and the change against no programme with its 95% interval. The full-coverage design lowers it by 0.10 to 0.13 in every environment and horizon; the opt-in design by 0.05 to 0.06 in Reference, 0.03 to 0.04 in Adverse and about 0.01 in Stress. Wealth net of a year's drain has no weighted figure in v5.9's runs and is no longer shown there; the page says so.
+- `dev/tools/suite_r2.py --study` copies the weighted Gini from v5.9's stored results into `data/releases/r2/study-*.json`; the figure check covers it; the report `dev/reports/s79-r2-measures.md` carries a dated correction.
 
 ## How to Contribute
 
@@ -205,7 +205,7 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 | Item (as named below) | Status | Where it stands |
 |---|---|---|
 | A consumption rule (v4.21) | Settled by v5 | Spending share 0.593 of income above the cost of living, from BEA's 2025 saving rate (plan step 7, `dev/reports/07-spending-rule.md`); every release row and the no-programme run use it. |
-| Poverty lines under inflation (v4.21) | Settled by v5 | The release engine's wealth line and BLEI move with the price level (decision D2, session 2; testbed option `lines`). The earlier engine still reads nominal lines. Step 2 shows the fixed-dollar reading beside it so the size of the difference is visible. |
+| Poverty lines under inflation (v4.21) | Settled by v5 | The release engine's wealth line and BLEI move with the price level (testbed option `lines`). The earlier engine still reads nominal lines. Step 2 shows the fixed-dollar reading beside it so the size of the difference is visible. |
 | The Gini small-sample bias (v4.21) | Settled by v5.2 | Step 2 applies the n/(n − 1) correction to every Gini of the release engine; a reading within 0.002 of a target line is labelled as on the line, and `domtest` checks that the uncorrected reading gives a different verdict only where that label is shown. The earlier engine's Gini is left as v4.22 documented it. |
 | The BLEI floor for CCO+PTH members (v4.21) | Settled by v5 | Both readings are reported: the BLEI paper's own definition and the design-neutral BLEI, which uses the Baseline's daily cost for everyone (plan step 8, `dev/reports/08-blei.md`). Whether a month of flows should count is a question for the BLEI paper. |
 | Settled in v4.20 (four items) | Settled | Still in force: automation-risk sampler, CI on every push, single file with a parity check, tagged releases. |
@@ -221,10 +221,10 @@ v4.4 continues the direction v4.3 established (this cohort is wealth-poor but no
 | Settled in v4.18 (the name "extreme poverty"; wellness zones) | Settled | Still in force. |
 | Reconcile the papers' headline with the engine (v4.17) | Settled by v5 | The page reads the Hub's own Year 7 targets beside the model's figures (Hub-target table, v5.1); step 2 adds the federal poverty line, Year 7 and a wealth Gini. |
 | The wage distribution versus the living-wage basket (v4.17) | Open in v5 | Step 5: the model's median wage ($39,945) is below both the basket ($49,370) and the comparable US group's median ($54,698, SCF 2022), and every adult pays the full basket, so with no programme 46% are in debt by Year 7 against 12.6% in the survey (the largest gap with US data). Readings: wages centred on the survey's median, the survey's wage spread, starting savings drawn conditional on wage (this item's option D). |
-| SZH θ read realised PTF density (v4.17) | Settled by v5 | On in the testbed profile (`THETA_GATE 'density'`, decision d12, session 5). |
+| SZH θ read realised PTF density (v4.17) | Settled by v5 | On in the testbed profile (`THETA_GATE 'density'`). |
 | The 55% participation threshold as a dynamic (v4.17) | Open in v5 | Later. Participation is endogenous since plan step 4 (open enrolment), but nothing collapses below 55%. |
-| An endogenous price channel (v4.17) | Settled by v5 | The price module (session 2) and the Source's backing share (plan step 3; the backing-share chart, v5.1). |
-| The PTF/PTH inflation damping (v4.14, v4.15) | Earlier engine only | Off in the release engine's main row since session 23 (ledger d86): the price module sets prices instead. It appears once on the release page, in the theoretical reading "the two former stand-ins on". Step 5 found no source for the damping's size; it stays labelled unsourced. |
+| An endogenous price channel (v4.17) | Settled by v5 | The price module and the Source's backing share (the backing-share chart, v5.1). |
+| The PTF/PTH inflation damping (v4.14, v4.15) | Earlier engine only | Off in the release engine's main row since v5.0: the price module sets prices instead. It appears once on the release page, in the theoretical reading "the two former stand-ins on". Step 5 found no source for the damping's size; it stays labelled unsourced. |
 | Baseline at the scenario's own inflation (v4.16) | Settled by v5 | The no-programme run is compared at each environment's own inflation (release gate; `tbComp`). |
 | PTH appreciation accounting (v4.16) | Open in v5 | Later; it applies to the release engine too (the switch `PTH_APPR_CONSERVE` exists; off). |
 | Tag and release each version (v4.15) | Settled | `release.yml` tags each new version when its pull request merges. |

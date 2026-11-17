@@ -1,6 +1,6 @@
 /* The sticky section bar on the simulation page and the findings page (S77, from Duke's report of Nov 16, 2026).
  * 1. Release 1's controls (environment, years) float under the section links and show only while a release 1 section is under the bar; over
- *    release 2's sections (marked data-r2) they are hidden, so the bar never offers "Release 1 panel" switches beside release 2. They float
+ *    release 2's sections (marked data-r2) they are hidden, so the bar never offers "v5.6 panel" switches beside release 2. They float
  *    (no change to the page's flow), so showing and hiding them never moves the page.
  * 2. Sections stop below the whole bar: their scroll margin is the bar's measured height (--fx-stick), not a fixed 120-130 px, which a phone's
  *    taller bar covered, so the reader saw the end of the section before the one clicked.

@@ -1,0 +1,3 @@
+replication.html:D0  # a formula's symbol (the share at year 0), not a code
+index.html:S72  # an engine error message, shown only to someone who calls the engine with an impossible option; engine text is not edited for wording
+earlier-engine.html:S72  # the same message in the earlier engine's frozen copy

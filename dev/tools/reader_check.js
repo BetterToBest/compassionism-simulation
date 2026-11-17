@@ -17,9 +17,9 @@ const PATTERNS = [
   ['session number', /\b[Ss]ession \d+[a-z]?\b/g],
   ['part letter', /\b[Pp]art [A-Z]\b/g],
   ['job id', /(?<![\w./-])(?:job )?X\d\b/g],
-  ['round 2', /\b[Rr]ound[ -]?[12]\b/g],
-  ['release 1/2', /\b[Rr]elease[ -]?[12]\b|\b[Rr]eleases? 1 and 2\b/g],
-  ['C2.2', /\bC2\.2\b/g]];
+  ['round 2', /(?<![\w/-])[Rr]ound[ -]?[12](?![\w.])/g],
+  ['release 1/2', /(?<![\w/-])[Rr]elease[ -]?[12](?![\w.])|\b[Rr]eleases? 1 and 2\b/g],
+  ['C2.2', /(?<!criterion )\bC2\.2\b/g]];
 
 function allow() {
   const f = path.join(ROOT, 'dev', 'tools', 'reader_codes_allow.txt'), s = new Set();
