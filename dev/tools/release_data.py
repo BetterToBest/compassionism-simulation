@@ -55,7 +55,8 @@ LATEST['docs'] = {'describes': '5.9', 'engine': '104691f', 'mainRow': 'harness.j
                   'files': ['ODD.md', 'MODEL_SPEC.md', 'TESTBED_SPEC.md', 'REPRODUCE.md', 'ECONOMIST-REVIEW.md', 'CITATION.cff', 'README.md', 'model-card.html'],
                   'seeds': {'main': 500, 's74-cb': 100, 's75-eras': 100},
                   'results': {'main': 'r2-<part>-<env>-<years>-104691f', 'tables': 'r2-tables-104691f', 'erosion': 'r2-erosion-104691f', 'cb': 's74-final-3beb5ff', 'eras': 's75-eras-e5649ef'},
-                  'resultsRepo': 'BetterToBest/compassionism-sim-results'}
+                  'resultsRepo': 'BetterToBest/compassionism-sim-results',
+                  'weights': {'adults': 500, 'ess': 472.6, 'maxWeight': 3.47, 'maxSharePct': 0.69, 'tailAdults': 18, 'tailBelowTenth': 13, 'tailAboveTwo': 4, 'tailWeightSharePct': 2.6, 'othersMin': 0.99, 'othersMax': 1.13}}  # S84 follow-up (v5.9.14): the main row's weights (harness.js weightSummary); dev/tools/check_docs_agree.js compares them with the engine
 
 def current():
     """the release the figures in dev/runs/ are: v5.6's once its panels carry today's safety net (--snab), v5.4's once its panels (labor and markets, harness.js --v54) are there, v5.3's for the v5.3 panels (households and children, --v53), else v5.2's"""

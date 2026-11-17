@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* S84 (Nov 17, 2026; research-update PLAN S84): weight tests, run in CI (.github/workflows/checks.yml). The weighted top tail (S59), the distribution measures
  * (S57) and the creditor and government accounts count each simulated adult at a weight. These tests pin down what a weight does.
- *   1. In the main row, the weights are finite and positive, sum to the number of adults, and have an effective sample size and a largest single weight
+ *   1. In the main row, the set of weights is the same in every seed and environment tested (seeds 1-3; Reference, Adverse, Stress; which adult carries which weight depends on the seed), finite and positive, sum to the number of adults, and have an effective sample size and a largest single weight
  *      inside stated limits (the numbers are printed: they belong beside any weighted figure).
  *   2. The weighted total, mean, quantile and tail-share functions equal a hand computation on a small population with known weights.
  *   3. Scale: multiplying every weight by a constant changes no quantile and no share.
@@ -23,15 +23,15 @@ const rnd = (n, seed) => { const r = lcg(seed); return Array.from({length: n}, (
 
 /* 1. The main row's own weights (Reference, Adverse, Stress; two seeds; year 0, where the weights are set). Limits: effective sample size at least 90% of the
  * adults; no adult above 2% of the total weight (500 adults at weight 1 is 0.2% each). */
-const S = H.startRelease(); const DIAG = {};
+const S = H.startRelease(); const DIAG = {}; let REF = null;
 test('the main row\'s weights: finite, positive, summing to the adults, with an effective sample size above 90% of the adults and no weight above 2% of the total', () => {
   const bad = [];
   for (const env of ['ref', 'adv', 'st']) {
     const P = Object.assign({}, {ref: H.FULL_INTEGRATION, adv: H.ADVERSE_REFERENCE, st: H.STRESS_TEST}[env], {years: 2, nAgents: 500}), W = [];
     H.setRepHook((agents, yr) => { if (yr === 0) W.push(agents.map(a => a._w === undefined ? 1 : +a._w)); });
-    try { H.tbStudy(H.r2FreezePair(P, 'rel'), 2, P, H.r2MainStudy()); } finally { H.setRepHook(null); }
+    try { H.tbStudy(H.r2FreezePair(P, 'rel'), 3, P, H.r2MainStudy()); } finally { H.setRepHook(null); }
     if (!W.length) bad.push(env + ': no weights seen');
-    W.forEach((w, i) => { const d = H.weightDiag(w); DIAG[env] = d;
+    W.forEach((w, i) => { const d = H.weightDiag(w); DIAG[env] = d; const sw = w.slice().sort((x, y) => x - y); if (!REF) REF = sw; else if (sw.length !== REF.length || sw.some((x, k) => Math.abs(x - REF[k]) > 1e-12)) bad.push(env + ' run ' + i + ': the set of weights differs from the first run\'s (it should not change with the seed or the environment; which adult carries which weight may)');
       if (!w.every(x => Number.isFinite(x) && x > 0)) bad.push(env + ' run ' + i + ': a weight is not finite and positive');
       if (!near(d.sum, d.n, 1e-9)) bad.push(env + ' run ' + i + ': weights sum to ' + d.sum + ' for ' + d.n + ' adults');
       if (d.ess < 0.9*d.n) bad.push(env + ' run ' + i + ': effective sample size ' + d.ess.toFixed(1) + ' of ' + d.n);

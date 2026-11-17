@@ -37,7 +37,8 @@ footer{margin-top:2.5em;color:var(--muted);font-size:.9rem;border-top:1px solid 
 <main>
 <nav class="top" aria-label="Site"><a href="index.html">The simulation</a> · <a href="findings.html">The findings, chart by chart</a> · <a href="https://github.com/BetterToBest/compassionism-simulation">The code</a></nav>
 <h1>Model card: the Compassionism Simulation</h1>
-<p class="sub">Describes release v5.9 (engine commit <code>104691f</code>, frozen and registered on OSF before it ran, Nov 14, 2026). Written Nov 17, 2026.</p>
+<p class="sub">Describes release v5.9 (engine commit <code>104691f</code>). Written Nov 17, 2026.</p>
+<p><strong>What was frozen and registered, and what was not.</strong> The model that was frozen and registered on OSF (osf.io/msdzk) before it ran, on Nov 14, 2026, is the engine <code>104691f</code> <strong>without a central bank</strong>. It was first published as release v5.8 (Nov 15, 2026). Release v5.9 (Nov 16) added a central-bank switch (a policy-rate rule, the "Fed" model) and the central-bank study, which has its own preregistration and is not part of the OSF registration. The main results on the pages (500 seeds, central bank off) are the frozen model's. The central-bank and policy-eras results (100 seeds) come from studies run after the freeze.</p>
 
 <h2>What it is</h2>
 <p>A <strong>dynamic microsimulation with a reduced-form price level</strong>, open and running in the browser. It follows 500 simulated US adults and their children, in households built from the 2022 Survey of Consumer Finances and the Census's Current Population Survey, for 20 or 40 years. Each population is run twice on the same random draws: once with Compassionism, as specified on the <a href="https://bettertobest.github.io/research-hub/">Research Hub</a>, and once with no programme. The difference is the programme's effect. It is run in three environments (Reference; Adverse, with recessions, automation and 2% inflation; Stress, with the same and weaker take-up), each 500 times with different draws.</p>
@@ -64,7 +65,7 @@ footer{margin-top:2.5em;color:var(--muted);font-size:.9rem;border-top:1px solid 
 </tbody></table></div>
 
 <h2>The measures, and how each counts the adults</h2>
-<p>Of the 500 simulated adults, 18 stand for the very top of the wealth distribution and carry small population weights (they stand for far fewer people). Weights never enter a decision. Each published measure is one of three kinds:</p>
+<p>Of the 500 simulated adults, 18 stand for the very top of the wealth distribution, and their population weights differ widely: 13 carry less than 0.1 each (each stands for far fewer people than one adult), 4 carry more than 2 (the largest is 3.47), and one carries about 1. Together the 18 hold 2.6% of the total weight. The other 482 adults count about once (0.99 to 1.13). Counted this way the 500 adults are as informative as 472.6 adults counted once (the effective sample size), and no adult carries more than 0.69% of the total weight (an adult counted once carries 0.2%). The set of weights is the same in every seed and environment checked; which adults carry them depends on the seed. Weights never enter a decision. Each published measure is one of three kinds:</p>
 <div class="tw"><table>
 <thead><tr><th scope="col">Measure</th><th scope="col">What it is</th><th scope="col">Counted</th></tr></thead>
 <tbody>
@@ -83,7 +84,7 @@ footer{margin-top:2.5em;color:var(--muted);font-size:.9rem;border-top:1px solid 
 
 <h2>How it was checked</h2>
 <ul>
-<li>Preregistered and frozen before it ran (OSF, osf.io/msdzk); every preregistered outcome is published, including the unfavourable ones.</li>
+<li>The main model was preregistered and frozen before it ran (OSF, osf.io/msdzk), without a central bank; the central-bank and policy-eras studies were preregistered separately before they ran. Every preregistered outcome is published, including the unfavourable ones.</li>
 <li>Each result across 62 preregistered readings (one assumption changed at a time, and pairs), along the backing curve, and with the programme paid by a contribution instead.</li>
 <li>Every added part sits behind a switch that, off, reproduces the earlier model exactly; unit tests, accounting identities every year, every part's other reading tested alone and in pairs; a 10,000-adult check.</li>
 <li>A second implementation of the main row agreed exactly. It was written from the specification and the engine's code and results, so it checks the translation, not a modelling choice the two share.</li>

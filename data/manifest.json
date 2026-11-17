@@ -58,7 +58,19 @@
      "cb": "s74-final-3beb5ff",
      "eras": "s75-eras-e5649ef"
     },
-    "resultsRepo": "BetterToBest/compassionism-sim-results"
+    "resultsRepo": "BetterToBest/compassionism-sim-results",
+    "weights": {
+     "adults": 500,
+     "ess": 472.6,
+     "maxWeight": 3.47,
+     "maxSharePct": 0.69,
+     "tailAdults": 18,
+     "tailBelowTenth": 13,
+     "tailAboveTwo": 4,
+     "tailWeightSharePct": 2.6,
+     "othersMin": 0.99,
+     "othersMax": 1.13
+    }
    }
   },
   {
