@@ -1286,7 +1286,7 @@ function phase15(done) {
     const t2 = d2.querySelectorAll('#suite table').length, l2 = [...d2.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();
     check('S11: the suite page opens on release 2 (no program, C2.2 and the release design) at 40 years on the C2.2 design, labelled with its engine; every section, chart and table draws, each with its downloads',
       S2.st.rel === '2' && S2.R && S2.R.version === '2' && p2 === '2,40,c22,ref' && d2.querySelectorAll('.su-sec').length === 9 && d2.querySelectorAll('.su-sec svg.fx-svg').length === 11 && l2 === '40,40' && t2 === 13 && d2.querySelectorAll('#suite .fx-tools button').length === 26 &&
-      /Release 2/.test(d2.getElementById('rel-note').textContent) && /104691f/.test(d2.getElementById('rel-note').textContent) && !d2.getElementById('optimistic') && r2.errs.length === 0,
+      /v5\.9/.test(d2.getElementById('rel-note').textContent) && /104691f/.test(d2.getElementById('rel-note').textContent) && !d2.getElementById('optimistic') && r2.errs.length === 0,
       'release ' + S2.st.rel + '; pressed ' + p2 + '; ' + d2.querySelectorAll('.su-sec').length + ' sections, ' + d2.querySelectorAll('.su-sec svg.fx-svg').length + ' charts, ' + t2 + ' tables' + (r2.errs.length ? '; errors: ' + r2.errs.join('; ') : ''));
     [...d2.querySelectorAll('#controls button')].filter(x => x.dataset.value === 'release').forEach(x => x.click()); await later(100);
     const q2 = new URLSearchParams(r2.w.location.search);
@@ -1301,9 +1301,9 @@ function phase15(done) {
       const ns = open('?years=20&read=release', (u, j) => { if (u === 'data/releases/r2/index.json') { const k = Object.assign({}, j); delete k.studyFiles; delete k.studyFrom; return k; } }); await later(400);
       const dn = ns.w.document, cn = cards(dn), mn = dn.querySelectorAll('#moves table').length;
       check('S79: release 2\'s view draws its own EDC, EPPM, FBS, CSI and IPBI cards and the measures study from job X3 (EDC with a paired change and its 95% interval; IPBI said to have no interval; only the weighted wealth Gini, which the top tail needs); without the X3 files it says, as before, that they are release 1\'s',
-        sw.w.suiteState().st.rel === '2' && cw.length === 6 && !cw.some(t => /Not in release 2/.test(t)) && /95% interval/.test(cw[1]) && /no interval/.test(cw[5]) && mw === 6 && /job X3/.test(dw.getElementById('content').textContent) && /\(weighted;/.test(dw.getElementById('moves').textContent) && !/Gini of wealth net of drain/.test(dw.getElementById('moves').textContent) &&
-        cn.length === 6 && cn.slice(1).every(t => /Not in release 2/.test(t)) && mn === 0 && /no run of the measures study/.test(dn.getElementById('moves').textContent) && sw.errs.length === 0 && ns.errs.length === 0,
-        'with X3: ' + cw.length + ' cards, ' + mw + ' movement tables; without: ' + cn.filter(t => /Not in release 2/.test(t)).length + ' cards say release 1, ' + mn + ' tables' + (sw.errs.length + ns.errs.length ? '; errors: ' + sw.errs.concat(ns.errs).join('; ') : '')); }
+        sw.w.suiteState().st.rel === '2' && cw.length === 6 && !cw.some(t => /Not in v5\.9/.test(t)) && /95% interval/.test(cw[1]) && /no interval/.test(cw[5]) && mw === 6 && /second re-run of v5\.9’s main row/.test(dw.getElementById('content').textContent) && /\(weighted;/.test(dw.getElementById('moves').textContent) && !/Gini of wealth net of drain/.test(dw.getElementById('moves').textContent) &&
+        cn.length === 6 && cn.slice(1).every(t => /Not in v5\.9/.test(t)) && mn === 0 && /no run of the measures study/.test(dn.getElementById('moves').textContent) && sw.errs.length === 0 && ns.errs.length === 0,
+        'with X3: ' + cw.length + ' cards, ' + mw + ' movement tables; without: ' + cn.filter(t => /Not in v5\.9/.test(t)).length + ' cards say v5.6, ' + mn + ' tables' + (sw.errs.length + ns.errs.length ? '; errors: ' + sw.errs.concat(ns.errs).join('; ') : '')); }
     /* session 13: release 1's view opens at 40 years on the "Every dollar backed" reading, says plainly that this is the optimistic end, and the other readings and 20 years are one click away; it stays out of search engines */
     const e = open(''); await later(400); const de = e.w.document; [...de.querySelectorAll('#controls button')].filter(x => x.dataset.value === '1').forEach(x => x.click()); await later(100);
     const SE = e.w.suiteState(), pr = [...de.querySelectorAll('#controls button[aria-pressed="true"]')].map(x => x.dataset.value).sort().join(',');
@@ -1354,6 +1354,21 @@ function phase16(done) {
       !hs && !/study\.html#history/.test(rd('replication.html')) && serrs.length === 0, 'section present ' + !!hs + (serrs.length ? '; errors ' + serrs.join('; ') : ''));
     const wf3 = fs.readdirSync(path.join(ROOT, '.github', 'workflows')).filter(x => /\.ya?ml$/.test(x)), latest = wf3.filter(x => /runs-on:\s*ubuntu-latest/.test(fs.readFileSync(path.join(ROOT, '.github', 'workflows', x), 'utf8')));
     check('session 13: every workflow runs on ubuntu-24.04 (none on ubuntu-latest), so the Oct 19 runner change cannot alter a run', latest.length === 0, latest.length ? 'ubuntu-latest in ' + latest.join(', ') : wf3.length + ' workflows pinned');
+    phase17(done);
+  })().catch(e => { check('session 13: the link and reading-notes checks run', false, String(e && e.stack || e).slice(0, 300)); phase17(done); });
+}
+
+/* ── Phase 17 (S80, Nov 17, 2026): reader-facing wording. Every page, rendered with its data in each view, carries no step or ledger code, session or part
+ * label, job id, "round 2", "release 1/2" or "C2.2" in the text a reader sees (dev/tools/reader_check.js), and the static pages and the Markdown a reader
+ * opens pass dev/tools/reader_codes.py --check. */
+function phase17(done) {
+  console.log('\n--- Phase 17: reader-facing wording (S80) ---');
+  const ROOT17 = path.dirname(FILE);
+  require(path.join(ROOT17, 'dev', 'tools', 'reader_check.js')).run().then(r => {
+    r.forEach(x => check(x.name, x.pass, x.detail));
+    const g = require('child_process').spawnSync('python3', [path.join(ROOT17, 'dev', 'tools', 'reader_codes.py'), '--check'], { encoding: 'utf8' });
+    check('S80: python3 dev/tools/reader_codes.py --check: no internal code in the static pages, site/*.js prose, README, CONTRIBUTING, REPRODUCE, the manifest\'s summaries or the glossary',
+      g.status === 0, (g.stdout || g.stderr || '').trim().split('\n').slice(-3).join(' | '));
     done();
-  })().catch(e => { check('session 13: the link and reading-notes checks run', false, String(e && e.stack || e).slice(0, 300)); done(); });
+  }).catch(e => { check('S80: the reader-facing wording check runs', false, String(e && e.stack || e).slice(0, 300)); done(); });
 }

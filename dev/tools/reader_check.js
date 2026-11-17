@@ -15,7 +15,7 @@ const PAGES = [['index.html', ''], ['index.html', '?rel=1'], ['findings.html', '
 const PATTERNS = [
   ['step/ledger code', /(?<![\w./#?=&-])(?:N-S\d+|H-S\d+|S\d{1,3}[a-z]?(?:\.\d+)?|D\d{1,3}|I\d{1,2}|i\d{1,2})(?![\w/-]|\.\w)/g],
   ['session number', /\b[Ss]ession \d+[a-z]?\b/g],
-  ['part letter', /\b[Pp]art [A-Z]\b/g],
+  ['part letter', /\b[Pp]art (?![IVX]\b)[A-Z]\b/g],
   ['job id', /(?<![\w./-])(?:job )?X\d\b/g],
   ['round 2', /(?<![\w/-])[Rr]ound[ -]?[12](?![\w.])/g],
   ['release 1/2', /(?<![\w/-])[Rr]elease[ -]?[12](?![\w.])|\b[Rr]eleases? 1 and 2\b/g],

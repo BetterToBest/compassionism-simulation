@@ -40,12 +40,13 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.5 Release Notes
+## v5.9.6 Release Notes
 
-Released Nov 17, 2026: **a correction to the wealth Gini in the visual suite's v5.9 view.** No engine line changes; no other figure changes.
-- **What was wrong.** v5.9.4 showed v5.9's wealth Gini at about 0.985 in every row, with or without the programme, and its report called that a null result. v5.9's runs give 18 of the 500 simulated adults the place of very rich families, who are rare in the population, and count each at its share of the population (a weight). The plain Gini counts each simulated adult once, so those few adults swamp the rest and the figure says nothing about the programme. It is not valid for v5.9's rows.
-- **Now.** The v5.9 view shows the weighted wealth Gini that v5.9's results store (debts counted as zero, and debts kept), with the spread across runs and the change against no programme with its 95% interval. The full-coverage design lowers it by 0.10 to 0.13 in every environment and horizon; the opt-in design by 0.05 to 0.06 in Reference, 0.03 to 0.04 in Adverse and about 0.01 in Stress. Wealth net of a year's drain has no weighted figure in v5.9's runs and is no longer shown there; the page says so.
-- `dev/tools/suite_r2.py --study` copies the weighted Gini from v5.9's stored results into `data/releases/r2/study-*.json`; the figure check covers it; the report `dev/reports/s79-r2-measures.md` carries a dated correction.
+Released Nov 17, 2026: **reader-facing wording.** The pages no longer carry the project's internal bookkeeping. No engine line changes and no figure changes.
+- **Versions by number.** The two model generations are called v5.6 (its panel published Oct 14, 2026) and v5.9 (its engine frozen Nov 14, 2026, results first shown in v5.8 and leading since v5.9) instead of "release 1" and "release 2"; "round 2 of the engine" is the v5.9 model. Links that use `?rel=1` still open the v5.6 view.
+- **Plain names for the designs.** "C2.2" is now the full-coverage design: every adult is covered automatically and paid enough to reach the cost of the basket of essentials. The page says once, where it is introduced, that it is built to meet NEEC's criterion C2.2. "The release design" is now the opt-in design: adults choose to take part, and it pays the allowance the Hub's papers set. Labels stored in the data files are unchanged. The pages map them to these names when they print them, and downloads keep each file as written.
+- **Studies by subject.** Studies are named by what they ask (the central-bank study, open access, the synergy study, …), not by step codes. Sentences that only recorded project history are cut.
+- **A check.** `dev/tools/reader_check.js` opens every page in each view with its data. `dev/tools/reader_codes.py --check` reads the static pages, `site/*.js`, README, CONTRIBUTING, REPRODUCE, the manifest's summaries and the glossary. Both fail on a step or ledger code, a session or part label, a job id, "round 2", "release 1/2" or "C2.2" (domtest Phase 17). The inventory before the edit is in `dev/reports/reader-wording.md`; the names and the reasons are in `dev/DECISIONS.md`. CHANGELOG.md and the reports in `dev/reports/` are reworded next; `reader_codes.py --check --all` lists what remains in them.
 
 ## How to Contribute
 
@@ -451,7 +452,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.5*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.6*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
