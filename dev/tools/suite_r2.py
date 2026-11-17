@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 """Release 2's visual-suite series (S11 sub-step 4): data/releases/r2/ from job X2.
 
-    python3 dev/tools/suite_r2.py RESULTS/x2-5b62481     writes data/releases/r2/suite-20.json, suite-40.json and index.json
+    python3 dev/tools/suite_r2.py RESULTS/x4-a60bd3e RESULTS/x2-5b62481   (S81) writes data/releases/r2/suite-20.json, suite-40.json and index.json from job X4,
+                                                         after checking that every plain key equals job X2's (the folder named second)
     python3 dev/tools/suite_r2.py --study RESULTS/x3-ENGINE7   (S79) writes data/releases/r2/study-20.json and study-40.json and adds them to index.json
     python3 dev/tools/suite_r2.py --check                checks index.json against data/studies/r2-effects.json and the suite (and study) files
 
-RESULTS/x2-5b62481 is the results folder of job X2 in BetterToBest/compassionism-sim-results (run-study run 125: release 2's main row,
-engine 104691f, re-run at engine commit 5b62481 with dev/tools/explore_export.js --r2, every engine key of every row and seed checked equal
+S81 (Nov 17, 2026; research-update prereg/2026-11-x4-weighted-addendum.md, job X4): the suite files now come from job X4, which re-ran release 2's main row at
+engine commit a60bd3e (dev/tools/explore_export.js --suite also writes the weighted keys wmean*, wmed*, wtier*, wbO, wbN, wrelPov, wpart: every
+adult counted at its population weight, a._w, the 18 top-tail adults at their small weights). Every plain key of X4 equals job X2's (run 125, engine
+commit 5b62481, the first source of these files); this tool checks that again when given X2's folder as the second argument.
+
+RESULTS/x4-a60bd3e is the results folder of job X4 in BetterToBest/compassionism-sim-results (run-study run 127: release 2's main row,
+engine 104691f, re-run at engine commit a60bd3e with dev/tools/explore_export.js --r2 --suite, every engine key of every row and seed checked equal
 to release 2's stored part M). Six shards, one per environment and horizon, 500 seeds each. Nothing is computed here but a re-arrangement:
 the series are copied as the shards hold them; index.json adds release 2's published effects (data/studies/r2-effects.json, the file the
 findings page reads) so the suite page can quote them beside the series. v5.6's files are not touched.
@@ -23,7 +29,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 OUT = os.path.join(ROOT, 'data', 'releases', 'r2')
 EFFECTS = os.path.join(ROOT, 'data', 'studies', 'r2-effects.json')
 ENGINE = '104691f3993ac6f37d6ff1b8ccd4690120cfe949'
-RERUN = '5b62481326f3b82cc714e20e4cd4ec3726357dd2'
+RERUN = 'a60bd3ecc54743427578ae2d8c81111137ca4133'  # S81: job X4's engine commit (compassionism-simulation PR 144's merge); X2's was 5b62481
+X2_RERUN = '5b62481326f3b82cc714e20e4cd4ec3726357dd2'
+X2_FOLDER = 'x2-5b62481'
+FOLDER = 'x4-a60bd3e'
+RUN = 'run-study run 127, Nov 17, 2026 (GitHub Actions)'
+WKEYS = ['wmeanSav', 'wmeanInc', 'wmeanBu', 'wmedSav', 'wmedInc', 'wmedBu', 'wbO', 'wbN', 'wrelPov', 'wpart'] + \
+    ['wmed_' + g for g in ('all', 'part', 'non')] + ['wtier%d_%s' % (i, g) for g in ('all', 'part', 'non') for i in range(6)]
 STUDY_RERUN = '6d095a1eefe71abbb025b82e8942cd80cfe9a34a'  # S79: job X3's engine commit (compassionism-simulation PR 138's merge)
 STUDY_FOLDER = 'x3-' + STUDY_RERUN[:7]
 STUDY_RUN = 'run-study run 126, Nov 17, 2026 (GitHub Actions)'  # S79: the run-study workflow run that wrote it
@@ -104,11 +116,14 @@ def effects():
 def index(suite_sha, study_sha=None):
     eff, em = effects()
     X = {
-        'about': 'Release 2’s visual-suite series (S11): the main row of release 2 (engine 104691f), re-run at engine commit 5b62481 by job X2 and checked equal to release 2’s stored results, '
-                 'value by value. Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x2-5b62481; release 1’s suite files (v5.6/) are unchanged.',
-        'release': '2', 'engine': ENGINE, 'rerunAt': RERUN, 'study': 'x2', 'seeds': 500, 'agents': 500, 'lifeSeed': 1,
-        'results': {'repo': 'BetterToBest/compassionism-sim-results', 'folder': 'x2-5b62481', 'workflow': 'run-study run 125, Nov 16, 2026 (GitHub Actions)'},
-        'prereg': 'prereg/2026-11-x2-series-addendum.md (BetterToBest/research-update)',
+        'about': 'Release 2’s visual-suite series (S11, S81): the main row of release 2 (engine 104691f), re-run at engine commit a60bd3e by job X4 and checked equal to release 2’s stored results, '
+                 'value by value. Every plain key equals job X2’s (engine commit 5b62481, the first source of these files); the weighted keys (w…) count each simulated adult at its population weight. '
+                 'Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x4-a60bd3e; release 1’s suite files (v5.6/) are unchanged.',
+        'release': '2', 'engine': ENGINE, 'rerunAt': RERUN, 'study': 'x4', 'seeds': 500, 'agents': 500, 'lifeSeed': 1,
+        'results': {'repo': 'BetterToBest/compassionism-sim-results', 'folder': FOLDER, 'workflow': RUN},
+        'prereg': 'prereg/2026-11-x4-weighted-addendum.md (BetterToBest/research-update)',
+        'plainFrom': {'study': 'x2', 'rerunAt': X2_RERUN, 'folder': X2_FOLDER, 'workflow': 'run-study run 125, Nov 16, 2026 (GitHub Actions)', 'prereg': 'prereg/2026-11-x2-series-addendum.md (BetterToBest/research-update)',
+                      'about': 'job X4 re-ran job X2’s series with the weighted keys added; every plain key of every row, year and environment equals job X2’s (checked by dev/tools/suite_r2.py and in the results folder’s run notes).'},
         'rows': {'base': 'No programme', 'c22': 'The C2.2 design', 'release': 'The release design'},
         'envs': ENV_TEXT,
         'suite': {'20': 'r2/suite-20.json', '40': 'r2/suite-40.json'},
@@ -130,15 +145,46 @@ def study_shas():
     return {Y: sha(p) for Y, p in zip(('20', '40'), ps)} if all(os.path.exists(p) for p in ps) else None
 
 
-def build(res):
+def plain_equal(res, res2):  # S81, prereg check 3: every plain key of job X4's shard equals job X2's (bands, deciles, lives and every suite key X2 wrote)
+    def walk(a, b, path, bad):
+        if isinstance(a, dict):
+            for k in a:
+                if k not in b:
+                    bad.append(path + '/' + k)
+                else:
+                    walk(a[k], b[k], path + '/' + k, bad)
+        elif isinstance(a, list):
+            if len(a) != len(b):
+                bad.append(path)
+            else:
+                for i, (x, y) in enumerate(zip(a, b)):
+                    walk(x, y, '%s[%d]' % (path, i), bad)
+        elif a != b:
+            bad.append(path)
+    for n in range(6):
+        a = json.load(open(os.path.join(res2, 'shard-%04d.json' % n)))
+        b = json.load(open(os.path.join(res, 'shard-%04d.json' % n)))
+        bad = []
+        for sec in ('bands', 'deciles', 'lives', 'suite'):
+            walk(a[sec], b[sec], sec, bad)
+        if bad or any(a['_meta'][k] != b['_meta'][k] for k in ('env', 'years', 'rows', 'seriesSeeds')):
+            raise SystemExit('shard %d: job X4 differs from job X2 in %d plain values (first: %s)' % (n, len(bad), bad[:1]))
+    print('every plain key of every row, year and environment equals job X2 (%s)' % X2_FOLDER)
+
+
+def build(res, res2=None):
+    if res2:
+        plain_equal(res, res2)
+    elif not TEST:
+        raise SystemExit('give job X2’s folder as the second argument (prereg check 3)')
     by = {}
     for n in range(6):
         p = os.path.join(res, 'shard-%04d.json' % n)
         d = json.load(open(p))
         m = d['_meta']
-        if m['manifest']['commit'] != RERUN or m['manifest']['dirty'] or m['rows'] != ROWS or m['seriesSeeds'] != 500 or 'every engine key of every row equals release 2' not in m['selfCheck'] \
-                or m['r2']['panelCheck']['engine'] != ENGINE:
-            raise SystemExit('shard %d is not job X2 as preregistered' % n)
+        if (m['manifest']['commit'] != RERUN and not TEST) or m['manifest']['dirty'] or m['rows'] != ROWS or m['seriesSeeds'] != 500 or 'every engine key of every row equals release 2' not in m['selfCheck'] \
+                or m['r2']['panelCheck']['engine'] != ENGINE or any(k not in d['suite'][r] for r in ROWS for k in WKEYS):
+            raise SystemExit('shard %d is not job X4 as preregistered' % n)
         by.setdefault(str(m['years']), {})[m['env']] = (d, m, sha(p), 'shard-%04d.json' % n)
     os.makedirs(OUT, exist_ok=True)
     shas = {}
@@ -151,9 +197,9 @@ def build(res):
                 'selfCheck': {e: envs[e][1]['selfCheck'] for e in ENVS},
                 'commands': {e: envs[e][1]['command'] for e in ENVS},
                 'jobCommands': {e: envs[e][1]['jobCommand'] for e in ENVS},
-                'results': {e: 'x2-5b62481/' + envs[e][3] for e in ENVS},
+                'results': {e: FOLDER + '/' + envs[e][3] for e in ENVS},
                 'resultsSha256': {e: envs[e][2] for e in ENVS},
-                'engine': ENGINE, 'rerunAt': RERUN}
+                'engine': ENGINE, 'rerunAt': RERUN, 'weighted': 'wmeanSav, wmeanInc, wmeanBu, wmedSav, wmedInc, wmedBu, wmed_*, wtier*, wbO, wbN, wrelPov, wpart: every simulated adult counted at its population weight (the top-tail adults of release 2 carry small weights); the keys without w count each adult once'}
         out = {'_meta': meta, 'envs': {e: envs[e][0]['suite'] for e in ENVS}}
         p = os.path.join(OUT, 'suite-%s.json' % Y)
         with open(p, 'w') as f:
@@ -223,6 +269,16 @@ def check():
                     s = sum(Z['tier%d_all' % k]['mean'][t] for k in range(6))
                     if abs(s - 100) > 0.01:
                         bad.append('%s %s %s year %d: tiers add to %s' % (Y, e, row, t + 1, s))
+                for k in WKEYS:
+                    if k not in Z or len(Z[k]['mean']) != int(Y):
+                        bad.append('%s %s %s: no weighted series %s' % (Y, e, row, k))
+                if all(k in Z for k in WKEYS):
+                    for t in range(int(Y)):
+                        s = sum(Z['wtier%d_all' % k]['mean'][t] for k in range(6))
+                        if abs(s - 100) > 0.01:
+                            bad.append('%s %s %s year %d: weighted tiers add to %s' % (Y, e, row, t + 1, s))
+                        if Z['wmeanSav']['mean'][t] > Z['meanSav']['mean'][t] + 1e-9:
+                            bad.append('%s %s %s year %d: weighted average days from savings above the plain one' % (Y, e, row, t + 1))
                 if row == 'base' and any(v is not None for v in Z['tier0_part']['mean']):
                     bad.append('%s %s: no programme has participants' % (Y, e))
                 # the year-average of the same-rules share under 30 days is release 2's published basic-living figure (adult-years)
@@ -272,6 +328,6 @@ if __name__ == '__main__':
         sys.exit(0)
     if sys.argv[1:] == ['--check']:
         sys.exit(0 if check() else 1)
-    if len(sys.argv) != 2:
+    if len(sys.argv) not in (2, 3):
         raise SystemExit(__doc__)
-    build(sys.argv[1])
+    build(sys.argv[1], sys.argv[2] if len(sys.argv) == 3 else None)

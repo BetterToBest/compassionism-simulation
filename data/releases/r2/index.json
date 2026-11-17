@@ -1,18 +1,26 @@
 {
- "about": "Release 2’s visual-suite series (S11): the main row of release 2 (engine 104691f), re-run at engine commit 5b62481 by job X2 and checked equal to release 2’s stored results, value by value. Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x2-5b62481; release 1’s suite files (v5.6/) are unchanged.",
+ "about": "Release 2’s visual-suite series (S11, S81): the main row of release 2 (engine 104691f), re-run at engine commit a60bd3e by job X4 and checked equal to release 2’s stored results, value by value. Every plain key equals job X2’s (engine commit 5b62481, the first source of these files); the weighted keys (w…) count each simulated adult at its population weight. Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x4-a60bd3e; release 1’s suite files (v5.6/) are unchanged.",
  "release": "2",
  "engine": "104691f3993ac6f37d6ff1b8ccd4690120cfe949",
- "rerunAt": "5b62481326f3b82cc714e20e4cd4ec3726357dd2",
- "study": "x2",
+ "rerunAt": "a60bd3ecc54743427578ae2d8c81111137ca4133",
+ "study": "x4",
  "seeds": 500,
  "agents": 500,
  "lifeSeed": 1,
  "results": {
   "repo": "BetterToBest/compassionism-sim-results",
-  "folder": "x2-5b62481",
-  "workflow": "run-study run 125, Nov 16, 2026 (GitHub Actions)"
+  "folder": "x4-a60bd3e",
+  "workflow": "run-study run 127, Nov 17, 2026 (GitHub Actions)"
  },
- "prereg": "prereg/2026-11-x2-series-addendum.md (BetterToBest/research-update)",
+ "prereg": "prereg/2026-11-x4-weighted-addendum.md (BetterToBest/research-update)",
+ "plainFrom": {
+  "study": "x2",
+  "rerunAt": "5b62481326f3b82cc714e20e4cd4ec3726357dd2",
+  "folder": "x2-5b62481",
+  "workflow": "run-study run 125, Nov 16, 2026 (GitHub Actions)",
+  "prereg": "prereg/2026-11-x2-series-addendum.md (BetterToBest/research-update)",
+  "about": "job X4 re-ran job X2’s series with the weighted keys added; every plain key of every row, year and environment equals job X2’s (checked by dev/tools/suite_r2.py and in the results folder’s run notes)."
+ },
  "rows": {
   "base": "No programme",
   "c22": "The C2.2 design",
@@ -37,8 +45,8 @@
   "40": "r2/suite-40.json"
  },
  "suiteSha256": {
-  "20": "871593042a9c64c886562437f7fe3ddf9f117954b5613a2d4e0de16ff04fa41b",
-  "40": "fe6e16d349c6a10219ed1a84a57619cf1a26df6e865166ff13162e7160d28e0b"
+  "20": "99d34961632b71ee205570e94acb4820411b99a29deeabc7c1865e7fc6d31eac",
+  "40": "d74a5e413f39c23155a82615c7b330d7795724fdb593a2fe77dde7f8a45daadf"
  },
  "effectsFrom": {
   "file": "data/studies/r2-effects.json",

@@ -40,12 +40,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.8 Release Notes
+## v5.9.9 Release Notes
 
-Released Nov 17, 2026: **a correction to the chart of what the days are made of on the visual suite page.** No engine line changes and no stored figure changes.
-- **What was wrong.** The chart drew each column as shares of the average adult's days from savings, pay and the allowance. Savings filled almost all of every column, so the chart looked one colour and pay and the allowance could not be seen. In the v5.9 view it was also misleading. v5.9's runs give 18 simulated adults the place of very rich families, each counted at its share of the population (a weight). The stored averages of these parts count those adults once each, so the average days from savings came out at 550,000 to 730,000 against a median of 1,500 to 3,800. The same fault was corrected for the wealth Gini in v5.9.5.
-- **Now.** The chart shows the median adult's days from each part, one bar chart per part, each on its own scale, for no programme and Compassionism at Year 7 and the last year, with the 10th to 90th percentile across runs. The text and the table give medians. The v5.6 view's table still shows averages below the medians; the v5.9 view shows none and says why. Weighted averages for v5.9 would need its main rows run again with weights in the suite export. That is listed as a follow-up and has not been run.
-- domtest and the figure check expect 13 charts on the suite page (the parts chart is now three). The reports `dev/reports/v5-33-visual-suite.md` and `dev/reports/s11-suite-release2.md` carry dated corrections.
+Released Nov 17, 2026: **the visual suite shows v5.9's averages counted by weight.** No engine line changes and no stored figure changes.
+- **What was missing.** v5.9's runs give 18 simulated adults the place of very rich families and count each at its share of the population (a weight). The suite's earlier series counted every adult once, so the average days of basic living from savings came out at hundreds of thousands and the page showed no v5.9 averages (v5.9.8).
+- **Now.** A second run of v5.9's main row (500 simulated adults, 500 paired seeds, all three environments, 20 and 40 years) also records every mean, median, tier share, share below 30 days, relative poverty and share taking part counted by weight. Every plain value equals the earlier series exactly; the weighted ones sit beside them in `data/releases/r2/`. The "what the days are made of" section of the suite page now shows v5.9's medians and averages counted by weight, with the table giving the average beside each median.
+- **Other plain figures.** Counted by weight, every share moves by at most about 1 point and every median by at most 5%; only the savings average was wrong in kind. The plain shares and tiers stay on the page. The report `dev/reports/s81-suite-weighted.md` lists each.
+- **Not changed.** The engine's own share below 30 days (behind v5.9's headline basic-living effects) is also counted once per adult; counted by weight it differs by at most 0.61 points in a year. Whether to weight it in a later release is Duke's decision.
+- `dev/tools/suite_r2.py` writes the suite files from the new run and checks again that every plain value equals the earlier one. domtest and the figure check still expect 13 charts.
 
 ## How to Contribute
 
@@ -451,7 +453,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.8*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.9*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
