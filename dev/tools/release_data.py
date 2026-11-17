@@ -48,6 +48,14 @@ CURRENT52 = {'version': '5.2', 'date': '2026-10-06', 'tag': 'v5.2', 'shownIn': '
 LATEST = {'version': '5.9', 'date': '2026-11-16', 'tag': 'v5.9.0', 'file': 'releases/v5.6.json',
           'summary': 'v5.9 leads both pages, with a central-bank switch. The simulation page opens on v5.9\u2019s main row (full backing, the design\u2019s statement), for the full-coverage design or the opt-in design, with the central bank off (v5.9 as frozen, 500 seeds) or on (a policy-rate rule, the central-bank study, 100 seeds). The central-bank study\u2019s runs were repeated with the release\u2019s global settings, which its first runs had left out (preregistration Amendment 4), and the findings page shows every outcome of the corrected study. The v5.6 panel is unchanged (v5.6\u2019s data stays the data shown in its sections), and the engine is unchanged.',
           'status': 'latest', 'shownIn': None, 'figuresFrom': '5.6', 'round2': {'engine': '104691f', 'studies': ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work'], 'charts': 'studies/r2-charts/', 'prereg': 'prereg/2026-11-s63-round2-freeze.md', 'osf': 'https://osf.io/msdzk/overview'}, 'cb': {'study': 's74-cb', 'prereg': 'prereg/2026-11-s74-central-bank.md', 'report': 'dev/reports/s74-central-bank.md'}}
+# S83 (Nov 17, 2026): what the documentation describes, and where the v5.9 results are, so a check can hold the documents, the test bed and the manifest
+# together (the CI check itself is S84). describes: the release each document is written for; mainRow: the function that builds v5.9's main row;
+# backing: the programme run's backed share in the main row; seeds: the main row's paired seeds, and each study's; results: the results folders.
+LATEST['docs'] = {'describes': '5.9', 'engine': '104691f', 'mainRow': 'harness.js r2FreezePair', 'backing': 1, 'spendingShare': 0.877, 'ageing': False,
+                  'files': ['ODD.md', 'MODEL_SPEC.md', 'TESTBED_SPEC.md', 'REPRODUCE.md', 'ECONOMIST-REVIEW.md', 'CITATION.cff', 'README.md', 'model-card.html'],
+                  'seeds': {'main': 500, 's74-cb': 100, 's75-eras': 100},
+                  'results': {'main': 'r2-<part>-<env>-<years>-104691f', 'tables': 'r2-tables-104691f', 'erosion': 'r2-erosion-104691f', 'cb': 's74-final-3beb5ff', 'eras': 's75-eras-e5649ef'},
+                  'resultsRepo': 'BetterToBest/compassionism-sim-results'}
 
 def current():
     """the release the figures in dev/runs/ are: v5.6's once its panels carry today's safety net (--snab), v5.4's once its panels (labor and markets, harness.js --v54) are there, v5.3's for the v5.3 panels (households and children, --v53), else v5.2's"""

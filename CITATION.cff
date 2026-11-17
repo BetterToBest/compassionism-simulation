@@ -8,23 +8,28 @@ message: >-
 type: software
 title: Compassionism Framework Simulation
 abstract: >-
-  An open, in-browser agent-based model of the Compassionism framework (Creative Currency Octaves, Public Trust Foundations, Public Trust
-  Housing, Social Zone Harmonization and the Citizens Internet Portal): 500 simulated adults followed for 20 or 40 years, with the programme
-  and with no programme, on the same random draws, in three environments, reporting poverty, work, cost and prices. The main
-  results average 500 paired runs; the central-bank and history studies use 100. harness.js reproduces them in Node.
+  An open, in-browser dynamic microsimulation, with a reduced-form price level, of the Compassionism framework (Creative Currency
+  Octaves, Public Trust Foundations, Public Trust Housing, Social Zone Harmonization and the Citizens Internet Portal). Release v5.9
+  (engine 104691f, frozen and registered on OSF before it ran, Nov 14, 2026) follows 500 simulated US adults and their children, in
+  households with SCF 2022 balance sheets and a weighted top tail of wealth, for 20 or 40 years, with the programme and with no
+  programme on the same random draws, in three environments, and reports poverty, basic living, wealth, work, prices and cost. Its
+  main row assumes that every dollar the programme pays is matched by new output (the design's statement, a design parameter); below
+  that the model has no limit on what the economy can supply. The main results average 500 paired runs; the central-bank and history
+  studies use 100. harness.js reproduces them in Node; REPRODUCE.md gives every command and fingerprint.
 authors:
   - family-names: Johnson
     given-names: Duke
     affiliation: Better To Best Research Hub
     email: BetterToBestResearch@gmail.com
   - name: "Claude (Anthropic)"
-version: 5.9.11
+version: 5.9.12
 doi: 10.17605/OSF.IO/QWTE2
 url: "https://bettertobest.github.io/compassionism-simulation/"
 repository-code: "https://github.com/BetterToBest/compassionism-simulation"
 license: Apache-2.0
 keywords:
   - agent-based model
+  - microsimulation
   - basic income
   - poverty
   - common random numbers

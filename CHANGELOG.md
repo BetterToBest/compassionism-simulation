@@ -6,6 +6,16 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.11 Release Notes
+
+Released Nov 17, 2026: **dated notes from the release reviews.** No engine line changes and no stored figure changes. v5.9.10 is skipped so that it cannot be confused with v5.9.1. A change to the engine's behaviour will be v6.
+- **Why.** Four reviews of v5.9.9 were read together: one written in-house in a fresh session, and three by outside AI systems, none of them an economist. The triage is research-update `audits/2026-11-release-review-triage.md`.
+- **"The poverty effects barely depend on backing."** A dated note now says why. Below full backing, the model has no limit on what the economy can supply: demand never runs into what can be produced, wages follow prices in full, and the Basic Unit and the basket follow the same prices. With no new output, the programme's recipients' gains are paid for only by holders of savings and lenders, through higher prices. So these figures are not evidence that the design works without backing. The note is on the findings page and in the backing report, the overview and the findings-page text. The main row's headlines are unchanged: they assume full backing, the design's statement.
+- **"Rests on today's price rule" corrected.** At full backing almost no unmatched money reaches prices, so the price rule is barely tested there. The median-wealth cards (findings page and central-bank page) and four report sentences now say the wealth figures rest on full backing.
+- **What no figure covers.** The list now names the fixed population: the main row has no ageing, births or deaths.
+- **The second implementation.** ODD.md and a note on its report now describe it as written from the description, with the engine's code and results to check against, not as an independent model.
+- **Which release each document describes.** ODD.md, TESTBED_SPEC.md, MODEL_SPEC.md and REPRODUCE.md open with a dated line naming the current release, its main row and where its results and commands are; their older sections are kept as they were. CITATION.cff no longer says every figure averages 500 paired runs: the central-bank and history studies use 100.
+
 ## v5.9.9 Release Notes
 
 Released Nov 17, 2026: **the visual suite shows v5.9's averages counted by weight.** No engine line changes and no stored figure changes.
