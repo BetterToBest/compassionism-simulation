@@ -6,6 +6,12 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.15 Release Notes
+
+Released Nov 17, 2026: **Duke Johnson's note on the design's aim, in his fuller wording.** Text only: no engine line changes and no stored figure changes.
+- **Findings page, central-bank section** ("How the Federal Reserve is governed"): the note now says that his concern is market cycles that can be engineered (bubbles, panics and crashes that let the wealthiest sell high and buy back low), wars and false-flag events used the same way, and a news media now owned by a handful of companies; and it says plainly that these are his views, not model outputs, and that the model does not represent war, the media, or whether market swings are engineered.
+- **The central-bank study's report** keeps the note as first recorded and adds the fuller wording beside it, dated.
+
 ## v5.9.14 Release Notes
 
 Released Nov 17, 2026: **the spread of the population weights is stated where the weights are used, and the model card says what was frozen.** No engine line changes and no stored figure changes (the guard test is identical).

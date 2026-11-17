@@ -2277,6 +2277,44 @@ function prUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { PR_KEYS, MF_KEYS, PR_DEFAULTS, prNew, prStep, prUnitSuite });  /* S58 */
+/* S82 (Nov 17, 2026; research-update prereg/2026-11-s82-v6-supply-indexing.md): unit tests of the v6 readings: the BU's delay (bl), the wage
+ * catch-up (wc) and the essentials supply limit (sl): the pure steps, the nesting and inactive-at-full-backing checks and the no-programme run. */
+function s82UnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); SLS = null; TB = null; LABOR = null; PRICE = null; } }
+  var near = function(a, b){ return Math.abs(a - b) < 1e-12*Math.max(1, Math.abs(b)); };
+  t('blLag: L 0 reads this year, L 1 last year, L 0.5 the geometric mean, years before 0 read year 0', function(){
+    var mk = function(L){ return {bl:L, blH:[]}; }, P0 = mk(0), P1 = mk(1), Ph = mk(0.5), P2 = mk(2), I = [1, 1.1, 1.3, 1.6], r = {a:[], b:[], c:[], d:[]};
+    I.forEach(function(v, y){ r.a.push(blLag(P0, y, v)); r.b.push(blLag(P1, y, v)); r.c.push(blLag(Ph, y, v)); r.d.push(blLag(P2, y, v)); });
+    var ok = r.a.every(function(v, y){ return near(v, I[y]); }) && near(r.b[0], 1) && near(r.b[3], 1.3) && near(r.c[3], Math.sqrt(1.6*1.3)) && near(r.c[0], 1) && near(r.d[1], 1) && near(r.d[3], 1.1);
+    return {pass:ok, detail:JSON.stringify(r)}; });
+  t('slStep: strict cuts the whole unbacked excess, full and a = 1 cut nothing, capacity builds at lam', function(){
+    var th = {food:0, housing:0.6, medical:0.5}, St = slNew({rd:'strict'}, 0, th), Sf = slNew({rd:'full'}, 0, th), S1 = slNew({rd:'strict'}, 1, th), Ss = slNew({rd:'sourced'}, 0.5, th);
+    slStep(St, 1.1, 1); slStep(Sf, 1.1, 1); slStep(S1, 1.1, 1); slStep(Ss, 1.1, 1);
+    var V = SL_SRC.housing, eu = 0.05, rH = Math.max(0, eu - V.v - V.m*V.eta*0.6*0.1), cH = V.lam*Math.max(0, eu - V.v);
+    var ok = near(St.R.housing, 0.1/1.1) && near(St.R.food, 0.1/1.1) && Sf.R.housing === 0 && Sf.R.food === 0 && S1.R.medical === 0 && near(Ss.R.housing, rH/1.1) && near(Ss.c.housing, cH);
+    return {pass:ok, detail:'strict ' + St.R.housing + ' full ' + Sf.R.housing + ' a1 ' + S1.R.medical + ' sourced ' + Ss.R.housing + ' / ' + rH/1.1 + ' c ' + Ss.c.housing}; });
+  t('sl options: unknown reading or rule, and the not-yet-built fs, are refused', function(){
+    var bad = 0; [{rd:'x'}, {sh:'x'}, {fs:true}].forEach(function(o){ try { slNew(o, 0, {}); } catch (e){ bad++; } }); return {pass:bad === 3, detail:bad + ' of 3 refused'}; });
+  var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:200});
+  function pair(o){ var c = r2FreezePair(P, 'c22'); if (o) c[1].o = Object.assign({}, c[1].o, o); return c; }
+  function same(A, B){ var bad = []; Object.keys(A._s).forEach(function(k){ if (!B._s[k] || A._s[k][0] !== B._s[k][0]) bad.push(k); }); return bad; }
+  t('run checks (200 adults, 20 years, seed 1): sl full = no limit at a = 0; sl strict = no limit at a = 1; wc with wIdx 1, and bl 0, change nothing; the no-programme run ignores sl and bl', function(){
+    var SO = r2MainStudy(), b0 = pair({a:0}), b1 = pair({a:1}), rows = [b0[0], b0[1], pair({a:0, sl:{rd:'full'}})[1], b1[1], pair({a:1, sl:{rd:'strict', sh:'pay'}})[1], pair({a:1, sl:{rd:'strict', sh:'bu'}})[1],
+      pair({a:0, wc:1})[1], pair({a:0, bl:0})[1]], n0 = Object.assign({}, b0[0]); n0.o = Object.assign({}, n0.o, {sl:{rd:'strict'}, bl:1}); rows.push(n0);
+    var R = tbStudy(rows, 1, P, SO), d = [same(R[1], R[2]), same(R[3], R[4]), same(R[3], R[5]), same(R[1], R[6]), same(R[1], R[7]), same(R[0], R[8])];
+    var on = R[2].slOn === 1 && R[4].slOn === 1 && R[0].slOn === undefined;
+    return {pass:on && d.every(function(x){ return x.length === 0; }), detail:'differing keys: ' + d.map(function(x){ return x.length ? x.slice(0, 4).join(',') : 0; }).join(' | ') + (on ? '' : ' (slOn missing)')}; });
+  t('run check: the strict limit at no backing cuts, the market rule cuts the least able to pay most, and basket poverty on what was received is at least the paid-for figure', function(){
+    var SO = r2MainStudy(), R = tbStudy([pair({a:0})[0], pair({a:0, sl:{rd:'strict', sh:'pay'}})[1], pair({a:0, sl:{rd:'strict', sh:'even'}})[1]], 1, P, SO), p = R[1], e = R[2];
+    var ok = p.slCutSh > 0 && p.slXq1 > p.slXq5 && Math.abs(e.slXq1 - e.slXq5) < Math.abs(p.slXq1 - p.slXq5) && p.fgt0PY >= p.slF0p;
+    return {pass:ok, detail:'cut ' + p.slCutSh.toFixed(3) + '%; pay q1 ' + p.slXq1.toFixed(3) + ' q5 ' + p.slXq5.toFixed(3) + '; even q1 ' + e.slXq1.toFixed(3) + ' q5 ' + e.slXq5.toFixed(3) + '; received ' + p.fgt0PY.toFixed(2) + ' paid ' + p.slF0p.toFixed(2)}; });
+  return out;
+}
+Object.assign(module.exports, { s82UnitSuite });  /* S82 */
 function paUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000;
@@ -4554,7 +4592,11 @@ if (require.main === module) {
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + PRU.length + ' run, ' + prf + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || s74f || s75f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof) process.exitCode = 1;
+    var S82U = s82UnitSuite(), s82f = 0;
+    console.log('\n=== s82UnitSuite(): S82, the v6 readings: the BU\'s delay, the wage catch-up and the essentials supply limit (harness-only) ===');
+    S82U.forEach(function(x){ if (!x.pass) s82f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + S82U.length + ' run, ' + s82f + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || s74f || s75f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof || s82f) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
