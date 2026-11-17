@@ -40,11 +40,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.15 Release Notes
+## v5.9.16 Release Notes
 
-Released Nov 17, 2026: **Duke Johnson's note on the design's aim, in his fuller wording.** Text only: no engine line changes and no stored figure changes.
-- **Findings page, central-bank section** ("How the Federal Reserve is governed"): the note now says that his concern is market cycles that can be engineered (bubbles, panics and crashes that let the wealthiest sell high and buy back low), wars and false-flag events used the same way, and a news media now owned by a handful of companies; and it says plainly that these are his views, not model outputs, and that the model does not represent war, the media, or whether market swings are engineered.
-- **The central-bank study's report** keeps the note as first recorded and adds the fuller wording beside it, dated.
+Released Nov 17, 2026: **the v6 readings are built, each behind its own switch and off by default.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, both environments). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, committed before the build. Claude's reading of the design: `dev/reports/s82-supply-reading.md`.
+- **A limit on the supply of housing, medical care and food** (price option `sl`). It applies only on the programme run of a pair paid for by the Source, and only to the extra need its own output does not back. That need is met first from idle capacity, then from the above-needs use that better-off households give up as prices rise, then from capacity built over the years. Only the rest is cut. Four supply readings: full, sourced, restricted and strict. Three ways of sharing a cut: the market's (those least able to pay go short first), even, and the design's (basics bought with BU served first). Basket poverty is read on what households received. The limit is inactive at full backing by construction. Its sourced values are placeholders until the preregistration's Amendment 1 fixes them from opened sources.
+- **Wages that make up a missed rise a year later** (option `wc`, beside wage indexation `wIdx`).
+- **The BU's cost-of-living adjustment with a delay** (option `bl`, in years: a month's adjustment is about 0.125, a quarter's 0.25, a year's 1).
+- **Unit tests** (`s82UnitSuite`): the delay's arithmetic; the limit's yearly step; refused options; on a 200-adult run, the full reading and the strict reading at full backing equal no limit, and the catch-up with full indexing and a zero delay change nothing, the no-programme run ignores both options, and the market rule cuts the least able to pay most.
+- Nothing is run for results yet. The batch runs on GitHub Actions once the sourced values and the dry run are recorded.
 
 ## How to Contribute
 
@@ -356,7 +359,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. *(v5.3: the engine has one copy. `harness.js` reads it out of `index.html` when it loads, so an engine change is made once, in `index.html`; `dev/tools/port_engine.py` and the five listed differences between the two files are retired. `domtest.js` still compares the page with the script `harness.js` runs.)* If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->162<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->384<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->162<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->389<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -450,7 +453,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.15*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.16*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

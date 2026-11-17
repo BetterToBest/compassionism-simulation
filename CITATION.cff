@@ -22,7 +22,7 @@ authors:
     affiliation: Better To Best Research Hub
     email: BetterToBestResearch@gmail.com
   - name: "Claude (Anthropic)"
-version: 5.9.15
+version: 5.9.16
 doi: 10.17605/OSF.IO/QWTE2
 url: "https://bettertobest.github.io/compassionism-simulation/"
 repository-code: "https://github.com/BetterToBest/compassionism-simulation"
