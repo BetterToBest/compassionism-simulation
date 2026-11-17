@@ -2,6 +2,8 @@
 
 *Report for Duke Johnson, November 14, 2026 (research-update step S69, part 2; phase 1).*
 
+**Note on the title (Nov 17, 2026; the release reviews' triage, research-update `audits/2026-11-release-review-triage.md`).** This program was written from the description with the engine's code excerpts and per-seed results to check against, so it is not an independent model. Its exact agreement shows that the description, the code and a careful port agree, and it found three gaps between the description and the code. It cannot catch a modelling choice that both share, for example that the model has no limit on what the economy can supply. The findings below stand.
+
 ## What was checked
 
 The simulation follows 500 adults and their households for 20 years, twice on the same random draws: once with the programme and once without. Since the last check, round 2 added a great deal to the model:

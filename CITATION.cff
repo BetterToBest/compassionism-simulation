@@ -10,15 +10,15 @@ title: Compassionism Framework Simulation
 abstract: >-
   An open, in-browser agent-based model of the Compassionism framework (Creative Currency Octaves, Public Trust Foundations, Public Trust
   Housing, Social Zone Harmonization and the Citizens Internet Portal): 500 simulated adults followed for 20 or 40 years, with the programme
-  and with no programme, on the same random draws, in three environments, reporting poverty, work, cost and prices. Every published
-  figure is an average over 500 paired runs; harness.js reproduces them in Node.
+  and with no programme, on the same random draws, in three environments, reporting poverty, work, cost and prices. The main
+  results average 500 paired runs; the central-bank and history studies use 100. harness.js reproduces them in Node.
 authors:
   - family-names: Johnson
     given-names: Duke
     affiliation: Better To Best Research Hub
     email: BetterToBestResearch@gmail.com
   - name: "Claude (Anthropic)"
-version: 5.9.9
+version: 5.9.11
 doi: 10.17605/OSF.IO/QWTE2
 url: "https://bettertobest.github.io/compassionism-simulation/"
 repository-code: "https://github.com/BetterToBest/compassionism-simulation"

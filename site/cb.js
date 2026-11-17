@@ -76,7 +76,7 @@
       leadCard('Below 30 days of basic living', 'bl', 'pt', 'Share of adult-years whose savings, pay and support would cover fewer than 30 days of basic living.') +
       leadCard('Below the cost of living', 'bk', 'pt', 'Share of adult-years whose household income falls short of the cost of a basket of essentials.') +
       leadCard('Too little wealth (yearly average)', 'wp', 'pt', 'Share of adults whose net wealth is below six months of their own cost of living, averaged over the years.') +
-      leadCard('Median real wealth at year 20', 'mw', 'usd', 'In today’s dollars. Rests on today’s price rule.') + '</div>';
+      leadCard('Median real wealth at year 20', 'mw', 'usd', 'In today’s dollars. Rests on full backing (corrected Nov 17, 2026: it said today’s price rule, which full backing barely tests).') + '</div>';
     var inf = on ? show('s74-cb', {design: des, environment: e, 'central bank': RULE, outcome: O.inf}, 'effect', 'sg2') : show('r2-effects', {design: des, environment: e, years: 20, outcome: O.inf}, 'effect', 'sg2');
     h += '<p class="fx-static-note">' + esc(e) + ' environment, 20 years, ' + (des === C ? 'the full-coverage design' : 'the opt-in design') + ', v5.9’s main row. Averages over ' +
       (on ? '<span class="snum" data-study="s74-cb" data-src="meta seeds">' + esc(String(D['s74-cb'].meta.seeds)) + '</span>' : '<span class="snum" data-study="r2-effects" data-src="meta seeds">' + esc(String(D['r2-effects'].meta.seeds)) + '</span>') +
