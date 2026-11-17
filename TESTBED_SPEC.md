@@ -1,6 +1,33 @@
 # Testbed specification: every switch and alternative mechanism
 
-**Which release this describes (Nov 17, 2026).** The current release is v5.9 (engine `104691f`, frozen Nov 14; shown in v5.9.11). Its main row: the parts added for v5.9 (MODEL_SPEC.md section 14), full backing on the programme run (every dollar paid is matched by new output, the design's statement; a design parameter), the spending share 0.877, no ageing. Its results: compassionism-sim-results folders `r2-<part>-<env>-<years>-104691f` (each with `run.txt`, the exact command and commit, and `SHA256SUMS`), and `data/releases/r2/` and `data/studies/r2-*.json` here. The central-bank and history studies use 100 paired seeds (`dev/reports/s74-central-bank.md`, `s75-deep-history.md`). Where a row below says "Main result" with `a = 0` (nothing backed), it describes the v5.2 and v5.3 release rows, not v5.9's main row; section 7 covers round 2.
+**How to read this file for v5.9 (rebuilt Nov 17, 2026).** v5.9 is the current release (engine `104691f`, frozen Nov 14, 2026). Its main row is set out option by option in section 0 below. Sections 1 to 5 were written for v5.6 and earlier: where their status column says "Main result", it means **v5.6's release row** (nothing backed, the spending share 0.593), not v5.9's; the lines where v5.9 differs say so. Section 6 is the frozen model (Nov 6, 2026); section 7 gives the plain name of every row option and its value in the candidate main row, which is v5.9's main row apart from the two items section 0 marks. Results: compassionism-sim-results `r2-<part>-<env>-<years>-104691f`; commands and fingerprints in [REPRODUCE.md](REPRODUCE.md), section "v5.9".
+
+## 0. v5.9's main row, option by option
+
+Built by `harness.js` `r2FreezePair(P, design)` for the environment's preset `P` (Reference, Adverse or Stress), and run by the results repository's `runner/jobs/r2.js` (part M), which first sets the global settings `applyNR6()` and `tbSetG(TB_PROFILE_G)`. Both runs of the pair carry every option below unless the row says "programme run".
+
+| Setting | v5.9's main row | v5.6's release row, for comparison | Described in |
+|---|---|---|---|
+| The programme | the full-coverage design (`design` `'c22'`: built to meet NEEC's criterion C2.2, unconditional provision covering 100% of basic needs; `c22: {auto: true, idx: 'needs'}`, the BU at the household's needs), or the opt-in design (`'rel'`: $1,200 a month, 78% take part) | the opt-in design | MODEL_SPEC 13.4 |
+| Who pays | the Source (`o.fin` 'source'; the financing identity reported, `fx.fin` 'report') | the Source | MODEL_SPEC 11 |
+| **Backing** (`o.a`, programme run) | **1: every dollar paid is matched by new output** (the design's statement; a design parameter, read along the curve 0, 0.25, 0.5, 0.75, 1 in the backing study) | 0: nothing backed | MODEL_SPEC 14.0; `dev/reports/s64-round2-q4-backing.md` |
+| The price rule | today's rule (no `pr`): unmatched new money moves the general price level (`lamG` 1), demand above capacity moves essentials prices | the same | MODEL_SPEC 6.12, 14.3 |
+| Wages and prices | wages follow the price level in full (`wIdx` 1); the BU and the basket follow the same prices | the same | MODEL_SPEC 6.1, 6.12 |
+| Spending share (`sc`) | 0.877 of the cash surplus consumed | 0.593 | MODEL_SPEC 13.3 |
+| The frozen model's corrections | `au: true`, `fx: {pthb, hb, ab, sp}` | off | MODEL_SPEC 13.1, 13.2 |
+| Reporting corrections | `fx.ez`, `fx.rk` (**not in the candidate row of section 7**) | off | section 7.3 |
+| Households, safety net, earnings | `hh` (households and children), `sn: {abawd, slope}`, `lt: {s: 'all', m: 'all'}` (CPS earnings), `v54` parts (job loss, PTH's books, PTF by sector) | the same | MODEL_SPEC 6.13, 12 |
+| Wealth by asset class | `rt: {bo: true, ci: true, ng: 'base', cr: true}` (business owners, capital income, the creditor side) | all wealth is cash | MODEL_SPEC 14.6, 14.7 |
+| Top tail | `wt: true` (18 tail adults with population weights; weights enter measures, the creditor totals and the government's books, never a decision) | off | MODEL_SPEC 14.8 |
+| Labour force | `lf: {fl: 'stock', pm: 0.43}` (adults outside the labour force, yearly movement in and out, the participation margin) | everyone in it | MODEL_SPEC 14.4, 14.15 |
+| Borrowing limit | `dr: {lim: 2500}` | off | MODEL_SPEC 14.5 |
+| Bargaining | `bg: {pi: 0, m: 1/1.21}` (pass-through 0: identical to off) | off | MODEL_SPEC 14.9 |
+| PTF access and costs | `pa: 'open'`, `po: true` | members only | MODEL_SPEC 14.1, 14.2 |
+| Government account | `gv: {}` (reporting; its books at each adult's weight) | off | MODEL_SPEC 14.14 |
+| Population | fixed: no births, deaths or ageing (`ag` off; ageing is a reading) | the same | MODEL_SPEC 2 |
+| Study options | `r2MainStudy()`: the v5.2 options with `dm`, `mf`, `wtm`, `wy` (reporting only) | the v5.2 options | MODEL_SPEC 10, 14.11 |
+| Seeds, adults, years | seeds 1-500, 500 adults (and 10,000 in part B), 20 and 40 years | the same | MODEL_SPEC 8 |
+| The central-bank and history studies | v5.9's main row with `cb` and `hx` (section 7.1), **100 seeds** | — | MODEL_SPEC 15, 16 |
 
 The release model ([MODEL_SPEC.md](MODEL_SPEC.md)) is one setting of a larger testbed in `harness.js`. This file lists every switch and alternative mechanism the testbed carries, its **status**, and the decision that set it. The rule since v5.0: every new mechanism sits behind a switch; with the switch off, output is bit-identical to before (proved by full-output diffs and the panel hashes); a new mechanism first appears as a **labelled reading** beside the main result, and joining the main result is a separate, recorded decision after a 500-seed restudy.
 
@@ -23,7 +50,7 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | `MULT` (the spending layer) | null / {m 1.5}; `nt` {m, s} for normal years | Main result: recession years only. Readings: `nt` (rows `slack`, `slacku6`) | plan step 16; v5.2 step 6 (decision B) |
 | `GATE_CURRENT` (BLEI gate reads this year's BU) | false / true | Main result: true | audit V5-02 (v5.1) |
 | `LABOR` (labour supply response) | null / `LABOR_DEFAULTS` (rho 0.16, rhoBU 0.16, rhoR 0, eps 0.33, delta 0) | Main result: on (central values) | d14, d15, d2 (session 4); fairness rule |
-| `PRICE` (the price module: created money and essentials prices) | testbed state; options in `PM_DEFAULTS` | Main result: on, a = 0 | sessions 2-3 (d22-d24); D2 lines deflated |
+| `PRICE` (the price module: created money and essentials prices) | testbed state; options in `PM_DEFAULTS` | v5.6 main result: on, nothing backed (`a` 0). v5.9 main row: on, every dollar backed (`a` 1, section 0) | sessions 2-3 (d22-d24); D2 lines deflated |
 | `THETA_GATE` | 'szh' / 'density' | Main result: 'density' (NR6 profile) | d12 (session 5) |
 | `PTH_MODE` | 'basket' / 'housing' | Main result: 'housing' | d4 (session 5) |
 | `DISC_BASE` | 'basket' / 'pretax' | Main result: 'pretax' | d5 (session 5) |
@@ -60,7 +87,7 @@ Decisions: "d" numbers are the project ledger's (exported in `dev/background/led
 | Option | Values (default first) | Status | Decision |
 |---|---|---|---|
 | `fin` (financing) | 'tax' (a flat contribution on wages) / 'source' / 'money' / 'hybrid' / 'none' | Main result: 'source'. Readings: 'tax' (row `tax`); with `taxBase` 'prog' (row `progtax`) and 'land' (row `landtax`) | plan step 3; v5.2 step 7 |
-| `a` (share of the Source's payout backed by new output) | 0 / 0 to 1 | Main result: 0 (cautious). Readings: 1 (H1, row `h1`); the backing-share sweep (0, 0.25, 0.5, 0.75, 1) | plan step 3; audit E2 (v5.1) |
+| `a` (share of the Source's payout backed by new output) | 0 / 0 to 1 | v5.6 main result: 0 (cautious). v5.9 main row: 1 on the programme run (the design's statement, a design parameter; section 0). Readings: 1 (H1, row `h1`, in v5.6); the backing-share sweep (0, 0.25, 0.5, 0.75, 1) in both | plan step 3; audit E2 (v5.1) |
 | `aK` (output backs the payout up to a share of earned income) | 0 / 0.08, 0.12, 0.16 | Labelled readings (rows `midlo`, `mid`, `midhi`) | v5.2 step 6 (decision B) |
 | `faceM` (essentials bought with BU counted as backed) | false / true | Labelled reading (row `face`) | plan step 18 |
 | `eP` (price cuts counted as capacity, not a transfer) | 0 / 1 | Labelled reading (row `free`) | d24 |
@@ -78,7 +105,7 @@ Main result: `release`. Paired no-programme runs: the no-programme row and, for 
 
 | Row | Status | What it changes |
 |---|---|---|
-| `release` | Main result | Compassionism with every mechanism, paid for by the Source, nothing backed (a = 0) |
+| `release` | v5.6 main result | Compassionism with every mechanism, paid for by the Source, nothing backed (`a` 0; v5.9's main row backs every dollar, section 0) |
 | `v422` | Labelled reading (history) | The v4.22 main row (wage contribution) |
 | `h1` | Labelled reading | Every Source dollar backed by new output |
 | `face`, `tax`, `cost`, `cap5`, `s30`, `all`, `free`, `standins` | Labelled readings | As in section 2 and the rows' labels on the explorer |
@@ -124,7 +151,7 @@ A study row is an object of options (`tbStudy`'s configurations). This table giv
 | Option | Plain name | Absent | Candidate main row | Described in |
 |---|---|---|---|---|
 | `p` | the environment's preset for this run (programme on or off, the BU, the parts) | required | `tbPresets(P).baseline()` / the C2.2 design's preset | MODEL_SPEC 10, 13.4 |
-| `o` | the row's own study options (financing and the like; section 7.2) | the study's | `{fin: 'source', a: 0}` (programme run) | section 2 |
+| `o` | the row's own study options (financing and the like; section 7.2) | the study's | `{fin: 'source', a: 0}` (programme run); v5.9's main row has `a: 1` (section 0) | section 2 |
 | `cm` | the conversion model | 'engine' | 'framework' | section 1 |
 | `pj`, `es`, `sp`, `pd`, `jn`, `cs`, `oc` | project hiring; ESP payroll; the surplus split; the production side; open enrolment; the PTF discount from forgone profit; the octave gap | off | as the release row | section 1; MODEL_SPEC 6 |
 | `ml` | the spending layer (`nt`: idle labour in normal years) | off | recession years only (as released) | section 1; MODEL_SPEC 6.12 |
@@ -153,12 +180,14 @@ A study row is an object of options (`tbStudy`'s configurations). This table giv
 | `pa` | open PTF access and the growth of the PTF share of sales | members only | 'open' | MODEL_SPEC 14.1 |
 | `po` | PTF running costs, who pays, PTF workers, the density tests' curve | off | `true` | MODEL_SPEC 14.2 |
 | `pr` | the capacity price rule (options `q`, `bv`, `bd`) | today's rule | today's rule (absent) | MODEL_SPEC 14.3 |
-| `lf` | adults outside the labour force (`conv` 'keep' or 'none') | everyone in it | `{}` ('keep') | MODEL_SPEC 14.4 |
+| `lf` | adults outside the labour force (`conv` 'keep' or 'none'; `fl` yearly flows 'stock' or 'panel'; `pm` the participation margin) | everyone in it | `{fl: 'stock', pm: 0.43}` ('keep') | MODEL_SPEC 14.4, 14.15 |
 | `dr` | borrowing for ordinary spending (`lim` the limit, `liq` the liquid share, `fl` the floor) | off | `{lim: 2500}` | MODEL_SPEC 14.5 |
 | `rt` | wealth held by asset class (options below) | all wealth is cash | `{bo: true, ci: true, ng: 'base', cr: true}` | MODEL_SPEC 14.6, 14.7 |
 | `wt` | the weighted top tail | off | `true` | MODEL_SPEC 14.8 |
 | `bg` | bargaining: the outside option and the markdown | off | `{pi: 0, m: 1/1.21}` (identical to off) | MODEL_SPEC 14.9 |
 | `gv` | the government account (who pays, interest, programme debt, the erosion of today's debt), the contribution's share and base, its books at each adult's weight (S72) | off | `{}` (reporting, and weighted books) | MODEL_SPEC 14.14 |
+| `cb` | the policy-rate rule in both runs (rates, purchases at the floor, refinancing, asset prices and job loss through the stance, forced sales; `CB_DEFAULTS`) | no central bank | off (the central-bank study turns it on) | MODEL_SPEC 15.2 |
+| `hx` (preset key) | the history environment: 2005-2025's actual paths; options `era` ('e1'-'e4', four US policy eras), `T` and `Tr` (the era's tax schedule, revenue-neutral), `H` (the era's health cost growth), `sp`, `rp` | off | off (the central-bank and history studies) | MODEL_SPEC 15.1, 16 |
 
 ### 7.2 Study options added in round 2 (and `o.wy`, which may also sit on a row)
 
@@ -174,6 +203,7 @@ A study row is an object of options (`tbStudy`'s configurations). This table giv
 
 | Option | Plain name | Values (absent first) | Candidate main row |
 |---|---|---|---|
+| `lf.fl`, `lf.pm` | yearly movement in and out of the labour force; the share of the income effect taken by leaving work | null, 0 | 'stock', 0.43 |
 | `fx.pthb`, `fx.hb`, `fx.ab`, `fx.sp` | PTH's books after households; the PTH home's price and receipt; SNAP's month count; the essentials' supply path | false / true | true |
 | `fx.ez`, `fx.rk` (S63) | earnings below 1e-9 dollars a year count as zero; the weighted distribution measures (dm, wtm) rank on wealth or income rounded to the cent, ties by index | false / true | true in the frozen round-2 main row (`r2FreezePair`) |
 | `fx.fin` | who pays the part a capped contribution does not raise | none / 'report' / 'money' / 'debt' (borrowed; needs `gv`) / 'cap' (a higher rate cap, the rest new money; needs `gv`) | 'report' |
