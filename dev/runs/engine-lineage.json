@@ -926,6 +926,22 @@
    },
    "equal": true,
    "seconds": 144
+  },
+  {
+   "from": "9b3afc8fa3e0df6af96312def80c8b6dd52b479f777894f1805cf6dfe5b23573",
+   "to": "d97b9b1c7481a999cfbbce30d0c88f6cef6754175fdd45b3451e1379d9c2c1fc",
+   "date": "2026-11-17",
+   "change": "S82: the v6 readings behind switches (sl supply limit, wc wage catch-up, bl BU delay); off = identical",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 209
   }
  ]
 }
