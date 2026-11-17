@@ -1,10 +1,10 @@
-# Study O (S52): the outside supply shock, every preregistered table
+# Study O: the outside supply shock, every preregistered table
 
 PILOT: seeds 1-50, labelled pilot throughout; not figures of the model. Engine 98b6100. Analysis: `dev/tools/s52_shock.py` (prereg/2026-11-supply-shock-addendum.md).
 
 Share of the shock reaching a group: the rise in its own money costs over the rise in the same basket at market prices, against the same run without the shock (same seed). 1 = the whole rise; 0 = none of it. 95% intervals: paired bootstrap over seeds.
 
-## Reference, release row (released wages)
+## Reference, opt-in row (released wages)
 
 ### Q14 (primary): share of the main shock reaching each group, during the shock (years 5-8), main reading (markup 25%, no local sourcing)
 
@@ -73,7 +73,7 @@ Sensitivities (markup 25%): local supply fully protected (kap 0), and a three-ye
 | 51% kept | 100.0% (100.0 to 100.0) | 52.0% (51.8 to 52.2) | 55.6% (55.1 to 56.2) | 52.8% (52.3 to 53.3) | -0.68 (-0.82 to -0.54) |
 | all kept | 100.0% (100.0 to 100.0) | 52.5% (52.2 to 52.7) | 56.0% (55.5 to 56.6) | 52.8% (52.3 to 53.4) | -0.83 (-0.99 to -0.67) |
 
-## Reference, C2.2 design (CPS yardstick)
+## Reference, full-coverage design (CPS yardstick)
 
 ### Q14 (primary): share of the main shock reaching each group, during the shock (years 5-8), main reading (markup 25%, no local sourcing)
 
@@ -142,7 +142,7 @@ Sensitivities (markup 25%): local supply fully protected (kap 0), and a three-ye
 | 51% kept | 100.0% (100.0 to 100.0) | 21.8% (21.7 to 22.0) | 29.3% (28.8 to 29.9) | 27.8% (27.3 to 28.3) | -0.82 (-0.92 to -0.73) |
 | all kept | 100.0% (100.0 to 100.0) | 20.4% (20.2 to 20.5) | 29.2% (28.7 to 29.8) | 27.4% (26.9 to 28.0) | -0.99 (-1.10 to -0.88) |
 
-## Adverse, release row (released wages)
+## Adverse, opt-in row (released wages)
 
 ### Q14 (primary): share of the main shock reaching each group, during the shock (years 5-8), main reading (markup 25%, no local sourcing)
 
@@ -211,7 +211,7 @@ Sensitivities (markup 25%): local supply fully protected (kap 0), and a three-ye
 | 51% kept | 100.0% (100.0 to 100.0) | 53.0% (52.7 to 53.2) | 56.3% (55.8 to 56.8) | 53.5% (53.0 to 54.0) | -0.53 (-0.65 to -0.40) |
 | all kept | 100.0% (100.0 to 100.0) | 53.3% (53.1 to 53.5) | 56.6% (56.1 to 57.1) | 53.4% (52.9 to 53.9) | -0.60 (-0.72 to -0.47) |
 
-## Adverse, C2.2 design (CPS yardstick)
+## Adverse, full-coverage design (CPS yardstick)
 
 ### Q14 (primary): share of the main shock reaching each group, during the shock (years 5-8), main reading (markup 25%, no local sourcing)
 
@@ -280,7 +280,7 @@ Sensitivities (markup 25%): local supply fully protected (kap 0), and a three-ye
 | 51% kept | 100.0% (100.0 to 100.0) | 23.5% (23.4 to 23.7) | 31.3% (30.8 to 31.8) | 29.7% (29.2 to 30.3) | -0.78 (-0.85 to -0.70) |
 | all kept | 100.0% (100.0 to 100.0) | 21.9% (21.7 to 22.1) | 31.0% (30.4 to 31.6) | 29.2% (28.7 to 29.8) | -0.96 (-1.06 to -0.86) |
 
-## Stress, release row (released wages)
+## Stress, opt-in row (released wages)
 
 ### Q14 (primary): share of the main shock reaching each group, during the shock (years 5-8), main reading (markup 25%, no local sourcing)
 
@@ -349,7 +349,7 @@ Sensitivities (markup 25%): local supply fully protected (kap 0), and a three-ye
 | 51% kept | 100.0% (100.0 to 100.0) | 79.9% (79.6 to 80.2) | 78.9% (78.0 to 79.8) | 75.5% (74.6 to 76.4) | -0.25 (-0.38 to -0.12) |
 | all kept | 100.0% (100.0 to 100.0) | 80.6% (80.3 to 80.9) | 79.2% (78.3 to 80.1) | 75.5% (74.7 to 76.4) | -0.24 (-0.38 to -0.09) |
 
-## Stress, C2.2 design (CPS yardstick)
+## Stress, full-coverage design (CPS yardstick)
 
 ### Q14 (primary): share of the main shock reaching each group, during the shock (years 5-8), main reading (markup 25%, no local sourcing)
 

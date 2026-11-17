@@ -1,6 +1,6 @@
 # When prices jump from outside: Claude's reading of how PTF and PTH protect the basics
 
-Nov 2, 2026 · research-update plan step S52 · written before any run · Claude
+Nov 2, 2026 · the supply-shock study · written before any run · Claude
 
 Duke, this note sets out my reading of what your writing says PTF and PTH do when the price of the basics jumps for reasons outside the economy: a war, bad weather, a cartel. It then describes how the model now represents such a shock. Please say if it misrepresents your design. Where the text is silent I took the most cautious option and labelled it a modelling assumption.
 
@@ -41,4 +41,4 @@ The shock is small for the basket as a whole (about 2-3% at its peak in the main
 
 ## Not changed
 
-The released figures do not move: the shock is behind a switch (preset key `sx`). The policy comparison stays frozen (ledger d94): the shock runs within the study programme only.
+The released figures do not move: the shock is behind a switch (preset key `sx`). The policy comparison stays frozen: the shock runs within the study programme only.

@@ -78,7 +78,7 @@ These are early results for this step alone. Children are frozen at their ages, 
 6. **Prices rise a little more slowly with households, and the reason is about what BU can buy.** A family's BU budget, with its children's allowances, is often larger than what BU can buy today: food, housing and medical care only, not childcare. So most of the extra BU expire unspent. Expired BU fund project work. The model counts that work as new output, which backs part of the Source's payout, so less of it is new money. In Reference, project payouts double (about $6,700 to $13,800 per adult a year, measured on 20 runs), the output backing doubles, and prices rise 2.4 points a year less (500 runs). You confirmed on the dashboard that BU can buy the full list in your glossary (transport and education too, with childcare at community providers), added first as a labelled reading. This result shows why it matters for families. I am building that reading next, beside this one.
 7. **The official poverty line hardly registers.** Adults in the model all earn wages, and couples have two, so very few households fall below the official line: about 2% of people in Reference with no programme, against the national 10%. The same was true of the adult-only model. The cost-of-living measure, from MIT, is the one that shows hardship here.
 
-## Decisions made (full reasons in `dev/DECISIONS.md`, Session 39)
+## Decisions made (full reasons in `dev/DECISIONS.md`)
 
 - The adults stay the model's people and are grouped into households; children are dependants of a household.
 - Composition, budgets, childcare and poverty lines come from the Census Bureau (2023 household tables; 2025 poverty thresholds) and MIT (2026 family budgets).

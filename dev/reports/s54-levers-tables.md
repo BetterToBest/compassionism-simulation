@@ -1,4 +1,4 @@
-# S54 policy levers: tables (pilot, seeds 1-50; labelled pilot, not figures of the model)
+# Policy levers: tables (pilot, seeds 1-50; labelled pilot, not figures of the model)
 
 Engine e6da050. Written by `dev/tools/s54_levers.py` from compassionism-sim-results (stage 1: ../compassionism-sim-results/s54-levers1-e6da050; stage 2: ../compassionism-sim-results/s54-levers2-e6da050). Paired bootstrap over seeds, 2000 replicates, resampler seed 54, the same resample for every cell. research-update `prereg/2026-11-levers-addendum.md` defines every cell.
 
@@ -10,44 +10,44 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 
 | Design | Wages | Row | Environment | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| release row | 100% | base | Reference | -29.79 (-30.40, -29.24) | +11.38 (+10.62, +12.18) | -14.61 (-15.36, -13.81) | +50.78 (+50.34, +51.26) | +83.61 (+83.08, +84.12) | +27.92 (+26.56, +29.31) | +0.56 (+0.49, +0.63) | +24.10 (+22.87, +25.36) | -12.42 (-12.86, -11.97) |
-| release row | 100% | base | Adverse | -35.11 (-35.84, -34.39) | +36.18 (+35.56, +36.83) | -17.27 (-18.26, -16.20) | +60.87 (+60.29, +61.49) | +83.70 (+83.18, +84.21) | +44.90 (+43.50, +46.30) | +0.46 (+0.36, +0.56) | +27.84 (+26.85, +28.84) | -7.94 (-8.43, -7.45) |
-| release row | 100% | base | Stress | -13.42 (-13.96, -12.85) | +31.47 (+30.72, +32.18) | -4.54 (-5.00, -4.06) | +27.68 (+27.14, +28.21) | +44.06 (+43.29, +44.84) | +39.05 (+38.10, +40.04) | +0.82 (+0.75, +0.88) | +23.50 (+22.93, +24.08) | +5.80 (+5.45, +6.14) |
-| release row | 100% | asis | Reference | -29.97 (-30.59, -29.41) | +11.30 (+10.51, +12.12) | -15.23 (-16.02, -14.39) | +51.00 (+50.56, +51.47) | +83.99 (+83.47, +84.49) | +27.20 (+25.81, +28.60) | +0.35 (+0.28, +0.41) | +23.73 (+22.49, +24.99) | -12.57 (-13.01, -12.11) |
-| release row | 100% | asis | Adverse | -35.23 (-35.96, -34.52) | +36.30 (+35.66, +36.97) | -17.74 (-18.80, -16.65) | +61.08 (+60.50, +61.70) | +83.99 (+83.47, +84.49) | +44.81 (+43.40, +46.19) | +0.28 (+0.18, +0.38) | +27.68 (+26.67, +28.70) | -8.05 (-8.54, -7.55) |
-| release row | 100% | asis | Stress | -13.42 (-13.97, -12.85) | +31.47 (+30.72, +32.18) | -4.54 (-5.00, -4.06) | +27.68 (+27.14, +28.21) | +44.06 (+43.30, +44.84) | +39.05 (+38.10, +40.04) | +0.82 (+0.75, +0.88) | +23.50 (+22.93, +24.08) | +5.80 (+5.45, +6.14) |
-| release row | 100% | base.sv | Reference | -29.75 (-30.37, -29.21) | -19.90 (-20.52, -19.29) | -14.60 (-15.36, -13.80) | +50.82 (+50.38, +51.29) | +83.62 (+83.09, +84.13) | -9.25 (-10.09, -8.48) | -0.23 (-0.28, -0.17) | -9.75 (-10.52, -9.00) | -17.41 (-17.82, -17.02) |
-| release row | 100% | base.sv | Adverse | -35.03 (-35.77, -34.32) | -22.84 (-23.47, -22.17) | -17.20 (-18.21, -16.13) | +61.00 (+60.42, +61.62) | +83.71 (+83.18, +84.21) | -10.89 (-11.82, -9.96) | -0.67 (-0.76, -0.59) | -10.67 (-11.48, -9.90) | -18.22 (-18.63, -17.79) |
-| release row | 100% | base.sv | Stress | -13.37 (-13.92, -12.80) | -8.95 (-9.37, -8.54) | -4.49 (-4.95, -4.02) | +27.69 (+27.16, +28.22) | +44.06 (+43.29, +44.84) | -2.77 (-3.15, -2.39) | -0.39 (-0.45, -0.33) | -3.19 (-3.48, -2.90) | -7.08 (-7.38, -6.78) |
-| release row | 90% | base | Reference | -10.61 (-11.08, -10.16) | +60.00 (+59.42, +60.58) | +8.13 (+7.00, +9.26) | +68.47 (+67.72, +69.28) | +83.72 (+83.19, +84.22) | +64.81 (+63.46, +66.04) | +0.75 (+0.68, +0.81) | +36.55 (+35.58, +37.54) | +2.85 (+2.36, +3.39) |
-| release row | 90% | base | Adverse | -12.73 (-13.23, -12.23) | +54.01 (+53.41, +54.63) | +3.43 (+2.38, +4.51) | +86.34 (+85.29, +87.45) | +83.79 (+83.26, +84.29) | +55.53 (+54.14, +56.94) | +0.74 (+0.62, +0.87) | +35.47 (+34.52, +36.45) | +10.04 (+9.60, +10.51) |
-| release row | 90% | base | Stress | -1.66 (-2.15, -1.17) | +47.49 (+46.86, +48.10) | +6.85 (+6.33, +7.40) | +33.89 (+33.12, +34.64) | +44.06 (+43.29, +44.84) | +51.55 (+50.92, +52.24) | +1.01 (+0.94, +1.08) | +28.24 (+27.74, +28.74) | +14.03 (+13.61, +14.44) |
-| release row | 90% | asis | Reference | -10.65 (-11.11, -10.18) | +60.08 (+59.50, +60.67) | +7.76 (+6.63, +8.94) | +68.73 (+68.00, +69.54) | +83.99 (+83.47, +84.49) | +64.81 (+63.49, +66.05) | +0.57 (+0.50, +0.64) | +36.47 (+35.49, +37.47) | +2.81 (+2.32, +3.35) |
-| release row | 90% | asis | Adverse | -12.74 (-13.24, -12.24) | +54.02 (+53.43, +54.63) | +3.23 (+2.20, +4.30) | +86.60 (+85.57, +87.69) | +83.99 (+83.47, +84.49) | +55.53 (+54.14, +56.94) | +0.59 (+0.47, +0.70) | +35.41 (+34.46, +36.39) | +10.03 (+9.59, +10.50) |
-| release row | 90% | asis | Stress | -1.66 (-2.15, -1.17) | +47.49 (+46.86, +48.10) | +6.85 (+6.33, +7.40) | +33.89 (+33.13, +34.64) | +44.06 (+43.30, +44.84) | +51.55 (+50.92, +52.24) | +1.01 (+0.94, +1.09) | +28.24 (+27.74, +28.74) | +14.04 (+13.61, +14.44) |
-| release row | 90% | base.sv | Reference | -10.43 (-10.89, -9.97) | -11.84 (-12.44, -11.24) | +8.27 (+7.15, +9.40) | +68.72 (+67.97, +69.54) | +83.72 (+83.19, +84.23) | -0.01 (-1.02, +0.99) | -0.12 (-0.17, -0.06) | -5.92 (-6.70, -5.15) | -13.66 (-14.08, -13.25) |
-| release row | 90% | base.sv | Adverse | -12.63 (-13.13, -12.14) | -14.80 (-15.38, -14.19) | +3.50 (+2.45, +4.59) | +86.53 (+85.48, +87.65) | +83.79 (+83.26, +84.29) | -2.88 (-4.08, -1.61) | -0.54 (-0.64, -0.45) | -7.38 (-8.21, -6.57) | -14.82 (-15.25, -14.39) |
-| release row | 90% | base.sv | Stress | -1.66 (-2.14, -1.16) | -4.02 (-4.54, -3.53) | +6.86 (+6.35, +7.41) | +33.88 (+33.11, +34.63) | +44.06 (+43.29, +44.84) | +2.22 (+1.64, +2.79) | -0.36 (-0.42, -0.30) | -1.25 (-1.59, -0.90) | -4.92 (-5.17, -4.65) |
-| C2.2 design | 100% | base | Reference | -25.51 (-26.03, -25.01) | -19.86 (-20.35, -19.35) | -24.99 (-26.13, -23.89) | +37.66 (+37.33, +38.00) | +100.00 (+100.00, +100.00) | -19.38 (-20.44, -18.34) | +0.16 (+0.07, +0.24) | -20.60 (-21.53, -19.71) | -17.29 (-17.68, -16.89) |
-| C2.2 design | 100% | base | Adverse | -36.14 (-36.82, -35.50) | -23.50 (-24.07, -22.95) | -35.58 (-36.80, -34.33) | +44.27 (+43.85, +44.72) | +100.00 (+100.00, +100.00) | -23.28 (-24.58, -22.07) | -0.42 (-0.55, -0.29) | -23.58 (-24.59, -22.64) | -20.93 (-21.34, -20.50) |
-| C2.2 design | 100% | base | Stress | -35.28 (-35.95, -34.66) | -11.25 (-11.96, -10.51) | -35.27 (-36.02, -34.53) | +46.32 (+45.83, +46.84) | +100.00 (+100.00, +100.00) | -10.94 (-11.84, -9.97) | -0.62 (-0.71, -0.55) | -20.62 (-21.14, -20.08) | -20.94 (-21.35, -20.51) |
-| C2.2 design | 100% | asis | Reference | -25.51 (-26.03, -25.01) | -19.86 (-20.35, -19.35) | -24.99 (-26.13, -23.89) | +37.66 (+37.33, +38.00) | +100.00 (+100.00, +100.00) | -19.38 (-20.44, -18.34) | +0.16 (+0.07, +0.24) | -20.60 (-21.53, -19.71) | -17.29 (-17.68, -16.89) |
-| C2.2 design | 100% | asis | Adverse | -36.14 (-36.82, -35.50) | -23.50 (-24.07, -22.95) | -35.58 (-36.80, -34.33) | +44.27 (+43.85, +44.72) | +100.00 (+100.00, +100.00) | -23.28 (-24.58, -22.07) | -0.42 (-0.55, -0.29) | -23.58 (-24.59, -22.64) | -20.93 (-21.34, -20.50) |
-| C2.2 design | 100% | asis | Stress | -35.28 (-35.95, -34.66) | -11.25 (-11.96, -10.51) | -35.27 (-36.02, -34.53) | +46.32 (+45.83, +46.84) | +100.00 (+100.00, +100.00) | -10.94 (-11.84, -9.97) | -0.62 (-0.71, -0.55) | -20.62 (-21.14, -20.08) | -20.94 (-21.35, -20.51) |
-| C2.2 design | 100% | base.sv | Reference | -25.49 (-26.02, -25.00) | -19.83 (-20.32, -19.32) | -24.97 (-26.11, -23.87) | +37.66 (+37.33, +38.00) | +100.00 (+100.00, +100.00) | -19.37 (-20.40, -18.35) | -0.44 (-0.51, -0.37) | -21.98 (-22.92, -21.10) | -17.03 (-17.42, -16.64) |
-| C2.2 design | 100% | base.sv | Adverse | -36.13 (-36.80, -35.49) | -26.15 (-26.69, -25.64) | -35.56 (-36.79, -34.32) | +44.27 (+43.85, +44.72) | +100.00 (+100.00, +100.00) | -25.52 (-26.71, -24.40) | -1.13 (-1.24, -1.01) | -24.93 (-25.97, -23.97) | -19.83 (-20.23, -19.43) |
-| C2.2 design | 100% | base.sv | Stress | -35.27 (-35.93, -34.65) | -25.86 (-26.39, -25.35) | -35.26 (-36.01, -34.52) | +46.32 (+45.83, +46.84) | +100.00 (+100.00, +100.00) | -25.83 (-26.56, -25.12) | -1.34 (-1.42, -1.26) | -25.06 (-25.63, -24.48) | -19.84 (-20.24, -19.43) |
-| C2.2 design | 90% | base | Reference | -24.61 (-25.11, -24.14) | -10.83 (-11.67, -9.91) | -24.22 (-25.37, -23.16) | +46.49 (+46.00, +47.00) | +100.00 (+100.00, +100.00) | -11.14 (-12.22, -10.11) | +0.18 (+0.09, +0.27) | -18.26 (-19.09, -17.47) | -17.26 (-17.66, -16.86) |
-| C2.2 design | 90% | base | Adverse | -33.87 (-34.46, -33.29) | +19.77 (+18.02, +21.55) | -33.42 (-34.59, -32.26) | +56.38 (+55.71, +57.10) | +100.00 (+100.00, +100.00) | +19.97 (+17.90, +22.02) | -0.47 (-0.59, -0.34) | -15.55 (-16.50, -14.65) | -20.89 (-21.30, -20.46) |
-| C2.2 design | 90% | base | Stress | -30.85 (-31.37, -30.33) | +43.46 (+42.02, +44.92) | -30.80 (-31.44, -30.15) | +61.54 (+60.72, +62.42) | +100.00 (+100.00, +100.00) | +43.58 (+42.08, +45.12) | -0.75 (-0.84, -0.68) | -5.72 (-6.49, -4.99) | -20.85 (-21.26, -20.43) |
-| C2.2 design | 90% | asis | Reference | -24.61 (-25.11, -24.14) | -10.83 (-11.67, -9.91) | -24.22 (-25.37, -23.16) | +46.49 (+46.00, +47.00) | +100.00 (+100.00, +100.00) | -11.14 (-12.22, -10.11) | +0.18 (+0.09, +0.27) | -18.26 (-19.09, -17.47) | -17.26 (-17.66, -16.86) |
-| C2.2 design | 90% | asis | Adverse | -33.87 (-34.46, -33.29) | +19.77 (+18.02, +21.55) | -33.42 (-34.59, -32.26) | +56.38 (+55.71, +57.10) | +100.00 (+100.00, +100.00) | +19.97 (+17.90, +22.02) | -0.47 (-0.59, -0.34) | -15.55 (-16.50, -14.65) | -20.89 (-21.30, -20.46) |
-| C2.2 design | 90% | asis | Stress | -30.85 (-31.37, -30.33) | +43.46 (+42.02, +44.92) | -30.80 (-31.44, -30.15) | +61.54 (+60.72, +62.42) | +100.00 (+100.00, +100.00) | +43.58 (+42.08, +45.12) | -0.75 (-0.84, -0.68) | -5.72 (-6.49, -4.99) | -20.85 (-21.26, -20.43) |
-| C2.2 design | 90% | base.sv | Reference | -24.60 (-25.09, -24.12) | -19.69 (-20.19, -19.17) | -24.20 (-25.36, -23.14) | +46.49 (+46.00, +47.00) | +100.00 (+100.00, +100.00) | -19.26 (-20.27, -18.29) | -0.39 (-0.47, -0.31) | -21.79 (-22.73, -20.91) | -17.01 (-17.39, -16.62) |
-| C2.2 design | 90% | base.sv | Adverse | -33.86 (-34.45, -33.28) | -25.90 (-26.41, -25.40) | -33.40 (-34.56, -32.24) | +56.38 (+55.71, +57.10) | +100.00 (+100.00, +100.00) | -25.38 (-26.53, -24.26) | -1.09 (-1.20, -0.97) | -24.72 (-25.74, -23.74) | -19.80 (-20.20, -19.40) |
-| C2.2 design | 90% | base.sv | Stress | -30.84 (-31.36, -30.32) | -25.36 (-25.88, -24.84) | -30.79 (-31.43, -30.14) | +61.54 (+60.72, +62.42) | +100.00 (+100.00, +100.00) | -25.36 (-26.08, -24.66) | -1.32 (-1.40, -1.24) | -24.72 (-25.31, -24.14) | -19.81 (-20.22, -19.41) |
+| opt-in row | 100% | base | Reference | -29.79 (-30.40, -29.24) | +11.38 (+10.62, +12.18) | -14.61 (-15.36, -13.81) | +50.78 (+50.34, +51.26) | +83.61 (+83.08, +84.12) | +27.92 (+26.56, +29.31) | +0.56 (+0.49, +0.63) | +24.10 (+22.87, +25.36) | -12.42 (-12.86, -11.97) |
+| opt-in row | 100% | base | Adverse | -35.11 (-35.84, -34.39) | +36.18 (+35.56, +36.83) | -17.27 (-18.26, -16.20) | +60.87 (+60.29, +61.49) | +83.70 (+83.18, +84.21) | +44.90 (+43.50, +46.30) | +0.46 (+0.36, +0.56) | +27.84 (+26.85, +28.84) | -7.94 (-8.43, -7.45) |
+| opt-in row | 100% | base | Stress | -13.42 (-13.96, -12.85) | +31.47 (+30.72, +32.18) | -4.54 (-5.00, -4.06) | +27.68 (+27.14, +28.21) | +44.06 (+43.29, +44.84) | +39.05 (+38.10, +40.04) | +0.82 (+0.75, +0.88) | +23.50 (+22.93, +24.08) | +5.80 (+5.45, +6.14) |
+| opt-in row | 100% | asis | Reference | -29.97 (-30.59, -29.41) | +11.30 (+10.51, +12.12) | -15.23 (-16.02, -14.39) | +51.00 (+50.56, +51.47) | +83.99 (+83.47, +84.49) | +27.20 (+25.81, +28.60) | +0.35 (+0.28, +0.41) | +23.73 (+22.49, +24.99) | -12.57 (-13.01, -12.11) |
+| opt-in row | 100% | asis | Adverse | -35.23 (-35.96, -34.52) | +36.30 (+35.66, +36.97) | -17.74 (-18.80, -16.65) | +61.08 (+60.50, +61.70) | +83.99 (+83.47, +84.49) | +44.81 (+43.40, +46.19) | +0.28 (+0.18, +0.38) | +27.68 (+26.67, +28.70) | -8.05 (-8.54, -7.55) |
+| opt-in row | 100% | asis | Stress | -13.42 (-13.97, -12.85) | +31.47 (+30.72, +32.18) | -4.54 (-5.00, -4.06) | +27.68 (+27.14, +28.21) | +44.06 (+43.30, +44.84) | +39.05 (+38.10, +40.04) | +0.82 (+0.75, +0.88) | +23.50 (+22.93, +24.08) | +5.80 (+5.45, +6.14) |
+| opt-in row | 100% | base.sv | Reference | -29.75 (-30.37, -29.21) | -19.90 (-20.52, -19.29) | -14.60 (-15.36, -13.80) | +50.82 (+50.38, +51.29) | +83.62 (+83.09, +84.13) | -9.25 (-10.09, -8.48) | -0.23 (-0.28, -0.17) | -9.75 (-10.52, -9.00) | -17.41 (-17.82, -17.02) |
+| opt-in row | 100% | base.sv | Adverse | -35.03 (-35.77, -34.32) | -22.84 (-23.47, -22.17) | -17.20 (-18.21, -16.13) | +61.00 (+60.42, +61.62) | +83.71 (+83.18, +84.21) | -10.89 (-11.82, -9.96) | -0.67 (-0.76, -0.59) | -10.67 (-11.48, -9.90) | -18.22 (-18.63, -17.79) |
+| opt-in row | 100% | base.sv | Stress | -13.37 (-13.92, -12.80) | -8.95 (-9.37, -8.54) | -4.49 (-4.95, -4.02) | +27.69 (+27.16, +28.22) | +44.06 (+43.29, +44.84) | -2.77 (-3.15, -2.39) | -0.39 (-0.45, -0.33) | -3.19 (-3.48, -2.90) | -7.08 (-7.38, -6.78) |
+| opt-in row | 90% | base | Reference | -10.61 (-11.08, -10.16) | +60.00 (+59.42, +60.58) | +8.13 (+7.00, +9.26) | +68.47 (+67.72, +69.28) | +83.72 (+83.19, +84.22) | +64.81 (+63.46, +66.04) | +0.75 (+0.68, +0.81) | +36.55 (+35.58, +37.54) | +2.85 (+2.36, +3.39) |
+| opt-in row | 90% | base | Adverse | -12.73 (-13.23, -12.23) | +54.01 (+53.41, +54.63) | +3.43 (+2.38, +4.51) | +86.34 (+85.29, +87.45) | +83.79 (+83.26, +84.29) | +55.53 (+54.14, +56.94) | +0.74 (+0.62, +0.87) | +35.47 (+34.52, +36.45) | +10.04 (+9.60, +10.51) |
+| opt-in row | 90% | base | Stress | -1.66 (-2.15, -1.17) | +47.49 (+46.86, +48.10) | +6.85 (+6.33, +7.40) | +33.89 (+33.12, +34.64) | +44.06 (+43.29, +44.84) | +51.55 (+50.92, +52.24) | +1.01 (+0.94, +1.08) | +28.24 (+27.74, +28.74) | +14.03 (+13.61, +14.44) |
+| opt-in row | 90% | asis | Reference | -10.65 (-11.11, -10.18) | +60.08 (+59.50, +60.67) | +7.76 (+6.63, +8.94) | +68.73 (+68.00, +69.54) | +83.99 (+83.47, +84.49) | +64.81 (+63.49, +66.05) | +0.57 (+0.50, +0.64) | +36.47 (+35.49, +37.47) | +2.81 (+2.32, +3.35) |
+| opt-in row | 90% | asis | Adverse | -12.74 (-13.24, -12.24) | +54.02 (+53.43, +54.63) | +3.23 (+2.20, +4.30) | +86.60 (+85.57, +87.69) | +83.99 (+83.47, +84.49) | +55.53 (+54.14, +56.94) | +0.59 (+0.47, +0.70) | +35.41 (+34.46, +36.39) | +10.03 (+9.59, +10.50) |
+| opt-in row | 90% | asis | Stress | -1.66 (-2.15, -1.17) | +47.49 (+46.86, +48.10) | +6.85 (+6.33, +7.40) | +33.89 (+33.13, +34.64) | +44.06 (+43.30, +44.84) | +51.55 (+50.92, +52.24) | +1.01 (+0.94, +1.09) | +28.24 (+27.74, +28.74) | +14.04 (+13.61, +14.44) |
+| opt-in row | 90% | base.sv | Reference | -10.43 (-10.89, -9.97) | -11.84 (-12.44, -11.24) | +8.27 (+7.15, +9.40) | +68.72 (+67.97, +69.54) | +83.72 (+83.19, +84.23) | -0.01 (-1.02, +0.99) | -0.12 (-0.17, -0.06) | -5.92 (-6.70, -5.15) | -13.66 (-14.08, -13.25) |
+| opt-in row | 90% | base.sv | Adverse | -12.63 (-13.13, -12.14) | -14.80 (-15.38, -14.19) | +3.50 (+2.45, +4.59) | +86.53 (+85.48, +87.65) | +83.79 (+83.26, +84.29) | -2.88 (-4.08, -1.61) | -0.54 (-0.64, -0.45) | -7.38 (-8.21, -6.57) | -14.82 (-15.25, -14.39) |
+| opt-in row | 90% | base.sv | Stress | -1.66 (-2.14, -1.16) | -4.02 (-4.54, -3.53) | +6.86 (+6.35, +7.41) | +33.88 (+33.11, +34.63) | +44.06 (+43.29, +44.84) | +2.22 (+1.64, +2.79) | -0.36 (-0.42, -0.30) | -1.25 (-1.59, -0.90) | -4.92 (-5.17, -4.65) |
+| Full-coverage design | 100% | base | Reference | -25.51 (-26.03, -25.01) | -19.86 (-20.35, -19.35) | -24.99 (-26.13, -23.89) | +37.66 (+37.33, +38.00) | +100.00 (+100.00, +100.00) | -19.38 (-20.44, -18.34) | +0.16 (+0.07, +0.24) | -20.60 (-21.53, -19.71) | -17.29 (-17.68, -16.89) |
+| Full-coverage design | 100% | base | Adverse | -36.14 (-36.82, -35.50) | -23.50 (-24.07, -22.95) | -35.58 (-36.80, -34.33) | +44.27 (+43.85, +44.72) | +100.00 (+100.00, +100.00) | -23.28 (-24.58, -22.07) | -0.42 (-0.55, -0.29) | -23.58 (-24.59, -22.64) | -20.93 (-21.34, -20.50) |
+| Full-coverage design | 100% | base | Stress | -35.28 (-35.95, -34.66) | -11.25 (-11.96, -10.51) | -35.27 (-36.02, -34.53) | +46.32 (+45.83, +46.84) | +100.00 (+100.00, +100.00) | -10.94 (-11.84, -9.97) | -0.62 (-0.71, -0.55) | -20.62 (-21.14, -20.08) | -20.94 (-21.35, -20.51) |
+| Full-coverage design | 100% | asis | Reference | -25.51 (-26.03, -25.01) | -19.86 (-20.35, -19.35) | -24.99 (-26.13, -23.89) | +37.66 (+37.33, +38.00) | +100.00 (+100.00, +100.00) | -19.38 (-20.44, -18.34) | +0.16 (+0.07, +0.24) | -20.60 (-21.53, -19.71) | -17.29 (-17.68, -16.89) |
+| Full-coverage design | 100% | asis | Adverse | -36.14 (-36.82, -35.50) | -23.50 (-24.07, -22.95) | -35.58 (-36.80, -34.33) | +44.27 (+43.85, +44.72) | +100.00 (+100.00, +100.00) | -23.28 (-24.58, -22.07) | -0.42 (-0.55, -0.29) | -23.58 (-24.59, -22.64) | -20.93 (-21.34, -20.50) |
+| Full-coverage design | 100% | asis | Stress | -35.28 (-35.95, -34.66) | -11.25 (-11.96, -10.51) | -35.27 (-36.02, -34.53) | +46.32 (+45.83, +46.84) | +100.00 (+100.00, +100.00) | -10.94 (-11.84, -9.97) | -0.62 (-0.71, -0.55) | -20.62 (-21.14, -20.08) | -20.94 (-21.35, -20.51) |
+| Full-coverage design | 100% | base.sv | Reference | -25.49 (-26.02, -25.00) | -19.83 (-20.32, -19.32) | -24.97 (-26.11, -23.87) | +37.66 (+37.33, +38.00) | +100.00 (+100.00, +100.00) | -19.37 (-20.40, -18.35) | -0.44 (-0.51, -0.37) | -21.98 (-22.92, -21.10) | -17.03 (-17.42, -16.64) |
+| Full-coverage design | 100% | base.sv | Adverse | -36.13 (-36.80, -35.49) | -26.15 (-26.69, -25.64) | -35.56 (-36.79, -34.32) | +44.27 (+43.85, +44.72) | +100.00 (+100.00, +100.00) | -25.52 (-26.71, -24.40) | -1.13 (-1.24, -1.01) | -24.93 (-25.97, -23.97) | -19.83 (-20.23, -19.43) |
+| Full-coverage design | 100% | base.sv | Stress | -35.27 (-35.93, -34.65) | -25.86 (-26.39, -25.35) | -35.26 (-36.01, -34.52) | +46.32 (+45.83, +46.84) | +100.00 (+100.00, +100.00) | -25.83 (-26.56, -25.12) | -1.34 (-1.42, -1.26) | -25.06 (-25.63, -24.48) | -19.84 (-20.24, -19.43) |
+| Full-coverage design | 90% | base | Reference | -24.61 (-25.11, -24.14) | -10.83 (-11.67, -9.91) | -24.22 (-25.37, -23.16) | +46.49 (+46.00, +47.00) | +100.00 (+100.00, +100.00) | -11.14 (-12.22, -10.11) | +0.18 (+0.09, +0.27) | -18.26 (-19.09, -17.47) | -17.26 (-17.66, -16.86) |
+| Full-coverage design | 90% | base | Adverse | -33.87 (-34.46, -33.29) | +19.77 (+18.02, +21.55) | -33.42 (-34.59, -32.26) | +56.38 (+55.71, +57.10) | +100.00 (+100.00, +100.00) | +19.97 (+17.90, +22.02) | -0.47 (-0.59, -0.34) | -15.55 (-16.50, -14.65) | -20.89 (-21.30, -20.46) |
+| Full-coverage design | 90% | base | Stress | -30.85 (-31.37, -30.33) | +43.46 (+42.02, +44.92) | -30.80 (-31.44, -30.15) | +61.54 (+60.72, +62.42) | +100.00 (+100.00, +100.00) | +43.58 (+42.08, +45.12) | -0.75 (-0.84, -0.68) | -5.72 (-6.49, -4.99) | -20.85 (-21.26, -20.43) |
+| Full-coverage design | 90% | asis | Reference | -24.61 (-25.11, -24.14) | -10.83 (-11.67, -9.91) | -24.22 (-25.37, -23.16) | +46.49 (+46.00, +47.00) | +100.00 (+100.00, +100.00) | -11.14 (-12.22, -10.11) | +0.18 (+0.09, +0.27) | -18.26 (-19.09, -17.47) | -17.26 (-17.66, -16.86) |
+| Full-coverage design | 90% | asis | Adverse | -33.87 (-34.46, -33.29) | +19.77 (+18.02, +21.55) | -33.42 (-34.59, -32.26) | +56.38 (+55.71, +57.10) | +100.00 (+100.00, +100.00) | +19.97 (+17.90, +22.02) | -0.47 (-0.59, -0.34) | -15.55 (-16.50, -14.65) | -20.89 (-21.30, -20.46) |
+| Full-coverage design | 90% | asis | Stress | -30.85 (-31.37, -30.33) | +43.46 (+42.02, +44.92) | -30.80 (-31.44, -30.15) | +61.54 (+60.72, +62.42) | +100.00 (+100.00, +100.00) | +43.58 (+42.08, +45.12) | -0.75 (-0.84, -0.68) | -5.72 (-6.49, -4.99) | -20.85 (-21.26, -20.43) |
+| Full-coverage design | 90% | base.sv | Reference | -24.60 (-25.09, -24.12) | -19.69 (-20.19, -19.17) | -24.20 (-25.36, -23.14) | +46.49 (+46.00, +47.00) | +100.00 (+100.00, +100.00) | -19.26 (-20.27, -18.29) | -0.39 (-0.47, -0.31) | -21.79 (-22.73, -20.91) | -17.01 (-17.39, -16.62) |
+| Full-coverage design | 90% | base.sv | Adverse | -33.86 (-34.45, -33.28) | -25.90 (-26.41, -25.40) | -33.40 (-34.56, -32.24) | +56.38 (+55.71, +57.10) | +100.00 (+100.00, +100.00) | -25.38 (-26.53, -24.26) | -1.09 (-1.20, -0.97) | -24.72 (-25.74, -23.74) | -19.80 (-20.20, -19.40) |
+| Full-coverage design | 90% | base.sv | Stress | -30.84 (-31.36, -30.32) | -25.36 (-25.88, -24.84) | -30.79 (-31.43, -30.14) | +61.54 (+60.72, +62.42) | +100.00 (+100.00, +100.00) | -25.36 (-26.08, -24.66) | -1.32 (-1.40, -1.24) | -24.72 (-25.31, -24.14) | -19.81 (-20.22, -19.41) |
 
-### Verdicts: release row, wages 100%
+### Verdicts: opt-in row, wages 100%
 
 | Row | What it sets | vs | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -116,7 +116,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | base | **harms** +6.02 | **harms** +4.34 | **harms** +5.51 | **harms** +0.94 | no move +0.12 | **harms** +3.21 | **harms** +0.86 | **harms** +3.45 | **harms** +4.05 |
 | hcrc | rent risk and rent cap | base | **harms** +2.48 | **harms** +0.54 | **harms** +7.46 | **works** -0.79 | **harms** -0.02 | **harms** +2.59 | **harms** +4.31 | **harms** +2.32 | **harms** +1.50 |
 
-### Verdicts: release row, wages 90%
+### Verdicts: opt-in row, wages 90%
 
 | Row | What it sets | vs | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -185,7 +185,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | base | **harms** +5.91 | **harms** +0.87 | **harms** +4.55 | **harms** +1.30 | no move +0.09 | **harms** +0.48 | **harms** +1.81 | **harms** +2.28 | **harms** +4.05 |
 | hcrc | rent risk and rent cap | base | **harms** +1.43 | **harms** -0.09 | **harms** +4.41 | **works** -1.07 | **harms** -0.01 | **harms** +0.05 | **harms** +6.52 | **harms** +1.24 | **harms** +0.73 |
 
-### Verdicts: C2.2 design, wages 100%
+### Verdicts: full-coverage design, wages 100%
 
 | Row | What it sets | vs | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -254,7 +254,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | base | **harms** +4.71 | **harms** +19.50 | **harms** +4.67 | **harms** +9.91 | no move +0.00 | **harms** +19.45 | **harms** -0.01 | **harms** +13.39 | **harms** +0.57 |
 | hcrc | rent risk and rent cap | base | **works** -0.26 | **works** -1.91 | **works** -0.26 | **works** -1.49 | no move +0.00 | **works** -1.83 | no move -0.01 | **works** -0.93 | **works** -0.02 |
 
-### Verdicts: C2.2 design, wages 90%
+### Verdicts: full-coverage design, wages 90%
 
 | Row | What it sets | vs | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -323,7 +323,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | base | **harms** +11.64 | **harms** +30.06 | **harms** +11.48 | **harms** +16.36 | no move +0.00 | **harms** +30.57 | **harms** -0.02 | **harms** +22.42 | **harms** +2.97 |
 | hcrc | rent risk and rent cap | base | **works** -0.70 | **works** -5.79 | **works** -0.69 | **works** -2.43 | no move +0.00 | **works** -5.82 | **harms** +0.00 | **works** -2.53 | **works** -0.03 |
 
-### Verdicts: release row, wages 100%, savings that keep up with prices (`.sv` twins, against `base.sv`)
+### Verdicts: opt-in row, wages 100%, savings that keep up with prices (`.sv` twins, against `base.sv`)
 
 | Row | What it sets | vs | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -390,7 +390,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc.sv | rent risk ($1.41 a BU dollar) | base.sv | **harms** +6.06 | **harms** +3.71 | **harms** +5.54 | **harms** +0.96 | no move +0.12 | **harms** +3.17 | **harms** +0.65 | **harms** +2.55 | **harms** +2.31 |
 | hcrc.sv | rent risk and rent cap | base.sv | **harms** +2.44 | **harms** +1.60 | **harms** +7.46 | **works** -0.79 | **harms** -0.02 | **harms** +5.28 | **harms** +3.15 | **harms** +4.16 | **harms** +1.08 |
 
-### Verdicts: release row, wages 90%, savings that keep up with prices (`.sv` twins, against `base.sv`)
+### Verdicts: opt-in row, wages 90%, savings that keep up with prices (`.sv` twins, against `base.sv`)
 
 | Row | What it sets | vs | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -457,7 +457,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc.sv | rent risk ($1.41 a BU dollar) | base.sv | **harms** +5.90 | **harms** +3.57 | **harms** +4.55 | **harms** +1.23 | no move +0.09 | **harms** +3.19 | **harms** +1.21 | **harms** +2.55 | **harms** +2.49 |
 | hcrc.sv | rent risk and rent cap | base.sv | **harms** +1.38 | **harms** +1.36 | **harms** +4.37 | **works** -1.13 | **harms** -0.01 | **harms** +4.43 | **harms** +4.10 | **harms** +3.92 | **harms** +1.02 |
 
-### Verdicts: C2.2 design, wages 100%, savings that keep up with prices (`.sv` twins, against `base.sv`)
+### Verdicts: full-coverage design, wages 100%, savings that keep up with prices (`.sv` twins, against `base.sv`)
 
 | Row | What it sets | vs | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -524,7 +524,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc.sv | rent risk ($1.41 a BU dollar) | base.sv | **harms** +4.71 | **harms** +2.17 | **harms** +4.67 | **harms** +9.92 | no move +0.00 | **harms** +2.09 | no move -0.13 | **harms** +3.13 | **harms** +0.36 |
 | hcrc.sv | rent risk and rent cap | base.sv | **works** -0.26 | no move -0.07 | **works** -0.26 | **works** -1.49 | no move +0.00 | no move -0.07 | **harms** +0.01 | **works** -0.15 | **works** -0.01 |
 
-### Verdicts: C2.2 design, wages 90%, savings that keep up with prices (`.sv` twins, against `base.sv`)
+### Verdicts: full-coverage design, wages 90%, savings that keep up with prices (`.sv` twins, against `base.sv`)
 
 | Row | What it sets | vs | basket poverty, % of adult-years | wealth poverty at year 20, % | non-participants' basket poverty, % | programme inflation, points a year | participation, mean of years 1-19, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | below 30 days of basic living, design-neutral, % |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -591,7 +591,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc.sv | rent risk ($1.41 a BU dollar) | base.sv | **harms** +11.64 | **harms** +4.71 | **harms** +11.49 | **harms** +16.41 | no move +0.00 | **harms** +4.66 | **works** -0.16 | **harms** +4.19 | **harms** +0.92 |
 | hcrc.sv | rent risk and rent cap | base.sv | **works** -0.70 | **works** -0.14 | **works** -0.69 | **works** -2.43 | no move +0.00 | **works** -0.14 | **harms** +0.01 | **works** -0.20 | **works** -0.02 |
 
-### basket poverty, % of adult-years: release row, wages 100% (lever effect, seed mean and 95% interval)
+### basket poverty, % of adult-years: opt-in row, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -660,7 +660,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +7.03 (+6.80, +7.28) | +8.13 (+7.90, +8.37) | +2.91 (+2.80, +3.02) | harms |
 | hcrc | rent risk and rent cap | +2.88 (+2.72, +3.04) | +2.31 (+2.16, +2.46) | +2.24 (+2.14, +2.33) | harms |
 
-### wealth poverty at year 20, %: release row, wages 100% (lever effect, seed mean and 95% interval)
+### wealth poverty at year 20, %: opt-in row, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -729,7 +729,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +7.85 (+7.39, +8.33) | +3.50 (+3.20, +3.79) | +1.68 (+1.48, +1.89) | harms |
 | hcrc | rent risk and rent cap | +1.14 (+0.91, +1.38) | -0.48 (-0.64, -0.34) | +0.96 (+0.80, +1.13) | harms |
 
-### non-participants' basket poverty, %: release row, wages 100% (lever effect, seed mean and 95% interval)
+### non-participants' basket poverty, %: opt-in row, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -798,7 +798,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +6.71 (+6.28, +7.16) | +7.10 (+6.65, +7.58) | +2.72 (+2.59, +2.85) | harms |
 | hcrc | rent risk and rent cap | +10.49 (+9.91, +11.10) | +8.60 (+8.14, +9.08) | +3.29 (+3.13, +3.44) | harms |
 
-### programme inflation, points a year: release row, wages 100% (lever effect, seed mean and 95% interval)
+### programme inflation, points a year: opt-in row, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -867,7 +867,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +1.51 (+1.46, +1.56) | +1.35 (+1.29, +1.41) | -0.04 (-0.04, -0.04) | harms |
 | hcrc | rent risk and rent cap | -1.00 (-1.03, -0.97) | -1.31 (-1.35, -1.28) | -0.06 (-0.07, -0.06) | works |
 
-### participation, mean of years 1-19, %: release row, wages 100% (lever effect, seed mean and 95% interval)
+### participation, mean of years 1-19, %: opt-in row, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -936,7 +936,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +0.21 (+0.16, +0.26) | +0.15 (+0.10, +0.20) | +0.00 (+0.00, +0.00) | does not move |
 | hcrc | rent risk and rent cap | -0.04 (-0.05, -0.03) | -0.03 (-0.04, -0.02) | +0.00 (+0.00, +0.00) | harms |
 
-### basket poverty, % of adult-years: release row, wages 90% (lever effect, seed mean and 95% interval)
+### basket poverty, % of adult-years: opt-in row, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1005,7 +1005,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +8.36 (+8.16, +8.56) | +6.77 (+6.63, +6.91) | +2.61 (+2.54, +2.68) | harms |
 | hcrc | rent risk and rent cap | +1.71 (+1.58, +1.84) | +0.96 (+0.87, +1.06) | +1.62 (+1.56, +1.68) | harms |
 
-### wealth poverty at year 20, %: release row, wages 90% (lever effect, seed mean and 95% interval)
+### wealth poverty at year 20, %: opt-in row, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1074,7 +1074,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +1.91 (+1.67, +2.14) | +0.22 (+0.14, +0.31) | +0.49 (+0.37, +0.63) | harms |
 | hcrc | rent risk and rent cap | -0.31 (-0.40, -0.22) | -0.08 (-0.15, -0.04) | +0.12 (+0.05, +0.18) | harms |
 
-### non-participants' basket poverty, %: release row, wages 90% (lever effect, seed mean and 95% interval)
+### non-participants' basket poverty, %: opt-in row, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1143,7 +1143,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +6.59 (+6.33, +6.84) | +4.91 (+4.69, +5.11) | +2.15 (+2.08, +2.22) | harms |
 | hcrc | rent risk and rent cap | +6.64 (+6.31, +6.97) | +4.19 (+3.95, +4.43) | +2.38 (+2.29, +2.47) | harms |
 
-### programme inflation, points a year: release row, wages 90% (lever effect, seed mean and 95% interval)
+### programme inflation, points a year: opt-in row, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1212,7 +1212,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +2.01 (+1.92, +2.09) | +1.92 (+1.82, +2.02) | -0.03 (-0.04, -0.03) | harms |
 | hcrc | rent risk and rent cap | -1.53 (-1.58, -1.48) | -1.60 (-1.66, -1.54) | -0.06 (-0.07, -0.06) | works |
 
-### participation, mean of years 1-19, %: release row, wages 90% (lever effect, seed mean and 95% interval)
+### participation, mean of years 1-19, %: opt-in row, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1281,7 +1281,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +0.15 (+0.10, +0.19) | +0.11 (+0.08, +0.15) | +0.00 (+0.00, +0.00) | does not move |
 | hcrc | rent risk and rent cap | -0.02 (-0.03, -0.01) | -0.01 (-0.02, -0.01) | +0.00 (+0.00, +0.00) | harms |
 
-### basket poverty, % of adult-years: C2.2 design, wages 100% (lever effect, seed mean and 95% interval)
+### basket poverty, % of adult-years: full-coverage design, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1350,7 +1350,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +2.70 (+2.56, +2.84) | +4.72 (+4.51, +4.96) | +6.70 (+6.45, +6.99) | harms |
 | hcrc | rent risk and rent cap | -0.12 (-0.14, -0.11) | -0.25 (-0.28, -0.23) | -0.41 (-0.45, -0.38) | works |
 
-### wealth poverty at year 20, %: C2.2 design, wages 100% (lever effect, seed mean and 95% interval)
+### wealth poverty at year 20, %: full-coverage design, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1419,7 +1419,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +7.71 (+7.31, +8.14) | +25.40 (+24.66, +26.16) | +25.38 (+24.72, +26.01) | harms |
 | hcrc | rent risk and rent cap | -0.18 (-0.24, -0.13) | -2.06 (-2.26, -1.86) | -3.48 (-3.81, -3.18) | works |
 
-### non-participants' basket poverty, %: C2.2 design, wages 100% (lever effect, seed mean and 95% interval)
+### non-participants' basket poverty, %: full-coverage design, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1488,7 +1488,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +2.66 (+2.42, +2.92) | +4.61 (+4.19, +5.06) | +6.74 (+6.43, +7.05) | harms |
 | hcrc | rent risk and rent cap | -0.14 (-0.17, -0.11) | -0.23 (-0.28, -0.19) | -0.42 (-0.46, -0.37) | works |
 
-### programme inflation, points a year: C2.2 design, wages 100% (lever effect, seed mean and 95% interval)
+### programme inflation, points a year: full-coverage design, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1557,7 +1557,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +8.25 (+8.14, +8.37) | +10.59 (+10.45, +10.73) | +10.91 (+10.78, +11.04) | harms |
 | hcrc | rent risk and rent cap | -1.03 (-1.06, -0.99) | -1.59 (-1.64, -1.55) | -1.86 (-1.91, -1.81) | works |
 
-### participation, mean of years 1-19, %: C2.2 design, wages 100% (lever effect, seed mean and 95% interval)
+### participation, mean of years 1-19, %: full-coverage design, wages 100% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1626,7 +1626,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +0.00 (+0.00, +0.00) | +0.00 (+0.00, +0.00) | +0.00 (+0.00, +0.00) | does not move |
 | hcrc | rent risk and rent cap | +0.00 (+0.00, +0.00) | +0.00 (+0.00, +0.00) | +0.00 (+0.00, +0.00) | does not move |
 
-### basket poverty, % of adult-years: C2.2 design, wages 90% (lever effect, seed mean and 95% interval)
+### basket poverty, % of adult-years: full-coverage design, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1695,7 +1695,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +6.27 (+6.03, +6.53) | +12.64 (+12.23, +13.04) | +16.01 (+15.65, +16.39) | harms |
 | hcrc | rent risk and rent cap | -0.25 (-0.27, -0.23) | -0.70 (-0.75, -0.65) | -1.15 (-1.23, -1.08) | works |
 
-### wealth poverty at year 20, %: C2.2 design, wages 90% (lever effect, seed mean and 95% interval)
+### wealth poverty at year 20, %: full-coverage design, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1764,7 +1764,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +38.63 (+37.74, +39.56) | +34.34 (+33.00, +35.62) | +17.21 (+16.00, +18.44) | harms |
 | hcrc | rent risk and rent cap | -2.88 (-3.28, -2.51) | -8.80 (-9.34, -8.28) | -5.70 (-6.07, -5.37) | works |
 
-### non-participants' basket poverty, %: C2.2 design, wages 90% (lever effect, seed mean and 95% interval)
+### non-participants' basket poverty, %: full-coverage design, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1833,7 +1833,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +6.12 (+5.66, +6.60) | +12.33 (+11.76, +12.90) | +16.00 (+15.57, +16.44) | harms |
 | hcrc | rent risk and rent cap | -0.24 (-0.29, -0.20) | -0.68 (-0.77, -0.60) | -1.15 (-1.23, -1.08) | works |
 
-### programme inflation, points a year: C2.2 design, wages 90% (lever effect, seed mean and 95% interval)
+### programme inflation, points a year: full-coverage design, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1902,7 +1902,7 @@ Lever effect: the lever row minus its comparison row on the same seeds (the desi
 | hc | rent risk ($1.41 a BU dollar) | +13.35 (+13.15, +13.57) | +17.64 (+17.37, +17.94) | +18.07 (+17.82, +18.34) | harms |
 | hcrc | rent risk and rent cap | -1.59 (-1.64, -1.54) | -2.57 (-2.66, -2.49) | -3.13 (-3.23, -3.03) | works |
 
-### participation, mean of years 1-19, %: C2.2 design, wages 90% (lever effect, seed mean and 95% interval)
+### participation, mean of years 1-19, %: full-coverage design, wages 90% (lever effect, seed mean and 95% interval)
 
 | Row | What it sets | Reference | Adverse | Stress | Verdict |
 |---|---|---|---|---|---|
@@ -1977,34 +1977,34 @@ Test reading: joining that sees what joining pays (`tNN`, released rate `base`);
 
 | Design | Wages | Environment | Joining | Self-funding rate | Net new money at 0% / released / 40% (% of earned income) | Lowest basket poverty at | Deterrence rate (participation 5 points below its level at the released rate) | Participation at released / 40% |
 |---|---|---|---|---|---|---|---|---|
-| release row | 100% | Reference | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 64.6 / 59.7 / 48.3 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 83.6 / 83.5 |
-| release row | 100% | Reference | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 64.5 / 59.9 / 48.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 84.0 / 84.0 |
-| release row | 100% | Adverse | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 78.5 / 72.7 / 59.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 83.7 / 83.6 |
-| release row | 100% | Adverse | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 78.3 / 72.9 / 59.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 84.0 / 84.0 |
-| release row | 100% | Stress | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 34.1 / 29.5 / 23.4 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 44.1 / 44.0 |
-| release row | 100% | Stress | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 34.1 / 29.5 / 23.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 44.1 / 44.1 |
-| release row | 90% | Reference | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 89.5 / 82.3 / 65.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 83.7 / 83.6 |
-| release row | 90% | Reference | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 89.2 / 82.6 / 65.8 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 84.0 / 84.0 |
-| release row | 90% | Adverse | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 106.8 / 98.8 / 79.8 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 83.8 / 83.7 |
-| release row | 90% | Adverse | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 106.5 / 99.1 / 80.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 84.0 / 84.0 |
-| release row | 90% | Stress | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 41.4 / 35.3 / 27.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 44.1 / 44.0 |
-| release row | 90% | Stress | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 41.3 / 35.3 / 27.6 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 44.1 / 44.1 |
-| C2.2 design | 100% | Reference | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 53.2 / 51.3 / 45.1 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 100% | Reference | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 53.2 / 51.3 / 45.1 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 100% | Adverse | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 65.7 / 63.4 / 55.9 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 100% | Adverse | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 65.7 / 63.4 / 55.9 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 100% | Stress | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 64.5 / 61.2 / 55.3 | 0% (0%, 4%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 100% | Stress | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 64.5 / 61.2 / 55.3 | 0% (0%, 4%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 90% | Reference | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 70.1 / 68.0 / 60.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 90% | Reference | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 70.1 / 68.0 / 60.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 90% | Adverse | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 86.2 / 83.8 / 74.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 90% | Adverse | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 86.2 / 83.8 / 74.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 90% | Stress | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 85.0 / 81.9 / 73.7 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
-| C2.2 design | 90% | Stress | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 85.0 / 81.9 / 73.7 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| opt-in row | 100% | Reference | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 64.6 / 59.7 / 48.3 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 83.6 / 83.5 |
+| opt-in row | 100% | Reference | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 64.5 / 59.9 / 48.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 84.0 / 84.0 |
+| opt-in row | 100% | Adverse | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 78.5 / 72.7 / 59.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 83.7 / 83.6 |
+| opt-in row | 100% | Adverse | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 78.3 / 72.9 / 59.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 84.0 / 84.0 |
+| opt-in row | 100% | Stress | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 34.1 / 29.5 / 23.4 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 44.1 / 44.0 |
+| opt-in row | 100% | Stress | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 34.1 / 29.5 / 23.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 44.1 / 44.1 |
+| opt-in row | 90% | Reference | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 89.5 / 82.3 / 65.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 83.7 / 83.6 |
+| opt-in row | 90% | Reference | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 89.2 / 82.6 / 65.8 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 84.0 / 84.0 |
+| opt-in row | 90% | Adverse | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 106.8 / 98.8 / 79.8 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 83.8 / 83.7 |
+| opt-in row | 90% | Adverse | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 106.5 / 99.1 / 80.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 84.0 / 84.0 |
+| opt-in row | 90% | Stress | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 41.4 / 35.3 / 27.5 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 44.1 / 44.0 |
+| opt-in row | 90% | Stress | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 41.3 / 35.3 / 27.6 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 44.1 / 44.1 |
+| Full-coverage design | 100% | Reference | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 53.2 / 51.3 / 45.1 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 100% | Reference | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 53.2 / 51.3 / 45.1 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 100% | Adverse | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 65.7 / 63.4 / 55.9 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 100% | Adverse | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 65.7 / 63.4 / 55.9 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 100% | Stress | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 64.5 / 61.2 / 55.3 | 0% (0%, 4%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 100% | Stress | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 64.5 / 61.2 / 55.3 | 0% (0%, 4%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 90% | Reference | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 70.1 / 68.0 / 60.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 90% | Reference | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 70.1 / 68.0 / 60.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 90% | Adverse | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 86.2 / 83.8 / 74.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 90% | Adverse | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 86.2 / 83.8 / 74.2 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 90% | Stress | test | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 85.0 / 81.9 / 73.7 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
+| Full-coverage design | 90% | Stress | today's | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 85.0 / 81.9 / 73.7 | 0% (0%, 0%) | not reached by 40% (beyond 40%, beyond 40%; reached 0%) | 100.0 / 100.0 |
 
 ### The tax sweep (seed means; basket poverty as the change against no programme)
 
-#### release row, wages 100%
+#### opt-in row, wages 100%
 
 | Rate | Reference test: basket / new money / participation | Reference today's: basket / new money / participation | Adverse test: basket / new money / participation | Adverse today's: basket / new money / participation | Stress test: basket / new money / participation | Stress today's: basket / new money / participation |
 |---|---|---|---|---|---|---|
@@ -2018,7 +2018,7 @@ Test reading: joining that sees what joining pays (`tNN`, released rate `base`);
 | 30% | -26.00 / 52.5 / 83.3 | -26.17 / 52.9 / 84.0 | -30.13 / 64.3 / 83.5 | -30.28 / 64.6 / 84.0 | -12.20 / 26.2 / 44.0 | -12.20 / 26.3 / 44.1 |
 | 40% | -23.94 / 48.3 / 83.5 | -24.04 / 48.5 / 84.0 | -27.71 / 59.2 / 83.6 | -27.82 / 59.5 / 84.0 | -10.88 / 23.4 / 44.0 | -10.88 / 23.5 / 44.1 |
 
-#### release row, wages 90%
+#### opt-in row, wages 90%
 
 | Rate | Reference test: basket / new money / participation | Reference today's: basket / new money / participation | Adverse test: basket / new money / participation | Adverse today's: basket / new money / participation | Stress test: basket / new money / participation | Stress today's: basket / new money / participation |
 |---|---|---|---|---|---|---|
@@ -2032,7 +2032,7 @@ Test reading: joining that sees what joining pays (`tNN`, released rate `base`);
 | 30% | -6.28 / 71.9 / 83.5 | -6.34 / 72.3 / 84.0 | -8.93 / 87.0 / 83.7 | -8.96 / 87.4 / 84.0 | -1.10 / 31.1 / 44.0 | -1.09 / 31.1 / 44.1 |
 | 40% | -4.63 / 65.5 / 83.6 | -4.66 / 65.8 / 84.0 | -7.13 / 79.8 / 83.7 | -7.16 / 80.2 / 84.0 | -0.41 / 27.5 / 44.0 | -0.40 / 27.6 / 44.1 |
 
-#### C2.2 design, wages 100%
+#### Full-coverage design, wages 100%
 
 | Rate | Reference test: basket / new money / participation | Reference today's: basket / new money / participation | Adverse test: basket / new money / participation | Adverse today's: basket / new money / participation | Stress test: basket / new money / participation | Stress today's: basket / new money / participation |
 |---|---|---|---|---|---|---|
@@ -2046,7 +2046,7 @@ Test reading: joining that sees what joining pays (`tNN`, released rate `base`);
 | 30% | -24.49 / 47.8 / 100.0 | -24.49 / 47.8 / 100.0 | -34.31 / 59.2 / 100.0 | -34.31 / 59.2 / 100.0 | -33.63 / 58.6 / 100.0 | -33.63 / 58.6 / 100.0 |
 | 40% | -23.58 / 45.1 / 100.0 | -23.58 / 45.1 / 100.0 | -32.66 / 55.9 / 100.0 | -32.66 / 55.9 / 100.0 | -31.63 / 55.3 / 100.0 | -31.63 / 55.3 / 100.0 |
 
-#### C2.2 design, wages 90%
+#### Full-coverage design, wages 90%
 
 | Rate | Reference test: basket / new money / participation | Reference today's: basket / new money / participation | Adverse test: basket / new money / participation | Adverse today's: basket / new money / participation | Stress test: basket / new money / participation | Stress today's: basket / new money / participation |
 |---|---|---|---|---|---|---|
@@ -2064,7 +2064,7 @@ Test reading: joining that sees what joining pays (`tNN`, released rate `base`);
 
 Elementary effects on the [0, 1] factor scale (the change over the full range, in points; inflation in points a year), 10 trajectories, wages 100%: mu* the mean absolute effect, sd its spread (a large sd beside mu* means the factor's effect depends on the others). Sorted by mu* on basket poverty, mean over environments.
 
-### release row, Reference
+### opt-in row, Reference
 
 | Factor | basket poverty mu* (mu; sd) | wealth poverty mu* (mu; sd) | participation mu* (mu; sd) | inflation mu* (mu; sd) |
 |---|---|---|---|---|
@@ -2086,7 +2086,7 @@ Elementary effects on the [0, 1] factor scale (the change over the full range, i
 | progression cap (50-75%) | 0.01 (+0.01; 0.02) | 0.01 (+0.01; 0.03) | 0.00 (-0.00; 0.00) | 0.02 (+0.02; 0.06) |
 | expired BU recycled (0-100%) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) |
 
-### release row, Adverse
+### opt-in row, Adverse
 
 | Factor | basket poverty mu* (mu; sd) | wealth poverty mu* (mu; sd) | participation mu* (mu; sd) | inflation mu* (mu; sd) |
 |---|---|---|---|---|
@@ -2108,7 +2108,7 @@ Elementary effects on the [0, 1] factor scale (the change over the full range, i
 | progression cap (50-75%) | 0.01 (+0.01; 0.02) | 0.01 (+0.01; 0.02) | 0.00 (-0.00; 0.00) | 0.03 (+0.03; 0.11) |
 | expired BU recycled (0-100%) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) |
 
-### release row, Stress
+### opt-in row, Stress
 
 | Factor | basket poverty mu* (mu; sd) | wealth poverty mu* (mu; sd) | participation mu* (mu; sd) | inflation mu* (mu; sd) |
 |---|---|---|---|---|
@@ -2130,7 +2130,7 @@ Elementary effects on the [0, 1] factor scale (the change over the full range, i
 | progression cap (50-75%) | 0.01 (+0.01; 0.03) | 0.00 (+0.00; 0.02) | 0.00 (-0.00; 0.00) | 0.10 (+0.10; 0.32) |
 | expired BU recycled (0-100%) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) | 0.00 (+0.00; 0.00) |
 
-### C2.2 design, Reference
+### Full-coverage design, Reference
 
 | Factor | basket poverty mu* (mu; sd) | wealth poverty mu* (mu; sd) | participation mu* (mu; sd) | inflation mu* (mu; sd) |
 |---|---|---|---|---|
@@ -2152,7 +2152,7 @@ Elementary effects on the [0, 1] factor scale (the change over the full range, i
 | progression cap (50-75%) | 0.01 (+0.01; 0.02) | 0.01 (+0.01; 0.02) | 0.00 (+0.00; 0.00) | 0.02 (-0.02; 0.05) |
 | project sales kept (0-50%) | 0.00 (-0.00; 0.00) | 0.01 (-0.01; 0.01) | 0.00 (+0.00; 0.00) | 0.15 (-0.15; 0.09) |
 
-### C2.2 design, Adverse
+### Full-coverage design, Adverse
 
 | Factor | basket poverty mu* (mu; sd) | wealth poverty mu* (mu; sd) | participation mu* (mu; sd) | inflation mu* (mu; sd) |
 |---|---|---|---|---|
@@ -2174,7 +2174,7 @@ Elementary effects on the [0, 1] factor scale (the change over the full range, i
 | progression cap (50-75%) | 0.00 (+0.00; 0.01) | 0.00 (+0.00; 0.02) | 0.00 (+0.00; 0.00) | 0.02 (-0.02; 0.06) |
 | project sales kept (0-50%) | 0.00 (-0.00; 0.00) | 0.01 (-0.01; 0.02) | 0.00 (+0.00; 0.00) | 0.17 (-0.17; 0.10) |
 
-### C2.2 design, Stress
+### Full-coverage design, Stress
 
 | Factor | basket poverty mu* (mu; sd) | wealth poverty mu* (mu; sd) | participation mu* (mu; sd) | inflation mu* (mu; sd) |
 |---|---|---|---|---|
@@ -2200,7 +2200,7 @@ Elementary effects on the [0, 1] factor scale (the change over the full range, i
 
 Candidates: every stage-1 row under the test reading on ordinary savings and every stage-2 row. Objectives: the mean over the three environments of the change against no programme in basket poverty and wealth poverty (lower is better), participation (higher) and programme inflation (lower, points a year). No harm: gNonF0, gNonW, secU25X, secM3X and wealth poverty at or below zero in every environment; inflation under 5 points a year in every environment.
 
-### release row, wages 100%
+### opt-in row, wages 100%
 
 435 candidates; 0 pass no harm in every environment; 0 of those keep inflation under 5 points a year. **No setting tested meets the rule.** Closest (by the summed excess of what fails): `fland` (outside finance: land-value tax: gNonW +0.74 in Reference, secU25X +0.86 in Reference, secM3X +0.94 in Reference, inflation 5.30 in Reference ...); `m6.1` (base tax 13%; progression 0.0 pts; cap 58%; business tax 0%; sales kept 17%; recycled 0%; business rate 1.0x; BU 60%; top multiplier 3.0; octave capacity not enforced; octaves 2; Phi tier on; phase-in 10 y; issuance cap 8%; indexation every year; protected account first $10,000; rent cap off: gNonW +13.15 in Reference, secU25X +0.43 in Reference, secM3X +14.09 in Reference, pov +7.92 in Reference ...); `m6.4` (base tax 13%; progression 0.0 pts; cap 58%; business tax 0%; sales kept 50%; recycled 0%; business rate 2.3x; BU 60%; top multiplier 3.0; octave capacity 50%; octaves 2; Phi tier on; phase-in 10 y; issuance cap 8%; indexation every year; protected account first $10,000; rent cap off: gNonW +13.26 in Reference, secU25X +0.40 in Reference, secM3X +14.19 in Reference, pov +8.25 in Reference ...); `m6.2` (base tax 13%; progression 0.0 pts; cap 58%; business tax 0%; sales kept 17%; recycled 0%; business rate 2.3x; BU 60%; top multiplier 3.0; octave capacity not enforced; octaves 2; Phi tier on; phase-in 10 y; issuance cap 8%; indexation every year; protected account first $10,000; rent cap off: gNonW +13.30 in Reference, secU25X +0.40 in Reference, secM3X +14.24 in Reference, pov +8.27 in Reference ...); `m6.3` (base tax 13%; progression 0.0 pts; cap 58%; business tax 0%; sales kept 17%; recycled 0%; business rate 2.3x; BU 60%; top multiplier 3.0; octave capacity 50%; octaves 2; Phi tier on; phase-in 10 y; issuance cap 8%; indexation every year; protected account first $10,000; rent cap off: gNonW +13.30 in Reference, secU25X +0.40 in Reference, secM3X +14.24 in Reference, pov +8.27 in Reference ...).
 
@@ -2369,7 +2369,7 @@ Candidates: every stage-1 row under the test reading on ordinary savings and eve
 | m6.12 (= m6.13) | base tax 40%; progression 5.3 pts; cap 58%; business tax 50%; sales kept 50%; recycled 0%; business rate 2.3x; BU 60%; top multiplier 7.0; octave capacity 50%; octaves 2; Phi tier off; phase-in 10 y; issuance cap 2%; indexation basic needs; protected account all savings; rent cap off | -0.77 | -4.73 | 70.9 | 1164.21 | Reference, Adverse | 7: gNonF0 +3.27 in Reference; gNonW +0.49 in Reference; inflation 1032.64 in Reference ... |
 | fflat | outside finance: flat wage contribution | +12.66 | +13.85 | 63.5 | -0.01 | Reference, Adverse, Stress | 15: gNonF0 +34.03 in Reference; gNonW +31.40 in Reference; secU25X +3.90 in Reference ... |
 
-### release row, wages 90%
+### opt-in row, wages 90%
 
 255 candidates; 0 pass no harm in every environment; 0 of those keep inflation under 5 points a year. **No setting tested meets the rule.** Closest (by the summed excess of what fails): `fland` (outside finance: land-value tax: gNonF0 +5.11 in Reference, gNonW +8.38 in Reference, secU25X +1.04 in Reference, secM3X +4.65 in Reference ...); `fflat` (outside finance: flat wage contribution: gNonF0 +34.03 in Reference, gNonW +31.40 in Reference, secU25X +3.90 in Reference, secM3X +16.06 in Reference ...); `h81` (base tax 14%; progression 3.9 pts; cap 59%; business tax 66%; sales kept 35%; recycled 38%; business rate 2.6x; BU 61%; top multiplier 5.3; octave capacity 50%; octaves 6; Phi tier off; phase-in 3 y; issuance cap 4%; indexation basic needs; protected account none; rent cap on: gNonF0 +6.87 in Reference, gNonW +37.59 in Reference, secU25X +0.57 in Reference, secM3X +22.22 in Reference ...); `h147` (base tax 7%; progression 1.0 pts; cap 51%; business tax 75%; sales kept 7%; recycled 73%; business rate 1.4x; BU 62%; top multiplier 5.8; octave capacity not enforced; octaves 4; Phi tier on; phase-in 5 y; issuance cap 2%; indexation basic needs; protected account none; rent cap off: gNonF0 +6.93 in Reference, gNonW +37.64 in Reference, secU25X +0.56 in Reference, secM3X +22.24 in Reference ...); `h144` (base tax 1%; progression 3.7 pts; cap 71%; business tax 68%; sales kept 38%; recycled 80%; business rate 1.9x; BU 62%; top multiplier 7.6; octave capacity 100%; octaves 3; Phi tier off; phase-in 8 y; issuance cap 8%; indexation surge; protected account none; rent cap off: gNonF0 +6.95 in Reference, gNonW +38.30 in Reference, secU25X +0.52 in Reference, secM3X +22.39 in Reference ...).
 
@@ -2450,7 +2450,7 @@ Candidates: every stage-1 row under the test reading on ordinary savings and eve
 | h64 | base tax 3%; progression 7.4 pts; cap 68%; business tax 42%; sales kept 9%; recycled 48%; business rate 2.2x; BU 64%; top multiplier 4.1; octave capacity 25%; octaves 6; Phi tier off; phase-in 7 y; issuance cap 8%; indexation surge; protected account all savings; rent cap on | +25.63 | +7.11 | 70.7 | 2849.43 | Reference, Adverse, Stress | 14: gNonF0 +37.70 in Reference; gNonW +16.62 in Reference; secM3X +4.99 in Reference ... |
 | h87 | base tax 5%; progression 5.7 pts; cap 51%; business tax 4%; sales kept 42%; recycled 90%; business rate 1.8x; BU 64%; top multiplier 6.1; octave capacity 25%; octaves 5; Phi tier on; phase-in 9 y; issuance cap 8%; indexation surge; protected account all savings; rent cap off | +25.63 | +7.11 | 70.7 | 2844.73 | Reference, Adverse, Stress | 14: gNonF0 +37.71 in Reference; gNonW +16.62 in Reference; secM3X +5.00 in Reference ... |
 
-### C2.2 design, wages 100%
+### Full-coverage design, wages 100%
 
 435 candidates; 175 pass no harm in every environment; 0 of those keep inflation under 5 points a year. **No setting tested meets the rule.** Closest (by the summed excess of what fails): `fland` (outside finance: land-value tax: secU25X +2.81 in Reference, inflation 5.03 in Reference, secU25X +3.31 in Adverse, inflation 6.12 in Adverse ...); `fflat` (outside finance: flat wage contribution: secU25X +5.24 in Reference, secU25X +3.70 in Adverse, secU25X +1.43 in Stress); `kp50` (Source keeps 50% of project sales: secU25X +0.27 in Reference, inflation 28.75 in Reference, inflation 33.37 in Adverse, inflation 37.08 in Stress); `m6.1` (base tax 13%; progression 0.0 pts; cap 58%; business tax 0%; sales kept 17%; recycled 0%; business rate 1.0x; BU 60%; top multiplier 3.0; octave capacity not enforced; octaves 2; Phi tier on; phase-in 10 y; issuance cap 8%; indexation every year; protected account first $10,000; rent cap off: secU25X +0.27 in Reference, inflation 20.16 in Reference, gNonW +7.22 in Adverse, secU25X +0.30 in Adverse ...); `m6.4` (base tax 13%; progression 0.0 pts; cap 58%; business tax 0%; sales kept 50%; recycled 0%; business rate 2.3x; BU 60%; top multiplier 3.0; octave capacity 50%; octaves 2; Phi tier on; phase-in 10 y; issuance cap 8%; indexation every year; protected account first $10,000; rent cap off: secU25X +0.22 in Reference, inflation 20.03 in Reference, gNonW +7.43 in Adverse, secU25X +0.25 in Adverse ...).
 
@@ -2462,7 +2462,7 @@ Candidates: every stage-1 row under the test reading on ordinary savings and eve
 | fflat | outside finance: flat wage contribution | -24.56 | -23.69 | 100.0 | 0.13 | Reference, Adverse, Stress | 3: secU25X +5.24 in Reference; secU25X +3.70 in Adverse; secU25X +1.43 in Stress |
 | fland | outside finance: land-value tax | -23.47 | -26.17 | 100.0 | 5.43 | Reference, Adverse, Stress | 6: secU25X +2.81 in Reference; inflation 5.03 in Reference; secU25X +3.31 in Adverse ... |
 
-### C2.2 design, wages 90%
+### Full-coverage design, wages 90%
 
 255 candidates; 0 pass no harm in every environment; 0 of those keep inflation under 5 points a year. **No setting tested meets the rule.** Closest (by the summed excess of what fails): `fflat` (outside finance: flat wage contribution: secU25X +5.24 in Reference, secU25X +3.70 in Adverse, secU25X +1.43 in Stress); `fland` (outside finance: land-value tax: secU25X +3.21 in Reference, inflation 5.25 in Reference, secU25X +4.15 in Adverse, inflation 6.67 in Adverse ...); `kp50` (Source keeps 50% of project sales: secU25X +0.33 in Reference, inflation 33.97 in Reference, inflation 40.92 in Adverse, gNonW +21.46 in Stress ...); `t0` (tax 0%: secU25X +2.04 in Reference, inflation 43.79 in Reference, secU25X +1.20 in Adverse, inflation 51.85 in Adverse ...); `t4` (tax 4%: secU25X +0.92 in Reference, inflation 44.66 in Reference, gNonW +0.26 in Adverse, secU25X +0.26 in Adverse ...).
 
@@ -2478,7 +2478,7 @@ Candidates: every stage-1 row under the test reading on ordinary savings and eve
 
 Each cell: the change against no programme, seed mean and 95% interval. Confirmed: basket poverty's interval below zero, each no-harm measure's upper end at or below +0.5 points, and inflation's upper end under 5 points a year (required for the chosen setting, reported for Pareto points), in every environment.
 
-### release row, wages 100%
+### opt-in row, wages 100%
 
 | Setting | Role | Environment | basket poverty, % of adult-years | non-participants' basket poverty, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | wealth poverty at year 20, % | programme inflation, points a year | participation, mean of years 1-19, % | Passes |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -2969,7 +2969,7 @@ Each cell: the change against no programme, seed mean and 95% interval. Confirme
 | fflat | Pareto point | Adverse | +13.15 (+12.49, +13.83) | +25.45 (+24.49, +26.43) | +32.29 (+31.14, +33.43) | +3.52 (+3.34, +3.69) | +17.04 (+16.32, +17.76) | +18.48 (+17.82, +19.16) | +0.00 (+0.00, +0.00) | +70.63 (+69.88, +71.36) | no |
 | fflat | Pareto point | Stress | +5.77 (+5.32, +6.23) | +13.74 (+13.11, +14.36) | +14.86 (+14.24, +15.53) | +0.81 (+0.74, +0.89) | +8.33 (+7.90, +8.75) | +8.42 (+7.88, +8.97) | +0.00 (+0.00, +0.00) | +35.60 (+34.84, +36.40) | no |
 
-### release row, wages 90%
+### opt-in row, wages 90%
 
 | Setting | Role | Environment | basket poverty, % of adult-years | non-participants' basket poverty, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | wealth poverty at year 20, % | programme inflation, points a year | participation, mean of years 1-19, % | Passes |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -3196,7 +3196,7 @@ Each cell: the change against no programme, seed mean and 95% interval. Confirme
 | h87 | Pareto point | Adverse | +20.33 (+19.83, +20.83) | +23.48 (+22.75, +24.24) | +5.64 (+4.73, +6.61) | -0.65 (-0.77, -0.53) | -0.03 (-0.41, +0.35) | +1.83 (+1.34, +2.32) | +3346.10 (+3250.89, +3446.74) | +83.46 (+82.77, +84.11) | no (inflation) |
 | h87 | Pareto point | Stress | +22.49 (+22.00, +22.99) | +23.38 (+22.77, +24.00) | +7.13 (+6.44, +7.78) | -0.33 (-0.41, -0.26) | +1.76 (+1.44, +2.06) | +5.74 (+5.26, +6.19) | +2754.42 (+2676.09, +2837.65) | +43.08 (+42.20, +43.97) | no (inflation) |
 
-### C2.2 design, wages 100%
+### Full-coverage design, wages 100%
 
 | Setting | Role | Environment | basket poverty, % of adult-years | non-participants' basket poverty, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | wealth poverty at year 20, % | programme inflation, points a year | participation, mean of years 1-19, % | Passes |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -3216,7 +3216,7 @@ Each cell: the change against no programme, seed mean and 95% interval. Confirme
 | fland | Pareto point | Adverse | -26.43 (-27.02, -25.84) | -25.42 (-26.67, -24.09) | -28.21 (-29.31, -27.17) | +3.45 (+3.15, +3.76) | -26.83 (-27.68, -25.98) | -29.16 (-29.72, -28.60) | +6.23 (+6.07, +6.39) | +100.00 (+100.00, +100.00) | no (inflation) |
 | fland | Pareto point | Stress | -24.29 (-24.88, -23.71) | -24.37 (-25.22, -23.52) | -28.99 (-29.69, -28.29) | +1.04 (+0.89, +1.20) | -27.51 (-28.03, -27.00) | -28.85 (-29.40, -28.31) | +5.21 (+5.07, +5.37) | +100.00 (+100.00, +100.00) | no (inflation) |
 
-### C2.2 design, wages 90%
+### Full-coverage design, wages 90%
 
 | Setting | Role | Environment | basket poverty, % of adult-years | non-participants' basket poverty, % | non-participants' wealth poverty, % | non-participants' income drops of 25%+ with no buffer, per 100 | non-participants under 3 months of basics covered, % | wealth poverty at year 20, % | programme inflation, points a year | participation, mean of years 1-19, % | Passes |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -3240,250 +3240,250 @@ Each cell: the change against no programme, seed mean and 95% interval. Confirme
 
 | Design | Wages | Setting | Role | Confirmed | Inflation under 5 points everywhere |
 |---|---|---|---|---|---|
-| release row | 100% | t0 | Pareto point | not confirmed | no |
-| release row | 100% | bt0 | Pareto point | not confirmed | no |
-| release row | 100% | t4 | Pareto point | not confirmed | no |
-| release row | 100% | ixn | Pareto point | not confirmed | no |
-| release row | 100% | t8 | Pareto point | not confirmed | no |
-| release row | 100% | rcap | Pareto point | not confirmed | no |
-| release row | 100% | pr0c75 | Pareto point | not confirmed | no |
-| release row | 100% | kp50 | Pareto point | not confirmed | no |
-| release row | 100% | mm9 | Pareto point | not confirmed | no |
-| release row | 100% | kp25 | Pareto point | not confirmed | no |
-| release row | 100% | kp10 | Pareto point | not confirmed | no |
-| release row | 100% | phi0 | Pareto point | not confirmed | no |
-| release row | 100% | mm6 | Pareto point | not confirmed | no |
-| release row | 100% | mm3 | Pareto point | not confirmed | no |
-| release row | 100% | ex0 | Pareto point | not confirmed | no |
-| release row | 100% | ph5 | Pareto point | not confirmed | no |
-| release row | 100% | svc | Pareto point | not confirmed | no |
-| release row | 100% | bt25 | Pareto point | not confirmed | no |
-| release row | 100% | t25 | Pareto point | not confirmed | no |
-| release row | 100% | ph10 | Pareto point | not confirmed | no |
-| release row | 100% | h100 | Pareto point | not confirmed | no |
-| release row | 100% | bu80 | Pareto point | not confirmed | no |
-| release row | 100% | h10 | Pareto point | not confirmed | no |
-| release row | 100% | h192 | Pareto point | not confirmed | no |
-| release row | 100% | br2 | Pareto point | not confirmed | no |
-| release row | 100% | h23 | Pareto point | not confirmed | no |
-| release row | 100% | bt50 | Pareto point | not confirmed | no |
-| release row | 100% | h119 | Pareto point | not confirmed | no |
-| release row | 100% | h4 | Pareto point | not confirmed | no |
-| release row | 100% | h141 | Pareto point | not confirmed | no |
-| release row | 100% | h126 | Pareto point | not confirmed | no |
-| release row | 100% | bu60 | Pareto point | not confirmed | no |
-| release row | 100% | m9.6 | Pareto point | not confirmed | no |
-| release row | 100% | br1 | Pareto point | not confirmed | no |
-| release row | 100% | h50 | Pareto point | not confirmed | no |
-| release row | 100% | h89 | Pareto point | not confirmed | no |
-| release row | 100% | h132 | Pareto point | not confirmed | no |
-| release row | 100% | h41 | Pareto point | not confirmed | no |
-| release row | 100% | m3.4 | Pareto point | not confirmed | no |
-| release row | 100% | h154 | Pareto point | not confirmed | no |
-| release row | 100% | m0.0 | Pareto point | not confirmed | no |
-| release row | 100% | h138 | Pareto point | not confirmed | no |
-| release row | 100% | h130 | Pareto point | not confirmed | no |
-| release row | 100% | h164 | Pareto point | not confirmed | no |
-| release row | 100% | h46 | Pareto point | not confirmed | no |
-| release row | 100% | h20 | Pareto point | not confirmed | no |
-| release row | 100% | h61 | Pareto point | not confirmed | no |
-| release row | 100% | m7.12 | Pareto point | not confirmed | no |
-| release row | 100% | m1.4 | Pareto point | not confirmed | no |
-| release row | 100% | h178 | Pareto point | not confirmed | no |
-| release row | 100% | m1.7 | Pareto point | not confirmed | no |
-| release row | 100% | m7.11 | Pareto point | not confirmed | no |
-| release row | 100% | h32 | Pareto point | not confirmed | no |
-| release row | 100% | h131 | Pareto point | not confirmed | no |
-| release row | 100% | h166 | Pareto point | not confirmed | no |
-| release row | 100% | h66 | Pareto point | not confirmed | no |
-| release row | 100% | h102 | Pareto point | not confirmed | no |
-| release row | 100% | h153 | Pareto point | not confirmed | no |
-| release row | 100% | h146 | Pareto point | not confirmed | no |
-| release row | 100% | h105 | Pareto point | not confirmed | no |
-| release row | 100% | fland | Pareto point | not confirmed | no |
-| release row | 100% | h21 | Pareto point | not confirmed | no |
-| release row | 100% | h168 | Pareto point | not confirmed | no |
-| release row | 100% | m3.9 | Pareto point | not confirmed | no |
-| release row | 100% | h47 | Pareto point | not confirmed | no |
-| release row | 100% | m3.5 | Pareto point | not confirmed | no |
-| release row | 100% | h108 | Pareto point | not confirmed | no |
-| release row | 100% | h86 | Pareto point | not confirmed | no |
-| release row | 100% | m9.5 | Pareto point | not confirmed | no |
-| release row | 100% | m9.1 | Pareto point | not confirmed | no |
-| release row | 100% | h71 | Pareto point | not confirmed | no |
-| release row | 100% | m4.16 | Pareto point | not confirmed | no |
-| release row | 100% | m9.0 | Pareto point | not confirmed | no |
-| release row | 100% | h162 | Pareto point | not confirmed | no |
-| release row | 100% | h40 | Pareto point | not confirmed | no |
-| release row | 100% | h30 | Pareto point | not confirmed | no |
-| release row | 100% | h176 | Pareto point | not confirmed | no |
-| release row | 100% | m9.2 | Pareto point | not confirmed | no |
-| release row | 100% | h193 | Pareto point | not confirmed | no |
-| release row | 100% | m9.3 | Pareto point | not confirmed | no |
-| release row | 100% | h113 | Pareto point | not confirmed | no |
-| release row | 100% | h14 | Pareto point | not confirmed | no |
-| release row | 100% | h129 | Pareto point | not confirmed | no |
-| release row | 100% | h182 | Pareto point | not confirmed | no |
-| release row | 100% | h25 | Pareto point | not confirmed | no |
-| release row | 100% | h26 | Pareto point | not confirmed | no |
-| release row | 100% | m3.2 | Pareto point | not confirmed | no |
-| release row | 100% | h123 | Pareto point | not confirmed | no |
-| release row | 100% | m3.3 | Pareto point | not confirmed | no |
-| release row | 100% | m3.0 | Pareto point | not confirmed | no |
-| release row | 100% | m1.1 | Pareto point | not confirmed | no |
-| release row | 100% | m1.2 | Pareto point | not confirmed | no |
-| release row | 100% | h53 | Pareto point | not confirmed | no |
-| release row | 100% | h34 | Pareto point | not confirmed | no |
-| release row | 100% | m1.0 | Pareto point | not confirmed | no |
-| release row | 100% | h8 | Pareto point | not confirmed | no |
-| release row | 100% | m1.3 | Pareto point | not confirmed | no |
-| release row | 100% | h74 | Pareto point | not confirmed | no |
-| release row | 100% | h114 | Pareto point | not confirmed | no |
-| release row | 100% | m7.5 | Pareto point | not confirmed | no |
-| release row | 100% | h167 | Pareto point | not confirmed | no |
-| release row | 100% | sva | Pareto point | not confirmed | no |
-| release row | 100% | m2.0 | Pareto point | not confirmed | no |
-| release row | 100% | m2.1 | Pareto point | not confirmed | no |
-| release row | 100% | m2.4 | Pareto point | not confirmed | no |
-| release row | 100% | m2.5 | Pareto point | not confirmed | no |
-| release row | 100% | h177 | Pareto point | not confirmed | no |
-| release row | 100% | h83 | Pareto point | not confirmed | no |
-| release row | 100% | m7.6 | Pareto point | not confirmed | no |
-| release row | 100% | m7.9 | Pareto point | not confirmed | no |
-| release row | 100% | m7.8 | Pareto point | not confirmed | no |
-| release row | 100% | m7.10 | Pareto point | not confirmed | no |
-| release row | 100% | h142 | Pareto point | not confirmed | no |
-| release row | 100% | h101 | Pareto point | not confirmed | no |
-| release row | 100% | m8.0 | Pareto point | not confirmed | no |
-| release row | 100% | h122 | Pareto point | not confirmed | no |
-| release row | 100% | h67 | Pareto point | not confirmed | no |
-| release row | 100% | h92 | Pareto point | not confirmed | no |
-| release row | 100% | h137 | Pareto point | not confirmed | no |
-| release row | 100% | h98 | Pareto point | not confirmed | no |
-| release row | 100% | h28 | Pareto point | not confirmed | no |
-| release row | 100% | h160 | Pareto point | not confirmed | no |
-| release row | 100% | m4.2 | Pareto point | not confirmed | no |
-| release row | 100% | m4.4 | Pareto point | not confirmed | no |
-| release row | 100% | h147 | Pareto point | not confirmed | no |
-| release row | 100% | h81 | Pareto point | not confirmed | no |
-| release row | 100% | m9.12 | Pareto point | not confirmed | no |
-| release row | 100% | m5.6 | Pareto point | not confirmed | no |
-| release row | 100% | m5.7 | Pareto point | not confirmed | no |
-| release row | 100% | m5.4 | Pareto point | not confirmed | no |
-| release row | 100% | m5.3 | Pareto point | not confirmed | no |
-| release row | 100% | m4.6 | Pareto point | not confirmed | no |
-| release row | 100% | m4.5 | Pareto point | not confirmed | no |
-| release row | 100% | m5.2 | Pareto point | not confirmed | no |
-| release row | 100% | h158 | Pareto point | not confirmed | no |
-| release row | 100% | m4.12 | Pareto point | not confirmed | no |
-| release row | 100% | m5.0 | Pareto point | not confirmed | no |
-| release row | 100% | h170 | Pareto point | not confirmed | no |
-| release row | 100% | h55 | Pareto point | not confirmed | no |
-| release row | 100% | h77 | Pareto point | not confirmed | no |
-| release row | 100% | h93 | Pareto point | not confirmed | no |
-| release row | 100% | m6.0 | Pareto point | not confirmed | no |
-| release row | 100% | h184 | Pareto point | not confirmed | no |
-| release row | 100% | m6.1 | Pareto point | not confirmed | no |
-| release row | 100% | m6.4 | Pareto point | not confirmed | no |
-| release row | 100% | h197 | Pareto point | not confirmed | no |
-| release row | 100% | h189 | Pareto point | not confirmed | no |
-| release row | 100% | h62 | Pareto point | not confirmed | no |
-| release row | 100% | m9.9 | Pareto point | not confirmed | no |
-| release row | 100% | h13 | Pareto point | not confirmed | no |
-| release row | 100% | h112 | Pareto point | not confirmed | no |
-| release row | 100% | h37 | Pareto point | not confirmed | no |
-| release row | 100% | h90 | Pareto point | not confirmed | no |
-| release row | 100% | h143 | Pareto point | not confirmed | no |
-| release row | 100% | h64 | Pareto point | not confirmed | no |
-| release row | 100% | h87 | Pareto point | not confirmed | no |
-| release row | 100% | h103 | Pareto point | not confirmed | no |
-| release row | 100% | h36 | Pareto point | not confirmed | no |
-| release row | 100% | m5.8 | Pareto point | not confirmed | no |
-| release row | 100% | m5.11 | Pareto point | not confirmed | no |
-| release row | 100% | m6.12 | Pareto point | not confirmed | no |
-| release row | 100% | fflat | Pareto point | not confirmed | yes |
-| release row | 90% | t0 | Pareto point | not confirmed | no |
-| release row | 90% | bt0 | Pareto point | not confirmed | no |
-| release row | 90% | t4 | Pareto point | not confirmed | no |
-| release row | 90% | t8 | Pareto point | not confirmed | no |
-| release row | 90% | fland | Pareto point | not confirmed | no |
-| release row | 90% | kp50 | Pareto point | not confirmed | no |
-| release row | 90% | ixn | Pareto point | not confirmed | no |
-| release row | 90% | pr0c75 | Pareto point | not confirmed | no |
-| release row | 90% | kp25 | Pareto point | not confirmed | no |
-| release row | 90% | kp10 | Pareto point | not confirmed | no |
-| release row | 90% | no6 | Pareto point | not confirmed | no |
-| release row | 90% | phi0 | Pareto point | not confirmed | no |
-| release row | 90% | ph5 | Pareto point | not confirmed | no |
-| release row | 90% | ph10 | Pareto point | not confirmed | no |
-| release row | 90% | bt25 | Pareto point | not confirmed | no |
-| release row | 90% | bu80 | Pareto point | not confirmed | no |
-| release row | 90% | h10 | Pareto point | not confirmed | no |
-| release row | 90% | svc | Pareto point | not confirmed | no |
-| release row | 90% | bu60 | Pareto point | not confirmed | no |
-| release row | 90% | h119 | Pareto point | not confirmed | no |
-| release row | 90% | h100 | Pareto point | not confirmed | no |
-| release row | 90% | h50 | Pareto point | not confirmed | no |
-| release row | 90% | h192 | Pareto point | not confirmed | no |
-| release row | 90% | h89 | Pareto point | not confirmed | no |
-| release row | 90% | h61 | Pareto point | not confirmed | no |
-| release row | 90% | h154 | Pareto point | not confirmed | no |
-| release row | 90% | h23 | Pareto point | not confirmed | no |
-| release row | 90% | h126 | Pareto point | not confirmed | no |
-| release row | 90% | h32 | Pareto point | not confirmed | no |
-| release row | 90% | h174 | Pareto point | not confirmed | no |
-| release row | 90% | h86 | Pareto point | not confirmed | no |
-| release row | 90% | h141 | Pareto point | not confirmed | no |
-| release row | 90% | h132 | Pareto point | not confirmed | no |
-| release row | 90% | h138 | Pareto point | not confirmed | no |
-| release row | 90% | h182 | Pareto point | not confirmed | no |
-| release row | 90% | h53 | Pareto point | not confirmed | no |
-| release row | 90% | h74 | Pareto point | not confirmed | no |
-| release row | 90% | h28 | Pareto point | not confirmed | no |
-| release row | 90% | h101 | Pareto point | not confirmed | no |
-| release row | 90% | h164 | Pareto point | not confirmed | no |
-| release row | 90% | h102 | Pareto point | not confirmed | no |
-| release row | 90% | h144 | Pareto point | not confirmed | no |
-| release row | 90% | h26 | Pareto point | not confirmed | no |
-| release row | 90% | h147 | Pareto point | not confirmed | no |
-| release row | 90% | h81 | Pareto point | not confirmed | no |
-| release row | 90% | h146 | Pareto point | not confirmed | no |
-| release row | 90% | h162 | Pareto point | not confirmed | no |
-| release row | 90% | h153 | Pareto point | not confirmed | no |
-| release row | 90% | h108 | Pareto point | not confirmed | no |
-| release row | 90% | h21 | Pareto point | not confirmed | no |
-| release row | 90% | h105 | Pareto point | not confirmed | no |
-| release row | 90% | fflat | Pareto point | not confirmed | yes |
-| release row | 90% | sva | Pareto point | not confirmed | no |
-| release row | 90% | h170 | Pareto point | not confirmed | no |
-| release row | 90% | h197 | Pareto point | not confirmed | no |
-| release row | 90% | h189 | Pareto point | not confirmed | no |
-| release row | 90% | h118 | Pareto point | not confirmed | no |
-| release row | 90% | h62 | Pareto point | not confirmed | no |
-| release row | 90% | h190 | Pareto point | not confirmed | no |
-| release row | 90% | h42 | Pareto point | not confirmed | no |
-| release row | 90% | h159 | Pareto point | not confirmed | no |
-| release row | 90% | h13 | Pareto point | not confirmed | no |
-| release row | 90% | h165 | Pareto point | not confirmed | no |
-| release row | 90% | h171 | Pareto point | not confirmed | no |
-| release row | 90% | h112 | Pareto point | not confirmed | no |
-| release row | 90% | h181 | Pareto point | not confirmed | no |
-| release row | 90% | h116 | Pareto point | not confirmed | no |
-| release row | 90% | h48 | Pareto point | not confirmed | no |
-| release row | 90% | h187 | Pareto point | not confirmed | no |
-| release row | 90% | h24 | Pareto point | not confirmed | no |
-| release row | 90% | h90 | Pareto point | not confirmed | no |
-| release row | 90% | h143 | Pareto point | not confirmed | no |
-| release row | 90% | h64 | Pareto point | not confirmed | no |
-| release row | 90% | h87 | Pareto point | not confirmed | no |
-| C2.2 design | 100% | t0 | Pareto point | not confirmed | no |
-| C2.2 design | 100% | kp50 | Pareto point | confirmed | no |
-| C2.2 design | 100% | svc | Pareto point | confirmed | no |
-| C2.2 design | 100% | fflat | Pareto point | not confirmed | yes |
-| C2.2 design | 100% | fland | Pareto point | not confirmed | no |
-| C2.2 design | 90% | t0 | Pareto point | not confirmed | no |
-| C2.2 design | 90% | kp50 | Pareto point | not confirmed | no |
-| C2.2 design | 90% | svc | Pareto point | confirmed | no |
-| C2.2 design | 90% | fflat | Pareto point | not confirmed | yes |
-| C2.2 design | 90% | fland | Pareto point | not confirmed | no |
+| opt-in row | 100% | t0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | bt0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | t4 | Pareto point | not confirmed | no |
+| opt-in row | 100% | ixn | Pareto point | not confirmed | no |
+| opt-in row | 100% | t8 | Pareto point | not confirmed | no |
+| opt-in row | 100% | rcap | Pareto point | not confirmed | no |
+| opt-in row | 100% | pr0c75 | Pareto point | not confirmed | no |
+| opt-in row | 100% | kp50 | Pareto point | not confirmed | no |
+| opt-in row | 100% | mm9 | Pareto point | not confirmed | no |
+| opt-in row | 100% | kp25 | Pareto point | not confirmed | no |
+| opt-in row | 100% | kp10 | Pareto point | not confirmed | no |
+| opt-in row | 100% | phi0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | mm6 | Pareto point | not confirmed | no |
+| opt-in row | 100% | mm3 | Pareto point | not confirmed | no |
+| opt-in row | 100% | ex0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | ph5 | Pareto point | not confirmed | no |
+| opt-in row | 100% | svc | Pareto point | not confirmed | no |
+| opt-in row | 100% | bt25 | Pareto point | not confirmed | no |
+| opt-in row | 100% | t25 | Pareto point | not confirmed | no |
+| opt-in row | 100% | ph10 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h100 | Pareto point | not confirmed | no |
+| opt-in row | 100% | bu80 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h10 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h192 | Pareto point | not confirmed | no |
+| opt-in row | 100% | br2 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h23 | Pareto point | not confirmed | no |
+| opt-in row | 100% | bt50 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h119 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h4 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h141 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h126 | Pareto point | not confirmed | no |
+| opt-in row | 100% | bu60 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m9.6 | Pareto point | not confirmed | no |
+| opt-in row | 100% | br1 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h50 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h89 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h132 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h41 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m3.4 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h154 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m0.0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h138 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h130 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h164 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h46 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h20 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h61 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m7.12 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m1.4 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h178 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m1.7 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m7.11 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h32 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h131 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h166 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h66 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h102 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h153 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h146 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h105 | Pareto point | not confirmed | no |
+| opt-in row | 100% | fland | Pareto point | not confirmed | no |
+| opt-in row | 100% | h21 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h168 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m3.9 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h47 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m3.5 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h108 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h86 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m9.5 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m9.1 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h71 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m4.16 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m9.0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h162 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h40 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h30 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h176 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m9.2 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h193 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m9.3 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h113 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h14 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h129 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h182 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h25 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h26 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m3.2 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h123 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m3.3 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m3.0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m1.1 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m1.2 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h53 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h34 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m1.0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h8 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m1.3 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h74 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h114 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m7.5 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h167 | Pareto point | not confirmed | no |
+| opt-in row | 100% | sva | Pareto point | not confirmed | no |
+| opt-in row | 100% | m2.0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m2.1 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m2.4 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m2.5 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h177 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h83 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m7.6 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m7.9 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m7.8 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m7.10 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h142 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h101 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m8.0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h122 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h67 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h92 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h137 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h98 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h28 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h160 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m4.2 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m4.4 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h147 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h81 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m9.12 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m5.6 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m5.7 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m5.4 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m5.3 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m4.6 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m4.5 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m5.2 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h158 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m4.12 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m5.0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h170 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h55 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h77 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h93 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m6.0 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h184 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m6.1 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m6.4 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h197 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h189 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h62 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m9.9 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h13 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h112 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h37 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h90 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h143 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h64 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h87 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h103 | Pareto point | not confirmed | no |
+| opt-in row | 100% | h36 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m5.8 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m5.11 | Pareto point | not confirmed | no |
+| opt-in row | 100% | m6.12 | Pareto point | not confirmed | no |
+| opt-in row | 100% | fflat | Pareto point | not confirmed | yes |
+| opt-in row | 90% | t0 | Pareto point | not confirmed | no |
+| opt-in row | 90% | bt0 | Pareto point | not confirmed | no |
+| opt-in row | 90% | t4 | Pareto point | not confirmed | no |
+| opt-in row | 90% | t8 | Pareto point | not confirmed | no |
+| opt-in row | 90% | fland | Pareto point | not confirmed | no |
+| opt-in row | 90% | kp50 | Pareto point | not confirmed | no |
+| opt-in row | 90% | ixn | Pareto point | not confirmed | no |
+| opt-in row | 90% | pr0c75 | Pareto point | not confirmed | no |
+| opt-in row | 90% | kp25 | Pareto point | not confirmed | no |
+| opt-in row | 90% | kp10 | Pareto point | not confirmed | no |
+| opt-in row | 90% | no6 | Pareto point | not confirmed | no |
+| opt-in row | 90% | phi0 | Pareto point | not confirmed | no |
+| opt-in row | 90% | ph5 | Pareto point | not confirmed | no |
+| opt-in row | 90% | ph10 | Pareto point | not confirmed | no |
+| opt-in row | 90% | bt25 | Pareto point | not confirmed | no |
+| opt-in row | 90% | bu80 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h10 | Pareto point | not confirmed | no |
+| opt-in row | 90% | svc | Pareto point | not confirmed | no |
+| opt-in row | 90% | bu60 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h119 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h100 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h50 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h192 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h89 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h61 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h154 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h23 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h126 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h32 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h174 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h86 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h141 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h132 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h138 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h182 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h53 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h74 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h28 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h101 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h164 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h102 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h144 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h26 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h147 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h81 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h146 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h162 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h153 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h108 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h21 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h105 | Pareto point | not confirmed | no |
+| opt-in row | 90% | fflat | Pareto point | not confirmed | yes |
+| opt-in row | 90% | sva | Pareto point | not confirmed | no |
+| opt-in row | 90% | h170 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h197 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h189 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h118 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h62 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h190 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h42 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h159 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h13 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h165 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h171 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h112 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h181 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h116 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h48 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h187 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h24 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h90 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h143 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h64 | Pareto point | not confirmed | no |
+| opt-in row | 90% | h87 | Pareto point | not confirmed | no |
+| Full-coverage design | 100% | t0 | Pareto point | not confirmed | no |
+| Full-coverage design | 100% | kp50 | Pareto point | confirmed | no |
+| Full-coverage design | 100% | svc | Pareto point | confirmed | no |
+| Full-coverage design | 100% | fflat | Pareto point | not confirmed | yes |
+| Full-coverage design | 100% | fland | Pareto point | not confirmed | no |
+| Full-coverage design | 90% | t0 | Pareto point | not confirmed | no |
+| Full-coverage design | 90% | kp50 | Pareto point | not confirmed | no |
+| Full-coverage design | 90% | svc | Pareto point | confirmed | no |
+| Full-coverage design | 90% | fflat | Pareto point | not confirmed | yes |
+| Full-coverage design | 90% | fland | Pareto point | not confirmed | no |
 

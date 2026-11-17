@@ -30,7 +30,7 @@ Eligibility uses the same income test as Medicaid (income against the poverty gu
 
 Today's safety net makes poverty shallower but almost never lifts a household above the cost of living. That line is MIT's living wage ($49,370 for one adult; derived: the unweighted average of the 51 state figures in MIT's Living Wage Calculator, February 2026 data, one adult and no children; MIT publishes no national figure, and weighting by population would give about $51,210), far above what these programmes pay. **Compassionism against the safety-net row** (simulated, Reference): basket poverty -30.3 points (interval -31.5 to -29.0), depth -5.8, child basket poverty -43.9. That is almost the same as against no programme (-30.2), because the safety net changes the headcount so little.
 
-Decided since (Duke, ledger d192, Oct 13): the safety net stays on in every Compassionism run, so every comparison reads "against today's safety net", and the Hub says Compassionism adds to these programmes; no savings from replacing them are claimed. The six-cell grid is in session 2c's report, `dev/reports/v5-28-safety-net-grid.md`.
+Decided since (Duke, Oct 13): the safety net stays on in every Compassionism run, so every comparison reads "against today's safety net", and the Hub says Compassionism adds to these programmes; no savings from replacing them are claimed. The six-cell grid is in session 2c's report, `dev/reports/v5-28-safety-net-grid.md`.
 
 ## 2. Setting C: single payer with a private layer
 
@@ -44,7 +44,7 @@ Setting C is setting B (one public plan for everyone, paid by a flat health tax)
 | **(a) Payment gap**: plans record more diagnoses, so payments run higher for the same person | 0 | 4% | 8% | MedPAC, March 2026 (4%) and March 2025 (8%); low is a design value |
 | **(b) Selection**: healthier people choose private plans, so payments set by risk exceed what they would have cost, and the public base keeps the costlier people | 5.5% | 11% | 16.5% | MedPAC, 2025 and 2026 (11%); low and high are design values |
 
-MedPAC estimates private plans are paid about 14% more than the same people would cost in traditional Medicare (2026; 20% in 2025) (sourced; $76 billion in 2026). The model splits this into coding (central 4%, range 0-8%) and selection (central 11%, range 5.5-16.5%); Using 14% or 20% as the gap and adding selection on top would count selection twice, because 11 of MedPAC's 14 points are selection. The central case's two together come to 15.4% (derived: 1.04 x 1.11). That is not a match for MedPAC's 14%: MedPAC's total also includes a part of Medicare Advantage's payment rules (bids and bonuses) that comes to about 1% below traditional Medicare (derived: 1.14 / 1.154 = 0.988), and the model has no counterpart to it, so its central case sits 1.4 points above MedPAC's total. The coding high case with selection central is 1.08 x 1.11 = 19.9%; both high is 1.08 x 1.165 = 25.8% (the "both high" row below), a stress case. The 8% is a design value near MedPAC's 2025 coding estimate. Medicare Advantage's figures stand in for a private layer open to all ages as an analogue, not an estimate for that layer. (Duke accepted the earlier wording, ledger d193; the arithmetic is corrected here.) (Corrected Oct 13 after the outside audit; `dev/reports/v5-29-outside-audit.md`.)
+MedPAC estimates private plans are paid about 14% more than the same people would cost in traditional Medicare (2026; 20% in 2025) (sourced; $76 billion in 2026). The model splits this into coding (central 4%, range 0-8%) and selection (central 11%, range 5.5-16.5%); Using 14% or 20% as the gap and adding selection on top would count selection twice, because 11 of MedPAC's 14 points are selection. The central case's two together come to 15.4% (derived: 1.04 x 1.11). That is not a match for MedPAC's 14%: MedPAC's total also includes a part of Medicare Advantage's payment rules (bids and bonuses) that comes to about 1% below traditional Medicare (derived: 1.14 / 1.154 = 0.988), and the model has no counterpart to it, so its central case sits 1.4 points above MedPAC's total. The coding high case with selection central is 1.08 x 1.11 = 19.9%; both high is 1.08 x 1.165 = 25.8% (the "both high" row below), a stress case. The 8% is a design value near MedPAC's 2025 coding estimate. Medicare Advantage's figures stand in for a private layer open to all ages as an analogue, not an estimate for that layer. (Duke accepted the earlier wording; the arithmetic is corrected here.) (Corrected Oct 13 after the outside audit; `dev/reports/v5-29-outside-audit.md`.)
 
 **How much of setting B's savings the private layer gives back** (simulated, 20 paired seeds, no programme; B saves $1,449 per person-year against today's $7,684 in Reference):
 
@@ -97,7 +97,7 @@ Under B and C, counting the BU removes no one's coverage. But one effect remains
 
 ## 5. The six-result test
 
-Twenty paired seeds per setting: A, B and C, each without and with Compassionism (the v5.4 release row), in the three environments. All figures simulated; "person-years" are over the 20 years.
+Twenty paired seeds per setting: A, B and C, each without and with Compassionism (the v5.4 opt-in row), in the three environments. All figures simulated; "person-years" are over the 20 years.
 
 **Basket poverty, person-years (no programme -> with Compassionism; the programme's paired effect):**
 
@@ -128,7 +128,7 @@ Twenty paired seeds per setting: A, B and C, each without and with Compassionism
 | C: too little wealth | -2.4; price part -3.8 | +0.6 | +0.7 |
 | C: child basket poverty | +0.3 | -4.0 | -2.5 |
 
-In short, in Reference single payer takes over part of what Compassionism does for basket poverty and depth, and C, which saves less, takes over less. In the harder environments the interaction on basket poverty is small and not distinguishable from zero. For children it runs the other way: Compassionism does more under single payer. Depth (FGT2) moves the same way in all three. Guardrail 6 asks for gains confirmed on basket poverty and wealth poverty, not depth alone, so the B and C gains are reported on all of them above, and they hold on basket poverty, depth and BLEI poverty in all three environments. Too little wealth, the measure the price rule decides (session 2a), improves under B and C without the programme in every environment.
+In short, in Reference single payer takes over part of what Compassionism does for basket poverty and depth, and C, which saves less, takes over less. In the harder environments the interaction on basket poverty is small and not distinguishable from zero. For children it runs the other way: Compassionism does more under single payer. Depth (FGT2) moves the same way in all three. Guardrail 6 asks for gains confirmed on basket poverty and wealth poverty, not depth alone, so the B and C gains are reported on all of them above, and they hold on basket poverty, depth and BLEI poverty in all three environments. Too little wealth, the measure the price rule decides, improves under B and C without the programme in every environment.
 
 **Today's safety net under A** (simulated, Reference): adding SNAP, the EITC and the CTC to setting A raises basket poverty without the programme by 0.4 points (interval 0.3 to 0.5), against +0.04 without health coverage, while depth falls by 0.5. Traced in session 2c (`dev/reports/v5-28-safety-net-grid.md`, section 2): most of the 0.4 was this comparison, which set the A-with-safety-net row against the row with no health setting and so folded in setting A's own +0.36. Against setting A, the safety net's own effect is +0.07 points (0.04 to 0.09), and it comes through prices.
 
@@ -142,7 +142,7 @@ In short, in Reference single payer takes over part of what Compassionism does f
 - Dollars are 2025 dollars: MIT's February 2026 data, SNAP's fiscal-2026 amounts and the 2025 tax year's credits.
 - The model charges every household the cost of living's tax line whatever its income, so low earners' taxes are overstated (a limit of the basket, as before).
 - Twenty seeds per setting. These are readings, not release figures; the 500-seed runs are session 3's.
-- Health does not yet improve with the care people get (the prevention link, session 2c).
+- Health does not yet improve with the care people get (the prevention link).
 
 ## Reproduce
 

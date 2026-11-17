@@ -1,6 +1,6 @@
 # Why today's safety net slightly raises basket poverty (issue i24-1)
 
-Session 9, Oct 14, 2026. A 20-seed trace, made before the 500-seed study (ledger step s165) was launched; the 500-seed figures are in section 5 (session 10). Tool: `dev/tools/sn_v54_trace.js`; results: `dev/runs/sn/v54trace-ENV.json`.
+Session 9, Oct 14, 2026. A 20-seed trace, made before the 500-seed study was launched; the 500-seed figures are in section 5. Tool: `dev/tools/sn_v54_trace.js`; results: `dev/runs/sn/v54trace-ENV.json`.
 
 ## 1. The question
 
@@ -36,7 +36,7 @@ The model reads each household's marginal rate as "benefits lost if it earned $1
 
 **Fix, behind a switch (`SNET.slope`, off by default):** for a household receiving SNAP, the rate is read with SNAP's income test held passed, so it measures the slope of the benefit schedule, not the cliff. The cliff still acts when the household's income actually passes the limit (it loses SNAP the next year). Effect at 20 seeds: basket poverty with Compassionism −0.11 (Reference), −0.12 (Adverse), −0.05 (Stress); no program about 0. It is a small part of the rise, not its cause.
 
-**Decision (Claude's, recorded in `dev/DECISIONS.md`, session 9):** the switch is on in every safety-net run of the s165 study (`--slope`), so the study's engine is re-pinned to the commit that has it. With the switch off every earlier figure is bit-identical (`guard_test.js`, `snap_rule_check.js`).
+**Decision (Claude's, recorded in `dev/DECISIONS.md`):** the switch is on in every safety-net run of the s165 study (`--slope`), so the study's engine is re-pinned to the commit that has it. With the switch off every earlier figure is bit-identical (`guard_test.js`, `snap_rule_check.js`).
 
 ## 5. In the study
 

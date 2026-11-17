@@ -1,6 +1,6 @@
 # Wider public costs avoided: prisons, emergency and hospital care, mental health, policing, child welfare
 
-Session 31, Oct 2, 2026. Design note before code (ledger step s69). Written by Claude.
+Session 31, Oct 2, 2026. Design note before code. Written by Claude.
 
 ## What it is, in plain words
 
@@ -24,7 +24,7 @@ Where no causal estimate exists, the main figure is zero and the descriptive gap
 | **Emergency rooms and ambulances** | $660 (ages 18-44) and $880 (45-64) per treat-and-release visit, 2021 (AHRQ HCUP Statistical Brief 311) | No causal estimate found for adults' income | Zero; Forget's 8.5% shown as an upper bound, labelled |
 | **State psychiatric hospitals** | $14.8 billion of $61.4 billion state mental health spending, FY2024 (NRI, State Mental Health Agency Expenditures and Funding Sources, FY2001-FY2024) | Forget 2011 (mental health admissions among the 8.5%) | Applied only to state psychiatric care, which the hospital row does not cover |
 | **Policing and courts** | $135 billion police, $52 billion courts, 2021 (Urban Institute from Census state and local finance data) | Cash lowered property crime 8% but raised substance-related incidents 10% in the four weeks after Alaska's dividend, with no change in violence (Watson, Guettabi and Reimer 2020, Review of Economics and Statistics) | Zero main: police and court budgets are mostly fixed salaries that do not fall with a few fewer incidents. Both directions of the Alaska finding shown as a range |
-| **Child welfare** | $31.4 billion, state fiscal year 2020 (Child Trends, Child Welfare Financing Survey) | Extra income randomly given to low-income mothers lowered child maltreatment risk (Cancian, Yang and Slack 2013, Social Service Review 87(3)) | Not costed: the model has no children yet (ledger step s52). Named on the page as a limit |
+| **Child welfare** | $31.4 billion, state fiscal year 2020 (Child Trends, Child Welfare Financing Survey) | Extra income randomly given to low-income mothers lowered child maltreatment risk (Cancian, Yang and Slack 2013, Social Service Review 87(3)) | Not costed: the model has no children yet. Named on the page as a limit |
 
 ## Not counting things twice
 
@@ -43,7 +43,7 @@ A row beside the program's cost: public costs avoided per adult a year, with the
 - Tests: zero income gain gives zero avoided cost; no row applies an effect beyond its study's income range; homeless adults are excluded from the new rows; the ranges' low end is never above the main figure.
 - To extract at build time and cite in the code: the dollar size of the SSI loss in Deshpande and Mueller-Smith (to scale the effect per dollar), the HCUP public-payer share for adults 18-64, and the prisoner-year figure's inflation to 2025 dollars (BLS CPI-U).
 
-## Built (session 31, Oct 2, 2026), and results
+## Built (Oct 2, 2026), and results
 
 Built as `avoidWide()` in `harness.js` (reporting only: it changes nobody's income), with 3 unit tests. Two refinements to the plan above:
 

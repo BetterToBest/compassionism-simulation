@@ -1,6 +1,6 @@
 # SNAP's work rule, built behind a switch that stays off
 
-Oct 14, 2026 (ledger step s166, decision d209, issue i23). This adds no figure to any page and changes no published number. The switch is off by default, and with it off every output is identical, as tested. The rule will run beside the main results in the next study (ledger step s165). Whether it becomes part of the main results is a separate decision for a v5.6 release, after Duke has seen both sets of figures side by side.
+Oct 14, 2026. This adds no figure to any page and changes no published number. The switch is off by default, and with it off every output is identical, as tested. The rule will run beside the main results in the next study. Whether it becomes part of the main results is a separate decision for a v5.6 release, after Duke has seen both sets of figures side by side.
 
 ## 1. What the rule is (checked against the law and USDA)
 
@@ -25,7 +25,7 @@ SNAP (food stamps) has a time limit for "able-bodied adults without dependents".
 
 ## 3. What it does to today's safety net alone
 
-This is a first look: 20 seeds, the v5.4 main row and its no-program run, both with today's safety net, rule off against rule on. The study (s165) will give the 500-seed figures.
+This is a first look: 20 seeds, the v5.4 main row and its no-program run, both with today's safety net, rule off against rule on. The study will give the 500-seed figures.
 
 | | Reference, no program | Reference, with Compassionism | Adverse, no program | Adverse, with Compassionism |
 |---|---|---|---|---|
@@ -49,7 +49,7 @@ The note on decision d209 said today's safety net (SNAP, the earned income tax c
 
 The safety net moves figures on its own. On 20 seeds, comparing the guard test's runs with the same runs plus the safety net, basket poverty with Compassionism changes by +0.11 points (Reference), −0.20 (Adverse) and +0.54 (Stress). The no-program run changes by +0.04, +0.03 and +0.03. These are 20-seed figures. That the safety net raises basket poverty slightly is itself surprising, and should be explained before release. The likely cause is people working a little less as benefits phase out (the safety net's own work response).
 
-So the study job (ledger s165) runs three things on the same engine:
+So the study job runs three things on the same engine:
 1. the full panel with today's safety net **and** the rule (`--snab`);
 2. the rule's own effect: the main row and its no-program run, with the safety net, rule off and on, 500 seeds;
 3. the v5.5 panel already published, which has neither.

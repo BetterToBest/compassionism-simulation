@@ -56,7 +56,7 @@ Both calibrations move the yardstick a long way toward the survey, especially fo
 - **Each does what it says.** Starting medians by household type come out within 9% of the survey's, with the survey's link to wages. Every graded year follows the formula exactly. The earnings curve averages exactly 1. With FBS50 kept as it is, nothing changes.
 - **The books balance.** Every accounting check passes in every run, including the new spending flow.
 
-## Decisions made (full reasons in `dev/DECISIONS.md`, Session 39)
+## Decisions made (full reasons in `dev/DECISIONS.md`)
 
 - The four readings and their sources, as above.
 - Before the v5.3 restudy I recorded which of them join the main result. **Survey wealth and graded spending join**, with households, because the alternative assumptions have no source and are the yardstick's largest gaps with US data. **Earnings by age** stays with the ageing reading. **FBS50** is reported. The rule was set before any restudy result, so the results cannot choose it.

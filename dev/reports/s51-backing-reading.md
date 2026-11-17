@@ -1,12 +1,12 @@
 # What backs the money the programme creates: Claude's reading of the design
 
-Nov 2, 2026 · research-update plan step S51 (ledger D11) · written before any run · Claude
+Nov 2, 2026 · the backing study · written before any run · Claude
 
 Duke, this note sets out my reading of what your writing says backs the new money, and how the model will now represent it. Please say if it misrepresents your design. Where the text is silent I took the most cautious option and labelled it a modelling assumption.
 
 ## Why this matters
 
-In the released model, the Source (the Treasury) pays every conversion, and almost all of that payout is new money. Only the work on projects, counted at the pay for its hours, is treated as output that backs it: about 7.7% of the payout. The rest raises prices through the model's price rule. That is where the release row's programme inflation of about 51% a year comes from. The other end of the published range, "every dollar backed", removes that inflation by assumption. Neither end is worked out inside the model. The audit (S13, item E6) found the headline depends on it: if wages keep up with prices only in part, the gain shrinks fast unless the payout is backed. Your answer to ledger decision D11 says backing is the design's requirement. So the model should make it a mechanism and report how much backing the result needs.
+In the released model, the Source (the Treasury) pays every conversion, and almost all of that payout is new money. Only the work on projects, counted at the pay for its hours, is treated as output that backs it: about 7.7% of the payout. The rest raises prices through the model's price rule. That is where the opt-in row's programme inflation of about 51% a year comes from. The other end of the published range, "every dollar backed", removes that inflation by assumption. Neither end is worked out inside the model. The audit (item E6) found the headline depends on it: if wages keep up with prices only in part, the gain shrinks fast unless the payout is backed. Your decision says backing is the design's requirement. So the model should make it a mechanism and report how much backing the result needs.
 
 ## What the writing says
 
@@ -27,7 +27,7 @@ In the released model, the Source (the Treasury) pays every conversion, and almo
 
 ## What this means before any run
 
-The release row pays out about 60% of a year's earned income in new money, every year. Under B4 and B5, no plausible project productivity backs more than a small part of that. The study is built to show this honestly. It reports two things:
+The opt-in row pays out about 60% of a year's earned income in new money, every year. Under B4 and B5, no plausible project productivity backs more than a small part of that. The study is built to show this honestly. It reports two things:
 1. the **break-even backed share**: how much of the payout must be backed for basket poverty to fall when wages keep up with prices only in part (95%, 90%, 75%);
 2. **whether the mechanism reaches that share**, and under which settings.
 
@@ -35,4 +35,4 @@ If it does not, the report will say so plainly. The design's other levers (a sma
 
 ## Not changed
 
-The released figures do not move: the mechanism is behind a switch (row option `bkm`). Essentials capacity through PTF is not used as the channel here. The release row's programme inflation is in the general price level, which also raises essentials prices. The PTF supply channel is part of S52 (the supply-shock environment, PTF local sourcing).
+The released figures do not move: the mechanism is behind a switch (row option `bkm`). Essentials capacity through PTF is not used as the channel here. The opt-in row's programme inflation is in the general price level, which also raises essentials prices. The PTF supply channel is part of the supply-shock study (the supply-shock environment, PTF local sourcing).

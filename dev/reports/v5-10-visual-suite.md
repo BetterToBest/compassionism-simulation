@@ -44,4 +44,4 @@ I cannot see the files in your claude.ai project's context box, so this is the r
 
 ## What is next
 
-The compare page (ledger s95): Compassionism against current US policy and other designs on the same simulated people, built on the same charts and data format. Then children and households.
+The compare page: Compassionism against current US policy and other designs on the same simulated people, built on the same charts and data format. Then children and households.

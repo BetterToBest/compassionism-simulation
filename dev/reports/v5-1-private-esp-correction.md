@@ -1,6 +1,6 @@
 # Correction: privately owned essential-service businesses pass the conversion premium to customers
 
-Session 31, Oct 2, 2026. Design note before code (ledger step s66, decision d140). Written by Claude.
+Session 31, Oct 2, 2026. Design note before code. Written by Claude.
 
 ## What changes, in plain words
 
@@ -30,7 +30,7 @@ So the premium becomes **lower prices for the customer**, not profit for the own
 
 Only this: is "the premium becomes lower prices for BU customers, and private-ESP workers are paid like profit-share workers" what you meant? Everything else is a modelling decision recorded in `dev/DECISIONS.md`.
 
-## Built (session 31, Oct 2, 2026), and one change from the plan above
+## Built (Oct 2, 2026), and one change from the plan above
 
 Built as switch `SURP.priv = 'prices'` in `harness.js`, with 6 unit tests (`privUnitSuite`). With the old setting every output is identical to session 30 (full output of `testbed 10 release` in all three environments diffed).
 

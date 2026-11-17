@@ -1,6 +1,6 @@
 # v5.1: what the audit fixes changed, and what I found (plain words, for Duke)
 
-Written Oct 3, 2026 (session 34). This is Claude's report on the second pull request of the audit round. It needs no code reading; the tables come straight from the 500-run files.
+Written Oct 3, 2026. This is Claude's report on the second pull request of the audit round. It needs no code reading; the tables come straight from the 500-run files.
 
 ## In one paragraph
 
@@ -36,7 +36,7 @@ Poverty, wealth, prices and cost are, for practical purposes, unchanged. The aud
 
 The page's optimistic end (called H1) asks: if every dollar the Source pays out were backed by new output, what happens? I ran the points in between (none, a quarter, half, three quarters, all backed) on the same 500 simulated adults, and drew them on the replication page. The change in the share of adults with too little wealth, against no programme, is:
 
-| Environment | a = 0 (release row) | a = 0.25 | a = 0.5 | a = 0.75 | a = 1 (H1) |
+| Environment | a = 0 (opt-in row) | a = 0.25 | a = 0.5 | a = 0.75 | a = 1 (H1) |
 |---|---|---|---|---|---|
 | Reference | −16.3 points; inflation 34.9% | −21.8 points; inflation 26.0% | −29.1 points; inflation 17.0% | −34.5 points; inflation 8.3% | −36.5 points; inflation 0.0% |
 | Adverse | +4.4 points; inflation 45.5% | −1.9 points; inflation 34.2% | −11.8 points; inflation 22.5% | −31.6 points; inflation 10.9% | −30.1 points; inflation 0.0% |
@@ -115,4 +115,4 @@ Two findings from this release belong at the top of that round:
 
 ## 7. Where things are
 
-`dev/DECISIONS.md` (Session 34), `dev/PROGRESS.md`, the 500-run files and their commands in `dev/runs/` (`v51-*`), `dev/tools/backing_chart.py`, `dev/tools/cola_check.js`, the chart and the Hub-target table on `replication.html`.
+`dev/DECISIONS.md`, `dev/PROGRESS.md`, the 500-run files and their commands in `dev/runs/` (`v51-*`), `dev/tools/backing_chart.py`, `dev/tools/cola_check.js`, the chart and the Hub-target table on `replication.html`.

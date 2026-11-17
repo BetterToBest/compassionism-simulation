@@ -1,4 +1,4 @@
-# Who loses when inflation wipes out a debt: a creditor side for household debt (S71)
+# Who loses when inflation wipes out a debt: a creditor side for household debt
 
 Nov 13, 2026. Pilot: seeds 1-100, 500 adults, 20 years, three environments, engine `f7572fd`. A pilot is a mechanism check, not a result; the frozen 500-seed batch decides. Preregistered before the build, before any coefficient was computed and before any run (research-update `prereg/2026-11-s71-creditor-side.md`, with one dated amendment before the pilot). Tables: `dev/runs/s71-creditors/tables.md`. Per-seed files: compassionism-sim-results `s71-creditors-f7572fd`.
 
@@ -6,10 +6,10 @@ Nov 13, 2026. Pilot: seeds 1-100, 500 adults, 20 years, three environments, engi
 1. **The gap this closes.** With wealth held by asset class, a fixed-rate mortgage keeps its dollar value while the programme's inflation runs 30-45% a year. The borrower's gain is real, and until now nobody in the model lost it. The earlier report said the programme's effect on the top 1% share of wealth turned on that missing lender.
 2. **Who holds a dollar of household fixed-rate debt** (the Fed's Financial Accounts, end of 2022, traced through banks and funds to final owners): households hold 32 cents (24 as bank deposits and money market shares, 8 as bonds and bond funds); businesses hold 32 cents, which belong to their shareholders; the government holds 27 cents (the Federal Reserve's mortgage securities, federal student loans, public deposits); foreigners 8 cents.
 3. **Part of the loss was already in the model, unlabelled.** The model pays savers only 46% of inflation on deposits and bonds, so they were already losing 54% of inflation on every dollar. Of each dollar of debt wiped out, 11 cents were already being lost by the model's savers. The option adds the rest: 2 cents more on their bond-like savings and 20 cents on their shares. The other 66 cents fall outside the model: 30 on the government, 16 on foreigners, 20 on households the model does not hold (mostly retired).
-4. **Wealth poverty does not change.** The programme's effect on wealth poverty at year 20 is −12.5 points (release design, Reference) with or without the creditor side, and between −12.4 and −12.5 under every reading tested, including the one where households in the model bear every dollar. Without debt relief at all it is −6.7. The reason: the poorest fifth of adults get $40,900 of debt relief each over the run and bear $580 of the new charges; the richest fifth get $211,300 and bear $102,300.
-5. **The programme still lowers the top 1% share once lenders are in the model.** −1.02 points (release) and −1.64 (C2.2) in Reference under the main creditor reading, against −1.14 and −1.75 without a creditor side. The sign holds, with intervals excluding zero, in all five creditor readings in all three environments (the preregistered test). It is weakest when nothing is left outside: −0.67 (−0.86 to −0.49).
+4. **Wealth poverty does not change.** The programme's effect on wealth poverty at year 20 is −12.5 points (opt-in design, Reference) with or without the creditor side, and between −12.4 and −12.5 under every reading tested, including the one where households in the model bear every dollar. Without debt relief at all it is −6.7. The reason: the poorest fifth of adults get $40,900 of debt relief each over the run and bear $580 of the new charges; the richest fifth get $211,300 and bear $102,300.
+5. **The programme still lowers the top 1% share once lenders are in the model.** −1.02 points (opt-in) and −1.64 (full coverage) in Reference under the main creditor reading, against −1.14 and −1.75 without a creditor side. The sign holds, with intervals excluding zero, in all five creditor readings in all three environments (the preregistered test). It is weakest when nothing is left outside: −0.67 (−0.86 to −0.49).
 6. **So the sign never turned on the lender. It turns on whether the debt relief happens.** The earlier "no debt relief" reading (+1.23) removes the borrower's gain; it does not add a lender's loss. They are different things. Whether fixed-rate debts would really stay fixed in dollars through twenty years of such inflation is a question about loan contracts, and both readings stay beside every wealth result.
-7. **On the broad measures the creditor side makes the programme more equalising, not less, and average wealth lower.** In Reference, for the release design, the top 10% share falls by 3.63 points instead of 3.28, the bottom half gains 2.77 instead of 2.61, the wealth Gini falls by 0.046 instead of 0.043. The programme's effect on average real wealth goes from −$57,700 to −$96,000 per adult; on the median from +$36,000 to +$31,500. The median adult still gains in every creditor reading (+$21,200 when nothing is outside).
+7. **On the broad measures the creditor side makes the programme more equalising, not less, and average wealth lower.** In Reference, for the opt-in design, the top 10% share falls by 3.63 points instead of 3.28, the bottom half gains 2.77 instead of 2.61, the wealth Gini falls by 0.046 instead of 0.043. The programme's effect on average real wealth goes from −$57,700 to −$96,000 per adult; on the median from +$36,000 to +$31,500. The median adult still gains in every creditor reading (+$21,200 when nothing is outside).
 8. **The assumption that matters most is whether lenders' shareholders are charged.** If they are not (banks' deposits protect their equity, as one strand of evidence says), the new charges are 2 cents on the dollar and every result equals the earlier main reading.
 
 ## What was built
@@ -41,7 +41,7 @@ U.S. shares are owned 73% by households, 20% by foreigners and 7% by the governm
 
 ## Results
 
-**The ledger under the programme** (Reference, release design; Year-0 dollars per adult over 20 years; tables section 1). Debt inflated away: $102,451 per adult, nearly all the fixed-rate debt the model's adults start with.
+**The ledger under the programme** (Reference, opt-in design; Year-0 dollars per adult over 20 years; tables section 1). Debt inflated away: $102,451 per adult, nearly all the fixed-rate debt the model's adults start with.
 
 | Share of the debt relief | Main | Holders of record | Shareholders not charged | Model = all households | Nothing outside |
 |---|---|---|---|---|---|
@@ -66,7 +66,7 @@ The top 1% of adults by starting wealth bear 26% of the new charges.
 
 **The programme's effect at year 20** (programme minus no programme, same seeds; 95% intervals in tables section 3)
 
-| | Reference, release | Reference, C2.2 | Adverse, release | Adverse, C2.2 | Stress, release | Stress, C2.2 |
+| | Reference, opt-in | Reference, full coverage | Adverse, opt-in | Adverse, full coverage | Stress, opt-in | Stress, full coverage |
 |---|---|---|---|---|---|---|
 | **Wealth poverty (points)** | | | | | | |
 | No creditor side (earlier main reading) | −12.53 | −18.13 | −12.96 | −20.15 | −7.01 | −18.63 |
@@ -117,12 +117,12 @@ Reading it:
 1. **Checks: pass.** Unit tests and guard test pass; the largest ledger gap is 1.2e-14 of the relief (limit one millionth); unplaced claims are at most 0.05% (limit 5%).
 2. **Direction of the effect on the top 1% share: established for both designs under the rule as written** (one sign, 95% interval excluding zero, in all five creditor readings and all three environments: the programme lowers it). The rule covers creditor readings only. The no-debt-relief reading still gives the opposite sign, so the plain statement is: the programme lowers the top 1% share if fixed-rate debts keep their dollar value, whoever bears the loss; it raises it if they do not.
 3. **Bounds.** The plan expected the earlier two readings (main, and no debt relief) to bound the creditor readings. They do for wealth poverty, the top 0.1% and 1% shares and median wealth (apart from differences of 0.06 points or less, inside the intervals). They do not for the top 10% share, the bottom half's share and the Gini, where the creditor readings lie beyond the earlier main reading (more equalising), nor for average wealth when nothing is outside (below the no-debt-relief reading). The no-debt-relief reading is not "the creditor side at its strongest": it takes the gain from borrowers, where a creditor side takes the loss from savers.
-4. **How much of the wealth-poverty reduction rests on debt relief:** about half for the release design, as the earlier report said (−12.5 against −6.7 in Reference). None of it rests on the lender being missing.
-5. **Recommended to the design freeze (S63), as fixed before the results:** the creditor side under the main reading as a main-row candidate for every wealth and concentration outcome, with the earlier main reading and the no-debt-relief reading kept beside it, and holders of record, shareholders not charged and model-as-all-households as readings. Added from rule 3: carry the nothing-outside reading too, as the upper bound on creditor losses. S63 chooses.
+4. **How much of the wealth-poverty reduction rests on debt relief:** about half for the opt-in design, as the earlier report said (−12.5 against −6.7 in Reference). None of it rests on the lender being missing.
+5. **Recommended to the design freeze, as fixed before the results:** the creditor side under the main reading as a main-row candidate for every wealth and concentration outcome, with the earlier main reading and the no-debt-relief reading kept beside it, and holders of record, shareholders not charged and model-as-all-households as readings. Added from rule 3: carry the nothing-outside reading too, as the upper bound on creditor losses. The v5.9 preregistration chooses.
 6. No synergy is claimed: these rows are not a factorial design.
 
 ## A correction to the earlier report's wording
-The report on the top tail (S59, part 2) said the fall in the top 1% share "comes from fixed-rate mortgages being inflated away with nobody bearing the loss" and that the direction "turns on the missing creditor side". With the creditor side built, the direction is unchanged. What the direction turns on is whether the debt relief happens at all. A dated note is added to that report; no figure in it changes.
+The report on the top tail said the fall in the top 1% share "comes from fixed-rate mortgages being inflated away with nobody bearing the loss" and that the direction "turns on the missing creditor side". With the creditor side built, the direction is unchanged. What the direction turns on is whether the debt relief happens at all. A dated note is added to that report; no figure in it changes.
 
 ## What the sources said, where it differs from the plan
 - **The plan named pension claims as a channel.** Under the paper's rule, defined-benefit pension assets belong to the sponsor, so the pension channel is small: defined-contribution funds are looked through to households (part of the 8 cents of bond-like claims).
@@ -140,4 +140,4 @@ The report on the top tail (S59, part 2) said the fall in the top 1% share "come
 7. **The model's top 1% bear less of the charges than the outside check suggests** (26% against 46-48%).
 8. **Year 20 only.** These rows report wealth at year 20; under any price rule other than today's the frozen design must also read yearly averages (the price-rule report explains why).
 9. **A weight is read by a rule for the first time** (through four totals). It must be rechecked at 10,000 adults with the rest of the tail.
-10. Tested with wealth by asset class only, without ageing, the capacity price rule or adults outside the labour force; those combinations belong to the pairwise tests (S68).
+10. Tested with wealth by asset class only, without ageing, the capacity price rule or adults outside the labour force; those combinations belong to the pairwise tests.

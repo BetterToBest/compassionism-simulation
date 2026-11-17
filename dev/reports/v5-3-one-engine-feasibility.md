@@ -4,7 +4,7 @@ Oct 6, 2026 · Claude · dashboard decision d166 ("read the engine straight out 
 
 ## The question
 
-Households will touch almost every part of the engine. Today the engine exists in two files, `harness.js` (Node, used for the 500-seed studies) and `index.html` (the page). The dashboard's decision (d166) is to keep `index.html` one file and have the harness read the engine out of it, instead of carrying its own copy, if that is workable; otherwise keep the copy and extend the equality checks.
+Households will touch almost every part of the engine. Today the engine exists in two files, `harness.js` (Node, used for the 500-seed studies) and `index.html` (the page). The dashboard's decision is to keep `index.html` one file and have the harness read the engine out of it, instead of carrying its own copy, if that is workable; otherwise keep the copy and extend the equality checks.
 
 ## What is actually duplicated today
 

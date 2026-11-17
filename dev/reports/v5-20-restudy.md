@@ -1,6 +1,6 @@
 # The v5.3 restudy: households and children
 
-Oct 7, 2026 · v5.3, plan item B10 · Claude · 500 paired runs in each of the three environments, 20 and 40 years · the main result as recorded before any restudy run (`dev/DECISIONS.md`, Session 39, B10)
+Oct 7, 2026 · v5.3, plan item B10 · Claude · 500 paired runs in each of the three environments, 20 and 40 years · the main result as recorded before any restudy run (`dev/DECISIONS.md`, B10)
 
 ## What was asked
 
@@ -10,7 +10,7 @@ Run every new part of v5.3 on 500 paired runs, decide what joins the main result
 
 By the rule recorded before any run, every part below joins the main result unless the restudy finds a modelling error in it. It found none. It did find three wrong labels in the attribution study, which are corrected, and one test that expected exactly zero where the model gives a tenth of a point (both explained below). So the v5.3 main result is:
 
-- **Households and children.** The adults live in households as US adults do (Census Bureau shares): single adults, single parents, couples with and without children. Each child brings a quarter of the adult allowance (your d167, d172). A household pools its money (d168).
+- **Households and children.** The adults live in households as US adults do (Census Bureau shares): single adults, single parents, couples with and without children. Each child brings a quarter of the adult allowance (your d167). A household pools its money.
 - **The Hub's full list of what BU buy** (your d173): food, housing, medical care, transport and, for families, childcare.
 - **Starting wealth from the Federal Reserve's survey**, by household type, and **spending that follows income** (people spend less in a year their income is short).
 - **Partners' income swings** move together at Shore's (2010) measured strength.

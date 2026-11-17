@@ -1,6 +1,6 @@
 # Ways to improve the model, beyond what the ledger already lists
 
-Session 33, Oct 2, 2026. Written by Claude for Duke. Plain words; each item says what is missing, why it matters, and how it could be built. None of this is built yet. The ledger already has: children and households (s52), the disposable-income Gini and poverty spells (s25), today's safety net as a comparison row, more designs, a full sensitivity analysis, and 30- and 40-year horizons (compare study s46-s49). Those are not repeated here.
+Session 33, Oct 2, 2026. Written by Claude for Duke. Plain words; each item says what is missing, why it matters, and how it could be built. None of this is built yet. The ledger already has: children and households, the disposable-income Gini and poverty spells, today's safety net as a comparison row, more designs, a full sensitivity analysis, and 30- and 40-year horizons (compare study s46-s49). Those are not repeated here.
 
 Ranked by how much each could change what the page says.
 

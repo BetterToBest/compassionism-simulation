@@ -1,8 +1,8 @@
 # v5.6: the results with today's safety net in both runs
 
-Oct 14, 2026 (session 10; ledger step s167). **This is a draft release for Duke to merge or withhold.** Merging it is the release. If it is withheld, the pages stay on v5.5 and nothing else changes.
+Oct 14, 2026. **This is a draft release for Duke to merge or withhold.** Merging it is the release. If it is withheld, the pages stay on v5.5 and nothing else changes.
 
-**Duke: before deciding, please read `dev/reports/v5-33-snap-work-rule.md`** (what SNAP's work rule is and how it is modelled) and `dev/reports/v5-35-safety-net-poverty.md` (why today's safety net slightly raises basket poverty in some runs). The open questions are yours: whether v5.6's main rows include today's safety net (issue i23) and SNAP's work rule (issue i24-2). This report gives the figures for that decision. It does not decide it.
+**Duke: before deciding, please read `dev/reports/v5-33-snap-work-rule.md`** (what SNAP's work rule is and how it is modelled) and `dev/reports/v5-35-safety-net-poverty.md` (why today's safety net slightly raises basket poverty in some runs). The open questions are yours: whether v5.6's main rows include today's safety net and SNAP's work rule (issue i24-2). This report gives the figures for that decision. It does not decide it.
 
 ## 1. What changes in v5.6
 
@@ -76,7 +76,7 @@ v5.6 differs from v5.5 by the three switches of section 1 and nothing else (each
 
 - **SNAP's work rule: almost nothing.** The study ran the main row and its no-program run with today's safety net, rule off and rule on, paired by seed (`dev/runs/snap-rule/snap-iso-ENV-YEARS.json`). The rule changes Compassionism's measured gain by at most 0.07 points (cost of living, Adverse, 40 years), and by under 0.03 points everywhere else. It moves the no-program run by under 0.01 points on the shares. The rule takes about $5 a year of SNAP per adult on average at Reference and $12 to $30 in Adverse and the Stress Test: few adults are covered and out of work for more than three months.
 - **Today's safety net, with the marginal-rate fix: nearly all of the move.** Since the rule adds almost nothing, the gain moves in section 2 are, to within a few hundredths of a point, the safety net's (with the fix on).
-- **The marginal-rate fix alone** was not run separately at 500 seeds (every safety-net run of the study has it on, by decision; `dev/DECISIONS.md`, session 9). At 20 seeds it lowered basket poverty with Compassionism by 0.05 to 0.12 points (`v5-35-safety-net-poverty.md`, section 4), so it is a small part of the move, in the direction of a slightly larger gain.
+- **The marginal-rate fix alone** was not run separately at 500 seeds (every safety-net run of the study has it on, by decision; `dev/DECISIONS.md`). At 20 seeds it lowered basket poverty with Compassionism by 0.05 to 0.12 points (`v5-35-safety-net-poverty.md`, section 4), so it is a small part of the move, in the direction of a slightly larger gain.
 
 ## 5. What stays from earlier releases (stated on the pages)
 

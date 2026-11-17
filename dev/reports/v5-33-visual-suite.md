@@ -40,7 +40,7 @@ Where your writing is silent on how a measure maps to the model, I chose the cau
 - **Four lines, four answers.** At Reference, Year 20: under 30 days, 12.7% on the paper's reading and 14.0% on the same-rules reading (30.7% with no program on both); relative income poverty barely moves (20.5% against 19.8%) because it counts cash only and the allowance is not cash; unhoused 0.19% against 0.31%.
 - **The environment matters as much as the program.** In the Stress Test, the main reading leaves 56.0% under 30 days against 42.1% with no program (10th to 90th percentile across the runs: 53.0% to 59.4%, against 39.4% to 44.6%).
 
-## Choices made (each recorded in `dev/DECISIONS.md`, Session 11)
+## Choices made (each recorded in `dev/DECISIONS.md`)
 
 1. **Where the page's extra data lives.** The suite series were already in the study's explore files; `release_data.py` now copies them into `data/releases/v5.6/suite-20.json` and `suite-40.json` and lists them in the release file, so the page needs nothing but the manifest. Alternative: read `dev/runs/` directly (the live site would then depend on development files).
 2. **The page stands alone and asks search engines not to index it** until you decide to link it. Alternative: link it from the findings explorer now.

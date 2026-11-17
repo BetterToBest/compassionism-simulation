@@ -1,6 +1,6 @@
 # The model now checks its own books
 
-Oct 6, 2026 · v5.3, plan item B2 · Claude · every release row, three environments; the effect of two corrections on 500 paired seeds · nothing on the live page changes until the v5.3 release
+Oct 6, 2026 · v5.3, plan item B2 · Claude · every opt-in row, three environments; the effect of two corrections on 500 paired seeds · nothing on the live page changes until the v5.3 release
 
 ## What was asked
 
@@ -42,7 +42,7 @@ Nothing on the live page changes now. The two corrections are switches that stay
 
 Every identity also held over all 500 runs in each environment for the main result, the first rent reading and the ageing reading with the corrections on (47.2 million checks of a person's money, 7.9 million of community-housing equity, and 94,500 of each of the yearly totals; the largest gap anywhere was eight parts in a thousand trillion). The runs and the exact commands are in `dev/runs/acct-check-ref.json`, `-adv.json` and `-st.json` (`node dev/tools/acct_check.js ENV 500`).
 
-## Decisions made (full reasons in `dev/DECISIONS.md`, Session 39)
+## Decisions made (full reasons in `dev/DECISIONS.md`)
 
 - The check lives inside the model (so it sees every person, every year), is off by default, and counts problems rather than stopping a run.
 - Both mistakes are corrected (the plan's rule: an identity that fails is corrected, not shown as an option). The plan had listed the equity reading as an option for v5.4; the check showed it is a mistake, so the correction comes forward to v5.3.

@@ -1,8 +1,8 @@
-# US policy eras and their stability: the descriptive panel (S75 part 1)
+# US policy eras and their stability: the descriptive panel
 
-Nov 16, 2026. The first part of S75: published data only, no engine. Preregistration: research-update `prereg/2026-11-s75-deep-history.md` (committed before any figure here was computed), with Amendment 1 (written after the files were downloaded and before any figure was computed). Script: `sources/s75_eras.py`, from the files in `sources/s75_eras/raw/`, `sources/s74_history/raw/` and `sources/s59_shiller/`. Output: `sources/s75_eras.json`. Every cell: `dev/runs/s75-panel/tables.md`. Results copy: compassionism-sim-results `s75-panel-<commit>`. The engine readings (part 2) and the full report come next.
+Nov 16, 2026. The first part of the policy-eras study: published data only, no engine. Preregistration: research-update `prereg/2026-11-s75-deep-history.md` (committed before any figure here was computed), with Amendment 1 (written after the files were downloaded and before any figure was computed). Script: `sources/s75_eras.py`, from the files in `sources/s75_eras/raw/`, `sources/s74_history/raw/` and `sources/s59_shiller/`. Output: `sources/s75_eras.json`. Every cell: `dev/runs/s75-panel/tables.md`. Results copy: compassionism-sim-results `s75-panel-<commit>`. The engine readings (part 2) and the full report come next.
 
-The eras were fixed before any figure: 1947-1972, 1973-1983, 1984-2007 and 2008-2025, with 1913-1946 as a reading only. S74's window, 2005-2025, is shown beside them. "Less stable" or "more stable" is said only where the difference between two eras passes the preregistered test: a block-bootstrap interval, with Holm's correction across the 14 measures compared for each pair of eras. Eras are short (11 to 26 years), so most differences do not pass.
+The eras were fixed before any figure: 1947-1972, 1973-1983, 1984-2007 and 2008-2025, with 1913-1946 as a reading only. The central-bank study's window, 2005-2025, is shown beside them. "Less stable" or "more stable" is said only where the difference between two eras passes the preregistered test: a block-bootstrap interval, with Holm's correction across the 14 measures compared for each pair of eras. Eras are short (11 to 26 years), so most differences do not pass.
 
 ## In short
 - **On no measure was 2005-2025 clearly less stable than all three earlier postwar eras.** That was the preregistered test of Duke's view that 2005-2025 was less stable than the decades before it. On 5 of the 14 measures the record goes against it: 2005-2025 was steadier than 1973-1983 on inflation and on food, shelter and medical prices, and medical prices rose more slowly than in 1984-2007 too. On the other 9, no comparison passes the test either way (the preregistered label for this is "mixed").
@@ -114,7 +114,7 @@ Each row is a regression of the quarterly policy rate on CPI-U's change over fou
 
 ## Checks
 - **The planning figures for tax rates do not match the opened file.** The planning text gave about 42% (top 1%) and 50.6% (top 0.1%) in the 1950s, against 36.4% and 39.8% in 2014. PSZ's 2022 appendix gives 45.5% and 57.3% (1950-1959 mean), and 33.9% and 36.4% in 2014. The direction and the conclusion are the same: the top paid much more of its income in tax in the 1950s. The file's figures are used. Where the planning figures came from is not known; they may come from an earlier vintage of the accounts.
-- CPI-U NSA against S74's seasonally adjusted series, 2005-2025: mean 2.58 against 2.57, spread 1.69 against 1.72.
+- CPI-U NSA against the central-bank study's seasonally adjusted series, 2005-2025: mean 2.58 against 2.57, spread 1.69 against 1.72.
 - The home price link: Shiller's series and Case-Shiller over CPI-U agree to 0.01 point a year over 2015-2022, so the splice after January 2023 is seamless.
 - Jordà, Schularick and Taylor's real returns: each era's mean yearly real change is within 0.5 point of Shiller's for 1913-2007 (homes and shares), though homes in 1913-1946 differ in sign (0.4% against -0.1%). The gaps are larger in 2008-2025 (homes 1.3% against 0.7%, shares 7.9% against 6.0%), where JST ends in 2020.
 
@@ -128,5 +128,5 @@ Each row is a regression of the quarterly policy rate on CPI-U's change over fou
 - A block bootstrap on 11-26 yearly values gives wide intervals, and it understates spreads a little in short samples. "No clear difference" is often the honest reading.
 - The model does not represent war, military spending or corruption, and no figure here is claimed about them.
 
-## Next (S75 part 2)
+## Next
 The engine readings: today's households under each era's measured settings (the era's macro path, its fitted rule, its tax rates by group, its medical cost growth), without and with the programme, both designs, 100 seeds. Amendment 2 fixes the build's mechanics before any engine run. Then the full report, and a separate Hub page for the findings (Duke's instruction, Nov 16), linked from the simulation and wiki pages once complete.

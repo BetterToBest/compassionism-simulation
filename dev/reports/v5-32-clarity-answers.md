@@ -1,16 +1,16 @@
 # Duke's answers to the seven wording questions, applied
 
-Oct 14, 2026 (ledger step s160, with issue i20). Wording only: no engine code changed and no figure changed. This note says what each answer changed, one place where a later decision changed the meaning of Duke's pick, and how we know no number moved.
+Oct 14, 2026 (with issue i20). Wording only: no engine code changed and no figure changed. This note says what each answer changed, one place where a later decision changed the meaning of Duke's pick, and how we know no number moved.
 
-The questions were in `dev/reports/v5-31-clarity-pass.md`, section 3. Duke answered them in the project ledger (decisions d201 to d207), and one more decision (d213) was added before this session.
+The questions were in `dev/reports/v5-31-clarity-pass.md`, section 3. Duke answered them in the project ledger (decisions d201 to d207), and one more decision was added before this session.
 
 ## 1. Where d213 changed the meaning of Duke's pick for d201 (read this first)
 
-The question (d201) was which programs the inflation-damping constant belongs to. Duke picked the second option, which described community housing (PTH) as the program "which holds rents down".
+The question was which programs the inflation-damping constant belongs to. Duke picked the second option, which described community housing (PTH) as the program "which holds rents down".
 
 That description is not what the model does. In the engine, PTH membership lowers the **overall** inflation rate of the whole simulated economy (the inflation rate is multiplied by one minus 0.10 times the share of people who are PTH members). No rent calculation uses that constant. Writing "which holds rents down" on the study page would have claimed a mechanism the code does not have.
 
-So a follow-up decision (d213) was put to Duke in the ledger, and confirmed: name both programs without a claim about rents, and say the damping applies to the overall inflation rate. The study page and the economist checklist now read:
+So a follow-up decision was put to Duke in the ledger, and confirmed: name both programs without a claim about rents, and say the damping applies to the overall inflation rate. The study page and the economist checklist now read:
 
 > Inflation damping by community businesses (PTF, which cut prices) and community housing (PTH): how much of outside inflation they absorb, applied to the overall inflation rate
 

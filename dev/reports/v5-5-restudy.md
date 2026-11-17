@@ -8,8 +8,8 @@ The same 500 simulated adults for 20 years, 500 times, with Compassionism and wi
 
 v5.0 is session 30's release candidate plus your four items:
 
-1. **Private essential-service businesses** pass what conversion adds to their BU customers as lower prices, and pay their workers what community-business workers earn (your correction, d140).
-2. **Creative projects' output counts at market value**, because they offer it to members below the market price and are paid at their earned rate (Claude's reading of your d138 answer). **Community businesses add capacity within a year**, paying for the capital they borrow (d137). **Only businesses' conversion is capped by their capacity**; individuals and Collectives are not (d139).
+1. **Private essential-service businesses** pass what conversion adds to their BU customers as lower prices, and pay their workers what community-business workers earn (your correction).
+2. **Creative projects' output counts at market value**, because they offer it to members below the market price and are paid at their earned rate (Claude's reading of your d138 answer). **Community businesses add capacity within a year**, paying for the capital they borrow. **Only businesses' conversion is capped by their capacity**; individuals and Collectives are not.
 3. **The spending layer:** in recessions, the programme's spending fills the idle capacity, at a published multiplier.
 4. **Wider public costs avoided:** prisons, hospital stays and psychiatric care, beside homelessness.
 

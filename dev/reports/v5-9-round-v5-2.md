@@ -1,6 +1,6 @@
 # v5.2: what this round added, what it found, and what it cannot tell you yet (plain words, for Duke)
 
-Written Oct 6, 2026 (session 35). This is Claude's report on the v5.2 round, the nine steps you set out on Oct 3. It needs no code reading. Every figure comes from the one 500-run regeneration made at the end of the round (500 pairs of simulated runs, each with 500 adults, in the Reference, Adverse and Stress Test environments, over 20 and 40 years). "Points" below means percentage points: if the share with too little wealth goes from 52.0% to 35.7%, that is 16.3 points lower.
+Written Oct 6, 2026. This is Claude's report on the v5.2 round, the nine steps you set out on Oct 3. It needs no code reading. Every figure comes from the one 500-run regeneration made at the end of the round (500 pairs of simulated runs, each with 500 adults, in the Reference, Adverse and Stress Test environments, over 20 and 40 years). "Points" below means percentage points: if the share with too little wealth goes from 52.0% to 35.7%, that is 16.3 points lower.
 
 ## In one paragraph
 
@@ -86,7 +86,7 @@ The no-programme run is the yardstick for every result, so it was checked agains
 
 ## 6. Where I made a choice your writing does not make
 
-Each is labelled on the page and recorded in `dev/DECISIONS.md` (Session 35):
+Each is labelled on the page and recorded in `dev/DECISIONS.md`:
 
 - retirees under decision A are always willing to do creative work (they give up no wage to do it);
 - audits catch half of unearned rates in the review reading ("not specified by the Hub");

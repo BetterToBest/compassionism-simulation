@@ -1,4 +1,4 @@
-# The frozen engine's corrections, measured (S47): tables
+# The frozen engine's corrections, measured: tables
 
 Written by `node dev/tools/s47_fx_measure.js --table dev/runs/s47-fx/s47-fx-{ref,adv,st}.json.gz` from the runs of Nov 5, 2026 (seeds 1-50, CPS earnings yardstick, 500 adults, 20 years). The plain-words reading is `dev/reports/s47-fx.md`. In the first table of each design, the columns pthb, hb, ab and sp are each part alone added to the audit-corrected engine (au), minus au.
 
@@ -23,7 +23,7 @@ Levels on the published engine, and the change each setting makes against the au
 | Gini, disposable income | 0.3354 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | -0.0001 ± 0.0000 | -0.0001 ± 0.0000 | -0.0001 ± 0.0000 |
 | SNAP work-rule months lost (per adult) | 0.48 | 0.00 ± 0.00 | 0.00 ± 0.00 | 0.00 ± 0.00 | -0.00 ± 0.00 | -0.00 ± 0.00 | -0.01 ± 0.00 | -0.01 ± 0.00 |
 
-**Release design**
+**Opt-in design**
 
 | Measure | published | au - published | pthb | hb | ab | sp | frozen - au | frozen - published |
 |---|---|---|---|---|---|---|---|---|
@@ -40,7 +40,7 @@ Levels on the published engine, and the change each setting makes against the au
 | Gini, disposable income | 0.3481 | 0.0014 ± 0.0002 | 0.0000 ± 0.0001 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | -0.0003 ± 0.0001 | -0.0003 ± 0.0001 | 0.0011 ± 0.0002 |
 | SNAP work-rule months lost (per adult) | 0.54 | 0.02 ± 0.01 | -0.00 ± 0.00 | 0.00 ± 0.00 | -0.00 ± 0.00 | -0.01 ± 0.00 | -0.01 ± 0.00 | 0.00 ± 0.01 |
 
-**C2.2 design**
+**Full-coverage design**
 
 | Measure | published | au - published | pthb | hb | ab | sp | frozen - au | frozen - published |
 |---|---|---|---|---|---|---|---|---|
@@ -93,7 +93,7 @@ Levels on the published engine, and the change each setting makes against the au
 | Gini, disposable income | 0.3417 | 0.0001 ± 0.0000 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | -0.0001 ± 0.0000 | -0.0001 ± 0.0000 | 0.0000 ± 0.0000 |
 | SNAP work-rule months lost (per adult) | 1.04 | 0.00 ± 0.00 | 0.00 ± 0.00 | 0.00 ± 0.00 | -0.00 ± 0.00 | -0.01 ± 0.00 | -0.01 ± 0.00 | -0.01 ± 0.00 |
 
-**Release design**
+**Opt-in design**
 
 | Measure | published | au - published | pthb | hb | ab | sp | frozen - au | frozen - published |
 |---|---|---|---|---|---|---|---|---|
@@ -110,7 +110,7 @@ Levels on the published engine, and the change each setting makes against the au
 | Gini, disposable income | 0.3658 | 0.0021 ± 0.0003 | 0.0001 ± 0.0001 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | -0.0008 ± 0.0001 | -0.0007 ± 0.0001 | 0.0014 ± 0.0004 |
 | SNAP work-rule months lost (per adult) | 1.19 | 0.03 ± 0.01 | 0.00 ± 0.00 | 0.00 ± 0.00 | -0.00 ± 0.00 | -0.03 ± 0.01 | -0.04 ± 0.01 | -0.01 ± 0.01 |
 
-**C2.2 design**
+**Full-coverage design**
 
 | Measure | published | au - published | pthb | hb | ab | sp | frozen - au | frozen - published |
 |---|---|---|---|---|---|---|---|---|
@@ -163,7 +163,7 @@ Levels on the published engine, and the change each setting makes against the au
 | Gini, disposable income | 0.3417 | 0.0001 ± 0.0000 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | -0.0001 ± 0.0000 | -0.0001 ± 0.0000 | 0.0000 ± 0.0000 |
 | SNAP work-rule months lost (per adult) | 1.04 | 0.00 ± 0.00 | 0.00 ± 0.00 | 0.00 ± 0.00 | -0.00 ± 0.00 | -0.01 ± 0.00 | -0.01 ± 0.00 | -0.01 ± 0.00 |
 
-**Release design**
+**Opt-in design**
 
 | Measure | published | au - published | pthb | hb | ab | sp | frozen - au | frozen - published |
 |---|---|---|---|---|---|---|---|---|
@@ -180,7 +180,7 @@ Levels on the published engine, and the change each setting makes against the au
 | Gini, disposable income | 0.3547 | 0.0018 ± 0.0001 | -0.0000 ± 0.0000 | 0.0000 ± 0.0000 | 0.0000 ± 0.0000 | -0.0001 ± 0.0001 | -0.0000 ± 0.0001 | 0.0018 ± 0.0001 |
 | SNAP work-rule months lost (per adult) | 1.10 | 0.01 ± 0.00 | 0.00 ± 0.00 | 0.00 ± 0.00 | -0.00 ± 0.00 | -0.02 ± 0.00 | -0.02 ± 0.00 | -0.01 ± 0.01 |
 
-**C2.2 design**
+**Full-coverage design**
 
 | Measure | published | au - published | pthb | hb | ab | sp | frozen - au | frozen - published |
 |---|---|---|---|---|---|---|---|---|

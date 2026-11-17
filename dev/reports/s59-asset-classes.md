@@ -1,15 +1,15 @@
-# Wealth held by asset class: what changes when a house is not treated as cash (S59, part 1)
+# Wealth held by asset class: what changes when a house is not treated as cash
 
 Nov 10, 2026. Pilot: seeds 1-100, 500 adults, 20 years, three environments, engine `1d2cf29`. A pilot is a mechanism check, not a result; the frozen 500-seed batch decides. Preregistered before the build and before any run (research-update `prereg/2026-11-s59-asset-classes.md`, with two dated amendments). Tables: `dev/runs/s59-assets/tables.md`. Per-seed files: compassionism-sim-results `s59-assets-1d2cf29`.
 
-**Correction, Nov 12, 2026 (found by part 2 of this step; no finding changes).** The Fed re-issued the survey file this report's holdings come from on Oct 5, 2026, with every dollar amount in 2025 dollars. The script of Nov 10 read the re-issued file and still applied the 2022-to-2025 price adjustment, so the dollar edges of the seven wealth groups were 9.4% too high ($40,571, $215,318, $728,230, $2,030,980, $14,012,139; corrected: $37,073, $196,748, $665,427, $1,855,827, $12,803,724). A household whose net worth lay within 9.4% above an edge was placed one group too low. The groups' holdings are ratios and were not affected, and the engine's starting wealth tables were computed from the earlier file and are right. The rows were run again with the corrected edges on the same seeds (engine `62a189b`): the programme's effect on wealth poverty under the main reading moves from −12.66 to −12.63 points (release, Reference) and stays at −18.18 (C2.2, Reference); with fixed-rate debt repricing it stays at −6.68 and moves from −13.32 to −13.33. The largest change in any environment is 0.11 points (C2.2, Stress: −18.71 to −18.82). Both sets of figures are in `dev/runs/s59-tail/tables.md`, section 17. The figures below are the Nov 10 pilot's, as run.
+**Correction, Nov 12, 2026 (found by part 2 of this step; no finding changes).** The Fed re-issued the survey file this report's holdings come from on Oct 5, 2026, with every dollar amount in 2025 dollars. The script of Nov 10 read the re-issued file and still applied the 2022-to-2025 price adjustment, so the dollar edges of the seven wealth groups were 9.4% too high ($40,571, $215,318, $728,230, $2,030,980, $14,012,139; corrected: $37,073, $196,748, $665,427, $1,855,827, $12,803,724). A household whose net worth lay within 9.4% above an edge was placed one group too low. The groups' holdings are ratios and were not affected, and the engine's starting wealth tables were computed from the earlier file and are right. The rows were run again with the corrected edges on the same seeds (engine `62a189b`): the programme's effect on wealth poverty under the main reading moves from −12.66 to −12.63 points (release, Reference) and stays at −18.18 (full coverage, Reference); with fixed-rate debt repricing it stays at −6.68 and moves from −13.32 to −13.33. The largest change in any environment is 0.11 points (full coverage, Stress: −18.71 to −18.82). Both sets of figures are in `dev/runs/s59-tail/tables.md`, section 17. The figures below are the Nov 10 pilot's, as run.
 
 ## In short
 1. **Until now the model treated all wealth as cash.** A house, a share portfolio and a business were each one number of dollars that never repriced. The programme's modelled inflation is about 30-45% a year, so after 20 years those dollars bought almost nothing. That single assumption produced most of every published wealth result.
 2. **In the survey data, the model's families hold little net cash.** For the families the engine starts from, homes, shares, businesses and other real assets are about 98% of net worth. Nominal assets (deposits, bonds) are 20% of net worth and debts are 18%, most of them fixed-rate mortgages (2022 Survey of Consumer Finances).
-3. **With wealth held by asset class, the programme's wealth-poverty harm becomes a reduction in every environment under the main reading.** In Reference, the release design moves from +21.5 points (more adults under $25,000 of real wealth) to −12.7; the C2.2 design from +0.7 to −18.2.
-4. **Part of that reduction is debt relief that nobody in the model pays for: about half for the release design and a quarter for C2.2.** Inflation wipes out fixed-rate mortgages, and the model has no lender who loses. In the reading where fixed-rate debt reprices instead, the reductions are −6.7 (release) and −13.3 (C2.2) in Reference.
-5. **One assumption can reverse the release design's result.** If houses, shares and businesses follow only half of the programme's inflation, the release design raises wealth poverty in Adverse (+9.1) and Stress (+3.6), and the C2.2 design's effect in Stress is nil. So for the release design the sign is not established. For C2.2 the effect is a reduction in 26 of the 27 asset-class cells (nine readings, three environments) and nil in the other.
+3. **With wealth held by asset class, the programme's wealth-poverty harm becomes a reduction in every environment under the main reading.** In Reference, the opt-in design moves from +21.5 points (more adults under $25,000 of real wealth) to −12.7; the full-coverage design from +0.7 to −18.2.
+4. **Part of that reduction is debt relief that nobody in the model pays for: about half for the opt-in design and a quarter for the full-coverage design.** Inflation wipes out fixed-rate mortgages, and the model has no lender who loses. In the reading where fixed-rate debt reprices instead, the reductions are −6.7 (opt-in) and −13.3 (full coverage) in Reference.
+5. **One assumption can reverse the opt-in design's result.** If houses, shares and businesses follow only half of the programme's inflation, the opt-in design raises wealth poverty in Adverse (+9.1) and Stress (+3.6), and the full-coverage design's effect in Stress is nil. So for the opt-in design the sign is not established. For the full-coverage design the effect is a reduction in 26 of the 27 asset-class cells (nine readings, three environments) and nil in the other.
 6. **Basket poverty, the cost of living and inflation do not move.** The switch changes wealth only.
 7. **The well-off still lose.** The top fifth by starting wealth loses about $240,000 per adult in real terms under either design in Reference, mostly nominal assets eroded by inflation. The other four fifths gain.
 
@@ -41,7 +41,7 @@ Every one of these is swept below.
 ## Results
 
 ### The programme's effect on wealth poverty (points; programme minus no programme; year 20)
-| Reading | Reference, release | Reference, C2.2 | Adverse, release | Adverse, C2.2 | Stress, release | Stress, C2.2 |
+| Reading | Reference, opt-in | Reference, full coverage | Adverse, opt-in | Adverse, full coverage | Stress, opt-in | Stress, full coverage |
 |---|---|---|---|---|---|---|
 | today: all wealth is cash | +21.5 | +0.7 | +45.0 | +30.2 | +24.8 | +41.7 |
 | by asset class, main reading | −12.7 | −18.2 | −13.2 | −20.2 | −7.1 | −18.7 |
@@ -54,10 +54,10 @@ Every one of these is swept below.
 | new saving split by the group's asset shares | −13.6 | −18.5 | −15.2 | −21.9 | −7.9 | −21.4 |
 | fixed-rate debt reprices too (no debt relief) | −6.7 | −13.3 | −7.8 | −15.7 | −2.8 | −13.4 |
 
-Intervals (2.5th to 97.5th percentile of 2,000 paired bootstrap replicates, unadjusted) are within ±0.6 points of each figure; the Stress C2.2 cell under half indexing is −0.03 (−0.58 to +0.49). The "today" row reproduces the earlier trace's published figures exactly.
+Intervals (2.5th to 97.5th percentile of 2,000 paired bootstrap replicates, unadjusted) are within ±0.6 points of each figure; the Stress full-coverage cell under half indexing is −0.03 (−0.58 to +0.49). The "today" row reproduces the earlier trace's published figures exactly.
 
 ### Other outcomes (Reference; programme minus no programme)
-| Outcome | Release, today | Release, main | Release, no debt relief | C2.2, today | C2.2, main | C2.2, no debt relief |
+| Outcome | Opt-in, today | Opt-in, main | Opt-in, no debt relief | Full coverage, today | Full coverage, main | Full coverage, no debt relief |
 |---|---|---|---|---|---|---|
 | Median real wealth | −$182,800 | +$43,600 | −$43,800 | −$171,500 | +$65,700 | −$22,500 |
 | Real wealth at the 10th percentile | +$12,200 | +$51,900 | +$20,900 | +$26,800 | +$80,500 | +$50,800 |
@@ -74,7 +74,7 @@ Two earlier findings do not survive. The halving of the wealth Gini and the 12-1
 ### The three parts (Reference, main reading; real dollars per adult at year 20, programme minus no programme)
 Each adult's real wealth is split into the opening nominal position held untouched (nominal assets and floating debt with their interest, less fixed-rate debt), the opening real assets held untouched, and the rest (saving since the start and what it earned). The three sum to real wealth exactly (unit test).
 
-| Group by starting wealth | Release: opening nominal position | Release: saving | Release: whole | C2.2: opening nominal position | C2.2: saving | C2.2: whole |
+| Group by starting wealth | Opt-in: opening nominal position | Opt-in: saving | Opt-in: whole | Full coverage: opening nominal position | Full coverage: saving | Full coverage: whole |
 |---|---|---|---|---|---|---|
 | All adults | +$5,700 | −$24,000 | −$18,300 | +$3,500 | −$400 | +$3,100 |
 | Lowest fifth | +$36,100 | −$15,800 | +$20,300 | +$36,100 | +$8,500 | +$44,600 |
@@ -86,10 +86,10 @@ Each adult's real wealth is split into the opening nominal position held untouch
 The opening real assets are the same in both runs (they follow the price level in full), so the programme's revaluation effect is zero by construction in the main reading. It appears only in the half-indexing reading, where it is about −$750,000 per adult: that reading is close to today's all-cash result for the same reason.
 
 What this shows:
-- **The mean real-wealth gap almost disappears.** The earlier trace measured −$561,600 (release) and −$551,700 (C2.2) per adult in Reference, 90-92% of it erosion of opening balances. With assets by class the gaps are −$18,300 and +$3,100.
+- **The mean real-wealth gap almost disappears.** The earlier trace measured −$561,600 (opt-in) and −$551,700 (full coverage) per adult in Reference, 90-92% of it erosion of opening balances. With assets by class the gaps are −$18,300 and +$3,100.
 - **The bottom four fifths gain on their opening position; the top fifth loses.** Families below about the 75th percentile owe more in fixed-rate debt than they hold in nominal assets, so inflation lowers their debts faster than it erodes their deposits. The top fifth holds nominal assets and little debt.
-- **Under the release design new saving loses value** (−$24,000 per adult): it goes into nominal assets that earn less than inflation. If nominal assets kept up with prices, or new saving followed each group's asset mix, the saving part would be about +$60,000 to +$65,000 (release) and +$126,000 to +$132,000 (C2.2).
-- **Without debt relief** the opening nominal position costs the average adult about $99,000 under the release design, and the whole gap is −$119,900.
+- **Under the opt-in design new saving loses value** (−$24,000 per adult): it goes into nominal assets that earn less than inflation. If nominal assets kept up with prices, or new saving followed each group's asset mix, the saving part would be about +$60,000 to +$65,000 (opt-in) and +$126,000 to +$132,000 (full coverage).
+- **Without debt relief** the opening nominal position costs the average adult about $99,000 under the opt-in design, and the whole gap is −$119,900.
 
 ### The no-programme run
 In Reference the no-programme run has no inflation, so the all-cash assumption cost it nothing; the switch changes it only through real price gains (median real wealth at year 20: $212,300 today, $265,800 with the main gains). In Adverse and Stress the no-programme run has outside inflation, so the switch also stops that erosion (median $116,000 today, $232,500 main). The preregistration's Amendment 1 said the no-programme run has no inflation; that is true of Reference only (Amendment 2 corrects it).
@@ -98,7 +98,7 @@ The start is unchanged by the switch: the top 1% hold 20.8% of wealth against th
 
 ## Limits
 1. **No creditor side.** When inflation wipes out a fixed-rate mortgage, a lender loses the same amount. The model has no lenders, so that loss lands on no one. The no-debt-relief reading removes the gain entirely; the truth lies between the two, and at 30-45% inflation it is doubtful that fixed-rate lending would continue at all.
-2. **Do real assets keep up with 30-45% inflation?** The main reading says fully. Evidence from moderate inflation does not settle it, and the half-indexing reading changes the release design's sign in two environments. This is the assumption an economist should look at first.
+2. **Do real assets keep up with 30-45% inflation?** The main reading says fully. Evidence from moderate inflation does not settle it, and the half-indexing reading changes the opt-in design's sign in two environments. This is the assumption an economist should look at first.
 3. **The 0.46 pass-through** is measured at US policy rates between 0 and about 6%, and applied here to 30-45% inflation.
 4. **No capital income.** Dividends, rents and business profits are not paid to households; price gains only.
 5. **Real assets are never sold and fixed debt is never repaid.** A household that runs short borrows at the floating rate rather than selling shares; mortgage payments stay inside the cost of living.
@@ -107,11 +107,11 @@ The start is unchanged by the switch: the top 1% hold 20.8% of wealth against th
 8. **The starting table is the 2022 survey**, matching the engine's starting wealth; the 2025 survey is out and both should move together.
 9. **Not yet tested with ageing or with the debt reading's liquid share** (for the pairwise switch tests).
 
-## For the freeze (S63) and the findings page
+## For the freeze and the findings page
 - Recommended: `rt` main as a main-row candidate, with "all wealth is cash" beside it and two readings always shown with any wealth result: fixed-rate debt reprices (no debt relief), and real assets follow half of inflation.
 - Wealth claims that rested on the all-cash assumption (the wealth-poverty harm, the fall in the wealth Gini and top shares, the fall in median real wealth) should be described as that assumption's result, not the programme's.
-- A favourable wealth-poverty result for C2.2 can be stated as a conditional model result: it holds in every reading run here except half indexing in Stress, where it is nil, and it shrinks by about a quarter without debt relief.
-- For the release design the direction is not established.
+- A favourable wealth-poverty result for the full-coverage design can be stated as a conditional model result: it holds in every reading run here except half indexing in Stress, where it is nil, and it shrinks by about a quarter without debt relief.
+- For the opt-in design the direction is not established.
 
 ## Reproduce
 ```

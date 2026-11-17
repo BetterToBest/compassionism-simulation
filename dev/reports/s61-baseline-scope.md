@@ -1,10 +1,10 @@
-# Who the "no programme" people are: adults outside the labour force, and how households below their budget borrow (S61)
+# Who the "no programme" people are: adults outside the labour force, and how households below their budget borrow
 
-Built Nov 9, 2026. Preregistration: research-update `prereg/2026-11-s61-baseline-scope.md` (the criterion for choosing a spending rule was fixed there before anything was built; Amendment 1 lists the small choices made while building). Choices: `dev/DECISIONS.md`, S61. Tables: `dev/runs/s61-scope/tables.md`. This is a **pilot** at 100 seeds: round 2 runs nothing at 500 seeds before its freeze (S63).
+Built Nov 9, 2026. Preregistration: research-update `prereg/2026-11-s61-baseline-scope.md` (the criterion for choosing a spending rule was fixed there before anything was built; Amendment 1 lists the small choices made while building). Choices: `dev/DECISIONS.md`. Tables: `dev/runs/s61-scope/tables.md`. This is a **pilot** at 100 seeds: the v5.9 model runs nothing at 500 seeds before its freeze.
 
 ## Why this matters
 
-Every result compares Compassionism with "no programme" on the same simulated people. S34 found two ways in which those people differ from Americans that matter for the next round of results:
+Every result compares Compassionism with "no programme" on the same simulated people. The baseline-realism check found two ways in which those people differ from Americans that matter for the next round of results:
 
 1. **Everyone works.** In the model every adult aged 25-64 is in the labour force. In the US, 19.4% of adults that age did not work at all in 2025, and 17.3% gave a reason outside the labour market: illness or disability (5.8%), retirement (4.1%), caring for home or family (6.3%), school (1.1%) (Census Bureau, CPS ASEC 2026). These adults are among the poorest: about a third of those out for disability or school are below the official poverty line, against 4.6% of adults in the labour force.
 2. **Households below their budget slide into debt.** A household whose income is below its living-wage budget spends less than the budget but more than its income, every year, with no limit until the debt floor (−$10,000), where the rest is written off. So families in debt rise over 20 years far beyond the survey's figure.
@@ -13,8 +13,8 @@ The outside reviews (research-update `audits/2026-11-s39-s55-review-triage.md`, 
 
 ## What was built (both off by default; with them off every published figure is unchanged)
 
-**Borrowing for ordinary spending** (row option `dr`, S35's debt reading, extended). When the spending rule would have a household spend more than its cash income, the excess is paid from its savings at the start of the year and from a borrowing limit, and from nothing else; once both are used up, the household spends its income and the rest of its budget is cut.
-- The **borrowing limit** is $2,500 in today's money, moved with prices: the median unsecured consumer debt (credit cards, other instalment loans, other debt) of families aged 25-64 in the bottom 40% of income who hold any, in the Federal Reserve's 2025 Survey of Consumer Finances. It is a design parameter (how much of a family's unsecured debt is room for ordinary spending), swept over $0 (S35's reading), $5,000, $8,700 and $10,000.
+**Borrowing for ordinary spending** (row option `dr`, the pilot studies' debt reading, extended). When the spending rule would have a household spend more than its cash income, the excess is paid from its savings at the start of the year and from a borrowing limit, and from nothing else; once both are used up, the household spends its income and the rest of its budget is cut.
+- The **borrowing limit** is $2,500 in today's money, moved with prices: the median unsecured consumer debt (credit cards, other instalment loans, other debt) of families aged 25-64 in the bottom 40% of income who hold any, in the Federal Reserve's 2025 Survey of Consumer Finances. It is a design parameter (how much of a family's unsecured debt is room for ordinary spending), swept over $0 (the pilot studies' reading), $5,000, $8,700 and $10,000.
 - The **liquid share** of savings that can pay for ordinary spending is 1 (the model has one wealth stock), with a reading at 0.046 (the survey's median of liquid assets over net worth).
 - The **floor reading** applies the income-graded rule only to spending above the household's official poverty line: below the line, spending is the line; between the line and the budget, the graded rule applies to the part above the line. The borrowing limit applies on top.
 
@@ -22,7 +22,7 @@ The outside reviews (research-update `audits/2026-11-s39-s55-review-triage.md`, 
 
 ## Claude's reading of the design (please check)
 
-The Hub's Optimal Transfer Design paper distributes the Basic Unit "universally" (`dev/reports/c22-coverage-adequacy.md`, which read the papers for S6); nothing in the papers treats adults outside the labour force differently. So in the model they receive the Basic Unit and every price effect like anyone else. Where the papers are silent is whether they gain programme income through work. The engine treats them as it treats retirees: they may take part in conversion projects, giving up no wage. A reading with no conversion at all (`conv: 'none'`) is reported beside it. **Modelling assumption:** status is fixed for the run (nobody enters or leaves the labour force); bargaining power and the outside option, which could move people in or out, come in S60.
+The Hub's Optimal Transfer Design paper distributes the Basic Unit "universally" (`dev/reports/c22-coverage-adequacy.md`, which read the papers for the coverage-and-adequacy study); nothing in the papers treats adults outside the labour force differently. So in the model they receive the Basic Unit and every price effect like anyone else. Where the papers are silent is whether they gain programme income through work. The engine treats them as it treats retirees: they may take part in conversion projects, giving up no wage. A reading with no conversion at all (`conv: 'none'`) is reported beside it. **Modelling assumption:** status is fixed for the run (nobody enters or leaves the labour force); bargaining power and the outside option, which could move people in or out, come in the bargaining study.
 
 ## Results (pilot: seeds 1-100, 500 adults, 20 years; engine `1d9ab84`; every figure in `dev/runs/s61-scope/tables.md`)
 
@@ -36,7 +36,7 @@ Every row is the frozen yardstick (the frozen engine, US earnings, today's safet
 | Frozen yardstick (no limit; write-off at −$10,000) | 13.4% | 22.0% | −$1,400 |
 | **Cap, limit $2,500 (recommended)** | 13.4% | 21.6% | $5,000 |
 | Cap, limit $5,000 / $8,700 / $10,000 | 13.4% | 21.8% / 21.9% / 21.9% | $2,800 / −$300 / −$1,400 |
-| Cap, limit $0 (S35's reading) | 9.9% | 12.3% | $7,100 |
+| Cap, limit $0 (the pilot studies' reading) | 9.9% | 12.3% | $7,100 |
 | Cap, only 4.6% of savings available | 10.6% | 18.3% | $24,900 |
 | Floor (graded only above the poverty line) + cap | 12.5% | 20.8% | $8,100 |
 
@@ -45,7 +45,7 @@ Every row is the frozen yardstick (the frozen engine, US earnings, today's safet
 - Adverse and Stress tell the same story (Year 20: 30.5% frozen, 30.4% cap, 28.9% floor, 18.2% limit $0).
 - None of the readings moves basket poverty or the cost-of-living measure (they compare income with the full budget, so a cut in spending is hardship, not relief); wealth poverty moves by at most 2.4 points (the liquid-share reading: 21.9% → 20.5% in Reference, 31.9% → 29.5% in Adverse and Stress; the floor reading: 21.9% → 21.4% in Reference, 31.9% → 31.0% in Adverse and Stress; the limit alone by less than 0.1).
 
-**Recommendation to S63 (criterion C1-C3, fixed before the run):** the **cap reading with the $2,500 limit** for the main row. It is admissible (spending above income only from savings and the explicit limit; unit test), every constant is sourced or a labelled design parameter, and it has one fewer design choice than the floor reading. The floor reading, the limit sweep and the liquid-share reading go beside it.
+**Recommendation to the v5.9 preregistration (criterion C1-C3, fixed before the run):** the **cap reading with the $2,500 limit** for the main row. It is admissible (spending above income only from savings and the explicit limit; unit test), every constant is sourced or a labelled design parameter, and it has one fewer design choice than the floor reading. The floor reading, the limit sweep and the liquid-share reading go beside it.
 
 ### 2. Adults outside the labour force
 
@@ -65,7 +65,7 @@ Every row is the frozen yardstick (the frozen engine, US earnings, today's safet
 
 ### 3. Does the programme's effect depend on the reading? (criterion C4; pilot, not a result)
 
-The C2.2 design against its own no-programme row, Reference, points (95% paired bootstrap interval):
+The full-coverage design against its own no-programme row, Reference, points (95% paired bootstrap interval):
 
 | Reading | Basket poverty | Wealth poverty | Cost-of-living measure |
 |---|---|---|---|
@@ -75,12 +75,12 @@ The C2.2 design against its own no-programme row, Reference, points (95% paired 
 | Adults outside the labour force | −31.4 [−31.8, −31.0] | +9.8 [+9.4, +10.3] | −34.9 [−35.4, −34.5] |
 | Adults outside the labour force + cap | −31.4 [−31.8, −31.0] | +9.9 [+9.4, +10.4] | −35.0 [−35.4, −34.5] |
 
-- No reading changes the sign of an effect or whether its interval excludes zero, in any environment, so C4 does not require S63 to carry two main rows.
-- But adding adults outside the labour force changes the size of the programme's effects a great deal. The basket-poverty gain is larger (−31.4 against −24.6 points: more people start below the cost of living and the Basic Unit reaches them), and so is the wealth-poverty **harm**: +9.8 points against +0.7 in Reference (Adverse +35.4 against +30.2; Stress +45.0 against +41.7). A likely mechanism, not yet traced: adults with no wages cannot rebuild savings that the programme's inflation erodes. **For S63:** carry `lf` on and off beside each other whatever the main row, and trace the wealth-poverty harm before any headline uses it.
-- With no conversion income for these adults (`conv: 'none'`), the no-programme figures are identical (as they must be); the programme effect under that reading is for S63's rows.
+- No reading changes the sign of an effect or whether its interval excludes zero, in any environment, so C4 does not require the v5.9 preregistration to carry two main rows.
+- But adding adults outside the labour force changes the size of the programme's effects a great deal. The basket-poverty gain is larger (−31.4 against −24.6 points: more people start below the cost of living and the Basic Unit reaches them), and so is the wealth-poverty **harm**: +9.8 points against +0.7 in Reference (Adverse +35.4 against +30.2; Stress +45.0 against +41.7). A likely mechanism, not yet traced: adults with no wages cannot rebuild savings that the programme's inflation erodes. **For the v5.9 preregistration:** carry `lf` on and off beside each other whatever the main row, and trace the wealth-poverty harm before any headline uses it.
+- With no conversion income for these adults (`conv: 'none'`), the no-programme figures are identical (as they must be); the programme effect under that reading is for the v5.9 preregistration's rows.
 
-## What S63 must carry from this step
-1. Main-row candidates: the cap reading at $2,500 (recommended) and `lf` (recommended under decision rule 3: its tests pass and it moves the share with earnings to the CPS figure). Which readings join the main row is S63's ledger decision.
+## What the v5.9 preregistration must carry from this step
+1. Main-row candidates: the cap reading at $2,500 (recommended) and `lf` (recommended under decision rule 3: its tests pass and it moves the share with earnings to the CPS figure). Which readings join the main row is the v5.9 preregistration's ledger decision.
 2. Beside them: the limit sweep ($0, $5,000, $8,700, $10,000), the liquid share 0.046, the floor reading, `lf` off, `conv: 'none'`.
 3. A per-adult reporting key for basket poverty by labour-force reason (Q4; prereg Amendment 1 item 5).
 4. The open gap on families in debt, and the wealth-poverty harm under `lf`, traced before any headline uses it.
@@ -99,7 +99,7 @@ The C2.2 design against its own no-programme row, Reference, points (95% paired 
 - Federal Reserve, 2025 Survey of Consumer Finances, summary extract (downloaded Nov 9, 2026; `sources/s61_borrowing.py`, output `sources/s61_borrowing.json`).
 - U.S. Census Bureau, poverty thresholds for 2025 (already in the engine, `CFG.HH_FPL`).
 
-## Design parameters (labelled, with the ranges to sweep in S63)
+## Design parameters (labelled, with the ranges to sweep in the v5.9 preregistration)
 
 | Parameter | Main value | Range | What it is |
 |---|---|---|---|
