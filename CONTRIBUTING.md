@@ -40,11 +40,12 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.7 Release Notes
+## v5.9.8 Release Notes
 
-Released Nov 17, 2026: **reader-facing wording, second part: CHANGELOG.md and the reports.** No engine line changes, no page changes, and no figure changes.
-- **The release notes and the plain-words reports** in `dev/reports/` now use the same names as the pages: v5.6 and v5.9 for the two model generations, the full-coverage design and the opt-in design, and studies named by what they ask. Each report that uses the full-coverage design says once that it is built to meet NEEC's criterion C2.2. Sentences that cited a step, a ledger decision, a job or a working session now say what was meant (Duke's decision, the measures run, the first v5.0 candidate) or drop the code. Dates, figures, findings, limits and correction notes are unchanged. Labels that a report defines for its own use (the financing reading's numbered statements, the supply-shock reading's numbered readings, the low-share trace's three parts, the pilots' lettered studies, and a v4 table's wealth deciles) stay, listed in `dev/tools/reader_codes_allow.txt`.
-- **The check covers them.** `dev/tools/reader_codes.py --check` (domtest Phase 17) now reads CHANGELOG.md and every report in `dev/reports/`, so no file a reader opens is left out. It also catches two forms it missed: a version label at the end of a sentence (`release 2.`) and a pair of codes joined by a slash. The counts before and after are in `dev/reports/reader-wording.md`.
+Released Nov 17, 2026: **a correction to the chart of what the days are made of on the visual suite page.** No engine line changes and no stored figure changes.
+- **What was wrong.** The chart drew each column as shares of the average adult's days from savings, pay and the allowance. Savings filled almost all of every column, so the chart looked one colour and pay and the allowance could not be seen. In the v5.9 view it was also misleading. v5.9's runs give 18 simulated adults the place of very rich families, each counted at its share of the population (a weight). The stored averages of these parts count those adults once each, so the average days from savings came out at 550,000 to 730,000 against a median of 1,500 to 3,800. The same fault was corrected for the wealth Gini in v5.9.5.
+- **Now.** The chart shows the median adult's days from each part, one bar chart per part, each on its own scale, for no programme and Compassionism at Year 7 and the last year, with the 10th to 90th percentile across runs. The text and the table give medians. The v5.6 view's table still shows averages below the medians; the v5.9 view shows none and says why. Weighted averages for v5.9 would need its main rows run again with weights in the suite export. That is listed as a follow-up and has not been run.
+- domtest and the figure check expect 13 charts on the suite page (the parts chart is now three). The reports `dev/reports/v5-33-visual-suite.md` and `dev/reports/s11-suite-release2.md` carry dated corrections.
 
 ## How to Contribute
 
@@ -450,7 +451,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.7*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.8*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

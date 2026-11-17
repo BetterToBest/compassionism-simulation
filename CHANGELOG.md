@@ -1,10 +1,16 @@
 # Changelog
 
-The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1, the v5.4.1 notes at v5.5.0, the v5.5.0 notes at v5.6.0, the v5.6.0 notes at v5.7.0, the v5.9.2 notes at v5.9.4, the v5.9.4 notes at v5.9.5, the v5.9.5 notes at v5.9.6, the v5.9.6 notes at v5.9.7) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
+The release notes of every version before the current one, and the notes written between releases, moved here from CONTRIBUTING.md in v5.2 (Oct 3, 2026; the v5.1 notes at the v5.2 release, the v5.2 notes at v5.2.1, the v5.2.1 and v5.2.2 notes at v5.3, the v5.3 notes at v5.3.1, the v5.3.1 notes at v5.4, the v5.4 notes at v5.4.1, the v5.4.1 notes at v5.5.0, the v5.5.0 notes at v5.6.0, the v5.6.0 notes at v5.7.0, the v5.9.2 notes at v5.9.4, the v5.9.4 notes at v5.9.5, the v5.9.5 notes at v5.9.6, the v5.9.6 notes at v5.9.7, the v5.9.7 notes at v5.9.8) without changes, newest first, so CONTRIBUTING.md can stay about how to contribute and what is open. The current release's notes are in [CONTRIBUTING.md](CONTRIBUTING.md); at each release they move here. References elsewhere to "CONTRIBUTING.md's vX Release Notes" (code comments, the replication page, the earlier engine) mean the section of the same name below. Headings are kept exactly, so their links still resolve on this page.
 
 The "Unreleased" sections were written between v4.22 and v5.0 for harness-only work; that work reached the page in v5.0.
 
 ---
+
+## v5.9.7 Release Notes
+
+Released Nov 17, 2026: **reader-facing wording, second part: CHANGELOG.md and the reports.** No engine line changes, no page changes, and no figure changes.
+- **The release notes and the plain-words reports** in `dev/reports/` now use the same names as the pages: v5.6 and v5.9 for the two model generations, the full-coverage design and the opt-in design, and studies named by what they ask. Each report that uses the full-coverage design says once that it is built to meet NEEC's criterion C2.2. Sentences that cited a step, a ledger decision, a job or a working session now say what was meant (Duke's decision, the measures run, the first v5.0 candidate) or drop the code. Dates, figures, findings, limits and correction notes are unchanged. Labels that a report defines for its own use (the financing reading's numbered statements, the supply-shock reading's numbered readings, the low-share trace's three parts, the pilots' lettered studies, and a v4 table's wealth deciles) stay, listed in `dev/tools/reader_codes_allow.txt`.
+- **The check covers them.** `dev/tools/reader_codes.py --check` (domtest Phase 17) now reads CHANGELOG.md and every report in `dev/reports/`, so no file a reader opens is left out. It also catches two forms it missed: a version label at the end of a sentence (`release 2.`) and a pair of codes joined by a slash. The counts before and after are in `dev/reports/reader-wording.md`.
 
 ## v5.9.6 Release Notes
 
