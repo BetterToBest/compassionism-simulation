@@ -1,0 +1,126 @@
+{
+ "files": {
+  "DHUTRC1A027NBEA": "9709eb52ef49b500b2c5c9f3bec628a9dd91f8ecbb8e45e7752dada0db65d874",
+  "DFXARC1A027NBEA": "92a6add5160b6184f79b96bca201bd8e1f2af3202a6890a6265cffa644dcafd3",
+  "DHLCRC1A027NBEA": "49cd3814ca20ac26ba437c8517b9f1c6b5f67e9b1e7e1be73f36b06766ccd24e",
+  "TTLHH": "ed7753967a3d8512459d280b83154aaca5774733b8b93abb6dcb9a0981582c48",
+  "CXUHEALTHLB0101M": "101a48d4485f2b115b53095858c073269dcac90e43b7270f99f8e5a44aaa4718",
+  "CXUFOODHOMELB0101M": "03fd0fe8e62c643ae35fab9518e72bc1e67724626baa2c82315b8c7fbd99c4d0",
+  "CXUFOODTOTLLB0101M": "c73372658d2b7ad0a3f604b6b0576c8454dec5b117ef2acd9467188b852ba317",
+  "CXUSHELTERLB0101M": "facb1fff1d766d8ff8c273cc243fb42712a540394b0da7d73c6630ecb39310a1",
+  "CXUUTILSLB0101M": "04cc6e2e54154a9049519dc1a764af177d6a614cff5049266c0813a04bf2a244",
+  "CXU980010LB0101M": "fd5a78edcb3a1839811ed5fbf42ec00555f68decc71dbbc7b8e99ded18e234b3",
+  "RRVRUSQ156N": "cfcdcbfed310097eb98dbf1f807fdbd902c2ee26b2eac69b623108c5890182d1",
+  "RHVRUSQ156N": "055567383579520206481fb453023be543ea3a7636b6c2b43283c6486c7700a2",
+  "CAPUTLG311S": "76f75f1645266cb69bb8c41c5f2956edd0d1502689289ffe9f93549025623011"
+ },
+ "year": 2025,
+ "SL_SRC": {
+  "food": {
+   "v": 0.0,
+   "m": 0.0,
+   "eta": 0.5,
+   "lam": 0.25
+  },
+  "housing": {
+   "v": 0.0,
+   "m": 0.7914,
+   "eta": 0.697,
+   "lam": 0.2
+  },
+  "medical": {
+   "v": 0.0,
+   "m": 0.0,
+   "eta": 0.2,
+   "lam": 0.25
+  }
+ },
+ "basis": {
+  "housing": {
+   "v": "sourced (HVS vacancy against its 1956-2025 mean)",
+   "m": "sourced (BEA PCE against MIT housing)",
+   "eta": "sourced (Albouy et al. 2016)",
+   "lam": "sourced (Wheaton et al. 2014; the generous side for the stock)"
+  },
+  "medical": {
+   "v": "sourced (hospital occupancy against its 2009-2019 mean, Leuchter et al. 2025)",
+   "m": "sourced (CE health care against MIT medical)",
+   "eta": "sourced (RAND HIE)",
+   "lam": "design parameter (no source opened)"
+  },
+  "food": {
+   "v": "sourced (food-manufacturing utilisation against its 1972-2025 mean)",
+   "m": "sourced (CE food at home against MIT food; not used, theta food 0)",
+   "eta": "design parameter (not used, theta food 0)",
+   "lam": "design parameter (no source opened)"
+  }
+ },
+ "needsPerHousehold": {
+  "food": 7507.84,
+  "housing": 15795.55,
+  "medical": 6543.57
+ },
+ "householdsPerAdult": 0.6772,
+ "spendPerHousehold": {
+  "food": 6491.0,
+  "housing": 28295.63,
+  "medical": 6470.0
+ },
+ "housingLowEnd": {
+  "ceShelterUtilities": 22557.0,
+  "m": 0.4281
+ },
+ "recorded": {
+  "pceFoodOffPremisesPerHousehold": 11306.49,
+  "pceHealthPerHousehold": 26478.83,
+  "ceFoodPerUnit": 10633.0,
+  "cePersonsPerUnit": 2.4,
+  "households": 134790000.0
+ },
+ "slack": {
+  "rentalVacancy2025": 7.1,
+  "rentalVacancyMean1956_2025": 7.2693,
+  "rentalVacancyMin1980_2025": 5.05,
+  "homeownerVacancy2025": 1.15,
+  "homeownerVacancyMean1956_2025": 1.5225,
+  "foodUtilisation2025": 84.9225,
+  "foodUtilisationMean1972_2025": 82.1773,
+  "hospitalOccupancy": {
+   "pre2009_2019": 63.9,
+   "post2023_2024": 75.3,
+   "shortageLine": 85.0
+  },
+  "notUsed_headroomToPracticalMax": {
+   "housingRental": 0.0205,
+   "medicalTo85": 0.1288
+  },
+  "latest2026": {
+   "rentalVacancy": {
+    "2026-01-01": 7.3,
+    "2026-04-01": 7.3,
+    "2026-07-01": 7.6
+   },
+   "foodUtilisationMean2026": 83.2698
+  }
+ },
+ "restricted": {
+  "food": {
+   "v": 0.0,
+   "m": 0.0,
+   "eta": 0.25,
+   "lam": 0.125
+  },
+  "housing": {
+   "v": 0.0,
+   "m": 0.3957,
+   "eta": 0.3485,
+   "lam": 0.1
+  },
+  "medical": {
+   "v": 0.0,
+   "m": 0.0,
+   "eta": 0.1,
+   "lam": 0.125
+  }
+ }
+}

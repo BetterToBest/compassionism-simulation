@@ -942,6 +942,22 @@
    },
    "equal": true,
    "seconds": 209
+  },
+  {
+   "from": "d97b9b1c7481a999cfbbce30d0c88f6cef6754175fdd45b3451e1379d9c2c1fc",
+   "to": "e83f3a45e021bda9ac87706a881c6f96d06c880e2fe5f72797236dfce314ddbb",
+   "date": "2026-11-17",
+   "change": "S82 part 2: SL_SRC from opened sources; fx.eb (PTH equity base from the basket); WT_CUTS p95; acctDrawCheck (reporting)",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 182
   }
  ]
 }

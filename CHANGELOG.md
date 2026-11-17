@@ -6,6 +6,15 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.16 Release Notes
+
+Released Nov 17, 2026: **the v6 readings are built, each behind its own switch and off by default.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, both environments). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, committed before the build. Claude's reading of the design: `dev/reports/s82-supply-reading.md`.
+- **A limit on the supply of housing, medical care and food** (price option `sl`). It applies only on the programme run of a pair paid for by the Source, and only to the extra need its own output does not back. That need is met first from idle capacity, then from the above-needs use that better-off households give up as prices rise, then from capacity built over the years. Only the rest is cut. Four supply readings: full, sourced, restricted and strict. Three ways of sharing a cut: the market's (those least able to pay go short first), even, and the design's (basics bought with BU served first). Basket poverty is read on what households received. The limit is inactive at full backing by construction. Its sourced values are placeholders until the preregistration's Amendment 1 fixes them from opened sources.
+- **Wages that make up a missed rise a year later** (option `wc`, beside wage indexation `wIdx`).
+- **The BU's cost-of-living adjustment with a delay** (option `bl`, in years: a month's adjustment is about 0.125, a quarter's 0.25, a year's 1).
+- **Unit tests** (`s82UnitSuite`): the delay's arithmetic; the limit's yearly step; refused options; on a 200-adult run, the full reading and the strict reading at full backing equal no limit, and the catch-up with full indexing and a zero delay change nothing, the no-programme run ignores both options, and the market rule cuts the least able to pay most.
+- Nothing is run for results yet. The batch runs on GitHub Actions once the sourced values and the dry run are recorded.
+
 ## v5.9.15 Release Notes
 
 Released Nov 17, 2026: **Duke Johnson's note on the design's aim, in his fuller wording.** Text only: no engine line changes and no stored figure changes.

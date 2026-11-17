@@ -119,7 +119,7 @@ def cut(pc):  # what the engine needs for one cutoff of the engine's population
         c['types'][t] = {'pi': round(float(gw[m].sum()/gw.sum()), 6), 'families': round(float(gw.sum())), 'rows': int(m.sum()), 'alpha': round(float(hill(gx, gw, u)), 3) if m.sum() > 5 else None,
                          'se': round(float(hill(gx, gw, u)/np.sqrt(neff(gw[m]))), 3) if m.sum() > 5 else None}
     return c
-out['cuts'] = {'main': cut(rm['pct']), 'p99': cut(99), 'p90': cut(90)}
+out['cuts'] = {'main': cut(rm['pct']), 'p99': cut(99), 'p90': cut(90), 'p95': cut(95)}
 print('\nPer household type at the main cutoff (share of the type above it, families of the type, rows, the type\'s own exponent and se):')
 for t, v in out['cuts']['main']['types'].items(): print('  %-13s %.4f%%  %10d  %5d  %s  %s' % (t, v['pi']*100, v['families'], v['rows'], v['alpha'], v['se']))
 # checks

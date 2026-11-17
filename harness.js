@@ -2297,7 +2297,7 @@ function s82UnitSuite(){
     var V = SL_SRC.housing, eu = 0.05, rH = Math.max(0, eu - V.v - V.m*V.eta*0.6*0.1), cH = V.lam*Math.max(0, eu - V.v);
     var ok = near(St.R.housing, 0.1/1.1) && near(St.R.food, 0.1/1.1) && Sf.R.housing === 0 && Sf.R.food === 0 && S1.R.medical === 0 && near(Ss.R.housing, rH/1.1) && near(Ss.c.housing, cH);
     return {pass:ok, detail:'strict ' + St.R.housing + ' full ' + Sf.R.housing + ' a1 ' + S1.R.medical + ' sourced ' + Ss.R.housing + ' / ' + rH/1.1 + ' c ' + Ss.c.housing}; });
-  t('sl options: unknown reading or rule, and the not-yet-built fs, are refused', function(){
+  t('sl options: unknown reading or rule, and the unbuilt fs, are refused', function(){
     var bad = 0; [{rd:'x'}, {sh:'x'}, {fs:true}].forEach(function(o){ try { slNew(o, 0, {}); } catch (e){ bad++; } }); return {pass:bad === 3, detail:bad + ' of 3 refused'}; });
   var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:200});
   function pair(o){ var c = r2FreezePair(P, 'c22'); if (o) c[1].o = Object.assign({}, c[1].o, o); return c; }
@@ -2312,6 +2312,11 @@ function s82UnitSuite(){
     var SO = r2MainStudy(), R = tbStudy([pair({a:0})[0], pair({a:0, sl:{rd:'strict', sh:'pay'}})[1], pair({a:0, sl:{rd:'strict', sh:'even'}})[1]], 1, P, SO), p = R[1], e = R[2];
     var ok = p.slCutSh > 0 && p.slXq1 > p.slXq5 && Math.abs(e.slXq1 - e.slXq5) < Math.abs(p.slXq1 - p.slXq5) && p.fgt0PY >= p.slF0p;
     return {pass:ok, detail:'cut ' + p.slCutSh.toFixed(3) + '%; pay q1 ' + p.slXq1.toFixed(3) + ' q5 ' + p.slXq5.toFixed(3) + '; even q1 ' + e.slXq1.toFixed(3) + ' q5 ' + e.slXq5.toFixed(3) + '; received ' + p.fgt0PY.toFixed(2) + ' paid ' + p.slF0p.toFixed(2)}; });
+  t('part 2 run check: fx.eb (the PTH equity base from the basket) leaves the no-programme run unchanged and moves the programme run; the tail cutoff p95 runs and carries more weight than the main cutoff', function(){
+    var a = pair(), b = pair(), c = pair(); b[0].fx.eb = true; b[1].fx.eb = true; c[0].wt = {cut:'p95'}; c[1].wt = {cut:'p95'};
+    var R = tbStudy([a[0], a[1], b[0], b[1], c[0]], 1, P, r2MainStudy()), d0 = same(R[0], R[2]), d1 = same(R[1], R[3]);
+    var ok = d0.length === 0 && d1.length > 0 && R[4].wtTailW > R[0].wtTailW && R[4].wtN === R[0].wtN;
+    return {pass:ok, detail:'no-programme keys moved ' + d0.length + ', programme ' + d1.length + '; tail weight ' + R[0].wtTailW.toFixed(2) + '% main, ' + R[4].wtTailW.toFixed(2) + '% p95'}; });
   return out;
 }
 Object.assign(module.exports, { s82UnitSuite });  /* S82 */
@@ -4034,6 +4039,22 @@ function r2PairCheck(env, seeds, opt){ opt = opt || {}; var E = opt.env || {ref:
       return out; }
     finally { mulberry32 = mb0; tbRunCore = core0; } }); }
 Object.assign(module.exports, { R2_ALT, r2PairRows, r2Own, r2PairCheck });  /* S68 part 2 */
+/* S82 part 2 (Nov 17, 2026): the money-accounts and draw check for any rows (checks 6 and 7 of research-update prereg/2026-11-s82-v6-supply-indexing.md),
+ * as r2PairCheck runs it: the rows run with ACCT on (MODEL_SPEC section 11) and the main stream's draws counted per run (8 per adult-year, the pre-pass
+ * year included), and every output checked finite. Reporting only: no rule reads what it sets, and every global is put back. */
+function acctDrawCheck(cf, seeds, P, so){ var mb0 = mulberry32, core0 = tbRunCore, cnt = 0, live = {}, draws = [];
+  return acctProfile(function(){
+    mulberry32 = function(sd){ var g = mb0(sd); return live[sd] ? function(){ cnt++; return g(); } : g; };
+    tbRunCore = function(p, seed, o, S, tau0, yrs){ live = {}; live[seed] = 1; var c0 = cnt, r = core0.apply(this, arguments); live = {}; draws.push({n:cnt - c0, exp:8*p.nAgents*yrs}); return r; };
+    var A0 = ACCT; ACCT = acctNew();
+    try { var R = tbStudy(cf, seeds, P, so || r2MainStudy()), nF = 0, nf = [];
+      Object.keys(ACCT.nFail || {}).forEach(function(k){ nF += ACCT.nFail[k]; });
+      R.forEach(function(r, i){ Object.keys(r._s).forEach(function(k){ var a = r._s[k]; for (var j = 0; j < a.length; j++) if (!isFinite(a[j])){ nf.push(i + ':' + k); break; } }); });
+      var dBad = draws.filter(function(d){ return d.n !== d.exp; });
+      return {R:R, acct:{n:ACCT.n, nFail:nF, byId:ACCT.nFail, worst:ACCT.worst, fails:(ACCT.fails || []).slice(0, 3)}, draws:{runs:draws.length, bad:dBad.length, first:dBad[0] || null},
+        nonFinite:nf, pass:nF === 0 && dBad.length === 0 && nf.length === 0}; }
+    finally { ACCT = A0; mulberry32 = mb0; tbRunCore = core0; } }); }
+Object.assign(module.exports, { acctDrawCheck });  /* S82 part 2 */
 Object.assign(module.exports, { PA_KEYS, PA_DEFAULTS, paW, paInit, paUnitSuite });  /* S55 */
 Object.assign(module.exports, { LV_KEYS, lvUnitSuite });  /* S54 */
 Object.assign(module.exports, { lwSet, lwReset });  /* S14 */
