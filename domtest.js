@@ -1257,7 +1257,7 @@ function phase15(done) {
     const secs = d.querySelectorAll('.su-sec').length, svgs = d.querySelectorAll('.su-sec svg.fx-svg').length, tierCols = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length);
     const tables = d.querySelectorAll('#suite table').length, dl = d.querySelectorAll('#suite .fx-tools button').length;
     check('session 11: every section, chart and table draws; each ladder chart has one column a year; every table has CSV and JSON downloads',
-      secs === 9 && svgs === 11 && tierCols.join() === '40,40' && tables === 7 + (S.R.study && S.R.study[S.st.years] ? 6 : 0) && dl === 2*tables,  /* session 12: + the movement section's six tables when the study covers this horizon */ secs + ' sections, ' + svgs + ' charts, ladder columns ' + tierCols.join(' and ') + ', ' + tables + ' tables, ' + dl + ' download buttons');
+      secs === 9 && svgs === 13 && /* Nov 17, 2026: the parts chart is three, one per part */  tierCols.join() === '40,40' && tables === 7 + (S.R.study && S.R.study[S.st.years] ? 6 : 0) && dl === 2*tables,  /* session 12: + the movement section's six tables when the study covers this horizon */ secs + ' sections, ' + svgs + ' charts, ladder columns ' + tierCols.join(' and ') + ', ' + tables + ' tables, ' + dl + ' download buttons');
     [...d.querySelectorAll('#controls button')].filter(b => b.dataset.value === 'ref' || b.dataset.value === '20' || b.dataset.value === 'release').forEach(b => b.click());
     [...d.querySelectorAll('#tiers button')].filter(b => b.dataset.value === 'part')[0].click(); await later(100);
     const q = new URLSearchParams(a.w.location.search), cols20 = [...d.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();
@@ -1285,7 +1285,7 @@ function phase15(done) {
     const r2 = open(''); await later(400); const d2 = r2.w.document, S2 = r2.w.suiteState(), p2 = [...d2.querySelectorAll('#controls button[aria-pressed="true"]')].map(x => x.dataset.value).sort().join(',');
     const t2 = d2.querySelectorAll('#suite table').length, l2 = [...d2.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();
     check('S11: the suite page opens on release 2 (no program, C2.2 and the release design) at 40 years on the C2.2 design, labelled with its engine; every section, chart and table draws, each with its downloads',
-      S2.st.rel === '2' && S2.R && S2.R.version === '2' && p2 === '2,40,c22,ref' && d2.querySelectorAll('.su-sec').length === 9 && d2.querySelectorAll('.su-sec svg.fx-svg').length === 11 && l2 === '40,40' && t2 === 13 && d2.querySelectorAll('#suite .fx-tools button').length === 26 &&
+      S2.st.rel === '2' && S2.R && S2.R.version === '2' && p2 === '2,40,c22,ref' && d2.querySelectorAll('.su-sec').length === 9 && d2.querySelectorAll('.su-sec svg.fx-svg').length === 13 && l2 === '40,40' && t2 === 13 && d2.querySelectorAll('#suite .fx-tools button').length === 26 &&
       /v5\.9/.test(d2.getElementById('rel-note').textContent) && /104691f/.test(d2.getElementById('rel-note').textContent) && !d2.getElementById('optimistic') && r2.errs.length === 0,
       'release ' + S2.st.rel + '; pressed ' + p2 + '; ' + d2.querySelectorAll('.su-sec').length + ' sections, ' + d2.querySelectorAll('.su-sec svg.fx-svg').length + ' charts, ' + t2 + ' tables' + (r2.errs.length ? '; errors: ' + r2.errs.join('; ') : ''));
     [...d2.querySelectorAll('#controls button')].filter(x => x.dataset.value === 'release').forEach(x => x.click()); await later(100);

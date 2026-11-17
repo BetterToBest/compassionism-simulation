@@ -48,6 +48,7 @@ main .wrap{padding-bottom:60px}
 .fx-note{font-size:13px;color:var(--fx-ink-3);margin:6px 0 0;max-width:80ch}
 .layer-h{font-size:13px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:var(--fx-ink-3);margin:30px 0 4px}
 .su-reading{font-size:12px;font-weight:650;color:var(--fx-ink-2);background:var(--fx-surface-2);border:1px solid var(--fx-rule);border-radius:999px;padding:2px 9px;display:inline-block;margin:0 0 8px}
+.su-part+.su-part{margin-top:10px;padding-top:6px;border-top:1px solid var(--fx-rule)}
 .su-key{list-style:none;padding:0;margin:10px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px}
 .su-key li{background:var(--fx-surface);border:1px solid var(--fx-rule);border-radius:var(--fx-r);padding:12px 14px;font-size:14px;line-height:1.5}
 .su-key b{display:block;font-size:14px;color:var(--fx-ink);margin-bottom:4px}
@@ -300,21 +301,28 @@ footer p{margin:0 0 6px}
     return s;
   }
 
-  /* 4. what the days are made of */
+  /* 4. what the days are made of. Nov 17, 2026 correction: each part on its own scale, typical (median) adult. The columns used to be shares of the
+   * average adult's days: savings were over 99% of every column, so pay and the allowance could not be seen, and v5.9's stored averages count its
+   * 18 top-tail adults once each instead of at their population weight (as the wealth Gini did before v5.9.5), so they are not shown for v5.9. */
   function parts() {
-    var r = st.read, L = LAST(), P = [['meanSav', 'medSav', 'Savings (a share of wealth)', 's-e1'], ['meanInc', 'medInc', 'Pay (a share of a month’s income)', 's-e2'], ['meanBu', 'medBu', 'The allowance (a month of BU spent on essentials)', 's-e3']];
+    var r = st.read, L = LAST(), P = [['meanSav', 'medSav', 'From savings (a share of wealth)', 's-e1'], ['meanInc', 'medInc', 'From pay (a share of a month’s income)', 's-e2'], ['meanBu', 'medBu', 'From the allowance (a month of BU spent on essentials)', 's-e3']];
     var s = section('parts', 'What the days are made of',
       'The BLEI adds three things: part of what a person has saved, part of a month’s pay, and a month of the allowance. Two adults with the same days can be in very different positions: savings are owned and stay through a bad year; the allowance lasts as long as the program does. <span class="su-reading">Claude’s reading of the design</span>');
     var cols = [['base', Y7], [r, Y7], ['base', L], [r, L]];
-    var f = figure('Where the average adult’s days come from', 'Each column is the whole of the average adult’s days, split by source; hover or use the arrow keys for the days themselves.'); s.appendChild(f);
+    function colName(c) { return (c[0] === 'base' ? 'No program' : 'Compassionism') + ', ' + tsel(c[1]); }  /* short, so the year is never cut; the design is in the tooltip */
+    var f = figure('Where the typical adult’s days come from', 'The median adult’s days from each part, each part on its own scale; bars are the mean over the runs, lines the 10th to 90th percentile across runs. Hover or use the arrow keys for the days.'); s.appendChild(f);
     var host = f.querySelector('.fx-chart');
-    draw(host, function () { C.stack(host, {x: [0, 1, 2, 3], xLabel: function (i, long) { var c = cols[i]; return long ? rowName(c[0]) + ', ' + tsel(c[1]) : (c[0] === 'base' ? 'None' : 'With') + ', Y' + (c[1] + 1); }, share: true,
-      yFmt: function (v) { return v + '%'; }, tipFmt: days, layers: P.map(function (p) { return {name: p[2], cls: p[3], values: cols.map(function (c) { return get(sp(c[0], p[0], 'mean', c[1])); })}; }),
-      label: 'The parts of the average adult’s BLEI, no program and Compassionism, Year 7 and Year ' + T(), xTitle: 'None = no program; With = Compassionism; Y = year', height: 240}); });
-    s.appendChild(para('Average days from savings: ' + N(sp('base', 'meanSav', 'mean', L), 'int') + ' with no program, ' + N(sp(r, 'meanSav', 'mean', L), 'int') + ' with Compassionism; from the allowance: ' + N(sp(r, 'meanBu', 'mean', L), 'int') + '; from pay: ' + N(sp('base', 'meanInc', 'mean', L), 'int') + ' and ' + N(sp(r, 'meanInc', 'mean', L), 'int') + ' (Year ' + T() + '). ' +
-      'Averages add up but are pulled up by the few with large savings; the medians in the table do not add up but describe the typical adult. A measure that counts only the total would rate a household living on the allowance and one living on its savings the same; a policy maker weighing how durable a program is should not.'));
-    s.appendChild(tableBox({id: 'suite-parts', title: 'The parts of BLEI in days: average (median below), over the runs', columns: ['Part', 'No program, Year 7', 'Compassionism, Year 7', 'No program, Year ' + T(), 'Compassionism, Year ' + T()],
-      rows: P.map(function (p) { return [{p: [p[2]]}].concat(cols.map(function (c) { var m = sp(c[0], p[1], 'mean', c[1]); return cell(sp(c[0], p[0], 'mean', c[1]), 'int', isN(m) ? ['median ', {src: m, f: 'int'}] : undefined); })); })}, false));
+    P.forEach(function (p) {
+      var h = document.createElement('div'); h.className = 'su-part'; host.appendChild(h);
+      draw(h, function () { C.rows(h, {bars: true, xMin: 0, xFmt: function (v) { return fmt(v, 'int'); }, tipFmt: days, valFmt: function (v) { return fmt(v, 'int'); }, xTitle: p[2] + ', median adult, days',
+        label: p[2] + ': the median adult’s days, no program and Compassionism, Year 7 and Year ' + T(),
+        rows: cols.map(function (c) { return {label: colName(c), sub: c[0] === 'base' ? '' : rowName(c[0]), marks: [{v: get(sp(c[0], p[1], 'mean', c[1])), lo: get(sp(c[0], p[1], 'p10', c[1])), hi: get(sp(c[0], p[1], 'p90', c[1])), cls: p[3], name: p[2]}]}; })}); });
+    });
+    s.appendChild(para('The median adult’s days from savings: ' + N(sp('base', 'medSav', 'mean', L), 'int') + ' with no program, ' + N(sp(r, 'medSav', 'mean', L), 'int') + ' with Compassionism; from pay: ' + N(sp('base', 'medInc', 'mean', L), 'int') + ' and ' + N(sp(r, 'medInc', 'mean', L), 'int') + '; from the allowance: ' + N(sp(r, 'medBu', 'mean', L), 'int') + ' (Year ' + T() + '). ' +
+      'The parts can differ in size a hundredfold, so each has its own scale; on one shared scale the smaller ones could not be seen. The medians of the parts do not add up to the median total. A measure that counts only the total would rate a household living on the allowance and one living on its savings the same; a policy maker weighing how durable a program is should not.' +
+      (isR2() ? ' Averages are not shown for v5.9. Its runs give 18 simulated adults the place of very rich families and count each at its share of the population (a weight); the stored averages of these parts count those adults once each, so the average days from savings come out at hundreds of thousands and describe those few, not the average adult. An earlier version of this page drew those averages (corrected Nov 17, 2026).' : ' The table also gives the averages, which add up but are pulled up by the few with large savings.')));
+    s.appendChild(tableBox({id: 'suite-parts', title: 'The parts of BLEI in days: median adult' + (isR2() ? '' : ' (average below)') + ', mean over the runs', columns: ['Part', 'No program, Year 7', 'Compassionism, Year 7', 'No program, Year ' + T(), 'Compassionism, Year ' + T()],
+      rows: P.map(function (p) { return [{p: [p[2]]}].concat(cols.map(function (c) { var m = sp(c[0], p[0], 'mean', c[1]); return cell(sp(c[0], p[1], 'mean', c[1]), 'int', !isR2() && isN(m) ? ['average ', {src: m, f: 'int'}] : undefined); })); })}, false));
     return s;
   }
 
