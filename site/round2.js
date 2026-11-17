@@ -8,6 +8,10 @@
   var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work'];
   var OUT = {bl: 'basic living (adult-years below 30 days, points)', bk: 'cost of living (basket poverty, adult-years, points)', wp: 'wealth poverty, yearly average (points)',
              mw: 'median real wealth (year-0 $)', inf: 'programme inflation (points a year)'};
+  /* how each outcome counts the simulated adults (S83): the 18 top-tail adults carry population weights; the poverty shares count every simulated adult once */
+  var WTL = {bl: 'Counted per simulated adult (unweighted).', bk: 'Counted per simulated adult (unweighted).', wp: 'Counted per simulated adult (unweighted).',
+             mw: 'Counted by population weight (weighted).', inf: 'From the price level, which counts every simulated adult once (unweighted).'};
+  var WTS = {bl: 'unweighted', bk: 'unweighted', wp: 'unweighted', mw: 'weighted', inf: 'unweighted'};
   var ENVS = ['Reference', 'Adverse', 'Stress'];
   var D = {};
 
@@ -69,7 +73,7 @@
       var g = Object.assign({outcome: OUT[key]}, f);
       var n = kind === 'usd' ? 'usd' : 'pc';
       return '<div class="fx-card"><div class="fx-card-k">' + esc(label) + '</div><div class="fx-card-v">' + show('r2-effects', g, 'programme', n) + '</div>' +
-        '<div class="fx-note">against ' + show('r2-effects', g, 'no programme', n) + ' with no programme (' + show('r2-effects', g, 'effect', kind === 'usd' ? 'sgusd' : 'sg') + (kind === 'usd' ? '' : ' points') + ')' + (extra || '') + '</div></div>';
+        '<div class="fx-note">against ' + show('r2-effects', g, 'no programme', n) + ' with no programme (' + show('r2-effects', g, 'effect', kind === 'usd' ? 'sgusd' : 'sg') + (kind === 'usd' ? '' : ' points') + ')' + (extra || '') + '</div><div class="fx-note">' + esc(WTL[key]) + '</div></div>';
     }
     var er = find('r2-effects', Object.assign({outcome: OUT.mw}, f), 'erosion share of the effect');
     return '<div class="fx-cards">' +
@@ -90,7 +94,7 @@
         ['bk', 'bl', 'wp', 'mw'].forEach(function (key) {
           var f = {design: des, environment: env, years: years, outcome: OUT[key]}, usd = key === 'mw', r = range(des, env, years, key, null, usd);
           var kept = find('r2-curves', f, 'readings keeping the sign'), n = find('r2-curves', f, 'readings');
-          rows.push([esc(des), env, esc(OUT[key].replace(/ \(.*\)/, '')), r[0] + ' to ' + r[1], show('r2-effects', f, 'effect', usd ? 'sgusd' : 'sg') + ' ' + ci('r2-effects', f, 1, usd),
+          rows.push([esc(des), env, esc(OUT[key].replace(/ \(.*\)/, '')) + ' (' + WTS[key] + ')', r[0] + ' to ' + r[1], show('r2-effects', f, 'effect', usd ? 'sgusd' : 'sg') + ' ' + ci('r2-effects', f, 1, usd),
             snum('r2-curves', kept.i, 'readings keeping the sign', String(kept.v)) + ' of ' + snum('r2-curves', n.i, 'readings', String(n.v)), esc(find('r2-curves', f, 'class').v)]);
         });
       });

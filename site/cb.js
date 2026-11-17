@@ -13,6 +13,10 @@
            wp: 'wealth poverty, yearly average (points)', mw: 'median real wealth (year-0 $)', inf: 'programme inflation (points a year)',
            p5: 'pushed below the basket line in a recession year (%)', p3: 'largest fall in real wealth (year-0 $, median adult)', p1: 'spread of the basket price level\'s yearly change (points)',
            t1: 'top 1% share of net worth at the end (%)', b50: 'bottom half\'s share of net worth at the end (%)', fs: 'adult-years with a forced sale (%)'};
+  /* how each outcome counts the simulated adults (S83): poverty shares once per simulated adult; wealth, distribution and stability measures by population weight */
+  var WT = {bl: 'unweighted', bk: 'unweighted', kid: 'unweighted', wp: 'unweighted', mw: 'weighted', inf: 'unweighted', p5: 'weighted', p3: 'weighted', p1: 'unweighted',
+            t1: 'weighted', b50: 'weighted', fs: 'weighted'};
+  var WTN = {unweighted: 'Counted per simulated adult (unweighted).', weighted: 'Counted by population weight (weighted).'};
   var RULE = 'the policy-rate rule', NONE = 'no central bank', ACT = 'the actual rate path';
   var S75 = 'https://bettertobest.github.io/research-hub/us-policy-eras.html';
 
@@ -67,7 +71,8 @@
         '<p class="fx-card-m">Turning the central bank on moves the program run by ' + show('s74-cb', c, 'change', kind === 'usd' ? 'sgusd' : 'sg2', 'cb') + (kind === 'usd' ? '' : ' points') + ' (same seeds).</p>';
     }
     var worse = (function () { var v = on ? val('s74-cb', {design: des, environment: e, 'central bank': RULE, outcome: O[key]}, 'effect') : val('r2-effects', {design: des, environment: e, years: 20, outcome: O[key]}, 'effect'); return kind === 'usd' ? v < 0 : v > 0; })();
-    return '<div class="fx-card' + (worse ? ' fx-worse' : '') + '"><p class="fx-card-k">' + esc(label) + '</p>' + h + (note ? '<p class="fx-card-m">' + note + '</p>' : '') + '</div>';
+    return '<div class="fx-card' + (worse ? ' fx-worse' : '') + '"><p class="fx-card-k">' + esc(label) + '</p>' + h + (note ? '<p class="fx-card-m">' + note + '</p>' : '') +
+      '<p class="fx-card-m">' + esc(WTN[WT[key]]) + (on ? ' Central bank on: ' + '<span class="snum" data-study="s74-cb" data-src="meta seeds">' + esc(String(D['s74-cb'].meta.seeds)) + '</span> paired runs.' : '') + '</p></div>';
   }
   function leadBody() {
     var on = LS.cb === 'on', des = LS.design, e = LS.env;
@@ -114,9 +119,9 @@
     var body = ROWS.map(function (r) {
       var cells = arms.map(function (a) { var f = {design: des, environment: e, 'central bank': a, outcome: O[r[0]]}; if (!find('s74-cb', f, 'effect')) return '<td>—</td>'; return '<td>' + show('s74-cb', f, 'effect', r[2]) + '<br><span class="fx-ci">' + ci('s74-cb', f, r[2]) + '</span></td>'; }).join('');
       var cc = ['no programme', 'programme'].map(function (run) { var f = {design: des, environment: e, run: run, outcome: O[r[0]]}; if (!find('s74-cb', f, 'change', 'cb')) return '<td>—</td>'; return '<td>' + show('s74-cb', f, 'change', r[2], 'cb') + '<br><span class="fx-ci">' + ci('s74-cb', f, r[2], 'cb') + '</span></td>'; }).join('');
-      return '<tr><th scope="row">' + esc(r[1] === 'C2.2' ? 'Full-coverage design' : r[1] === 'release design' ? 'Opt-in design' : r[1]) + '</th>' + cells + cc + '</tr>';
+      return '<tr><th scope="row">' + esc(r[1] === 'C2.2' ? 'Full-coverage design' : r[1] === 'release design' ? 'Opt-in design' : r[1]) + ' <span class="fx-ci">(' + esc(WT[r[0]]) + ')</span></th>' + cells + cc + '</tr>';
     }).join('');
-    return '<div class="fx-tw" tabindex="0" role="region" aria-label="Central bank table"><table class="fx-table"><caption>' + esc(des === C ? 'Full-coverage design' : 'Opt-in design') + ', ' + esc(e) + ': the programme’s effect with no central bank and with the rule, and the rule’s own effect (with the rule minus without it) in each run. Same paired seeds.</caption><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
+    return '<div class="fx-tw" tabindex="0" role="region" aria-label="Central bank table"><table class="fx-table"><caption>' + esc(des === C ? 'Full-coverage design' : 'Opt-in design') + ', ' + esc(e) + ': the programme’s effect with no central bank and with the rule, and the rule’s own effect (with the rule minus without it) in each run. Means over the same ' + esc(String(D['s74-cb'].meta.seeds)) + ' paired seeds (not the 500 of v5.9’s main row).</caption><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>';
   }
   function sectionRender(host) {
     var sw = host.querySelector('#cb-sw'); sw.innerHTML = '';
@@ -137,7 +142,7 @@
     function cbp(e, k, kind) { return show('s74-cb', {design: C, environment: e, run: 'programme', outcome: O[k]}, 'change', kind, 'cb'); }
     function eff(des, e, k, kind) { return show('s74-cb', {design: des, environment: e, 'central bank': RULE, outcome: O[k]}, 'effect', kind); }
     var H = 'History 2005-2025';
-    return '<ul>' +
+    return '<p class="fx-static-note">Every figure in this section is a mean over <span class="snum" data-study="s74-cb" data-src="meta seeds">' + esc(String(D['s74-cb'].meta.seeds)) + '</span> paired runs (seeds 1-' + esc(String(D['s74-cb'].meta.seeds)) + '), not the 500 of v5.9’s main row; the intervals measure the model’s randomness over those runs.</p><ul>' +
       '<li><strong>Steadier at the bottom.</strong> With the central bank on, a recession year pushes ' + p5(C, 'Adverse', 'no programme') + ' of households below the basket line with no programme, ' + p5(C, 'Adverse', 'programme') + ' with the full-coverage design and ' + p5(RL, 'Adverse', 'programme') + ' with the opt-in design (Adverse). With the full-coverage design the median adult’s largest fall in real wealth changes by ' + eff(C, 'Adverse', 'p3', 'sgusd') + ' against no programme.</li>' +
       '<li><strong>Less steady in prices.</strong> Both designs widen the year-to-year spread of the basket’s price level (full-coverage design: ' + eff(C, 'Adverse', 'p1', 'sg2') + ' points in Adverse; ' + eff(C, H, 'p1', 'sg2') + ' in History). In Reference, Adverse and Stress outside inflation is fixed, so the programme’s own price changes are the larger source of price swings there.</li>' +
       '<li><strong>The damping claim is not supported.</strong> The design says its share of essentials should damp what the central bank and outside shocks do to the cost of basic living. In this engine the rule moves rates, asset prices and job loss, not the price of essentials, so it cannot show that damping, for either design. That is a limit of the model, not evidence about the world.</li>' +

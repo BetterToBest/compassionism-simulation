@@ -28,9 +28,9 @@ from html.parser import HTMLParser
 PRESETS = {
     'sim': {
         'html': ['index.html', 'findings.html', 'suite.html', 'study.html', 'replication.html',
-                 'earlier-engine.html', 'compare.html'],
+                 'earlier-engine.html', 'compare.html', 'model-card.html'],
         'js': ['site/*.js'],
-        'md': ['README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'REPRODUCE.md', 'dev/reports/*.md'],
+        'md': ['README.md', 'CONTRIBUTING.md', 'CHANGELOG.md', 'REPRODUCE.md', 'ODD.md', 'ECONOMIST-REVIEW.md', 'dev/reports/*.md'],  # S83: ODD and the review checklist
         'json': {'data/manifest.json': ['summary', 'about'], 'site/glossary.json': None},
     },
     'hub': {

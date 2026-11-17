@@ -28,6 +28,37 @@
     "study": "s74-cb",
     "prereg": "prereg/2026-11-s74-central-bank.md",
     "report": "dev/reports/s74-central-bank.md"
+   },
+   "docs": {
+    "describes": "5.9",
+    "engine": "104691f",
+    "mainRow": "harness.js r2FreezePair",
+    "backing": 1,
+    "spendingShare": 0.877,
+    "ageing": false,
+    "files": [
+     "ODD.md",
+     "MODEL_SPEC.md",
+     "TESTBED_SPEC.md",
+     "REPRODUCE.md",
+     "ECONOMIST-REVIEW.md",
+     "CITATION.cff",
+     "README.md",
+     "model-card.html"
+    ],
+    "seeds": {
+     "main": 500,
+     "s74-cb": 100,
+     "s75-eras": 100
+    },
+    "results": {
+     "main": "r2-<part>-<env>-<years>-104691f",
+     "tables": "r2-tables-104691f",
+     "erosion": "r2-erosion-104691f",
+     "cb": "s74-final-3beb5ff",
+     "eras": "s75-eras-e5649ef"
+    },
+    "resultsRepo": "BetterToBest/compassionism-sim-results"
    }
   },
   {

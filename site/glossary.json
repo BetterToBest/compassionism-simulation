@@ -41,7 +41,7 @@
  },
  {
   "term": "BLEI — Basic Living Economic Index",
-  "def": "Primary welfare metric: how many days of basic living an agent's accessible resources cover (cash + income + benefit buffers). Two readings are shown: the BLEI paper's own, and the same-rules reading (earlier called design-neutral): the same rules for everyone: 12% of a month's wage and the ordinary daily cost of living, plus one month of whatever regular support a design pays; it leaves out the two extras the BLEI paper gives participants (20% of wage, and a lower daily cost in community housing)."
+  "def": "Primary welfare metric: how many days of basic living a person's savings, income and Basic Units together cover. It measures capacity, not cash on hand. Two readings are shown: the BLEI paper's own, and the same-rules reading (earlier called design-neutral): the same rules for everyone: 12% of a month's wage and the ordinary daily cost of living, plus one month of whatever regular support a design pays; it leaves out the two extras the BLEI paper gives participants (20% of wage, and a lower daily cost in community housing)."
  },
  {
   "term": "EDC — Extractive Drain Coefficient",

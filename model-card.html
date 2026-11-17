@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model card | Compassionism Framework Simulation</title>
+<meta name="description" content="One page on what the Compassionism Simulation is and is not: a dynamic microsimulation with a reduced-form price level, what v5.9's main row assumes, how each measure counts the simulated adults, how it was checked, and its limits.">
+<meta name="author" content="Duke Johnson, Claude (Anthropic)">
+<link rel="canonical" href="https://bettertobest.github.io/compassionism-simulation/model-card.html">
+<meta name="theme-color" content="#1D9E75">
+<link rel="icon" type="image/svg+xml" href="https://bettertobest.github.io/research-hub/assets/favicon.svg">
+<style>
+:root{--bg:#fbfbf8;--fg:#1f2421;--muted:#5b625e;--line:#d9ddd8;--accent:#127a5b;--card:#ffffff;--warn:#8a4b0f;--warnbg:#fdf3e7}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141816;--fg:#e6e9e6;--muted:#a3aba6;--line:#2f3833;--accent:#5fd0a8;--card:#1b201d;--warn:#f0b36b;--warnbg:#2a2117}}
+:root[data-theme="dark"]{--bg:#141816;--fg:#e6e9e6;--muted:#a3aba6;--line:#2f3833;--accent:#5fd0a8;--card:#1b201d;--warn:#f0b36b;--warnbg:#2a2117}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.7rem;line-height:1.25;margin:.2em 0 .3em}
+h2{font-size:1.15rem;margin:1.8em 0 .5em;padding-top:.6em;border-top:1px solid var(--line)}
+p,li{max-width:72ch}
+a{color:var(--accent)}
+.sub{color:var(--muted);margin-top:0}
+.box{background:var(--warnbg);border-left:4px solid var(--warn);padding:12px 16px;border-radius:4px;margin:1em 0}
+.box h2{border:0;margin-top:0;padding-top:0;color:var(--warn)}
+.tw{overflow-x:auto;margin:.6em 0}
+table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95rem}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:color-mix(in srgb,var(--accent) 10%,var(--card))}
+code{font-size:.9em;overflow-wrap:anywhere}
+nav.top{font-size:.92rem;margin-bottom:8px}
+footer{margin-top:2.5em;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1em}
+</style>
+</head>
+<body>
+<main>
+<nav class="top" aria-label="Site"><a href="index.html">The simulation</a> · <a href="findings.html">The findings, chart by chart</a> · <a href="https://github.com/BetterToBest/compassionism-simulation">The code</a></nav>
+<h1>Model card: the Compassionism Simulation</h1>
+<p class="sub">Describes release v5.9 (engine commit <code>104691f</code>, frozen and registered on OSF before it ran, Nov 14, 2026). Written Nov 17, 2026.</p>
+
+<h2>What it is</h2>
+<p>A <strong>dynamic microsimulation with a reduced-form price level</strong>, open and running in the browser. It follows 500 simulated US adults and their children, in households built from the 2022 Survey of Consumer Finances and the Census's Current Population Survey, for 20 or 40 years. Each population is run twice on the same random draws: once with Compassionism, as specified on the <a href="https://bettertobest.github.io/research-hub/">Research Hub</a>, and once with no programme. The difference is the programme's effect. It is run in three environments (Reference; Adverse, with recessions, automation and 2% inflation; Stress, with the same and weaker take-up), each 500 times with different draws.</p>
+<p>The programme's institutions, firms, lenders and the government are aggregate flows and accounts, not agents. Prices move by one rule for the whole economy, not by markets between agents. Two designs are shown: <strong>the full-coverage design</strong> (built to meet NEEC's criterion C2.2: unconditional provision covering 100% of basic needs for everyone) and <strong>the opt-in design</strong> ($1,200 a month, taken up by those for whom it pays).</p>
+
+<h2>What it is for, and what not</h2>
+<ul>
+<li><strong>For:</strong> showing what the framework's rules imply for poverty, basic living, savings, work, prices and cost, if its stated assumptions hold; making each assumption visible and testable, with every alternative reading behind a switch.</li>
+<li><strong>Not for:</strong> forecasting what would happen in the US, estimating a programme's budget, or reconstructing any past period.</li>
+</ul>
+
+<h2>What v5.9's main row assumes</h2>
+<div class="tw"><table>
+<thead><tr><th scope="col">Assumption</th><th scope="col">What the main row does</th><th scope="col">How it is read</th></tr></thead>
+<tbody>
+<tr><td>Backing</td><td><strong>Every dollar the programme pays is matched by new output</strong>, as the design states</td><td>A design parameter, not something the model shows. The model's own mechanism for new output reaches only a small fraction of it; the findings show every result along the backing curve (0, 25, 50, 75 and 100% backed).</td></tr>
+<tr><td>Limits on supply</td><td>None: demand never runs into what the economy can produce</td><td>Why the poverty effects barely move with backing while inflation and wealth do. A rationing reading is planned for the next engine version.</td></tr>
+<tr><td>Wages and prices</td><td>Wages, the Basic Unit and the cost-of-living basket all follow the price level in full</td><td>Partial wage indexation is planned as a reading; at no backing it is the largest mover of inflation.</td></tr>
+<tr><td>Who pays</td><td>The Source (new money matched by output)</td><td>Paying by a contribution instead is shown beside it, never led with.</td></tr>
+<tr><td>Spending</td><td>87.7% of each household's spare cash is spent</td><td>Derived from the US saving rate; 59.3% is a reading and the largest mover of median wealth.</td></tr>
+<tr><td>Population</td><td>Fixed: no births, deaths, ageing, partnerships or separations</td><td>Ageing is a reading; the 40-year figures age no one.</td></tr>
+<tr><td>Central bank</td><td>None in the main row</td><td>A policy-rate rule is a separate study (below).</td></tr>
+<tr><td>Expectations</td><td>None: decisions use last year's or this year's known values</td><td>A limit.</td></tr>
+</tbody></table></div>
+
+<h2>The measures, and how each counts the adults</h2>
+<p>Of the 500 simulated adults, 18 stand for the very top of the wealth distribution and carry small population weights (they stand for far fewer people). Weights never enter a decision. Each published measure is one of three kinds:</p>
+<div class="tw"><table>
+<thead><tr><th scope="col">Measure</th><th scope="col">What it is</th><th scope="col">Counted</th></tr></thead>
+<tbody>
+<tr><td>Below 30 days of basic living</td><td>Share of adult-years in which the days of basic living that the adult's savings, income and Basic Units together cover (BLEI, the Hub's measure) fall below 30. A measure of capacity, not cash on hand.</td><td>Unweighted: each simulated adult once</td></tr>
+<tr><td>Below the cost of living (basket poverty)</td><td>Share of adult-years whose household cash income falls short of its basket of essentials (MIT living-wage basket), a higher bar than the official poverty line</td><td>Unweighted</td></tr>
+<tr><td>Too little wealth (wealth poverty)</td><td>Share of adults with net wealth under $25,000 in today's prices (about six months of one adult's basket), at the end and as a yearly average</td><td>Unweighted</td></tr>
+<tr><td>Employment and hours</td><td>Share of adult-years in work; hours against the no-change level</td><td>Unweighted</td></tr>
+<tr><td>Participation and leaving work</td><td>Adult-years with earnings, adult-years outside the labour force, programme leavers and their earnings forgone</td><td>Weighted</td></tr>
+<tr><td>Median real wealth</td><td>The middle adult's net wealth in today's dollars</td><td>Weighted: each adult at its population weight</td></tr>
+<tr><td>Who gains: shares of wealth and income, percentiles, mobility, debt, labour's share</td><td>The distribution measures</td><td>Weighted</td></tr>
+<tr><td>Stability (central-bank and history studies)</td><td>Largest fall in real wealth, share pushed below the basket in a recession year, income swings, recovery time</td><td>Weighted</td></tr>
+<tr><td>Programme inflation; cost per adult</td><td>The yearly rise of the basket's price above no programme; programme outlays per adult-year</td><td>Unweighted (prices and the payout count each simulated adult once)</td></tr>
+<tr><td>Government account; creditor totals</td><td>The contribution, its base, borrowing and debt; who loses when inflation erodes fixed-rate debt</td><td>Weighted in the accounts: the contribution and the creditors' books are weighted sums, while the payout and prices are not</td></tr>
+</tbody></table></div>
+<p>Counted by weight, the unweighted poverty shares differ by up to about 0.6 points in a single year, less than the spread across runs. The suite page shows plain and weighted averages side by side.</p>
+
+<h2>How it was checked</h2>
+<ul>
+<li>Preregistered and frozen before it ran (OSF, osf.io/msdzk); every preregistered outcome is published, including the unfavourable ones.</li>
+<li>Each result across 62 preregistered readings (one assumption changed at a time, and pairs), along the backing curve, and with the programme paid by a contribution instead.</li>
+<li>Every added part sits behind a switch that, off, reproduces the earlier model exactly; unit tests, accounting identities every year, every part's other reading tested alone and in pairs; a 10,000-adult check.</li>
+<li>A second implementation of the main row agreed exactly. It was written from the specification and the engine's code and results, so it checks the translation, not a modelling choice the two share.</li>
+<li>Seed intervals measure the model's randomness only. They do not cover the choice of main row, full backing, or the engine's structure.</li>
+</ul>
+
+<h2>Studies beyond the main row (100 paired runs each, not 500)</h2>
+<ul>
+<li><strong>The central bank:</strong> a policy-rate rule in both runs, with bond purchases, refinancing, asset prices, job loss and forced sales, in the three environments and in 2005-2025's actual US paths. The rule has no channel to the price of essentials, so the design's claim that it damps the cost of basic living cannot show in this engine. <a href="findings.html#cb">On the findings page</a>.</li>
+<li><strong>US policy eras:</strong> today's households under the measured settings of 1947-1972, 1973-1983, 1984-2007 and 2008-2025. A model counterfactual, not a reconstruction of those years. <a href="https://bettertobest.github.io/research-hub/us-policy-eras.html">On the Research Hub</a>.</li>
+</ul>
+
+<div class="box">
+<h2>What this model is not</h2>
+<ul>
+<li>Not a forecast, and not a backtest.</li>
+<li>No limit on what the economy can supply below full backing; no expectations; one price rule for the whole economy; no migration.</li>
+<li>A fixed population in the main row; no value of care, community work or new ventures.</li>
+<li>Community-owned providers (PTFs) are modelled from the Hub's statements and measured costs; the creditor side is not a full accounting of who holds inflation's losses.</li>
+<li>It measures poverty, cost and work, not the cultural effects Compassionism aspires to.</li>
+<li>It has not been reviewed by an independent economist. <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/ECONOMIST-REVIEW.md">The checklist for a reviewer</a>.</li>
+</ul>
+</div>
+
+<h2>Data and reproduction</h2>
+<p>Results: BetterToBest/compassionism-sim-results, folders <code>r2-&lt;part&gt;-&lt;env&gt;-&lt;years&gt;-104691f</code>, <code>s74-final-3beb5ff</code> (central bank) and <code>s75-eras-e5649ef</code> (eras), each with <code>run.txt</code> (the exact command and commit) and <code>SHA256SUMS</code>. Commands and fingerprints: <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/REPRODUCE.md">REPRODUCE.md</a>. The model in full: <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/ODD.md">ODD.md</a> and <a href="https://github.com/BetterToBest/compassionism-simulation/blob/main/MODEL_SPEC.md">MODEL_SPEC.md</a>. Code Apache-2.0; documentation CC BY 4.0; DOI <a href="https://doi.org/10.17605/OSF.IO/QWTE2">10.17605/OSF.IO/QWTE2</a>.</p>
+
+<footer>
+<p>The math and code of this simulation were engineered by Claude, an AI model made by Anthropic, from the concepts in Duke Johnson's book <em>Better To Best</em> and his related vision for eradicating extreme poverty while enriching cultures and supporting human flourishing. The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.</p>
+</footer>
+</main>
+</body>
+</html>
