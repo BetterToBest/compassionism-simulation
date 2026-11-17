@@ -94,16 +94,29 @@ try {
   const T = YRS, L30 = C.BLEI_PRECARIOUS_MAX, TB = [C.BLEI_CRISIS_MAX, C.BLEI_PRECARIOUS_MAX, C.BLEI_THRESHOLD_MAX, C.BLEI_STABLE_MAX, C.BLEI_SECURE_MAX];
   const tierOf = d => { let k = 0; while (k < TB.length && d >= TB[k]) k++; return k; }, med = x => x.length ? H.quantileOf(x, 0.5) : null, mean = x => x.length ? x.reduce((s, v) => s + v, 0)/x.length : 0;
   /* session 7 (--suite): one year of one run, the visual suite's series */
+  /* S81 (Nov 17, 2026): the same year with each adult counted at its weight a._w (1 where the run has none, so v5.6's weighted keys equal its plain ones).
+   * v5.9's runs give 18 top-tail adults the place of very rich families, so a plain mean, share or median over the simulated adults counts those 18 once
+   * each; the w-keys count them at their share of the population. The plain keys are unchanged (they equal the stored suite files). */
+  const wMean = (x, w) => { let s = 0, t = 0; for (let i = 0; i < x.length; i++) { s += x[i]*w[i]; t += w[i]; } return t > 0 ? s/t : 0; };
+  const wMed = (x, w) => { if (!x.length) return null; const ix = x.map((_, i) => i).sort((i, j) => x[i] - x[j]); let t = 0; ix.forEach(i => { t += w[i]; }); if (!(t > 0)) return null;
+    let c = 0; const pos = ix.map(i => { const q = (c + w[i]/2)/t; c += w[i]; return q; }); if (0.5 <= pos[0]) return x[ix[0]]; if (0.5 >= pos[pos.length - 1]) return x[ix[ix.length - 1]];
+    let k = 0; while (pos[k + 1] < 0.5) k++; const f = (0.5 - pos[k])/(pos[k + 1] - pos[k]); return x[ix[k]] + f*(x[ix[k + 1]] - x[ix[k]]); };
   function suiteYear(agents, p, lf, ep) {
-    const g = {all: [], part: [], non: []}, sav = [], inc = [], bu = [], cash = [], n = agents.length; let bO = 0, bN = 0;
-    agents.forEach(a => { const bo = H.agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf)/lf, bn = (H.agentBLEI(a, 0, false, false, false, 0, false) + (a._tbM || 0)/C.BASE_DAILY_COST)/lf;
+    const g = {all: [], part: [], non: []}, gw = {all: [], part: [], non: []}, sav = [], inc = [], bu = [], cash = [], wt = [], n = agents.length; let bO = 0, bN = 0, wO = 0, wN = 0, W = 0;
+    agents.forEach(a => { const bo = H.agentBLEI(a, p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf)/lf, bn = (H.agentBLEI(a, 0, false, false, false, 0, false) + (a._tbM || 0)/C.BASE_DAILY_COST)/lf, w = a._w === undefined ? 1 : +a._w;
       const s0 = H.agentBLEI(Object.assign({}, a, {wealth: 0}), p.bu, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf)/lf, b0 = H.agentBLEI(a, 0, p.ccoOn, p.pth, p.szh, p.szhCoh, p.ptf)/lf;
-      g.all.push(bo); g[a.inCCO ? 'part' : 'non'].push(bo); sav.push(bo - s0); bu.push(bo - b0); inc.push(bo - (bo - s0) - (bo - b0));
-      if (bo < L30) bO++; if (bn < L30) bN++; cash.push(H.tbCashIncome(a)); });
+      g.all.push(bo); g[a.inCCO ? 'part' : 'non'].push(bo); gw.all.push(w); gw[a.inCCO ? 'part' : 'non'].push(w); sav.push(bo - s0); bu.push(bo - b0); inc.push(bo - (bo - s0) - (bo - b0)); wt.push(w); W += w;
+      if (bo < L30) { bO++; wO += w; } if (bn < L30) { bN++; wN += w; } cash.push(H.tbCashIncome(a)); });
     const cm = med(cash), r = {bO: bO/n*100, bN: bN/n*100, relPov: cash.filter(c => c < 0.6*cm).length/n*100, ep: ep, part: g.part.length/n*100,
       medSav: med(sav), medInc: med(inc), medBu: med(bu), meanSav: mean(sav), meanInc: mean(inc), meanBu: mean(bu)};
     ['all', 'part', 'non'].forEach(k => { const t = [0, 0, 0, 0, 0, 0]; g[k].forEach(d => { t[tierOf(d)]++; }); const m = g[k].length;
       r['med_' + k] = med(g[k]); t.forEach((c, i) => { r['tier' + i + '_' + k] = m ? c/m*100 : null; }); });
+    /* S81: the weighted keys */
+    const wcm = wMed(cash, wt); let wrp = 0; cash.forEach((c, i) => { if (c < 0.6*wcm) wrp += wt[i]; });
+    Object.assign(r, {wbO: wO/W*100, wbN: wN/W*100, wrelPov: wrp/W*100, wpart: gw.part.reduce((s, v) => s + v, 0)/W*100,
+      wmedSav: wMed(sav, wt), wmedInc: wMed(inc, wt), wmedBu: wMed(bu, wt), wmeanSav: wMean(sav, wt), wmeanInc: wMean(inc, wt), wmeanBu: wMean(bu, wt)});
+    ['all', 'part', 'non'].forEach(k => { const t = [0, 0, 0, 0, 0, 0]; let m = 0; g[k].forEach((d, i) => { t[tierOf(d)] += gw[k][i]; m += gw[k][i]; });
+      r['wmed_' + k] = wMed(g[k], gw[k]); t.forEach((c, i) => { r['wtier' + i + '_' + k] = m > 0 ? c/m*100 : null; }); });
     return r; }
   /* The hook sees every simulated year of every run in tbStudy's order (seed outer, row inner). tbRun may first run one year to set the contribution
    * rate; that short run is recognised (it ends after one year) and dropped. */
