@@ -4555,7 +4555,10 @@ function lfDraw(a){ if (LFS.u) a._lpU = LFS.u();  /* S73: the programme margin's
   if (typeof a.age === 'number' && a.age < CFG.RETIRE_AGE){ var B = CFG.LF_SHARES_AGE[lfBand(a.age)]; if (B && B[t]) S = B[t]; if (LFS.fl) S = lfCell(CFG.LF_FLOWS.stock, lfBand(a.age), lfSx(a), t); }  /* S73: with the flows, the fitted stock by sex as well */
   for (var i = 0; i < LF_REASONS.length; i++){ c += S[LF_REASONS[i]]; if (u1 < c){ why = LF_REASONS[i]; break; } }
   LFS.n++; if (!why || a._ret) return;  /* a retiree (67 and over, ageing) keeps the engine's own retirement */
-  var y = lfIncome(CFG.LF_INCOME[why], u2); a._lf = why; a._lfW = a.wage; a._ret = true; a._ssB0 = y; a._ssY = y*DR_PL; a.wage = a._ssY/12/CFG.WAGE_TO_USD; LFS.k[why]++; LFS.inc += y; if (!(y > 0)) LFS.z++; }
+  /* S91 (Nov 18, 2026): _lfP, the price level at the draw, so a return moves the wage at exit by the prices since the draw (lfFlow's k). At year 0 it is 1,
+   * as before; a newcomer drawn at entry (ageing) has a wage already in that year's prices, and without it a return multiplied it by the whole price level
+   * since year 0 (dev/DECISIONS.md, "S91"). */
+  var y = lfIncome(CFG.LF_INCOME[why], u2); a._lf = why; a._lfW = a.wage; a._lfP = DR_PL; a._ret = true; a._ssB0 = y; a._ssY = y*DR_PL; a.wage = a._ssY/12/CFG.WAGE_TO_USD; LFS.k[why]++; LFS.inc += y; if (!(y > 0)) LFS.z++; }
 function lfInit(agents, seed){ LFS = {r:mulberry32(seed + 600071), n:0, k:{dis:0, ret:0, care:0, sch:0}, inc:0, z:0}; var L = LF_SCOPE || {};
   if (L.fl !== undefined && L.fl !== null && L.fl !== 'stock' && L.fl !== 'panel') throw new Error('lf.fl must be \'stock\' or \'panel\'');
   if (L.pm !== undefined && !(+L.pm >= 0 && +L.pm <= 1)) throw new Error('lf.pm must be between 0 and 1');
