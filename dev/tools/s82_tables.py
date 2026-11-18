@@ -3,7 +3,11 @@
 Analysis, Checks, Decision rules; Amendments 1-4). Reads the six result folders s82-v6-<env>-<years>-eb0969c of compassionism-sim-results
 (runner/jobs/s82.js at 4881a84; shard-NNNN.json, seeds 1-500 split across 20 shards) and writes Markdown tables and a summary JSON.
 
-  python3 dev/tools/s82_tables.py RESULTS_DIR OUT_DIR [--engine eb0969c] [--reps 10000]
+  python3 dev/tools/s82_tables.py RESULTS_DIR OUT_DIR [--engine <7 characters>] [--reps 10000] [--first eb0969c]
+
+Amendment 5 (Nov 18): the first batch (engine eb0969c) is superseded by the rerun on the fixed engine (v5.9.19; the design's sharing rule cut far more
+than its target). Run the tables on the rerun with --engine <its commit> --first eb0969c: check 11 then confirms that only the design's rule's rows
+below full backing moved; check 12 that the design's rule realises the even rule's total cut.
 
 Method (fixed by the preregistration; where it is silent, the cautious reading, said so here and in the tables):
 - Effect: the programme run minus its own no-programme run, paired by seed (seeds 1-500, common random numbers). The no-programme partner: base.none
@@ -65,7 +69,7 @@ THN = ['half', 'double']; THL = {'half': 'half theta (housing 0.3, medical care 
 EREAD = ['sc', 'tailLo', 'tailHi', 'p95', 'eb', 'age']
 EL = {'sc': 'wage-only spending share 0.862 (theme 9)', 'tailLo': 'tail exponent 1.218 (minus two s.e.; theme 11)', 'tailHi': 'tail exponent 1.762 (plus two s.e.)',
       'p95': 'tail cut at the 95th percentile (theme 11)', 'eb': 'PTH equity base from the basket (theme 15)', 'age': 'ageing, AGE with lf.fl panel (theme 13)'}
-REPS = 10000; W = None; NS = 500
+REPS = 10000; W = None; NS = 500; FIRST = None; ENGINE_OLD = False
 
 
 def sa(a): return '%g' % a
@@ -380,6 +384,10 @@ def checks(F):
     ok = all(np.all(R[n]['s82Ok'] == 1) for n in R if 's82Ok' in R[n]); out.append(('every run read the same seed\'s no-programme median (s82Ok 1 in every row and seed)', ok, []))
     ok = np.array_equal(R['base.none']['s82Mw0'], R['base.none']['medWealthReal']); out.append(('the no-programme run\'s s82Mw0 equals its own median real wealth', ok, []))
     nf = [n + ':' + k for n in R for k in R[n] if not np.all(np.isfinite(R[n][k]))]; out.append(('every stored value is finite', not nf, nf[:10]))
+    # check 12 (Amendment 5): the design's rule and the even rule cut each sector's share exactly, so their realised cuts agree (stored to 7 digits)
+    pairs = [(n, n.replace('.bu.', '.even.')) for n in R if '.bu.' in n and not n.startswith(('X.', 'Achk.')) and n.replace('.bu.', '.even.') in R]
+    bad = [n for n, m in pairs if not np.allclose(R[n]['slCutSh'], R[m]['slCutSh'], rtol=2e-6, atol=1e-9)]
+    out.append(('check 12: the design\'s rule realises the even rule\'s total cut in every seed (%d pairs of rows; v5.9.19 on)' % len(pairs), None if ENGINE_OLD else not bad, bad[:8]))
     # A moves the wealth outcomes and basic living only through prices; the cut does not change prices (essD is demand before the cut)
     same = [n for n in R if n.startswith('A.') and all(np.array_equal(R[n][k], R['base.a' + n.split('.a')[-1]][k]) for k in ['ppovA', 'pov', 'wtMedE', 'medWealthReal', 'bNAPy', 'endoAnn'])]
     out.append(('reported, not a pass/fail check: A rows whose wealth, basic-living and inflation keys equal the base row at the same share in every seed: %d of 36' % len(same), None, []))
@@ -388,10 +396,12 @@ def checks(F):
 
 # ---------------------------------------------------------------- writing
 def main():
-    global W, REPS
+    global W, REPS, FIRST, ENGINE_OLD
     src, out = sys.argv[1], sys.argv[2]
     eng = sys.argv[sys.argv.index('--engine') + 1] if '--engine' in sys.argv else 'eb0969c'
     if '--reps' in sys.argv: REPS = int(sys.argv[sys.argv.index('--reps') + 1])
+    if '--first' in sys.argv: FIRST = sys.argv[sys.argv.index('--first') + 1]  # Amendment 5: the first batch's engine (7 characters), for check 11
+    ENGINE_OLD = eng == 'eb0969c'  # the first batch, before the fix of the design's rule: check 12 is reported, not passed or failed
     os.makedirs(out, exist_ok=True)
     rng = np.random.default_rng(20261118); idx = rng.integers(0, NS, size=(REPS, NS))
     W = np.zeros((REPS, NS))
@@ -407,6 +417,12 @@ def main():
                 [('20 shards cover seeds 1-500 once; engine %s and a clean checkout in every shard' % meta[0]['manifest'].get('commit', '?')[:7],
                   all(m['manifest'].get('commit', '').startswith(eng) and not m['manifest'].get('dirty', False) for m in meta), [])] + \
                 [('the release start\'s baseline check passed in every shard', all(m['baseline'] and m['baseline'].get('checked') for m in meta), [])] + checks(F)
+            if FIRST:
+                R0, _ = load(os.path.join(src, 's82-v6-%s-%d-%s' % (e, y, FIRST)))
+                moved = sorted(n for n in rows if any(not np.array_equal(rows[n][k], R0[n][k], equal_nan=True) for k in set(rows[n]) | set(R0[n]) if k in rows[n] and k in R0[n]) or set(rows[n]) != set(R0[n]))
+                expect = sorted(n for n in rows if '.bu.' in n and not n.endswith('.a1'))
+                CHK['%s-%d' % (e, y)].append(('check 11 (Amendment 5): every row that does not use the design\'s rule below full backing equals the first batch (%s) in every key and seed; %d rows moved, %d expected (the design\'s rule\'s rows)' % (FIRST, len(moved), len(expect)),
+                                               set(moved) <= set(expect), sorted(set(moved) - set(expect))[:8]))
             S, _ = analyse(F)
             ALL['%s-%d' % (e, y)] = S
             META['%s-%d' % (e, y)] = {'command': meta[0]['command'], 'manifest': meta[0]['manifest']}
