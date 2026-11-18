@@ -6911,8 +6911,9 @@ function slRes(r, S){ var Y = S.y, T = Y.length, L = T ? Y[T - 1] : {e:0, eu:0, 
  *        unweighted; 1 the least able to pay); participants; others. On both runs: the no-programme run's unmet need on the supply cut's scale (question 5).
  *   s82Xq1-s82Xq5  the supply cut (slCut's x over the basket, %) by the same fifths (0 without sl), so the cut and the unpaid need share one ranking.
  *   s82B30, s82B30w  % of adult-years below 30 days of basic living on the design-neutral BLEI (bNAPy's test): unweighted (equals bNAPy) and weighted by a._w.
- *   s82BuR20, s82BuRE  what a month of the BU buys at the needs' price, Year-0 dollars (pbuR's measure; 0 with no programme), at year 20 (index 19; 0 if the run
- *        is shorter) and at the last year.
+ *   s82BuR20, s82BuRE  the real BU: a month of the BU over this year's price of the needs it is indexed to (the C2.2 needs' price, the outside index times
+ *        c22Share; the basket's price under the release design's COLA), Year-0 dollars (0 with no programme), at year 20 (index 19; 0 if the run is shorter)
+ *        and at the last year. With no delay it moves only with the BU's own rules (the stabiliser); under bl it shows what the delay costs. (pbuR, the path's key, uses the whole basket's price.)
  *   s82WgG20, s82WgGE  the mean yearly wage of adults with wages, over the general price level (the outside index times the engine's general component, which
  *        every good but the essentials follows), Year-0 dollars, at year 20 and at the last year.
  *   s82WF, s82WFPY  wages over factor income (wages plus capital income, a.yrCapUSD, which is 0 without rt's ci), %, weighted: the last year, and the ratio of
@@ -6939,7 +6940,8 @@ function s82Year(S, agents, p, yr, T, SP, Sin){
     S.py++; S.pyw += w[i]; if (bn < L30){ S.b++; S.bw += w[i]; }
     wg += w[i]*y; kc += w[i]*(+a.yrCapUSD || 0); mi += w[i]*tbCashIncome(a); if (y > 0){ nw++; sw += y; } });
   S.pW += wg/lf; S.pF += (wg + kc)/lf; S.pY += mi/lf;
-  var G = PRICE ? lf/(PRICE.bIdx || 1)*(PRICE.comp.other || 1) : lf, bu = p.ccoOn && p.bu > 0 && PRICE && PRICE.buY ? PRICE.buY/lf : 0, wr = nw ? sw/nw/G : 0;
+  var oI = PRICE ? lf/(PRICE.bIdx || 1) : lf, G = PRICE ? oI*(PRICE.comp.other || 1) : lf, NP = C22 && C22.idx === 'needs' && PRICE ? oI*c22Share(PRICE.comp)/c22Share(null) : lf,
+    bu = p.ccoOn && p.bu > 0 && PRICE && PRICE.buY ? PRICE.buY/NP : 0, wr = nw ? sw/nw/G : 0;
   if (yr === 19){ S.bu20 = bu; S.wg20 = wr; }
   if (yr === T - 1){ S.buE = bu; S.wgE = wr; S.wf = wg + kc !== 0 ? wg/(wg + kc)*100 : 0; S.ls = mi > 0 ? wg/mi*100 : 0; }
   var v = agents.map(function(a){ return a.wealth/lf; });

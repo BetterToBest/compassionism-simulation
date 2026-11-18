@@ -974,6 +974,22 @@
    },
    "equal": true,
    "seconds": 153
+  },
+  {
+   "from": "5402f97c90cbb0da2272b8100ff142f74eb94ebbfa2aac8539ab5c2729a36b1d",
+   "to": "e06f7d538203bd1579dde61f3ee9f48d6d95f57a671140b5c9c4328329823659",
+   "date": "2026-11-18",
+   "change": "S82 part 2b: the real BU key (s82BuR20, s82BuRE) over the needs' price the BU is indexed to (the outside reading's point); reporting only, off = identical",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 276
   }
  ]
 }

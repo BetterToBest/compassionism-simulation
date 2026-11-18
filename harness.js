@@ -2329,6 +2329,9 @@ function s82UnitSuite(){
     var skip = function(A, B){ return same(A, B).filter(function(k){ return !/^s82/.test(k); }); }, d = [skip(R0[0], R1[0]), skip(R0[1], R1[1]), same(R1[2], R1[3])], mv = same(R1[2], R1[4]).length;
     var ok = d.every(function(x){ return x.length === 0; }) && R1[0].s82Ok === 1 && R1[1].s82Ok === 1 && near(R1[0].s82B30, R1[0].bNAPy) && near(R1[1].s82B30, R1[1].bNAPy) && near(R1[0].s82Mw0, R1[0].medWealthReal) && R0[0].s82Ok === undefined && mv > 0;
     return {pass:ok, detail:'differing keys ' + d.map(function(x){ return x.length; }).join(' / ') + '; lam 0 moves ' + mv + ' keys; s82Mw0 ' + R1[0].s82Mw0 + ' vs ' + R1[0].medWealthReal}; });
+  t('part 2b run check: the real BU (s82BuRE, over the needs\' price the BU is indexed to) is lower with a two-year delay than with none at no backing, where prices rise', function(){
+    var S2 = Object.assign({}, r2MainStudy(), {s82:true}), R = tbStudy([pair({a:0})[1], pair({a:0, bl:2})[1]], 1, P, S2);
+    return {pass:R[0].s82BuRE > 0 && R[1].s82BuRE < R[0].s82BuRE && R[0].endoAnn > 0, detail:'no delay ' + R[0].s82BuRE.toFixed(1) + ', two years ' + R[1].s82BuRE.toFixed(1) + ' (inflation ' + (100*R[0].endoAnn).toFixed(2) + '% a year)'}; });
   return out;
 }
 Object.assign(module.exports, { s82UnitSuite });  /* S82 */
