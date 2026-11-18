@@ -1022,6 +1022,22 @@
    },
    "equal": true,
    "seconds": 166
+  },
+  {
+   "from": "bddce6c7f00ba4917449a47e83e58e3c5649c6dbe5aa795059e3db0cf7072348",
+   "to": "fac71555eaed218d943e375ca18cb2cd926d59870d075c660d313411e4aa9ae1",
+   "date": "2026-11-18",
+   "change": "S90: the private ESPs' lower BU price can be set at the sale (sp.vAt 'sale', off by default); the conversion tax rates moved unchanged to bizTaxRates",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 178
   }
  ]
 }
