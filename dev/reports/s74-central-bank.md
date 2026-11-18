@@ -129,6 +129,8 @@ Duke Johnson's view, as recorded in the plan (planning chat, Nov 13, 2026): deci
 
 *Nov 17, 2026: Duke Johnson's fuller wording.* His concern is not ordinary buying low and selling high but market cycles that can be engineered: bubbles, panics and crashes that let the wealthiest sell high and buy back low ("when there's blood in the streets, buy real estate"), and wars and false-flag events used the same way, while the news media, once owned by many, is now owned by a handful of companies that profit from the fear. The findings page carries this wording. These are his views, not model outputs; the model does not represent war, the media, or whether market swings are engineered.
 
+*Nov 18, 2026: removed from the findings page.* At Duke Johnson's request the note on the design's aim (this section's wording, both versions) no longer appears on the findings page; he plans to discuss it elsewhere. The study, its figures and this report are unchanged. The note stays here as the record of what was said and when.
+
 ## Limits (stated in advance, and found)
 - Today's population lives through 2005-2025's paths. This is a model counterfactual, not a reconstruction of those years; only changes and differences are read.
 - The rule is a reduced form: no bond market, no banks' balance sheets, no exchange rate. The responses of asset prices and unemployment are slopes taken from the papers (Bernanke and Kuttner 2005; Williams 2015), not derived in the model.
