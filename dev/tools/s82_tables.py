@@ -3,7 +3,13 @@
 Analysis, Checks, Decision rules; Amendments 1-4). Reads the six result folders s82-v6-<env>-<years>-eb0969c of compassionism-sim-results
 (runner/jobs/s82.js at 4881a84; shard-NNNN.json, seeds 1-500 split across 20 shards) and writes Markdown tables and a summary JSON.
 
-  python3 dev/tools/s82_tables.py RESULTS_DIR OUT_DIR [--engine <7 characters>] [--reps 10000] [--first eb0969c]
+  python3 dev/tools/s82_tables.py RESULTS_DIR OUT_DIR [--engine <7 characters>] [--reps 10000] [--first eb0969c] [--age ab11c05]
+
+S91 (Nov 18, 2026; Amendment 6's addendum and Amendment 7): --age <engine> takes the three ageing rows (E.age.none, E.age.a0, E.age.a1) from the rerun
+folders s82-v6-age-<env>-<years>-<engine> in place of the batch's, all three so that each ageing effect pairs runs on one engine. Check 13 as Amendment 7
+corrects it: in Reference E.age.none equals the batch in every key and seed; in Adverse and Stress (outside inflation) its programme inflation is 0 in
+every seed, and its moves are printed (the fix acting through outside inflation; the engine files differ only by the fix). The rerun's folder checks
+(SHA256SUMS, seed cover, engine, clean checkout, baseline) are printed too, and question 6 prints the ageing rows' real wage (inspection, no threshold).
 
 Amendment 5 (Nov 18): the first batch (engine eb0969c) is superseded by the rerun on the fixed engine (v5.9.19; the design's sharing rule cut far more
 than its target). Run the tables on the rerun with --engine <its commit> --first eb0969c: check 11 then confirms that only the design's rule's rows
@@ -69,7 +75,8 @@ THN = ['half', 'double']; THL = {'half': 'half theta (housing 0.3, medical care 
 EREAD = ['sc', 'tailLo', 'tailHi', 'p95', 'eb', 'age']
 EL = {'sc': 'wage-only spending share 0.862 (theme 9)', 'tailLo': 'tail exponent 1.218 (minus two s.e.; theme 11)', 'tailHi': 'tail exponent 1.762 (plus two s.e.)',
       'p95': 'tail cut at the 95th percentile (theme 11)', 'eb': 'PTH equity base from the basket (theme 15)', 'age': 'ageing, AGE with lf.fl panel (theme 13)'}
-REPS = 10000; W = None; NS = 500; FIRST = None; ENGINE_OLD = False
+REPS = 10000; W = None; NS = 500; FIRST = None; ENGINE_OLD = False; AGE = None
+AGEROWS = ['E.age.none', 'E.age.a0', 'E.age.a1']
 
 
 def sa(a): return '%g' % a
@@ -332,6 +339,7 @@ def analyse(F):
     for x in EREAD:
         for a in [0, 1]:
             n = 'E.%s.a%s' % (x, sa(a)); S['E'][n] = readrow(n, 'base.a' + sa(a), PK + ['endoAnn', 's82Wp50A'])
+            S['E'][n]['wage'] = est(F.lev(n, 's82WgG20'))
     S['D'] = {sa(a): {k: est(F.eff('base.a' + sa(a), k)) for k in ['s82Wp50A', 's82Wp50', 's82Wp50Aw', 's82Wp50w', 's82B30w']} for a in SHARES}
     S['ppov20'] = {sa(a): est(F.eff('base.a' + sa(a), 'ppov20')) for a in SHARES} if 'ppov20' in F.R['base.a1'] else None
     S['prices'] = {sa(a): {k: est(F.eff('base.a' + sa(a), k)) for k in ['prSh', 'prWsh', 'prPovSh']} for a in SHARES}
@@ -396,11 +404,12 @@ def checks(F):
 
 # ---------------------------------------------------------------- writing
 def main():
-    global W, REPS, FIRST, ENGINE_OLD
+    global W, REPS, FIRST, ENGINE_OLD, AGE
     src, out = sys.argv[1], sys.argv[2]
     eng = sys.argv[sys.argv.index('--engine') + 1] if '--engine' in sys.argv else 'eb0969c'
     if '--reps' in sys.argv: REPS = int(sys.argv[sys.argv.index('--reps') + 1])
     if '--first' in sys.argv: FIRST = sys.argv[sys.argv.index('--first') + 1]  # Amendment 5: the first batch's engine (7 characters), for check 11
+    if '--age' in sys.argv: AGE = sys.argv[sys.argv.index('--age') + 1]
     ENGINE_OLD = eng == 'eb0969c'  # the first batch, before the fix of the design's rule: check 12 is reported, not passed or failed
     os.makedirs(out, exist_ok=True)
     rng = np.random.default_rng(20261118); idx = rng.integers(0, NS, size=(REPS, NS))
@@ -423,6 +432,23 @@ def main():
                 expect = sorted(n for n in rows if '.bu.' in n and not n.endswith('.a1'))
                 CHK['%s-%d' % (e, y)].append(('check 11 (Amendment 5): every row that does not use the design\'s rule below full backing equals the first batch (%s) in every key and seed; %d rows moved, %d expected (the design\'s rule\'s rows)' % (FIRST, len(moved), len(expect)),
                                                set(moved) <= set(expect), sorted(set(moved) - set(expect))[:8]))
+            if AGE:
+                fa = os.path.join(src, 's82-v6-age-%s-%d-%s' % (e, y, AGE))
+                na, bada = sha_ok(fa); ra, ma = load(fa)
+                CHK['%s-%d' % (e, y)] += [('ageing rerun %s: SHA256SUMS, %d files, all match' % (os.path.basename(fa), na), not bada, bada),
+                    ('ageing rerun: %d shards cover seeds 1-500 once; engine %s and a clean checkout in every shard; the baseline check passed' % (len(ma), AGE),
+                     all(m['manifest'].get('commit', '').startswith(AGE) and not m['manifest'].get('dirty', False) and m['baseline'] and m['baseline'].get('checked') for m in ma), []),
+                    ('ageing rerun holds exactly the rows %s' % ', '.join(AGEROWS), sorted(ra) == sorted(AGEROWS), sorted(ra))]
+                o, nw = rows['E.age.none'], ra['E.age.none']
+                mv = sorted(k for k in nw if k in o and not np.array_equal(nw[k], o[k], equal_nan=True))
+                if e == 'ref':
+                    CHK['%s-%d' % (e, y)].append(('check 13 (a) (Amendment 7): E.age.none on the fixed engine equals the batch in every key and seed; %d keys moved' % len(mv), not mv, mv[:8]))
+                else:
+                    lv = '; '.join('%s %s to %s' % (LAB.get(k, k), fm(float(np.nanmean(o[k])), k), fm(float(np.nanmean(nw[k])), k)) for k in ['pov', 'ppovA', 'fgt0PY', 'medWealthReal', 's82WgGE'] if k in mv)
+                    CHK['%s-%d' % (e, y)].append(('check 13 (b) (Amendment 7): E.age.none has no programme inflation in any seed (outside inflation only); %d of %d keys moved, the fix acting through outside inflation (means before to after: %s)' % (len(mv), len(nw), lv),
+                                                   bool(np.all(nw['endoAnn'] == 0)), []))
+                for n in AGEROWS: rows[n] = ra[n]
+                F = Folder(rows, e, y)
             S, _ = analyse(F)
             ALL['%s-%d' % (e, y)] = S
             META['%s-%d' % (e, y)] = {'command': meta[0]['command'], 'manifest': meta[0]['manifest']}
@@ -436,7 +462,8 @@ def write(out, ALL, CHK, eng):
     gen = ('Generated by `python3 dev/tools/s82_tables.py` from compassionism-sim-results `s82-v6-<env>-<years>-%s` (runner/jobs/s82.js, seeds 1-500, 500 adults). '
            'Effect: programme run minus its own no-programme run, mean over seeds; 95%% paired-bootstrap interval (%d replicates, generator seed 20261118). '
            'Shares are the backed share (the part of the payout matched by new output); share 1 is the main row (full backing, a design parameter). '
-           'Preregistration: research-update `prereg/2026-11-s82-v6-supply-indexing.md` with Amendments 1-4.' % (eng, REPS))
+           'Preregistration: research-update `prereg/2026-11-s82-v6-supply-indexing.md` with Amendments 1-%d.' % (eng, REPS, 7 if AGE else 4))
+    if AGE: gen += (' The ageing rows (E.age.none, E.age.a0, E.age.a1) come from the rerun on the fixed engine, `s82-v6-age-<env>-<years>-%s` (Amendment 6, its addendum, and Amendment 7); every other row from the batch.' % AGE)
     # ---- checks
     L = ['# S82, the checks (before any table is read)', '', gen, '']
     allok = True
@@ -639,6 +666,8 @@ def write(out, ALL, CHK, eng):
                 for a in [0, 1]:
                     r = S['E']['E.%s.a%s' % (x, sa(a))]
                     L.append('| %s: change | %s | ' % (EL[x], sa(a)) + ' | '.join(ci(r['chg'][k], k) + (' H' if k in PK and r['holm'][k] < 0.05 and not r['chg'][k]['zero'] else '') for k in PK + ['endoAnn']) + ' |')
+            L += ['', 'Inspection (no threshold): the mean wage over the general price level at year %d (Year-0 $), level; base %s at share 0 and %s at share 1; no programme %s.' % (min(20, y), ci(S['baseLev']['0']['s82WgG20'], 's82WgG20'), ci(S['baseLev']['1']['s82WgG20'], 's82WgG20'), ci(S['noneLev']['s82WgG20'], 's82WgG20')), '',
+                  '| Reading | Share | real wage, level |', '|---|---|---|'] + ['| %s | %s | %s |' % (EL[x], sa(a), ci(S['E']['E.%s.a%s' % (x, sa(a))].get('wage'), 's82WgG20')) for x in EREAD for a in [0, 1]]
             L += ['', '### Section D\'s keys (themes 10, 22, 24)', '', '| Key | ' + ' | '.join('share %s' % sa(a) for a in SHARES) + ' | no programme (level) |', '|---|' + '---|'*(len(SHARES) + 1)]
             for k, nm in (('s82Wp50A', 'wealth poverty at half the same seed\'s no-programme median, yearly average: effect (theme 24)'), ('s82Wp50', 'the same at the last year: effect'),
                           ('s82Wp50Aw', 'the same, weighted, yearly: effect'), ('s82B30w', 'below 30 days of basic living, weighted: effect (theme 10)')):

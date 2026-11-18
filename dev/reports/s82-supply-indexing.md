@@ -1,6 +1,6 @@
 # Limits on supply, wages that lag prices and a delayed BU: what the v6 engine finds
 
-Nov 18, 2026. The results of the preregistered study of limits on supply and indexing, on engine v5.9.19 (compassionism-simulation `aa2a4e0`). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, with Amendments 1-6. How the model reads the design where Duke Johnson's writing is silent: `dev/reports/s82-supply-reading.md` (Claude's reading of the design, written before the build). Tables: `dev/runs/s82-batch/`. Results: compassionism-sim-results `s82-v6-<environment>-<years>-aa2a4e0` and `s82-tables-aa2a4e0`.
+Nov 18, 2026. The results of the preregistered study of limits on supply and indexing, on engine v5.9.19 (compassionism-simulation `aa2a4e0`). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, with Amendments 1-7. How the model reads the design where Duke Johnson's writing is silent: `dev/reports/s82-supply-reading.md` (Claude's reading of the design, written before the build). Tables: `dev/runs/s82-batch/`. Results: compassionism-sim-results `s82-v6-<environment>-<years>-aa2a4e0`, the ageing rows rerun on the fixed engine in `s82-v6-age-<environment>-<years>-ab11c05`, and the tables in `s82-tables-ab11c05` (the batch's first tables, `s82-tables-aa2a4e0`, are kept; only their ageing rows are superseded).
 
 ## 1. What was asked
 
@@ -23,7 +23,7 @@ Effects are the programme run minus its own no-programme run, in percentage poin
 3. **The design's monthly and quarterly adjustments of the BU cost little; a yearly one costs a lot.** With no backing, a monthly delay costs 0.7-1.3 points of basket poverty and a quarterly one 1.5-2.7. A yearly delay costs 7.0-11.1 points and the two-year bound 12.0-17.2. At full backing the monthly delay costs 0.04 points or less and the two-year bound 0.8 or less.
 4. **Together** (sourced limit, wages at three quarters made up a year later, the BU a year behind), the programme loses 8.4-8.6 points of its basket-poverty cut with no backing in Reference and 13.2-13.9 in Adverse and Stress. The yearly delay accounts for 81-93% of that. The readings interact (chiefly the wage lag with the delay), so the joint figure is the one to quote.
 5. **Who goes short.** With no programme, the poorest fifth already leaves 54-58% of its needs basket unpaid: the market rations by ability to pay today. Under the market's sharing rule, a shortage falls about nine times as hard on the poorest fifth as on the richest. The design's rule (BU purchases served first) puts slightly less of it on the poorest fifth than on the richest.
-6. **One reading measures a defect and is not reported:** ageing (adults who age, retire and are replaced) at no backing. Under ageing with programme inflation, wages outrun prices many times over. It predates this study and is off in every other row (section 7).
+6. **Ageing** (adults who age, retire and are replaced): the programme cuts basket poverty 6.6-8.8 points more than with a fixed population at 20 years, with or without backing. The first batch's ageing rows measured an engine defect (wages that outran prices many times over); it was found, fixed and the ageing rows rerun before any of their figures were reported (section 9).
 
 ## 3. Checks, and what was fixed before these figures
 
@@ -169,22 +169,19 @@ Each is its own pair, at no backing and at full backing. These are changes to th
 - **The wealth tail's exponent at plus and minus two standard errors** (theme 11): under 0.01 points on every poverty reading; median wealth moves by $11-745.
 - **The tail cut at the 95th percentile** (theme 11): the programme cuts basket poverty 0.34-0.35 points more, basic living 0.29 and wealth poverty 0.33-0.36.
 - **The PTH equity base from the basket** (theme 15): 0.02 points or less; about $100 of median wealth.
-- **Ageing at full backing** (theme 13, adults age, retire and are replaced, with yearly moves in and out of the labour force):
-  - basket poverty −8.81 points (the programme does more: with ageing, the no-programme run has more people below the line);
-  - basic living −1.08;
-  - wealth poverty −1.36 (yearly) and −2.62 (last year);
-  - median wealth −$1,061 (not significant after Holm).
-  - At 40 years, labelled as the triage asks (partnerships stay fixed): −15.4 points of basket poverty and −$159,312 of median wealth.
-  - These full-backing figures are provisional until the ageing rows are rerun (below).
-- **Ageing at no backing: not reported.** Under ageing with programme inflation, wages outrun prices:
-  - the mean wage over the general price level at year 20 is $655,202 in Reference, $1.10 million in Adverse and $1.37 million in Stress (medians over seeds 1-100), against $61,000-102,000 in every other row;
-  - at 40 years in Reference it reaches about $260 billion, and the median real wealth reading averages $1.7 million;
-  - a one-seed run puts it on the ageing option (that run kept the main row's labour-force flows; see the update below);
-  - with no programme, or at full backing (programme inflation about 0.15 points a year), the ageing rows read normally.
+- **Ageing** (theme 13: adults age, retire and are replaced, with yearly moves in and out of the labour force). Each figure is the change ageing makes to the programme's effect; no backing / full backing:
+  - basket poverty −8.67 / −8.81 points (the programme does more: with ageing the no-programme run has more people below the line);
+  - basic living −1.16 / −1.08;
+  - wealth poverty −1.52 / −1.35 (yearly) and −3.10 / −2.61 (last year);
+  - median real wealth +$20,783 / −$1,102 (the second not significant after Holm);
+  - programme inflation +2.2 points a year at no backing (42.6 against 40.3); unchanged at full backing.
+  - Adverse and Stress: basket poverty −6.6 to −6.9 points, the same signs elsewhere.
+  - At 40 years (labelled, as the triage asks: partnerships stay fixed), Reference: basket poverty −14.6 / −15.4 points; median real wealth +$63,639 / −$160,053. With ageing, median real wealth with no programme is far lower at 40 years ($127,000 against $413,000 with a fixed population), because each new adult starts with little. Against that lower level the unbacked programme adds more ($79,000 against $12,000), and full backing adds less ($284,000 against $442,000), since new adults have had fewer years of the BU.
+  - Inspection (no threshold): the mean wage over the general price level at year 20 is $94,826 at no backing and $102,201 at full backing with ageing, against $94,430 and $101,372 without it.
 
-  This is a defect in how ageing meets programme inflation, not a result. Ageing predates this study and is off in every other row, so nothing else here can be reached by it. Its figures stay in the published tables, marked, and the ageing rows are rerun after a fix (preregistration Amendment 6; a step of its own in research-update's plan).
+  **The defect behind the first ageing figures, and the rerun.** The batch's ageing rows (engine `aa2a4e0`) at no backing showed wages outrunning prices many times over (a mean wage over the general price level of $655,202 to $1.37 million at year 20, against $61,000-102,000 in every other row). They were not reported (preregistration Amendment 6). The cause: with ageing, each adult who dies is replaced by a new adult whose wage is set in that year's prices. A new adult can start outside the labour force. The engine kept that adult's wage but not the price level at the time, so when the adult later went back to work it raised the wage by all the price rises since year 0, not just those since the adult arrived. Prices were counted twice, and those wages fed the average that sets later new adults' wages, so the error grew. It needs ageing, the yearly labour-force moves and a price level that has moved. The fix stores the price level when the adult is drawn (compassionism-simulation pull request 160; `dev/DECISIONS.md`, "S91"); every row without ageing is unchanged.
 
-  **Update (Nov 18, 2026): the cause, found and fixed.** With ageing, each adult who dies is replaced by a new adult, whose wage is set in that year's prices. A new adult can start outside the labour force. The engine kept that adult's wage but not the price level at the time, so when the adult later went back to work it raised the wage by all the price rises since year 0, not just those since the adult arrived. Prices were counted twice. Those wages then fed the average that sets later new adults' wages, so the error grew. It needs ageing, the yearly moves in and out of the labour force, and prices that have moved, which is why the no-programme and full-backing runs read normally. On one traced seed the wage over the general price level at year 20 goes from $929,458 to $93,763 after the fix; without ageing it is $94,891. Every other row of this study is unchanged (229 of 231 rows identical in every key at seeds 1-2). The three ageing rows are being rerun in all six environment-horizons, and their figures will replace this paragraph once read (preregistration, addendum to Amendment 6; `dev/DECISIONS.md`, "the ageing defect located and fixed").
+  The three ageing rows were rerun on the fixed engine (`ab11c05`, seeds 1-500, all six environment-horizons). Their check (check 13) found that in Adverse and Stress the no-programme ageing run had also moved: outside inflation moves prices there even with no programme, so the defect had reached it too, slightly (at 40 years, wealth poverty 39.7 to 41.1 points and median real wealth $68,107 to $62,299). The check had assumed that run could not move; it was corrected before the ageing outcomes were read (Amendment 7), and every ageing effect above pairs runs on the fixed engine. In Reference that run is identical. The full-backing figures barely moved (Reference: within 0.01 points on every poverty reading and $41 of median real wealth; Adverse and Stress at 40 years, basket poverty about 0.3 points more and wealth poverty at the last year about 0.9 more), and are no longer provisional. The batch's ageing figures stay in `s82-tables-aa2a4e0`, marked superseded.
 
 Section D's reporting keys (Reference, 20 years):
 - **Wealth poverty at half the same seed's no-programme median** (theme 24): the programme cuts it by 15.4 points at no backing and 19.2 at full backing (yearly average), and by 15.6 and 28.2 at the last year.
@@ -220,7 +217,7 @@ What does make the effects depend on backing is how fully wages and the BU keep 
    - the wage readings (wIdx, wc);
    - the BU's delays (the monthly and quarterly ones follow the design's stated adjustment).
 5. The BU's relief to the cost of living runs a damped two-year cycle in every programme row, the main row included. It predates this study and is its own inspection step in research-update's plan.
-6. The ageing reading at no backing measures a defect (section 9; its own step).
+6. The ageing reading was rerun after a defect was fixed (section 9). The batch's ageing figures are superseded, not quoted.
 7. The population is fixed in every row but the ageing reading.
 8. The design's surge protocol (luxury restrictions, conversion limits) is not modelled: the cautious side. The shortages here may be larger than under the design.
 9. Building capacity costs nothing in the model's accounts, so the building-speed sweep is a physical sweep, not a fiscal one. The Creative Collectives' lending and output per hour are the next engine step, which is what can make backing produced rather than assumed.
@@ -228,11 +225,11 @@ What does make the effects depend on backing is how fully wages and the BU keep 
 
 ## 12. Where everything is
 
-- **Preregistration:** research-update `prereg/2026-11-s82-v6-supply-indexing.md` (Amendment 5: the first batch superseded; Amendment 6: the ageing reading flagged).
-- **Engine:** v5.9.19, `aa2a4e0`.
+- **Preregistration:** research-update `prereg/2026-11-s82-v6-supply-indexing.md` (Amendment 5: the first batch superseded; Amendment 6 and its addendum: the ageing reading flagged, the defect fixed; Amendment 7: the ageing rerun's check corrected).
+- **Engine:** v5.9.19, `aa2a4e0`; the ageing rows on `ab11c05` (the same engine with the ageing fix).
 - **Job:** compassionism-sim-results `runner/jobs/s82.js` at `4881a84`.
 - **Tables tool:** `dev/tools/s82_tables.py`.
-- **Results:** `s82-v6-{ref,adv,str}-{20,40}-aa2a4e0`. Each folder has `run.txt` with the command and `SHA256SUMS`.
-- **Analysis:** `s82-tables-aa2a4e0`.
+- **Results:** `s82-v6-{ref,adv,str}-{20,40}-aa2a4e0`; the ageing rows `s82-v6-age-{ref,adv,str}-{20,40}-ab11c05`. Each folder has `run.txt` with the command and `SHA256SUMS`.
+- **Analysis:** `s82-tables-ab11c05` (`python3 dev/tools/s82_tables.py <results> <out> --engine aa2a4e0 --first eb0969c --age ab11c05`); the first tables `s82-tables-aa2a4e0`, their ageing rows superseded.
 - **The first batch:** `-eb0969c`, marked superseded; no figure is quoted from it.
-- **Decisions:** `dev/DECISIONS.md`, the two entries of Nov 18, 2026 on this study (part 3 and part 3b).
+- **Decisions:** `dev/DECISIONS.md`, the entries of Nov 18, 2026 on this study (part 3, part 3b, and S91 with its part 2).
