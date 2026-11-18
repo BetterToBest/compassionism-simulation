@@ -7125,6 +7125,7 @@ function slNew(o, a, theta){ var O = Object.assign({}, SL_DEFAULTS, o === true |
   var V = slVals(O.rd);
   if (O.lam !== undefined && O.lam !== null){  /* S82 part 2b (Amendment 3, the strict-bound sweep): the building speed of the sectors named, over the reading's own (a number for every sector, or {sector: lam}) */
     if (O.rd === 'full') throw new Error('sl.lam: the full reading meets every extra need at once and builds nothing');
+    if (typeof O.lam === 'object' && Object.keys(O.lam).some(function(k){ return SL_SECT.indexOf(k) < 0 || typeof O.lam[k] !== 'number'; })) throw new Error('sl.lam: a number, or {food, housing, medical: number}');
     SL_SECT.forEach(function(k){ var l = prSec(O.lam, k, V[k].lam); if (!(typeof l === 'number' && l >= 0 && l <= 1)) throw new Error('sl.lam must be in [0, 1] (a share of the lasting gap built each year)'); V[k].lam = l; }); }
   return {o:O, a:a || 0, th:theta || {}, V:V, c:z(), R:z(), y:[], sE:z(), sC:z(), sW:z(), xk:z(), pE:z(), pC:z(), nP:{food:1, housing:1, medical:1},
     qN:[], qP:[], n:0, f0p:0, xs:0, xq:[0, 0, 0, 0, 0], nq:[0, 0, 0, 0, 0], xP:0, nP1:0, xN:0, nN1:0}; }
