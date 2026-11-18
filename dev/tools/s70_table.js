@@ -38,15 +38,18 @@ const STEPWHY = {bgM: 'steps with a bargaining pass-through above 0', gvA: 'step
 const cellActs = (n, r) => !(block === 'S' && (r === 'c22' || r === 'rel') && PRICE.includes(n));
 /* joined per-seed series: rows[name][key] = array over all seeds */
 const rows = {}; Object.keys(files[0].rows).forEach(r => { rows[r] = {}; Object.keys(files[0].rows[r]).forEach(k => { rows[r][k] = [].concat(...files.map(f => f.rows[r][k])); }); });
-const ENVS = M.env === 'both' ? ['ref', 'adv'] : [M.env], EN = {ref: 'Reference', adv: 'Adverse'};
+/* S82 part 3 (Nov 18, 2026): env 'all' (Reference, Adverse, Stress) and the Stress name, for S82's screen in Stress and its block FT (the financed rows
+ * with the weighted tail, prereg/2026-11-s82-v6-supply-indexing.md, Amendment 3); FT is read as a financed block, as F. No rule or threshold changed. */
+const FIN = block === 'F' || block === 'FT';
+const ENVS = M.env === 'both' ? ['ref', 'adv'] : M.env === 'all' ? ['ref', 'adv', 'str'] : [M.env], EN = {ref: 'Reference', adv: 'Adverse', str: 'Stress'};
 const CELLS = block === 'S' ? [['c22', 'C2.2, full backing'], ['rel', 'release design, full backing'], ['c22a0', 'C2.2, no assumed backing'], ['rela0', 'release design, no assumed backing']]
   : [['c22', 'C2.2, financed'], ['rel', 'release design, financed']];
 /* [key, name, how, threshold (null: 5% of the no-programme median wealth), digits, primary] */
 const OUTC = [['bNAPy', 'basic living (points)', 'mean', 1, 2, true], ['fgt0PY', 'cost of living (points)', 'mean', 1, 2, true], ['ppovA', 'wealth poverty, yearly average (points)', 'mean', 1, 2, true],
   ['wtMedE', 'median real wealth ($)', 'mean', null, 0, true], ['endoAnn', 'programme inflation (points a year)', 'mean', 1, 2, true]]
-  .concat(block === 'F' ? [['gvDebtY', 'programme debt at year 20 (% of GDP)', 'median', 10, 1, true], ['gvY100', 'year debt passes GDP (21: not within 20 years)', 'median', 2, 1, true]] : [])
+  .concat(FIN ? [['gvDebtY', 'programme debt at year 20 (% of GDP)', 'median', 10, 1, true], ['gvY100', 'year debt passes GDP (21: not within 20 years)', 'median', 2, 1, true]] : [])
   .concat([['pov', 'secondary: wealth poverty at year 20 (points)', 'mean', 0, 2, false], ['cost', 'secondary: programme cost ($)', 'mean', 0, 0, false]])
-  .concat(block === 'F' ? [['tauMean', 'secondary: the contribution\'s mean rate (points)', 'mean', 0, 3, false]] : []);
+  .concat(FIN ? [['tauMean', 'secondary: the contribution\'s mean rate (points)', 'mean', 0, 3, false]] : []);
 const SCALE = {endoAnn: 100, tauMean: 100};
 const mean = a => a.length ? a.reduce((s, x) => s + x, 0)/a.length : 0;
 const median = a => { const b = a.slice().sort((x, y) => x - y), n = b.length; return n % 2 ? b[(n - 1)/2] : (b[n/2 - 1] + b[n/2])/2; };
