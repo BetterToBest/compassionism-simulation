@@ -2006,6 +2006,13 @@ function s73UnitSuite(){
     lfOut(a, 'sch', 4000, 1.1); var ok = a._ret && a._lf === 'sch' && a._ssY === 4000*1.1;
     while (a._lf && k < 1000){ lfFlow(a, 1.32, 3); k++; }
     var r = 1.32/1.1; return {pass:ok && !a._ret && Math.abs(a.wage - 1000*r) < 1e-9 && Math.abs(a._lwNB - 900*r) < 1e-9 && Math.abs(a._wNB - 950*r) < 1e-9, detail:'returned after ' + k + ' years; wage ' + a.wage.toFixed(2)}; });
+  t('S91: an adult drawn out at entry (ageing) returns with the wage at entry moved by the prices since entry, not since year 0', function(){
+    LF_SCOPE = {conv:'keep', fl:'stock'}; lfInit([], 1); var r0 = LFS.r, k = 0, a = {wage:1000, age:30, _fem:true};
+    LFS.r = function(){ return 1e-4; }; DR_PL = 1.5;
+    try { lfDraw(a); } finally { LFS.r = r0; DR_PL = 1; }
+    var ok = a._ret && a._lf === 'dis' && a._lfP === 1.5 && a._lfW === 1000;
+    while (a._lf && k < 1000){ lfFlow(a, 1.8, 3); k++; }
+    return {pass:ok && !a._ret && Math.abs(a.wage - 1000*1.8/1.5) < 1e-9, detail:'drawn out at price level 1.5, returned at 1.8 after ' + k + ' years; wage ' + a.wage.toFixed(2) + ' (1200 expected; 1800 before the fix)'}; });
   t('S73: refusals (fl \'x\', pm 2) leave no switch set: a no-programme row is unchanged after them', function(){
     var e = [], A = tbStudy([main('none', {})], 1, P, MS);
     [{fl:'x'}, {pm:2}].forEach(function(l, i){ try { tbStudy([main('none', l)], 1, P, MS); e.push(i + ' ran'); } catch (x){} });

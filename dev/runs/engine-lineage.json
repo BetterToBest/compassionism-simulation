@@ -1006,6 +1006,22 @@
    },
    "equal": true,
    "seconds": 175
+  },
+  {
+   "from": "b659ebf178f9bd07a367dfd214645527484ebcba487005259a6c5c32bfe51ee4",
+   "to": "bddce6c7f00ba4917449a47e83e58e3c5649c6dbe5aa795059e3db0cf7072348",
+   "date": "2026-11-18",
+   "change": "S91: a newcomer drawn out of the labour force at entry stores the price level of the draw (_lfP), so its return moves the wage by the prices since entry; release panels have no ageing with the labour-force flows",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 166
   }
  ]
 }

@@ -179,10 +179,12 @@ Each is its own pair, at no backing and at full backing. These are changes to th
 - **Ageing at no backing: not reported.** Under ageing with programme inflation, wages outrun prices:
   - the mean wage over the general price level at year 20 is $655,202 in Reference, $1.10 million in Adverse and $1.37 million in Stress (medians over seeds 1-100), against $61,000-102,000 in every other row;
   - at 40 years in Reference it reaches about $260 billion, and the median real wealth reading averages $1.7 million;
-  - a one-seed run puts it on the ageing option, not the labour-force flows;
+  - a one-seed run puts it on the ageing option (that run kept the main row's labour-force flows; see the update below);
   - with no programme, or at full backing (programme inflation about 0.15 points a year), the ageing rows read normally.
 
   This is a defect in how ageing meets programme inflation, not a result. Ageing predates this study and is off in every other row, so nothing else here can be reached by it. Its figures stay in the published tables, marked, and the ageing rows are rerun after a fix (preregistration Amendment 6; a step of its own in research-update's plan).
+
+  **Update (Nov 18, 2026): the cause, found and fixed.** With ageing, each adult who dies is replaced by a new adult, whose wage is set in that year's prices. A new adult can start outside the labour force. The engine kept that adult's wage but not the price level at the time, so when the adult later went back to work it raised the wage by all the price rises since year 0, not just those since the adult arrived. Prices were counted twice. Those wages then fed the average that sets later new adults' wages, so the error grew. It needs ageing, the yearly moves in and out of the labour force, and prices that have moved, which is why the no-programme and full-backing runs read normally. On one traced seed the wage over the general price level at year 20 goes from $929,458 to $93,763 after the fix; without ageing it is $94,891. Every other row of this study is unchanged (229 of 231 rows identical in every key at seeds 1-2). The three ageing rows are being rerun in all six environment-horizons, and their figures will replace this paragraph once read (preregistration, addendum to Amendment 6; `dev/DECISIONS.md`, "the ageing defect located and fixed").
 
 Section D's reporting keys (Reference, 20 years):
 - **Wealth poverty at half the same seed's no-programme median** (theme 24): the programme cuts it by 15.4 points at no backing and 19.2 at full backing (yearly average), and by 15.6 and 28.2 at the last year.
