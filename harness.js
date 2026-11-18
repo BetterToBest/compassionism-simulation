@@ -2317,6 +2317,18 @@ function s82UnitSuite(){
     var R = tbStudy([a[0], a[1], b[0], b[1], c[0]], 1, P, r2MainStudy()), d0 = same(R[0], R[2]), d1 = same(R[1], R[3]);
     var ok = d0.length === 0 && d1.length > 0 && R[4].wtTailW > R[0].wtTailW && R[4].wtN === R[0].wtN;
     return {pass:ok, detail:'no-programme keys moved ' + d0.length + ', programme ' + d1.length + '; tail weight ' + R[0].wtTailW.toFixed(2) + '% main, ' + R[4].wtTailW.toFixed(2) + '% p95'}; });
+  t('part 2b: sl.lam sets the building speed of the sectors named (strict with medical 0.5 builds there only); refused with full and outside [0, 1]', function(){
+    var th = {food:0, housing:0.6, medical:0.5}, S = slNew({rd:'strict', lam:{medical:0.5}}, 0, th), N = slNew({rd:'sourced', lam:0.1}, 0, th), bad = 0;
+    slStep(S, 1.1, 1); [{rd:'full', lam:0.5}, {lam:1.5}, {lam:-0.1}, {lam:{food:'x'}}].forEach(function(o){ try { slNew(o, 0, th); } catch (e){ bad++; } });
+    var ok = S.V.medical.lam === 0.5 && S.V.food.lam === 0 && S.V.housing.lam === 0 && near(S.c.medical, 0.5*0.1) && S.c.food === 0 && S.c.housing === 0 && N.V.housing.lam === 0.1 && N.V.food.lam === 0.1 && N.V.housing.m === SL_SRC.housing.m && bad === 4;
+    return {pass:ok, detail:'c medical ' + S.c.medical + ', food ' + S.c.food + '; refused ' + bad + ' of 4'}; });
+  t('part 2b run checks (200 adults, 20 years, seed 1): o.s82 moves no other key on either run; s82B30 equals bNAPy; the no-programme run reads its own median (s82Mw0 = medWealthReal); sl.lam at the reading\'s own values is identical, at 0 it moves the limit', function(){
+    var SO = r2MainStudy(), S2 = Object.assign({}, SO, {s82:true}), b = pair({a:0});
+    var R0 = tbStudy([b[0], b[1]], 1, P, SO), R1 = tbStudy([pair({a:0})[0], pair({a:0})[1], pair({a:0, sl:{rd:'sourced', sh:'pay'}})[1], pair({a:0, sl:{rd:'sourced', sh:'pay', lam:{medical:0.25, food:0.25}}})[1],
+      pair({a:0, sl:{rd:'sourced', sh:'pay', lam:{medical:0, food:0}}})[1]], 1, P, S2);
+    var skip = function(A, B){ return same(A, B).filter(function(k){ return !/^s82/.test(k); }); }, d = [skip(R0[0], R1[0]), skip(R0[1], R1[1]), same(R1[2], R1[3])], mv = same(R1[2], R1[4]).length;
+    var ok = d.every(function(x){ return x.length === 0; }) && R1[0].s82Ok === 1 && R1[1].s82Ok === 1 && near(R1[0].s82B30, R1[0].bNAPy) && near(R1[1].s82B30, R1[1].bNAPy) && near(R1[0].s82Mw0, R1[0].medWealthReal) && R0[0].s82Ok === undefined && mv > 0;
+    return {pass:ok, detail:'differing keys ' + d.map(function(x){ return x.length; }).join(' / ') + '; lam 0 moves ' + mv + ' keys; s82Mw0 ' + R1[0].s82Mw0 + ' vs ' + R1[0].medWealthReal}; });
   return out;
 }
 Object.assign(module.exports, { s82UnitSuite });  /* S82 */
