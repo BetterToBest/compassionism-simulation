@@ -29,13 +29,23 @@ table{border-collapse:collapse;width:100%;background:var(--card);font-size:.95re
 th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 th{background:color-mix(in srgb,var(--accent) 10%,var(--card))}
 code{font-size:.9em;overflow-wrap:anywhere}
-nav.top{font-size:.92rem;margin-bottom:8px}
+header.top{background:var(--card);border-bottom:1px solid var(--line)}
+.top-in{max-width:1120px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.2;text-decoration:none;color:var(--fg);padding:6px 0}
+.brand b{font-size:15px;font-weight:600}.brand span{font-size:11.5px;color:var(--muted)}
+.links{display:flex;gap:6px;flex-wrap:wrap}
+.links a{font-size:12.5px;text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid var(--line);color:var(--muted)}
+.links a:hover{background:color-mix(in srgb,var(--accent) 10%,var(--card));color:var(--fg)}
+@media (max-width:560px){.links a:not(.keep){display:none}}
 footer{margin-top:2.5em;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1em}
 </style>
 </head>
 <body>
+<header class="top"><div class="top-in">
+  <a class="brand" href="./"><b>Compassionism Simulation</b><span>Model card</span></a>
+  <nav class="links" aria-label="Site"><a class="keep" href="./">Simulation</a><a class="keep" href="findings.html">Findings</a><a href="study.html">Health Study</a><a href="suite.html">Visual suite</a><a href="compare.html">Compare designs</a><a href="replication.html">Replication</a><a href="https://github.com/BetterToBest/compassionism-simulation">GitHub</a><a href="https://bettertobest.github.io/research-hub/">Research Hub</a></nav>
+</div></header>
 <main>
-<nav class="top" aria-label="Site"><a href="index.html">The simulation</a> · <a href="findings.html">The findings, chart by chart</a> · <a href="https://github.com/BetterToBest/compassionism-simulation">The code</a></nav>
 <h1>Model card: the Compassionism Simulation</h1>
 <p class="sub">Describes release v5.9 (engine commit <code>104691f</code>). Written Nov 17, 2026.</p>
 <p><strong>What was frozen and registered, and what was not.</strong> The model that was frozen and registered on OSF (osf.io/msdzk) before it ran, on Nov 14, 2026, is the engine <code>104691f</code> <strong>without a central bank</strong>. It was first published as release v5.8 (Nov 15, 2026). Release v5.9 (Nov 16) added a central-bank switch (a policy-rate rule, the "Fed" model) and the central-bank study, which has its own preregistration and is not part of the OSF registration. The main results on the pages (500 seeds, central bank off) are the frozen model's. The central-bank and policy-eras results (100 seeds) come from studies run after the freeze.</p>
