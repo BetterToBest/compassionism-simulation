@@ -1,6 +1,6 @@
 # Limits on supply, wages that lag prices and a delayed BU: what the v6 engine finds
 
-Nov 18, 2026. The results of the preregistered S82 study on engine v5.9.19 (compassionism-simulation `aa2a4e0`). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, with Amendments 1-6. How the model reads the design where Duke Johnson's writing is silent: `dev/reports/s82-supply-reading.md` (Claude's reading of the design, written before the build). Tables: `dev/runs/s82-batch/`. Results: compassionism-sim-results `s82-v6-<environment>-<years>-aa2a4e0` and `s82-tables-aa2a4e0`.
+Nov 18, 2026. The results of the preregistered study of limits on supply and indexing, on engine v5.9.19 (compassionism-simulation `aa2a4e0`). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, with Amendments 1-6. How the model reads the design where Duke Johnson's writing is silent: `dev/reports/s82-supply-reading.md` (Claude's reading of the design, written before the build). Tables: `dev/runs/s82-batch/`. Results: compassionism-sim-results `s82-v6-<environment>-<years>-aa2a4e0` and `s82-tables-aa2a4e0`.
 
 ## 1. What was asked
 
@@ -182,7 +182,7 @@ Each is its own pair, at no backing and at full backing. These are changes to th
   - a one-seed run puts it on the ageing option, not the labour-force flows;
   - with no programme, or at full backing (programme inflation about 0.15 points a year), the ageing rows read normally.
 
-  This is a defect in how ageing meets programme inflation, not a result. Ageing predates S82 and is off in every other row, so nothing else here can be reached by it. Its figures stay in the published tables, marked, and the ageing rows are rerun after a fix (preregistration Amendment 6; research-update PLAN.md step S91).
+  This is a defect in how ageing meets programme inflation, not a result. Ageing predates this study and is off in every other row, so nothing else here can be reached by it. Its figures stay in the published tables, marked, and the ageing rows are rerun after a fix (preregistration Amendment 6; a step of its own in research-update's plan).
 
 Section D's reporting keys (Reference, 20 years):
 - **Wealth poverty at half the same seed's no-programme median** (theme 24): the programme cuts it by 15.4 points at no backing and 19.2 at full backing (yearly average), and by 15.6 and 28.2 at the last year.
@@ -192,8 +192,8 @@ Section D's reporting keys (Reference, 20 years):
 
 ## 10. The assumptions screen in Stress and with the weighted tail (question 7)
 
-The screen (the S70 design, unchanged) was run on engine `eb0969c` and stands. It sets no supply limit, so the fix of section 3 cannot reach it. Folders: compassionism-sim-results `s82-screen-{s-str,ft,f-str}-eb0969c`; tables `dev/runs/s82-screen/`.
-- **In Stress**, S70's list of the inputs that matter (those carried forward) covers both blocks of rows. Five Source-row inputs and three financed-row inputs are weaker there than in Reference and Adverse; none is stronger.
+The screen (the earlier assumptions screen's design, unchanged) was run on engine `eb0969c` and stands. It sets no supply limit, so the fix of section 3 cannot reach it. Folders: compassionism-sim-results `s82-screen-{s-str,ft,f-str}-eb0969c`; tables `dev/runs/s82-screen/`.
+- **In Stress**, the earlier screen's list of the inputs that matter (those carried forward) covers both blocks of rows. Five Source-row inputs and three financed-row inputs are weaker there than in Reference and Adverse; none is stronger.
 - **With the weighted wealth tail on the financed rows** (block FT, the contribution's base held at wages), four inputs move up:
   - the employer markdown and the policy-rate rule's response to the output gap, to carried in full;
   - the band of the PTF density tests, to full;
@@ -217,11 +217,11 @@ What does make the effects depend on backing is how fully wages and the BU keep 
    - the essentials' price response θ;
    - the wage readings (wIdx, wc);
    - the BU's delays (the monthly and quarterly ones follow the design's stated adjustment).
-5. The BU's relief to the cost of living runs a damped two-year cycle in every programme row, the main row included. It predates S82 and is its own inspection step (research-update PLAN.md S90).
-6. The ageing reading at no backing measures a defect (section 9; step S91).
+5. The BU's relief to the cost of living runs a damped two-year cycle in every programme row, the main row included. It predates this study and is its own inspection step in research-update's plan.
+6. The ageing reading at no backing measures a defect (section 9; its own step).
 7. The population is fixed in every row but the ageing reading.
 8. The design's surge protocol (luxury restrictions, conversion limits) is not modelled: the cautious side.
-9. Building capacity costs nothing in the model's accounts. The Creative Collectives' lending and output per hour are the next engine step (S85), which is what can make backing produced rather than assumed.
+9. Building capacity costs nothing in the model's accounts. The Creative Collectives' lending and output per hour are the next engine step, which is what can make backing produced rather than assumed.
 10. Duke's views on supply policy (that the levers should be set by the people, and that the design supplies the basics with providers given a reason to supply them) are his and are kept apart from these results. Nothing here tests them.
 
 ## 12. Where everything is
@@ -233,4 +233,4 @@ What does make the effects depend on backing is how fully wages and the BU keep 
 - **Results:** `s82-v6-{ref,adv,str}-{20,40}-aa2a4e0`. Each folder has `run.txt` with the command and `SHA256SUMS`.
 - **Analysis:** `s82-tables-aa2a4e0`.
 - **The first batch:** `-eb0969c`, marked superseded; no figure is quoted from it.
-- **Decisions:** `dev/DECISIONS.md`, "S82 part 3" and "S82 part 3b".
+- **Decisions:** `dev/DECISIONS.md`, the two entries of Nov 18, 2026 on this study (part 3 and part 3b).

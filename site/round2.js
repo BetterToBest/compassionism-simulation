@@ -5,7 +5,7 @@
 (function (root) {
   'use strict';
   var F = root.CSF, esc = F.esc;
-  var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work'];
+  var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work', 's82-supply', 's82-breakeven'];  /* S82 (Nov 18, 2026): the v6 readings below full backing */
   var OUT = {bl: 'basic living (adult-years below 30 days, points)', bk: 'cost of living (basket poverty, adult-years, points)', wp: 'wealth poverty, yearly average (points)',
              mw: 'median real wealth (year-0 $)', inf: 'programme inflation (points a year)'};
   /* how each outcome counts the simulated adults (S83): the 18 top-tail adults carry population weights; the poverty shares count every simulated adult once */
@@ -102,6 +102,40 @@
     return table('v5.9, ' + years + ' years: the effect at each preregistered reading (lowest to highest), the main row with its seed interval, and whether every reading keeps its sign',
       ['Design', 'Environment', 'Outcome', 'Across the readings', 'Main row (95% seed interval)', 'Readings keeping the sign', 'Class'], rows);
   }
+  /* S82 part 3b (Nov 18, 2026; research-update prereg/2026-11-s82-v6-supply-indexing.md, decision rule 5): the curve below full backing under the
+   * v6 readings (a limit on supply, wages that follow prices in part, the BU's delay), with the break-even shares under each. Every figure is read
+   * from data/studies/s82-supply.json and s82-breakeven.json (dev/tools/s82_page_data.py); the full-coverage design's main pair only. */
+  function s82Section() {
+    var BK = 'basket poverty (points)', SV = 's82-supply', SB = 's82-breakeven', m = D[SV].meta;
+    function eff(env, rd, a) { return show(SV, {environment: env, years: 20, reading: rd, 'backed share': a, outcome: BK}, 'effect', 'sg'); }
+    function be(env, rd, yrs) {
+      var r = find(SB, {environment: env, years: yrs || 20, reading: rd, outcome: BK}, 'break-even share');
+      return r.v === null ? esc(D[SB].data[D[SB].columns.indexOf('word')][r.i]) : snum(SB, r.i, 'break-even share', fmtN(r.v, 2));
+    }
+    var RD = [['no limit', 'No limit on supply (the v5.9 engine)'],
+      ['sourced, the market\'s rule', 'Supply limit, sourced; the market\'s rule (those least able to pay go short first)'],
+      ['sourced, the design\'s rule', 'Supply limit, sourced; the design\'s rule (basics bought with the BU served first)'],
+      ['restricted, the market\'s rule', 'Supply limit, restricted (today\'s land-use, residency and farm policies); the market\'s rule'],
+      ['strictest case, the market\'s rule', 'The strictest case: no essentials beyond today\'s needs consumption; not the economy and not the design; the market\'s rule'],
+      ['the BU a month behind', 'The BU follows the needs\' price a month behind (the design\'s monthly adjustment)'],
+      ['the BU a quarter behind', 'The BU a quarter behind'],
+      ['the BU a year behind', 'The BU a year behind (as Social Security\'s adjustment)'],
+      ['the BU two years behind (a bound)', 'The BU two years behind (a bound)'],
+      ['wages follow half, made up a year later', 'Wages follow half of programme inflation, the rest made up a year later'],
+      ['wages follow three quarters, never made up', 'Wages follow three quarters of programme inflation, never made up'],
+      ['wages follow half of programme inflation, never made up', 'Wages follow half of programme inflation, never made up']];
+    var rows = RD.map(function (r) { return [esc(r[1]), eff('Reference', r[0], 0), eff('Reference', r[0], 0.5), eff('Reference', r[0], 1),
+      be('Reference', r[0]) + ' / ' + be('Adverse', r[0]) + ' / ' + be('Stress', r[0]), be('Reference', r[0], 40) + ' / ' + be('Adverse', r[0], 40) + ' / ' + be('Stress', r[0], 40)]; });
+    var W = 'wages follow half of programme inflation, never made up', ST = 'strictest case, the market\'s rule', SO = 'sourced, the market\'s rule';
+    return '<h3 class="fx-h3">Below full backing: limits on supply, wages and the BU’s adjustment (v6 readings, added Nov 18, 2026)</h3>' +
+      '<p>The v5.9 engine had no limit on what the economy can supply, and wages, the BU and the cost-of-living basket followed prices in full and at once. A preregistered study adds each of these as a reading, behind its own switch, and runs it at every backed share on ' + esc(String(m.seeds)) + ' paired seeds. Full backing is the main row, and no reading changes it. In order of what moves the curve least to most:</p><ul>' +
+      '<li><strong>A limit on supply</strong> of housing, medical care and food, from the economy’s headroom in opened sources, shared by the market’s rule, evenly, or the design’s rule. It costs little. With no backing in Reference, the programme’s effect on basket poverty is ' + eff('Reference', SO, 0) + ' points under the sourced limit with the market’s rule and ' + eff('Reference', ST, 0) + ' in the strictest case, against ' + eff('Reference', 'no limit', 0) + ' with no limit. Every primary result holds under the sourced limit at every share, in every environment, with every rule. <em>But the limit as built moves only basket poverty:</em> the money a cut leaves unspent goes to other goods, and the cut moves no price, so wealth, basic living and inflation are the same with and without it.</li>' +
+      '<li><strong>The BU’s adjustment to prices.</strong> The design’s monthly and quarterly adjustments cost little; a yearly or two-year delay costs much more (table).</li>' +
+      '<li><strong>Wages that follow programme inflation only in part.</strong> This is what makes the results depend on backing. If wages follow half of it and the rest is never made up, the programme with no backing leaves basket poverty ' + eff('Reference', W, 0) + ' points against no programme in Reference (' + eff('Adverse', W, 0) + ' in Adverse, ' + eff('Stress', W, 0) + ' in Stress): worse than no programme. If the rest is made up a year later, the cost is small.</li></ul>' +
+      table('Full-coverage design, Reference, 20 years: the change in basket poverty against no programme at each backed share (points), and the break-even backed share (where the effect is no better than no programme; Reference / Adverse / Stress)',
+        ['Reading', 'No backing', 'Half backed', 'Full backing (the main row)', 'Break-even share, 20 years', 'Break-even share, 40 years'], rows) +
+      '<p class="fx-note">Effects are programme minus no programme, mean over paired seeds; ' + esc(m.intervals) + '. The wage and BU readings are design parameters, as are the building speed of medical care and food and the essentials’ price response; each is swept in the study, and every result above holds at the slowest building speed and at half and double the price response. Programme inflation is unchanged by the supply limit (inflation stays under 5 points a year only above about ' + snum(SB, find(SB, {environment: 'Reference', years: 20, reading: SO, outcome: 'inflation reaches 5 points a year'}, 'break-even share').i, 'break-even share', fmtN(find(SB, {environment: 'Reference', years: 20, reading: SO, outcome: 'inflation reaches 5 points a year'}, 'break-even share').v, 2)) + ' backing in Reference). One reading of the study (adults who age and are replaced, at no backing) measures a defect and is not shown; it is rerun once fixed. Every figure, with the 40-year horizon, who goes short by fifth of income, and the smaller readings: the report <code>' + esc(m.report) + '</code>, the files <code>data/studies/s82-supply.json</code> and <code>s82-breakeven.json</code> (<code>' + esc(m.command) + '</code>), engine <code>' + esc(m.engine) + '</code>, results <code>' + esc(m.resultsFolder) + '</code> in ' + esc(m.resultsRepo) + '; preregistration ' + esc(m.prereg) + '.</p>';
+  }
   function backingTable(design) {
     var rows = [], base = {design: design, environment: 'Reference', years: 20};
     function line(label, row, bs) {
@@ -180,15 +214,17 @@
         return ['c22', 'rel'].map(function (d) { return [20, 40].map(function (y) { return chartFig('spec-' + d + '-' + o[0] + '-' + y, o[1] + ', ' + (d === 'c22' ? 'full-coverage design' : 'opt-in design') + ', ' + y + ' years: effect at each preregistered reading, three environments, with the financed rows beside. The numbers are in the table above and in the file r2-curves.'); }).join(''); }).join('');
       }).join('') + '</details>';
     h += '<h3 class="fx-h3">Prices, and how much new output backs the payout</h3>' +
-      '<p>At the main row, programme inflation is ' + show('r2-effects', {design: C, environment: 'Reference', years: 20, outcome: OUT.inf}, 'effect', 'x', 2) + ' points a year above no programme in Reference at 20 years (full-coverage design): no material change. <strong>The main row assumes that every dollar the programme pays is matched by new output</strong>, as the design states (a design parameter). The model’s own mechanism for new output reaches only the share shown below (and the second figure with its ceiling removed). The poverty effects barely depend on backing; inflation and median wealth do. <em>Note (Nov 17, 2026):</em> below full backing, the poverty effects hold because the model has no limit on what the economy can supply. Demand never runs into what can be produced, wages follow prices in full, and the Basic Unit and the cost-of-living basket follow the same prices. With no new output, the real goods the programme’s recipients gain are paid for only by holders of savings and lenders, through higher prices. So these figures are not evidence that the design works without backing. All inflation figures rest on the model’s placeholder price rule (all unmatched new money reaches prices); they are not a forecast.</p>' +
+      '<p>At the main row, programme inflation is ' + show('r2-effects', {design: C, environment: 'Reference', years: 20, outcome: OUT.inf}, 'effect', 'x', 2) + ' points a year above no programme in Reference at 20 years (full-coverage design): no material change. <strong>The main row assumes that every dollar the programme pays is matched by new output</strong>, as the design states (a design parameter). The model’s own mechanism for new output reaches only the share shown below (and the second figure with its ceiling removed). The poverty effects barely depend on backing; inflation and median wealth do. <em>Replaced Nov 18, 2026:</em> the dated note of Nov 17 said this held because the model had no limit on what the economy can supply. The v6 readings below test it: a limit on supply barely moves the curve, but wages that follow programme inflation only in part, never made up, do. All inflation figures rest on the model’s placeholder price rule (all unmatched new money reaches prices); they are not a forecast.</p>' +
       backingTable('C2.2') + '<details class="fx-more"><summary>The opt-in design, and the backing charts</summary>' + backingTable(RL) +
       ['backing-c22-20', 'backing-c22-40', 'backing-rel-20', 'backing-rel-40'].map(function (n) { return chartFig(n, 'Programme inflation by backed share, with the break-even share and the mechanism’s own points marked (' + n + '); the numbers are in the table above and in the file r2-backing.'); }).join('') + '</details>';
+    h += s82Section();
     h += '<h3 class="fx-h3">Paid for by a contribution instead (shown, never led with)</h3>' +
       '<p>If the programme is paid for by a contribution, with the rest borrowed, the contribution needed is far larger and the poverty effects are much smaller, and in some cells they reverse. Nearly every financed result is fragile: 46 of the 48 poverty and wealth curves change sign or lose significance at some reading, depending on how the contribution is set up. The two that hold are the opt-in design’s basic-living effect in Reference, at both horizons. These rows were run without the weighted top tail.</p>' + financedTable();
     h += '<h3 class="fx-h3">Who gains</h3>' +
       '<p>The programme lowers the top 1%’s share of wealth, raises the bottom half’s, and sharply reduces the share of families in debt; the opt-in design moves them about half as far. Below the top fifth of starting wealth, slightly higher prices lower what adults owe (a small gain); at the top, where money is lent, they are a loss. Adults outside the labour force stay far more often below the cost of living than adults in it; the Question 6 report and the erosion tables (r2-erosion-104691f/tables.md in the results repository) give the split.</p>' + distTable();
     h += '<h3 class="fx-h3">Unfavourable results, together</h3><ul>' +
       '<li><strong>Prices:</strong> programme inflation is above no programme in every cell: immaterial at the main row, tens of points a year without backing (table above).</li>' +
+      '<li><strong>Wages below full backing:</strong> if wages follow half of programme inflation and the rest is never made up, the programme with no backing leaves more people below the cost of living than no programme does (v6 readings, above).</li>' +
       '<li><strong>Work:</strong> fewer adults work: participation falls (adults who leave work for the programme), with their earnings forgone.</li>' +
       '<li><strong>Mobility:</strong> less movement out of the lowest wealth fifth (“stayed in the lowest wealth fifth”, above).</li>' +
       '<li><strong>Labour’s share</strong> of money income falls, because the programme’s payments are income that is not wages.</li>' +
