@@ -2332,6 +2332,11 @@ function s82UnitSuite(){
   t('part 2b run check: the real BU (s82BuRE, over the needs\' price the BU is indexed to) is lower with a two-year delay than with none at no backing, where prices rise', function(){
     var S2 = Object.assign({}, r2MainStudy(), {s82:true}), R = tbStudy([pair({a:0})[1], pair({a:0, bl:2})[1]], 1, P, S2);
     return {pass:R[0].s82BuRE > 0 && R[1].s82BuRE < R[0].s82BuRE && R[0].endoAnn > 0, detail:'no delay ' + R[0].s82BuRE.toFixed(1) + ', two years ' + R[1].s82BuRE.toFixed(1) + ' (inflation ' + (100*R[0].endoAnn).toFixed(2) + '% a year)'}; });
+  t('part 3 run check (v5.9.19, preregistration Amendment 5): the design\'s rule cuts exactly the sector\'s share, as the even rule does, so their realised cuts are equal (sourced at share 0.5, strict at share 0); its households are not cut alike', function(){
+    var R = tbStudy([pair({a:0.5, sl:{rd:'sourced', sh:'even'}})[1], pair({a:0.5, sl:{rd:'sourced', sh:'bu'}})[1], pair({a:0, sl:{rd:'strict', sh:'even'}})[1], pair({a:0, sl:{rd:'strict', sh:'bu'}})[1]], 1, P, r2MainStudy());
+    var rel = function(x, y){ return Math.abs(x - y)/Math.max(1e-12, Math.abs(y)); }, e1 = rel(R[1].slCutSh, R[0].slCutSh), e2 = rel(R[3].slCutSh, R[2].slCutSh);
+    var ok = R[0].slCutSh > 0 && R[2].slCutSh > 0 && e1 < 1e-9 && e2 < 1e-9 && Math.abs(R[3].slXq1 - R[2].slXq1) > 1e-6;
+    return {pass:ok, detail:'realised cut even / bu: sourced ' + R[0].slCutSh.toFixed(4) + ' / ' + R[1].slCutSh.toFixed(4) + ', strict ' + R[2].slCutSh.toFixed(4) + ' / ' + R[3].slCutSh.toFixed(4) + '; poorest fifth\'s cut strict ' + R[2].slXq1.toFixed(3) + ' / ' + R[3].slXq1.toFixed(3)}; });
   return out;
 }
 Object.assign(module.exports, { s82UnitSuite });  /* S82 */

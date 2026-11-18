@@ -1,8 +1,9 @@
-# Handoff (Nov 18, 2026): engine state after S82 part 2b (the strict-bound sweep's option and the study's reporting keys, v5.9.18)
+# Handoff (Nov 18, 2026): engine state after S82 part 3a (the design's sharing rule fixed, v5.9.19)
 
 The project is coordinated from BetterToBest/research-update (its HANDOFF.md and PLAN.md come first); this file records this repository's state. The full Nov 10 handoff, with every shipped item from S6 to S66, is kept word for word in `dev/handoff-archive/2026-11-10-handoff-full.md`. Pitfalls are in `dev/PITFALLS.md`.
 
 ## What shipped (latest first)
+- S82 part 3a (Nov 18, v5.9.19, branch `claude/s82-part3-bu-fix`): the supply limit's design rule for sharing a shortage (`sh` 'bu') cut two to four times its target (it divided this year's cut by last year's totals; the cash share swings yearly). Under that rule only, the year's `tbPov` calls are queued (`SLS.dq`, from `tbAccount` and `hhPool`) and run by `slFlush` after `runYear` with this year's totals (`slParts`); the cut is exact. Guard test identical; lineage link recorded; a unit test added. Seeds 1-2, all 231 rows of the S82 job: 179 identical to the first batch, the 52 'bu' rows below full backing moved. Tools (branch `claude/s82-part3-analysis`): `dev/tools/s82_tables.py` (the batch's tables; checks 11-12 with `--first eb0969c`), `dev/tools/s70_table.js` reads Stress and block FT. Found, not fixed: the BU's relief runs a two-year cycle in the main row (research-update PLAN.md S90). Next version after v5.9.19: v5.9.21 (v5.9.20 skipped, Duke).
 - S82 part 2b (Nov 18, v5.9.18, branch `claude/s82-part2b-strict-sweep`): price option `sl.lam` (the building speed by sector over the reading's own, for preregistration Amendment 3's strict-bound sweep; refused with 'full' and outside [0, 1]); study option `s82` (section D's reporting keys, `S82_KEYS`: `s82New`, `s82Acc` from `tbPov`, `s82Year`, `s82Res`; the unpaid need by fifth on both runs, the cut on the same fifths, the weighted share below 30 days, the real BU and the wage over the general level at year 20, wages over factor income, and wealth poverty at half the same seed's no-programme median, read from the supply-path run); the weights comment above `WEALTH_TAIL` corrected. Off = identical (guard test; lineage link recorded); 392 unit tests. Duke's rule of thumb for engine additions is in `dev/DECISIONS.md` (S82 part 2b).
 - S82 part 2a (Nov 17, pull request 152, v5.9.17): `SL_SRC` from opened sources (`sources/s82_supply.py` -> `sources/s82_supply.json`; `sources/s82_fred/`): v 0 in every sector; housing m 0.7914, eta 0.697, lam 0.2; medical m 0, eta 0.2, lam 0.25 (design); food m 0, eta 0.5 and lam 0.25 (design; theta food 0). `fx.eb` (PTH equity base from the basket, `mainLoopCostUSD` in place of `dcA` in `pthSaving`; `fx.pe` is the PTH estate fix, a different option). `WT_CUTS.p95` (`sources/s59_tail.py` with `cut(95)`). `acctDrawCheck` in harness.js (accounts, draws, finite outputs for any rows; the S82 job's checks 6-7). `fs` stays refused (rows dropped, preregistration Amendment 2). One more test in `s82UnitSuite` (390 in all). Decisions: `dev/DECISIONS.md`, "S82 part 2".
 - S82 part 1 (Nov 17, pull request 151, v5.9.16): price options `sl` (the essentials supply limit: `SL_SECT`, `SL_SRC` placeholders, `slVals`, `slNew`, `slStep`, `slCut` called from `tbPov`, `slRes`, `SL_KEYS`; readings 'full', 'sourced', 'restricted', 'strict'; rules 'pay', 'even', 'bu'; `fs` refused until built), `wc` (wage catch-up) and `bl` (`blLag`, the BU's delay); `s82UnitSuite`. Next: sources for `SL_SRC` (research-update S82 preregistration, Amendment 2), the job `runner/jobs/s82.js` in compassionism-sim-results, the dry run, the batch. Units: `v` and `m` are shares of the no-programme needs consumption, not of sector output.
@@ -24,14 +25,14 @@ The project is coordinated from BetterToBest/research-update (its HANDOFF.md and
 - Earlier work (S6, S13, S35 to S39, S47 to S57, S61; S61's report is `dev/reports/s61-baseline-scope.md`): see the archive file above.
 
 ## Branch and pull request state
-- Branch `claude/s82-part2b-strict-sweep` (S82 part 2b): see research-update HANDOFF.md for its pull request and whether it merged.
+- Branches `claude/s82-part3-bu-fix` (v5.9.19) and `claude/s82-part3-analysis` (tools): see research-update HANDOFF.md for their pull requests.
 
-## Long jobs in flight: none.
+## Long jobs in flight: the S82 rerun on GitHub Actions (research-update HANDOFF.md has the run numbers).
 
 ## Next 3 actions
-1. S82 part 2b: study option `s82` (section D's reporting keys: real BU and real wage at year 20, the no-programme run's unmet need by fifth, the weighted share below 30 days, wages over factor income, wealth poverty at half the paired no-programme median; the weights comment near `index.html` 4237), behind the study option, reporting only, guard test identical.
-2. Then the dry run of compassionism-sim-results `runner/jobs/s82.js` (`--dry --seeds=1-2 --procs=4`) on the merged commit.
-3. See research-update PLAN.md, S82, for the screen (question 7) and the dispatch.
+1. S82 part 3b: once the rerun's six folders `s82-v6-<env>-<years>-<v5.9.19 merge, 7>` show `DONE`, `python3 dev/tools/s82_tables.py <results> <out> --engine <7> --first eb0969c` (checks 11 and 12 must pass).
+2. The plain-words report `dev/reports/s82-supply-indexing.md` and the findings-page text (preregistration decision rule 5).
+3. S90 (research-update PLAN.md): the two-year cycle in the BU's relief.
 
 ## Files to touch
 - `index.html`: grep `WEALTH_TAIL`, `WT_`, `RT_`, `rtCap`, `spBase`, `PRICE_RULE`; look the line ranges up in `dev/CODEMAP.md`.

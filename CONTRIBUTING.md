@@ -40,14 +40,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.17 Release Notes
+## v5.9.19 Release Notes
 
-Released Nov 17, 2026: **the supply limit's sourced values, from opened sources, and two smaller readings for the v6 batch.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendment 2.
-- **The limit's sourced values** (`SL_SRC`; `sources/s82_supply.py`, output `sources/s82_supply.json`, every value a share of the sector's needs consumption, 2025). Idle capacity beyond normal use is nil in all three sectors: rental and homeowner vacancy are below their long-run means, food manufacturing runs above its mean, and hospitals are 75% full against 64% in 2009-2019. Housing: households consume 0.79 more than the needs baskets (consumer spending on housing and utilities, $28,296 a household, against the model's needs of $15,796), with a price elasticity of 0.70 (Albouy, Ehrlich and Liu 2016) and 20% of a lasting gap answered each year (Wheaton, Chervachidze and Nechayev 2014). Medical care: no above-needs use on the household's own spending (CE $6,470 against needs of $6,544), elasticity 0.2 (the RAND experiment). Food's price does not respond in today's engine, so only new capacity answers its excess. The two building speeds no source could fix (medical care, food) are labelled design parameters at 0.25.
-- **The PTH equity base from the basket** (`fx.eb`): a quarter of the member's actual PTH saving goes to Acre Equity, instead of a quarter of the saving at the BLEI daily cost (about half as much). Off by default; the no-programme run is unchanged by it.
-- **A fourth top-tail cutoff, the 95th percentile** (`wt {cut: 'p95'}`; `sources/s59_tail.py` rerun with that cutoff added: every stored fit reproduces; exponent 1.265, threshold $3.59 million in 2025 dollars).
-- **The cut kept as savings (`fs`) is not built**: a cut is shared out in the poverty accounting, after the year's money accounts are settled, so keeping it as savings would move those accounts. Its two preregistered rows are dropped; the main reading (the money is spent on other goods) is the cautious one for the wealth results.
-- One more unit test in `s82UnitSuite` (390 in all).
+Released Nov 18, 2026: **a fix to the supply limit's design rule for sharing a shortage.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress; every release panel's fingerprint is unchanged). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendment 5.
+- **What was wrong.** Under the design's rule (`sl {sh: 'bu'}`: basics bought with the BU are served first, and cash purchases go short first), the supply limit cut two to four times more than its target. The rule divided this year's cut by last year's totals of spending and of the part bought with cash, and that cash share swings from year to year, so in some years all cash spending was cut.
+- **The fix.** Under that rule only, each year's poverty accounting, which shares out the cut, waits until the year's flows are done (`slFlush`) and then uses this year's totals. The cut is now exactly the sector's share, as under the even rule. The market and even rules, and every run without the limit, are unchanged to the last digit.
+- **What it means for results.** The first run of the supply-and-indexing study (engine `eb0969c`) is superseded and rerun on this version; only the rerun is reported.
+- One more unit test in `s82UnitSuite`.
+- **Version numbers:** v5.9.20 will be skipped, as v5.9.10 was, so it cannot be read as v5.9.2. The next release is v5.9.21 (Duke, Nov 18).
 
 ## How to Contribute
 
@@ -359,7 +359,7 @@ The simulation is a single HTML file with no build tooling — runs directly fro
 
 - Test in Chrome, Firefox, and Safari
 - **New in v4.20:** `npm install` once (it installs jsdom, the only dev dependency, pinned in `package.json`), then `npm test`, which runs `node harness.js validate`, `node harness.js unit` and `node domtest.js`. GitHub Actions runs the same three on every push and pull request (`.github/workflows/checks.yml`); a red check means a figure, a unit test, or page/harness parity broke. *(v5.3: the engine has one copy. `harness.js` reads it out of `index.html` when it loads, so an engine change is made once, in `index.html`; `dev/tools/port_engine.py` and the five listed differences between the two files are retired. `domtest.js` still compares the page with the script `harness.js` runs.)* If your change moves the seed-42 figures on purpose, update `validate`'s documented values in the same pull request and say why.
-- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->162<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->393<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
+- **New in v4.13:** run `node domtest.js` for any change touching markup, CSS classes, or a render function. It takes ~3 minutes (<!-- count:domtest -->162<!-- /count --> checks; `domtest` fails if this number is stale, and `node domtest.js --write-counts` refreshes it, as `node harness.js unit --write-counts` does for the <!-- count:unit -->394<!-- /count --> unit tests) and asserts DOM behaviour the existing checklist cannot see — the two defects it was written to catch had both been live for eight releases precisely because every prior check read the file rather than running it. It does **not** cover CSS layout, tooltip positioning, or Chart.js output; those still need a human look at a few zoom levels and viewport widths after deploying.
 - Ensure seeded RNG produces identical output before and after your change, for a fixed configuration (seed `42`, Full Integration, 20 years — record Median BLEI, BLEI Poverty, and Gini as regression metrics) — unless your change is intentionally a mechanics fix, in which case say so explicitly in the PR
 - Do not introduce external dependencies beyond the existing Chart.js CDN (the page) and jsdom (dev-only, v4.20)
 - Follow existing code style: vanilla JS, CSS variables, inline documentation, `CFG` object for all calibration constants
@@ -453,7 +453,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.18*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.19*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document

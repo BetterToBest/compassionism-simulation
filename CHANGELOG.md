@@ -6,6 +6,21 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.18 Release Notes
+
+Released Nov 18, 2026 (notes written at v5.9.19): **the strict-bound sweep's option and the study's reporting keys for the v6 batch.** No stored figure changes (guard test identical). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendments 3 and 4.
+- **The building speed by sector** (`sl.lam`, a number or `{sector: speed}` in [0, 1], over the reading's own value), for the sweep of the strictest supply bound.
+- **The study's reporting keys** (study option `s82`; reporting only): the need nobody could pay for, by fifth of cash income, on both runs; the supply cut on the same fifths; the share of adult-years below 30 days of basic living, weighted; what a month of the BU buys at the price of the needs it follows; the mean wage over the general price level; wages over factor income; wealth poverty at half the same seed's no-programme median.
+
+## v5.9.17 Release Notes
+
+Released Nov 17, 2026: **the supply limit's sourced values, from opened sources, and two smaller readings for the v6 batch.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendment 2.
+- **The limit's sourced values** (`SL_SRC`; `sources/s82_supply.py`, output `sources/s82_supply.json`, every value a share of the sector's needs consumption, 2025). Idle capacity beyond normal use is nil in all three sectors: rental and homeowner vacancy are below their long-run means, food manufacturing runs above its mean, and hospitals are 75% full against 64% in 2009-2019. Housing: households consume 0.79 more than the needs baskets (consumer spending on housing and utilities, $28,296 a household, against the model's needs of $15,796), with a price elasticity of 0.70 (Albouy, Ehrlich and Liu 2016) and 20% of a lasting gap answered each year (Wheaton, Chervachidze and Nechayev 2014). Medical care: no above-needs use on the household's own spending (CE $6,470 against needs of $6,544), elasticity 0.2 (the RAND experiment). Food's price does not respond in today's engine, so only new capacity answers its excess. The two building speeds no source could fix (medical care, food) are labelled design parameters at 0.25.
+- **The PTH equity base from the basket** (`fx.eb`): a quarter of the member's actual PTH saving goes to Acre Equity, instead of a quarter of the saving at the BLEI daily cost (about half as much). Off by default; the no-programme run is unchanged by it.
+- **A fourth top-tail cutoff, the 95th percentile** (`wt {cut: 'p95'}`; `sources/s59_tail.py` rerun with that cutoff added: every stored fit reproduces; exponent 1.265, threshold $3.59 million in 2025 dollars).
+- **The cut kept as savings (`fs`) is not built**: a cut is shared out in the poverty accounting, after the year's money accounts are settled, so keeping it as savings would move those accounts. Its two preregistered rows are dropped; the main reading (the money is spent on other goods) is the cautious one for the wealth results.
+- One more unit test in `s82UnitSuite` (390 in all).
+
 ## v5.9.16 Release Notes
 
 Released Nov 17, 2026: **the v6 readings are built, each behind its own switch and off by default.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, both environments). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, committed before the build. Claude's reading of the design: `dev/reports/s82-supply-reading.md`.
