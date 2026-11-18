@@ -18,7 +18,7 @@ Effects are the programme run minus its own no-programme run, in percentage poin
 
 ## 2. The answer in short
 
-1. **The supply limit costs little.** Under the sourced limit, the programme's cut in basket poverty is at most 0.54 points smaller than without it (no backing, the market's sharing rule, Stress, 20 years). At the strict bound (no essentials at all beyond today's needs consumption; not the economy and not the design) it is at most 3.7 points smaller at 20 years and 5.1 at 40. Every primary result holds under the sourced limit at every share, in every environment and at both horizons, with all three sharing rules. It also holds at the strict bound, at the slowest building speed swept, and at half and double the essentials' price response. **But the limit as built can move only basket poverty.** The money a cut leaves unspent goes to other goods and the cut moves no price, so wealth, days of basic living and inflation are identical with and without it in every seed. For those outcomes, "holds" is true by construction, not a finding.
+1. **The supply limit costs little.** Under the sourced limit, the programme's cut in basket poverty is at most 0.54 points smaller than without it (no backing, the market's sharing rule, Stress, 20 years). At the strict bound (no essentials at all beyond today's needs consumption; not the economy and not the design) it is at most 3.7 points smaller at 20 years and 5.1 at 40. **But the limit as built can move only basket poverty.** The money a cut leaves unspent goes to other goods and the cut moves no price, so wealth, days of basic living and inflation are identical with and without it in every seed. So the one real test is basket poverty. Its effect holds under the sourced limit at every share, in every environment and at both horizons, with all three sharing rules. It also holds at the strict bound, at the slowest building speed swept, and at half and double the essentials' price response. The other five primary readings pass the same test only by construction, which is not a finding.
 2. **Wages that lag prices are what make the results depend on backing.** If wages follow half of programme inflation and the rest is never made up, the programme with no backing leaves basket poverty 9.6 points *higher* than no programme (Reference; 5.0 in Adverse, 9.6 in Stress). Inflation runs 146-190 points a year, and the programme is no better than no programme on basket poverty below a backed share of 0.08-0.26 at 20 years and 0.30-0.49 at 40. If the lost part is made up a year later, the cost falls to 0.3-1.5 points.
 3. **The design's monthly and quarterly adjustments of the BU cost little; a yearly one costs a lot.** With no backing, a monthly delay costs 0.7-1.3 points of basket poverty and a quarterly one 1.5-2.7. A yearly delay costs 7.0-11.1 points and the two-year bound 12.0-17.2. At full backing the monthly delay costs 0.04 points or less and the two-year bound 0.8 or less.
 4. **Together** (sourced limit, wages at three quarters made up a year later, the BU a year behind), the programme loses 8.4-8.6 points of its basket-poverty cut with no backing in Reference and 13.2-13.9 in Adverse and Stress. The yearly delay accounts for 81-93% of that. The readings interact (chiefly the wage lag with the delay), so the joint figure is the one to quote.
@@ -46,7 +46,7 @@ The change the limit makes, in points of basket poverty, at no backing and at ha
 |---|---|---|---|---|---|---|
 | Effect without the limit | −30.96 | −31.64 | −38.66 | −39.65 | −37.11 | −38.75 |
 | Sourced | 0.38 / 0.20 / 0.24 | 0.11 / 0.06 / 0.07 | 0.50 / 0.27 / 0.31 | 0.15 / 0.08 / 0.10 | 0.54 / 0.31 / 0.35 | 0.17 / 0.09 / 0.11 |
-| Restricted (today's land-use, residency and farm policies; every sourced value halved) | 0.91 / 0.50 / 0.57 | 0.35 / 0.19 / 0.22 | 1.35 / 0.75 / 0.84 | 0.49 / 0.26 / 0.31 | 1.54 / 0.88 / 0.99 | 0.60 / 0.32 / 0.39 |
+| Restricted (a policy reading: every sourced value halved, standing for today's land-use, residency and farm policies) | 0.91 / 0.50 / 0.57 | 0.35 / 0.19 / 0.22 | 1.35 / 0.75 / 0.84 | 0.49 / 0.26 / 0.31 | 1.54 / 0.88 / 0.99 | 0.60 / 0.32 / 0.39 |
 | The strictest case: no essentials beyond today's needs consumption; not the economy and not the design | 2.06 / 1.12 / 1.23 | 0.86 / 0.46 / 0.53 | 3.13 / 1.74 / 1.86 | 1.24 / 0.66 / 0.77 | 3.68 / 2.12 / 2.21 | 1.60 / 0.88 / 1.01 |
 
 With no programme, basket poverty is 36.1% in Reference and 44.6% in Adverse and Stress. Every change in the table has an interval that excludes zero. The market's rule always costs most: it cuts those least able to pay, who are the ones nearest the poverty line.
@@ -70,7 +70,7 @@ At no backing the programme's extra need is 14.4% of needs consumption. Under th
 
 ## 5. Wages that follow prices in part (question 2)
 
-Basket poverty: the programme's effect at no backing, and the break-even backed share (20 years). Wage readings are design parameters: no source was found for how wages respond to an inflation the programme itself makes.
+Basket poverty: the programme's effect at no backing, and the break-even backed share (20 years). Wage readings are design parameters: no source was found for how wages respond to an inflation the programme itself makes. The readings never made up are the pessimistic end of the range swept; which reading is nearest reality is not known.
 
 | Wages follow programme inflation | Reference | Adverse | Stress |
 |---|---|---|---|
@@ -220,8 +220,8 @@ What does make the effects depend on backing is how fully wages and the BU keep 
 5. The BU's relief to the cost of living runs a damped two-year cycle in every programme row, the main row included. It predates this study and is its own inspection step in research-update's plan.
 6. The ageing reading at no backing measures a defect (section 9; its own step).
 7. The population is fixed in every row but the ageing reading.
-8. The design's surge protocol (luxury restrictions, conversion limits) is not modelled: the cautious side.
-9. Building capacity costs nothing in the model's accounts. The Creative Collectives' lending and output per hour are the next engine step, which is what can make backing produced rather than assumed.
+8. The design's surge protocol (luxury restrictions, conversion limits) is not modelled: the cautious side. The shortages here may be larger than under the design.
+9. Building capacity costs nothing in the model's accounts, so the building-speed sweep is a physical sweep, not a fiscal one. The Creative Collectives' lending and output per hour are the next engine step, which is what can make backing produced rather than assumed.
 10. Duke's views on supply policy (that the levers should be set by the people, and that the design supplies the basics with providers given a reason to supply them) are his and are kept apart from these results. Nothing here tests them.
 
 ## 12. Where everything is
