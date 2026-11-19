@@ -216,7 +216,7 @@ What does make the effects depend on backing is how fully wages and the BU keep 
    - the essentials' price response θ;
    - the wage readings (wIdx, wc);
    - the BU's delays (the monthly and quarterly ones follow the design's stated adjustment).
-5. The BU's relief to the cost of living runs a damped two-year cycle in every programme row, the main row included. It predates this study and is its own inspection step in research-update's plan. *Nov 18 (S90):* the cause is the private businesses' lower BU price, which was paid from last year's premium instead of at the sale as the design has it; a fix is built behind an option and its rerun is preregistered (`dev/reports/s90-private-price-at-sale.md`).
+5. The BU's relief to the cost of living runs a damped two-year cycle in every programme row, the main row included. It predates this study and is its own inspection step in research-update's plan. *Nov 18:* the cause is the private businesses' lower BU price, which was paid from last year's premium instead of at the sale as the design has it; a fix is built behind an option and its rerun is preregistered (`dev/reports/s90-private-price-at-sale.md`).
 6. The ageing reading was rerun after a defect was fixed (section 9). The batch's ageing figures are superseded, not quoted.
 7. The population is fixed in every row but the ageing reading.
 8. The design's surge protocol (luxury restrictions, conversion limits) is not modelled: the cautious side. The shortages here may be larger than under the design.

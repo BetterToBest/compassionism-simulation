@@ -1,10 +1,10 @@
 # The BU's two-year swing: a private business's lower BU price paid a year late
 
-Nov 18, 2026. Written by Claude. A plain-words report of research-update step S90; the full decision is in `dev/DECISIONS.md` ("S90").
+Nov 18, 2026. Written by Claude. A plain-words report of the research-update plan's step on this swing; the full decision is in `dev/DECISIONS.md` (Nov 18, "the two-year cycle in the BU's relief").
 
 ## What was seen
 
-In the main row (full backing, flat prices; Reference environment, seed 1, 500 adults), the Basic Units (BU) each adult spends on the cost of living swing from year to year: $22,838 in years 0 and 1, then $10,969, $21,452, $13,819, $19,472, $16,202, and so on. The swing shrinks each year but takes more than ten years to die out. Meanwhile the BU paid each month keep their value and the cost of living hardly moves. The swing is in every programme row, and it was behind the swing in the cash share that the supply study (S82) found.
+In the main row (full backing, flat prices; Reference environment, seed 1, 500 adults), the Basic Units (BU) each adult spends on the cost of living swing from year to year: $22,838 in years 0 and 1, then $10,969, $21,452, $13,819, $19,472, $16,202, and so on. The swing shrinks each year but takes more than ten years to die out. Meanwhile the BU paid each month keep their value and the cost of living hardly moves. The swing is in every programme row, and it was behind the swing in the cash share that the supply study found.
 
 ## What causes it
 
