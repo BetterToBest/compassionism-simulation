@@ -2,6 +2,8 @@
 
 Oct 14, 2026. **This is a draft release for Duke to merge or withhold.** Merging it is the release. If it is withheld, the pages stay on v5.5 and nothing else changes.
 
+**Dated note (Nov 19, 2026): the private businesses' BU price was paid a year late.** The programme rows here paid the private businesses' lower BU price out of the previous year's premium. The design sets that price at the sale, so this was a defect, now fixed behind an option (see [the report on the private price at the sale](s90-private-price-at-sale.md)). On v5.9's main rows, setting the price at the sale makes every poverty and wealth effect slightly larger in the programme's favour and changes no sign: across both designs, three environments and 20 and 40 years, the cut in basket poverty grows by 0.04 to 0.59 points, the cut in too little wealth by 0.06 to 0.38 points and the rise in median real wealth by $110 to $1,525, and programme inflation moves by less than 0.001 points a year. It was measured on v5.9's main rows, not on the v5.0 to v5.6 panels, whose main row is different. No rerun of this study is planned now; a rerun would be its own preregistered amendment.
+
 **Duke: before deciding, please read `dev/reports/v5-33-snap-work-rule.md`** (what SNAP's work rule is and how it is modelled) and `dev/reports/v5-35-safety-net-poverty.md` (why today's safety net slightly raises basket poverty in some runs). The open questions are yours: whether v5.6's main rows include today's safety net and SNAP's work rule (issue i24-2). This report gives the figures for that decision. It does not decide it.
 
 ## 1. What changes in v5.6
