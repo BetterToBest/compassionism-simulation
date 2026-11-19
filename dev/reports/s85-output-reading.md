@@ -1,0 +1,67 @@
+# Output per hour, automation and free time: Claude's reading of the design
+
+Nov 19, 2026 · written before any build or run · Claude. Sources: `sources/s85_output.md` (each opened Nov 19). Preregistration: BetterToBest/research-update `prereg/2026-11-s85-output-per-hour.md`.
+
+Duke, this note sets out how I read your writing on work, output per hour and automation, what the evidence says, and how the model will represent it. Please say if it misrepresents your design. Where the text is silent I took the most cautious option and labelled it a modelling assumption.
+
+## Why this matters
+
+The main row assumes full backing: every dollar the programme pays out is matched by new output. The model's own mechanism for new output reaches only 0.2-1.9% of the payout (the report on how much the results depend on full backing). The release reviews asked for the design's growth to be modelled, not assumed. Your answer was "work is worth more for less, instead of the current less for more."
+
+You added two things. On Nov 17: AI and automation will raise output per hour, but they will also cut work hours in many professions, and in the near term more of the labour force may be displaced. On Nov 19: "The goal of the program is more for less, not less for more, however additional leisure time and free time to pursue personal projects (whether entrepreneurship, or hobbies, travel, concerts/singing/dancing, etc.) is part of the flourishing aspect that the program can offer. AI and automation are happening regardless (30%/50%/70% displacement) so whether society gets ahead of this is paramount." Your view is that, implemented and maintained well, the programme can prevent much of the distress this would otherwise cause.
+
+That view is yours, and it stays apart from the results. Whether the programme prevents the distress is what the run measures. It is not an input. The study is built so that it can find the programme falls short, and it says where it does.
+
+## What the writing says
+
+1. **The corporate transformation paper** sets out the path of hours: 40 to 35 a week (2025-2030), 35 to 25 (2030-2035), 20 to 15 (2035-2045), and 15-hour weeks "standard or optional" after 2045. Its "Maintained Take-Home Model" pays $40 an hour for 25 hours instead of $25 for 40. Weekly pay stays $1,000. With the BU (about $250 a week) and the PTH saving (about $225 a week), the paper counts "a 47% improvement with 38% fewer work hours". It says 25-hour weeks "maintain productivity", and that with the programme in place this is "not dystopian unemployment — it is liberation". It proposes a corporate tax of 10-15% of gross revenue, 40% of it to the BU.
+2. **The economic modelling paper** writes output per hour as growing 1.5% a year, plus 0.8% from the programme's incentives to innovate and 0.5% from PTF's lower overheads. The Hub already labels these figures illustrative: no run produced them.
+3. **The implementation roadmap** sets automation targets by sector (health care 30-40%, education 20-30%, infrastructure 60-70%, emergency services 40-50%) and wage premiums for the essential workers who remain (20-50%).
+4. **The backing reading** (Nov 2): conversions pay for contributions, and part of them build supply. A funded dollar adds output after a lag and wears away. Only added output absorbs new money (the cautious reading), and the backed share is an outcome.
+
+The writing does not say who owns the output of automated work. It does not say who pays the higher hourly rate in the maintained take-home model, or what makes firms pay it. It does not say how much of the Creative Collectives' work is goods and services sold in shops.
+
+## What the evidence says
+
+- **Shorter weeks.** The paper cites Pencavel (2015) for falling output per hour at 35-40 hours. Pencavel found the opposite in that range: "below 49 weekly hours, variations in output are proportional to variations in hours". Output per hour falls only above 49 hours, and output peaks at about 63. So in the range the design is about (40 down to 15), the evidence says shorter weeks bring no gain in output per hour. Fewer hours means less output unless something else raises output per hour. The Hub sentence needs a correction note. I have listed it for a later Hub edit.
+- **History.** US hours per worker fell from 3,096 a year in 1870 to 2,022 in 1950, then only to 1,789 by 2023. Output per hour has grown about 2.2% a year since 1947 (BLS). Since 1950 about 8% of that gain was taken as shorter hours and the rest as income. So "more for less" in hours is not what the market has delivered since 1950. That is your point about who gets ahead of the change.
+- **Exposure is not loss.** About 80% of US workers have at least a tenth of their tasks exposed to language models, and about 19% have at least half (Eloundou and others). The IMF finds about 60% of jobs in advanced economies exposed, about half of them likely to be harmed and half helped. In the past, new work replaced much of what was automated: most of today's employment is in kinds of work that did not exist in 1940 (Autor and others). In the last three decades, though, displacement has outrun new work, and automation has lowered labour's share of income (Acemoglu and Restrepo).
+- **Output per hour.** The opened forecasts of AI's added growth run from about 0.1 points a year (Acemoglu: GDP about 1.1% higher after ten years; Penn Wharton: 1.5% by 2035, 3.7% by 2075) to 1.5 points a year for a decade (Goldman Sachs, as Acemoglu quotes it). Early measured effects on earnings and hours in Denmark are near zero (Humlum and Vestergaard). Within one task, the gains can be large: 14% in customer support, 34% for novices (Brynjolfsson and others).
+- **Who gains.** One point more productivity growth has gone with 0.7-1 point more average and median pay growth, and 0.4-0.7 for production workers (Stansbury and Summers). Acemoglu expects AI to widen the gap between capital and labour income.
+
+## Your 30%, 50% and 70%
+
+I read each figure as the share of today's paid hours no longer done by people at the horizon, net of the new work that appears. The IMF's harmed half of exposed jobs (about 30%) sits at your first figure. Fifty per cent is near the share of tasks software built on language models could speed up (47-56%) and Frey and Osborne's high-risk share (47%). Seventy per cent is above every at-risk estimate I opened.
+
+They also imply something about output. If output is kept while paid hours fall by these shares, output per remaining hour must rise. Over 20 years that is 1.8%, 3.5% and 6.2% a year above the usual growth. Over 40 years it is 0.9%, 1.75% and 3.1%. The highest forecast I opened is 1.5 points a year for a decade. So at 20 years, 30% is at the edge of the forecasts, and 50% and 70% are beyond them. They are stress readings, not forecasts. Over 40 years, 30% and 50% are within the range. The study runs both paths, and it adds a 10% reading for the case where new work replaces most of what is automated, as it has in the past.
+
+## My reading, as rules the model can run
+
+- **R1. Two inputs, not one.** Output per hour and paid hours are separate. Automation raises the first and lowers the second, along one S-shaped adoption path that reaches its full size at year 20 or year 40.
+- **R2. Displacement is the economy's, in both runs.** The no-programme run faces exactly the same automation. The programme's effect is always read against it.
+- **R3. Two forms of displacement.** *Lost jobs* (the main reading): adults leave paid work for good, the most exposed first, by the occupation's automation risk already in the model. Evenly across adults is a second reading. *Shorter hours:* every worker's paid hours fall, more in exposed occupations. In both forms an hour's pay is not changed by the displacement itself. Lost jobs is the main reading because it concentrates the loss, so it is the harder test of the programme's floor.
+- **R4. Output is kept, and grows.** The automated work is still done, by machines and software, so output does not fall when paid hours do. On top of that, output per hour grows by the forecast gain: 0.1 points a year (the low reading) or 1.5 (the high reading), along the same path. Those still in paid work receive 0.7 of the gain in their pay; 0 and 1 are swept.
+- **R5. The dividend goes to owners (both runs).** The output of the automated hours and the part of the gain not paid as wages go to the owners of businesses and shares, in proportion to what they hold. That is where the market's efficiency gains have gone (Acemoglu and Restrepo). Part of US business wealth is held abroad and by institutions. The share the model's households keep will be taken from the national accounts before any run (until then 1, swept at 0.5).
+- **R6. Shorter weeks, as the evidence reads them.** Below 49 hours, output is proportional to hours (Pencavel), so a shorter week brings no gain per hour by itself. *The design's maintained take-home* is a labelled reading of the programme run in the shorter-hours form. In it, the output of a worker's automated hours is paid to that worker as a higher hourly rate, not to owners, so weekly pay is kept. Nothing in the model makes firms pay it, so it is not the main reading.
+- **R7. The programme's own output produces the backing.** Project work, the Creative Collectives' work and PTF capital produce output. An hour of programme work produces what an hour produces in the economy: its pay over labour's share of output (from the national accounts), times the forecast gain. How much of that work is goods and services people would otherwise buy (from a shop or a service provider: food, housing and repairs, care, childcare, transport, utilities, training), or replaces something they would buy, is not in the writing. It is a design parameter, swept at a quarter, a half and all of it. The hours behind a conversion are its BU at face value over the contract pay, as the model already counts project hours. PTF capital yields output a year per dollar from the national accounts, never more than the economy's 0.32. Output starts after a lag and wears away, as in the backing reading. The backed share is then an outcome, not an input.
+- **R8. Two ways new output absorbs new money.** In the model's own convention, each year's matched output offsets that year's new money; this is how the backing curve is drawn. In the stricter reading from the backing study, only output added that year absorbs new money. Both are reported.
+- **R9. Free time is measured, not assumed.** Every paid hour that automation removes is an hour of free time. It is counted as *secure* in years when the adult's household is above the cost-of-living line, and as *insecure* when it is below. Free time that comes with hardship is not counted as flourishing.
+
+**Dated note (Nov 19, 2026, after an outside reading of the preregistration, before any build).** Three of the rules above leaned towards the programme without a source, so the preregistration was amended before anything was built.
+- The main reading of R7 counts only project hours, the model's only observed hours of programme work. The hours behind other conversions become a labelled reading.
+- The forecast gain is not applied to programme output in the main reading. The sources measure it for the economy or for one task, not for care, community or creative work.
+- PTF capital yields only capital's share of output per dollar, because full output per dollar would also count the labour the capital needs.
+- Services count as fully as goods. The share of programme work that backs the money covers any output people would otherwise pay for, from a shop or a service provider (care, childcare, health, transport, repairs, training), and work that replaces such a purchase. Output that replaces no purchase, such as unsold art or a community event, is real value. It is reported apart, not as backing. (Your question, Nov 19.)
+- In R4, the high reading is ten years of 1.5 points, held after that, because Goldman Sachs' figure covers a decade. The low reading follows Penn Wharton's published path.
+
+## Not modelled here (each listed as a limit)
+
+- **A shortfall of spending.** Owners may spend less of their gain than workers would have spent of their wages. The resulting slack is the case where the programme's spending would fill idle capacity. Leaving it out is the cautious side for the design.
+- **The corporate revenue tax.** It is financing, a question for a separate study of who pays.
+- **Health and security raising output per hour.** No source I opened sizes it.
+- **The Creative Collectives' lending to start-ups** (your Nov 17 note). It needs its own step.
+- **New occupations that automation creates.** They enter only through the net displacement readings.
+
+## What this means before any run
+
+The programme's paid work (projects and conversions) is a small part of what it pays out: most of the payout is the BU spent at face value. So I expect the backed share it produces to stay well below full backing unless most of that work is goods and services people would otherwise buy and the gain is high. If so, the report will say so plainly, with the break-even shares. The displacement readings test the other half of your question. With no programme, displaced adults lose their pay. With the programme, the BU and the essentials prices stay. The run measures how much of the loss in poverty, savings and wealth that offsets, and where it does not.
