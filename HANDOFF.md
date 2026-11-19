@@ -1,8 +1,9 @@
-# Handoff (Nov 19, 2026): engine state after S92 (the private price at the sale read as the corrected model; default unchanged until Duke's release)
+# Handoff (Nov 19, 2026): engine state after S85 part 1 (output per hour and automation: reading and sources; no engine change)
 
 The project is coordinated from BetterToBest/research-update (its HANDOFF.md and PLAN.md come first); this file records this repository's state. The full Nov 10 handoff, with every shipped item from S6 to S66, is kept word for word in `dev/handoff-archive/2026-11-10-handoff-full.md`. Pitfalls are in `dev/PITFALLS.md`.
 
 ## What shipped (latest first)
+- S85 part 1 (Nov 19, pull request 166, branch `claude/s85-output-reading`, no engine change): Claude's reading of the design `dev/reports/s85-output-reading.md` (output per hour and paid hours as separate inputs; displacement in both runs; the dividend to owners; the backing produced by the programme's own work, services counted as fully as goods; free time split secure and insecure; a dated note after the outside reading), sources `sources/s85_output.md`, `sources/s85_hours.py` with `sources/s85_owid/us_hours.csv`. Preregistration: research-update `prereg/2026-11-s85-output-per-hour.md` with Amendment 1. Next: part 2 builds row option `oh` (off = identical) after Amendment 2's sources.
 - S92 part 2 (Nov 19, branch `claude/s92-sale-results`, no engine change): the at-sale rerun (`s90-sale-*-b8ccd8d`) read under the preregistered rules: checks 1-3 pass, so `sp.vAt: 'sale'` is the corrected model and replaces the main rows' figures at the next release (Duke sets the version; make 'sale' the default then, with a Hub corrections-log entry). Every poverty and wealth effect grows slightly in the programme's favour (basket poverty 0.04-0.59 points), no sign change. Report section 'The rerun, part 2'; `dev/tools/s90_page_check.py`; dated notes on the findings page (v5.9 and v5.6 sections) and in eight reports; decisions in `dev/DECISIONS.md` 'S92 part 2'.
 - S90 and S92 part 1 (Nov 18-19, pull requests 163, 164): `sp.vAt: 'sale'` built (off = identical); swing measure and accounting check; `dev/tools/s90_tables.py`.
 - S91 (Nov 18, pull request 160, branch `claude/s91-ageing-lf-return`): with ageing and the labour-force flows, a newcomer drawn out of the labour force at entry kept its wage but not the price level of the draw, so a return counted prices since year 0 twice and the newcomers' wage index compounded it. `lfDraw` now stores `_lfP = DR_PL` (1 at year 0: every run without ageing identical). Guard test identical; unit test in `s73UnitSuite` (395 in all); `earlier-engine.html` resynced; lineage link recorded. S82 job, 231 rows, seeds 1-2: 229 identical, only E.age.a0 and E.age.a1 moved. Reach: S82's ageing rows (rerun on Actions, folders `s82-v6-age-<env>-<years>-<engine 7>`) and the participation pilot's agP and agS rows (`dev/tools/s91_s73_age.js`). Decisions: `dev/DECISIONS.md`, "S91".
@@ -34,9 +35,9 @@ The project is coordinated from BetterToBest/research-update (its HANDOFF.md and
 ## Long jobs in flight: none.
 
 ## Next 3 actions
-1. S91: once the six folders `s82-v6-age-<env>-<years>-<engine 7>` show `DONE`, read them (check 13: E.age.none equals the batch `aa2a4e0` in every key and seed), then replace the ageing paragraph of `dev/reports/s82-supply-indexing.md` section 9 and the batch tables' ageing rows (`dev/tools/s82_tables.py` needs the rerun folders substituted for rows 134-136).
-2. S91: the participation pilot's ageing rows at 100 seeds (`node dev/tools/s91_s73_age.js ENV 100 <published s73 folder> <out>` from a clean worktree, then `node dev/tools/s73_table.js <out>`), a dated note in `dev/reports/s73-participation.md`.
-3. S90 (research-update PLAN.md): the two-year cycle in the BU's relief.
+1. S85 part 2: open the sources Amendment 1 item 5 names (households' share of corporate equity, the labour share, capital's yield in the essentials industries), record them in Amendment 2, then build row option `oh` behind its switch (paths, displacement, gain, dividend, `bk`), off = identical, unit tests, guard test, lineage.
+2. S85 part 2: the dry run (seeds 1-2, all rows, checks 1-9), the job in compassionism-sim-results, dispatch on Actions.
+3. S85 part 3: tables, report `dev/reports/s85-output-per-hour.md`, findings-page text.
 
 ## Files to touch
 - `index.html`: grep `WEALTH_TAIL`, `WT_`, `RT_`, `rtCap`, `spBase`, `PRICE_RULE`; look the line ranges up in `dev/CODEMAP.md`.
