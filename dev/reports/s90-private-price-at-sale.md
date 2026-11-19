@@ -39,4 +39,8 @@ Every programme row uses the private rule, so every published programme figure s
 
 ## What the community businesses' cut does
 
-The community businesses' cut stays as it is: their premium is split three ways (price cuts, reinvestment, workers) once the year's surplus is known, which is a reading of their design. With the private price at the sale, it shows no swing.
+The community businesses' cut stays as it is. Duke's text for them ("The converted dollars go one-third each to lower prices, reinvestment in capacity and profit-sharing with the ESP's workers") says how their premium is split, not when. Paying the price third once the year's premium is known is therefore a modelling assumption where the design is silent, not something the design requires. With the private price at the sale, it shows no swing. Paying it at the sale as well is a possible later reading.
+
+## Status
+
+The fix is a candidate. It becomes the corrected model only if the preregistered rerun passes its checks and shows the swing gone in every environment. An outside reading by a model from another maker (research-update `audits/2026-11-18-s90-reading.md`) found the diagnosis, the defect call and the algebra sound.
