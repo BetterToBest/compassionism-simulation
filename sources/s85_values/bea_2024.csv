@@ -1,0 +1,8 @@
+industry,basket_sector,bea_tva113_line,value_added_musd,compensation_musd,fa_series,net_stock_musd
+Food and beverage stores,food,145,230750,132509,k1n44501es00,370750
+Food services and drinking places,food,345,687264,455925,k1n72201es00,435606
+Utilities,housing,37,477342,109593,k1n22001es00,4017579
+Housing,housing,245,2863497,28575,k1r53101es00,34370798
+Ambulatory health care services,medical,305,1057757,815013,k1n62101es00,639393
+Hospitals,medical,309,690236,562456,k1n622h1es00,1567643
+Nursing and residential care facilities,medical,313,209899,187168,k1n62301es00,178360
