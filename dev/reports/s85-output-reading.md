@@ -47,6 +47,12 @@ They also imply something about output. If output is kept while paid hours fall 
 - **R8. Two ways new output absorbs new money.** In the model's own convention, each year's matched output offsets that year's new money; this is how the backing curve is drawn. In the stricter reading from the backing study, only output added that year absorbs new money. Both are reported.
 - **R9. Free time is measured, not assumed.** Every paid hour that automation removes is an hour of free time. It is counted as *secure* in years when the adult's household is above the cost-of-living line, and as *insecure* when it is below. Free time that comes with hardship is not counted as flourishing.
 
+**Dated note (Nov 19, 2026, after an outside reading of the preregistration, before any build).** Three of the rules above leaned towards the programme without a source, so the preregistration was amended before anything was built.
+- The main reading of R7 counts only project hours, the model's only observed hours of programme work. The hours behind other conversions become a labelled reading.
+- The forecast gain is not applied to programme output in the main reading. The sources measure it for the economy or for one task, not for care, community or creative work.
+- PTF capital yields only capital's share of output per dollar, because full output per dollar would also count the labour the capital needs.
+- In R4, the high reading is ten years of 1.5 points, held after that, because Goldman Sachs' figure covers a decade. The low reading follows Penn Wharton's published path.
+
 ## Not modelled here (each listed as a limit)
 
 - **A shortfall of spending.** Owners may spend less of their gain than workers would have spent of their wages. The resulting slack is the case where the programme's spending would fill idle capacity. Leaving it out is the cautious side for the design.
