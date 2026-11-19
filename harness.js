@@ -2865,6 +2865,30 @@ function privUnitSuite(){
   t('CRN: the correction draws no random numbers (same number of draws as the owners rule; three environments)', function(){ var d = [];
     ENVS.forEach(function(c){ SURP = sp(); var a = plain(c[0], c[1], null, true); SURP = sp({priv:'prices'}); var b = plain(c[0], c[1], null, true); if (a !== b) d.push(a + ' vs ' + b); });
     return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'draw counts equal'}; });
+  /* S90 (Nov 18, 2026; research-update PLAN.md S90): the private ESP's lower BU price set at the sale (SURP.vAt 'sale'), as Duke's design has it,
+   * in place of last year's premium shared this year (the one-year lag that ran a damped two-year cycle in the BU spent). */
+  t('S90 at-sale: last year\'s private premium repays last year\'s advance; what is left is exactly the private share of the premium on payroll BU returned this year (d73), shared as before (three environments)', function(){ var worst = 0, n = 0, nr = 0;
+    ENVS.forEach(function(c){ SURP = sp({priv:'prices', vAt:'sale'}); var k0 = 0; plain(c[0], c[1], function(ag, y){ var q = SPS.y[y], priv = q.pool - q.ptf, ret = ESS.y[y] ? ESS.y[y].ret || 0 : 0;
+      if (y > 0 && priv > 0){ n++; if (ret > 0) nr++; var want = ret*k0*(1 - q.s)/(1 - ESP.lam); worst = Math.max(worst, Math.abs(q.privPool - want)/priv); } k0 = SPS.vK; }); });
+    return {pass:n > 0 && nr > 0 && worst < 1e-9, detail:n + ' years (' + nr + ' with payroll BU returned); worst gap over the private premium ' + worst.toExponential(2)}; });
+  t('S90 at-sale: one BU at a private ESP buys 1 + vK dollars (Duke: a $9 menu for 3 BU at 3x; here net of tax, payroll and the workers\' match): each year\'s private cuts = vK x the BU spent at private ESPs + the share paid a year late', function(){ var worst = 0, n = 0, k = 0, f = null;
+    ENVS.forEach(function(c){ SURP = sp({priv:'prices', vAt:'sale'}); plain(c[0], c[1], function(ag, y){ var q = SPS.y[y], nx = FWS.prev, priv = nx.bizBU - (nx.bizBUptf || 0); k = SPS.vK;
+      if (priv > 0){ n++; worst = Math.max(worst, Math.abs(q.cutV - SPS.vK*priv - q.privUsed)/q.cutV); } }); });
+    SURP = sp({priv:'prices', vAt:'sale', privWk:'none'}); plain(FI, 1, function(ag, y){ if (y === 0) f = [SPS.vK, bizPremPerBU(FI)]; }, false, function(ag, y){ if (y === 0){ ESP = null; } });
+    return {pass:n > 0 && worst < 1e-9 && k > 0 && f && Math.abs(f[0] - f[1]) < 1e-15, detail:n + ' years; worst relative gap ' + worst.toExponential(2) + '; vK ' + k.toFixed(4) + ' (no workers\' match, no payroll: ' + (f ? f[0].toFixed(4) : '?') + ', the year end\'s premium per BU)'}; });
+  t('S90 at-sale: the BU spent no longer swing year to year (Reference, seed 1: mean |change| over years 2-12, against the lagged rule)', function(){ var sw = [];
+    [sp({priv:'prices'}), sp({priv:'prices', vAt:'sale'})].forEach(function(q){ SURP = q; var S = []; plain(FI, 1, function(ag, y){ var t = 0; ag.forEach(function(a){ t += a._spBU || 0; }); S.push(t); });
+      var m = 0; for (var y = 2; y <= 12; y++) m += Math.abs(S[y] - S[y - 1])/S[y]/11; sw.push(m); });
+    return {pass:sw[1] < 0.5*sw[0], detail:'mean year-to-year change: lagged ' + (100*sw[0]).toFixed(1) + '%, at the sale ' + (100*sw[1]).toFixed(1) + '%'}; });
+  t('S90 at-sale: the books balance in the main row (200 adults, 20 years, seed 1; three environments): no accounting identity fails, the premium identity included', function(){ var bad = [], nP = 0;
+    try { [FULL_INTEGRATION, ADVERSE_REFERENCE, STRESS_TEST].forEach(function(E){ var P = Object.assign({}, E, {years:20, nAgents:200});
+      [false, true].forEach(function(sale){ var c = r2FreezePair(P, 'c22')[1]; if (sale) c.sp = Object.assign({}, c.sp, {vAt:'sale'});
+        ACCT = acctNew(); tbStudy([c], 1, P, r2MainStudy()); var f = Object.keys(ACCT.nFail); nP += sale ? (ACCT.n.premium || 0) : 0; if (f.length) bad.push((sale ? 'sale ' : 'lag ') + f.join(',')); ACCT = null; }); }); }
+    finally { ACCT = null; }
+    return {pass:bad.length === 0 && nP > 0, detail:'premium checks under the sale rule ' + nP + '; failing: ' + (bad.join('; ') || 'none')}; });
+  t('S90 CRN: the at-sale price draws no random numbers (three environments)', function(){ var d = [];
+    ENVS.forEach(function(c){ SURP = sp({priv:'prices'}); var a = plain(c[0], c[1], null, true); SURP = sp({priv:'prices', vAt:'sale'}); var b = plain(c[0], c[1], null, true); if (a !== b) d.push(a + ' vs ' + b); });
+    return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'draw counts equal'}; });
   return out;
 }
 Object.assign(module.exports, { privUnitSuite });
