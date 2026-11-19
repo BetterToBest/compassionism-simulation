@@ -1038,6 +1038,22 @@
    },
    "equal": true,
    "seconds": 178
+  },
+  {
+   "from": "fac71555eaed218d943e375ca18cb2cd926d59870d075c660d313411e4aa9ae1",
+   "to": "3e6661b6a9512b9aa35ad6bb8b4bdd81c7674a6458578de6bcf96dccfe89e24a",
+   "date": "2026-11-19",
+   "change": "S85 (v5.9.21): row option oh, output per hour and automation, behind its switch; off = identical",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 144
   }
  ]
 }
