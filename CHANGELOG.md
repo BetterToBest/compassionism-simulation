@@ -6,6 +6,15 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.19 Release Notes
+
+Released Nov 18, 2026: **a fix to the supply limit's design rule for sharing a shortage.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress; every release panel's fingerprint is unchanged). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendment 5.
+- **What was wrong.** Under the design's rule (`sl {sh: 'bu'}`: basics bought with the BU are served first, and cash purchases go short first), the supply limit cut two to four times more than its target. The rule divided this year's cut by last year's totals of spending and of the part bought with cash, and that cash share swings from year to year, so in some years all cash spending was cut.
+- **The fix.** Under that rule only, each year's poverty accounting, which shares out the cut, waits until the year's flows are done (`slFlush`) and then uses this year's totals. The cut is now exactly the sector's share, as under the even rule. The market and even rules, and every run without the limit, are unchanged to the last digit.
+- **What it means for results.** The first run of the supply-and-indexing study (engine `eb0969c`) is superseded and rerun on this version; only the rerun is reported.
+- One more unit test in `s82UnitSuite`.
+- **Version numbers:** v5.9.20 will be skipped, as v5.9.10 was, so it cannot be read as v5.9.2. The next release is v5.9.21 (Duke, Nov 18).
+
 ## v5.9.18 Release Notes
 
 Released Nov 18, 2026 (notes written at v5.9.19): **the strict-bound sweep's option and the study's reporting keys for the v6 batch.** No stored figure changes (guard test identical). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendments 3 and 4.

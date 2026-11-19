@@ -1319,9 +1319,9 @@ function s68UnitSuite(){
     [false, true].forEach(function(pe){ var c = frozenRow(relMainCfgs(tbPresets(P6))[1]); c.fx = {pthb:true, hb:true, ab:true, sp:true, pe:pe}; var r = tbStudy([c], 1, P6, SO)[0];
       sg.push(Object.keys(r._s).sort().map(function(k){ return k + ':' + Array.prototype.join.call(r._s[k], ','); }).join(';')); });
     return {pass:n[0] > 0 && n[1] === 0 && sg[0] === sg[1], detail:'PTH-books misses with ageing: ' + n[0] + ' without pe, ' + n[1] + ' with; without ageing identical: ' + (sg[0] === sg[1])}; });
-  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 45 places (39 at S68 part 2; S73 added 5, all its own handling of adults outside the labour force: lfOut, lfFlow, lfAcc, the margin\'s call; S75 added 1, hx.T\'s income base, which takes a._ssY as yrCashSurplus does: a retiree\'s benefit or the own income of an adult outside the labour force) (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
+  t('S68 part 2: the outside-the-labour-force flag reuses the retiree flag (a._ret): the engine reads a._ret in 47 places (39 at S68 part 2; S73 added 5, all its own handling of adults outside the labour force: lfOut, lfFlow, lfAcc, the margin\'s call; S75 added 1, hx.T\'s income base, which takes a._ssY as yrCashSurplus does: a retiree\'s benefit or the own income of an adult outside the labour force; S85 added 2, oh\'s adults in paid work at the start (ohNew: an adult outside the labour force at the start is not among them) and its wage step (skipped for an adult outside the labour force, who earns no wage that year)) (dev/PITFALLS.md, S61); a new read fails this count until it is checked for adults outside the labour force and the count is raised', function(){
     var S = builtSource(), k = S.indexOf('/* ==== HARNESS' + '-ONLY CODE ==== */'), n = (S.slice(0, k).match(/\._ret\b/g) || []).length;
-    return {pass:n === 45, detail:'reads of a._ret in the engine: ' + n + ' (expected 45)'}; });
+    return {pass:n === 47, detail:'reads of a._ret in the engine: ' + n + ' (expected 47)'}; });
   t('S68 part 2: the on-together check (r2PairCheck) passes on the candidate main row and with the price rule counted in quarters, and the run-order test holds (Reference, seed 1)', function(){
     var R = r2PairCheck('ref', 1, {only:['q']}), f = R.rows.filter(function(x){ return !x.pass; });
     return {pass:f.length === 0 && R.runOrder.mainSame && R.runOrder.noneSame, detail:R.rows.length + ' rows, failed: ' + (f.map(function(x){ return x.id + (x.threw ? ' (' + x.threw + ')' : ''); }).join(', ') || 'none') + '; run order ' + JSON.stringify(R.runOrder)}; });
@@ -2347,6 +2347,56 @@ function s82UnitSuite(){
   return out;
 }
 Object.assign(module.exports, { s82UnitSuite });  /* S82 */
+/* S85 (Nov 19, 2026; research-update prereg/2026-11-s85-output-per-hour.md, Amendments 1-2): output per hour and automation (row option oh). */
+function s85UnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G);
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); OH = null; OHS = null; SLS = null; TB = null; LABOR = null; PRICE = null; } }
+  var near = function(a, b, e){ return Math.abs(a - b) <= (e || 1e-12)*Math.max(1, Math.abs(b)); };
+  var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:200});
+  function pair(oh, o1){ var c = r2FreezePair(P, 'c22'); c.forEach(function(x){ x.sp = Object.assign({}, x.sp || {}, {vAt:'sale'}); if (oh) x.oh = JSON.parse(JSON.stringify(oh)); }); if (o1) c[1].o = Object.assign({}, c[1].o, o1); return c; }
+  var same = function(A, B){ return TB_KEYS.filter(function(k){ return !(A[k] === B[k] || (A[k] !== A[k] && B[k] !== B[k])); }); };
+  t('the path: S(0) 0, S(1/2) 1/2, S(1) 1, held after T; the low gain is Penn Wharton\'s levels (1, 1.015, 1.0225, 1.03, 1.0335 at years 0, 10, 20, 30, 40); the high gain reaches 1.015^10 at T', function(){
+    var L = ohOpts({g:'low'}), H = ohOpts({g:'high', T:20}), N = ohOpts({});
+    var ok = ohS(0) === 0 && near(ohS(0.5), 0.5) && ohS(1) === 1 && ohS(1.4) === 1 && near(ohG(L, 0), 1) && near(ohG(L, 10), 1.015) && near(ohG(L, 20), 1.0225) && near(ohG(L, 30), 1.03) && near(ohG(L, 40), 1.0335) && near(ohG(L, 60), 1.037)
+      && near(ohG(H, 0), 1) && near(ohG(H, 20), Math.pow(1.015, 10)) && near(ohG(H, 30), Math.pow(1.015, 10)) && near(ohG(H, 10), Math.pow(1.015, 5)) && ohG(N, 15) === 1;
+    return {pass:ok, detail:'low 20 ' + ohG(L, 20) + ', high 10 ' + ohG(H, 10)}; });
+  t('shorter hours: the cuts average D_t over the adults in paid work, none above 1, rising with risk; even cuts equal D_t; D_t 1 cuts every hour', function(){
+    var W = [0.95, 0.9, 0.9, 0.7, 0.4, 0.2, 0.05, 0.01].map(function(r, i){ return {_ohR:r, _ohU:i/10}; }), ok = true, d = [];
+    [0.1, 0.5, 0.8, 0.97].forEach(function(D){ var S = {W:W, D:D, O:{ord:'risk'}}; ohFill(S); var c = W.map(function(a){ return 1 - a._ohH; }), m = c.reduce(function(x, y){ return x + y; }, 0)/c.length;
+      ok = ok && near(m, D, 1e-12) && c.every(function(x, i){ return x >= -1e-15 && x <= 1 + 1e-15 && (i === 0 || x <= c[i - 1] + 1e-15); }); d.push(D + ':' + m.toFixed(6) + '/' + c[0].toFixed(3)); });
+    var S = {W:W, D:0.3, O:{ord:'even'}}; ohFill(S); ok = ok && W.every(function(a){ return near(1 - a._ohH, 0.3); }); S = {W:W, D:1, O:{ord:'risk'}}; ohFill(S); ok = ok && W.every(function(a){ return a._ohH === 0; });
+    return {pass:ok, detail:d.join(' ')}; });
+  t('refusals: kp with lost jobs, bad values; in a study, oh with ageing, oh without rt\'s ci, bk on a no-programme row, bk at a above 0', function(){
+    var thr = function(f){ try { f(); return false; } catch (e){ return true; } }, c = pair({D:0.3});
+    var ok = thr(function(){ ohOpts({kp:'workers'}); }) && thr(function(){ ohOpts({D:1.2}); }) && thr(function(){ ohOpts({g:'mid'}); }) && thr(function(){ ohOpts({bk:{acct:'x'}}); }) && !thr(function(){ ohOpts({f:'hours', kp:'workers'}); })
+      && thr(function(){ var x = pair({D:0.3}); x[0].ag = true; tbStudy([x[0]], 1, P, r2MainStudy()); }) && thr(function(){ var x = pair({D:0.3}); x[0].rt = {bo:true}; tbStudy([x[0]], 1, P, r2MainStudy()); })
+      && thr(function(){ tbStudy([pair({D:0.3, bk:{m:1}})[0]], 1, P, r2MainStudy()); }) && thr(function(){ tbStudy([pair({D:0.3, bk:{m:1}}, {a:0.5})[1]], 1, P, r2MainStudy()); });
+    return {pass:ok, detail:''}; });
+  t('on at zero = identical (check 2): oh with D 0 and no gain gives the main pair\'s every key in both runs, whatever f, ord, pw and own', function(){
+    var R = tbStudy(pair(null).concat(pair({D:0, g:'none'}), pair({D:0, g:'none', f:'hours', ord:'even', pw:0, own:0.5}), [pair({D:0, g:'none', f:'hours', kp:'workers'})[1]]), 1, P, r2MainStudy());
+    var d = [same(R[0], R[2]), same(R[1], R[3]), same(R[0], R[4]), same(R[1], R[5]), same(R[1], R[6])];
+    return {pass:d.every(function(x){ return x.length === 0; }), detail:'differing keys ' + d.map(function(x){ return x.length ? x.slice(0, 3).join(',') : 0; }).join(' / ')}; });
+  t('checks 3 and 4: the displaced count (lost jobs) and the mean cut (shorter hours) are as set, and wages plus the dividend equal every E0 times G, each year, in both runs (with kp too)', function(){
+    var R = tbStudy(pair({D:0.5, g:'high'}).concat(pair({D:0.5, f:'hours', g:'low'}), [pair({D:0.3, f:'hours', g:'high', kp:'workers'})[1]]), 1, P, r2MainStudy()), bad = [];
+    R.forEach(function(r, i){ if (!(r.ohChk < 1e-9 && r.ohId < 1e-9 && r.ohDT > 0)) bad.push(i + ':' + r.ohChk + '/' + r.ohId); });
+    var ok = !bad.length && R[0].ohDisp > 45 && R[0].ohDiv > 0 && R[0].ohPaid > 0 && R[4].ohDiv < R[2].ohDiv;
+    return {pass:ok, detail:(bad.join(' ') || 'all as set') + '; dividend % of wages ' + R.map(function(r){ return r.ohDiv.toFixed(2); }).join(', ')}; });
+  t('pairing (check 5): kp and bk act only on a programme run; a no-programme row is the same with or without them, and the no-programme run of a bk row is the plain row\'s', function(){
+    var a = pair({D:0.3, f:'hours', g:'low'}), b = pair({D:0.3, f:'hours', g:'low', kp:'workers'}), R = tbStudy([a[0], b[0]], 1, P, r2MainStudy()), d = same(R[0], R[1]);
+    return {pass:d.length === 0 && R[0].ohOn === 1, detail:'differing keys ' + d.length}; });
+  t('nesting (check 6, as amended): bk with m 0 and no capital term produces nothing (ohA 0), and its programme inflation is at least the a = 0 row\'s, which counts the project payout as matched', function(){
+    var R = tbStudy([pair({D:0.5, g:'low'}, {a:0})[1], pair({D:0.5, g:'low', bk:{m:0, y0:true}}, {a:0})[1], pair({D:0.5, g:'low', bk:{m:1}}, {a:0})[1], pair({D:0.5, g:'low', bk:{m:1, acct:'growth'}}, {a:0})[1]], 1, P, r2MainStudy());
+    var ok = R[1].ohA === 0 && R[1].ohMk === 0 && R[1].endoAnn >= R[0].endoAnn && R[2].ohA > 0 && R[2].endoAnn < R[1].endoAnn && R[3].ohA <= R[2].ohA + 1e-9;
+    return {pass:ok, detail:'inflation a0 ' + R[0].endoAnn.toFixed(4) + ', floor ' + R[1].endoAnn.toFixed(4) + ', m 1 ' + R[2].endoAnn.toFixed(4) + ' (produced ' + R[2].ohA.toFixed(2) + '%, growth ' + R[3].ohA.toFixed(2) + '%)'}; });
+  t('checks 7 and 8: with oh on (both forms, the gain, kp and bk), the money accounts close, every output is finite and the main stream draws eight per adult-year', function(){
+    var rows = pair({D:0.5, g:'high'}).concat(pair({D:0.7, f:'hours', g:'low', kp:'workers'}), [pair({D:0.5, g:'high', bk:{m:1, gain:true, vk:true}}, {a:0})[1]]);
+    var X = acctDrawCheck(rows, 1, P); return {pass:X.pass, detail:'accounts: ' + X.acct.nFail + ' failed; draws ' + X.draws.runs + ' runs, ' + X.draws.bad + ' off; non-finite ' + X.nonFinite.length}; });
+  return out;
+}
+Object.assign(module.exports, { s85UnitSuite });  /* S85 */
 function paUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000;
@@ -4668,7 +4718,11 @@ if (require.main === module) {
     console.log('\n=== s82UnitSuite(): S82, the v6 readings: the BU\'s delay, the wage catch-up and the essentials supply limit (harness-only) ===');
     S82U.forEach(function(x){ if (!x.pass) s82f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + S82U.length + ' run, ' + s82f + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || s74f || s75f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof || s82f) process.exitCode = 1;
+    var S85U = s85UnitSuite(), s85f = 0;
+    console.log('\n=== s85UnitSuite(): S85, output per hour and automation: the path, shorter hours, refusals, zero = identical, the identity, pairing, nesting, accounts and draws (harness-only) ===');
+    S85U.forEach(function(x){ if (!x.pass) s85f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + S85U.length + ' run, ' + s85f + ' failed');
+    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || s74f || s75f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof || s82f || s85f) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));

@@ -40,14 +40,14 @@ The label "Reference" (not "Optimal") reflects that these are calibrated startin
 
 The notes for the current release stay here (the release workflow reads them from this file when it tags a version). Every earlier version's notes, and the session notes that came between releases, are in [CHANGELOG.md](CHANGELOG.md), moved there unchanged in v5.2; older references to "CONTRIBUTING.md's vX Release Notes" (in code comments, the replication page and the earlier engine) mean that file now.
 
-## v5.9.19 Release Notes
+## v5.9.21 Release Notes
 
-Released Nov 18, 2026: **a fix to the supply limit's design rule for sharing a shortage.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress; every release panel's fingerprint is unchanged). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendment 5.
-- **What was wrong.** Under the design's rule (`sl {sh: 'bu'}`: basics bought with the BU are served first, and cash purchases go short first), the supply limit cut two to four times more than its target. The rule divided this year's cut by last year's totals of spending and of the part bought with cash, and that cash share swings from year to year, so in some years all cash spending was cut.
-- **The fix.** Under that rule only, each year's poverty accounting, which shares out the cut, waits until the year's flows are done (`slFlush`) and then uses this year's totals. The cut is now exactly the sector's share, as under the even rule. The market and even rules, and every run without the limit, are unchanged to the last digit.
-- **What it means for results.** The first run of the supply-and-indexing study (engine `eb0969c`) is superseded and rerun on this version; only the rerun is reported.
-- One more unit test in `s82UnitSuite`.
-- **Version numbers:** v5.9.20 will be skipped, as v5.9.10 was, so it cannot be read as v5.9.2. The next release is v5.9.21 (Duke, Nov 18).
+Released Nov 19, 2026: **output per hour and automation, built behind a switch for the preregistered study.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress). Preregistration: BetterToBest/research-update `prereg/2026-11-s85-output-per-hour.md`, Amendments 1 and 2. Specification: MODEL_SPEC section 17.
+- **Two inputs, not one.** Output per hour and paid work are separate: automation can displace a share of the adults in paid work for good (the most exposed first, or evenly) or shorten everyone's paid hours, along a smooth path, in both runs of every pair. Output per hour rises along the low or high forecast opened (Penn Wharton; a decade of Goldman Sachs' 1.5 points a year), and part of the gain is passed to pay.
+- **Where the automated work's output goes.** Its output, and the part of the gain not paid as pay, goes to owners: the share US households hold (0.541, Rosenthal and Burke 2020) is paid to the model's adults the next year in proportion to their share and business holdings; the rest goes to owners outside the model.
+- **The design's maintained take-home** (a reading, programme run only): with shorter hours, the automated hours' output is paid to the workers whose hours fell.
+- **The backing produced** (programme run only): nothing is assumed backed; the programme's own project work and the reinvestment's yield are counted as output at sourced rates (the labour share, BLS; capital's yield in the essentials industries, BEA), for a stated share of programme work that people would otherwise buy.
+- Sources: `sources/s85_output.md`, `sources/s85_values.py`. Eight unit tests in `s85UnitSuite`.
 
 ## How to Contribute
 
@@ -453,7 +453,7 @@ If you're contributing code (a pull request touching `index.html` or a harness s
 
 ---
 
-*Better To Best Research Hub · Compassionism Framework Simulation v5.9.19*
+*Better To Best Research Hub · Compassionism Framework Simulation v5.9.21*
 *Principal Investigator: Duke Johnson (pseudonymous)*
 <!-- v4.11 note: this signature line had read "v4.8" since that release — missed by both the
      v4.9 and v4.10 version-bump sweeps, the same class of small staleness gap this document
