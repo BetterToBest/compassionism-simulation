@@ -44,3 +44,19 @@ The community businesses' cut stays as it is. Duke's text for them ("The convert
 ## Status
 
 The fix is a candidate. It becomes the corrected model only if the preregistered rerun passes its checks and shows the swing gone in every environment. An outside reading by a model from another maker (research-update `audits/2026-11-18-s90-reading.md`) found the diagnosis, the defect call and the algebra sound.
+
+## The rerun, part 1 (Nov 19, 2026)
+
+**The swing is gone.** The preregistered measure is the mean change in BU spent from one year to the next, years 2 to 12. It was computed for each of seeds 1 to 20 and then averaged, on the full-coverage main row with 500 adults over 20 years.
+
+| Environment | Paid a year late | Set at the sale | At the sale over late |
+|---|---|---|---|
+| Reference | 18.33% | 2.27% | 0.124 |
+| Adverse | 16.58% | 3.33% | 0.201 |
+| Stress | 14.24% | 3.19% | 0.224 |
+
+The rule set before the run was that the fix works if the measure at the sale is below half the late one in every environment. That holds in all three. Averaging the seeds into one series first gives the same answer (ratios 0.096, 0.168 and 0.185). The files are in compassionism-sim-results, `s90-swing-b8ccd8d`; the tools are `dev/tools/s90_swing.js` and `dev/tools/s90_trace.js --from`.
+
+**The books balance.** The engine's accounting checks were run on both designs with the price set at the sale, for seeds 1 to 5 in each environment. None failed, and the premium identity was checked 105 times per row (`dev/tools/s90_acct.js`).
+
+**The full rerun has started.** It covers the main rows: no programme, and both designs under both rules, for seeds 1 to 500 in all three environments at 20 and 40 years. It runs on GitHub Actions with the results repository's job `runner/jobs/s90.js` and lands in `s90-sale-<environment>-<years>-b8ccd8d`. On a two-seed trial, the no-programme and late-price rows matched the published main rows on all 5,862 values, as the first preregistered check requires. The tables come from `dev/tools/s90_tables.py`, which runs the folder checks first and stops if any fails. The effects on poverty and wealth will be added here once the six folders are complete. Until then the fix stays a candidate, and the published figures stand.
