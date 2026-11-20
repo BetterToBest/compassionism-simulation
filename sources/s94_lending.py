@@ -49,6 +49,7 @@ sec = list(csv.DictReader(open(os.path.join(HERE, 'bds2023_sec_extract.csv'))))
 fa = list(csv.DictReader(open(os.path.join(HERE, 'bds2023_sec_fa_extract.csv'))))
 
 print('Capital weights (BEA 2025 net stock): ' + ', '.join('%s %.4f' % (k, W[k]) for k in W))
+print('The engine\'s K: $%.0fm / $18,862 per adult = %.1f million adults (its Census 2025 count of adults 18+, set earlier, not here)' % (TOT, TOT/18862))
 
 # 1. The pace at which new establishments add capacity: jobs created by establishment births over the sector's jobs (BDS
 #    job_creation_rate_births), mean of 2014-2023, weighted by the capital each sector holds in the capacity rule.
