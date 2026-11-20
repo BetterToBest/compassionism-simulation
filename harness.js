@@ -1916,6 +1916,79 @@ function poUnitSuite(){
   return out;
 }
 Object.assign(module.exports, { PO_KEYS, PO_DEFAULTS, poOpts, poEps, poCost, poForg, poUnitSuite });  /* S62 */
+/* S94 (Nov 20, 2026; research-update prereg/2026-11-s94-collectives-lending.md, checks 2-8 with Amendment 1's 3b, 4b and 6b): the Collectives' lending
+ * (row option lend; index.html LEND, ldOpts, ldYear, ldCharge, ldChCut, ldRes). Harness-only; run by `unit`. */
+function clUnitSuite(){
+  var out = [];
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR, A0 = ACCT; CFG.WEALTH_FLOOR = -10000;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); CFG.WEALTH_FLOOR = wf0; ACCT = A0; LEND = null; LDS = null; PTFS = null; PTF_OPS = null; POS = null; PAS = null; PA = null; PTF_ACCESS = 'members'; PFS = null; CMS = null; BARGAIN = null; BGS = null; LF_SCOPE = null; LFS = null; TB = null; LABOR = null; PRICE = null; REP_HOOK = null; } }
+  var SO = Object.assign(r2MainStudy(), {sec:true});
+  function env(P, y){ return Object.assign({}, P, {nAgents:500, years:y}); }
+  var R20 = env(FULL_INTEGRATION, 20), S20 = env(STRESS_TEST, 20), R5 = env(FULL_INTEGRATION, 5);
+  function pair(P, x, design){ var cf = r2MainPair(P, design || 'rel'), c = cf[1]; c.o = Object.assign({}, c.o, {a:1}); c.sp = Object.assign({}, c.sp, {vAt:'sale'}); if (x) Object.assign(c, JSON.parse(JSON.stringify(x))); return [cf[0], c]; }
+  function grab(P, x, design, N){ var S = null; REP_HOOK = function(){ if (LDS) S = LDS; }; try { var R = tbStudy(pair(P, x, design), N || 1, P, SO, 1); } finally { REP_HOOK = null; } return {R:R, S:S}; }
+  function same(A, B, skip){ var bad = []; A.forEach(function(r, i){ Object.keys(r._s).forEach(function(k){ if (skip && skip.indexOf(k) >= 0) return; var x = r._s[k], y = B[i]._s[k];
+    if (!y){ if (bad.length < 4) bad.push('row ' + i + ' ' + k + ' missing'); return; }
+    for (var s = 0; s < x.length; s++) if (!(x[s] === y[s] || (isNaN(x[s]) && isNaN(y[s])))){ if (bad.length < 4) bad.push('row ' + i + ' ' + k + ': ' + x[s] + ' against ' + y[s]); break; } }); }); return bad; }
+  function near(a, b, tol){ return Math.abs(a - b) <= (tol || 1e-9)*Math.max(1, Math.abs(a), Math.abs(b)); }
+  t('check 2: lend {fund false, ch 0} gives the main row\'s results on every key, in both designs (Reference, 2 seeds, 20 years), and lend on the no-programme row changes nothing in it', function(){
+    var bad = [], keys = 0; ['rel', 'c22'].forEach(function(d){ tbStudy(pair(R20, null, d), 2, R20, SO, 1);
+      var A = tbStudy(pair(R20, null, d), 2, R20, SO, 1), B = tbStudy(pair(R20, {lend:{fund:false, ch:0}}, d), 2, R20, SO, 1); bad = bad.concat(same(A, B, LEND_KEYS)); keys = Object.keys(A[1]._s).length;
+      if (!(B[1].clOut === 0 && B[1].chSub === 0 && A[1].clOut === undefined)) bad.push(d + ': the fund keys are not 0 in row D, or present without lend'); });
+    var Z = pair(R20), Y = pair(R20); Y[0].lend = true; bad = bad.concat(same(tbStudy([Z[0]], 2, R20, SO, 1), tbStudy([Y[0]], 2, R20, SO, 1)));
+    return {pass:bad.length === 0 && keys > 300, detail:bad.join('; ') + ' (' + keys + ' keys)'}; });
+  t('checks 3 and 3b: every year f = min(want, pace limit) with the limit pace less the growth of owned capacity (\'total\'), within 1e-12; f = 0 where capacity does not bind; under \'lent\' the limit is the pace; non-vacuous: in Stress, opt-in design, seed 1, f > 0 in year 1 and the pace binds in at least one year', function(){
+    var G = grab(S20, {lend:true}, 'c22'), S = G.S, ok = !!S && S.fY.length >= 20, bad = 0, bound = 0, y;
+    for (y = 1; ok && y < S.fY.length; y++){ var lim = Math.max(0, 0.0296 - S.gY[y]); if (!(Math.abs(S.lY[y] - lim) <= 1e-12 && Math.abs(S.fY[y] - Math.min(S.wY[y], lim)) <= 1e-12 && S.fY[y] <= lim + 1e-12 && (S.wY[y] > 0 || S.fY[y] === 0))) bad++; if (S.wY[y] > lim) bound++; }
+    var H = grab(S20, {lend:{paceOn:'lent'}}, 'c22').S, badL = 0; for (y = 1; H && y < H.fY.length; y++) if (!(H.lY[y] === 0.0296 && H.fY[y] <= 0.0296 + 1e-12)) badL++;
+    return {pass:ok && bad === 0 && badL === 0 && S.fY[1] > 0 && bound >= 1 && G.R[1].paC19 > 0, detail:bad + ' and ' + badL + ' years off; year 1 f ' + (S && S.fY[1]) + '; the pace bound in ' + bound + ' years; clBind ' + G.R[1].clBind + '%'}; });
+  t('checks 4 and 4b: outlays to date = (funded + lost capacity) x K per adult (relative 1e-9); interest = INT x the loan balance in every year paid in full with nothing carried; write-offs = capacity lost x K x the loan share; grant + loan = outlay; net = outlay - interest', function(){
+    var G = grab(S20, {lend:true}, 'c22'), S = G.S, R = G.R[1], K = SURP_DEFAULTS.K, r = PROD_CAP_DEP + PROD_CAP_INT, full = 0, bad = 0, i, n = 500, NY = R.clOut > 0 ? S.out/R.clOut : 0;
+    for (i = 0; i < S.iY.length; i++){ if (i > 0 && S.pY[i - 1] < S.dY[i - 1] - 1e-9*Math.max(1, S.dY[i - 1])) continue; if (!near(S.pY[i], S.dY[i], 1e-12)) continue; full++; if (!near(S.iY[i], PROD_CAP_INT*S.bY[i], 1e-9)) bad++; }
+    var ok = S.chk <= 1e-9 && R.clChk <= 1e-9 && near(S.oPA, (S.F + S.fail)*K, 1e-9) && full >= 5 && bad === 0;
+    ok = ok && near(S.off, S.fail*K*(1 - 0.1419)*n, 1e-9) && near(R.clGrant + (R.clOut - R.clGrant), R.clOut) && near(R.clGrant, 0.1419*R.clOut, 1e-9) && near(R.clNet, R.clOut - R.clInt, 1e-9);
+    var Z = grab(S20, {lend:{grant:1}}, 'c22'); ok = ok && Z.R[1].clInt === 0 && Z.R[1].clOff === 0 && near(Z.R[1].clGrant, Z.R[1].clOut);
+    return {pass:ok, detail:'identity ' + S.chk + '; interest checked in ' + full + ' years, ' + bad + ' off; outlay ' + R.clOut + ', interest ' + R.clInt + ', write-offs ' + R.clOff + ' (adult-years ' + NY + ')'}; });
+  t('check 5: with haz young a cohort keeps 0.454 of its capacity after five years (product of the five rates, and the year-1 cohort in a run), within 1e-3; mature 0.0440 every year; none 0', function(){
+    LEND = ldOpts(true); var s5 = 1, k; for (k = 1; k <= 5; k++) s5 *= 1 - ldHaz(k);
+    var ok = Math.abs(s5 - 0.454) <= 1e-3 && ldHaz(6) === 0.0843 && ldHaz(10) === 0.0843 && ldHaz(11) === 0.0674 && ldHaz(21) === 0.0504 && ldHaz(26) === 0.0440 && ldHaz(40) === 0.0440;
+    LEND = ldOpts({haz:'mature'}); ok = ok && ldHaz(1) === 0.0440 && ldHaz(30) === 0.0440; LEND = ldOpts({haz:'none'}); ok = ok && ldHaz(1) === 0; LEND = null;
+    var S = grab(S20, {lend:true}, 'c22').S, q = S.co.filter(function(x){ return x.y === 1; })[0], s5r = NaN;
+    if (q){ var c = q.c0; for (k = 1; k <= 5; k++) c *= 1 - (k <= 5 ? CFG.LEND_HAZ_YOUNG[k - 1] : 0); s5r = c/q.c0; var left = q.c0; for (k = 1; k <= 18; k++){ LEND = ldOpts(true); left *= 1 - ldHaz(k); } LEND = null; ok = ok && near(q.c, left, 1e-9); }
+    return {pass:ok && Math.abs(s5r - 0.454) <= 1e-3, detail:'five-year survival ' + s5 + '; the year-1 cohort ' + (q ? q.c/q.c0 : 'none') + ' left at year 19'}; });
+  t('checks 6 and 6b: charters by hand (zone share 0.3 and 0.05, cost full, step): ch 0 and ch 1/7 at s 0.3 leave the cut as without lend; at s 0.05, ch 1/7 adds (1/7 - 0.05) x electricity\'s part of the utility cut; the added subsidy is the chartered part\'s cut less its free part (0.258 of the market price)', function(){
+    var a = {}, p = {szh:false}, b, M = 1000, ok = true;
+    function fake(s, ch){ PTFS = Object.assign({}, PTFS_DEFAULTS); PTF_OPS = poOpts({curve:'step'}); PA = Object.assign({}, PA_DEFAULTS); PAS = {z:Float64Array.from([s]), s:s, cY:[]}; CMS = null; PFS = null; PRICE = null;
+      POS = {wz:Float64Array.from([1]), mz:Float64Array.from([0.2]), cs:0.7, g:0, eN:0, eD:0}; LEND = ch === null ? null : ldOpts({fund:false, ch:ch}); LDS = ch === null ? null : {ch:0}; }
+    fake(0.3, null); b = ptfsShares(a, false); var c0 = ptfsCut(a, false, p, true); fake(0.3, 0); ok = ok && ptfsCut(a, false, p, true) === c0; fake(0.3, 1/7); ok = ok && ptfsCut(a, false, p, true) === c0;
+    fake(0.05, null); var d0 = ptfsCut(a, false, p, true); fake(0.05, 1/7); var d1 = ptfsCut(a, false, p, true), xu = (1/7 - 0.05)*b.h*CFG.PTFS_UTIL*CFG.LEND_ELEC*(1 - 1/1.80);
+    ok = ok && near(d1 - d0, xu, 1e-12) && near(CFG.LEND_ELEC, 0.5535, 1e-4);
+    var fr = poFree(a, M, 1 - d1, b.f, b.h, p), want = M*(1/7 - 0.05)*b.h*CFG.LEND_ELEC*(CFG.PTFS_UTIL*(1 - 1/1.80) - poForg('u')), per = (1 - 1/1.80) - poForg('u')/CFG.PTFS_UTIL;
+    ok = ok && near(a._chS, want, 1e-12) && Math.abs(per - 0.258) < 0.001 && near(fr, M*(b.f*poForg('f') + b.h*poForg('u'))*0.05 + M*(1/7 - 0.05)*b.h*CFG.LEND_ELEC*poForg('u'), 1e-12);
+    var A = tbStudy(pair(R5, {lend:{fund:false, ch:2/3}}), 1, R5, SO, 1)[1], B = tbStudy(pair(R5), 1, R5, SO, 1)[1];
+    return {pass:ok && A.chSub > 0 && A.poSub > B.poSub && A.clOut === 0, detail:'added cut ' + (d1 - d0) + ' against ' + xu + '; subsidy ' + a._chS + ' against ' + want + ' (' + per + ' per market dollar); in a run chSub ' + A.chSub}; });
+  t('check 7: the money accounts close with lend on: no identity fails that does not fail in the main row (Stress, opt-in, seed 1, the fund and charters 1/7)', function(){
+    ACCT = acctNew(); tbStudy(pair(S20, null, 'c22'), 1, S20, SO, 1); var A = ACCT; ACCT = acctNew(); tbStudy(pair(S20, {lend:{ch:1/7}}, 'c22'), 1, S20, SO, 1); var B = ACCT; ACCT = null;
+    var bad = Object.keys(B.n).filter(function(k){ return (B.nFail[k] || 0) > (A.nFail[k] || 0); });
+    return {pass:bad.length === 0 && (B.n.source || 0) > 0 && (B.n.fin || 0) > 0, detail:bad.map(function(k){ return k + ' ' + B.nFail[k] + ' (worst ' + B.worst[k] + ')'; }).join('; ') + ' (' + Object.keys(B.n).length + ' identities)'}; });
+  t('check 8: no random draw: with the fund and charters 1/3 the main stream is at the same place at the end of every year as in the main row (opt-in design, Stress, 20 years)', function(){
+    var probe = function(x){ var v = []; REP_HOOK = function(){ v.push(RNG()); }; try { tbStudy([pair(S20, x, 'c22')[1]], 1, S20, SO, 1); } finally { REP_HOOK = null; } return v; };
+    var a = probe(null), b = probe({lend:{ch:1/3}}), ok = a.length >= 20 && a.length === b.length && a.every(function(x, i){ return x === b[i]; });
+    return {pass:ok, detail:a.length + ' probes, first ' + a[0] + ' against ' + b[0]}; });
+  t('refused: lend without open access, with a fixed share, without growth, with fin other than source, charters without po, and unknown or out-of-range settings', function(){
+    var thr = function(f){ try { f(); return false; } catch (e){ return true; } }, n = 0, run = function(x){ tbStudy([pair(R5, x)[1]], 1, R5, SO, 1); };
+    if (thr(function(){ run({lend:true, pa:'members', po:null}); })) n++;
+    if (thr(function(){ run({lend:true, pa:{fix:0.3}}); })) n++;
+    if (thr(function(){ run({lend:true, pa:{grow:false}}); })) n++;
+    if (thr(function(){ var c = pair(R5, {lend:true})[1]; c.o = Object.assign({}, c.o, {fin:'tax'}); tbStudy([c], 1, R5, SO, 1); })) n++;
+    if (thr(function(){ run({lend:{fund:false, ch:0.2}, po:null}); })) n++;
+    [{fund:1}, {paceOn:'x'}, {haz:'x'}, {pace:0}, {grant:2}, {ch:-1}].forEach(function(v){ if (thr(function(){ ldOpts(v); })) n++; });
+    return {pass:n === 11, detail:n + ' of 11 refused'}; });
+  return out;
+}
+Object.assign(module.exports, { LEND_KEYS, LEND_DEFAULTS, ldOpts, ldHaz, clUnitSuite });  /* S94 */
 Object.assign(module.exports, { s68UnitSuite, FIN_KEYS, WY_KEYS, finStep, finRes, wyRes });  /* S68 */
 Object.assign(module.exports, { GV_KEYS, GV_DEFAULTS, GV_US, gvOpts });  /* S72 */
 /* S72 (Nov 14, 2026): the government account (index.html gvStep, GV_KEYS; row option gv), fx.fin 'debt' and 'cap', the frontier's settings
@@ -4710,6 +4783,10 @@ if (require.main === module) {
     console.log('\n=== poUnitSuite(): S62, PTF realism: running costs and who pays, PTF workers and wages, the density tests (harness-only) ===');
     POU.forEach(function(x){ if (!x.pass) pof++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + POU.length + ' run, ' + pof + ' failed');
+    var CLU = clUnitSuite(), clf = 0;
+    console.log('\n=== clUnitSuite(): S94, the Creative Collectives\' lending to community businesses and charters of public operators (harness-only) ===');
+    CLU.forEach(function(x){ if (!x.pass) clf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + CLU.length + ' run, ' + clf + ' failed');
     var PRU = prUnitSuite(), prf = 0;
     console.log('\n=== prUnitSuite(): S58, the capacity price rule and the money-flow table (harness-only) ===');
     PRU.forEach(function(x){ if (!x.pass) prf++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
@@ -4722,7 +4799,7 @@ if (require.main === module) {
     console.log('\n=== s85UnitSuite(): S85, output per hour and automation: the path, shorter hours, refusals, zero = identical, the identity, pairing, nesting, accounts and draws (harness-only) ===');
     S85U.forEach(function(x){ if (!x.pass) s85f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + S85U.length + ' run, ' + s85f + ' failed');
-    if (nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || s74f || s75f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof || s82f || s85f) process.exitCode = 1;
+    if (clf || nf || pf || lf || rf || tf || jf || ef || bf || zf || sf || pdf || srf || jnf || csf || ocf || spf || avf || pvf || v5f || mlf || awf || gcf || rpf || mxf || v52f || acf || hhf || v54f || hlf || bkf || fxf || s68f || s72f || s73f || s74f || s75f || sxf || sef || lvf || paf || lff || dmf || prf || rtf || wtf || crf || bgf || pof || s82f || s85f) process.exitCode = 1;
     console.log = ulog;
     var wc = process.argv.indexOf('--write-counts') >= 0, cc = docCounts('unit', UC, wc);  /* audit E6 */
     console.log('\n' + UC + ' unit tests run in all; ' + (cc.found.length === 0 ? 'FAIL  no <!-- count:unit --> marker in README.md or CONTRIBUTING.md' : cc.stale.length === 0 ? 'the number quoted in the docs (' + cc.found.length + ' places) is current' : wc ? 'FIXED  the number quoted in the docs was ' + cc.stale.join(', ') + '; rewritten' : 'FAIL  the number quoted in the docs is stale (' + cc.stale.join(', ') + '); run node harness.js unit --write-counts'));
