@@ -1,0 +1,40 @@
+# The Creative Collectives' lending to start-ups: Claude's reading of the design
+
+Nov 20, 2026. A reading and a plan, written before any build or run. Nothing here is a result. The study's preregistration is research-update `prereg/2026-11-s94-collectives-lending.md`; the figures below come from `sources/s94_lending.py`.
+
+## What Duke asked, in his words
+On Nov 17 Duke said the Creative Collectives can lend to, or support, start-ups that banks will not lend to. On Nov 19 he added: "For small businesses that provide essentials, the program could support in ways such as the physical location, logistics, and setup costs that a normal grocer or restaurant owner would normally have to take on. For large projects such as utility and transportation efforts, this is much different [...] these large sums of money are usually handled by municipal bonds, and government debt. Many of these organizations are currently public operated such as the road and highway systems, airports, train infrastructure, shipping/boat ports, and public utility systems - so that could be an easy transition to Creative Collective charters."
+
+## What the Hub's papers say
+- The papers describe Creative Collectives as chartered, opt-in groups of at least 50 members that run the review of conversion rates, pool resources (the glossary's example is a musicians' collective sharing recording facilities) and may be "industry-specific, regional, local, age-based, or thematic". No paper gives them a lending role, a fund, or loan terms.
+- The community businesses that sell essentials (grocers, counter-service restaurants, utilities) are the Public Trust Foundations. Their capital comes from the reinvestment account of the essential-service split. The housing papers propose bond finance for housing (tax-exempt municipal "Social Housing Bonds"), not for essential businesses.
+- The community development paper contrasts the programme with microfinance, which "relies on debt relationships".
+
+So Duke's note adds something the papers do not have. In the model it is an addition to the design, recorded as his statement, not a reading of existing text.
+
+## Where it acts in the model
+The model already has a precise place where lending matters. Under open access (the main row), the share of a zone's essential sales that the community businesses can serve grows each year only as far as the capital they own allows: $18,862 of capital per adult serves a whole population's food and utilities (BEA net stock). In a short check of the main row (two seeds, no outcome read), that capital limit:
+- holds back growth in about a quarter of adult-years in Reference and Adverse, until the share reaches the 49% demand ceiling around years 6 to 10;
+- binds in every year of the 20 under Stress in the opt-in design, where the share is 13% at year 5 and 34% at year 19.
+
+Money for premises, equipment and set-up costs, beyond what reinvestment has paid for, is exactly what that limit lacks. The membership side already has a borrowing rule: capacity is borrowed at a real corporate rate, and lenders are not modelled. The sales side has none, because borrowing on that rule would move the share from 18% to the ceiling in one year, which no retail network does.
+
+## Claude's reading of the design (modelling assumptions where the text is silent)
+1. **Small essential providers: a Collectives' fund.** Each year the fund pays for new capacity that zones want and owned capital cannot supply. The mix follows the closest real programme found: Pennsylvania's Fresh Food Financing Initiative (2004-2010) financed "predevelopment, acquisition, equipment and construction costs, as well as start-up costs such as employee recruitment and training" for grocers "where infrastructure costs and credit needs were not met by conventional financial institutions": $73.2 million in loans and $12.1 million in grants, so 14% grants.
+2. **Who pays.** The fund's money is programme money, counted in programme cost in the year it is lent. Repayments come back from the community businesses' premium before the split, at the model's existing charge on borrowed capacity (depreciation 4.53% plus a real corporate rate of 3.67%), and they lower programme cost. The fund is not given a cheaper rate than the model's other borrowing: no source sizes a concessional rate (the cautious reading).
+3. **How fast.** New capacity paid for by the fund can be added at most at the pace at which new establishments add capacity in these sectors: 2.96 points of the sector a year (Census Business Dynamics Statistics, 2014-2023: jobs created by new establishments over all jobs, weighted by each sector's capital). That figure measures how fast the whole economy opens new stores and plants, so it is generous to a single network. Half and double are run, with no limit as a sensitivity. A stricter reading counts reinvestment-built capacity against the same pace.
+4. **Failures.** New businesses close. The main reading applies the exit rates of young firms' establishments in these sectors (BDS, capital-weighted): 22% in the first year, then 13%, 14%, 12% and 10%, falling to 4% after 25 years. That means 45% survive five years; BLS's survival tables give 49-52% for older cohorts. When a funded unit closes, its capacity is lost and its unpaid balance is written off as programme cost. Where capacity falls below a zone's share, the share falls with it: shoppers go back to private stores. Other readings use mature firms' rate (4.4% a year) and no failures. Closing a funded store is the cautious reading, even though the Source already pays a community business's running-cost gap.
+5. **Large infrastructure: charters, not loans.** Utilities, roads, transit, airports and ports are already financed mostly by state and local borrowing ($4.5 trillion of municipal bonds outstanding, SIFMA, mid-2026). The Collectives would not lend at that scale. Duke's route is a charter: an existing public operator becomes a community business. In the model only utilities have a community-business price; transport and the rest have none (the papers give no figure). So the charter reading lets the utility part of the price cut reach the customers of public operators without new capital: one in seven electricity customers (APPA). Their existing bonds stay with them, since their debt service is already in the observed running cost of public power (0.839 of investor-owned prices). The Source pays the gap to the community-business price, as it does for every community business. Water is publicly supplied to 90% of Americans, but EPA gives no ownership share, so the model's electricity share stands for all utilities (a stated limit). Larger charter shares (one third, two thirds) are design parameters, swept.
+6. **The density tests** (the 40% test) keep reading the network's share of sales without the chartered utilities, the reading with the smaller effect.
+
+## What would count as an answer
+- How much faster the community businesses' share grows with the fund, in each environment and design, and what it does to basket poverty, wealth poverty, median wealth and savings against the main row.
+- What the fund costs net of repayments and write-offs, per adult a year, and per point of poverty reduced.
+- Whether charters of public operators change any outcome, and at what subsidy.
+- Expected from the check above: the main effect, if any, is under Stress and in the opt-in design. Under Reference and Adverse the ceiling binds by year 10 anyway. A null result there is reported as such.
+
+## What is left out
+- Lending to private start-ups that are not community businesses: the model has no firms, so it cannot represent private entry.
+- Transport, health care and child care charters: the model gives these sectors no community-business price.
+- Interest rates the fund might charge below market, and recoveries on failed loans: no source opened.
+- Capacity by zone: the fund, like reinvestment, adds capacity for the whole population.
