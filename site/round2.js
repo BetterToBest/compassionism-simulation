@@ -5,7 +5,7 @@
 (function (root) {
   'use strict';
   var F = root.CSF, esc = F.esc;
-  var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work', 's82-supply', 's82-breakeven'];  /* S82 (Nov 18, 2026): the v6 readings below full backing */
+  var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work', 's82-supply', 's82-breakeven', 's85-automation', 's85-backing', 's85-free-time'];  /* S82 (Nov 18, 2026): the v6 readings below full backing; S85 (Nov 20): automation */
   var OUT = {bl: 'basic living (adult-years below 30 days, points)', bk: 'cost of living (basket poverty, adult-years, points)', wp: 'wealth poverty, yearly average (points)',
              mw: 'median real wealth (year-0 $)', inf: 'programme inflation (points a year)'};
   /* how each outcome counts the simulated adults (S83): the 18 top-tail adults carry population weights; the poverty shares count every simulated adult once */
@@ -136,6 +136,96 @@
         ['Reading', 'No backing', 'Half backed', 'Full backing (the main row)', 'Break-even share, 20 years', 'Break-even share, 40 years'], rows) +
       '<p class="fx-note">Effects are programme minus no programme, mean over paired seeds; ' + esc(m.intervals) + '. The wage and BU readings are design parameters, as are the building speed of medical care and food and the essentials’ price response; each is swept in the study, and every result above holds at the slowest building speed and at half and double the price response. Programme inflation is unchanged by the supply limit (inflation stays under 5 points a year only above about ' + snum(SB, find(SB, {environment: 'Reference', years: 20, reading: SO, outcome: 'inflation reaches 5 points a year'}, 'break-even share').i, 'break-even share', fmtN(find(SB, {environment: 'Reference', years: 20, reading: SO, outcome: 'inflation reaches 5 points a year'}, 'break-even share').v, 2)) + ' backing in Reference). One reading of the study (adults who age and are replaced, at no backing) measures a defect and is not shown; it is rerun once fixed. Every figure, with the 40-year horizon, who goes short by fifth of income, and the smaller readings: the report <code>' + esc(m.report) + '</code>, the files <code>data/studies/s82-supply.json</code> and <code>s82-breakeven.json</code> (<code>' + esc(m.command) + '</code>), engine <code>' + esc(m.engine) + '</code>, results <code>' + esc(m.resultsFolder) + '</code> in ' + esc(m.resultsRepo) + '; preregistration ' + esc(m.prereg) + '.</p>';
   }
+  /* S85 part 5 (Nov 20, 2026; research-update prereg/2026-11-s85-output-per-hour.md, Amendments 1-4): automation in both runs, at full backing, and the
+   * backing the programme's own work produces. Words follow dev/reports/s85-output-per-hour.md section 14; every figure is read from
+   * data/studies/s85-automation.json, s85-backing.json and s85-free-time.json (dev/tools/s85_page_data.py). Ranges are the lowest and highest row of a
+   * named set; counts are counted from the files' category column. */
+  var RC = {};
+  function recs(file) {
+    if (!RC[file]) { var d = D[file], n = d.data[0].length, out = []; for (var i = 0; i < n; i++) { var o = {_i: i}; d.columns.forEach(function (c, j) { o[c] = d.data[j][i]; }); out.push(o); } RC[file] = out; }
+    return RC[file];
+  }
+  function where(file, pred) { return recs(file).filter(pred); }
+  function span(file, rows, col, fmt) {
+    if (!rows.length) throw new Error('no rows in ' + file + ' for a range of ' + col);
+    var lo = rows.reduce(function (a, b) { return b[col] < a[col] ? b : a; }), hi = rows.reduce(function (a, b) { return b[col] > a[col] ? b : a; });
+    if (fmt(lo[col]) === fmt(hi[col])) return snum(file, lo._i, col, fmt(lo[col]));
+    return snum(file, lo._i, col, fmt(lo[col])) + ' to ' + snum(file, hi._i, col, fmt(hi[col]));
+  }
+  function pc0(x) { return fmtN(x, 0) + '%'; }
+  function pt0(x) { return fmtN(x, 0); }
+  function s85Section() {
+    var SA = 's85-automation', SK = 's85-backing', ST = 's85-free-time', m = D[SA].meta;
+    var BK = 'basket poverty (points)', SV = 'savings under three months of need (points)', WY = 'wealth poverty, yearly average (points)';
+    var FC = 'full coverage', OI = 'opt-in', LJ = 'lost jobs', SH = 'shorter hours', SHARE = 'offset share (%)', NONE = 'cost, no programme';
+    function A(o) { return function (r) { for (var k in o) if (typeof o[k] === 'function' ? !o[k](r[k]) : r[k] !== o[k]) return false; return true; }; }
+    function mw(x) { return x.indexOf('median real wealth') === 0; }
+    function shareR(flt) { return span(SA, where(SA, A(flt)), SHARE, pc0); }
+    function count(flt, cat) { return where(SA, A(Object.assign({category: cat}, flt))).length; }
+    function counts(des, yrs) {
+      var f = {design: des, years: yrs}, n = where(SA, A(f)).length;
+      var said = {'offsets fully': 'offset fully', 'offsets in part': 'offset in part', 'does not offset': 'do not offset', 'worsens': 'worsen'};
+      return n + ' tests, ' + ['offsets fully', 'offsets in part', 'does not offset', 'worsens'].map(function (c) { return [count(f, c), said[c]]; })
+        .filter(function (p) { return p[0] > 0; }).map(function (p) { return p[0] + ' ' + p[1]; }).join(', ');
+    }
+    function cells(flt) {  /* the cells of one category, named by environment and displacement level */
+      var rs = where(SA, A(flt));
+      return ENVS.map(function (e) {
+        var es = rs.filter(function (r) { return r.environment === e; });
+        return es.length ? e + ' at ' + es.map(function (r) { return snum(SA, r._i, 'displaced (%)', pc0(r['displaced (%)'])); }).join(', ') : null;
+      }).filter(Boolean).join('; ');
+    }
+    function worse(flt) {  /* the worsening cells of one design and outcome, by form; "none" if there are none */
+      var t = [LJ, SH].map(function (fm) { var c = cells(Object.assign({form: fm, category: 'worsens'}, flt)); return c ? c + ' (' + fm + ')' : null; }).filter(Boolean);
+      return t.length ? t.join('; ') : 'none';
+    }
+    function free(run) { return span(ST, where(ST, A({run: run, years: 20, form: LJ, 'displaced (%)': 50})), 'insecure share (%)', pc0); }
+    function bk(des, yrs, env, rd) { return where(SK, A({design: des, years: yrs, reading: rd || 'main reading', environment: env || function () { return true; }})); }
+    var IN = 'programme inflation (points a year)', PS = 'produced share (%)';
+    var allE = where(SK, function () { return true; }), above = allE.filter(function (r) { return r['infl lo95'] > 5; }).length;
+    var nLJ = where(SA, A({design: OI, years: 20, form: LJ, outcome: BK})).length, wLJ = count({design: OI, years: 20, form: LJ, outcome: BK}, 'worsens');
+    function offTable(out, yrs, cap) {
+      var rows = [];
+      [FC, OI].forEach(function (des) { [LJ, SH].forEach(function (fm) { [10, 30, 50, 70].forEach(function (dp) {
+        rows.push([esc((des === FC ? 'Full coverage' : 'Opt-in') + ', ' + fm + ', ' + dp + '%')].concat(ENVS.map(function (e) {
+          var f = {environment: e, years: yrs, design: des, form: fm, 'displaced (%)': dp, outcome: out}, r = find(SA, f, SHARE);
+          return snum(SA, r.i, SHARE, pc0(r.v)) + ' ' + ci(SA, f, 0) + ', ' + esc(D[SA].data[D[SA].columns.indexOf('category')][r.i]);
+        })));
+      }); }); });
+      return table(cap, ['Design, form, share of paid work displaced by year 20', 'Reference', 'Adverse', 'Stress'], rows);
+    }
+    function bkTable() {
+      var rows = [];
+      [FC, OI].forEach(function (des) { ENVS.forEach(function (e) {
+        rows.push([esc((des === FC ? 'Full coverage' : 'Opt-in') + ', ' + e), span(SK, bk(des, 20, e), PS, pc0), span(SK, bk(des, 20, e), IN, pt0),
+          span(SK, bk(des, 20, e, 'nothing produced (the floor)'), IN, pt0), span(SK, bk(des, 40, e), PS, pc0), span(SK, bk(des, 40, e), IN, pt0),
+          where(SK, A({design: des, environment: e, category: 'does not back enough'})).length + ' of ' + where(SK, A({design: des, environment: e})).length]);
+      }); });
+      return table('The backing the programme’s own work produces (nothing assumed backed; displacement as lost jobs at 0-70%): the main reading’s rows (m 0.25 to 1, low or high automation gain)',
+        ['Design, environment', 'Produced share of the payout, 20 years', 'Programme inflation, points a year, 20 years', 'With nothing produced, 20 years', 'Produced share, 40 years', 'Programme inflation, 40 years', 'Rows that do not back enough (every reading, both horizons)'], rows);
+    }
+    var nf = {design: FC, years: 20, form: LJ, outcome: BK};
+    return '<h3 class="fx-h3">Automation: displacement in both runs, and the backing the programme’s own work produces (added Nov 20, 2026)</h3>' +
+      '<p>A preregistered study runs automation in both runs of every pair, so the no-programme run faces the same displacement: 10%, 30%, 50% or 70% of today’s paid work gone by year 20, net of new work, as <strong>lost jobs</strong> (the most exposed adults leave paid work first) or as <strong>shorter hours</strong> for everyone. 50% and 70% are stress readings, beyond every forecast the study opened. The automated work is still done: output per hour grows by a sourced forecast, part of the gain reaches pay, and the rest goes to owners by their holdings. Two designs, ' + esc(String(m.seeds)) + ' paired seeds, three environments; figures are for 20 years unless named.</p><ul>' +
+      '<li><strong>With no programme</strong>, displacement raises basket poverty (adult-years below one’s own cost of living) by ' + span(SA, where(SA, A({design: FC, years: 20, form: LJ, outcome: BK, environment: 'Reference'})), NONE, function (x) { return fmtN(x, 1); }) + ' points with lost jobs in Reference (' + span(SA, where(SA, A({design: FC, years: 20, form: LJ, outcome: BK, environment: function (e) { return e !== 'Reference'; }})), NONE, function (x) { return fmtN(x, 1); }) + ' in Adverse and Stress), and median real wealth (weighted) falls by ' + span(SA, where(SA, A({design: FC, years: 20, form: LJ, outcome: 'median real wealth, weighted (year-0 $)', environment: 'Reference'})), NONE, dollars) + ' (Reference).</li>' +
+      '<li><strong>With every adult taking part and full backing</strong> (the full-coverage design), the programme takes away ' + shareR({design: FC, years: 20, outcome: BK}) + ' of the rise in basket poverty (lost jobs and shorter hours, three environments), ' + shareR({design: FC, years: 20, outcome: WY}) + ' of the rise in wealth poverty, ' + shareR({design: FC, years: 20, outcome: SV}) + ' of the rise in the share of adult-years with under three months of savings, and ' + shareR({design: FC, years: 20, outcome: mw}) + ' of the fall in median real wealth (weighted and unweighted). Of its ' + counts(FC, 20) + ', every one significant. At 50% lost jobs, ' + free(FC) + ' of the hours no longer paid fall in households below their cost of living, against ' + free('no programme') + ' with no programme.</li>' +
+      '<li><strong>In the opt-in design</strong> it takes away much less: ' + shareR({design: OI, years: 20, form: LJ, outcome: BK}) + ' of the rise in basket poverty with lost jobs, and ' + shareR({design: OI, years: 20, form: SH, outcome: BK}) + ' with shorter hours. <strong>With lost jobs it often makes the rise in poverty larger:</strong> in ' + wLJ + ' of its ' + nLJ + ' lost-jobs cells the rise in basket poverty is larger with the programme than without it. The cells where it is larger: ' + worse({design: OI, years: 20, outcome: BK}) + '. Where the rise in the share with under three months of savings is larger with the programme: ' + worse({design: OI, years: 20, outcome: SV}) + '. ' + (count({design: FC}, 'worsens') ? 'With full coverage, ' + count({design: FC}, 'worsens') + ' tests worsen.' : 'With full coverage no test worsens, for any reading, in any cell, at either horizon.') + ' Of its ' + counts(OI, 20) + ' (40 years: ' + counts(OI, 40) + '). At 50% lost jobs, ' + free(OI) + ' of the freed hours fall below the cost of living. The opt-in programme still cuts basket poverty against no programme at every level; “larger” means that cut shrinks as displacement grows. A trace of these cells finds that the adults who would take part carry most of the extra rise, as more of them sit just below the line rather than far below it, and that enrolment does not fall (the report gives the figures).</li>' +
+      '<li><strong>Full backing is assumed, not produced.</strong> Every figure above assumes that each programme dollar is matched by new output (a design parameter). Counting only what the programme’s own work produces (project hours valued at their pay over the labour share, times m, the share of that work whose output people would otherwise buy, a design parameter; plus the yield of the providers’ reinvested capital), it matches ' + span(SK, bk(FC, 20), PS, pc0) + ' of the payout in the full-coverage design at 20 years (' + span(SK, bk(FC, 40), PS, pc0) + ' at 40) and ' + span(SK, bk(OI, 20), PS, pc0) + ' opt-in (' + span(SK, bk(OI, 40), PS, pc0) + ' at 40). At that backing programme inflation is ' + span(SK, bk(FC, 20), IN, pt0) + ' points a year with full coverage across the three environments (Reference: ' + span(SK, bk(FC, 20, 'Reference'), IN, pt0) + ') and ' + span(SK, bk(OI, 20), IN, pt0) + ' opt-in, at 20 years. In ' + above + ' of the block’s ' + allE.length + ' rows (every reading, design, environment and horizon, m 1 included) the interval of programme inflation lies above 5 points a year: no row backs enough.</li></ul>' +
+      offTable(BK, 20, 'The share of displacement’s rise in basket poverty that the programme takes away, 20 years, at full backing (95% interval; category after the multiple-testing correction). Negative: the rise is larger with the programme.') +
+      '<details class="fx-more"><summary>The same for savings, wealth poverty and median real wealth, and at 40 years</summary>' +
+      offTable(SV, 20, 'Savings under three months of need: the share of displacement’s rise the programme takes away, 20 years, at full backing') +
+      offTable(WY, 20, 'Wealth poverty, yearly average: the share of displacement’s rise the programme takes away, 20 years, at full backing') +
+      offTable('median real wealth, weighted (year-0 $)', 20, 'Median real wealth (weighted): the share of displacement’s fall the programme takes away, 20 years, at full backing; today’s price rule, barely tested at full backing') +
+      offTable(BK, 40, 'Basket poverty: the share of displacement’s rise the programme takes away, 40 years, at full backing') + '</details>' +
+      bkTable() +
+      '<p class="fx-note">Cost: a run at a displacement level minus the same run with none, positive is harm. Offset share: the cost with no programme minus the cost with it, over the cost with no programme. ' + esc(m.intervals) + '; each category holds after a Holm correction over the 48 tests of its environment, horizon and design. <strong>Wealth figures</strong> are real wealth at year-0 prices under the engine’s price rule; in the headline block that rule is barely tested, because at full backing almost no unmatched money reaches prices. <strong>Inflation figures</strong> are at the produced backing, under the model’s placeholder price rule (all unmatched new money reaches prices), with no central bank and no general equilibrium: they measure the size of the unbacked money, not a forecast of prices. Not modelled: a fall in owners’ spending, investment out of the dividend, pay that differs by wage level in the pass-through, adults under 25 or over 64. Every figure, with the 40-year tables, displaced adults’ own outcomes, the design’s maintained take-home and the readings together: the report <code>' + esc(m.report) + '</code>, the files <code>data/studies/s85-automation.json</code>, <code>s85-backing.json</code> and <code>s85-free-time.json</code> (<code>' + esc(m.command) + '</code>), engine <code>' + esc(m.engine) + '</code>, results <code>' + esc(m.resultsFolder) + '</code> and <code>s85-trace-503fa48</code> in ' + esc(m.resultsRepo) + '; preregistration ' + esc(m.prereg) + '.</p>';
+  }
+  function s85Unfavourable() {
+    var SA = 's85-automation', SK = 's85-backing', f = {design: 'opt-in', years: 20, form: 'lost jobs', outcome: 'basket poverty (points)'};
+    var all = where(SA, function (r) { for (var k in f) if (r[k] !== f[k]) return false; return true; });
+    var fc = where(SK, function (r) { return r.design === 'full coverage' && r.years === 20 && r.reading === 'main reading'; });
+    return '<li><strong>Automation:</strong> in the opt-in design with lost jobs, the rise in basket poverty is larger with the programme than without it in ' + all.filter(function (r) { return r.category === 'worsens'; }).length + ' of ' + all.length + ' cells at 20 years; and the programme’s own work produces ' + span(SK, fc, 'produced share (%)', pc0) + ' of the backing the full-coverage figures assume, at programme inflation of ' + span(SK, fc, 'programme inflation (points a year)', pt0) + ' points a year (automation study, above).</li>';
+  }
   function backingTable(design) {
     var rows = [], base = {design: design, environment: 'Reference', years: 20};
     function line(label, row, bs) {
@@ -219,6 +309,7 @@
       backingTable('C2.2') + '<details class="fx-more"><summary>The opt-in design, and the backing charts</summary>' + backingTable(RL) +
       ['backing-c22-20', 'backing-c22-40', 'backing-rel-20', 'backing-rel-40'].map(function (n) { return chartFig(n, 'Programme inflation by backed share, with the break-even share and the mechanism’s own points marked (' + n + '); the numbers are in the table above and in the file r2-backing.'); }).join('') + '</details>';
     h += s82Section();
+    h += s85Section();
     h += '<h3 class="fx-h3">Paid for by a contribution instead (shown, never led with)</h3>' +
       '<p>If the programme is paid for by a contribution, with the rest borrowed, the contribution needed is far larger and the poverty effects are much smaller, and in some cells they reverse. Nearly every financed result is fragile: 46 of the 48 poverty and wealth curves change sign or lose significance at some reading, depending on how the contribution is set up. The two that hold are the opt-in design’s basic-living effect in Reference, at both horizons. These rows were run without the weighted top tail.</p>' + financedTable();
     h += '<h3 class="fx-h3">Who gains</h3>' +
@@ -226,6 +317,7 @@
     h += '<h3 class="fx-h3">Unfavourable results, together</h3><ul>' +
       '<li><strong>Prices:</strong> programme inflation is above no programme in every cell: immaterial at the main row, tens of points a year without backing (table above).</li>' +
       '<li><strong>Wages below full backing:</strong> if wages follow half of programme inflation and the rest is never made up, the programme with no backing leaves more people below the cost of living (basket poverty) than no programme does (v6 readings, above).</li>' +
+      s85Unfavourable() +
       '<li><strong>Work:</strong> fewer adults work: participation falls (adults who leave work for the programme), with their earnings forgone.</li>' +
       '<li><strong>Mobility:</strong> less movement out of the lowest wealth fifth (“stayed in the lowest wealth fifth”, above).</li>' +
       '<li><strong>Labour’s share</strong> of money income falls, because the programme’s payments are income that is not wages.</li>' +
