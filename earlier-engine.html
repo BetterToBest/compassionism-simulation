@@ -3897,13 +3897,13 @@ function acctYearEnd(agents, yr, p){
     if (!PROJ){ var un = C.proj0 - C.want; acctChk('bu-unallocated', yr, Math.min(0, un), C.proj0, null); des += un; }  /* directed BU no participant could receive (left the programme or died): destroyed, never negative */
     acctChk('bu', yr, C.s0 + iss - conv - des - (st + held), C.s0 + iss + conv + des + st + held, null); ACCT.endStock = st + held; ACCT.issued = (ACCT.issued || 0) + iss;
     if (C.bizIn !== null){
-      if (SPON){ var y = SPS.y[yr], pin = y.pool + y.carryIn + C.carryV0 + C.carryP0, pout = y.cut + y.paid + y.reinv + y.ch + SPS.carry + (SPS.carryV || 0) + (SPS.carryP || 0);
+      if (SPON){ var y = SPS.y[yr], pin = y.pool + y.carryIn + C.carryV0 + C.carryP0, pout = y.cut + y.paid + y.reinv + y.ch + (y.ld || 0) + SPS.carry + (SPS.carryV || 0) + (SPS.carryP || 0);
         acctChk('premium', yr, pin - pout, Math.abs(pin) + Math.abs(pout), null); }
       else { var pd = 0; agents.forEach(function(a){ pd += +a._fwPayY || 0; }); acctChk('premium', yr, C.bizIn - pd, Math.abs(C.bizIn) + Math.abs(pd), null); } }
-    if (TB && p.tb && TB.cur){ var T = TB.cur, ex = SPON ? SPS.y[yr].reinv + (SPS.y[yr].ch || 0) : 0;
+    if (TB && p.tb && TB.cur){ var T = TB.cur, ex = SPON ? SPS.y[yr].reinv + (SPS.y[yr].ch || 0) + (SPS.y[yr].ld || 0) : 0;
       acctChk('books-bu', yr, T.bu - sB, Math.abs(T.bu) + sB, null); acctChk('books-conv', yr, T.conv - sC - ex, Math.abs(T.conv) + Math.abs(sC) + Math.abs(ex), null);
       var bi = 0; agents.forEach(function(a){ bi += a._acBi; }); acctChk('books-issued', yr, T.buIss - bi, T.buIss + bi, null); }
-    if (PRICE && PRICE.acc){ var ex2 = SPON ? SPS.y[yr].reinv + (SPS.y[yr].ch || 0) : 0; acctChk('books-prices', yr, PRICE.acc.conv - sY - ex2, Math.abs(PRICE.acc.conv) + Math.abs(sY) + Math.abs(ex2), null); }
+    if (PRICE && PRICE.acc){ var ex2 = SPON ? SPS.y[yr].reinv + (SPS.y[yr].ch || 0) + (SPS.y[yr].ldD || 0) : 0; acctChk('books-prices', yr, PRICE.acc.conv - sY - ex2, Math.abs(PRICE.acc.conv) + Math.abs(sY) + Math.abs(ex2), null); }
   } }
 /* ─── Next-round session 2 (Sep 26 2026; Duke assigns the version). Harness-only switches, every one inert by
  * default, so index.html and every shipped figure are unchanged (`validate` and domtest's parity checks).
@@ -5151,7 +5151,7 @@ function finStep(L, o, C, A, need, U, extra, gRun, bkP, bkU, T, tauUsed){
   M = U - extra;
   if (o.fin === 'tax'){ P = need; B = 0; G = gp - gm; }
   else if (o.fin === 'hybrid'){ P = need + C.conv; B = o.a*(C.conv - C.convM) + C.convM; G = gp - gm; }
-  else if (o.fin === 'source'){ var cvS = gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv; P = need + C.bu + cvS; B = bkP - bkU + C.convM + (o.faceM ? C.bu : 0); G = gp - gm; }
+  else if (o.fin === 'source'){ var cvS = gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv; P = need + C.bu + cvS + (C.lo || 0); B = bkP - bkU + C.convM + (o.faceM ? C.bu : 0); G = gp - gm; }
   else { P = C.cash + C.endow + C.cap + C.bu + cuts + C.conv + C.pthLiq;
     if (o.fin === 'money'){ B = o.aT*(C.cash + C.endow + C.cap) + (o.buAtA ? o.a : o.aT)*C.bu + o.a*(C.conv - C.convM) + C.convM + (o.pthUnmatched ? 0 : C.pthLiq); G = 0; }
     else { B = o.a*A.conv; G = C.cash + C.endow + C.cap + C.bu + cuts + (C.conv - A.conv) + (o.pthUnmatched ? C.pthLiq - A.pthLiq : C.pthLiq); } }
@@ -5699,7 +5699,7 @@ function paPop(agents){ var C = PAS.z.length, t = new Float64Array(C), n = Math.
   for (i = 0; i < C; i++){ s += t[i]/n*PAS.z[i]; if (PAS.z[i] < CFG.PTFS_LOW_DENS) lo += t[i]/n; if (PAS.z[i] > CFG.SZH_THETA_THRESHOLD) th += t[i]/n; }
   PAS.s = s; return [lo, th]; }
 function paYear(agentSet, yr, p){  /* at the start of the year's PTF steps, before any test reads a share: growth (part 2), the population's share, the year's tallies (no draw) */
-  if (yr > 0){ PAS.cY[yr] = paCapNow(yr, p); if (POS) poYear(agentSet, yr, p); if (PA.grow && PA.fix === null){ if (POS && PTF_OPS.hire !== null) poHireGrow(agentSet, yr, p); else paGrow(agentSet, yr, p); } } else if (POS) poYear(agentSet, yr, p);  /* S62 */
+  if (yr > 0){ PAS.cY[yr] = LDS ? ldYear(agentSet, yr, p) : paCapNow(yr, p); if (POS) poYear(agentSet, yr, p); if (PA.grow && PA.fix === null){ if (POS && PTF_OPS.hire !== null) poHireGrow(agentSet, yr, p); else paGrow(agentSet, yr, p); } } else if (POS) poYear(agentSet, yr, p);  /* S62 */
   var q = paPop(agentSet), C = PAS.z.length, t = new Float64Array(C), n = Math.max(1, agentSet.length), i; PAS.sh += PAS.s; PAS.lo += q[0]; PAS.th += q[1]; PAS.yrs++; PAS.sY[yr] = PAS.s;
   agentSet.forEach(function(a){ t[paZ(a)]++; }); for (i = 0; i < C; i++) PAS.cv += t[i]/n*paCover(PAS.z[i], p); if (POS) poTally(agentSet, p); }
 function paRes(out){ var S = PAS; out.paSh = S && S.yrs ? S.sh/S.yrs*100 : 0; out.paLo = S && S.yrs ? S.lo/S.yrs*100 : 0; out.paTh = S && S.yrs ? S.th/S.yrs*100 : 0;
@@ -5764,13 +5764,15 @@ function poCover(i, p){ /* zone i's PTF sales at PTF prices over running cost (f
 function poBonus(a, p, pcb){ if (PTF_OPS.bonus === 'members') return (p.ptf && a.inPTF) ? pcb : 1.0;  /* the conversion-rate multiplier PTF work gives */
   if (!p.ptf || !poWorker(a)) return 1.0; return 1 + Math.min(1, CFG.PO_JOBS*paW(a))*(pcb - 1); }
 function poWorker(a){ return !a._ret && !(LFS && a._lf) && a.wage > 0; }
-function poFree(a, M, cfP, fS, hS){ /* the part of the adult's PTF cut that costs nothing (market price less running cost; all of it under 'hub' or 'price') */
+function poFree(a, M, cfP, fS, hS, p){ /* the part of the adult's PTF cut that costs nothing (market price less running cost; all of it under 'hub' or 'price') */
   var cut = M*(1 - cfP); if (PTF_OPS.cost === 'hub' || poPrice()) return cut;
+  if (LDS && LEND.ch > 0){ var x = ldChW(a), fu = hS*CFG.LEND_ELEC*x, fr = Math.max(0, Math.min(cut, M*(fS*poForg('f') + hS*poForg('u'))*paW(a) + M*fu*poForg('u')));  /* S94: the chartered part's free part reads the same share */
+    a._chS = x > 0 ? Math.max(0, M*fu*(CFG.PTFS_UTIL*poCutParts(PAS.z[paZ(a)], poTZ(paZ(a)), p)[1] - poForg('u'))) : 0; return fr; }  /* chSub: the chartered part's cut less its free part */
   return Math.max(0, Math.min(cut, M*(fS*poForg('f') + hS*poForg('u'))*paW(a))); }
 function poPtfsCut(a, HHA, p, quiet, full){ /* ptfsCut under PTF_OPS: the Hub's epsilon by the test's share (step or smooth), or prices at running cost */
   var s = ptfsShares(a, HHA), pr = poPrice(), eF = pr ? 1/Math.min(1, Math.max(1e-9, poCost('f'))) : poEps(poTZ(paZ(a))), eU = pr ? 1/Math.min(1, Math.max(1e-9, poCost('u'))) : CFG.PTFS_EPS_UTIL, o = pr ? 0 : PTFS.other;
   var c = (PRICE && PRICE.sxF ? sxPtf(s.f, s.h, eF, eU) : s.f*(1 - 1/eF) + s.h*CFG.PTFS_UTIL*(1 - 1/eU)) + (s.t + (HLS && HLS.planOn ? 0 : s.m) + s.k)*o; if (p.szh && !pr) c *= (0.12 + p.szhCoh*0.04)/0.12;
-  if (!full) c = paW(a)*Math.min(0.95, c);
+  if (!full) c = paW(a)*Math.min(0.95, c); if (!full && LDS && LEND.ch > 0) c += ldChCut(a, s, p);  /* S94: charters of public operators (electricity) */
   if (PFS && !quiet){ PFS.cut += c; PFS.cn++; POS.eN += paW(a)*eF; POS.eD += paW(a); } return Math.min(0.95, c); }
 function poHireGrow(agentSet, yr, p){ /* growth with the hiring limit: the population's share rises at most hire this year (capital capacity still applies) */
   var cK = PAS.cY[yr], hc = PAS.s + PTF_OPS.hire, tot = 0, i; POS.yu++; if (hc < cK) PAS.cY[yr] = hc; paGrow(agentSet, yr, p); PAS.cY[yr] = cK;
@@ -5791,6 +5793,75 @@ function poTally(agentSet, p){ /* after growth: the year's coverage, jobs and ho
 function poRes(out, NY, cost){ var S = POS; out.poSub = S.sub/Math.max(1, NY); out.poFree = S.fr/Math.max(1, NY); out.poSubSh = cost > 0 ? out.poSub/cost*100 : 0;
   out.poEpsF = S.eD > 0 ? S.eN/S.eD : 0; out.poCov = S.cy ? S.cv/S.cy*100 : 0; out.poWk = S.wn ? S.wk/S.wn : 0; out.poWkH = S.wn ? S.wh/S.wn : 0;
   out.poBon = S.bc ? S.bn/S.bc*100 : 0; out.poHire = S.yu ? S.hb/S.yu*100 : 0; out.poG = S.gy ? S.gY/S.gy*100 : 0; return out; }
+/* S94 (Nov 20, 2026; research-update prereg/2026-11-s94-collectives-lending.md, Amendments 1 and 2; dev/reports/s94-collectives-lending-reading.md;
+ * values sources/s94_lending.py): THE CREATIVE COLLECTIVES' LENDING (row option lend; the preregistration calls it cl, which the community layer already
+ * uses). LEND null is the default (every earlier run; LDS null). An object acts only in the programme run with open access and growth (pa 'open', grow
+ * true, no fix, cap 'own'), the production side's capital rule on (PROD cap 'ptf', the surplus split, the framework model) and the Source paying
+ * conversion (o.fin 'source'); it is refused otherwise. The no-programme run is untouched (LDS needs PAS). No draw is added (CRN holds).
+ *  fund    true (main): each year from year 1, before growth reads capacity, the fund finances f = min(want, pace limit) of capacity, where want is the
+ *          room the demand ceiling and the operations limit leave above capacity c (paGrow's own wanted growth, capped by po's hiring limit where set).
+ *  pace    0.0296 (main; Census BDS: jobs created by new establishments, capital-weighted over utilities, retail and accommodation and food); null: no
+ *          limit. paceOn 'total' (main, Amendment 1): the limit counts reinvestment's own growth of capacity, f <= max(0, pace - (c_own,t - c_own,t-1));
+ *          'lent': the limit counts the fund's additions only.
+ *  grant   0.1419 (main; Pennsylvania's Fresh Food Financing Initiative): the share of each outlay given; the rest is a perpetual loan whose balance
+ *          (year-0 $) pays depreciation plus real interest (PROD_CAP_DEP + PROD_CAP_INT) from the PTFs' premium before the split, as the membership
+ *          borrowing charge is paid (a shortfall carries). Depreciation buys the capacity's replacement (conversion, matched output); interest goes back
+ *          to the programme (it lowers programme cost). The principal is never repaid (Amendment 1 item 6).
+ *  haz     'young' (main; BDS exit rates of young firms' establishments by age, capital-weighted): each year's cohort loses h_k of what remains in its
+ *          k-th year (applied at the start of the next year; 45.4% survive five years); 'mature' 0.0440 every year; 'none'. Lost capacity's loan is
+ *          written off (no recovery). The outlay was already programme cost, so the write-off is no second cost (Amendment 1 item 4). Where capacity
+ *          falls below the population's share, every zone's share is scaled down in proportion.
+ *  The outlay f K per adult (year-0 $, revalued with the price level) is programme cost in the year paid and part of the Source's payout, unmatched as
+ *  the rest of it is (the backing share a then matches it; Amendment 1 item 5). Funded capacity also counts in the membership capacity, so the
+ *  membership borrowing charge is not paid on capacity the fund already financed (Amendment 2). The surplus split's phase still reads owned capital.
+ *  ch      0 (main): charters of public operators (needs po). The utility part of the PTF cut on electricity (CFG.LEND_ELEC, 0.5535 of household
+ *          utilities, BEA NIPA 2.4.5U) reads max(s_zone, ch) instead of s_zone; gas and water read s_zone (Amendment 1 item 2). The density tests read s.
+ *          The Source pays the chartered part's running-cost gap as under po (its free part reads the same share).
+ * Reported (LEND_KEYS, rows with lend; per adult-year, year-0 $ unless stated): clOut outlay; clGrant its grant part; clInt interest received; clOff
+ * write-offs (information); clNet outlay less interest; clCap5..39 the funded capacity's share of sales capacity at years 5, 10, 19, 39 (%); clFail
+ * capacity lost, cumulative (points of capacity); clBind the share of years from year 1 in which the pace limit bound (%); chSub the charters' added
+ * subsidy; clChk the largest relative miss of the fund's identity (outlays = (funded + lost capacity) K; reporting only). */
+var LEND = null, LEND_DEFAULTS = {fund:true, pace:0.0296, paceOn:'total', grant:0.1419, haz:'young', ch:0}, LDS = null;
+CFG.LEND_HAZ_YOUNG = [0.2238, 0.1323, 0.1410, 0.1249, 0.1036]; CFG.LEND_HAZ_BANDS = [0.0843, 0.0674, 0.0583, 0.0504]; CFG.LEND_HAZ_MATURE = 0.0440; CFG.LEND_ELEC = 269938/487685;
+var LEND_KEYS = ['clOut', 'clGrant', 'clInt', 'clOff', 'clNet', 'clCap5', 'clCap10', 'clCap19', 'clCap39', 'clFail', 'clBind', 'chSub', 'clChk'];
+function ldOpts(v){ var o = Object.assign({}, LEND_DEFAULTS, v === true ? {} : v);
+  if (typeof o.fund !== 'boolean' || ['total', 'lent'].indexOf(o.paceOn) < 0 || ['young', 'mature', 'none'].indexOf(o.haz) < 0) throw new Error("lend: fund true or false, paceOn 'total' or 'lent', haz 'young', 'mature' or 'none'");
+  if (o.pace !== null){ o.pace = +o.pace; if (!(o.pace > 0)) throw new Error('lend: pace a share above 0, or null (no limit)'); }
+  o.grant = +o.grant; o.ch = +o.ch; if (!(o.grant >= 0 && o.grant <= 1) || !(o.ch >= 0 && o.ch <= 1)) throw new Error('lend: grant and ch shares from 0 to 1'); return o; }
+function ldHaz(k){ var h = LEND.haz; if (h === 'none' || k < 1) return 0; if (h === 'mature') return CFG.LEND_HAZ_MATURE;
+  return k <= 5 ? CFG.LEND_HAZ_YOUNG[k - 1] : k <= 25 ? CFG.LEND_HAZ_BANDS[Math.floor((k - 6)/5)] : CFG.LEND_HAZ_MATURE; }
+function ldInit(o, p){ if (PA.fix !== null || !PA.grow || PA.cap !== 'own') throw new Error('lend: needs growth from owned capital (pa open, grow true, no fix, cap own)');
+  if (LEND.fund && !(PROD && PROD.cap === 'ptf' && CONVERSION_MODEL === 'framework' && SURP)) throw new Error("lend: the fund needs the production side's capital rule (pd cap 'ptf', the framework model, the surplus split sp)");
+  if (o.fin !== 'source') throw new Error("lend: needs the Source paying conversion (fin 'source')");
+  if (LEND.ch > 0 && !POS) throw new Error('lend: charters need po (the running-cost gap the Source pays)');
+  LDS = {co:[], F:0, cO:null, B:0, debt:0, outY:0, intY:0, out:0, gr:0, int:0, off:0, fail:0, bind:0, yu:0, ch:0, oPA:0, lPA:0, chk:0, Fy:[], wY:[], lY:[], fY:[], gY:[], iY:[], bY:[], dY:[], pY:[]}; }
+function ldWant(agentSet, p){ /* paGrow's wanted population share at the zones' current shares (no state change), capped by po's hiring limit */
+  var S = PAS, C = S.z.length, n = Math.max(1, agentSet.length), w = new Float64Array(C), tot = 0, all = 0, i;
+  agentSet.forEach(function(a){ w[paZ(a)]++; });
+  for (i = 0; i < C; i++){ w[i] /= n; tot += w[i]*S.z[i]; all += w[i]*Math.max(0, Math.min(PA.dem, paOpsMax(S.z[i], p)) - S.z[i]); }
+  var t = tot + all; if (POS && PTF_OPS.hire !== null) t = Math.min(t, tot + PTF_OPS.hire); return [tot, t, w]; }
+function ldYear(agentSet, yr, p){ /* year >= 1, in paYear before growth: failures, then this year's funded capacity; returns capacity c (no draw) */
+  var S = LDS, L = LEND, cO = paCapNow(yr, p), K = SURP ? SURP.K : Infinity, n = Math.max(1, agentSet.length), lost = 0, F = 0, f = 0, j;
+  if (S.cO === null) S.cO = paCapNow(0, p);
+  if (!L.fund || !(K > 0 && K < Infinity)){ S.cO = cO; S.F = 0; S.Fy[yr] = 0; return cO; }
+  for (j = 0; j < S.co.length; j++){ var q = S.co[j], d = q.c*ldHaz(yr - q.y); q.c -= d; lost += d; F += q.c; }
+  var c = Math.min(1, cO + F), W = ldWant(agentSet, p);
+  if (lost > 0 && W[0] > c + 1e-12){ var r = c/W[0]; for (j = 0; j < PAS.z.length; j++) PAS.z[j] *= r; W = ldWant(agentSet, p); }
+  var want = Math.max(0, W[1] - c), lim = L.pace === null ? Infinity : L.paceOn === 'total' ? Math.max(0, L.pace - (cO - S.cO)) : L.pace;
+  f = Math.max(0, Math.min(want, lim)); if (want > lim) S.bind++; S.yu++; S.wY[yr] = want; S.lY[yr] = lim; S.fY[yr] = f; S.gY[yr] = cO - S.cO;  /* reporting and unit checks */
+  if (f > 0) S.co.push({y:yr, c:f, c0:f});
+  S.F = F + f; S.Fy[yr] = S.F; S.cO = cO; S.fail += lost;
+  S.oPA += f*K; S.lPA += lost*K; S.B = S.F*K*(1 - L.grant);  /* per adult, year-0 $: outlays to date, capacity lost to date, the loan balance */
+  S.outY = f*K*n; S.out += S.outY; S.gr += S.outY*L.grant; S.off += lost*K*(1 - L.grant)*n;
+  var e = Math.abs(S.oPA - (S.F + S.fail)*K)/Math.max(1e-300, S.oPA); if (S.oPA > 0 && e > S.chk) S.chk = e;
+  return Math.min(1, cO + S.F); }
+function ldCharge(spPtf, spN, spIdx){ /* the loan's depreciation and interest, from the PTFs' premium before the split (after the membership borrowing charge); returns [paid, depreciation part] */
+  var S = LDS, r = PROD_CAP_DEP + PROD_CAP_INT, due = S.B*r*spN*spIdx + S.debt*spIdx, pd = Math.min(Math.max(0, spPtf), due); S.debt = (due - pd)/spIdx;
+  var dep = due > 0 ? pd*PROD_CAP_DEP/r : 0, it = pd - dep; S.intY = it/spIdx; S.int += S.intY; S.iY.push(S.intY); S.bY.push(S.B*spN); S.dY.push(due/spIdx); S.pY.push(pd/spIdx); return [pd, dep]; }
+function ldChW(a){ return LEND && LEND.ch > 0 && PAS ? Math.max(0, Math.max(paW(a), LEND.ch) - paW(a)) : 0; }  /* the chartered share above the zone's PTF share */
+function ldChCut(a, s, p){ var x = ldChW(a); if (x > 0 && PRICE && PRICE.sxF) throw new Error('lend: charters are not built for the supply shock (sx)'); return x > 0 ? x*s.h*CFG.PTFS_UTIL*CFG.LEND_ELEC*poCutParts(PAS.z[paZ(a)], poTZ(paZ(a)), p)[1] : 0; }  /* the charters' added cut (share of the basket) */
+function ldRes(out, NY){ var S = LDS, N = Math.max(1, NY); out.clOut = S.out/N; out.clGrant = S.gr/N; out.clInt = S.int/N; out.clOff = S.off/N; out.clNet = (S.out - S.int)/N;
+  [5, 10, 19, 39].forEach(function(y){ out['clCap' + y] = S.Fy[y] !== undefined ? S.Fy[y]*100 : 0; }); out.clFail = S.fail*100; out.clBind = S.yu ? S.bind/S.yu*100 : 0; out.chSub = S.ch/N; out.clChk = S.chk; return out; }
 /* S37 (Oct 31, 2026; dev/reports/community-layer.md; dev/DECISIONS.md S37): THE COMMUNITY AND ZONE LAYER. null = off (every earlier run: the tests that
  * read PTF density read the share of all adults who are members). When an object (row option cl), and only in runs with PTF:
  *  - Communities. At the start of the run the households (each adult alone, without households) are dealt into round(n/k) communities of about k adults,
@@ -6334,7 +6405,7 @@ function tbAccount(a, y, yr, mlc, cf, cfPreCCO, costUSD, E, tbG, tbPT){
   if (yr === 0 && a._tbEl) C.endow += y.W;
   var spCut = a._spCutY || 0, buR = Math.max(0, mlc*(cfPreCCO - cf) - tbG - spCut); if (SLS) a._slBU = buR;  /* S82: BU spent at face value, for the 'bu' sharing rule */  /* plan step 1 (d105): the split's price cut is conversion premium, not BU relief */
   if (a._csFree){ C.cutFree += a._csFree; a._csFree = 0; }  /* plan step 5 */
-  if (POS && a._poS !== undefined){ POS.sub += a._poS/idx; POS.fr += a._poF/idx; a._poS = undefined; }  /* S62: the PTF subsidy and the free part (year-0 dollars, as cost) */
+  if (POS && a._poS !== undefined){ POS.sub += a._poS/idx; POS.fr += a._poF/idx; a._poS = undefined; if (LDS && a._chS){ LDS.ch += a._chS/idx; a._chS = 0; } }  /* S94: chSub */  /* S62: the PTF subsidy and the free part (year-0 dollars, as cost) */
   C.bu += buR; C.conv += conv + spCut; if (a._pdM){ if (OHS && OHS.bk) OHS.cur.pd += a._pdM; C.convM += a._pdM; if (LVS) LVS.pjM += a._pdM; a._pdM = 0; }  /* plan step 2: matched project output */ C.pjg += a.yrPjGift || 0; a.yrPjGift = 0; C.cutPT += tbPT; C.cutG += tbG; C.pthLiq += a._tbPthNow || 0;
   /* Session 7 (A5 targeting share): program dollars this agent received this year (cash, the endowment's annuity value, BU relief,
    * conversion, price-cut dollars, PTH liquid appreciation; not capital), and the part that closes the agent's shortfall before
@@ -6439,7 +6510,7 @@ function runYear(agentSet,yr,p,recSt){
   if(p.ptf&&p.ptfCap){agentSet.forEach(function(a){if(a.inPTF)ptfLiveCount++;});}
   var PDON=!!PROD&&CONVERSION_MODEL==='framework'&&!!p.ptf&&PROD.cap==='ptf',pdCap=1,pdLive=0;  /* plan step 2: PTF capacity (no RNG) */
   if(PDON){if(yr===0||!PDS){var pdN0=0;agentSet.forEach(function(a){if(a.inPTF)pdN0++;});PDS={c0:pdN0/Math.max(1,agentSet.length),y:[]};}
-    var pdK=SURP?SURP.K:Infinity,pdA=(yr>0&&SURP&&SPS)?SPS.capPA:0;pdCap=pdK<=0?1:Math.min(1,PDS.c0+pdA/pdK);
+    var pdK=SURP?SURP.K:Infinity,pdA=(yr>0&&SURP&&SPS)?SPS.capPA:0;pdCap=pdK<=0?1:Math.min(1,PDS.c0+pdA/pdK+(LDS&&yr>0?LDS.F:0));
     agentSet.forEach(function(a){if(a.inPTF)pdLive++;});
     var pdOwn=pdCap,pdBor=0;if(PROD.speed==='oneyear'){if(yr>0&&pdK<Infinity&&pdK>0){pdCap=Math.min(1,Math.max(pdOwn,(pdLive+(PDS.blk||0))/Math.max(1,agentSet.length)));pdBor=Math.max(0,pdCap-pdOwn)*pdK;}PDS.blk=0;PDS.borPA=pdBor;}  // plan step 15 (d137): last year's unmet demand is served this year; the capacity reinvestment has not paid for is borrowed (year-0 $ per adult)
     PDS.y[yr]={cap:pdCap,mem:pdLive/Math.max(1,agentSet.length),own:pdOwn,bor:pdBor};}
@@ -6601,6 +6672,7 @@ function runYear(agentSet,yr,p,recSt){
     var spSh=spPh===1?SURP.p1:SURP.p2,spPtf=spPool*spS,spOwn=spPool-spPtf,spChD=0,spChI=0;
     if(PDON&&PROD.speed==='oneyear'){var spChDue=(PDS.borPA||0)*(PROD_CAP_DEP+PROD_CAP_INT)*spN*spIdx+(PDS.debt||0)*spIdx,spChPd=Math.min(spPtf,spChDue);PDS.debt=(spChDue-spChPd)/spIdx;spPtf-=spChPd;  // plan step 15: depreciation plus real interest on borrowed PTF capital, paid from the PTFs' premium first; any shortfall carries
       spChD=spChPd*PROD_CAP_DEP/(PROD_CAP_DEP+PROD_CAP_INT);spChI=spChPd-spChD;if(tbY){TB.cur.conv+=spChPd;TB.cur.convM+=spChD;}if(PRICE&&PRICE.acc)PRICE.acc.conv+=spChPd;SPS.acc.chD=(SPS.acc.chD||0)+spChD/spIdx;SPS.acc.chI=(SPS.acc.chI||0)+spChI/spIdx;}
+    var ldC=[0,0];if(LDS&&LEND.fund){ldC=ldCharge(spPtf,spN,spIdx);spPtf-=ldC[0];if(tbY){TB.cur.conv+=ldC[0];TB.cur.convM+=ldC[1];}if(PRICE&&PRICE.acc)PRICE.acc.conv+=ldC[1];}  // S94: the Collectives' loan, depreciation (replacement capital, matched) plus interest (back to the programme: TB.cur.lo below), from the PTFs' premium before the split
     var spRest=spPtf*Math.max(0,1-spSh[0]-spSh[1]-spSh[2]),spCarryIn=SPS.carry;
     var spPP=spPtf*spSh[0]+(SURP.rv==='price'?spPtf*spSh[1]:0)+SPS.carry,spRv=SURP.rv==='price'?0:spPtf*spSh[1],spPr=spPtf*spSh[2]+SPS.carryP;SPS.carryP=0;
     var spCust=SURP.cust==='auto'?((SURP.priv==='owners'||SURP.priv==='prices')?'ptf':'all'):SURP.cust;
@@ -6634,7 +6706,7 @@ function runYear(agentSet,yr,p,recSt){
     if(tbY){TB.cur.conv+=spRv;if(PROD)TB.cur.convM+=spRv;}if(OHS&&OHS.bk&&PROD)OHS.cur.rv+=spRv/spIdx;if(PRICE&&PRICE.acc)PRICE.acc.conv+=spRv;  // plan step 2: reinvestment buys capital goods (output at face)  // d105: reinvestment is part of the conversion premium
     spA.pool+=spPool/spIdx;spA.own+=spOwn/spIdx;if(spVOn){spA.privW=(spA.privW||0)+spVW/spIdx;spA.privP=(spA.privP||0)+(spVP-SPS.carryV)/spIdx;}spA.ptf+=spPtf/spIdx;spA.rest+=spRest/spIdx;spA.pricePool+=(spPP-spCarryIn)/spIdx;spA.reinv+=spRv/spIdx;spA.carry=SPS.carry/spIdx;
     if(yr>0){if(spPh===1){spA.d1+=spDelta;spA.n1++;}else{spA.d2+=spDelta;spA.n2++;}spA.yrs++;}
-    SPS.y[yr]={pool:spPool,s:spS,own:spOwn,ptf:spPtf,rest:spRest,carryIn:spCarryIn,pp:spPP,sum:spSum,delta:spDelta,used:spUsed,carryOut:SPS.carry,profit:spPr,reinv:spRv,cap:SPS.cap,capPA:SPS.capPA,phase:spPh,cut:0,freed:0,paid:0,pjFreed:0,privW:spVW,privPool:spVP,privUsed:spVUsed,cutV:0,ch:spChD+spChI,chDue:(typeof spChDue==='number'?spChDue:0)};
+    SPS.y[yr]={pool:spPool,s:spS,own:spOwn,ptf:spPtf,rest:spRest,carryIn:spCarryIn,pp:spPP,sum:spSum,delta:spDelta,used:spUsed,carryOut:SPS.carry,profit:spPr,reinv:spRv,cap:SPS.cap,capPA:SPS.capPA,phase:spPh,cut:0,freed:0,paid:0,pjFreed:0,privW:spVW,privPool:spVP,privUsed:spVUsed,cutV:0,ch:spChD+spChI,chDue:(typeof spChDue==='number'?spChDue:0),ld:ldC[0],ldD:ldC[1]};
     if(LEDGER){ledAdd(yr,'spPool',spPool);ledAdd(yr,'spOwners',spOwn);ledAdd(yr,'spPricePool',spPP);ledAdd(yr,'spCarry',SPS.carry);ledAdd(yr,'spProfit',spPr);ledAdd(yr,'spReinvest',spRv);ledAdd(yr,'spRest',spRest);}
   }
   agentSet.forEach(function(a){
@@ -6740,7 +6812,7 @@ function runYear(agentSet,yr,p,recSt){
     if(HEALTH)a._hlOut=emQ?emQ.out:0;  // session 2a: a year mostly out of work loses employer coverage next year
     if(HEALTH&&OHS&&a._ohH===0&&OHS.O.f==='jobs')a._hlOut=1;  // S85: displaced for good: no employer cover
     if(dsOn)annualWageUSD*=1-Math.min(52,DIS.weeks)/52;  // v5.4 item 5: weeks of work lost to the disaster  // v5.2 step 4: a retiree earns no wage  // v5.2 step 6: mlNT = 0 unless the spending layer fills normal-times slack
-    var tbG=0,tbPT=0;if(tbY&&POS&&p.ptf){a._csFree=poFree(a,mainLoopCostUSD,cfPTF,fSA,hSA);a._csFreeY=a._csFree;a._poS=Math.max(0,mainLoopCostUSD*(1-cfPTF)-a._csFree);a._poF=a._csFree;}else if(tbY&&COST&&p.ptf&&(a.inPTF||PAS)){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),PAS?mainLoopCostUSD*(fSA*COST.food+hSA*COST.util)*paW(a):mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // S55: under open access, on the share bought at PTFs  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
+    var tbG=0,tbPT=0;if(tbY&&POS&&p.ptf){a._csFree=poFree(a,mainLoopCostUSD,cfPTF,fSA,hSA,p);a._csFreeY=a._csFree;a._poS=Math.max(0,mainLoopCostUSD*(1-cfPTF)-a._csFree);a._poF=a._csFree;}else if(tbY&&COST&&p.ptf&&(a.inPTF||PAS)){a._csFree=Math.min(mainLoopCostUSD*(1-cfPTF),PAS?mainLoopCostUSD*(fSA*COST.food+hSA*COST.util)*paW(a):mainLoopCostUSD*(fSA*COST.food+hSA*COST.util));a._csFreeY=a._csFree;}  // S55: under open access, on the share bought at PTFs  // plan step 5: the PTF discount a PTF funds from forgone profit (accounting only)
     if(tbY){tbPT=mainLoopCostUSD*(1-cfPreCCO);if(lvRc>0)tbPT-=mainLoopCostUSD*lvRc;if(p.tb.groc&&a._tbU<p.tb.groc.cover)tbG=mainLoopCostUSD*p.tb.groc.cut*(fSA+(p.tb.groc.housing?hSA:0));}  // session 11: X-Cents Power of 1 on housing too (groc.housing)  // session 6: PTF/PTH price-cut dollars; public-grocery cut on the food component
     if(LABOR){  // session 4 (A3): the labor-supply response replaces this year's wage earnings (no RNG)
       var lbE0=annualWageUSD,lbBU=0,lbR=0,lbC=a._labC||0,lbU=p.ubi||0;
@@ -7738,7 +7810,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (HOUSEHOLDS) hhInit(agents, seed); else HHS = null;  /* v5.3 B3: households drawn once, on their own stream (no draw on the main or construction streams) */
   if (PTHB && p.pth && FX && FX.pthb) pthbInit(agents, latent, seed);  /* S47 fx.pthb: the books follow the household's PTH decision (no draw at set-up) */
   if (COMM && p.ptf) clInit(agents, seed, p); else CMS = null;
-  if (PTF_ACCESS === 'open' && p.ptf){ if (!PTFS) throw new Error('pa open: needs PTF by sector (v54 ptfs)'); paInit(agents); } else PAS = null;  if (PTF_OPS){ if (PTF_ACCESS !== 'open') throw new Error('po: needs open PTF access (pa open)'); if (PA.ops === 'outside') throw new Error('po: replaces ops outside (the payer readings)'); if (PAS) poInit(agents); else POS = null; } else POS = null;  /* S62 */  /* S55: the zones' PTF shares of essential sales (after the layer places members; no draw) */
+  if (PTF_ACCESS === 'open' && p.ptf){ if (!PTFS) throw new Error('pa open: needs PTF by sector (v54 ptfs)'); paInit(agents); } else PAS = null;  if (PTF_OPS){ if (PTF_ACCESS !== 'open') throw new Error('po: needs open PTF access (pa open)'); if (PA.ops === 'outside') throw new Error('po: replaces ops outside (the payer readings)'); if (PAS) poInit(agents); else POS = null; } else POS = null;  /* S62 */  if (LEND){ if (PTF_ACCESS !== 'open') throw new Error('lend: needs open PTF access (pa open)'); if (PAS) ldInit(o, p); else LDS = null; } else LDS = null;  /* S94 */  /* S55: the zones' PTF shares of essential sales (after the layer places members; no draw) */
   if (C22) c22Init(agents, seed); else C22S = null;  /* S6: eligibility and automatic distribution (own stream); coverage tallies */  /* S37: the community layer (its own stream; nothing to do without PTF) */
   if (HOUSEHOLDS && HOUSEHOLDS.wealth === 'scf' && spec.endow) agents.forEach(function(a){ a._tbEl = a.wealth < spec.endow.thresh; });  /* v5.3 B7: an endowment's test reads the household's starting wealth */
   var RHH = HOUSEHOLDS && HHS ? hhRepAcc() : null;  /* v5.3 B3: the household reading's measures (reporting only) */
@@ -7806,20 +7878,20 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
        * less the efficiency share eP of price cuts (added capacity, not a transfer; 0 by the plan's rule). */
       /* d66 (sessions 15-16; issue i7): the launch gift's proceeds are one-time spending. 'payg' (Duke's pick) finances them in the
        * year they are paid, like every other conversion; 'run' spreads them over the remaining years, like the endowment (d26). */
-      L.pjg += C.pjg; var gRun = !!(PROJ && PROJ.giftFin === 'run');
+      L.pjg += C.pjg; var gRun = !!(PROJ && PROJ.giftFin === 'run'); C.lo = LDS ? (LDS.outY - LDS.intY)*(C.idx || 1) : 0; if (LDS){ LDS.outY = 0; LDS.intY = 0; }  /* S94: the fund's outlay less interest received (current $), new money in the Source's payout */
       var need = C.cash + L.endowTot/T + (o.fin === 'source' ? 0 : C.bu) + (o.fin === 'hybrid' || o.fin === 'source' ? 0 : gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv) + C.cap + (1 - o.eP)*(C.cutPT - C.cutFree + C.cutG) + C.pthLiq, U;  /* plan step 3: the Source pays every conversion (BU face value included) */  /* session 7 (d26): hybrid leaves conversion rewards to money creation */
       /* d24: created money counted by one rule for every design. aT: output matched to transfer dollars (cash, BU spent at face
        * value, the endowment, capital spending); a: output matched to conversion rewards (H1); eP: price-cut efficiency. */
       /* Session 7 (d24 option b, o.buAtA): output matched at a to a converted BU's face value as well as its reward. */
       if (o.fin === 'money') U = (1 - o.aT)*(C.cash + C.endow + C.cap) + (1 - (o.buAtA ? o.a : o.aT))*C.bu + (1 - o.eP)*(C.cutPT - C.cutFree + C.cutG) + (1 - o.a)*(C.conv - C.convM) + (o.pthUnmatched ? C.pthLiq : 0) + extra;
       else if (o.fin === 'tax') U = extra + (o.taxBase ? Math.max(0, need - C.tax) : 0);  /* v5.2 step 7: the progressive and land taxes pay what they can (marginal rates capped at tauMax); the Source pays the rest as new money */
-      else if (o.fin === 'source'){ var cvS = gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv, bkP = (o.faceM ? 0 : C.bu) + cvS - C.convM, bkU = (1 - o.a)*bkP;  /* v5.2 step 7: with the gift over the run, the Source's new money for the launch gift is spread over the run (d66's 'run', as for the contribution) */  /* plan step 3 (S1-S6): the Source's net payout is new money, less output that backs it; faceM: essentials bought with BU count as backed */
+      else if (o.fin === 'source'){ var cvS = gRun ? C.conv - C.pjg + L.pjg/(T - 1) : C.conv, bkP = (o.faceM ? 0 : C.bu) + cvS - C.convM + C.lo, bkU = (1 - o.a)*bkP;  /* v5.2 step 7: with the gift over the run, the Source's new money for the launch gift is spread over the run (d66's 'run', as for the contribution) */  /* plan step 3 (S1-S6): the Source's net payout is new money, less output that backs it; faceM: essentials bought with BU count as backed */
         if (o.aK) bkU = Math.max(0, bkU - o.aK*A.Yw);  /* v5.2 step 6 (decision B): the middle reading; output backs the payout up to aK of the year's earned income (CFG.KENYA_ABSORB_*) */
         if (o.bkm) bkU = bkmStep(L, o.bkm, bkP, bkU, C.idx, yr, A.Yw);  /* S51: backing as a mechanism (off unless the row sets o.bkm): the funded projects' output backs the payout */
         if (LVS) bkU = lvStep(L, o, C, bkP, bkU, A.Yw, yr);
         if (OHS && OHS.bk) bkU = ohBack(OHS, C, bkP, yr);  /* S85 (F): the backing produced replaces a and the project payout's market valuation */  /* S54: the Source keeps project proceeds, pays the protected account's interest, sets next year's rationing */
         U = bkU + extra; L.bkP += bkP/C.idx; L.bkU += bkU/C.idx; L.bkY += A.Yw/C.idx;
-        if (ACCT && !gRun){ var srcB = bkP - bkU + C.convM + (o.faceM ? C.bu : 0); acctChk('source', yr, C.bu + C.conv - bkU - srcB, Math.abs(C.bu) + Math.abs(C.conv) + Math.abs(bkU) + Math.abs(srcB), null); } }  /* v5.3 B2: what the Source pays (BU face value and conversion) = new money + the output that backs it */
+        if (ACCT && !gRun){ var srcB = bkP - bkU + C.convM + (o.faceM ? C.bu : 0); acctChk('source', yr, C.bu + C.conv + C.lo - bkU - srcB, Math.abs(C.bu) + Math.abs(C.conv) + Math.abs(bkU) + Math.abs(srcB), null); } }  /* v5.3 B2: what the Source pays (BU face value and conversion) = new money + the output that backs it */
       else if (o.fin === 'hybrid') U = (1 - o.a)*(C.conv - C.convM) + extra;  /* plan step 2: matched output (0 unless PROD) */  /* session 7 (d26 option c): transfers taxed, conversion rewards created at a */
       else U = (1 - o.a)*A.conv + (o.pthUnmatched ? A.pthLiq : 0) + extra;  /* 'none': the session 2-5 rule (transfers and price cuts unfinanced) */
       if ((FX && FX.fin) || ACCT){ L.yr = yr; U = finStep(L, o, C, A, need, U, extra, gRun, o.fin === 'source' ? bkP : 0, o.fin === 'source' ? bkU : 0, T, tauUsed); }  /* S68: the financing identity; fx.fin 'money' makes the capped contribution's gap new money */
@@ -7828,8 +7900,8 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
       if (MFS) mfYear(MFS, C, U, A.Y);  /* S58 (reporting only) */
       if (yr === 0){ L.need0 = need; L.base0 = C.base; if (C.Es){ L.Es0 = C.Es; L.xi0 = 1; } }  /* v5.2 step 7: year 0's earnings for the progressive schedule (its brackets are in year-0 terms) */
       if (MULT && MLS && MLS.y[yr] && MLS.y[yr].ntR) L.ntR += MLS.y[yr].ntR/C.idx;  /* v5.2 step 6: wages added by filling normal-times slack (year-0 $) */
-      if (MULT && MLS) MLS.push = o.fin === 'source' ? Math.max(0, C.bu + C.conv - C.ctax) : 0;  /* plan step 16: next year's push, the net Source payout */
-      L.cost += (C.cash + C.endow + C.bu + C.conv + C.cap + C.cutPT - C.cutFree + C.cutG + C.pthLiq)/C.idx; L.cutFree += C.cutFree/C.idx;  /* plan step 5: the PTF discount funded by forgone profit is not programme cost */
+      if (MULT && MLS) MLS.push = o.fin === 'source' ? Math.max(0, C.bu + C.conv + C.lo - C.ctax) : 0;  /* plan step 16: next year's push, the net Source payout */
+      L.cost += (C.cash + C.endow + C.bu + C.conv + C.cap + C.cutPT - C.cutFree + C.cutG + C.pthLiq + C.lo)/C.idx; L.cutFree += C.cutFree/C.idx;  /* plan step 5: the PTF discount funded by forgone profit is not programme cost */
       L.cash += C.cash/C.idx; L.endow += C.endow/C.idx; L.bu += C.bu/C.idx; L.conv += C.conv/C.idx; L.cutPT += C.cutPT/C.idx; L.cutG += C.cutG/C.idx; L.cap += C.cap/C.idx; L.pth += C.pthLiq/C.idx;
       L.pd += C.pd/C.idx; L.tgt += C.tgt/C.idx; L.tax += C.tax/C.idx; L.need += need/C.idx; L.treas += (C.tax - need)/C.idx; L.f0 += C.f0; L.f1 += C.f1; L.f2 += C.f2; L.n += C.n;
       L.emp += C.emp; L.hrs += C.hrs; L.Er += C.E/C.idx; L.bR += C.bR; L.bP += C.bP;  /* session 8 (A5): employment, hours, real wage earnings */
@@ -7892,6 +7964,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   if (COMM) emR = clRes(emR || {});  /* S37 */
   if (PAS) emR = paRes(emR || {});  /* S55 */
   if (POS) emR = poRes(emR || {}, NY, L.cost/NY);  /* S62 */
+  if (LDS){ emR = ldRes(emR || {}, NY); LDS = null; }  /* S94 */
   if (FX && FX.fin) emR = finRes(emR || {}, L.fi, NY);  /* S68 */
   if (GVS){ emR = gvRes(emR || {}, GVS, NY, T); GVS = null; }  /* S72 (only with gv) */
   if (CB && CBS){ emR = cbRes(emR || {}, CBS, agents); CBS = null; }  /* S74 (only with cb) */
@@ -8345,6 +8418,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var wt0 = WEALTH_TAIL; if (c.wt) WEALTH_TAIL = wtOpts(c.wt);  /* S59 part 2: the weighted top tail for this row (no programme rows too) */
       var rt0 = RETURNS; if (c.rt) RETURNS = rtOpts(c.rt);  /* S59: wealth held by asset class for this row (no programme rows too) */
       var lf0 = LF_SCOPE; if (c.lf) LF_SCOPE = Object.assign({}, LF_DEFAULTS, c.lf === true ? {} : c.lf);  /* S61: adults outside the labour force for this row (no programme rows too) */
+      var ld0 = LEND; if (c.lend) LEND = ldOpts(c.lend);  /* S94: the Collectives' lending for this row (needs pa open; acts in the programme run only) */
       var po0 = PTF_OPS; if (c.po) PTF_OPS = poOpts(c.po);  /* S62: PTF realism for this row (needs pa open) */
       var oh0 = OH; if (c.oh) OH = ohOpts(c.oh);  /* S85: output per hour and automation for this row (both runs) */
       var cb0 = CB; if (c.cb) CB = cbOpts(c.cb);  /* S74: the policy-rate rule for this row (no programme rows too) */
@@ -8382,6 +8456,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.pfCut !== undefined) PTFS_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 4 */
         if (r.c22PY !== undefined) C22_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S6 */
         if (r.clN !== undefined) CL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S37 */
+        if (r.clOut !== undefined) LEND_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S94 */
         if (r.poSub !== undefined) PO_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S62 */
         if (r.stP1 !== undefined) ST74_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S74 */
         if (r.wgWq1 !== undefined) ST74W_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S74 part 3 */
@@ -8405,7 +8480,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.lfShare !== undefined) LF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */  /* S73 */
         if (r.lfOut !== undefined) LF_FLOW_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { OH = oh0; OHS = null; CB = cb0; CBS = null; CBJ = null; CBDM = 0; RTY = null; GOV = gv0; GVS = null; PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; PTF_OPS = po0; POS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { OH = oh0; OHS = null; CB = cb0; CBS = null; CBJ = null; CBDM = 0; RTY = null; GOV = gv0; GVS = null; PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; PTF_OPS = po0; POS = null; LEND = ld0; LDS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;

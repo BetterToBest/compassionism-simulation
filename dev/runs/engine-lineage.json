@@ -1054,6 +1054,22 @@
    },
    "equal": true,
    "seconds": 144
+  },
+  {
+   "from": "3e6661b6a9512b9aa35ad6bb8b4bdd81c7674a6458578de6bcf96dccfe89e24a",
+   "to": "0acbbf086a3c6c74d83164cea4e72713aa4976569eef569c84816d58de195c97",
+   "date": "2026-11-20",
+   "change": "S94: the Creative Collectives' lending (row option lend) and charters, off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 161
   }
  ]
 }
