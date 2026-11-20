@@ -59,4 +59,4 @@ The seed intervals measure the model's randomness only. They do not cover the ch
 
 ## Where each figure comes from (basis class: simulation release and command)
 
-Engine `104691f`, v5.9 batch, seeds 1-500, run on GitHub Actions Nov 14-15, 2026, as frozen in research-update `prereg/2026-11-s63-round2-freeze.md` (registered on OSF, https://osf.io/msdzk/overview). Results: compassionism-sim-results `r2-<part>-<env>-<years>-104691f/`; tables `r2-tables-104691f/`; erosion trace `r2-erosion-104691f/`. Commands: `dev/tools/s64_tables.py`, `dev/tools/s64_erosion.js` and `s64_erosion_table.py`, `dev/tools/s64_charts.py`.
+Engine `104691f` (the frozen model, first published as v5.8), batch shown as v5.9, seeds 1-500, run on GitHub Actions Nov 14-15, 2026, as frozen in research-update `prereg/2026-11-s63-round2-freeze.md` (registered on OSF, https://osf.io/msdzk/overview). Results: compassionism-sim-results `r2-<part>-<env>-<years>-104691f/`; tables `r2-tables-104691f/`; erosion trace `r2-erosion-104691f/`. Commands: `dev/tools/s64_tables.py`, `dev/tools/s64_erosion.js` and `s64_erosion_table.py`, `dev/tools/s64_charts.py`.
