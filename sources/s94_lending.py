@@ -19,6 +19,9 @@ Sources (all opened Nov 20, 2026):
 - American Public Power Association, "Public Power" (publicpower.org): public power utilities "serve 1 in 7 electricity customers".
 - EPA, Information about Public Water Systems (updated Mar 16, 2026): public water systems "provide drinking water to 90 percent of
   Americans"; "A public water system may be publicly or privately owned" (no ownership share given).
+- BEA, NIPA Table 2.4.5U, personal consumption expenditures by type of product, 2025 (Underlying Section2All_xls.xlsx, opened
+  Nov 20, 2026): household utilities (line 165) $487,685m, the engine's utility total; electricity (line 170) $269,938m; natural gas
+  (line 171) $77,973m; water supply and sanitation (line 166) $139,774m.
 - SIFMA, US Municipal Bonds Statistics (Nov 3, 2026): outstanding $4.5 trillion (2Q26); issuance through October 2026 $521.0 billion.
 - BLS, Business Employment Dynamics Table 7, survival of private sector establishments by opening year (read through the fetch tool; only
   the 1994 and 1995 cohorts were read verbatim): all private, 79.6% and 78.8% survive one year, 49.6% and 48.8% five years; retail, 1994
@@ -33,6 +36,7 @@ FULL_SHA256 = {
     'bds2023_sec_fa.csv': '07f3b6c3e34add284c1e5b900605eb6d45b4c22420cc4670ee0a9e0d94661755',
     '2025-report-on-employer-firms.pdf': 'a637b0030a236af2428ab9bbd6b9dfb80d6d72c5ab7f91a13a6e674d8b9ccbac',
     'reinvestment.com FFFI page': '52dabc02cb9c7eeba0c6ebb033ef101730b4d57b1d152e478c69023d6ea3c6d5',
+    'Underlying Section2All_xls.xlsx (BEA NIPA)': '7c96d36e8a6e8fcf42385a9d3eed14be90055488e935baf858a4c1adb2c7a1ea',
     'publicpower.org public-power page': '51ed8ea75316f0e4f6335367e6fe29f8e37dec9ece42bb4405fd0755407c0e5f',
 }
 STOCK = {'22': 4250891, '44-45': 383164, '72': 454294}  # BEA 3.1ESI yearend 2025, $m (food stores and food services weighted at their own lines)
@@ -93,4 +97,6 @@ L, G = 73.2, 12.1
 print('Pennsylvania FFFI: loans %.1f, grants %.1f ($m): grant share %.4f  -> CL grant share main' % (L, G, G/(L + G)))
 # 5. Public operators.
 print('Public power: 1 in 7 electricity customers -> CL charter share main %.4f' % (1/7))
+EL, UT = 269938, 487685  # BEA 2.4.5U, 2025, $m
+print('Electricity over household utilities: %.4f -> the charter acts on this part of the utility cut only (gas and water: no ownership share opened)' % (EL/UT))
 print('Municipal bonds outstanding (SIFMA, 2Q26): $4.5 trillion; issuance Jan-Oct 2026: $521.0 billion (context only).')
