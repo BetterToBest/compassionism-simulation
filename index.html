@@ -135,7 +135,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 @media(max-width:950px){.kgrid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.kgrid-3{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:600px){.kgrid-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .kpi{background:var(--bg2);border-radius:var(--rs);padding:.65rem .9rem;border:.5px solid var(--border2);min-width:0}.kpi.hi{border-color:var(--accent);background:var(--accent-bg)}.kpi.hi2{border-color:var(--gold);background:var(--gold-bg)}.kpi.hi3{border-color:var(--purple);background:var(--purple-bg)}.kpi.hi4{border-color:var(--red);background:var(--red-bg)}.kpi.hi-blue{border-color:var(--blue);background:var(--blue-bg)}
 .klabel{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}.kval{font-size:20px;font-weight:600;color:var(--text);line-height:1.2}.kdelta{font-size:11px;margin-top:2px;line-height:1.4}
-.good{color:var(--accent)}.warn{color:var(--amber)}.bad{color:var(--red)}
+.good{color:var(--accent)}.warn{color:var(--amber)}.bad{color:var(--red)}.kdelta.flat{color:var(--text3)}
 .tbadge{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:var(--rs);font-weight:600}
 .t-crisis{background:var(--red-bg);color:var(--red)}.t-precarious{background:var(--red-bg);color:#c04040}.t-threshold{background:var(--amber-bg);color:var(--amber)}.t-stable{background:var(--amber-bg);color:#9a6010}.t-secure{background:var(--accent-bg);color:var(--accent2)}.t-flourishing{background:var(--gold-bg);color:var(--gold);border:.5px solid var(--gold)}
 .cgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-bottom:9px}@media(max-width:850px){.cgrid{grid-template-columns:minmax(0,1fr)}}
@@ -1162,7 +1162,7 @@ if(typeof Chart==='undefined'){window.Chart=function(ctx,cfg){this.data=cfg&&cfg
  *     CHANGELOG.md's v4.10 Release Notes for the full trail). Shown only
  *     as labeled callout text beneath the wealth chart, explicitly marked
  *     "external reference, not a simulation parameter" — same category as
- *     CFG.NORDIC_GINI elsewhere in this file.
+ *     CFG.NORDIC_GINI was (removed Nov 21, 2026).
  *  3. Deliberately NOT in scope: CFG.LIVING_WAGE_ANNUAL is genuinely baked
  *     into runYear()'s wealth-accumulation trajectory (unlike POVERTY_LINE,
  *     which is a pure post-hoc reporting threshold with exactly one call
@@ -2153,9 +2153,12 @@ var CFG = {
   WAGE_BASE_GROWTH:0.010, WAGE_BLEI_BONUS:0.008, WAGE_OCTAVE_BONUS:0.003,
   AI_DISPLACEMENT_YEAR_1:5, AI_DISPLACEMENT_YEAR_2:15,
   AI_DISPLACEMENT_RATE_1:0.012, AI_DISPLACEMENT_RATE_2:0.022,
-  TARGET_WEALTH:82000, TARGET_STABILITY:0.90, TARGET_POVERTY:0.05,
-  TARGET_FLOURISHING:0.50, TARGET_GINI:0.25, TARGET_EDC:0.10,
-  NORDIC_GINI:0.28, CCO_OPTIMAL_BU:1200,
+  /* Nov 21, 2026 (S96): TARGET_WEALTH 82000, TARGET_STABILITY 0.90, TARGET_POVERTY 0.05, TARGET_FLOURISHING 0.50,
+   * TARGET_GINI 0.25, TARGET_EDC 0.10, CCO_OPTIMAL_BU 1200 and NORDIC_GINI 0.28 removed. They were pre-v4.3 calibration goals that no run
+   * tested, read only by the earlier engine page's tiles, milestones and insights and by the harness's headline print;
+   * those now compare each figure with the no-programme run of the same seed. No line of the engine read them. NORDIC_GINI
+   * drew a "Nordic (0.28)" line on the Gini chart: an income Gini beside the model's wealth Gini; the chart now draws the
+   * baseline's yearly Gini. */
   /* v4.17: the papers' "minimum viable" CCO participation. Used ONLY for a run warning — no
    * line of runYear() reads aggregate CCO participation, so nothing in the dynamics changes
    * at 55% (sweep in CONTRIBUTING.md v4.17; NEEC maintainers' note 7). Whether to build a
@@ -2218,7 +2221,7 @@ var CFG = {
    * retired-worker benefit, $2,071/mo. */
   SS_ANCHOR_SSI_ANNUAL:11928, SS_ANCHOR_SSDI_ANNUAL:19560, SS_ANCHOR_RETIRE_ANNUAL:24852,
   /* v4.10: external reference only — NOT a simulation parameter, same category as
-   * NORDIC_GINI above (never read by runYear()/calcMetrics()/agentBLEI() or any other
+   * NORDIC_GINI was until Nov 21, 2026 (never read by runYear()/calcMetrics()/agentBLEI() or any other
    * mechanics function; used only as a labeled comparison point in
    * renderThresholdSensitivity's callout text, below). 2026 HHS ASPE federal poverty
    * guideline, one-person household, 48 contiguous states + DC: $15,960/yr. Verified this
@@ -3124,7 +3127,7 @@ function simulate(p,warns){
   var sharedRecPath=p.shock?buildRecessionPath(years,isNaN(seedNum)?null:seedNum):null;
   function recAt(yr){return sharedRecPath?sharedRecPath[yr]:{active:false,incomeMultiplier:1.0,yearsLeft:0};}
 
-  var baseYearlyPov=[],baseYearlyWealth=[],baseYearlyBLEI=[],baseYearlyBleiPov=[];
+  var baseYearlyPov=[],baseYearlyWealth=[],baseYearlyBLEI=[],baseYearlyBleiPov=[],baseYearlyGini=[];
   /* v4.4: true common-random-numbers (CRN) pairing across all three scenarios' annual
    * trajectories (external audit, "Counterfactual pairing is improved, but not yet full
    * CRN pairing": baseline/CCO-only previously ran on their own +700001/+700002 offset
@@ -3147,7 +3150,7 @@ function simulate(p,warns){
   for(var bYr=0;bYr<years;bYr++){
     runYear(baseAgents,bYr,pBase,recAt(bYr));
     var mBYr=calcMetrics(baseAgents,false,false);
-    baseYearlyPov.push(+(mBYr.pov*100).toFixed(1));baseYearlyWealth.push(mBYr.med);baseYearlyBLEI.push(calcMedianBLEI(baseAgents,pBase));
+    baseYearlyPov.push(+(mBYr.pov*100).toFixed(1));baseYearlyWealth.push(mBYr.med);baseYearlyGini.push(mBYr.gini);baseYearlyBLEI.push(calcMedianBLEI(baseAgents,pBase));
     /* v4.13: baseline's per-year BLEI-poverty SHARE, for the new Cumulative Poverty
      * Exposure comparison. Baseline's per-year MEDIAN BLEI was already tracked (line
      * above) but a median can't give a poverty headcount. bleiMetrics() is a pure
@@ -3191,7 +3194,7 @@ function simulate(p,warns){
    * Good First Issues) because it touches the mechanics engine's own signatures and needs
    * its own regression pass; changing the shape of one already-bundled reporting argument
    * does not. */
-  var extras={thresh:{wealth:{base:wDistBase,cco:wDistCCO},blei:{base:bDistBase,cco:bDistCCO}},baseBleiPovYearly:baseYearlyBleiPov,atFloorBase:atFloorBase,
+  var extras={thresh:{wealth:{base:wDistBase,cco:wDistCCO},blei:{base:bDistBase,cco:bDistCCO}},baseBleiPovYearly:baseYearlyBleiPov,baseYearlyWealth:baseYearlyWealth,baseYearlyGini:baseYearlyGini,atFloorBase:atFloorBase,
     yearZero:yearZero,ibBase:incomeBasketMetrics(baseAgents),ibCCO:incomeBasketMetrics(ccoAgents),bleiPovCCO:bleiPovOf(bCCO),  // v4.17: +yearZero, income/basket
     epBase:extremePovertyOf(housingDistressOf(baseAgents),yearZero.distress,pBase),epCCO:extremePovertyOf(housingDistressOf(ccoAgents),yearZero.distress,pCCO)};  // v4.18: extreme-poverty overlay
   extras.stabRun=newStabRun();  // v4.19: Your Settings' stabilizer tally, filled in step()
@@ -8667,7 +8670,7 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
    * not represent). */
   SIM_RESULTS={params:p,exposure:exposure,thresholdDominance:null,finalPov:finalM.pov,finalGini:finalM.gini,finalWealth:finalM.med,stab:stab,blei:bMain,bleiPovPct:bleiPovPct,mBase:mBase,mCCO:mCCO,bBase:bBase,bCCO:bCCO,topTierName:top,totalConversionProceeds:Math.round(totalConversionAll||0),timestamp:new Date().toISOString(),timeSeries:{labels:yLabels,poverty:aPov,gini:aGini,wealth:aWealth,blei:aBlei,p10:aP10,p90:aP90,cashDays:aCash,incomeDays:aInc,benefitDays:aBen,baselinePoverty:baseYearlyPov,participantPoverty:aPartPov,nonParticipantPoverty:aNonPartPov,participantBLEI:aPartBLEI,nonParticipantBLEI:aNonPartBLEI}};
 
-  renderKPIs(finalM,stab,mBase,bMain,bBase,top,policy);
+  renderKPIs(finalM,stab,mBase,bMain,bBase,top,policy,stabBase);
   renderStratKPIs(fPartPov,fNonPov,fPartBLEI,fNonBLEI,p,top);
   renderSSCohorts(ssAnchorCohorts(agents,p,top),top);
   /* v4.10: Main's own final-year distributions are computed HERE, not in simulate(), since
@@ -8704,10 +8707,10 @@ function finish(p,warns,agents,yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,a
   SIM_RESULTS.shockResponse={run:extras.stabRun||newStabRun(),settings:stabSettingsOf(p),shockOn:!!p.shock,study:null,
     constants:{hubMult:CFG.STAB_HUB_MULT,hubThresh:CFG.STAB_HUB_THRESH,neutralMult:CFG.STAB_NEUTRAL_MULT,neutralK:CFG.STAB_NEUTRAL_K,emergTakeupDefault:CFG.STAB_EMERG_TAKEUP,colaHubThresh:CFG.COLA_HUB_THRESH}};
   renderShockCard(SIM_RESULTS.shockResponse);
-  renderCharts(yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,baseYearlyPov,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,top,p);
+  renderCharts(yLabels,aPov,aGini,aWealth,aVel,aBlei,aP10,aP90,aTiersDist,aCash,aInc,aBen,baseYearlyPov,aPartPov,aNonPartPov,aPartBLEI,aNonPartBLEI,top,p,extras.baseYearlyWealth,extras.baseYearlyGini);
   renderTable(finalM,stab,mBase,mCCO,bMain,bBase,bCCO,p,top,stabBase,stabCCO);
-  renderInsights(finalM,stab,bMain,p,top);
-  renderMilestones(findMilestones(aPov,aGini,aWealth,aBlei,baseYearlyPov));
+  renderInsights(finalM,stab,bMain,p,top,mBase,bBase);
+  renderMilestones(findMilestones(aPov,aGini,aWealth,aBlei,baseYearlyPov,extras.baseYearlyWealth,extras.baseYearlyGini));
   renderSens();showRunConfig(p);
   var refLbl=document.getElementById('ref-run-label');if(refLbl)refLbl.style.display=wasRefRun?'block':'none';
 
@@ -9211,7 +9214,13 @@ function renderAttribution(fullMetrics,ablResults){
 }
 
 /* ─── KPI RENDER ──────────────────────────────────────────────────────── */
-function renderKPIs(m,stab,base,bMain,bBase,top,policy){
+/* S96 (Nov 21, 2026): every tile is read against the baseline, the no-programme run of the same seed (paired by common random
+ * numbers), and coloured by the sign of the paired difference: 'good' better, 'bad' worse, 'flat' within the display's rounding.
+ * Before, the tiles showed fixed targets ($82K median wealth, Gini 0.25, 90% stability, over 50% at the top tier, EDC under 10%)
+ * and coloured by absolute thresholds (poverty under 5%, median wealth $75K and over, stability 75% and over, and others): those
+ * were pre-v4.3 calibration goals that no run tested. lowerBetter: a fall is an improvement; tol: the smallest difference shown. */
+function vsBase(x,b,lowerBetter,tol){var d=lowerBetter?b-x:x-b;return d>tol?'good':d<-tol?'bad':'flat';}
+function renderKPIs(m,stab,base,bMain,bBase,top,policy,stabBase){
   top=top||'Flourishing';var pov=m.pov;
   /* v4.13: the arrow was hardcoded '▼' while the number it prefixes is signed, so any
    * configuration that does WORSE than the baseline rendered as "▼ -3.2pp" — a down-arrow
@@ -9219,21 +9228,24 @@ function renderKPIs(m,stab,base,bMain,bBase,top,policy){
    * Welfare preset, where Your Settings and Baseline are near-identical and the delta can
    * land either side of zero). Arrow now follows the sign and the magnitude is unsigned. */
   var povGap=base.pov*100-pov;
-  set('k-pov',pov.toFixed(1)+'%');setD('k-pov-d',(povGap>0.05?'▼ ':povGap<-0.05?'▲ ':'≈ ')+Math.abs(povGap).toFixed(1)+'pp vs baseline ('+(base.pov*100).toFixed(1)+'%)',pov<5?'good':pov<15?'warn':'bad');
-  set('k-gini',m.gini.toFixed(3));setD('k-gini-d','Baseline: '+base.gini.toFixed(3)+' · Target ≤'+CFG.TARGET_GINI,m.gini<=CFG.TARGET_GINI?'good':m.gini<=0.35?'warn':'bad');
-  set('k-wealth','$'+Math.round(m.med/1000)+'K');setD('k-wealth-d','Baseline: $'+Math.round(base.med/1000)+'K · Target $'+Math.round(CFG.TARGET_WEALTH/1000)+'K',m.med>=75000?'good':m.med>=40000?'warn':'bad');
-  set('k-stab',Math.round(stab*100)+'%');setD('k-stab-d','Target ≥'+Math.round(CFG.TARGET_STABILITY*100)+'%',stab>=CFG.TARGET_STABILITY?'good':stab>=0.75?'warn':'bad');
+  set('k-pov',pov.toFixed(1)+'%');setD('k-pov-d',(povGap>0.05?'▼ ':povGap<-0.05?'▲ ':'≈ ')+Math.abs(povGap).toFixed(1)+'pp vs baseline ('+(base.pov*100).toFixed(1)+'%)',vsBase(pov,base.pov*100,true,0.05));
+  set('k-gini',m.gini.toFixed(3));setD('k-gini-d','Baseline: '+base.gini.toFixed(3),vsBase(m.gini,base.gini,true,0.0005));
+  set('k-wealth','$'+Math.round(m.med/1000)+'K');setD('k-wealth-d','Baseline: $'+Math.round(base.med/1000)+'K',vsBase(m.med,base.med,false,500));
+  var hasSB=typeof stabBase==='number'&&isFinite(stabBase);
+  set('k-stab',Math.round(stab*100)+'%');setD('k-stab-d',hasSB?'Baseline: '+Math.round(stabBase*100)+'%':'',hasSB?vsBase(stab,stabBase,false,0.005):'flat');
   var medDays=Math.round(bMain.med),tier=getTier(medDays,top),baseDays=Math.round(bBase.med),baseTier=getTier(baseDays,'Comfortable');
   set('k-blei',medDays+' days');document.getElementById('k-blei-d').innerHTML='<span class="tbadge '+tier.cls+'">'+tier.name+'</span> &nbsp; Baseline: '+baseDays+'d <span class="tbadge '+baseTier.cls+'">'+baseTier.name+'</span>';
   var fl=document.getElementById('k-flour-label');if(fl)fl.textContent='Agents at '+top+' (730+ days)';
-  set('k-flour',bMain.pctF.toFixed(1)+'%');setD('k-flour-d','Baseline: '+bBase.pctF.toFixed(1)+'% · Target >'+Math.round(CFG.TARGET_FLOURISHING*100)+'%',bMain.pctF>50?'good':bMain.pctF>20?'warn':'bad');
-  set('k-edc',(bMain.avgEDC*100).toFixed(1)+'%');setD('k-edc-d','Baseline: '+(bBase.avgEDC*100).toFixed(1)+'% · Target <'+Math.round(CFG.TARGET_EDC*100)+'%',bMain.avgEDC<CFG.TARGET_EDC?'good':bMain.avgEDC<0.30?'warn':'bad');
+  set('k-flour',bMain.pctF.toFixed(1)+'%');setD('k-flour-d','Baseline: '+bBase.pctF.toFixed(1)+'%',vsBase(bMain.pctF,bBase.pctF,false,0.05));
+  set('k-edc',(bMain.avgEDC*100).toFixed(1)+'%');setD('k-edc-d','Baseline: '+(bBase.avgEDC*100).toFixed(1)+'%',vsBase(bMain.avgEDC,bBase.avgEDC,true,0.0005));
   var bPov=(bMain.tc[0]+bMain.tc[1])/bMain.n*100,bPovBase=(bBase.tc[0]+bBase.tc[1])/bBase.n*100;
-  set('k-blei-pov',bPov.toFixed(1)+'%');setD('k-blei-pov-d','% Crisis+Precarious · Baseline: '+bPovBase.toFixed(1)+'%',bPov<5?'good':bPov<20?'warn':'bad');
+  set('k-blei-pov',bPov.toFixed(1)+'%');setD('k-blei-pov-d','% Crisis+Precarious · Baseline: '+bPovBase.toFixed(1)+'%',vsBase(bPov,bPovBase,true,0.05));
   if(policy){
     var bk=policy.breakEvenYr;set('k-break',bk?'Year '+bk:'—');setD('k-break-d',bk?'First year outperforms baseline poverty':'Not reached in simulation period',bk?'good':'warn');
-    var rn=parseFloat(policy.ratio);set('k-ratio',isNaN(rn)?'∞':policy.ratio+'×');setD('k-ratio-d','p10: $'+Math.round((policy.p10||0)/1000)+'K · p90: $'+Math.round((policy.p90||0)/1000)+'K',rn<10?'good':rn<25?'warn':'bad');
-    set('k-p10','$'+Math.round((policy.p10||0)/1000)+'K');setD('k-p10-d','Bottom 10% wealth floor',(policy.p10||0)>=0?'good':(policy.p10||0)>=-5000?'warn':'bad');
+    var rn=parseFloat(policy.ratio),bp10=base.p10||0,bp90=base.p90||0,rb=bp10>100?bp90/bp10:NaN;set('k-ratio',isNaN(rn)?'∞':policy.ratio+'×');
+    /* S96: an infinite ratio (p10 at or below $100) is worse than any finite one */
+    setD('k-ratio-d','p10: $'+Math.round((policy.p10||0)/1000)+'K · p90: $'+Math.round((policy.p90||0)/1000)+'K · Baseline: '+(isNaN(rb)?'∞':rb.toFixed(1)+'×'),isNaN(rn)&&isNaN(rb)?'flat':isNaN(rn)?'bad':isNaN(rb)?'good':vsBase(rn,rb,true,0.05));
+    set('k-p10','$'+Math.round((policy.p10||0)/1000)+'K');setD('k-p10-d','Bottom 10% of wealth · Baseline: $'+Math.round(bp10/1000)+'K',vsBase(policy.p10||0,bp10,false,500));
     var t5=getTier(policy.blei5||0,top);set('k-blei5',(policy.blei5||0)+'d');document.getElementById('k-blei5-d').innerHTML='<span class="tbadge '+t5.cls+'">'+t5.name+'</span> by Year 5';
   }
 }
@@ -9245,12 +9257,12 @@ var C={teal:'#1D9E75',blue:'#185FA5',amber:'#BA7517',red:'#A32D2D',gray:'#888780
 var GA='rgba(120,120,120,0.08)';
 function mkChart(id,type,labels,datasets,yFmt){if(charts[id])charts[id].destroy();var ctx=document.getElementById(id);if(!ctx)return;charts[id]=new Chart(ctx,{type:type,data:{labels:labels,datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:datasets.length>1,labels:{boxWidth:10,font:{size:10.5},color:'#888780'}},tooltip:{callbacks:{label:function(c){return yFmt(c.parsed.y)+' '+c.dataset.label;}}}},scales:{x:{ticks:{font:{size:10.5},color:'#888780',maxTicksLimit:10},grid:{display:false}},y:{ticks:{font:{size:10.5},color:'#888780',callback:function(v){return yFmt(v);}},grid:{color:GA}}}}});}
 
-function renderCharts(yl,pov,gini,wealth,vel,blei,p10,p90,tiersDist,cash,inc,ben,basePov,partPov,nonPartPov,partBLEI,nonPartBLEI,top,p){
+function renderCharts(yl,pov,gini,wealth,vel,blei,p10,p90,tiersDist,cash,inc,ben,basePov,partPov,nonPartPov,partBLEI,nonPartBLEI,top,p,baseWealth,baseGini){
   var povDs=[{label:'Scenario',data:pov,borderColor:C.red,backgroundColor:'rgba(163,45,45,0.06)',tension:.35,pointRadius:0,fill:true,borderWidth:2}];
   if(basePov&&basePov.length)povDs.push({label:'Baseline',data:basePov,borderColor:C.gray,borderDash:[4,3],tension:.35,pointRadius:0,fill:false,borderWidth:1.5});
   mkChart('ch-pov','line',yl,povDs,function(v){return v.toFixed(1)+'%';});
-  mkChart('ch-gini','line',yl,[{label:'Gini',data:gini,borderColor:C.teal,backgroundColor:'rgba(29,158,117,0.06)',tension:.35,pointRadius:0,fill:true,borderWidth:2},{label:'Nordic ('+CFG.NORDIC_GINI+')',data:yl.map(function(){return CFG.NORDIC_GINI;}),borderColor:C.gray,borderDash:[4,3],tension:0,pointRadius:0,borderWidth:1.5,fill:false}],function(v){return v.toFixed(2);});
-  mkChart('ch-wealth','line',yl,[{label:'p90',data:p90,borderColor:'rgba(29,158,117,0.45)',borderDash:[3,2],tension:.35,pointRadius:0,fill:false,borderWidth:1.2},{label:'Median',data:wealth,borderColor:C.blue,backgroundColor:'rgba(24,95,165,0.06)',tension:.35,pointRadius:0,fill:true,borderWidth:2.5},{label:'p10',data:p10,borderColor:'rgba(163,45,45,0.45)',borderDash:[3,2],tension:.35,pointRadius:0,fill:false,borderWidth:1.2},{label:'$82K target',data:yl.map(function(){return CFG.TARGET_WEALTH;}),borderColor:C.amber,borderDash:[4,3],tension:0,pointRadius:0,borderWidth:1.5,fill:false}],function(v){return '$'+Math.round(v/1000)+'K';});
+  mkChart('ch-gini','line',yl,[{label:'Gini',data:gini,borderColor:C.teal,backgroundColor:'rgba(29,158,117,0.06)',tension:.35,pointRadius:0,fill:true,borderWidth:2},{label:'Baseline',data:(baseGini||[]).slice(0,yl.length),borderColor:C.gray,borderDash:[4,3],tension:.35,pointRadius:0,borderWidth:1.5,fill:false}],function(v){return v.toFixed(2);});
+  mkChart('ch-wealth','line',yl,[{label:'p90',data:p90,borderColor:'rgba(29,158,117,0.45)',borderDash:[3,2],tension:.35,pointRadius:0,fill:false,borderWidth:1.2},{label:'Median',data:wealth,borderColor:C.blue,backgroundColor:'rgba(24,95,165,0.06)',tension:.35,pointRadius:0,fill:true,borderWidth:2.5},{label:'p10',data:p10,borderColor:'rgba(163,45,45,0.45)',borderDash:[3,2],tension:.35,pointRadius:0,fill:false,borderWidth:1.2},{label:'Baseline median',data:(baseWealth||[]).slice(0,yl.length),borderColor:C.gray,borderDash:[4,3],tension:.35,pointRadius:0,borderWidth:1.5,fill:false}],function(v){return '$'+Math.round(v/1000)+'K';});
   mkChart('ch-vel','bar',yl,[{label:'BU/person/yr',data:vel,backgroundColor:'rgba(93,202,165,0.7)',borderColor:C.teal,borderWidth:1,borderRadius:2}],function(v){return '$'+Math.round(v);});
   mkChart('ch-blei','line',yl,[{label:'Median BLEI days',data:blei,borderColor:C.gold,backgroundColor:'rgba(154,120,0,0.07)',tension:.35,pointRadius:0,fill:true,borderWidth:2.5},{label:'Flourishing (730d)',data:yl.map(function(){return 730;}),borderColor:C.teal,borderDash:[5,3],tension:0,pointRadius:0,borderWidth:1.5,fill:false},{label:'Secure (365d)',data:yl.map(function(){return 365;}),borderColor:C.purple,borderDash:[3,3],tension:0,pointRadius:0,borderWidth:1.2,fill:false},{label:'Stable (120d)',data:yl.map(function(){return 120;}),borderColor:C.amber,borderDash:[3,2],tension:0,pointRadius:0,borderWidth:1,fill:false},{label:'Threshold (30d)',data:yl.map(function(){return 30;}),borderColor:C.red,borderDash:[2,3],tension:0,pointRadius:0,borderWidth:1,fill:false}],function(v){return Math.round(v)+'d';});
   if(tiersDist&&tiersDist.length)renderTierTimeChart(yl,tiersDist,top);
@@ -9300,13 +9312,16 @@ function bleiCell(bm,top){var days=Math.round(bm.med),tier=getTier(days,top||'Fl
 function renderTierChart(bm,top){top=top||'Flourishing';if(charts['ch-tiers'])charts['ch-tiers'].destroy();var ctx=document.getElementById('ch-tiers');if(!ctx)return;var names=TIERS.slice(0,5).map(function(t){return t.name;});names.push(top);var pcts=bm.tc.map(function(c){return+(c/bm.n*100).toFixed(1);});var sub=document.getElementById('tier-chart-sub');if(sub)sub.textContent='Six-tier classification (Johnson & Claude, 2026) · Top tier: '+top+' (730+ days)';charts['ch-tiers']=new Chart(ctx,{type:'bar',data:{labels:names,datasets:[{label:'% of agents',data:pcts,backgroundColor:TIERS.map(function(t){return t.color;}),borderRadius:3,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y.toFixed(1)+'% of agents';}}}},scales:{x:{ticks:{font:{size:10.5},color:'#888780'},grid:{display:false}},y:{ticks:{font:{size:10.5},color:'#888780',callback:function(v){return v+'%';}},grid:{color:GA},max:100}}}});}
 
 /* ─── MILESTONES ──────────────────────────────────────────────────────── */
-function findMilestones(aPov,aGini,aWealth,aBlei,baseYearlyPov){
+/* S96: the "Poverty ≤ 5% (target)", "Gini ≤ 0.25 (target)" and "Median wealth ≥ $82K" milestones were fixed targets no run
+ * tested. The 5% step stays as a plain step of the poverty ladder; the Gini and median wealth are read against the baseline's
+ * in the same year (the first year the run's Gini is lower, and its median higher). */
+function findMilestones(aPov,aGini,aWealth,aBlei,baseYearlyPov,baseYearlyWealth,baseYearlyGini){
   var ms=[];
   if(baseYearlyPov&&baseYearlyPov.length){for(var i=0;i<Math.min(aPov.length,baseYearlyPov.length);i++){if(aPov[i]<baseYearlyPov[i]){ms.push({name:'Beats baseline poverty',yr:i+1,val:aPov[i].toFixed(1)+'% vs '+baseYearlyPov[i].toFixed(1)+'%'});break;}}}
-  [{t:20,n:'Poverty < 20%'},{t:10,n:'Poverty < 10%'},{t:5,n:'Poverty ≤ 5% (target)'}].forEach(function(s){for(var i=0;i<aPov.length;i++){if(aPov[i]<s.t){ms.push({name:s.n,yr:i+1,val:aPov[i].toFixed(1)+'%'});return;}}});
-  for(var gi=0;gi<aGini.length;gi++){if(aGini[gi]<=0.25){ms.push({name:'Gini ≤ 0.25 (target)',yr:gi+1,val:aGini[gi].toFixed(3)});break;}}
+  [{t:20,n:'Poverty < 20%'},{t:10,n:'Poverty < 10%'},{t:5,n:'Poverty < 5%'}].forEach(function(s){for(var i=0;i<aPov.length;i++){if(aPov[i]<s.t){ms.push({name:s.n,yr:i+1,val:aPov[i].toFixed(1)+'%'});return;}}});
+  if(baseYearlyGini&&baseYearlyGini.length){for(var gi=0;gi<Math.min(aGini.length,baseYearlyGini.length);gi++){if(aGini[gi]<baseYearlyGini[gi]){ms.push({name:'Gini below baseline',yr:gi+1,val:(+aGini[gi]).toFixed(3)+' vs '+baseYearlyGini[gi].toFixed(3)});break;}}}
   [{t:120,n:'BLEI ≥ 120d (Threshold)'},{t:365,n:'BLEI ≥ 365d (Stable)'},{t:730,n:'BLEI ≥ 730d (Secure)'}].forEach(function(s){for(var i=0;i<aBlei.length;i++){if(aBlei[i]>=s.t){ms.push({name:s.n,yr:i+1,val:aBlei[i]+'d'});return;}}});
-  for(var wi=0;wi<aWealth.length;wi++){if(aWealth[wi]>=CFG.TARGET_WEALTH){ms.push({name:'Median wealth ≥ $82K',yr:wi+1,val:'$'+Math.round(aWealth[wi]/1000)+'K'});break;}}
+  if(baseYearlyWealth&&baseYearlyWealth.length){for(var wi=0;wi<Math.min(aWealth.length,baseYearlyWealth.length);wi++){if(aWealth[wi]>baseYearlyWealth[wi]){ms.push({name:'Median wealth above baseline',yr:wi+1,val:'$'+Math.round(aWealth[wi]/1000)+'K vs $'+Math.round(baseYearlyWealth[wi]/1000)+'K'});break;}}}
   return ms;
 }
 function renderMilestones(ms){
@@ -9793,25 +9808,26 @@ function renderSens(){
 }
 
 /* ─── INSIGHTS ────────────────────────────────────────────────────────── */
-function renderInsights(m,stab,bMain,p,top){
+/* S96 (Nov 21, 2026): each card reads this run against the baseline (no programme, same seed). Removed: "Poverty target
+ * achieved" (a 5% target no run tested), "CCO+PTF+PTH annual cost offset confirmed" (the run does not test a cost offset),
+ * "raise BU toward $1,200" and "raise participation toward 78%" (no run finds an optimal BU or participation rate),
+ * "two-year entrepreneurial horizon unlocked", the EDC "below 10% target", and the automation card's claims of wage losses
+ * "3-5x faster" and a "partial floor buffer", which this run does not measure. */
+function renderInsights(m,stab,bMain,p,top,mBase,bBase){
   top=top||'Flourishing';var pov=m.pov,medDays=Math.round(bMain.med),tier=getTier(medDays,top),ins=[];
-  var i1={};
-  if(pov<CFG.TARGET_POVERTY*100){i1.icon='✅';i1.title='Poverty target achieved';i1.body=pov.toFixed(1)+'% wealth poverty — below target. BLEI median: '+tier.name+' ('+medDays+'d). CCO+PTF+PTH annual cost offset confirmed.';}
-  else{i1.icon='📈';i1.title='Poverty reduction in progress';var t1=[];if(!p.ccoOn)t1.push('enable CCO');else if(p.bu<CFG.CCO_OPTIMAL_BU)t1.push('raise BU toward $'+CFG.CCO_OPTIMAL_BU);if(p.partRate<0.78&&p.ccoOn)t1.push('raise participation toward 78%');if(!p.ptf)t1.push('enable PTF');if(!p.pth)t1.push('enable PTH');i1.body=pov.toFixed(1)+'% poverty · BLEI: '+tier.name+' ('+medDays+'d).';if(t1.length)i1.body+=' Try: '+t1.join(', ')+'.';}
+  var word=function(c,lo,hi){return c==='good'?lo:c==='bad'?hi:'about the same as';},icon=function(c){return c==='good'?'✅':c==='bad'?'⚠️':'➖';};
+  var bPov=mBase?mBase.pov*100:NaN,baseDays=bBase?Math.round(bBase.med):NaN,c1=isNaN(bPov)?'flat':vsBase(pov,bPov,true,0.05);
+  var i1={icon:icon(c1),title:'Wealth poverty '+word(c1,'lower than','higher than')+' with no programme'};
+  i1.body=pov.toFixed(1)+'% wealth poverty'+(isNaN(bPov)?'':' against '+bPov.toFixed(1)+'% in the baseline (no programme, same seed)')+'. Median BLEI: '+tier.name+' ('+medDays+'d)'+(isNaN(baseDays)?'':' against '+baseDays+'d')+'. One seed: run 10× Monte Carlo for a range across seeds.';
   ins.push(i1);
-  var i2={};
-  if(bMain.pctF>CFG.TARGET_FLOURISHING*100){i2.icon='🌿';i2.title='Majority at '+top+' tier';i2.body=bMain.pctF.toFixed(1)+'% at 730+ days'+(top==='Flourishing'?' — two-year entrepreneurial horizon unlocked (BLEI §4).':' — strong stability. Activate CCO+PTF for Flourishing tier.');}
-  else{i2.icon='📊';i2.title=top+' tier: '+bMain.pctF.toFixed(1)+'%';var t2=[];if(!p.pth)t2.push('enable PTH');if(!p.szh)t2.push('enable SZH');if(p.bu<CFG.CCO_OPTIMAL_BU&&p.ccoOn)t2.push('increase BU');i2.body=t2.length?'To increase: '+t2.join('; ')+'.':'Fine-tune BU and participation rate.';}
+  var bF=bBase?bBase.pctF:NaN,c2=isNaN(bF)?'flat':vsBase(bMain.pctF,bF,false,0.05);
+  var i2={icon:icon(c2),title:top+' tier (730+ days): '+bMain.pctF.toFixed(1)+'%'};
+  i2.body=isNaN(bF)?'Share of agents at 730+ days of basic living.':(c2==='good'?'Above':c2==='bad'?'Below':'About the same as')+' the baseline’s '+bF.toFixed(1)+'% (no programme, same seed).';
   ins.push(i2);
-  var i3={};
-  if(bMain.avgEDC<CFG.TARGET_EDC){i3.icon='🔓';i3.title='Extractive drain below target (design target proxy)';i3.body='Avg EDC (design target proxy) '+(bMain.avgEDC*100).toFixed(1)+'% — below '+Math.round(CFG.TARGET_EDC*100)+'% target. PTH converts rent extraction to Acre Equity; PTF reduces cost base.';}
-  else if(p.automation){i3.icon='🤖';i3.title='AI automation displacing wages';i3.body='Heterogeneous automationRisk creating inequality. High-risk agents lose wages 3–5× faster. CCO conversion income provides partial floor buffer.';}
-  else{
-    // v3.4: contextual — only suggest a system if it's actually off
-    var offSystems=[];if(!p.szh)offSystems.push('SZH');if(!p.cip)offSystems.push('CIP');
-    if(offSystems.length){i3.icon='⚡';i3.title='Enable '+offSystems.join('+')+' for full integration';i3.body='Avg EDC (design target proxy) '+(bMain.avgEDC*100).toFixed(1)+'%. '+offSystems.join(' and ')+' would complete integration via zone coherence and democratic governance.';}
-    else{i3.icon='🔍';i3.title='All systems active — explore parameters';i3.body='Avg EDC (design target proxy) '+(bMain.avgEDC*100).toFixed(1)+'%. Try the OAT sensitivity analysis or run 10× Monte Carlo to map the solution space.';}
-  }
+  var bE=bBase?bBase.avgEDC:NaN,c3=isNaN(bE)?'flat':vsBase(bMain.avgEDC,bE,true,0.0005);
+  var offSystems=[];if(!p.ccoOn)offSystems.push('CCO');if(!p.ptf)offSystems.push('PTF');if(!p.pth)offSystems.push('PTH');if(!p.szh)offSystems.push('SZH');if(!p.cip)offSystems.push('CIP');
+  var i3={icon:icon(c3),title:'Extractive drain '+word(c3,'lower than','higher than')+' with no programme'};
+  i3.body='Avg EDC (design target proxy) '+(bMain.avgEDC*100).toFixed(1)+'%'+(isNaN(bE)?'':' against '+(bE*100).toFixed(1)+'% in the baseline')+'. '+(offSystems.length?'Switched off in this run: '+offSystems.join(', ')+'.':'All five systems are on; the One-at-a-Time sensitivity analysis shows each setting’s effect.');
   ins.push(i3);
   var html='';ins.forEach(function(ic){html+='<div class="icard"><div class="iicon">'+ic.icon+'</div><div class="ititle">'+ic.title+'</div><div class="ibody">'+ic.body+'</div></div>';});
   document.getElementById('ins-grid').innerHTML=html;document.getElementById('sec-insights').style.display='block';
