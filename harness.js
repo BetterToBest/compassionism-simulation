@@ -2520,6 +2520,13 @@ function s100UnitSuite(){
     var R = tbStudy([main('none', {sn:{cdc:true}}), main('none', {sn:{cdc:'all'}}), main('c22', {sn:{cdc:true}}), main('none')], 1, P, MS);
     var ok = R[0].snCdcK > 0 && R[1].snCdcK > R[0].snCdcK && R[2].snCdc >= 0 && R[0].emSpells === R[3].emSpells && R[0].lfShare === R[3].lfShare;
     return {pass:ok, detail:'reach ' + R[0].snCdcK.toFixed(2) + ' / ' + R[1].snCdcK.toFixed(2) + '; spells ' + R[0].emSpells + ' / ' + R[3].emSpells}; });
+  /* S93 (v5.9.22): the stored no-programme supply path is keyed on pay by household type (and the other settings rowKeyS93 names), so a row's figures do
+   * not depend on which row ran before it in the process. A no-programme run on its own supply path has programme inflation exactly 0; on another row's
+   * path it does not (the engine before: -0.00035 and 0.00060 here). Own size and seeds (300 adults, 3 years, seeds 9 and 10), so no other test filled the store. */
+  t('S93: no-programme rows with and without pay by household type, in either order, each use their own supply path (programme inflation exactly 0; seeds 9, 10)', function(){
+    var Q = Object.assign({}, FULL_INTEGRATION, {years:3, nAgents:300}), mk = function(eh){ var c = r2MainPair(Q, 'c22')[0]; if (eh) c.eh = {}; return c; };
+    var A = tbStudy([mk(false), mk(true)], 9, Q, MS, 9), B = tbStudy([mk(true), mk(false)], 10, Q, MS, 10), v = [A[0].endoAnn, A[1].endoAnn, B[0].endoAnn, B[1].endoAnn];
+    return {pass:v.every(function(x){ return x === 0; }), detail:'inflation ' + v.join(', ')}; });
   return out; }
 Object.assign(module.exports, { s100UnitSuite });  /* S100 */
 function paUnitSuite(){
@@ -3012,7 +3019,7 @@ function privUnitSuite(){
     catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
     finally { CONVERSION_MODEL = sv.cm; PROJ = sv.pj; ESP = sv.es; SURP = sv.sp; SPS = null; ESS = null; resetNR6(sv.nr); TB = null; LABOR = null; PRICE = null; LEDGER = null; RNG = sv.rng; } }
   var FI = FULL_INTEGRATION, CALM = {active:false, incomeMultiplier:1.0, yearsLeft:0};
-  function sp(o){ return Object.assign({}, SURP_DEFAULTS, o || {}); }
+  function sp(o){ return Object.assign({}, SURP_DEFAULTS, {vAt:'lag'}, o || {}); }  /* S93: these tests check the lagged rule's identities (plan step 14); the at-sale tests below say vAt 'sale' */
   function plain(P, seed, each, count, before){ CONVERSION_MODEL = 'framework'; PROJ = Object.assign({}, PROJ_DEFAULTS); ESP = Object.assign({}, ESP_DEFAULTS);
     RNG = mulberry32(seed + 700003); var ag = makeLatentPopulation(P.nAgents).map(function(l){ return instantiateAgent(l, P); });
     var base = mulberry32(seed), n = {c:0}; RNG = count ? function(){ n.c++; return base(); } : base;
@@ -3038,7 +3045,7 @@ function privUnitSuite(){
     ENVS.forEach(function(c){ SURP = sp({priv:'prices'}); plain(c[0], c[1], function(ag, y){ var q = SPS.y[y]; if (q.privUsed > 0){ n++; worst = Math.max(worst, Math.abs(q.cutV - q.privUsed)/q.privUsed); } }); });
     return {pass:n > 0 && worst < 1e-9, detail:n + ' years; worst relative gap ' + worst.toExponential(2)}; });
   t('CRN: the correction draws no random numbers (same number of draws as the owners rule; three environments)', function(){ var d = [];
-    ENVS.forEach(function(c){ SURP = sp(); var a = plain(c[0], c[1], null, true); SURP = sp({priv:'prices'}); var b = plain(c[0], c[1], null, true); if (a !== b) d.push(a + ' vs ' + b); });
+    ENVS.forEach(function(c){ SURP = sp(); var a = plain(c[0], c[1], null, true); SURP = sp({priv:'prices', vAt:'lag'}); var b = plain(c[0], c[1], null, true); if (a !== b) d.push(a + ' vs ' + b); });
     return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'draw counts equal'}; });
   /* S90 (Nov 18, 2026; research-update PLAN.md S90): the private ESP's lower BU price set at the sale (SURP.vAt 'sale'), as Duke's design has it,
    * in place of last year's premium shared this year (the one-year lag that ran a damped two-year cycle in the BU spent). */
@@ -3052,17 +3059,17 @@ function privUnitSuite(){
     SURP = sp({priv:'prices', vAt:'sale', privWk:'none'}); plain(FI, 1, function(ag, y){ if (y === 0) f = [SPS.vK, bizPremPerBU(FI)]; }, false, function(ag, y){ if (y === 0){ ESP = null; } });
     return {pass:n > 0 && worst < 1e-9 && k > 0 && f && Math.abs(f[0] - f[1]) < 1e-15, detail:n + ' years; worst relative gap ' + worst.toExponential(2) + '; vK ' + k.toFixed(4) + ' (no workers\' match, no payroll: ' + (f ? f[0].toFixed(4) : '?') + ', the year end\'s premium per BU)'}; });
   t('S90 at-sale: the BU spent no longer swing year to year (Reference, seed 1: mean |change| over years 2-12, against the lagged rule)', function(){ var sw = [];
-    [sp({priv:'prices'}), sp({priv:'prices', vAt:'sale'})].forEach(function(q){ SURP = q; var S = []; plain(FI, 1, function(ag, y){ var t = 0; ag.forEach(function(a){ t += a._spBU || 0; }); S.push(t); });
+    [sp({priv:'prices', vAt:'lag'}), sp({priv:'prices', vAt:'sale'})].forEach(function(q){ SURP = q; var S = []; plain(FI, 1, function(ag, y){ var t = 0; ag.forEach(function(a){ t += a._spBU || 0; }); S.push(t); });
       var m = 0; for (var y = 2; y <= 12; y++) m += Math.abs(S[y] - S[y - 1])/S[y]/11; sw.push(m); });
     return {pass:sw[1] < 0.5*sw[0], detail:'mean year-to-year change: lagged ' + (100*sw[0]).toFixed(1) + '%, at the sale ' + (100*sw[1]).toFixed(1) + '%'}; });
   t('S90 at-sale: the books balance in the main row (200 adults, 20 years, seed 1; three environments): no accounting identity fails, the premium identity included', function(){ var bad = [], nP = 0;
     try { [FULL_INTEGRATION, ADVERSE_REFERENCE, STRESS_TEST].forEach(function(E){ var P = Object.assign({}, E, {years:20, nAgents:200});
-      [false, true].forEach(function(sale){ var c = r2FreezePair(P, 'c22')[1]; if (sale) c.sp = Object.assign({}, c.sp, {vAt:'sale'});
+      [false, true].forEach(function(sale){ var c = r2FreezePair(P, 'c22')[1]; c.sp = Object.assign({}, c.sp, {vAt:sale ? 'sale' : 'lag'});
         ACCT = acctNew(); tbStudy([c], 1, P, r2MainStudy()); var f = Object.keys(ACCT.nFail); nP += sale ? (ACCT.n.premium || 0) : 0; if (f.length) bad.push((sale ? 'sale ' : 'lag ') + f.join(',')); ACCT = null; }); }); }
     finally { ACCT = null; }
     return {pass:bad.length === 0 && nP > 0, detail:'premium checks under the sale rule ' + nP + '; failing: ' + (bad.join('; ') || 'none')}; });
   t('S90 CRN: the at-sale price draws no random numbers (three environments)', function(){ var d = [];
-    ENVS.forEach(function(c){ SURP = sp({priv:'prices'}); var a = plain(c[0], c[1], null, true); SURP = sp({priv:'prices', vAt:'sale'}); var b = plain(c[0], c[1], null, true); if (a !== b) d.push(a + ' vs ' + b); });
+    ENVS.forEach(function(c){ SURP = sp({priv:'prices', vAt:'lag'}); var a = plain(c[0], c[1], null, true); SURP = sp({priv:'prices', vAt:'sale'}); var b = plain(c[0], c[1], null, true); if (a !== b) d.push(a + ' vs ' + b); });
     return {pass:d.length === 0, detail:d.length ? d.join('; ') : 'draw counts equal'}; });
   return out;
 }
@@ -4188,9 +4195,17 @@ Object.assign(module.exports, { R2_MAIN, R2_MAIN_STUDY, r2MainRow, r2MainPair, r
  * S68-S70 and S69's packet reproduce) with S69's two reporting corrections on (fx.ez, fx.rk), and the programme run at full backing (o.a 1: every
  * programme dollar matched by new output, the design's statement, a design parameter; D25). Today's price rule (no pr; D26). */
 var R2_FREEZE_FX = {ez:true, rk:true};
+/* S93 (Nov 21, 2026; v5.9.22; research-update prereg/2026-11-s90-private-price-at-sale.md, Amendment 3; ledger D36, Duke: adopt both): the release main
+ * row adds, in both runs of the pair, pay by household type (eh {}, partners' correlation CFG.EH.rho) and the child and dependent care credit for households
+ * that pay for care (sn.cdc true): the yardstick study's 'both' rows (dev/reports/s100-part-time-dcc.md). With the private price at the sale, now the engine's
+ * default (SURP_DEFAULTS.vAt), r2FreezePair gives the release main row. r2FreezePair(P, design, true) gives the v5.9 frozen row exactly (eh false,
+ * sn.cdc false, and sp.vAt 'lag' on the programme row), for the proofs and the earlier studies' reproduction. */
+var R2_REL = {eh:{}, cdc:true};
+function r2RelRow(c){ c.eh = Object.assign({}, R2_REL.eh); c.sn = Object.assign({}, c.sn, {cdc:R2_REL.cdc}); return c; }
+function r2V59Row(c){ c.eh = false; c.sn = Object.assign({}, c.sn, {cdc:false}); if (c.sp) c.sp = Object.assign({}, c.sp === true ? {} : c.sp, {vAt:'lag'}); return c; }
 function r2FreezeRow(c, prog){ r2MainRow(c); Object.assign(c.fx, R2_FREEZE_FX); if (prog) c.o = Object.assign({}, c.o, {a:1}); return c; }
-function r2FreezePair(P, design){ var cf = relMainCfgs(tbPresets(P)).map(function(c, i){ c.sc = SPEND_SOURCED; return r2FreezeRow(c, i === 1); }); if (design !== 'rel') c22Design(cf[1]); return cf; }
-Object.assign(module.exports, { R2_FREEZE_FX, r2FreezeRow, r2FreezePair });
+function r2FreezePair(P, design, v59){ var cf = relMainCfgs(tbPresets(P)).map(function(c, i){ c.sc = SPEND_SOURCED; r2FreezeRow(c, i === 1); return v59 ? r2V59Row(c) : r2RelRow(c); }); if (design !== 'rel') c22Design(cf[1]); return cf; }
+Object.assign(module.exports, { R2_FREEZE_FX, R2_REL, r2RelRow, r2V59Row, r2FreezeRow, r2FreezePair });
 /* S68 part 2, item 3: on-together tests. Each round-2 switch has one other reading that runs its own code (R2_ALT); every single one and every pair is
  * applied to the candidate main row (which already has the other switches on at their main readings), in both runs of the pair. Per row and run:
  * the accounting identities (ACCT, MODEL_SPEC section 11), eight main-stream draws per adult-year (the pre-pass year included), no non-finite output,

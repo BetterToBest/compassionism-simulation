@@ -33,6 +33,15 @@ No stored figure changes (the guard test is identical). Page and reporting only;
 - **Insight cards.** Each compares the run with the baseline. Removed, because the run does not test them: "Poverty target achieved", "annual cost offset confirmed", the advice to raise the BU toward $1,200 or participation toward 78%, "two-year entrepreneurial horizon unlocked", and the automation card's wage-loss and floor-buffer claims.
 - **The constants** `CFG.TARGET_WEALTH`, `TARGET_STABILITY`, `TARGET_POVERTY`, `TARGET_FLOURISHING`, `TARGET_GINI`, `TARGET_EDC`, `CCO_OPTIMAL_BU` and `NORDIC_GINI` are removed from the engine's settings (no line of the engine read them). `node harness.js headline` prints the no-programme median wealth beside Full Integration's in their place. The release page's table of the Research Hub's own Year 7 targets is unchanged: it checks the Hub's stated targets against the run, with the no-programme figure beside each.
 
+## v5.9.21 Release Notes
+
+Released Nov 19, 2026: **output per hour and automation, built behind a switch for the preregistered study.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress). Preregistration: BetterToBest/research-update `prereg/2026-11-s85-output-per-hour.md`, Amendments 1 and 2. Specification: MODEL_SPEC section 17.
+- **Two inputs, not one.** Output per hour and paid work are separate: automation can displace a share of the adults in paid work for good (the most exposed first, or evenly) or shorten everyone's paid hours, along a smooth path, in both runs of every pair. Output per hour rises along the low or high forecast opened (Penn Wharton; a decade of Goldman Sachs' 1.5 points a year), and part of the gain is passed to pay.
+- **Where the automated work's output goes.** Its output, and the part of the gain not paid as pay, goes to owners: the share US households hold (0.541, Rosenthal and Burke 2020) is paid to the model's adults the next year in proportion to their share and business holdings; the rest goes to owners outside the model.
+- **The design's maintained take-home** (a reading, programme run only): with shorter hours, the automated hours' output is paid to the workers whose hours fell.
+- **The backing produced** (programme run only): nothing is assumed backed; the programme's own project work and the reinvestment's yield are counted as output at sourced rates (the labour share, BLS; capital's yield in the essentials industries, BEA), for a stated share of programme work that people would otherwise buy.
+- Sources: `sources/s85_output.md`, `sources/s85_values.py`. Eight unit tests in `s85UnitSuite`.
+
 ## v5.9.19 Release Notes
 
 Released Nov 18, 2026: **a fix to the supply limit's design rule for sharing a shortage.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress; every release panel's fingerprint is unchanged). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendment 5.
