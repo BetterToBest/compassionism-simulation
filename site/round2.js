@@ -5,7 +5,7 @@
 (function (root) {
   'use strict';
   var F = root.CSF, esc = F.esc;
-  var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work', 's82-supply', 's82-breakeven', 's85-automation', 's85-backing', 's85-free-time', 's94-fund', 's94-charters', 's94-interaction', 's94-levels'];  /* S82 (Nov 18, 2026): the v6 readings below full backing; S85 (Nov 20): automation */
+  var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work', 's82-supply', 's82-breakeven', 's85-automation', 's85-backing', 's85-free-time', 's94-fund', 's94-charters', 's94-interaction', 's94-levels', 's100-yardstick', 's100-effects'];  /* S82 (Nov 18, 2026): the v6 readings below full backing; S85 (Nov 20): automation */
   var OUT = {bl: 'basic living (adult-years below 30 days, points)', bk: 'cost of living (basket poverty, adult-years, points)', wp: 'wealth poverty, yearly average (points)',
              mw: 'median real wealth (year-0 $)', inf: 'programme inflation (points a year)'};
   /* how each outcome counts the simulated adults (S83): the 18 top-tail adults carry population weights; the poverty shares count every simulated adult once */
@@ -350,6 +350,80 @@
     var nw = cells.filter(function (c) { return s94Worse(c, MAIN).length >= 2; }).length;
     return '<li><strong>Lending:</strong> the Creative Collectives’ fund for community businesses helps in no cell and worsens at least two of the six readings in ' + nw + ' of ' + cells.length + ' cells; where capital does hold the share back (Stress, opt-in, 20 years) it changes the programme’s cost by ' + show(F, Object.assign({reading: MAIN, outcome: CSO}, S5), 'change', 'sgusd', 0) + ' per adult a year and basket poverty by ' + show(F, Object.assign({reading: MAIN, outcome: BKO}, S5), 'change', 'sg', 3) + ' points.</li>';
   }
+  /* S100 part 2 (Nov 21, 2026; research-update prereg/2026-11-s100-part-time-dcc.md): pay by household type and the child and dependent care
+   * credit in the no-programme yardstick. Words follow dev/reports/s100-part-time-dcc.md section 9; every figure is read from
+   * data/studies/s100-yardstick.json and s100-effects.json (dev/tools/s100_page_data.py). Counts come from the files' rows. */
+  var S100 = {Y: 's100-yardstick', E: 's100-effects'};
+  var S100O = {bl: 'below 30 days of basic living (points)', bk: 'basket poverty (points)', wp: 'too little wealth, yearly average (points)',
+               mw: 'median real wealth, weighted (year-0 $)', inf: 'programme inflation (points a year)'};
+  function s100A(o) { return function (r) { for (var k in o) if (typeof o[k] === 'function' ? !o[k](r[k]) : r[k] !== o[k]) return false; return true; }; }
+  function s100Ch(o) { return where(S100.E, s100A(Object.assign({kind: 'change', reading: 'both'}, o))); }
+  function s100Fig(cell, reading, key, usd, dg) {
+    var f = Object.assign({kind: reading === 'interaction' ? 'interaction' : 'change', reading: reading, outcome: S100O[key]}, cell), r = find(S100.E, f, 'est');
+    var t = show(S100.E, f, 'est', usd ? 'sgusd' : 'sg', dg) + ' ' + ci(S100.E, f, dg, usd);
+    return D[S100.E].data[D[S100.E].columns.indexOf('interval')][r.i] === 'excludes zero' ? '<strong>' + t + '</strong>' : t;
+  }
+  function s100Abs(file, rows, dg) {  /* the range of magnitudes of a set of same-signed figures, smaller first */
+    var lo = rows.reduce(function (a, b) { return Math.abs(b.est) < Math.abs(a.est) ? b : a; }), hi = rows.reduce(function (a, b) { return Math.abs(b.est) > Math.abs(a.est) ? b : a; });
+    if (rows.some(function (r) { return r.est * lo.est < 0; })) throw new Error('mixed signs in a range of magnitudes in ' + file);
+    return snum(file, lo._i, 'est', fmtN(Math.abs(lo.est), dg)) + ' to ' + snum(file, hi._i, 'est', fmtN(Math.abs(hi.est), dg));
+  }
+  function s100Section() {
+    var Y = S100.Y, E = S100.E, REF = {environment: 'Reference', years: 20};
+    function yv(reading, measure, col, kind, dg) { return show(Y, Object.assign({reading: reading, measure: measure}, REF), col || 'model', kind || 'pc', dg); }
+    var EITC = 'EITC reach, all adults (%)', SP = 'EITC reach, single parents (%)', CK = 'EITC reach, couples with children (%)', SUM = "sum of the four household types' EITC gaps (points)";
+    var CK13 = 'care credit reach, families with a child under 13 (%)', CR = 'care credit per receiving family ($)';
+    var OFF = "today's main row, full take-up", BOTH = 'both, full take-up';
+    var f2 = function (x) { return fmtN(x, 2); }, f3 = function (x) { return fmtN(x, 3); }, usd0 = function (x) { return dollars(x); };
+    var oi = function (k) { return s100Ch({design: 'opt-in', outcome: S100O[k]}); }, fc = function (k) { return s100Ch({design: 'full coverage', outcome: S100O[k]}); };
+    var oiEff = where(E, s100A({kind: 'effect', reading: "today's main row", design: 'opt-in', outcome: S100O.bk}));
+    var mwX = s100Ch({outcome: S100O.mw, interval: 'excludes zero'}).length, mwN = s100Ch({outcome: S100O.mw}).length;
+    var infl = s100Ch({outcome: S100O.inf}).map(function (r) { return Object.assign({}, r, {abs: Math.abs(r.est)}); });
+    var inflMax = infl.reduce(function (a, b) { return b.abs > a.abs ? b : a; });
+    var cdc = where(E, s100A({kind: 'change', reading: 'the care credit', outcome: function (o) { return o === S100O.bl || o === S100O.bk || o === S100O.wp; }}))
+      .reduce(function (a, b) { return Math.abs(b.est) > Math.abs(a.est) ? b : a; });
+    var ints = where(E, s100A({kind: 'interaction'})), intX = ints.filter(function (r) { return r.interval === 'excludes zero'; });
+    var intBk = where(E, s100A({kind: 'interaction', outcome: S100O.bk})).reduce(function (a, b) { return Math.abs(b.est) > Math.abs(a.est) ? b : a; });
+    var pc0bk = where(E, s100A({kind: 'change', reading: 'both, partners independent', outcome: S100O.bk})), pc0bl = where(E, s100A({kind: 'change', reading: 'both, partners independent', design: 'full coverage', outcome: S100O.bl}));
+    function cells(years) { var out = []; ['full coverage', 'opt-in'].forEach(function (d) { ENVS.forEach(function (e) { out.push({design: d, environment: e, years: years}); }); }); return out; }
+    function chTable(years) {
+      return table('Change in the programme’s effect with both additions, against today’s main row, ' + years + ' years (95% seed interval; bold: the interval excludes zero after correcting for five outcomes). A positive change on a poverty measure means the programme cuts it less. Poverty in points, median wealth in year-0 dollars, inflation in points a year.',
+        ['Design, environment', 'Below 30 days of basic living', 'Basket poverty', 'Too little wealth, yearly average', 'Median wealth, weighted', 'Programme inflation'],
+        cells(years).map(function (c) { var k = {design: c.design, environment: c.environment, years: c.years};
+          return [esc((c.design === 'full coverage' ? 'Full coverage' : 'Opt-in') + ', ' + c.environment), s100Fig(k, 'both', 'bl', false, 2), s100Fig(k, 'both', 'bk', false, 2), s100Fig(k, 'both', 'wp', false, 2), s100Fig(k, 'both', 'mw', true, 0), s100Fig(k, 'both', 'inf', false, 4)]; }));
+    }
+    function yTable() {
+      var M = ['EITC reach, all adults (%)', 'EITC reach, single adults (%)', SP, 'EITC reach, couples without children (%)', CK, 'refundable child tax credit reach, single parents (%)', 'refundable child tax credit reach, couples with children (%)'];
+      var rows = M.map(function (m) { return [esc(m.replace(' (%)', '')), yv(BOTH, m, 'US', 'pc', 2), yv(OFF, m, 'model', 'pc', 2), yv(BOTH, m, 'model', 'pc', 2)]; });
+      rows.push([esc('care credit reach, families with a child under 13 (take-up as measured)'), yv('both', CK13, 'US', 'pc', 2), 'none', yv('both', CK13, 'model', 'pc', 2)]);
+      rows.push([esc('care credit per receiving family'), yv('both', CR, 'US', 'usd'), 'none', yv('both', CR, 'model', 'usd')]);
+      return table('The no-programme run against US data, Reference, 20 years (full take-up, except the care credit). US: the Current Population Survey (own tax unit, full take-up) and IRS Statistics of Income (the care credit).',
+        ['Measure', 'US', 'Today’s main row', 'Both additions'], rows);
+    }
+    function bTable(years) {
+      var R = ['both', 'both, partners independent', 'both, credit for every family', 'both, credit in the no-programme run only'];
+      return table('The bounds: change in the programme’s effect on basket poverty (points) under each reading, ' + years + ' years (95% seed interval; bold: excludes zero after the correction).',
+        ['Design, environment', 'Both', 'Partners’ pay independent', 'The credit for every family', 'The credit in the no-programme run only'],
+        cells(years).map(function (c) { var k = {design: c.design, environment: c.environment, years: c.years};
+          return [esc((c.design === 'full coverage' ? 'Full coverage' : 'Opt-in') + ', ' + c.environment)].concat(R.map(function (x) { return s100Fig(k, x, 'bk', false, 2); })); }));
+    }
+    return '<h3 class="fx-h3">The yardstick: pay by household type and the child and dependent care credit</h3>' +
+      '<p>Every effect here is the programme against a run with no programme, so that run should look like the US. A preregistered study gave each household type its own pay from the Current Population Survey: single parents are paid less and couples with children more, as in the survey, and the overall pay distribution still matches the survey’s closely. It also added the child and dependent care credit. Both sit behind options, and today’s main row is unchanged when they are off.</p><ul>' +
+      '<li><strong>The no-programme run is closer to the US.</strong> In Reference at 20 years, with full take-up, the EITC reaches ' + yv(BOTH, EITC) + ' of adults (US ' + yv(BOTH, EITC, 'US') + ', on the same basis: each adult’s own tax unit, full take-up): single parents ' + yv(BOTH, SP) + ' (US ' + yv(BOTH, SP, 'US') + '; today’s main row ' + yv(OFF, SP) + '), couples with children ' + yv(BOTH, CK) + ' (US ' + yv(BOTH, CK, 'US') + '). The four household types’ gaps sum to ' + show(Y, Object.assign({reading: BOTH, measure: SUM}, REF), 'model', 'pt', 1) + ' points against ' + show(Y, Object.assign({reading: OFF, measure: SUM}, REF), 'model', 'pt', 1) + ' today. By the preregistered rule, Claude recommends this reading for the main row. Changing the main row is Duke’s decision; until he decides, the results above keep today’s main row and these changes are stated as a limit.</li>' +
+      '<li><strong>Two gaps remain, reported and not tuned:</strong> the care credit reaches ' + yv('both', CK13) + ' of families with a child under 13 (tax data ' + yv('both', CK13, 'US') + ') and pays ' + yv('both', CR, 'model', 'usd') + ' per receiving family (tax data ' + yv('both', CR, 'US', 'usd') + '). The model’s paying families all pay the full price of care.</li>' +
+      '<li><strong>Opt-in design:</strong> in every environment and horizon, the programme cuts basket poverty by ' + span(E, oi('bk'), 'est', f2) + ' points less, against cuts of ' + s100Abs(E, oiEff, 1) + ' points, and the share below 30 days of basic living by ' + span(E, oi('bl'), 'est', f2) + ' points less. These changes are unfavourable to the programme.</li>' +
+      '<li><strong>Full-coverage design:</strong> the programme cuts the share below 30 days of basic living by ' + s100Abs(E, fc('bl'), 2) + ' points more in every cell, and basket poverty changes by ' + span(E, fc('bk'), 'est', f2) + ' points (less cut in five cells, more in one).</li>' +
+      '<li><strong>Median wealth and inflation barely move:</strong> median wealth changes measurably in ' + mwX + ' of ' + mwN + ' cells, and programme inflation by at most ' + snum(E, inflMax._i, 'est', fmtN(inflMax.est, 4)) + ' points a year.</li>' +
+      '<li><strong>Pay by household type does almost all of it.</strong> The credit alone changes no poverty effect by more than ' + snum(E, cdc._i, 'est', f2(Math.abs(cdc.est))) + ' points. The two additions’ interaction excludes zero in ' + intX.length + ' of ' + ints.length + ' tests, but is never larger than ' + snum(E, intBk._i, 'est', f3(Math.abs(intBk.est))) + ' points of basket poverty, which is negligible.</li>' +
+      '<li><strong>With partners’ pay drawn independently</strong> rather than correlated as in the survey, the changes are larger (basket poverty ' + span(E, pc0bk, 'est', f2) + ' points), and the full-coverage change in the share below 30 days of basic living reverses: the programme then cuts it by ' + span(E, pc0bl, 'est', f2) + ' points less. The correlation is the survey’s, so this is a bound.</li>' +
+      '</ul>' + chTable(20) +
+      '<details class="fx-more"><summary>The same at 40 years, the yardstick table, and the bounds</summary>' + chTable(40) + yTable() + bTable(20) + bTable(40) + '</details>' +
+      '<p class="fx-note">Limits: pay by household type sets who has low yearly pay, not a choice of hours, so hours that respond to the programme or to taxes enter only through the labour response on yearly pay; hours are not modelled separately (part-time and part-year work are inside the yearly pay the model reads); household types are fixed for the run; each type’s pay is a lognormal curve fitted to its quartiles, so the bottom tenth of pay is somewhat too high, as before. The seed intervals cover the model’s randomness only. Report: <code>dev/reports/s100-part-time-dcc.md</code>; preregistration: <code>prereg/2026-11-s100-part-time-dcc.md</code> (research-update); engine <code>' + esc(D[E].meta.engine) + '</code>, seeds 1-500, tables <code>' + esc(D[E].meta.resultsFolder) + '</code>.</p>';
+  }
+  function s100Unfavourable() {
+    var E = S100.E, oi = s100Ch({design: 'opt-in', outcome: S100O.bk});
+    return '<li><strong>The yardstick:</strong> with pay by household type and the care credit (the reading Claude recommends for the main row), the opt-in design cuts basket poverty by ' + span(E, oi, 'est', function (x) { return fmtN(x, 2); }) + ' points less in every environment and horizon (study above).</li>';
+  }
   function backingTable(design) {
     var rows = [], base = {design: design, environment: 'Reference', years: 20};
     function line(label, row, bs) {
@@ -452,6 +526,7 @@
     h += s82Section();
     h += s85Section();
     h += s94Section();
+    h += s100Section();
     h += '<h3 class="fx-h3">Paid for by a contribution instead (shown, never led with)</h3>' +
       '<p>If the programme is paid for by a contribution, with the rest borrowed, the contribution needed is far larger and the poverty effects are much smaller, and in some cells they reverse. Nearly every financed result is fragile: 46 of the 48 poverty and wealth curves change sign or lose significance at some reading, depending on how the contribution is set up. The two that hold are the opt-in design’s basic-living effect in Reference, at both horizons. The contribution is measured against different incomes by design: the full-coverage design’s is a share of all money income (capped at 90%), the opt-in design’s a flat share of wages, so the two designs’ rates are not comparable. These rows were run without the weighted top tail (the 18 adults who carry population weights and stand for the very wealthy), so the top of the wealth distribution is less extreme than on the main rows and the figures that count by population weight (median real wealth, shares of wealth) are the ones that can differ from the main rows’; the size of that difference is not reported. The poverty measures count every simulated adult once.</p>' + financedTable();
     h += '<h3 class="fx-h3">Who gains</h3>' +
@@ -461,6 +536,7 @@
       '<li><strong>Wages below full backing:</strong> if wages follow half of programme inflation and the rest is never made up, the programme with no backing leaves more people below the cost of living (basket poverty) than no programme does (v6 readings, above).</li>' +
       s85Unfavourable() +
       s94Unfavourable() +
+      s100Unfavourable() +
       '<li><strong>Work:</strong> fewer adults work: participation falls (adults who leave work for the programme), with their earnings forgone.</li>' +
       '<li><strong>Mobility:</strong> less movement out of the lowest wealth fifth (“stayed in the lowest wealth fifth”, above).</li>' +
       '<li><strong>Adults outside the labour force</strong> (disability, early retirement, care, school) stay below the cost of living in a large share of their adult-years even with the programme, far more than adults in the labour force, and more so under the opt-in design than under the full-coverage design (the Question 6 report’s table gives each group).</li>' +
