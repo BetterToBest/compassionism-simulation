@@ -4984,7 +4984,8 @@ if (require.main === module) {
         console.log(c[0] + '\t' + m[1] + '\t' + f1(mean(cmp)) + '\t' + f1(mean(fi)) + '\t' + f1(rm) + '%\t' + f1(pr) + '%');
       });
     });
-    console.log('FI median wealth (mean of run medians): $' + Math.round(mean(col(FI, 'wealth'))) + '; TARGET_WEALTH $' + CFG.TARGET_WEALTH + ', TARGET_POVERTY ' + (CFG.TARGET_POVERTY*100) + '%');
+    /* S96: the fixed targets (TARGET_WEALTH, TARGET_POVERTY) are removed from CFG; the no-programme run is the comparison */
+    console.log('FI median wealth (mean of run medians): $' + Math.round(mean(col(FI, 'wealth'))) + '; no programme (Baseline @3%) $' + Math.round(mean(col(B3, 'wealth'))));
   }
 
   if (mode === 'year0') {

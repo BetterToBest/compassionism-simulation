@@ -6,6 +6,15 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## Between releases (Nov 21, 2026): the earlier engine page reads every figure against no programme
+
+No stored figure changes (the guard test is identical). Page and reporting only; the engine's dynamics are untouched.
+- **The fixed targets are gone.** The earlier engine page's tiles showed targets ($82K median wealth, a Gini of 0.25, 90% stability, over 50% at the top tier, extractive drain under 10%) and coloured each tile by fixed thresholds. Those were early calibration goals that no run had tested. Each tile now shows the baseline, the no-programme run on the same seed, and is coloured by the sign of the difference: green better, red worse, grey about the same. The policy tiles (the p90/p10 ratio and the bottom 10% of wealth) gained a baseline too.
+- **The charts.** The wealth chart draws the baseline's median in place of the "$82K target" line, and the Gini chart the baseline's Gini in place of a "Nordic (0.28)" line, which was an income Gini drawn beside the model's wealth Gini.
+- **Milestones.** "Poverty ≤ 5% (target)" is now a plain step of the poverty ladder; "Gini ≤ 0.25 (target)" becomes "Gini below baseline"; "Median wealth ≥ $82K" becomes "Median wealth above baseline", the first year the run's median passes the baseline's.
+- **Insight cards.** Each compares the run with the baseline. Removed, because the run does not test them: "Poverty target achieved", "annual cost offset confirmed", the advice to raise the BU toward $1,200 or participation toward 78%, "two-year entrepreneurial horizon unlocked", and the automation card's wage-loss and floor-buffer claims.
+- **The constants** `CFG.TARGET_WEALTH`, `TARGET_STABILITY`, `TARGET_POVERTY`, `TARGET_FLOURISHING`, `TARGET_GINI`, `TARGET_EDC`, `CCO_OPTIMAL_BU` and `NORDIC_GINI` are removed from the engine's settings (no line of the engine read them). `node harness.js headline` prints the no-programme median wealth beside Full Integration's in their place. The release page's table of the Research Hub's own Year 7 targets is unchanged: it checks the Hub's stated targets against the run, with the no-programme figure beside each.
+
 ## v5.9.19 Release Notes
 
 Released Nov 18, 2026: **a fix to the supply limit's design rule for sharing a shortage.** No stored figure changes (the guard test is identical: 25 rows, 20 seeds, 483 outputs, Reference, Adverse and Stress; every release panel's fingerprint is unchanged). Preregistration: BetterToBest/research-update `prereg/2026-11-s82-v6-supply-indexing.md`, Amendment 5.
