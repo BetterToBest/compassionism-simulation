@@ -4865,7 +4865,7 @@ function hhPool(yr, tbOn){  /* pool 'household': the end-of-year step for couple
       H.a.forEach(function(a){ if (SLS && SLS.dq) SLS.dq.push([a, TB.cur, a._hhIdx, inc/n, mlc/n, cost/n, disp/n]); else tbPov(a, TB.cur, a._hhIdx, inc/n, mlc/n, cost/n, disp/n); }); }  /* S82 part 3: queued under the design's rule (slFlush) */
     H.a.forEach(function(a){ if (a.wealth < CFG.WEALTH_FLOOR){ if (ACCT) a._acFl = CFG.WEALTH_FLOOR - a.wealth;
       if (LEDGER){ var lf = CFG.WEALTH_FLOOR - a.wealth; ledAdd(yr, 'floor', lf); ledAdd(yr, 'floorHits', 1); a._ledFloor = (a._ledFloor || 0) + lf; } a.wealth = CFG.WEALTH_FLOOR; } });
-    if (ACCT){ var tg = 0, ts = 0; H.a.forEach(function(a){ acctAgent(a, yr); tg += a._acHt; ts += Math.abs(a._acHt) + Math.abs(a.wealth); }); acctChk('household', yr, tg, ts, H.id); }  /* the scale: the transfers and the wealth pooled (rounding is relative to the wealth: v5.3 B6) */
+    if (ACCT){ var tg = 0, ts = 0; H.a.forEach(function(a){ acctAgent(a, yr); tg += a._acHt; ts += Math.abs(a._acHt) + Math.abs(a.wealth) + Math.abs(a._acFl || 0); }); acctChk('household', yr, tg, ts, H.id); }  /* the scale: the transfers and the wealth pooled (rounding is relative to the wealth: v5.3 B6); v5.9.23: with the wealth before the floor (a debt of 1e32 reset to the floor left one rounding step of the pooling, 2^56, against a scale of 1e4) */
   });
 }
 /* v5.3 B6 (Oct 7, 2026; plan item B6; dev/DECISIONS.md Session 39, "B6"): THE MEASURED EDC (reporting only: no draw, nothing any rule reads; EDC_MEASURE

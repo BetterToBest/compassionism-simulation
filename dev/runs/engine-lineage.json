@@ -1128,6 +1128,27 @@
     "prereg": "BetterToBest/research-update prereg/2026-11-s90-private-price-at-sale.md, Amendment 6",
     "why": "This change moves no panel: all six fingerprints equal the previous link's (v5.9.22) exactly. The published panels stay the record of their engine, as since v5.9.22 (v5.6 kept by Amendment 2)."
    }
+  },
+  {
+   "from": "463372fd4d7971d369972e40d7c071c94382f8339f9e5c3c9a96aac7885ad26d",
+   "to": "2c2cb9ed8bf9a2749a9b572f55028e14e5e9bd45d04ffe6bc638a5afafaaf0c9",
+   "date": "2026-11-21",
+   "change": "v5.9.23: the household accounting check's scale includes the wealth before the floor (reporting only; no figure depends on the accounts)",
+   "fingerprints": {
+    "r20-ref": "83fb8a114cf561f4",
+    "r20-adv": "4828ca71d7921660",
+    "r20-st": "63d1917c98a51733",
+    "r40-ref": "fb9ba7b90982834a",
+    "r40-adv": "e5a90e6cf6d0bd66",
+    "r40-st": "7f2eb8ea9479f7ab"
+   },
+   "equal": false,
+   "seconds": 204,
+   "record": {
+    "version": "v5.6",
+    "prereg": "BetterToBest/research-update prereg/2026-11-s90-private-price-at-sale.md, Amendment 6 (addendum)",
+    "why": "A reporting-only change (the household accounting check's scale); all six fingerprints equal v5.9.22's exactly. The published panels stay the record of their engine, as since v5.9.22."
+   }
   }
  ]
 }
