@@ -5,13 +5,17 @@
  * numbers through a SHA-256 hash per row; a handful of headline means are stored beside each hash so a failure says what moved.
  * The reference (dev/runs/guard/guard-ENV.json) was made on main 0f2e42e (v5.4.1; the engine is v5.4's) before any engine edit. A new mechanism
  * behind a switch must leave it unchanged with the switch off; a deliberate change to released figures must re-write it (--write) and say why.
- * Usage: node dev/tools/guard_test.js [--write] [--env=ref,adv,st] [--seeds=20]
+ * S93 (Nov 21, 2026; v5.9.22): the private price at the sale became the default, so the reference was rewritten by design; the one before is kept in
+ * dev/runs/guard/v5.9.21/. --lag sets sp.vAt 'lag' on every row that has the surplus split, and --ref=DIR reads the reference from DIR: with both,
+ * the release engine must equal the v5.9.21 reference exactly (the proof that the default is the only change).
+ * Usage: node dev/tools/guard_test.js [--write] [--env=ref,adv,st] [--seeds=20] [--lag] [--ref=dev/runs/guard/v5.9.21] [--write --keys-from=DIR]
  * Without --env the three environments run as three child processes at once (about 3 minutes on 4 cores). Exit code 1 on any difference. */
 'use strict';
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), cp = require('child_process');
 const arg = k => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.split('=')[1] : null; };
+if (process.argv.includes('--write') && process.argv.includes('--lag')){ console.error('--lag is a proof against a kept reference; it cannot --write'); process.exit(2); }
 const WRITE = process.argv.includes('--write'), N = +(arg('seeds') || 20), ENVS = (arg('env') || 'ref,adv,st').split(',');
-const ROOT = path.join(__dirname, '..', '..'), DIR = path.join(ROOT, 'dev', 'runs', 'guard');
+const ROOT = path.join(__dirname, '..', '..'), DIR = arg('ref') ? path.resolve(arg('ref')) : path.join(ROOT, 'dev', 'runs', 'guard'), LAG = process.argv.includes('--lag');
 /* The rows (by their panel names, harness.js releaseRowsV54 / releaseBasesV54): every v5.4 part on and off, ageing, households off, savings that
  * keep up with prices, the other financing readings. Each no-programme pair a row needs is listed too. */
 const ROWS = ['v422', 'release', 'v53', 'cut0', 'autopay', 'pthbold', 'ptfs25', 'dis', 'h1', 'tax', 'progtax', 'age', 'indiv', 'adults', 'sav', 'fbs50'];
@@ -27,7 +31,8 @@ if (ENVS.length > 1){
 function run(env){
   const H = require(path.join(ROOT, 'harness.js')), C = H.CFG, SC = H.SPEND_SOURCED, t0 = Date.now(), file = path.join(DIR, 'guard-' + env + '.json');
   /* The outputs compared are the reference's own list, so an output added later (a new mechanism's figures) does not count as a change. */
-  const ref = WRITE ? null : JSON.parse(fs.readFileSync(file, 'utf8')), KEYS = ref ? ref._meta.keyList : H.TB_KEYS.slice();
+  const kf = arg('keys-from'), ref = WRITE ? null : JSON.parse(fs.readFileSync(file, 'utf8')),
+    KEYS = ref ? ref._meta.keyList : kf ? JSON.parse(fs.readFileSync(path.join(path.resolve(kf), 'guard-' + env + '.json'), 'utf8'))._meta.keyList : H.TB_KEYS.slice();  /* S93: --write --keys-from=DIR keeps DIR's output list, so rows that did not change keep their hashes */
   const lost = KEYS.filter(k => H.TB_KEYS.indexOf(k) < 0);
   if (lost.length){ console.log('[' + env + '] FAILED: outputs no longer produced: ' + lost.join(', ')); process.exit(1); }
   const P0 = {ref: H.FULL_INTEGRATION, adv: H.ADVERSE_REFERENCE, st: H.STRESS_TEST}[env];
@@ -41,6 +46,7 @@ function run(env){
     const names = ['base'], cfg = [Object.assign({p: PR.baseline()}, base)];
     ROWS.forEach(j => { const r = pick(R, j), c = H.n1Row(PR, 'framework', r.v); if (r.v.o) Object.assign(c.o || (c.o = {}), r.v.o); names.push(j); cfg.push(c); });
     BASES.forEach(j => { names.push(j); cfg.push(Object.assign({p: PR.baseline()}, pick(B, j).v)); });
+    if (LAG) cfg.forEach(c => { if (c.sp) c.sp = Object.assign({}, c.sp === true ? {} : c.sp, {vAt: 'lag'}); });
     const S = H.tbStudy(cfg, N, P, Object.assign({fin: 'tax', aT: 0, a: 0, X: 0}, H.REL_V52_STUDY, {sc: SC}));
     S.forEach((r, i) => { const h = crypto.createHash('sha256');
       KEYS.forEach(k => { h.update(k); h.update(Buffer.from(r._s[k].buffer, r._s[k].byteOffset, r._s[k].byteLength)); });

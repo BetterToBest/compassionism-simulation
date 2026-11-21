@@ -1086,6 +1086,27 @@
    },
    "equal": true,
    "seconds": 239
+  },
+  {
+   "from": "64a79f4757d245dca614c205135b1835e112b307ebe2632a4af138e351bdbf05",
+   "to": "d75f90fed793e3fe789c9b427160ee74f99cd8828144ef3261c843decf268809",
+   "date": "2026-11-21",
+   "change": "v5.9.22, the release engine: the private businesses' lower BU price set at the sale is the default (sp.vAt 'sale'; 'lag' keeps the earlier rule and reproduces the previous guard reference exactly); the frozen main row (r2FreezePair) adds pay by household type and the child and dependent care credit; the stored no-programme supply path is keyed on every row setting that acts on it (a row no longer takes an earlier row's path)",
+   "fingerprints": {
+    "r20-ref": "83fb8a114cf561f4",
+    "r20-adv": "4828ca71d7921660",
+    "r20-st": "63d1917c98a51733",
+    "r40-ref": "fb9ba7b90982834a",
+    "r40-adv": "e5a90e6cf6d0bd66",
+    "r40-st": "7f2eb8ea9479f7ab"
+   },
+   "equal": false,
+   "seconds": 169,
+   "record": {
+    "version": "v5.6",
+    "prereg": "BetterToBest/research-update prereg/2026-11-s90-private-price-at-sale.md, Amendment 2, section B (kept as the record)",
+    "why": "The published release panels (v5.6, commit 5bf5bcc) were made with the private price paid a year late; the release engine sets it at the sale, so they no longer reproduce on it. They stay published as the v5.6 record, reproducible from their own commit; the release figures come from the preregistered reruns."
+   }
   }
  ]
 }
