@@ -4555,7 +4555,10 @@ function checkBaselineWith(o){
   var B = JSON.parse(require('fs').readFileSync(baselineFile(), 'utf8')), R = B.rows[o.env];
   if (!R) throw new Error('baseline check: no reference rows for environment ' + o.env);
   var N = Math.min(o.seeds, R.seeds), P = Object.assign({}, {ref: FULL_INTEGRATION, adv: ADVERSE_REFERENCE, st: STRESS_TEST}[o.env], {years: B.years, nAgents: 500});
-  var out = tbStudy(r2FreezePair(P, 'rel'), N, P, r2MainStudy()), bad = [], n = 0;
+  /* S93 (v5.9.22): the published rows in data/baseline.json are the v5.9 no-programme run, so the check runs the v5.9 row (r2FreezePair's third argument):
+   * it still tests what it is for, that a study started with the release's settings. When the release's own main rows are published (the rerun of part M),
+   * baseline.json is rewritten from them (dev/tools/make_baseline.js) and this goes back to r2FreezePair(P, 'rel'). */
+  var v59 = !B.release || B.release === 'v5.9', out = tbStudy(r2FreezePair(P, 'rel', v59), N, P, r2MainStudy()), bad = [], n = 0;
   B.keys.forEach(function(k){ var a = Array.from(out[0]._s[k]); a.forEach(function(x, s){ n++; var y = R[k][s]; if (Math.abs(x - y) > 1e-9*Math.max(1, Math.abs(y))) bad.push(o.env + ' ' + k + ' seed ' + (s + 1) + ': ' + x + ' against the release ' + y); }); });
   if (bad.length){ var e = new Error('baseline check FAILED: the no-programme arm does not equal the release per seed, so the run stops (' + bad.length + ' of ' + n + ' values differ)\n  ' + bad.slice(0, 8).join('\n  ')); e.differences = bad; throw e; }
   return {checked: true, env: o.env, seeds: N, values: n, keys: B.keys, engine: B.engine, years: B.years};

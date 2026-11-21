@@ -20,13 +20,13 @@ const SEEDS = +arg('seeds', 2), N = +arg('n', 500);
 if (process.argv.includes('--emit')){
   /* worker: --emit --dir=D --mode=old|v59|rel --env=E --years=Y; prints {row: {key: [values by seed]}} */
   const dir = path.resolve(arg('dir')), mode = arg('mode'), env = arg('env'), years = +arg('years');
-  const H = require(path.join(dir, 'harness.js')), svN = H.applyNR6(), svG = H.tbSetG(H.TB_PROFILE_G), out = {};
+  const H = require(path.join(dir, 'harness.js')), SR = H.startRelease(), out = {};
   try {
     const P = Object.assign({}, H[ENVN[env]], {years, nAgents: N}), pair = d => mode === 'v59' ? H.r2FreezePair(P, d, true) : H.r2FreezePair(P, d);
     const c = pair('c22'), r = pair('rel'), rows = [['none', c[0]], ['c22', c[1]], ['rel', r[1]]];
     const R = H.tbStudy(rows.map(x => x[1]), SEEDS, P, H.r2MainStudy());
     R.forEach((x, i) => { const o = out[rows[i][0]] = {}; Object.keys(x._s).forEach(k => { o[k] = Array.from(x._s[k]); }); });
-  } finally { H.resetNR6(svN); H.tbSetG(svG); }
+  } finally { SR.restore(); }
   process.stdout.write(JSON.stringify(out)); process.exit(0);
 }
 
