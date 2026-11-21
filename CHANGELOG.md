@@ -6,6 +6,18 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## Between releases (Nov 21, 2026): the findings page's wording
+
+Text only; no figure changes and the engine is untouched. On the findings page and its text file:
+- **Every headline card names its condition**, full backing (every programme dollar matched by new output, a design statement), and carries the opt-in design's figure beside the full-coverage design's.
+- **The claim about backing is conditional.** The poverty effects barely depend on backing only where wages follow prices in full; if wages follow half of programme inflation and the rest is never made up, the programme with no backing raises basket poverty, and the supply study's figure now sits beside the sentence.
+- **One reconciled statement of the model's own new output**: the production mechanism's 0.2 to 1.9% of the payout (14 to 20% with its ceiling removed) and the automation study's 6 to 17% (3 to 7% opt-in) count differently, and the page says how; neither reaches the whole.
+- **Every inflation figure below full backing is labelled** as the size of unbacked money in a model with no central-bank response and no expectations, not a forecast. The no-backing ranges (18 to 53 points a year in all rows; 40 to 49 for the full-coverage design at 20 years) are reconciled.
+- **The ratio between the designs is gone** from the text file (no data file derived it, and the designs differ in coverage as well as per participant).
+- Scope and definitions: who is simulated (working-age adults and their families), what the 10,000-adult check covered, "families in debt", "robust", the 48 curves against the readings, what the financed rows' missing top tail does, the different income bases of the financed contributions, the labour share's fall as partly a denominator effect, which savings measure the automation figures use, and that the supply limit's shortages do not enter the money measures.
+
+---
+
 ## Between releases (Nov 21, 2026): the earlier engine page reads every figure against no programme
 
 No stored figure changes (the guard test is identical). Page and reporting only; the engine's dynamics are untouched.
