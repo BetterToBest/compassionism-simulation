@@ -32,7 +32,11 @@ function reaches(from, to, L) {
   L = L || load(); if (from === to) return {ok: true, links: 0};
   let cur = from, n = 0;
   const same = k => k.equal === true && PANELS.every(([id]) => k.fingerprints && k.fingerprints[id] === L.base.fingerprints[id]);  /* the recorded fingerprints, not only the flag */
-  for (const k of L.links) { if (k.from === cur && same(k)) { cur = k.to; n++; if (cur === to) return {ok: true, links: n}; } }
+  /* v5.9.22: a link that changed the panels by design passes only if it says the published panels are kept as the record of the engine that made them,
+   * naming their version and the preregistration that decided it (k.record {version, prereg, why}); the caller prints it, so a pass says so. */
+  const rec = k => k.equal === false && k.record && typeof k.record.version === 'string' && typeof k.record.prereg === 'string' && typeof k.record.why === 'string';
+  const used = [];
+  for (const k of L.links) { if (k.from === cur && (same(k) || rec(k))) { if (!same(k)) used.push(k.record); cur = k.to; n++; if (cur === to) return {ok: true, links: n, record: used}; } }
   return {ok: false, links: n};
 }
 /* The fingerprint panel_hash.py prints (the SHA-256 of the file without _meta, keys sorted, no spaces), through Python so both agree byte for byte. */
