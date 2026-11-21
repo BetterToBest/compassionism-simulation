@@ -6,6 +6,15 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## v5.9.22 Release Notes
+
+Released Nov 21, 2026: **the release engine. The private businesses' lower BU price is set at the sale, and the main row's no-programme yardstick pays by household type and includes the child and dependent care credit.** Stored figures change by design; the figures published before stay as the record, reproducible from their engine commits. Preregistration: BetterToBest/research-update `prereg/2026-11-s90-private-price-at-sale.md`, Amendments 2 and 3.
+- **The private price at the sale is the default.** A privately owned essential-service business takes BU at a lower price, as the design has it (a $9 meal for 3 BU at three times face value), in the year of the sale. The model had shared the premium a year late, which ran a damped two-year swing in the BU each adult spends. The earlier rule stays available as `sp.vAt: 'lag'`; with it on every row the guard test equals the previous reference exactly.
+- **The main row's yardstick** (both runs of the pair): each adult's pay is drawn from the survey's pay for their household type (single adults, single parents, couples with and without children; partners' pay correlated as in the survey), and households that pay for care claim the child and dependent care credit at the 2025 rules. The yardstick study found that these bring the no-programme run close to the US tax-credit data (the earned income credit reaches 11.3% of adults against 11.8%), and Duke adopted them for the release. `r2FreezePair(P, design, true)` gives the earlier main row exactly.
+- **A defect fixed.** The engine stores each seed's no-programme economy and reuses it for later runs with the same settings, but the store did not tell apart pay by household type, the capacity price rule's settings, bargaining, the government account or PTF running costs. In a study that ran several rows in one process, a row could reuse the stored economy of an earlier row with different settings; a row run on its own was always right. It was found because the release's own check against the yardstick study failed, and it is fixed: each of these settings is now part of the store's key (nothing changes for runs without them). The yardstick study's two readings with pay by household type were affected and are rerun; studies kept as the record are checked after the release.
+- **What it changes** is measured by the reruns preregistered for the release (every study whose figures the findings page shows), before any page figure changes.
+- Guard test: the reference was rewritten with the new default; the one before is kept (`dev/runs/guard/v5.9.21/`), and `node dev/tools/guard_test.js --lag --ref=dev/runs/guard/v5.9.21` reproduces it. Proofs: `dev/tools/s93_release_proof.js`.
+
 ## Between releases (Nov 21, 2026): the earlier engine's validation presets, described and renamed
 
 Labels and text only; no figure changes and no engine line changes.
