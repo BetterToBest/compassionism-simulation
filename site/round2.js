@@ -5,7 +5,7 @@
 (function (root) {
   'use strict';
   var F = root.CSF, esc = F.esc;
-  var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work', 's82-supply', 's82-breakeven', 's85-automation', 's85-backing', 's85-free-time'];  /* S82 (Nov 18, 2026): the v6 readings below full backing; S85 (Nov 20): automation */
+  var FILES = ['r2-effects', 'r2-curves', 'r2-backing', 'r2-financed', 'r2-distribution', 'r2-work', 's82-supply', 's82-breakeven', 's85-automation', 's85-backing', 's85-free-time', 's94-fund', 's94-charters', 's94-interaction', 's94-levels'];  /* S82 (Nov 18, 2026): the v6 readings below full backing; S85 (Nov 20): automation */
   var OUT = {bl: 'basic living (adult-years below 30 days, points)', bk: 'cost of living (basket poverty, adult-years, points)', wp: 'wealth poverty, yearly average (points)',
              mw: 'median real wealth (year-0 $)', inf: 'programme inflation (points a year)'};
   /* how each outcome counts the simulated adults (S83): the 18 top-tail adults carry population weights; the poverty shares count every simulated adult once */
@@ -226,6 +226,123 @@
     var fc = where(SK, function (r) { return r.design === 'full coverage' && r.years === 20 && r.reading === 'main reading'; });
     return '<li><strong>Automation:</strong> in the opt-in design with lost jobs, the rise in basket poverty is larger with the programme than without it in ' + all.filter(function (r) { return r.category === 'worsens'; }).length + ' of ' + all.length + ' cells at 20 years; and the programme’s own work produces ' + span(SK, fc, 'produced share (%)', pc0) + ' of the backing the full-coverage figures assume, at programme inflation of ' + span(SK, fc, 'programme inflation (points a year)', pt0) + ' points a year (automation study, above).</li>';
   }
+  /* S94 part 5 (Nov 21, 2026; research-update prereg/2026-11-s94-collectives-lending.md, Amendments 1-2): the Creative Collectives' lending to community
+   * businesses, and charters of public utilities. Words follow dev/reports/s94-collectives-lending.md section 10; every figure is read from
+   * data/studies/s94-fund.json, s94-charters.json, s94-interaction.json and s94-levels.json (dev/tools/s94_page_data.py). Counts come from the files'
+   * category column; ranges are the lowest and highest row of a named set. */
+  var S94 = {F: 's94-fund', C: 's94-charters', I: 's94-interaction', L: 's94-levels'};
+  var BKO = 'basket poverty (points)', WYO = 'wealth poverty, yearly average (points)', WLO = 'wealth poverty, last year (points)', MWO = 'median real wealth, weighted (year-0 $)',
+      MUO = 'median real wealth, unweighted (year-0 $)', SVO = 'savings under three months of need (points)', CSO = 'programme cost per adult a year ($)';
+  var S94OUT = [[BKO, 'Basket poverty'], [WYO, 'Wealth poverty, yearly average'], [WLO, 'Wealth poverty, last year'], [MWO, 'Median wealth, weighted'], [MUO, 'Median wealth, unweighted'], [SVO, 'Savings shortfall']];
+  function s94A(o) { return function (r) { for (var k in o) if (typeof o[k] === 'function' ? !o[k](r[k]) : r[k] !== o[k]) return false; return true; }; }
+  function s94Cells(years) {  /* every environment and design, in the page's order */
+    var out = []; ENVS.forEach(function (e) { ['full coverage', 'opt-in'].forEach(function (d) { out.push({environment: e, design: d, years: years}); }); }); return out;
+  }
+  function s94Helps(cell, reading) {  /* decision rule 3: improves basket poverty or yearly wealth poverty, and worsens none of the six readings */
+    var rs = where(S94.F, s94A(Object.assign({reading: reading}, cell))).filter(function (r) { return S94OUT.some(function (o) { return o[0] === r.outcome; }); });
+    return rs.some(function (r) { return (r.outcome === BKO || r.outcome === WYO) && r.category === 'improves'; }) && !rs.some(function (r) { return r.category === 'worsens'; });
+  }
+  function s94Worse(cell, reading, file) {  /* the readings of one cell and reading that worsen, by name */
+    return where(file || S94.F, s94A(Object.assign({reading: reading, category: 'worsens'}, cell)));
+  }
+  function s94Fig(file, cell, reading, outcome, kind, dg) {
+    var f = Object.assign({reading: reading, outcome: outcome}, cell);
+    return show(file, f, 'change', kind, dg) + ' ' + ci(file, f, dg === undefined ? 1 : dg, kind === 'sgusd');
+  }
+  function s94Cell(file, cell, reading, outcome, kind, dg) {
+    var f = Object.assign({reading: reading, outcome: outcome}, cell), r = find(file, f, 'change'), cat = D[file].data[D[file].columns.indexOf('category')][r.i];
+    var t = s94Fig(file, cell, reading, outcome, kind, dg);
+    return cat === 'worsens' ? '<strong>' + t + '</strong>' : t;
+  }
+  function s94Section() {
+    var F = S94.F, Ch = S94.C, I = S94.I, L = S94.L, m = D[F].meta, MAIN = 'main reading', CH3 = 'charters at 1/3', CH23 = 'charters at 2/3', CH7 = 'charters at 1/7 (public power today)';
+    var SH = function (y) { return "community businesses' share of essential sales, " + y + ' (points)'; };
+    var cells20 = s94Cells(20), cells40 = s94Cells(40), all12 = cells20.concat(cells40);
+    var readings = []; D[F].data[D[F].columns.indexOf('reading')].forEach(function (x) { if (readings.indexOf(x) < 0) readings.push(x); });
+    var helpM = all12.filter(function (c) { return s94Helps(c, MAIN); }).length;
+    var helpO = 0, nO = 0; all12.forEach(function (c) { readings.filter(function (x) { return x !== MAIN; }).forEach(function (x) { nO++; if (s94Helps(c, x)) helpO++; }); });
+    var worse2 = all12.filter(function (c) { return s94Worse(c, MAIN).length >= 2; }).length;
+    /* the five cells at 20 years where the share reaches its ceiling without the fund */
+    var ceil = cells20.filter(function (c) { return !(c.environment === 'Stress' && c.design === 'opt-in'); });
+    var S5 = {environment: 'Stress', design: 'opt-in', years: 20};
+    function lvl(row, out, cell) { return show(L, Object.assign({row: row, outcome: out}, cell), 'value', 'pc', 0); }
+    function fnd(out, cell, kind, dg) { return show(F, Object.assign({reading: MAIN, outcome: out}, cell), 'change', kind, dg); }
+    function mn(x) { return fmtN(x, 0); }
+    var usd0 = function (x) { return '$' + fmtN(x, 0); };
+    var costRange = span(F, ceil.reduce(function (a, c) { return a.concat(where(F, s94A(Object.assign({reading: MAIN, outcome: CSO}, c)))); }, []), 'change', usd0);
+    var wyRange = span(F, ceil.reduce(function (a, c) { return a.concat(where(F, s94A(Object.assign({reading: MAIN, outcome: WYO}, c)))); }, []), 'change', function (x) { return fmtN(x, 3); });
+    var chart23 = function (out, f2) { return span(Ch, cells20.reduce(function (a, c) { return a.concat(where(Ch, s94A(Object.assign({reading: CH23, outcome: out}, c)))); }, []), 'change', f2); };
+    var chart7 = where(Ch, s94A({reading: CH7, years: 20, outcome: BKO}));
+    var c7moved = chart7.filter(function (r) { return r.category !== 'no change'; });
+    var c7s = c7moved.map(function (r) { return r.environment + ', ' + r.design; });
+    function chWorse(years) { return where(Ch, s94A({years: years, category: 'worsens'})).filter(function (r) { return r.reading !== 'the fund and charters at 1/7'; }).length; }
+    function fundTable(years) {
+      var rows = s94Cells(years).map(function (c) {
+        return [esc(c.environment + ', ' + c.design),
+          show(F, Object.assign({reading: MAIN, outcome: SH('year 5')}, c), 'change', 'sg', 1), s94Cell(F, c, MAIN, CSO, 'sgusd', 0), s94Cell(F, c, MAIN, BKO, 'sg', 3), s94Cell(F, c, MAIN, WYO, 'sg', 3),
+          s94Cell(F, c, MAIN, MWO, 'sgusd', 0), s94Cell(F, c, MAIN, SVO, 'sg', 3)];
+      });
+      return table('The fund, main reading, ' + years + ' years: change against the main row of the same design (95% seed interval; bold: worsens after the multiple-testing correction). Share in points at year 5; cost in dollars per adult a year; poverty and savings in points; median wealth in year-0 dollars.',
+        ['Environment, design', 'Share of essential sales, year 5', 'Programme cost', 'Basket poverty', 'Wealth poverty, yearly average', 'Median wealth, weighted', 'Savings shortfall'], rows);
+    }
+    function readingsTable() {
+      var rows = readings.filter(function (x) { return x !== MAIN; }).concat([]).map(function (x) {
+        var nW = 0, nI = 0; cells20.forEach(function (c) { nW += s94Worse(c, x).length; nI += where(F, s94A(Object.assign({reading: x, category: 'improves'}, c))).length; });
+        var ps = cells20.filter(function (c) { return s94Helps(c, x); }).length;
+        return [esc(x), span(F, cells20.reduce(function (a, c) { return a.concat(where(F, s94A(Object.assign({reading: x, outcome: CSO}, c)))); }, []), 'change', mn),
+          nI + ' of ' + 6 * cells20.length, nW + ' of ' + 6 * cells20.length, ps + ' of ' + cells20.length];
+      });
+      return table('The other readings of the fund, 20 years, six cells (three environments, two designs): the added cost, the number of its 36 readings that improve or worsen after the correction, and the cells where the preregistered rule counts it as helping',
+        ['Reading of the fund', 'Added programme cost, $ per adult a year (lowest to highest cell)', 'Readings that improve', 'Readings that worsen', 'Cells where it helps'], rows);
+    }
+    function charterTable(years) {
+      var rows = [];
+      [CH7, CH3, CH23].forEach(function (rd) {
+        var f = {reading: rd, years: years};
+        rows.push([esc(rd), span(Ch, where(Ch, s94A(Object.assign({outcome: 'added subsidy from charters, per adult a year ($)'}, f))), 'change', mn),
+          span(Ch, where(Ch, s94A(Object.assign({outcome: CSO}, f))), 'change', function (x) { return fmtN(x, 0); }),
+          span(Ch, where(Ch, s94A(Object.assign({outcome: BKO}, f))), 'change', function (x) { return fmtN(x, 3); }),
+          span(Ch, where(Ch, s94A(Object.assign({outcome: WYO}, f))), 'change', function (x) { return fmtN(x, 3); }),
+          span(Ch, where(Ch, s94A(Object.assign({outcome: MWO}, f))), 'change', mn),
+          span(Ch, where(Ch, s94A(Object.assign({outcome: SVO}, f))), 'change', function (x) { return fmtN(x, 3); })]);
+      });
+      return table('Charters of public utilities (no fund), ' + years + ' years: the range of the change against the main row over the six cells (three environments, two designs). Subsidy and cost in dollars per adult a year; poverty and savings in points; median wealth in year-0 dollars.',
+        ['Charters', 'Subsidy', 'Programme cost', 'Basket poverty', 'Wealth poverty, yearly average', 'Median wealth, weighted', 'Savings shortfall'], rows);
+    }
+    function absSpan(file, rows, col, fmt) {  /* the smallest and largest size, ignoring sign, with the rows they come from */
+      var lo = rows.reduce(function (x, y) { return Math.abs(y[col]) < Math.abs(x[col]) ? y : x; }), hi = rows.reduce(function (x, y) { return Math.abs(y[col]) > Math.abs(x[col]) ? y : x; });
+      return snum(file, hi._i, col, fmt(Math.abs(hi[col])));
+    }
+    function interactionLine() {
+      var n = 0, sig = where(I, function (r) { return r.outcome !== CSO && r['interval excludes zero']; });
+      all12.forEach(function (c) { if (where(I, s94A(c)).some(function (r) { return r.outcome !== CSO && r['interval excludes zero']; })) n++; });
+      var cst = all12.filter(function (c) { return where(I, s94A(Object.assign({outcome: CSO}, c)))[0]['interval excludes zero']; }).length;
+      var bad = sig.filter(function (r) { return r.interaction * (r.outcome.indexOf('median real wealth') === 0 ? -1 : 1) > 0; }).length;
+      var good = sig.filter(function (r) { return r.interaction * (r.outcome.indexOf('median real wealth') === 0 ? -1 : 1) < 0; }).length;
+      return {n: n, cost: cst, sig: sig.length, bad: bad, good: good,
+        share: absSpan(I, where(I, function (r) { return r.outcome.indexOf('(points)') > 0; }), 'interaction', function (x) { return fmtN(x, 3); }),
+        usd: absSpan(I, where(I, function (r) { return r.outcome.indexOf('median real wealth') === 0; }), 'interaction', function (x) { return fmtN(x, 0); })};
+    }
+    var it = interactionLine();
+    var main20 = show(L, Object.assign({row: 'the main row against no programme', outcome: BKO}, {environment: 'Reference', design: 'full coverage', years: 20}), 'value', 'sg', 1);
+    return '<h3 class="fx-h3">The Creative Collectives’ lending, and charters of public utilities (added Nov 21, 2026)</h3>' +
+      '<p>The proposal: the Creative Collectives lend to community businesses that sell essentials, for premises, equipment and set-up costs, where banks will not, and public utilities move to Collective charters. These are Duke’s statements; the Hub’s papers give the Collectives no lending role, so the study adds them to the design and models them as stated. A preregistered study adds a <strong>fund</strong> for the community businesses (grocers, counter-service restaurants, utilities), paced at the rate new establishments open in these sectors, with young firms’ failure rates, 14% of it in grants (the share Pennsylvania’s fresh-food financing gave), and <strong>charters</strong> under which public power’s customers pay the community-business price for electricity. Public power serves one customer in seven (APPA), so a third and two thirds are design parameters, swept. Both run in the full-coverage and the opt-in designs, in the three environments, at 20 and 40 years, on ' + esc(String(m.seeds)) + ' paired seeds. The model has no private firms, so the fund finances community-business capacity only. Each figure is a row minus the main row of the same design; the main row is unchanged.</p>' +
+      '<ul>' +
+      '<li><strong>The fund helps in no cell.</strong> Under the preregistered rule (it helps where it lowers basket poverty or yearly wealth poverty and worsens none of the six readings), it helps in ' + helpM + ' of ' + all12.length + ' cells (three environments, two designs, 20 and 40 years), and it worsens at least two of the six readings in ' + worse2 + ' of them. Of the eight other readings of the fund (half and double the pace, no pace limit, and others), ' + helpO + ' of ' + nO + ' cells and readings pass. No reading changes the verdict.</li>' +
+      '<li><strong>Where the share would reach its ceiling anyway, the fund only brings the gain forward.</strong> In five of the six cells at 20 years (everywhere but Stress with the opt-in design) the community businesses’ share of essential sales reaches the 49% ceiling by year 10 without the fund. The fund raises the share at year 5 and costs ' + costRange + ' per adult a year; yearly wealth poverty rises by ' + wyRange + ' points in these cells.</li>' +
+      '<li><strong>Where capital holds the share back (Stress, opt-in)</strong>, the fund lifts the share at year 20 from ' + lvl('the main row, no fund', SH('year 20').replace('(points)', '(%)'), S5) + ' to ' + lvl('the fund, main reading', SH('year 20').replace('(points)', '(%)'), S5) + ', but it makes every reading worse. Changes at 20 years, in dollars per adult a year: programme cost ' + fnd(CSO, S5, 'sgusd', 0) + ' (running-cost subsidy on the extra sales ' + fnd("community businesses' running-cost subsidy, per adult a year ($)", S5, 'sgusd', 0) + ', the fund’s net outlay ' + fnd("the fund's net outlay (outlay less interest), per adult a year ($)", S5, 'usd', 0) + '), the contribution that finances it ' + fnd('the contribution that finances the programme, per adult a year ($)', S5, 'sgusd', 0) + '. Basket poverty changes by ' + fnd(BKO, S5, 'sg', 3) + ' points and weighted median wealth by ' + fnd(MWO, S5, 'sgusd', 0) + '.</li>' +
+      '<li><strong>The changes are small beside the programme’s own effect</strong> (for example, ' + main20 + ' points of basket poverty against no programme in Reference with full coverage), but they are on the unfavourable side.</li>' +
+      '<li><strong>Charters of public utilities improve basket poverty, yearly wealth poverty and savings wherever they act, and worsen no reading:</strong> at one customer in seven (the share public power serves today) only in ' + c7s.length + ' of the six cells at 20 years' + (c7s.length ? ' (' + esc(c7s.join('; ')) + ')' : '') + ', because elsewhere every zone already has more than that share; at two in three, basket poverty changes by ' + chart23(BKO, function (x) { return fmtN(x, 3); }) + ' points at an added cost of ' + chart23(CSO, usd0) + ' per adult a year (20 years, six cells). Charter rows that worsen a reading: ' + chWorse(20) + ' at 20 years and ' + chWorse(40) + ' at 40.</li>' +
+      '<li><strong>The fund and charters together</strong> give the fund’s result: the interaction’s interval excludes zero for at least one reading in ' + it.n + ' of the ' + all12.length + ' cells and for the programme’s cost in ' + it.cost + ', but it is negligible: at most ' + it.share + ' points of any share and $' + it.usd + ' of median wealth. Of the ' + it.sig + ' readings whose interval excludes zero, ' + it.bad + ' are on the unfavourable side, ' + it.good + ' on the favourable side and ' + (it.sig - it.bad - it.good) + ' too small to show at six decimals. No headline joins the two.</li>' +
+      '</ul>' + fundTable(20) +
+      '<details class="fx-more"><summary>The fund at 40 years, its other readings, and charters</summary>' + fundTable(40) + readingsTable() + charterTable(20) + charterTable(40) + '</details>' +
+      '<p class="fx-note">Limits, stated in advance: the model has no private firms, so lending to private start-ups that are not community businesses cannot be represented; transport, health care and child care have no community-business price, so charters of roads, transit, airports and ports change nothing in it; capacity is for the whole population, not by zone; the pace limit is a whole-economy rate, generous to one network; no concessional rate and no recovery on failures were opened as sources, and the loan’s principal is never repaid; charters act on electricity only; the fund’s money is new programme money, matched by full backing as every programme dollar is, and under a limit on supply it would compete for real resources, which is not in this design; and the trace of the cost reads stored totals and does not test a cause by switching each part off. ' + esc(m.intervals) + '. Categories after the multiple-testing correction across the six readings of each row. Dollars are year-0 dollars; poverty and savings are unweighted, median wealth as labelled.</p>';
+  }
+  function s94Unfavourable() {
+    var F = S94.F, MAIN = 'main reading', cells = s94Cells(20).concat(s94Cells(40)), S5 = {environment: 'Stress', design: 'opt-in', years: 20};
+    var nw = cells.filter(function (c) { return s94Worse(c, MAIN).length >= 2; }).length;
+    return '<li><strong>Lending:</strong> the Creative Collectives’ fund for community businesses helps in no cell and worsens at least two of the six readings in ' + nw + ' of ' + cells.length + ' cells; where capital does hold the share back (Stress, opt-in, 20 years) it changes the programme’s cost by ' + show(F, Object.assign({reading: MAIN, outcome: CSO}, S5), 'change', 'sgusd', 0) + ' per adult a year and basket poverty by ' + show(F, Object.assign({reading: MAIN, outcome: BKO}, S5), 'change', 'sg', 3) + ' points.</li>';
+  }
   function backingTable(design) {
     var rows = [], base = {design: design, environment: 'Reference', years: 20};
     function line(label, row, bs) {
@@ -310,6 +427,7 @@
       ['backing-c22-20', 'backing-c22-40', 'backing-rel-20', 'backing-rel-40'].map(function (n) { return chartFig(n, 'Programme inflation by backed share, with the break-even share and the mechanism’s own points marked (' + n + '); the numbers are in the table above and in the file r2-backing.'); }).join('') + '</details>';
     h += s82Section();
     h += s85Section();
+    h += s94Section();
     h += '<h3 class="fx-h3">Paid for by a contribution instead (shown, never led with)</h3>' +
       '<p>If the programme is paid for by a contribution, with the rest borrowed, the contribution needed is far larger and the poverty effects are much smaller, and in some cells they reverse. Nearly every financed result is fragile: 46 of the 48 poverty and wealth curves change sign or lose significance at some reading, depending on how the contribution is set up. The two that hold are the opt-in design’s basic-living effect in Reference, at both horizons. These rows were run without the weighted top tail.</p>' + financedTable();
     h += '<h3 class="fx-h3">Who gains</h3>' +
@@ -318,6 +436,7 @@
       '<li><strong>Prices:</strong> programme inflation is above no programme in every cell: immaterial at the main row, tens of points a year without backing (table above).</li>' +
       '<li><strong>Wages below full backing:</strong> if wages follow half of programme inflation and the rest is never made up, the programme with no backing leaves more people below the cost of living (basket poverty) than no programme does (v6 readings, above).</li>' +
       s85Unfavourable() +
+      s94Unfavourable() +
       '<li><strong>Work:</strong> fewer adults work: participation falls (adults who leave work for the programme), with their earnings forgone.</li>' +
       '<li><strong>Mobility:</strong> less movement out of the lowest wealth fifth (“stayed in the lowest wealth fifth”, above).</li>' +
       '<li><strong>Labour’s share</strong> of money income falls, because the programme’s payments are income that is not wages.</li>' +
