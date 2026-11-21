@@ -2470,6 +2470,58 @@ function s85UnitSuite(){
   return out;
 }
 Object.assign(module.exports, { s85UnitSuite });  /* S85 */
+/* S100 (Nov 21, 2026; research-update prereg/2026-11-s100-part-time-dcc.md): earnings by household type (row option eh; index.html EARN_HH, ehTypes, ehAdjust,
+ * CFG.EH) and the child and dependent care credit (sn.cdc; snBen, CFG.SN_CDC; reporting keys SN_X_KEYS with sn.cdc or sn.rep). */
+function s100UnitSuite(){
+  var out = [];
+  function hk(f){ REP_HOOK = f; }
+  function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), sn = SNET;
+    try { var r = fn(); out.push({name:name, pass:!!r.pass, detail:r.detail || ''}); }
+    catch (e){ out.push({name:name, pass:false, detail:'threw: ' + e.message}); }
+    finally { resetNR6(sv); tbSetG(g); SNET = sn; EARN_HH = null; EHS = null; hk(null); } }
+  var P = Object.assign({}, FULL_INTEGRATION, {years:20, nAgents:500}), P2 = Object.assign({}, P, {years:2}), MS = r2MainStudy();
+  function main(d, x){ var c = r2MainPair(P, 'c22')[d === 'none' ? 0 : 1]; if (x && x.sn) c.sn = Object.assign({}, c.sn, x.sn); if (x && x.eh) c.eh = x.eh; return c; }
+  function moved(A, B, keys){ return keys.filter(function(k){ return !(A._s[k] && B._s[k]) ? !!A._s[k] !== !!B._s[k] : A._s[k][0] !== B._s[k][0]; }); }
+  t('S100: the reporting keys (sn.rep) move no key of the main pair, both runs (C2.2 candidate main pair, seed 1), and add SN_X_KEYS', function(){
+    var R = tbStudy([main('none'), main('c22'), main('none', {sn:{rep:true}}), main('c22', {sn:{rep:true}})], 1, P, MS), m = moved(R[0], R[2], Object.keys(R[0]._s)).concat(moved(R[1], R[3], Object.keys(R[1]._s)));
+    var add = SN_X_KEYS.filter(function(k){ return R[2]._s[k] === undefined || R[0]._s[k] !== undefined; });
+    return {pass:!m.length && !add.length && R[2].snCdc === 0, detail:(m.length ? 'moved: ' + m.slice(0, 8).join(', ') : '') + (add.length ? ' keys: ' + add.join(', ') : '')}; });
+  t('S100: the care credit by hand (single parent, one child under 13, $30,000 of pay, care $12,914): 27% of $3,000 = $810, limited to the income tax $637.50; the refundable CTC rises from $1,562.50 to $1,700', function(){
+    var h = {nA:1, nK:1, k17:1, other:0, house:18502, care:12914, old:false, okAge:true, takeS:false, takeT:true, n13:1, e2:30000};
+    SNET = Object.assign({}, SNET_DEFAULTS, {cdc:true}); var a = snBen(h, 30000); SNET = Object.assign({}, SNET_DEFAULTS); var b = snBen(h, 30000);
+    var ok = a.length === 4 && Math.abs(a[3] - 637.5) < 1e-9 && Math.abs(a[2] - 1700) < 1e-9 && b.length === 3 && Math.abs(b[2] - 1562.5) < 1e-9 && a[1] === b[1] && a[0] === b[0];
+    return {pass:ok, detail:'with: ' + a.join(', ') + '; without: ' + b.join(', ')}; });
+  t('S100: the care credit\'s limits by hand: a couple whose lower earner earns nothing gets none; a disabled partner is deemed to earn the cap; two children: 20% of $6,000 at $80,000', function(){
+    SNET = Object.assign({}, SNET_DEFAULTS, {cdc:true});
+    var h0 = {nA:2, nK:2, k17:2, other:0, house:18502, care:24551, old:false, okAge:true, takeS:false, takeT:true, n13:2, e2:0}, h1 = Object.assign({}, h0, {e2:6000}), h2 = Object.assign({}, h0, {e2:40000});
+    var a = snBen(h0, 80000)[3], b = snBen(h1, 80000)[3], c = snBen(h2, 80000)[3], tx = snIncTax('j', 80000);
+    return {pass:a === 0 && Math.abs(b - Math.min(1200, tx)) < 1e-9 && Math.abs(c - Math.min(1200, tx)) < 1e-9 && tx > 1200, detail:[a, b, c, tx].join(', ')}; });
+  t('S100: eh assigns each adult the household type hhInit gives it, keeps each adult\'s normal score (pc 0), and leaves the household, outside-the-labour-force and job-loss draws as they were (no-programme main row, seed 1)', function(){
+    var A = [], B = [], T = null;
+    hk(function(ag, yr){ if (yr === 0) A = ag.map(function(a){ return {t:hhTypeOf(a._hh), w:a.initialWage, lf:a._lf || null, k:a._hh.kids.join(',')}; }); });
+    tbStudy([main('none', {eh:{pc:0}})], 1, P2, MS); T = EHS ? 'EHS not cleared' : null; 
+    hk(function(ag, yr){ if (yr === 0) B = ag.map(function(a){ return {t:hhTypeOf(a._hh), w:a.initialWage, lf:a._lf || null, k:a._hh.kids.join(',')}; }); });
+    tbStudy([main('none')], 1, P2, MS); hk(null);
+    var ty = ehTypes(500, 1), L = LATENT || {}, bad = [], base = Math.log(CFG.CPS_EARN.all.median/(12*CFG.WAGE_TO_USD)), sd = CFG.CPS_EARN.all.sigma;
+    A.forEach(function(a, i){ var b = B[i], z = (Math.log(b.w) - base)/sd, P1 = CFG.EH[a.t], w = Math.exp(Math.log(P1.median/(12*CFG.WAGE_TO_USD)) + P1.sigma*z);
+      if (a.t !== ty.t[i] || a.t !== b.t) bad.push(i + ' type'); if (Math.abs(a.w/w - 1) > 1e-12) bad.push(i + ' wage'); if (a.lf !== b.lf || a.k !== b.k) bad.push(i + ' draws'); });
+    return {pass:A.length === 500 && !bad.length && T === null, detail:bad.slice(0, 6).join(', ') || (T || '')}; });
+  t('S100: eh with pc moves only second partners\' scores (first partners and single adults keep pc 0\'s wage)', function(){
+    var A = [], B = []; function hook(X){ return function(ag, yr){ if (yr === 0){ X.length = 0; X.push.apply(X, ag.map(function(a){ return a.initialWage; })); } }; }
+    hk(hook(A)); tbStudy([main('none', {eh:{}})], 1, P2, MS); hk(hook(B)); tbStudy([main('none', {eh:{pc:0}})], 1, P2, MS); hk(null);
+    var ty = ehTypes(500, 1), bad = 0, sec = 0; A.forEach(function(w, i){ if (ty.mate[i] !== undefined){ sec++; if (w === B[i]) bad++; } else if (w !== B[i]) bad++; });
+    return {pass:A.length === 500 && !bad && sec > 100, detail:'second partners ' + sec + ', wrong ' + bad}; });
+  t('S100: eh refuses a row without households or without the CPS wage reading', function(){
+    var e = [];
+    try { var c = main('none', {eh:{}}); delete c.lt; tbStudy([c], 1, P2, MS); e.push('no lt ran'); } catch (x){}
+    try { var d = main('none', {eh:{}}); delete d.hh; delete d.wt; delete d.rt; tbStudy([d], 1, P2, MS); e.push('no hh ran'); } catch (x){}
+    return {pass:!e.length && EARN_HH === null, detail:e.join(', ') || 'both refused'}; });
+  t('S100: sn.cdc reaches only households with a child under 13 that pay for care; \'all\' reaches more, and the credit changes no draw (main pair, seed 1)', function(){
+    var R = tbStudy([main('none', {sn:{cdc:true}}), main('none', {sn:{cdc:'all'}}), main('c22', {sn:{cdc:true}}), main('none')], 1, P, MS);
+    var ok = R[0].snCdcK > 0 && R[1].snCdcK > R[0].snCdcK && R[2].snCdc >= 0 && R[0].emSpells === R[3].emSpells && R[0].lfShare === R[3].lfShare;
+    return {pass:ok, detail:'reach ' + R[0].snCdcK.toFixed(2) + ' / ' + R[1].snCdcK.toFixed(2) + '; spells ' + R[0].emSpells + ' / ' + R[3].emSpells}; });
+  return out; }
+Object.assign(module.exports, { s100UnitSuite });  /* S100 */
 function paUnitSuite(){
   var out = [];
   function t(name, fn){ var sv = applyNR6(), g = tbSetG(TB_PROFILE_G), wf0 = CFG.WEALTH_FLOOR; CFG.WEALTH_FLOOR = -10000;
@@ -4795,6 +4847,11 @@ if (require.main === module) {
     console.log('\n=== s82UnitSuite(): S82, the v6 readings: the BU\'s delay, the wage catch-up and the essentials supply limit (harness-only) ===');
     S82U.forEach(function(x){ if (!x.pass) s82f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
     console.log('\n' + S82U.length + ' run, ' + s82f + ' failed');
+    var S100U = s100UnitSuite(), s100f = 0;
+    console.log('\n=== s100UnitSuite(): S100, earnings by household type and the child and dependent care credit (harness-only) ===');
+    S100U.forEach(function(x){ if (!x.pass) s100f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });
+    console.log('\n' + S100U.length + ' run, ' + s100f + ' failed');
+    if (s100f) process.exitCode = 1;
     var S85U = s85UnitSuite(), s85f = 0;
     console.log('\n=== s85UnitSuite(): S85, output per hour and automation: the path, shorter hours, refusals, zero = identical, the identity, pairing, nesting, accounts and draws (harness-only) ===');
     S85U.forEach(function(x){ if (!x.pass) s85f++; console.log('  ' + (x.pass ? 'PASS' : 'FAIL') + '  ' + x.name + (x.detail ? '\n         ' + x.detail : '')); });

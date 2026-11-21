@@ -1070,6 +1070,22 @@
    },
    "equal": true,
    "seconds": 161
+  },
+  {
+   "from": "0acbbf086a3c6c74d83164cea4e72713aa4976569eef569c84816d58de195c97",
+   "to": "64a79f4757d245dca614c205135b1835e112b307ebe2632a4af138e351bdbf05",
+   "date": "2026-11-21",
+   "change": "S100: pay by household type (row option eh) and the child and dependent care credit (sn.cdc, sn.rep), off by default",
+   "fingerprints": {
+    "r20-ref": "dba1bbc6c4a77d9a",
+    "r20-adv": "fe07f39b4c354aa0",
+    "r20-st": "241c6a01ee95b0f3",
+    "r40-ref": "a57c1f757d57e192",
+    "r40-adv": "ec91d48ccb240e66",
+    "r40-st": "1462d0e50fc64d40"
+   },
+   "equal": true,
+   "seconds": 239
   }
  ]
 }
