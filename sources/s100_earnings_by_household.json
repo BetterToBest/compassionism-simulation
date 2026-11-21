@@ -1,0 +1,225 @@
+{
+ "_meta": {
+  "script": "sources/s100_earnings_by_household.py",
+  "sources": "Earnings by household type, part-time and part-year work, and the EITC's reach, adults 25-64 (research-update prereg/2026-11-s100-part-time-dcc.md).\n\nSource: Census Bureau, Current Population Survey, 2026 Annual Social and Economic Supplement (CPS ASEC), public-use CSV (asecpub26csv.zip:\nhttps://www2.census.gov/programs-surveys/cps/datasets/2026/march/), income year 2025; person file pppub26.csv, weight MARSUPWT.\n- Household type as the model's (sources/households.py): an adult is in a couple if a spouse (A_SPOUSE) or a cohabiting partner (PECOHAB) is present;\n  with children if any person under 18 in the household names the adult or the partner as a parent (PEPAR1, PEPAR2). Types: single adult (sg),\n  single parent (sp), couple without children (cn), couple with children (ck).\n- Earnings PEARNVAL (adults with earnings > 0). Part-time: usually under 35 hours a week in the weeks worked (HRSWK); part-year: under 50 weeks\n  (WKSWORK); full-time, year-round: both at or above (the Census definition). Under 20 hours: HRSWK < 20 (SNAP's work rule reads 20 hours a week).\n- Spread of log earnings from the quartiles, (ln p75 - ln p25) / (2 x 0.6745), as the release's wage reading (sources/baseline_realism_us.py).\n- Partners' earnings correlation: couples where both partners are 25-64 and both have earnings; the correlation of the normal scores of their\n  earnings ranks (weighted by the first partner's MARSUPWT), the scale the model's Gaussian copula uses.\n- EITC: EIT_CRED is the Census tax model's credit, carried on one member of each tax unit (TAX_ID within PH_SEQ); SPM_EITC is the Supplemental\n  Poverty Measure unit's total. The tax model simulates the credit for every eligible tax unit (it does not model take-up). \"Own tax unit\": the\n  adult's own tax unit receives it; the S34 figure (15.3%) counts the adult's SPM unit, which also holds other tax units (cohabiting partners\n  filing apart, grown children, other relatives). The model's household is one tax unit (couples file jointly), so the own-tax-unit share is the\n  figure comparable with the model's at full take-up. ACTC_CRD likewise for the refundable Child Tax Credit.\n- Who pays for care: families (a single parent, or a couple, aged 25-64) with a child under 13 of their own (PEPAR1, PEPAR2); \"every adult earns\": the\n  parent, or both partners, have earnings; \"pays\": SPM_CHILDCAREXPNS > 0 (childcare paid while working, the SPM unit's). Families counted once\n  (the partner with the lower line number). Weighted count in millions (MARSUPWT / 100), for the IRS SOI comparison (Table 3.3, tax year 2023:\n  5,720,294 returns with the credit for child and dependent care expenses, $3,468,910 thousand).",
+  "adults25to64": 66740,
+  "earners": 54070
+ },
+ "earners": {
+  "all": {
+   "n": 54070,
+   "median": 60000.0,
+   "p10": 20000.0,
+   "p25": 37000.0,
+   "p75": 100000.0,
+   "p90": 155000.0,
+   "sigmaLogIQR": 0.737040258684318,
+   "partTime": 12.152978676994366,
+   "partYearFullTime": 9.296775765799858,
+   "fullTimeYearRound": 78.55024555720578,
+   "under20Hours": 3.095029537668872
+  },
+  "sg": {
+   "n": 13410,
+   "median": 50000.0,
+   "p10": 18000.0,
+   "p25": 30002.0,
+   "p75": 80000.0,
+   "p90": 120000.0,
+   "sigmaLogIQR": 0.7270403411342787,
+   "partTime": 12.814724430895206,
+   "partYearFullTime": 10.683880549263918,
+   "fullTimeYearRound": 76.50139501984088,
+   "under20Hours": 2.8990155974924106,
+   "shareOfAdults": 29.862321463275055,
+   "withEarnings": 77.02943268004249
+  },
+  "sp": {
+   "n": 3166,
+   "median": 45000.0,
+   "p10": 15000.0,
+   "p25": 28000.0,
+   "p75": 70000.0,
+   "p90": 119016.61095756321,
+   "sigmaLogIQR": 0.6792472857811594,
+   "partTime": 16.694679258983037,
+   "partYearFullTime": 10.259692921465108,
+   "fullTimeYearRound": 73.04562781955185,
+   "under20Hours": 3.6936996869793974,
+   "shareOfAdults": 5.116975919569826,
+   "withEarnings": 83.16323826712092
+  },
+  "cn": {
+   "n": 16948,
+   "median": 65000.0,
+   "p10": 23000.0,
+   "p25": 40000.0,
+   "p75": 100000.0,
+   "p90": 160000.0,
+   "sigmaLogIQR": 0.6792472857811608,
+   "partTime": 11.369210656993427,
+   "partYearFullTime": 8.675441440152417,
+   "fullTimeYearRound": 79.95534790285416,
+   "under20Hours": 2.9607185612833256,
+   "shareOfAdults": 34.205048585205375,
+   "withEarnings": 80.66268806456837
+  },
+  "ck": {
+   "n": 20546,
+   "median": 70000.0,
+   "p10": 22500.0,
+   "p25": 42000.0,
+   "p75": 118000.0,
+   "p90": 191000.0,
+   "sigmaLogIQR": 0.7657751134133505,
+   "partTime": 11.657360314149198,
+   "partYearFullTime": 8.57346119804635,
+   "fullTimeYearRound": 79.76917848780445,
+   "under20Hours": 3.3123475795777244,
+   "shareOfAdults": 30.815654031949748,
+   "withEarnings": 84.62244282030382
+  }
+ },
+ "byAge": {
+  "25-34": {
+   "partTime": 12.304139758158843,
+   "partYearFullTime": 10.959652811548965,
+   "under20Hours": 2.9259356260636955
+  },
+  "35-44": {
+   "partTime": 11.590171033162589,
+   "partYearFullTime": 8.515269698349462,
+   "under20Hours": 2.7728512259126576
+  },
+  "45-54": {
+   "partTime": 10.799725625134007,
+   "partYearFullTime": 8.383722520808021,
+   "under20Hours": 2.6914777754015367
+  },
+  "55-64": {
+   "partTime": 14.283321653345759,
+   "partYearFullTime": 9.134026734005433,
+   "under20Hours": 4.232407942914061
+  }
+ },
+ "byEarningsQuintile": {
+  "cuts": [
+   31000.0,
+   50000.0,
+   72500.0,
+   110000.0
+  ],
+  "1": {
+   "partTime": 42.98145753090441,
+   "partYearFullTime": 18.12679537227667,
+   "median": 20000.0
+  },
+  "2": {
+   "partTime": 8.485643191860326,
+   "partYearFullTime": 10.455849418466407,
+   "median": 40000.0
+  },
+  "3": {
+   "partTime": 4.801721245634412,
+   "partYearFullTime": 7.120693737724454,
+   "median": 60000.0
+  },
+  "4": {
+   "partTime": 2.8638986629738588,
+   "partYearFullTime": 6.7398024323120085,
+   "median": 88000.0
+  },
+  "5": {
+   "partTime": 2.5036011460351926,
+   "partYearFullTime": 4.6747306787151715,
+   "median": 150000.0
+  }
+ },
+ "partners": {
+  "cn": {
+   "couples": 9364,
+   "bothEarn": 6635,
+   "shareBothEarn": 71.62023643922828,
+   "rhoNormalScores": 0.22697553433997256,
+   "rhoLog": 0.1803352110721597
+  },
+  "ck": {
+   "couples": 11900,
+   "bothEarn": 8536,
+   "shareBothEarn": 70.89898256674377,
+   "rhoNormalScores": 0.2118895597696206,
+   "rhoLog": 0.14337510819592691
+  },
+  "all": {
+   "couples": 21264,
+   "bothEarn": 15171,
+   "shareBothEarn": 71.26061069680745,
+   "rhoNormalScores": 0.21983529256633674,
+   "rhoLog": 0.16130521014708435
+  }
+ },
+ "eitc": {
+  "spmUnit": 15.303485209135498,
+  "ownTaxUnit": 11.772183407375545,
+  "otherTaxUnitOnly": 3.5313018017599527,
+  "dependents": 1.4279468805929825,
+  "ownTaxUnitNoOwnEarnings": 1.8485310855670931,
+  "byType": {
+   "sg": {
+    "ownTaxUnit": 8.616412416018655,
+    "spmUnit": 13.44893179963321
+   },
+   "sp": {
+    "ownTaxUnit": 49.76987260934349,
+    "spmUnit": 51.74072265541958
+   },
+   "cn": {
+    "ownTaxUnit": 4.547647486457838,
+    "spmUnit": 7.83049375298578
+   },
+   "ck": {
+    "ownTaxUnit": 16.539922206326,
+    "spmUnit": 19.345159586787243
+   }
+  },
+  "recipientsWithEarnings": {
+   "partTime": 32.75819713389122,
+   "partYearFullTime": 16.600077071634384,
+   "fullTimeYearRound": 50.64172579447439
+  }
+ },
+ "actc": {
+  "spmUnit": 10.32179554230395,
+  "ownTaxUnit": 8.374371713689978,
+  "byType": {
+   "sg": 0.335459799135807,
+   "sp": 45.3143913857164,
+   "cn": 0.29524188390040956,
+   "ck": 18.99840093896207
+  }
+ },
+ "care": {
+  "familiesUnder13Millions": 26.76181797,
+  "familiesUnder13AllEarnMillions": 19.42865015,
+  "sp": {
+   "families": 2603,
+   "allEarn": 82.71758299431265,
+   "paysAll": 21.853458935019034,
+   "paysAllEarn": 25.513792852643817,
+   "medianPaidPayersAllEarn": 3848.5306022259015
+  },
+  "ck": {
+   "families": 9322,
+   "allEarn": 69.58613588971515,
+   "paysAll": 25.71777400562026,
+   "paysAllEarn": 32.000106916445056,
+   "medianPaidPayersAllEarn": 9000.0
+  },
+  "soiTY2023": {
+   "returns": 5720294,
+   "amountThousands": 3468910,
+   "meanPerReturn": 606.4216279792612,
+   "returnsPerFamilyUnder13": 21.37483337795829
+  }
+ }
+}

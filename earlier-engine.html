@@ -4554,6 +4554,33 @@ function wtRep(S, agents, o, yr, T){  /* reporting only: the end of Year 0 and o
  * of the wage index, the income in place of the wage. conv 'none': no conversion income either (a reading). Status is fixed for the run; at 67 nothing
  * changes; a new adult (ageing) is drawn at entry. Own stream (seed + 600071), two draws per adult: no draw on any other stream. Reporting: LF_KEYS. */
 var LF_SCOPE = null, LF_DEFAULTS = {conv:'keep'}, LFS = null, LF_REASONS = ['dis', 'ret', 'care', 'sch'];
+/* S100 (Nov 21, 2026; research-update prereg/2026-11-s100-part-time-dcc.md; dev/reports/s100-part-time-reading.md): earnings by household type (row option eh; off by default,
+ * off = identical). The release's wage reading (lt s and m 'all') gives every adult the earnings of all US earners aged 25-64; CPS ASEC 2026 earners differ by household
+ * type (sources/s100_earnings_by_household.py): single adults median $50,000, single parents $45,000, couples without children $65,000, couples with children $70,000,
+ * each with its own spread of log earnings from the quartiles. Part-time and part-year work are inside these distributions (43% of the bottom fifth of earners
+ * work part time, 18% full time for part of the year), so the model's yearly pay already carries them; what the single distribution misses is where they fall.
+ * With eh, each adult keeps its own normal score z (no draw), read from the release's distribution, and takes the distribution of its household's type:
+ * wage = exp(ln(median_t) + sigma_t * z). Partners' scores are correlated at pc (the CPS couples' normal-score correlation, 0.22; 0 = independent, as today):
+ * the second partner's z becomes pc * z1 + sqrt(1 - pc^2) * z2. The household type is read from the household stream's own shuffle (hhInit's, replayed on a
+ * fresh generator with the same seed: no draw on any stream), before any wage is read, so occupations, wealth ranks and every later step see the new wage. */
+var EARN_HH = null, EHS = null;
+CFG.EH = {sg:{median:50000, sigma:0.7270}, sp:{median:45000, sigma:0.6790}, cn:{median:65000, sigma:0.6788}, ck:{median:70000, sigma:0.7660}, rho:0.2198};
+function ehTypes(n, seed){  /* hhInit's assignment of adults to household types, from its own seed (the same shuffle and counts; kids are drawn after and do not change a type) */
+  var r = mulberry32(seed + 500009), C = CFG.HH_COMP, ord = [], i, t = new Array(n), q = 0, mate = new Array(n);
+  for (i = 0; i < n; i++) ord.push(i);
+  for (i = n - 1; i > 0; i--){ var j = Math.floor(r()*(i + 1)), x = ord[i]; ord[i] = ord[j]; ord[j] = x; }
+  var nC = Math.round(n*(C.coupleKids + C.coupleNoKids)/2), nCK = Math.round(nC*C.coupleKids/(C.coupleKids + C.coupleNoKids)), nSP = Math.round(n*C.singleParent);
+  for (i = 0; i < nC; i++){ var a1 = ord[q++], a2 = ord[q++]; t[a1] = t[a2] = i < nCK ? 'ck' : 'cn'; mate[a2] = a1; }
+  for (i = 0; i < nSP && q < n; i++) t[ord[q++]] = 'sp';
+  while (q < n) t[ord[q++]] = 'sg';
+  return {t:t, mate:mate}; }
+function ehAdjust(latent, seed){
+  if (!HOUSEHOLDS) throw new Error('eh (earnings by household type) needs households (hh)');
+  if (!LATENT || !LATENT.wmed || !LATENT.wsd) throw new Error('eh needs the CPS wage reading (lt s and m)');
+  var T = ehTypes(latent.length, seed), base = Math.log(LATENT.wmed/(12*CFG.WAGE_TO_USD)), pc = +EARN_HH.pc || 0, z = latent.map(function(l){ return (Math.log(l.wage) - base)/LATENT.wsd; }), w0 = [];
+  latent.forEach(function(l, i){ var zi = T.mate[i] !== undefined ? pc*z[T.mate[i]] + Math.sqrt(1 - pc*pc)*z[i] : z[i], P = CFG.EH[T.t[i]]; w0.push(l.wage);
+    l.wage = Math.exp(Math.log(P.median/(12*CFG.WAGE_TO_USD)) + P.sigma*zi); });
+  EHS = {t:T.t, w0:w0}; }
 var LF_KEYS = ['lfShare', 'lfDis', 'lfRet', 'lfCare', 'lfSch', 'lfInc0', 'lfZero'];
 CFG.LF_SHARES = {"single":{"dis":0.11595,"ret":0.03691,"care":0.02447,"sch":0.02074},"singleParent":{"dis":0.05227,"ret":0.00483,"care":0.07683,"sch":0.01429},"coupleNoKids":{"dis":0.04321,"ret":0.08113,"care":0.04624,"sch":0.0049},"coupleKids":{"dis":0.01902,"ret":0.01005,"care":0.11405,"sch":0.00771}};  /* share of adults 25-64 out of the labour force all year, by household type and reason (CPS ASEC 2026; sources/lf_scope.json) */
 CFG.LF_SHARES_AGE = {"25-34":{"single":{"dis":0.05813,"ret":0.00821,"care":0.02373,"sch":0.04242},"singleParent":{"dis":0.02778,"ret":0.00102,"care":0.12405,"sch":0.02082},"coupleNoKids":{"dis":0.0114,"ret":0.01394,"care":0.03503,"sch":0.01433},"coupleKids":{"dis":0.00762,"ret":0.00351,"care":0.1565,"sch":0.01386}},"35-49":{"single":{"dis":0.11426,"ret":0.01154,"care":0.0258,"sch":0.01239},"singleParent":{"dis":0.05536,"ret":0.00366,"care":0.06117,"sch":0.0122},"coupleNoKids":{"dis":0.0329,"ret":0.02652,"care":0.04967,"sch":0.00503},"coupleKids":{"dis":0.01566,"ret":0.00287,"care":0.10781,"sch":0.00634}},"50-61":{"single":{"dis":0.17631,"ret":0.05555,"care":0.02752,"sch":0.00293},"singleParent":{"dis":0.09328,"ret":0.01711,"care":0.04619,"sch":0.00998},"coupleNoKids":{"dis":0.05328,"ret":0.08009,"care":0.05539,"sch":0.00182},"coupleKids":{"dis":0.03902,"ret":0.03089,"care":0.08009,"sch":0.00408}},"62-64":{"single":{"dis":0.20814,"ret":0.19892,"care":0.01428,"sch":0.00212},"singleParent":null,"coupleNoKids":{"dis":0.07567,"ret":0.27701,"care":0.02772,"sch":0.00063},"coupleKids":{"dis":0.12498,"ret":0.18691,"care":0.05752,"sch":0.00452}}};  /* the same by age band (null: fewer than 100 survey records, the type's all-ages row is used) */
@@ -6339,7 +6366,19 @@ CFG.SN_EITC = [{inc:8490, max:649, ps:10620, pj:17730, es:19104, ej:26214}, {inc
 CFG.SN_CTC = {per:2200, ref:1700, thr:2500, rate:0.15, age:17, po:{s:200000, h:200000, j:400000}, poR:0.05};
 CFG.SN_TAX = {std:{s:15750, j:31500, h:23625}, br:{s:[[11925, 0.10], [48475, 0.12], [103350, 0.22], [197300, 0.24], [Infinity, 0.32]],
   j:[[23850, 0.10], [96950, 0.12], [206700, 0.22], [394600, 0.24], [Infinity, 0.32]], h:[[17000, 0.10], [64850, 0.12], [103350, 0.22], [197300, 0.24], [Infinity, 0.32]]}};
+/* S100 (Nov 21, 2026; research-update prereg/2026-11-s100-part-time-dcc.md; dev/reports/s100-part-time-reading.md): the child and dependent care credit, tax year 2025
+ * (26 U.S.C. 21; IRS Publication 503 (2025), opened Nov 21, 2026): the credit is a percentage of work-related care expenses for qualifying children under 13, at most
+ * $3,000 for one and $6,000 for two or more, and at most the earned income of the lower-earning spouse (a spouse who is a full-time student or unable to care for self
+ * is deemed to earn $250 a month for one qualifying person, $500 for two or more); the percentage is 35% at adjusted gross income up to $15,000, one point less for each
+ * $2,000 or part of it above, and 20% above $43,000; not refundable (at most the income tax before credits; claimed before the Child Tax Credit). Read only with
+ * SNET.cdc (row option sn.cdc true); off by default, and off = identical. */
+/* Who pays for care (CPS ASEC 2026, families aged 25-64 with a child under 13 in which every adult has earnings: 25.5% of single parents and 32.0% of couples report
+ * childcare paid while working, SPM_CHILDCAREXPNS > 0; sources/s100_earnings_by_household.py). The model's budget charges every such family MIT's childcare line, so with
+ * sn.cdc true the credit reads that line only for a household whose fixed hash (seed + 700001, head, slot 33; no random stream, as take-up) is below its type's share;
+ * sn.cdc 'all' reads it for every household (the upper bound). */
+CFG.SN_CDC = {cap1:3000, cap2:6000, top:0.35, floor:0.20, from:15000, step:2000, deem1:3000, deem2:6000, pay:{sp:0.255, ck:0.320}};
 var SN_KEYS = ['snSnap', 'snEitc', 'snCtc', 'snSnapM', 'snEitcM', 'snCtcM', 'snAll', 'snMtr', 'snKids'];
+var SN_X_KEYS = ['snCdc', 'snCdcM', 'snCdcK', 'snCdcR', 'snEitcSg', 'snEitcSp', 'snEitcCn', 'snEitcCk', 'snCtcSg', 'snCtcSp', 'snCtcCn', 'snCtcCk', 'snShSg', 'snShSp', 'snShCn', 'snShCk'];  /* S100: snCdc % of adult-years in households receiving the care credit, snCdcM its dollars per adult-year (year-0), snCdcK % of household-years with a child under 13 that receive it, snCdcR its mean per receiving household-year; snEitc*, snCtc* % of adult-years receiving by household type, snSh* each type's share of adult-years */
 var SN_AB_KEYS = ['snAbN', 'snAbM', 'snAbLost'];  /* session 7, only with SNET.abawd: % of adult-years losing SNAP months to the work rule; SNAP dollars cut and months lost per adult-year */
 /* snSnap, snEitc, snCtc: % of adult-years in households receiving each; snSnapM, snEitcM, snCtcM, snAll: dollars per adult-year (year-0); snMtr: the mean combined
  * marginal rate (%) over adult-years in receiving households; snKids: % of child-years in households receiving any of the three. */
@@ -6352,31 +6391,41 @@ function snBen(h, earn, keep){  /* one household's yearly benefits in year-0 dol
     var mx = 12*(n <= S.max.length ? S.max[n - 1] : S.max[S.max.length - 1] + S.add*(n - S.max.length)); snap = Math.max(0, mx - S.rate*ni); if (n <= 2) snap = Math.max(snap, 12*S.min); }
   if (E.eitc && h.takeT && (h.nK > 0 || h.okAge)){ var P = CFG.SN_EITC[Math.min(3, h.nK)], st = f === 'j' ? P.pj : P.ps, en = f === 'j' ? P.ej : P.es;
     eitc = Math.max(0, Math.min(P.max, P.max/P.inc*Math.max(0, earn)) - P.max/(en - st)*Math.max(0, Math.max(earn, Y) - st)); }
+  var cdc = 0, tx = null;  /* S100: the child and dependent care credit (CFG.SN_CDC), only with E.cdc */
+  if (E.cdc && h.takeT && h.n13 > 0 && h.care > 0){ var D = CFG.SN_CDC, lim = Math.max(0, h.e2), ex = Math.min(h.care, h.n13 > 1 ? D.cap2 : D.cap1, lim), pct = Math.max(D.floor, D.top - 0.01*Math.ceil(Math.max(0, Y - D.from)/D.step));
+    tx = snIncTax(f, Y); cdc = Math.max(0, Math.min(pct*ex, tx)); }
   if (E.ctc && h.takeT && h.k17 > 0){ var C = CFG.SN_CTC, cr = Math.max(0, C.per*h.k17 - C.poR*Math.max(0, Y - C.po[f]));
-    ctc = Math.max(0, Math.min(C.ref*h.k17, C.rate*Math.max(0, earn - C.thr), cr - snIncTax(f, Y))); }
-  return [snap, eitc, ctc]; }
+    ctc = Math.max(0, Math.min(C.ref*h.k17, C.rate*Math.max(0, earn - C.thr), cr - (tx === null ? snIncTax(f, Y) : tx - cdc))); }
+  return E.cdc ? [snap, eitc, ctc, cdc] : [snap, eitc, ctc]; }
 function snAbClock(a, subject, gets){  /* session 7: one adult's work-rule clock for this year; returns the months of SNAP lost (a._snAbC: last year's countable months) */
   var pr = a._snAb || [0, 0], c = a._snAbC || 0, cr = subject && gets ? Math.min(c, Math.max(0, 3 - pr[0] - pr[1])) : 0; a._snAb = [cr, pr[0]]; return subject && gets ? c - cr : 0; }
 function snAbCut(h, earn, snap, lost){  /* session 7: the household's yearly SNAP cut for its adults' lost months (each lost month: one member fewer, all income counted) */
   if (!lost.length || snap <= 0) return 0; var h1 = Object.assign({}, h, {nA:h.nA - 1}), w = h1.nA + h1.nK > 0 ? snBen(h1, earn)[0] : 0, f = 0;
   lost.forEach(function(l){ f += l/12; }); return Math.min(snap, f*(1 - SNET.abawdEx)*Math.max(0, snap - w)); }
-function snInit(agents, seed){ SNS = {seed:(seed | 0) + 700001, idxPrev:1, acc:{ay:0, ky:0, kN:0, snapN:0, eitcN:0, ctcN:0, snap:0, eitc:0, ctc:0, mN:0, m:0, abN:0, abM:0, abL:0}}; agents.forEach(function(a, j){ a._snId = j; a._snB = 0; a._snM = 0; }); }
+function snInit(agents, seed){ SNS = {seed:(seed | 0) + 700001, idxPrev:1, acc:{ay:0, ky:0, kN:0, snapN:0, eitcN:0, ctcN:0, snap:0, eitc:0, ctc:0, mN:0, m:0, abN:0, abM:0, abL:0}, x:SNET && (SNET.cdc || SNET.rep) ? {cdcN:0, cdc:0, hk:0, hkN:0, hkD:0, t:{}} : null}; agents.forEach(function(a, j){ a._snId = j; a._snB = 0; a._snM = 0; }); }
 function snYear(agents, yr, HHON, inflRate, oI){  /* S74: oI as in hlYear */
   var S = SNS, ac = S.acc, gIdx = (oI === undefined ? Math.pow(1 + inflRate, yr) : oI)*(PRICE ? PRICE.bIdx : 1), next = 0;
   agents.forEach(function(a){ if (a._snId === undefined) a._snId = 1000000 + (a._id !== undefined ? a._id : agents.length + next++); });  /* adults who arrive with ageing */
   hlUnits(agents, HHON).forEach(function(u){
     var nA = u.a.length, nK = u.kids.length, earn = 0, other = 0, old = false, okAge = false, k17 = 0, hd = u.a[0]._snId;
-    u.a.forEach(function(a){ if (yr === 0 || a.yrWageUSD === undefined) earn += a._ret ? 0 : a.wage*12*CFG.WAGE_TO_USD; else { earn += (a.yrWageUSD || 0)/S.idxPrev; other += ((a.yrSSUSD || 0) + (a.yrUbiUSD || 0) + (a.yrConvUSD || 0))/S.idxPrev; }
+    var eA = [];  /* S100: each adult's earnings, for the care credit's earned-income limit (read only with SNET.cdc) */
+    u.a.forEach(function(a){ var e0 = earn; if (yr === 0 || a.yrWageUSD === undefined) earn += a._ret ? 0 : a.wage*12*CFG.WAGE_TO_USD; else { earn += (a.yrWageUSD || 0)/S.idxPrev; other += ((a.yrSSUSD || 0) + (a.yrUbiUSD || 0) + (a.yrConvUSD || 0))/S.idxPrev; }
+      if (SNET.cdc) eA.push({e:earn - e0, d:a._lf === 'dis' || a._lf === 'sch'});
       if (yr === 0 && a._ret) other += (a._ssY || 0);
       if (typeof a.age === 'number'){ if (a.age >= CFG.SN_SNAP.old) old = true; if (a.age >= 25 && a.age <= 64) okAge = true; } else okAge = true; });
     u.kids.forEach(function(age){ if (age < CFG.SN_CTC.age) k17++; });
     var h = {nA:nA, nK:nK, k17:k17, other:other, house:u.H ? u.H.need.housing : CFG.LIVING_WAGE_ANNUAL*CFG.BASKET.housing, care:u.H ? (u.H.need.childcare || 0) : 0, old:old, okAge:okAge,
       takeS:hlU(S.seed, hd, 0, 31) < SNET.snapTake, takeT:hlU(S.seed, hd, 0, 32) < SNET.taxTake};
+    if (SNET.cdc){ var n13 = u.kids.filter(function(age){ return age < CFG.HH_CARE_AGE; }).length, dm = n13 > 1 ? CFG.SN_CDC.deem2 : CFG.SN_CDC.deem1;  /* S100: a student or disabled spouse is deemed to earn the cap (26 U.S.C. 21(d)(2)) */
+      h.n13 = SNET.cdc === 'all' || hlU(S.seed, hd, 0, 33) < CFG.SN_CDC.pay[nA > 1 ? 'ck' : 'sp'] ? n13 : 0; h.e2 = Math.min.apply(null, eA.map(function(x){ return x.d && nA > 1 ? Math.max(x.e, dm) : x.e; })); }
     var b0 = snBen(h, earn), b1 = snBen(h, earn + 1000, SNET.slope && b0[0] > 0);  /* session 9: with SNET.slope a household receiving SNAP keeps passing the gross test at +$1,000 (comment above) */
     if (SNET.abawd){ var abK = u.kids.some(function(age){ return age < 14; }), abL = [];  /* session 7: SNAP's work rule (comment above) */
       u.a.forEach(function(a){ var l = snAbClock(a, !abK && !a._ret && (typeof a.age !== 'number' || (a.age >= 18 && a.age <= 64)), b0[0] > 0); if (l > 0){ abL.push(l); ac.abN++; ac.abL += l; } });
       var abCut = snAbCut(h, earn, b0[0], abL); b0[0] -= abCut; b1[0] -= snAbCut(h, earn + 1000, b1[0], abL); ac.abM += abCut; }
     var B = b0[0] + b0[1] + b0[2], m = Math.max(-0.5, Math.min(0.9, (B - (b1[0] + b1[1] + b1[2]))/1000));
+    if (SNET.cdc){ B += b0[3]; m = Math.max(-0.5, Math.min(0.9, (B - (b1[0] + b1[1] + b1[2] + b1[3]))/1000)); }  /* S100: the care credit is a benefit like the others (its marginal rate included) */
+    if (S.x){ var X = S.x, tq = nA > 1 ? (nK ? 'ck' : 'cn') : (nK ? 'sp' : 'sg'), T = X.t[tq] || (X.t[tq] = {ay:0, e:0, c:0}), k13 = u.kids.some(function(age){ return age < CFG.HH_CARE_AGE; });  /* S100: reporting only */
+      T.ay += nA; if (b0[1] > 0) T.e += nA; if (b0[2] > 0) T.c += nA; var cd = SNET.cdc ? b0[3] : 0; if (cd > 0){ X.cdcN += nA; X.cdc += cd; } if (k13){ X.hk++; if (cd > 0){ X.hkN++; X.hkD += cd; } } }
     u.a.forEach(function(a){ a._snB = B*gIdx/nA; a._snM = B > 0 || m !== 0 ? m : 0; });
     ac.ay += nA; ac.ky += nK; if (B > 0) ac.kN += nK; if (b0[0] > 0) ac.snapN += nA; if (b0[1] > 0) ac.eitcN += nA; if (b0[2] > 0) ac.ctcN += nA;
     ac.snap += b0[0]; ac.eitc += b0[1]; ac.ctc += b0[2]; if (B > 0){ ac.mN += nA; ac.m += m*nA; } });
@@ -6384,6 +6433,9 @@ function snYear(agents, yr, HHON, inflRate, oI){  /* S74: oI as in hlYear */
 function snRes(out){ var A = SNS ? SNS.acc : null, ay = A && A.ay ? A.ay : 1, pc = function(x){ return A ? x/ay*100 : 0; };
   out.snSnap = pc(A ? A.snapN : 0); out.snEitc = pc(A ? A.eitcN : 0); out.snCtc = pc(A ? A.ctcN : 0); out.snSnapM = A ? A.snap/ay : 0; out.snEitcM = A ? A.eitc/ay : 0; out.snCtcM = A ? A.ctc/ay : 0;
   out.snAll = out.snSnapM + out.snEitcM + out.snCtcM; out.snMtr = A && A.mN ? A.m/A.mN*100 : 0; out.snKids = A && A.ky ? A.kN/A.ky*100 : 0;
+  if (SNS && SNS.x){ var X = SNS.x, t = function(k, f){ var T = X.t[k]; return T && T.ay ? T[f]/T.ay*100 : 0; };  /* S100: SN_X_KEYS, only with SNET.cdc or SNET.rep */
+    out.snCdc = pc(X.cdcN); out.snCdcM = X.cdc/ay; out.snCdcK = X.hk ? X.hkN/X.hk*100 : 0; out.snCdcR = X.hkN ? X.hkD/X.hkN : 0;
+    ['sg', 'sp', 'cn', 'ck'].forEach(function(k){ var K = k.charAt(0).toUpperCase() + k.slice(1); out['snEitc' + K] = t(k, 'e'); out['snCtc' + K] = t(k, 'c'); out['snSh' + K] = X.t[k] ? X.t[k].ay/ay*100 : 0; }); }
   if (SNET && SNET.abawd){ out.snAbN = pc(A ? A.abN : 0); out.snAbM = A ? A.abM/ay : 0; out.snAbLost = A ? A.abL/ay : 0; } return out; }
 function tbSetV54(o){ var old = {rk:RISK_MEASURE, em:EMPL, pb:PTHB, pf:PTFS, ds:DIS}; if (o){ if (o.rk !== undefined) RISK_MEASURE = !!o.rk; if (o.empl) EMPL = Object.assign({}, EMPL_DEFAULTS, o.empl === true ? {} : o.empl);
   if (o.pthb) PTHB = Object.assign({}, PTHB_DEFAULTS, o.pthb === true ? {} : o.pthb); if (o.ptfs) PTFS = Object.assign({}, PTFS_DEFAULTS, o.ptfs === true ? {} : o.ptfs);
@@ -7796,7 +7848,7 @@ function giniOfArr(x){ var v = x.map(function(z){ return Math.max(0, +z || 0); }
 function tbRunCore(p, seed, o, S, tau0, yMax){
   var CALM0 = {active:false, incomeMultiplier:1.0, yearsLeft:0};
   RNG = mulberry32(seed + 700003);
-  var latent = makeLatentPopulation(p.nAgents); if (LATENT) latent.forEach(latentAdjust);  /* v5.2 step 5: the readings that close known gaps with US data (no draw added) */
+  var latent = makeLatentPopulation(p.nAgents); if (LATENT) latent.forEach(latentAdjust); if (EARN_HH) ehAdjust(latent, seed); else EHS = null;  /* v5.2 step 5: the readings that close known gaps with US data (no draw added) */
   var agents = latent.map(function(l){ return instantiateAgent(l, p); });
   hxRun(p);  /* S75: the run's history paths (S74's without hx.era) and settings */
   var recPath = p.hx ? hxRecPath(p.years) : p.shock ? (REC_SCRIPT ? recScriptPath(p.years) : buildRecessionPath(p.years, seed)) : null;  /* session 9: REC_SCRIPT, a fixed recession path (comment above tbOpts) */
@@ -7804,7 +7856,7 @@ function tbRunCore(p, seed, o, S, tau0, yMax){
   var wq = latent.map(function(l){ return l.wage; }).sort(function(x, y){ return x - y; }), w1 = wq[Math.floor(wq.length/3)], w2 = wq[Math.floor(2*wq.length/3)];
   agents.forEach(function(a, i){ var l = latent[i]; a._tbU = gR(); a._tbEl = !!(spec.endow && l.wealth < spec.endow.thresh); a._tbPart = l.uCCO < grp.part; a._tbPTH = l.uPTH < grp.pth; a._tbLow = l.wage < w1; a._tbTop = l.wage >= w2; });
   if (EMPL) emplInit(agents, seed); else EMS = null;
-  if (HEALTH){ hlInit(agents, seed); HLS.noProg = !p.ccoOn && !Object.keys(spec).length; HLS.govKey = (seed | 0) + '|' + JSON.stringify(HEALTH) + '|' + JSON.stringify(SNET) + '|' + JSON.stringify(PREV); if (HLS.noProg && HL_GOVREF && HEALTH.gov === 'fixed') HL_GOVREF[HLS.govKey] = []; } else HLS = null;  /* session 2a: health coverage (no draw on any stream); session 2c: the no-programme run records government's share (d194) */
+  if (HEALTH){ hlInit(agents, seed); HLS.noProg = !p.ccoOn && !Object.keys(spec).length; HLS.govKey = (seed | 0) + '|' + JSON.stringify(HEALTH) + '|' + JSON.stringify(SNET ? Object.assign({}, SNET, {cdc:undefined, rep:undefined}) : SNET) + '|' + JSON.stringify(PREV); if (HLS.noProg && HL_GOVREF && HEALTH.gov === 'fixed') HL_GOVREF[HLS.govKey] = []; } else HLS = null;  /* session 2a: health coverage (no draw on any stream); session 2c: the no-programme run records government's share (d194) */
   if (SNET) snInit(agents, seed); else SNS = null;  /* session 2b: today's safety net (no draw on any stream) */
   if (PTHB && p.pth && !(FX && FX.pthb)) pthbInit(agents, latent, seed); else PBS = null;  /* S47 fx.pthb: opened after households instead (below) */
   if (DIS) DSS = {r:mulberry32(seed + 600053), hit:0, n:0, list:[], ctl:[]}; else DSS = null;  /* v5.4 item 5 */
@@ -8439,6 +8491,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
       var hl0 = HEALTH; if (c.hl) HEALTH = Object.assign({}, HEALTH_DEFAULTS, c.hl === true ? {} : c.hl);  /* session 2a: the health setting for this row (no programme rows too) */
       var sn0 = SNET; if (c.sn) SNET = Object.assign({}, SNET_DEFAULTS, c.sn === true ? {} : c.sn);  /* session 2b: today's safety net for this row */
       var pv0 = PREV; if (c.pv) PREV = Object.assign({}, PREV_DEFAULTS, c.pv === true ? {} : c.pv);  /* session 2c: the prevention link for this row */
+      var eh0 = EARN_HH; if (c.eh) EARN_HH = Object.assign({pc:CFG.EH.rho}, c.eh === true ? {} : c.eh);  /* S100: earnings by household type */
       var lt0 = LATENT; if (c.lt) LATENT = {wealth:c.lt.w ? CFG.SCF_WAGE_WEALTH_RHO : 0, risk:c.lt.r ? CFG.FO_RISK_WAGE_RHO : 0, wsd:c.lt.s ? (CFG.CPS_EARN[c.lt.s] ? CFG.CPS_EARN[c.lt.s].sigma : CFG.SCF_WAGE_SIGMA) : 0, wmed:c.lt.m ? (CFG.CPS_EARN[c.lt.m] ? CFG.CPS_EARN[c.lt.m].median : CFG.SCF_WAGE_MEDIAN) : 0};  /* v5.2 step 5: {w, r, s, m} flags; S34: s, m 'all' or 'ft' read the CPS's earnings (CFG.CPS_EARN) */
       try { var r = tbRun(c.p, sd, Object.assign({grp:grp}, o0 || {}, c.o || {}), FX && FX.sp ? tbBaseS(envP, sd, Object.assign({}, o0 || {}, c.o || {})) : HOUSEHOLDS || SPEND_GRADE || LW ? s3BaseS(envP, sd) : S).res;  /* S47 fx.sp: the supply path from the reported no-programme run */  /* v5.3 B3: a household row's supply reference is the no-programme economy of households (B7: likewise with income-graded spending) */
         TB_KEYS.forEach(function(k){ out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });
@@ -8474,6 +8527,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.paSh !== undefined) PA_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S55 */
         if (r.pbV !== undefined) PTHB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 3 */
         if (r.snAbN !== undefined) SN_AB_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* session 7 */
+        if (r.snCdc !== undefined) SN_X_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S100 */
         if (r.snSnap !== undefined) SN_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* session 2b */
         if (r.hlEsi !== undefined) HL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* session 2a */
         if (r.emUrate !== undefined) EMPL_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* v5.4 item 2 */
@@ -8484,7 +8538,7 @@ function tbStudy(cfgs, N, envP, o0, lo){
         if (r.lfShare !== undefined) LF_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */  /* S73 */
         if (r.lfOut !== undefined) LF_FLOW_KEYS.forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; });  /* S61: adults outside the labour force (rows with lf only) */
         if (r.hhPer !== undefined) HH_KEYS.concat(HH_REP_KEYS, r.hhBirthR !== undefined ? HH_LIFE_KEYS : []).forEach(function(k){ if (!out[i]._s[k]){ out[i][k] = 0; out[i]._s[k] = new Float64Array(M); } out[i][k] += r[k]/M; out[i]._s[k][sd - lo] = r[k]; }); }  /* v5.3 B3: the household reading's measures, where the row has households (B4: and children's lives, with ageing) */
-      finally { OH = oh0; OHS = null; CB = cb0; CBS = null; CBJ = null; CBDM = 0; RTY = null; GOV = gv0; GVS = null; PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; PTF_OPS = po0; POS = null; LEND = ld0; LDS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
+      finally { EARN_HH = eh0; EHS = null; OH = oh0; OHS = null; CB = cb0; CBS = null; CBJ = null; CBDM = 0; RTY = null; GOV = gv0; GVS = null; PRICE_RULE = pr0[0]; PR_OPTS = pr0[1]; tbResetV54(v540); HEALTH = hl0; HLS = null; SNET = sn0; SNS = null; PREV = pv0; CONVERSION_MODEL = cm0; Object.assign(PATHWAY_OFF, pw0); tbSetG(g0); PROJ = pj0; ESP = es0; SURP = sp0; PROD = pd0; JOIN = jn0; COST = cs0; OCT = oc0; SURPLUS_CONSUMPTION_SHARE = sc0; MULT = ml0; GATE_CURRENT = gc0; SAVE = sv0; AGE = ag0; AGS = null; LATENT = lt0; HCAP = hc0; HCS = null; REVIEW = rv0; REVS = null; HOUSEHOLDS = hh0; HHS = null; BU_SCOPE = bs0; EDC_MEASURE = em0; EDCS = null; SPEND_GRADE = sg0; DEBT_READ = dr0; RETURNS = rt0; RTR = null; RTO = null; WEALTH_TAIL = wt0; WTS = null; LF_SCOPE = lf0; LFS = null; BARGAIN = bg0; BGS = null; PTF_OPS = po0; POS = null; LEND = ld0; LDS = null; DR_PL = 1; AUD = au0; FX = fx0; COMM = cl0; CMS = null; PTF_ACCESS = pa0[0]; PA = pa0[1]; PAS = null; C22 = c220; C22S = null; FBS50 = fb0; FBSS = null; lwReset(lw0); } });
   }
   HL_GOVREF = null;  /* session 2c */
   return out;
