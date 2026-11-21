@@ -1122,7 +1122,12 @@
     "r40-st": "7f2eb8ea9479f7ab"
    },
    "equal": false,
-   "seconds": 417
+   "seconds": 417,
+   "record": {
+    "version": "v5.6",
+    "prereg": "BetterToBest/research-update prereg/2026-11-s90-private-price-at-sale.md, Amendment 6",
+    "why": "This change moves no panel: all six fingerprints equal the previous link's (v5.9.22) exactly. The published panels stay the record of their engine, as since v5.9.22 (v5.6 kept by Amendment 2)."
+   }
   }
  ]
 }
