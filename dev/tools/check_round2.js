@@ -12,7 +12,7 @@ const ROOT = path.join(__dirname, '..', '..'), rd = f => fs.readFileSync(path.jo
   await new Promise(r => setTimeout(r, 1500));
   const body = w.document.getElementById('round2-body'), bad = [];
   if (errs.length) bad.push('errors: ' + errs.slice(0, 3).join('; '));
-  if (/NaN|undefined|not reported|Could not load/.test(body.textContent)) bad.push('the section prints NaN, undefined, a missing value or a load error');
+  if (/NaN|undefined|Could not load/.test(body.textContent) || [...body.querySelectorAll('.snum')].some(s => s.textContent === 'not reported')) bad.push('the section prints NaN, undefined, a missing value or a load error');  /* S100: a missing value is a number span that reads 'not reported'; the weighting note says the words in prose */
   const D = {}; let n = 0;
   body.querySelectorAll('.snum').forEach(s => { n++; const f = s.getAttribute('data-study'), m = /^row (\d+) (.+)$/.exec(s.getAttribute('data-src'));
     D[f] = D[f] || JSON.parse(rd('data/studies/' + f + '.json')); const d = D[f], j = m && d.columns.indexOf(m[2]);
