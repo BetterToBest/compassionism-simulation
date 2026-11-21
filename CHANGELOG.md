@@ -6,6 +6,12 @@ The "Unreleased" sections were written between v4.22 and v5.0 for harness-only w
 
 ---
 
+## Between releases (Nov 21, 2026): the earlier engine's validation presets, described and renamed
+
+Labels and text only; no figure changes and no engine line changes.
+- **The earlier engine's "Gini" is now called the net-wealth Gini** on its page (tile, chart, table, milestone and export) and in `node harness.js validate`. It is the Gini of wealth less one year of the extractive-debt cost times the annual wage, not a plain wealth Gini.
+- **The written description covers the validation path.** The model specification's Appendix B says what the check compares and that the changelog's seed-42 figures come from the earlier engine path; Appendix C states the status of every gap and contradiction the two independent implementations found; the ODD protocol has a short paragraph on the presets.
+
 ## Between releases (Nov 21, 2026): the findings page's wording
 
 Text only; no figure changes and the engine is untouched. On the findings page and its text file:
