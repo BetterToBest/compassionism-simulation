@@ -9,11 +9,18 @@
  * --patch=  experiments in the tool's copy only (never the engine): nocut (no PTF price cut), fixcut (PTF cut held at 30%),
  *           nov (no private price), none (neither). S90's finding: the cycle goes with nov and none, and stays with nocut.
  * --from=K  run seeds K to --seed (default 1: seeds 1 to --seed, pooled into one year-by-year series; S92 passes --from=K --seed=K for one seed)
- * Usage: node dev/tools/s90_trace.js [--env=ref|adv|st] [--seed=1] [--from=1] [--n=500] [--years=20] [--check] [--sale] [--json=FILE] [--patch=NAME] */
+ * --lag     (S93, Nov 21, 2026; prereg Amendment 2 section C) the programme run with the private ESPs' price a year late (sp.vAt 'lag'): since v5.9.22
+ *           the sale is the engine's default, so the lagged rule is named; --sale and --lag together are refused
+ * --a=X     (S93, the same section) the programme run at backed share X (o.a X; the main row is at 1); absent, the row is unchanged
+ * Usage: node dev/tools/s90_trace.js [--env=ref|adv|st] [--seed=1] [--from=1] [--n=500] [--years=20] [--check] [--sale|--lag] [--a=X] [--json=FILE] [--patch=NAME] */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..'), H = require(path.join(ROOT, 'harness.js'));
 const arg = (k, d) => { const a = process.argv.find(x => x.startsWith('--' + k + '=')); return a ? a.slice(k.length + 3) : d; };
-const SALE = process.argv.includes('--sale');
+const SALE = process.argv.includes('--sale'), LAG = process.argv.includes('--lag'), BA = arg('a', null) === null ? null : +arg('a', null);
+if (SALE && LAG) { console.error('s90_trace: --sale and --lag together'); process.exit(1); }
+if (BA !== null && !(BA >= 0 && BA <= 1)) { console.error('s90_trace: --a takes a backed share from 0 to 1'); process.exit(1); }
+/* the programme run's settings beyond the main row (S93): the price rule named, the backed share */
+const setRow = c => { if (SALE) c.sp = Object.assign({}, c.sp, {vAt: 'sale'}); if (LAG) c.sp = Object.assign({}, c.sp, {vAt: 'lag'}); if (BA !== null) c.o = Object.assign({}, c.o, {a: BA}); return c; };
 const ENVN = {ref: 'FULL_INTEGRATION', adv: 'ADVERSE_REFERENCE', st: 'STRESS_TEST'};
 const PATCH = [
   ['probe: BU spent', 'cf=cfPreCCO+hcX-fwB/mainLoopCostUSD;hcDone=true;', 'cf=cfPreCCO+hcX-fwB/mainLoopCostUSD;hcDone=true;if(S90.on)S90.bu(yr,fwBudget,mainLoopCostUSD*essF,spC,fwB,fwLeft,mainLoopCostUSD);'],
@@ -49,14 +56,14 @@ const ALT = {  /* experiments in the tool's copy only (never the engine), to pro
   none: [['no price cut', SPD, 'spDelta=0;'], ['no private cut', SPV, 'a._spV=0;']]};                        /* the uniform cut held at 30% of essentials from year 1 */
 function run(E, env, seed, n, years, from) {
   const P = Object.assign({}, E[ENVN[env]], {years, nAgents: n}), RS = E.startRelease ? E.startRelease() : null;
-  try { const c = E.r2FreezePair(P, 'c22'); if (SALE) c[1].sp = Object.assign({}, c[1].sp, {vAt: 'sale'}); E._s90.on = true; E._s90.Y = {}; const R = E.tbStudy([c[1]], seed, P, E.r2MainStudy(), from || 1); E._s90.on = false; return {R: R[0], Y: E._s90.Y}; }
+  try { const c = E.r2FreezePair(P, 'c22'); setRow(c[1]); E._s90.on = true; E._s90.Y = {}; const R = E.tbStudy([c[1]], seed, P, E.r2MainStudy(), from || 1); E._s90.on = false; return {R: R[0], Y: E._s90.Y}; }
   finally { if (RS && RS.restore) RS.restore(); }
 }
 if (require.main === module) {
   const env = arg('env', 'ref'), seed = +arg('seed', 1), from = +arg('from', 1), n = +arg('n', 500), years = +arg('years', 20);
   const E = engineCopy(ALT[arg('patch', '')] || []), o = run(E, env, seed, n, years, from);
   if (process.argv.includes('--check')) {
-    const P = Object.assign({}, H[ENVN[env]], {years, nAgents: n}), RS = H.startRelease(), c = H.r2FreezePair(P, 'c22'); if (SALE) c[1].sp = Object.assign({}, c[1].sp, {vAt: 'sale'}); const R = H.tbStudy([c[1]], seed, P, H.r2MainStudy(), from)[0]; RS.restore();
+    const P = Object.assign({}, H[ENVN[env]], {years, nAgents: n}), RS = H.startRelease(), c = H.r2FreezePair(P, 'c22'); setRow(c[1]); const R = H.tbStudy([c[1]], seed, P, H.r2MainStudy(), from)[0]; RS.restore();
     const ks = Object.keys(R).filter(k => k[0] !== '_' && JSON.stringify(R[k]) !== JSON.stringify(o.R[k]));
     console.log('check: the copy with probes gives the harness outputs: ' + (ks.length ? 'FAIL, ' + ks.length + ' keys differ: ' + ks.slice(0, 8) : 'identical (' + Object.keys(R).length + ' keys)'));
   }
@@ -65,7 +72,7 @@ if (require.main === module) {
   Object.keys(o.Y).map(Number).sort((a, b) => a - b).forEach(y => { const q = o.Y[y], m = v => q.n ? v/q.n : 0;
     console.log([String(y).padEnd(3), String(q.n).padStart(6), f(m(q.mlc)).padStart(8), f(m(q.iss)).padStart(8), f(m(q.ess)).padStart(9), f(m(q.spC)).padStart(9), f(m(q.fwB)).padStart(9), f(m(q.left)).padStart(8),
       f(q.nT ? q.buR/q.nT : 0).padStart(11), f(q.pool || 0).padStart(10), (q.d || 0).toFixed(4).padStart(9), f(q.carry || 0).padStart(10), String(q.ph || '').padStart(5), f(m(q.vC || 0)).padStart(9), f(m(q.ess - q.spC - q.fwB)).padStart(9), f(q.nA ? q.E/q.nA : 0).padStart(10), f(q.nA ? q.inc/q.nA : 0).padStart(11)].join(' ')); });
-  if (SALE) console.log('at-sale: yr, vK (dollars a private-ESP BU buys beyond face), workers\' share paid, premium left after repaying the advance (shared by last year\'s BU), carry after sharing: ' + Object.keys(o.Y).map(Number).sort((a, b) => a - b).filter(y => o.Y[y].vK !== undefined).map(y => y + ':' + o.Y[y].vK.toFixed(4) + '/' + Math.round(o.Y[y].wk) + '/' + Math.round(o.Y[y].res) + '/' + Math.round(o.Y[y].cv)).join(' '));
-  if (arg('json')) fs.writeFileSync(arg('json'), JSON.stringify({env, seed, from, n, years, sale: SALE, Y: o.Y}, null, 1));
+  if (!LAG) console.log('at-sale: yr, vK (dollars a private-ESP BU buys beyond face), workers\' share paid, premium left after repaying the advance (shared by last year\'s BU), carry after sharing: ' + Object.keys(o.Y).map(Number).sort((a, b) => a - b).filter(y => o.Y[y].vK !== undefined).map(y => y + ':' + o.Y[y].vK.toFixed(4) + '/' + Math.round(o.Y[y].wk) + '/' + Math.round(o.Y[y].res) + '/' + Math.round(o.Y[y].cv)).join(' '));
+  if (arg('json')) fs.writeFileSync(arg('json'), JSON.stringify({env, seed, from, n, years, sale: SALE, lag: LAG, a: BA, Y: o.Y}, null, 1));
 }
 module.exports = {engineCopy, run};
