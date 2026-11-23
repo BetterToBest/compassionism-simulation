@@ -4,7 +4,7 @@
   'use strict';
   var F = root.CSF, esc = F.esc;
   var STUDIES = [
-    ['r2-effects', 'v5.9: the main effects ', 'Five outcomes, each design against no programme, at the main row, in three environments and two horizons, with the erosion share of each wealth figure. Engine 104691f, seeds 1-500.'],
+    ['r2-effects', 'v5.9: the main effects ', 'Five outcomes, each design against no programme, at the main row, in three environments and two horizons, with the erosion share of each wealth figure. Release engine 50bc51d (v5.9.23), seeds 1-500.'],
     ['r2-curves', 'v5.9: how sure we are ', 'Every outcome across the preregistered readings: range, how many keep the sign, robust or fragile; the financed rows are marked.'],
     ['r2-backing', 'v5.9: how much new output backs the payout ', 'Effects at each backed share, the model’s own mechanism’s point and the break-even share.'],
     ['r2-financed', 'v5.9: paid for by a contribution instead ', 'Shown, never led with: the contribution needed, debt and the effects. Fragile across readings.'],

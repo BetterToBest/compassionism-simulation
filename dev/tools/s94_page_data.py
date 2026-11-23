@@ -73,6 +73,8 @@ def main():
     if len(sys.argv) != 2:
         sys.exit('usage: s94_page_data.py <path to s94-summary.json>')
     S = json.load(open(sys.argv[1]))['results']
+    global FOLDER
+    FOLDER = os.path.basename(os.path.dirname(os.path.abspath(sys.argv[1])))  # S93 part 4: the tables folder (its name ends in the engine commit)
     F, Ch, I, L = [], [], [], []
     for e, en in ENVS:
         for yrs in (20, 40):
@@ -98,8 +100,8 @@ def main():
                     x = o['effect']['M.main'][k]
                     L.append([en, yrs, dn, 'the main row against no programme', lab, r(x['est']), r(x['lo']), r(x['hi'])])
     base = {'prereg': 'prereg/2026-11-s94-collectives-lending.md (research-update; Amendments 1-2)', 'report': 'dev/reports/s94-collectives-lending.md',
-            'engine': 'c5682f9', 'seeds': 500, 'resultsFolder': 's94-tables-c5682f9', 'resultsRepo': 'BetterToBest/compassionism-sim-results',
-            'command': 'python3 dev/tools/s94_page_data.py s94-tables-c5682f9/s94-summary.json',
+            'engine': FOLDER.rsplit('-', 1)[1], 'seeds': 500, 'resultsFolder': FOLDER, 'resultsRepo': 'BetterToBest/compassionism-sim-results',
+            'command': 'python3 dev/tools/s94_page_data.py %s/s94-summary.json' % FOLDER,
             'intervals': "95% paired-bootstrap intervals over seeds 1-500 (10,000 replicates); the model's randomness only"}
     cols = ['environment', 'years', 'design', 'reading', 'outcome', 'change', 'lo95', 'hi95', 'category']
     write('s94-fund', dict(base, title="The Creative Collectives' fund for community businesses: every reading, each environment, horizon and design",

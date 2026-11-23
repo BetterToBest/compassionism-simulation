@@ -1,0 +1,116 @@
+rank,point,reading,kind,estimate,lo95,hi95,excludes_zero,shift_from_main,shift_lo95,shift_hi95
+1,32,single.gvSh=0,single,3,3,3,1,-38,-38,-38
+2,53,pair.gvSh x wIdx,pair,3,3,3,1,-38,-38,-38
+3,55,pair.gvSh x rho,pair,3,3,3,1,-38,-38,-38
+4,56,pair.cap x gvSh,pair,3,3,3,1,-38,-38,-38
+5,57,pair.gvSh x lfFl,pair,3,3,3,1,-38,-38,-38
+6,58,pair.gvSh x rtIx,pair,3,3,3,1,-38,-38,-38
+7,59,pair.gvSh x lfPm,pair,3,3,3,1,-38,-38,-38
+8,60,pair.gvSh x prBd,pair,3,3,3,1,-38,-38,-38
+9,72,pair.gvBase x gvSh,pair,3,3,3,1,-38,-38,-38
+10,73,pair.gvSh x prK,pair,3,3,3,1,-38,-38,-38
+11,74,pair.gvSh x prR,pair,3,3,3,1,-38,-38,-38
+12,75,pair.gvSh x prA,pair,3,3,3,1,-38,-38,-38
+13,76,pair.gvDk x gvSh,pair,3,3,3,1,-38,-38,-38
+14,77,pair.gvIp x gvSh,pair,3,3,3,1,-38,-38,-38
+15,78,pair.gvRr x gvSh,pair,3,3,3,1,-38,-38,-38
+16,79,pair.gvR x gvSh,pair,3,3,3,1,-38,-38,-38
+17,80,pair.gvSh x poHire,pair,3,3,3,1,-38,-38,-38
+18,81,pair.gvSh x poCost,pair,3,3,3,1,-38,-38,-38
+19,82,pair.gvRs x gvSh,pair,3,3,3,1,-38,-38,-38
+20,83,pair.gvSh x poPay,pair,3,3,3,1,-38,-38,-38
+21,84,pair.gvA x gvSh,pair,3,3,3,1,-38,-38,-38
+22,85,pair.gvSh x poBonus,pair,3,3,3,1,-38,-38,-38
+23,86,pair.drLim x gvSh,pair,3,3,3,1,-38,-38,-38
+24,87,pair.bgPi x gvSh,pair,3,3,3,1,-38,-38,-38
+25,88,pair.gvSh x prH,pair,3,3,3,1,-38,-38,-38
+26,89,pair.gvSh x lfConv,pair,3,3,3,1,-38,-38,-38
+27,90,pair.gvSh x paDem,pair,3,3,3,1,-38,-38,-38
+28,91,pair.gvSh x poTest,pair,3,3,3,1,-38,-38,-38
+29,92,pair.gvSh x rtChi,pair,3,3,3,1,-38,-38,-38
+30,98,pair.gvSh x rtPhi,pair,3,3,3,1,-38,-38,-38
+31,99,pair.gvSh x rtNs,pair,3,3,3,1,-38,-38,-38
+32,100,pair.gvSh x sc,pair,3,3,3,1,-38,-38,-38
+33,33,single.gvBase=w,single,4,4,4,1,-37,-37,-37
+34,36,single.cap=0,single,5,5,5,1,-36,-36,-36
+35,101,pair.cap x wIdx,pair,5,5,5,1,-36,-36,-36
+36,0,main row,main,41,41,41,1,0,0,0
+37,1,single.prK=0.2,single,41,41,41,1,0,0,0
+38,2,single.prR=0.45,single,41,41,41,1,0,0,0
+39,3,single.prA=0.5078,single,41,41,41,1,0,0,0
+40,4,single.prH=0.0446,single,41,41,41,1,0,0,0
+41,5,single.prBd=0.132,single,41,41,41,1,0,0,0
+42,6,single.sc=0.593,single,41,41,41,1,0,0,0
+43,7,single.wIdx=0.75,single,41,41,41,1,0,0,0
+44,8,single.rho=0.05,single,41,41,41,1,0,0,0
+45,9,single.rho=0.3,single,41,41,41,1,0,0,0
+46,10,single.paDem=1,single,41,41,41,1,0,0,0
+47,11,single.drLim=0,single,41,41,41,1,0,0,0
+48,12,single.drLim=10000,single,41,41,41,1,0,0,0
+49,13,single.lfConv=none,single,41,41,41,1,0,0,0
+50,14,single.lfFl=off,single,41,41,41,1,0,0,0
+51,15,single.lfPm=0,single,41,41,41,1,0,0,0
+52,16,single.lfPm=1,single,41,41,41,1,0,0,0
+53,17,single.rtPhi=0,single,41,41,41,1,0,0,0
+54,18,single.rtPhi=1,single,41,41,41,1,0,0,0
+55,19,single.rtNs=port,single,41,41,41,1,0,0,0
+56,20,single.rtIx=0.5,single,41,41,41,1,0,0,0
+57,21,single.rtChi=1,single,41,41,41,1,0,0,0
+58,22,single.bgPi=0.1,single,41,41,41,1,0,0,0
+59,23,single.bgM=1,single,41,41,41,1,0,0,0
+60,24,single.poCost=sector,single,41,41,41,1,0,0,0
+61,25,single.poCost=hub,single,41,41,41,1,0,0,0
+62,26,single.poTest=members,single,41,41,41,1,0,0,0
+63,27,single.poTest=capacity,single,41,41,41,1,0,0,0
+64,28,single.poHire=0.05,single,41,41,41,1,0,0,0
+65,29,single.poHire=0.02,single,41,41,41,1,0,0,0
+66,30,single.poBonus=members,single,41,41,41,1,0,0,0
+67,31,single.poPay=price,single,41,41,41,1,0,0,0
+68,34,single.gvBase=wc,single,41,41,41,1,0,0,0
+69,37,single.fin=money,single,41,41,41,1,0,0,0
+70,38,single.fin=cap,single,41,41,41,1,0,0,0
+71,39,single.gvRr=0,single,41,41,41,1,0,0,0
+72,40,single.gvRr=0.0196,single,41,41,41,1,0,0,0
+73,41,single.gvDk=0,single,41,41,41,1,0,0,0
+74,42,single.gvR=rule,single,41,41,41,1,0,0,0
+75,43,single.gvA=0.25,single,41,41,41,1,0,0,0
+76,44,single.gvA=1,single,41,41,41,1,0,0,0
+77,45,single.gvB=0,single,41,41,41,1,0,0,0
+78,46,single.gvB=1,single,41,41,41,1,0,0,0
+79,47,single.gvRs=0,single,41,41,41,1,0,0,0
+80,48,single.gvRs=0.02,single,41,41,41,1,0,0,0
+81,49,single.gvIp=borrow,single,41,41,41,1,0,0,0
+82,50,pair.fin x rtIx,pair,41,41,41,1,0,0,0
+83,51,pair.rtChi x rtIx,pair,41,41,41,1,0,0,0
+84,52,pair.rtIx x wIdx,pair,41,41,41,1,0,0,0
+85,54,pair.fin x gvSh,pair,41,41,41,1,0,0,0
+86,61,pair.rtIx x rtPhi,pair,41,41,41,1,0,0,0
+87,62,pair.rtIx x sc,pair,41,41,41,1,0,0,0
+88,63,pair.rho x rtIx,pair,41,41,41,1,0,0,0
+89,64,pair.rtIx x rtNs,pair,41,41,41,1,0,0,0
+90,65,pair.lfFl x rtIx,pair,41,41,41,1,0,0,0
+91,66,pair.fin x sc,pair,41,41,41,1,0,0,0
+92,67,pair.fin x wIdx,pair,41,41,41,1,0,0,0
+93,68,pair.fin x rtChi,pair,41,41,41,1,0,0,0
+94,69,pair.fin x rtPhi,pair,41,41,41,1,0,0,0
+95,70,pair.fin x rtNs,pair,41,41,41,1,0,0,0
+96,71,pair.fin x gvIp,pair,41,41,41,1,0,0,0
+97,93,pair.rho x wIdx,pair,41,41,41,1,0,0,0
+98,94,pair.lfFl x wIdx,pair,41,41,41,1,0,0,0
+99,95,pair.gvIp x wIdx,pair,41,41,41,1,0,0,0
+100,96,pair.bgPi x wIdx,pair,41,41,41,1,0,0,0
+101,97,pair.gvDk x wIdx,pair,41,41,41,1,0,0,0
+102,102,pair.lfPm x wIdx,pair,41,41,41,1,0,0,0
+103,103,pair.lfConv x wIdx,pair,41,41,41,1,0,0,0
+104,104,pair.poPay x wIdx,pair,41,41,41,1,0,0,0
+105,105,pair.prBd x wIdx,pair,41,41,41,1,0,0,0
+106,106,pair.prK x rtIx,pair,41,41,41,1,0,0,0
+107,107,pair.fin x lfFl,pair,41,41,41,1,0,0,0
+108,108,pair.fin x prBd,pair,41,41,41,1,0,0,0
+109,109,pair.fin x gvBase,pair,41,41,41,1,0,0,0
+110,110,pair.fin x rho,pair,41,41,41,1,0,0,0
+111,111,pair.fin x prK,pair,41,41,41,1,0,0,0
+112,112,pair.cap x fin,pair,41,41,41,1,0,0,0
+113,113,pair.fin x prA,pair,41,41,41,1,0,0,0
+114,114,pair.fin x prR,pair,41,41,41,1,0,0,0
+115,115,pair.bgPi x fin,pair,41,41,41,1,0,0,0

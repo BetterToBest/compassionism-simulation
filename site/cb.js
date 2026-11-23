@@ -49,7 +49,7 @@
   function load(files) { return Promise.all(files.filter(function (f) { return !D[f]; }).map(function (f) { return F.fetchJSON('data/studies/' + f + '.json').then(function (d) { D[f] = d; }); }).concat([F.loadWeights()])); }
   function basis(cbOn) {
     var m = D['s74-cb'].meta, r = D['r2-effects'].meta;
-    return F.weightNote() + '<p class="fx-note"><strong>Where these figures come from</strong> (simulation release and command). Central bank off: the frozen model (registered on OSF, with no central bank), engine <code>' + esc(r.engine) + '</code>, seeds 1-' + esc(String(r.seeds)) +
+    return F.weightNote() + '<p class="fx-note"><strong>Where these figures come from</strong> (simulation release and command): the release v5.9.23. Central bank off: the main row (the model has no central bank unless this switch adds it), engine <code>' + esc(r.engine) + '</code>, seeds 1-' + esc(String(r.seeds)) +
       ', results <code>r2-m-&lt;env&gt;-20-' + esc(r.engine) + '</code> (file <code>data/studies/r2-effects.json</code>). Central bank on: the central-bank study’s rerun with the release’s settings, engine <code>' + esc(m.engine) + '</code>, seeds 1-' + esc(String(m.seeds)) +
       ', results <code>' + esc(m.resultsFolder) + '</code> (file <code>data/studies/s74-cb.json</code>; <code>' + esc(m.command) + '</code>). Both in BetterToBest/compassionism-sim-results. Intervals cover the model’s randomness only.</p>';
   }

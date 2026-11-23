@@ -44,6 +44,8 @@ def main():
     if len(sys.argv) != 2:
         sys.exit('usage: s85_page_data.py <path to s85-summary.json>')
     S = json.load(open(sys.argv[1]))['results']
+    global FOLDER
+    FOLDER = os.path.basename(os.path.dirname(os.path.abspath(sys.argv[1])))  # S93 part 4: the tables folder (its name ends in the engine commit)
     A, B, T = [], [], []
     for e, en in ENVS:
         for yrs in (20, 40):
@@ -73,8 +75,8 @@ def main():
                     B.append([en, yrs, dn, 'main reading' if var == 'main' else VARIANTS[var], m, g, Dv,
                               r(x['A']['est']), r(x['A']['lo']), r(x['A']['hi']), r(x['infl']['est']), r(x['infl']['lo']), r(x['infl']['hi']), x['cat']])
     base = {'prereg': 'prereg/2026-11-s85-output-per-hour.md (research-update; Amendments 1-4)', 'report': 'dev/reports/s85-output-per-hour.md',
-            'engine': '503fa48', 'seeds': 500, 'resultsFolder': 's85-tables2-503fa48', 'resultsRepo': 'BetterToBest/compassionism-sim-results',
-            'command': 'python3 dev/tools/s85_page_data.py s85-tables2-503fa48/s85-summary.json',
+            'engine': FOLDER.rsplit('-', 1)[1], 'seeds': 500, 'resultsFolder': FOLDER, 'resultsRepo': 'BetterToBest/compassionism-sim-results',
+            'command': 'python3 dev/tools/s85_page_data.py %s/s85-summary.json' % FOLDER,
             'intervals': '95% paired-bootstrap intervals over seeds 1-500 (10,000 replicates); the model\'s randomness only'}
     write('s85-automation', dict(base, title='Automation in both runs (displacement of 10-70% of paid work by year 20, as lost jobs or shorter hours), '
                                  'at full backing: displacement\'s cost with no programme and with it, and the share the programme takes away',

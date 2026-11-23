@@ -2,6 +2,7 @@
 
 Usage: python3 dev/tools/r2_study_files.py            writes data/studies/r2-*.json
        python3 dev/tools/r2_study_files.py --check    exits 1 if any file is not what this script writes from dev/runs/s64-round2/ and dev/runs/s64-erosion/
+       python3 dev/tools/r2_study_files.py --engine=50bc51d [--check]   the release's files (v5.9.23), from dev/runs/s93-round2/ and dev/runs/s93-erosion/
 
 Nothing is recomputed. Every row is a value that dev/tools/s64_tables.py (summary file s64-summary.json) or dev/tools/s64_erosion.js (summary file) printed.
 Files, in the same shape as study_files.py writes (meta, columns, data as one list per column; a missing value is null):
@@ -23,6 +24,21 @@ EROSION = os.path.join('dev', 'runs', 's64-erosion', 'summary.json')
 ENGINE = '104691f'
 PREREG = 'prereg/2026-11-s63-round2-freeze.md (research-update; registered on OSF, https://osf.io/msdzk/overview; Amendments 1-4)'
 RESULTS = 'r2-<part>-<env>-<years>-104691f (parts m, s, f), r2-tables-104691f, r2-erosion-104691f'
+CHARTS = os.path.join('dev', 'runs', 's64-round2', 'charts')
+# S93 part 4 (Nov 23, 2026): --engine=50bc51d writes the release's files from the reruns on the release engine (v5.9.23), copied from
+# compassionism-sim-results r2-tables-50bc51d (s64-summary.json, curves/) into dev/runs/s93-round2/ and r2-erosion-50bc51d/summary.json into
+# dev/runs/s93-erosion/; the charts are dev/tools/s64_charts.py run on dev/runs/s93-round2. Without it, the published v5.9 files (unchanged).
+REL = {'50bc51d': {'dir': 's93-round2', 'ero': 's93-erosion',
+                   'prereg': PREREG + '; the release reruns: prereg/2026-11-s90-private-price-at-sale.md, Amendments 2-6',
+                   'results': 'r2-<part>-<env>-<years>-50bc51d (parts m, s, f, b), r2-tables-50bc51d, r2-erosion-50bc51d'}}
+_E = [a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--engine=')]
+if _E:
+    if _E[0] not in REL: sys.exit('r2_study_files.py: unknown --engine %s (known: %s)' % (_E[0], ', '.join(REL)))
+    _R = REL[_E[0]]
+    SUMMARY = os.path.join('dev', 'runs', _R['dir'], 's64-summary.json')
+    EROSION = os.path.join('dev', 'runs', _R['ero'], 'summary.json')
+    ENGINE, PREREG, RESULTS = _E[0], _R['prereg'], _R['results']
+    CHARTS = os.path.join('dev', 'runs', _R['dir'], 'charts')
 ENVN = {'ref': 'Reference', 'adv': 'Adverse', 'str': 'Stress', 'st': 'Stress'}
 DESN = {'c22': 'C2.2', 'rel': 'release design'}
 OUTN = {'bNAPy': 'basic living (adult-years below 30 days, points)', 'fgt0PY': 'cost of living (basket poverty, adult-years, points)',
@@ -155,7 +171,7 @@ def main():
             with open(p, 'w', encoding='utf-8') as f:
                 f.write(want)
             print('wrote', p, d['meta']['n'], 'rows')
-    src = os.path.join(ROOT, 'dev', 'runs', 's64-round2', 'charts')
+    src = os.path.join(ROOT, CHARTS)
     dst = os.path.join(OUTDIR, 'r2-charts')
     for fn in sorted(x for x in os.listdir(src) if x.endswith('.svg')):
         a, b = open(os.path.join(src, fn), 'rb').read(), None

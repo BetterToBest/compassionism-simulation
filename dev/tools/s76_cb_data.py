@@ -104,7 +104,7 @@ def main():
                     'engine': man['commit'][:7], 'seeds': len(files['ref']['c22']['off'][0]['fgt0PY']),
                     'rows': 'release 2\'s main row (r2FreezePair, full backing) with the release\'s global settings; arms: no central bank, the policy-rate rule (cb, forced sales on); History also the actual rate path',
                     'resultsFolder': folder, 'resultsRepo': 'BetterToBest/compassionism-sim-results',
-                    'command': 'python3 dev/tools/s76_cb_data.py ' + folder + ' --check-r2=<folder with r2-m-*-20-104691f>',
+                    'command': 'python3 dev/tools/s76_cb_data.py ' + folder + ' --check-r2=<folder with r2-m-*-20-%s>' % r2e + ('' if r2e == '104691f' else ' --r2-engine=' + r2e),
                     'intervals': '95% intervals over paired seeds (mean of the per-seed differences, +/- 1.96 standard errors); the model\'s randomness only',
                     'n': len(rows)},
            'columns': cols, 'data': [list(c) for c in zip(*rows)],

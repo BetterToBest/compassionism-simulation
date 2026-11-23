@@ -1,23 +1,23 @@
 {
- "about": "Release 2’s visual-suite series (S11, S81): the main row of release 2 (engine 104691f), re-run at engine commit a60bd3e by job X4 and checked equal to release 2’s stored results, value by value. Every plain key equals job X2’s (engine commit 5b62481, the first source of these files); the weighted keys (w…) count each simulated adult at its population weight. Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x4-a60bd3e; release 1’s suite files (v5.6/) are unchanged.",
+ "about": "The visual suite’s series for the release (v5.9.23, engine 50bc51d): the release main row, with the private businesses’ lower BU price set at the sale, pay by household type and the child and dependent care credit, run by the visual suite’s jobs on the release engine and checked equal to the rerun part M (r2-m-<env>-<years>-50bc51d), every engine key of every row and seed. Every plain key of x4 equals x2’s; the weighted keys (w…) count each simulated adult at its population weight. Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x4-50bc51d; release 1’s suite files (v5.6/) are unchanged.",
  "release": "2",
- "engine": "104691f3993ac6f37d6ff1b8ccd4690120cfe949",
- "rerunAt": "a60bd3ecc54743427578ae2d8c81111137ca4133",
+ "engine": "50bc51d1d551697232fdaa74421325ce66432de6",
+ "rerunAt": "50bc51d1d551697232fdaa74421325ce66432de6",
  "study": "x4",
  "seeds": 500,
  "agents": 500,
  "lifeSeed": 1,
  "results": {
   "repo": "BetterToBest/compassionism-sim-results",
-  "folder": "x4-a60bd3e",
-  "workflow": "run-study run 127, Nov 17, 2026 (GitHub Actions)"
+  "folder": "x4-50bc51d",
+  "workflow": "run-study run 292, Nov 23, 2026 (GitHub Actions)"
  },
- "prereg": "prereg/2026-11-x4-weighted-addendum.md (BetterToBest/research-update)",
+ "prereg": "prereg/2026-11-x4-weighted-addendum.md and prereg/2026-11-s90-private-price-at-sale.md, Amendments 2-6 (BetterToBest/research-update)",
  "plainFrom": {
   "study": "x2",
-  "rerunAt": "5b62481326f3b82cc714e20e4cd4ec3726357dd2",
-  "folder": "x2-5b62481",
-  "workflow": "run-study run 125, Nov 16, 2026 (GitHub Actions)",
+  "rerunAt": "50bc51d1d551697232fdaa74421325ce66432de6",
+  "folder": "x2-50bc51d",
+  "workflow": "run-study run 290, Nov 23, 2026 (GitHub Actions)",
   "prereg": "prereg/2026-11-x2-series-addendum.md (BetterToBest/research-update)",
   "about": "job X4 re-ran job X2’s series with the weighted keys added; every plain key of every row, year and environment equals job X2’s (checked by dev/tools/suite_r2.py and in the results folder’s run notes)."
  },
@@ -45,12 +45,12 @@
   "40": "r2/suite-40.json"
  },
  "suiteSha256": {
-  "20": "99d34961632b71ee205570e94acb4820411b99a29deeabc7c1865e7fc6d31eac",
-  "40": "d74a5e413f39c23155a82615c7b330d7795724fdb593a2fe77dde7f8a45daadf"
+  "20": "2fb763caa52286fced4e00a7deb2af8586adb009f0fb4289c966e945f98f97a4",
+  "40": "e2145ee9806b92687f2cd73e5ff41b064970428dc7fed1d96cb24bc9e7d5f970"
  },
  "effectsFrom": {
   "file": "data/studies/r2-effects.json",
-  "engine": "104691f",
+  "engine": "50bc51d",
   "seeds": 500,
   "intervals": "95% bootstrap intervals over seeds 1-500 (the seed interval: the model's randomness only, not the choice of reading)",
   "report": "dev/reports/s64-round2-q1-main-effects.md"
@@ -60,85 +60,85 @@
    "ref": {
     "c22": {
      "bl": {
-      "np": 19.61608,
-      "p": 0.89208,
-      "effect": -18.724,
-      "lo95": -18.834862,
-      "hi95": -18.61434,
+      "np": 20.30994,
+      "p": 0.96302,
+      "effect": -19.34692,
+      "lo95": -19.463426,
+      "hi95": -19.232831,
       "material": "yes"
      },
      "bk": {
-      "np": 36.09766,
-      "p": 3.70686,
-      "effect": -32.3908,
-      "lo95": -32.541887,
-      "hi95": -32.241773,
+      "np": 36.36168,
+      "p": 3.52574,
+      "effect": -32.83594,
+      "lo95": -32.991916,
+      "hi95": -32.676914,
       "material": "yes"
      },
      "wp": {
-      "np": 24.603789,
-      "p": 6.004589,
-      "effect": -18.5992,
-      "lo95": -18.710328,
-      "hi95": -18.490414,
+      "np": 25.132316,
+      "p": 6.234884,
+      "effect": -18.897432,
+      "lo95": -19.014967,
+      "hi95": -18.782245,
       "material": "yes"
      },
      "mw": {
-      "np": 223853.008552,
-      "p": 432297.421862,
-      "effect": 208444.41331,
-      "lo95": 207111.116953,
-      "hi95": 209878.51475,
+      "np": 224184.913521,
+      "p": 434102.490141,
+      "effect": 209917.57662,
+      "lo95": 208559.28802,
+      "hi95": 211240.856199,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.151163,
-      "effect": 0.151163,
-      "lo95": 0.149993,
-      "hi95": 0.152265,
+      "p": 0.158062,
+      "effect": 0.158062,
+      "lo95": 0.156953,
+      "hi95": 0.159155,
       "material": "no"
      }
     },
     "release": {
      "bl": {
-      "np": 19.61608,
-      "p": 7.2962,
-      "effect": -12.31988,
-      "lo95": -12.426267,
-      "hi95": -12.215417,
+      "np": 20.30994,
+      "p": 8.01096,
+      "effect": -12.29898,
+      "lo95": -12.409093,
+      "hi95": -12.193292,
       "material": "yes"
      },
      "bk": {
-      "np": 36.09766,
-      "p": 15.1793,
-      "effect": -20.91836,
-      "lo95": -21.046632,
-      "hi95": -20.79533,
+      "np": 36.36168,
+      "p": 16.02658,
+      "effect": -20.3351,
+      "lo95": -20.472582,
+      "hi95": -20.203093,
       "material": "yes"
      },
      "wp": {
-      "np": 24.603789,
-      "p": 13.702358,
-      "effect": -10.901432,
-      "lo95": -11.006506,
-      "hi95": -10.800414,
+      "np": 25.132316,
+      "p": 14.292884,
+      "effect": -10.839432,
+      "lo95": -10.946766,
+      "hi95": -10.730686,
       "material": "yes"
      },
      "mw": {
-      "np": 223853.008552,
-      "p": 323278.330024,
-      "effect": 99425.321472,
-      "lo95": 98240.574655,
-      "hi95": 100661.148343,
+      "np": 224184.913521,
+      "p": 323882.278543,
+      "effect": 99697.365022,
+      "lo95": 98442.442865,
+      "hi95": 100951.347112,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.118401,
-      "effect": 0.118401,
-      "lo95": 0.1174,
-      "hi95": 0.119367,
+      "p": 0.121819,
+      "effect": 0.121819,
+      "lo95": 0.120885,
+      "hi95": 0.122765,
       "material": "no"
      }
     }
@@ -146,85 +146,85 @@
    "adv": {
     "c22": {
      "bl": {
-      "np": 20.64382,
-      "p": 0.81344,
-      "effect": -19.83038,
-      "lo95": -19.94528,
-      "hi95": -19.718155,
+      "np": 21.2349,
+      "p": 0.88084,
+      "effect": -20.35406,
+      "lo95": -20.473603,
+      "hi95": -20.238056,
       "material": "yes"
      },
      "bk": {
-      "np": 44.629,
-      "p": 3.99434,
-      "effect": -40.63466,
-      "lo95": -40.815933,
-      "hi95": -40.455148,
+      "np": 44.50608,
+      "p": 3.8861,
+      "effect": -40.61998,
+      "lo95": -40.801911,
+      "hi95": -40.43156,
       "material": "yes"
      },
      "wp": {
-      "np": 25.540358,
-      "p": 5.907158,
-      "effect": -19.6332,
-      "lo95": -19.755568,
-      "hi95": -19.518406,
+      "np": 25.962611,
+      "p": 6.100274,
+      "effect": -19.862337,
+      "lo95": -19.986978,
+      "hi95": -19.737237,
       "material": "yes"
      },
      "mw": {
-      "np": 202097.25604,
-      "p": 399514.934761,
-      "effect": 197417.67872,
-      "lo95": 196134.552761,
-      "hi95": 198678.735885,
+      "np": 203211.732634,
+      "p": 402215.241864,
+      "effect": 199003.509229,
+      "lo95": 197729.050635,
+      "hi95": 200351.614656,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.183398,
-      "effect": 0.183398,
-      "lo95": 0.182041,
-      "hi95": 0.184722,
+      "p": 0.187816,
+      "effect": 0.187816,
+      "lo95": 0.186464,
+      "hi95": 0.189141,
       "material": "no"
      }
     },
     "release": {
      "bl": {
-      "np": 20.64382,
-      "p": 10.04108,
-      "effect": -10.60274,
-      "lo95": -10.70812,
-      "hi95": -10.500037,
+      "np": 21.2349,
+      "p": 10.69506,
+      "effect": -10.53984,
+      "lo95": -10.646636,
+      "hi95": -10.432866,
       "material": "yes"
      },
      "bk": {
-      "np": 44.629,
-      "p": 25.7135,
-      "effect": -18.9155,
-      "lo95": -19.053781,
-      "hi95": -18.780199,
+      "np": 44.50608,
+      "p": 26.3512,
+      "effect": -18.15488,
+      "lo95": -18.28573,
+      "hi95": -18.014097,
       "material": "yes"
      },
      "wp": {
-      "np": 25.540358,
-      "p": 15.957558,
-      "effect": -9.5828,
-      "lo95": -9.692802,
-      "hi95": -9.469659,
+      "np": 25.962611,
+      "p": 16.514568,
+      "effect": -9.448042,
+      "lo95": -9.55569,
+      "hi95": -9.339516,
       "material": "yes"
      },
      "mw": {
-      "np": 202097.25604,
-      "p": 274107.768189,
-      "effect": 72010.512149,
-      "lo95": 70914.804283,
-      "hi95": 73193.075903,
+      "np": 203211.732634,
+      "p": 275289.128324,
+      "effect": 72077.39569,
+      "lo95": 71001.236162,
+      "hi95": 73175.493581,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.078854,
-      "effect": 0.078854,
-      "lo95": 0.077451,
-      "hi95": 0.080195,
+      "p": 0.077388,
+      "effect": 0.077388,
+      "lo95": 0.075987,
+      "hi95": 0.078679,
       "material": "no"
      }
     }
@@ -232,85 +232,85 @@
    "st": {
     "c22": {
      "bl": {
-      "np": 20.64382,
-      "p": 0.8094,
-      "effect": -19.83442,
-      "lo95": -19.950588,
-      "hi95": -19.721987,
+      "np": 21.2349,
+      "p": 0.88176,
+      "effect": -20.35314,
+      "lo95": -20.472721,
+      "hi95": -20.237221,
       "material": "yes"
      },
      "bk": {
-      "np": 44.629,
-      "p": 4.50144,
-      "effect": -40.12756,
-      "lo95": -40.302062,
-      "hi95": -39.942739,
+      "np": 44.50608,
+      "p": 4.40288,
+      "effect": -40.1032,
+      "lo95": -40.28624,
+      "hi95": -39.915571,
       "material": "yes"
      },
      "wp": {
-      "np": 25.540358,
-      "p": 6.477874,
-      "effect": -19.062484,
-      "lo95": -19.184646,
-      "hi95": -18.946556,
+      "np": 25.962611,
+      "p": 6.650547,
+      "effect": -19.312063,
+      "lo95": -19.434712,
+      "hi95": -19.188467,
       "material": "yes"
      },
      "mw": {
-      "np": 202097.25604,
-      "p": 371588.079062,
-      "effect": 169490.823021,
-      "lo95": 168250.004563,
-      "hi95": 170723.209621,
+      "np": 203211.732634,
+      "p": 374427.926786,
+      "effect": 171216.194152,
+      "lo95": 169937.36865,
+      "hi95": 172476.826076,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.182915,
-      "effect": 0.182915,
-      "lo95": 0.181533,
-      "hi95": 0.184235,
+      "p": 0.187336,
+      "effect": 0.187336,
+      "lo95": 0.185987,
+      "hi95": 0.188652,
       "material": "no"
      }
     },
     "release": {
      "bl": {
-      "np": 20.64382,
-      "p": 16.3878,
-      "effect": -4.25602,
-      "lo95": -4.330771,
-      "hi95": -4.181376,
+      "np": 21.2349,
+      "p": 16.98412,
+      "effect": -4.25078,
+      "lo95": -4.322469,
+      "hi95": -4.177432,
       "material": "yes"
      },
      "bk": {
-      "np": 44.629,
-      "p": 36.95782,
-      "effect": -7.67118,
-      "lo95": -7.764147,
-      "hi95": -7.580299,
+      "np": 44.50608,
+      "p": 37.12656,
+      "effect": -7.37952,
+      "lo95": -7.467935,
+      "hi95": -7.289335,
       "material": "yes"
      },
      "wp": {
-      "np": 25.540358,
-      "p": 21.658147,
-      "effect": -3.882211,
-      "lo95": -3.952239,
-      "hi95": -3.808164,
+      "np": 25.962611,
+      "p": 22.156463,
+      "effect": -3.806147,
+      "lo95": -3.876696,
+      "hi95": -3.733261,
       "material": "yes"
      },
      "mw": {
-      "np": 202097.25604,
-      "p": 230916.787637,
-      "effect": 28819.531596,
-      "lo95": 27990.68102,
-      "hi95": 29712.458566,
+      "np": 203211.732634,
+      "p": 232170.22203,
+      "effect": 28958.489396,
+      "lo95": 28116.856546,
+      "hi95": 29793.229136,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.015505,
-      "effect": 0.015505,
-      "lo95": 0.014367,
-      "hi95": 0.016594,
+      "p": 0.013986,
+      "effect": 0.013986,
+      "lo95": 0.012872,
+      "hi95": 0.015049,
       "material": "no"
      }
     }
@@ -320,85 +320,85 @@
    "ref": {
     "c22": {
      "bl": {
-      "np": 19.39569,
-      "p": 0.49076,
-      "effect": -18.90493,
-      "lo95": -19.020434,
-      "hi95": -18.794214,
+      "np": 20.23059,
+      "p": 0.54178,
+      "effect": -19.68881,
+      "lo95": -19.812041,
+      "hi95": -19.573502,
       "material": "yes"
      },
      "bk": {
-      "np": 32.83351,
-      "p": 2.10088,
-      "effect": -30.73263,
-      "lo95": -30.866946,
-      "hi95": -30.597056,
+      "np": 33.2575,
+      "p": 2.03531,
+      "effect": -31.22219,
+      "lo95": -31.357379,
+      "hi95": -31.086327,
       "material": "yes"
      },
      "wp": {
-      "np": 23.256092,
-      "p": 3.204697,
-      "effect": -20.051395,
-      "lo95": -20.164791,
-      "hi95": -19.941596,
+      "np": 23.948646,
+      "p": 3.40599,
+      "effect": -20.542656,
+      "lo95": -20.662177,
+      "hi95": -20.424097,
       "material": "yes"
      },
      "mw": {
-      "np": 400997.295854,
-      "p": 843651.306074,
-      "effect": 442654.01022,
-      "lo95": 440256.782819,
-      "hi95": 445127.886753,
+      "np": 403330.010454,
+      "p": 844740.136878,
+      "effect": 441410.126424,
+      "lo95": 438881.910653,
+      "hi95": 444010.558429,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.062087,
-      "effect": 0.062087,
-      "lo95": 0.061547,
-      "hi95": 0.062617,
+      "p": 0.065547,
+      "effect": 0.065547,
+      "lo95": 0.065007,
+      "hi95": 0.066079,
       "material": "no"
      }
     },
     "release": {
      "bl": {
-      "np": 19.39569,
-      "p": 5.86154,
-      "effect": -13.53415,
-      "lo95": -13.640618,
-      "hi95": -13.429689,
+      "np": 20.23059,
+      "p": 6.73245,
+      "effect": -13.49814,
+      "lo95": -13.609772,
+      "hi95": -13.389928,
       "material": "yes"
      },
      "bk": {
-      "np": 32.83351,
-      "p": 12.85558,
-      "effect": -19.97793,
-      "lo95": -20.097802,
-      "hi95": -19.865252,
+      "np": 33.2575,
+      "p": 13.75129,
+      "effect": -19.50621,
+      "lo95": -19.627938,
+      "hi95": -19.387965,
       "material": "yes"
      },
      "wp": {
-      "np": 23.256092,
-      "p": 10.354974,
-      "effect": -12.901118,
-      "lo95": -13.005989,
-      "hi95": -12.799325,
+      "np": 23.948646,
+      "p": 11.21959,
+      "effect": -12.729056,
+      "lo95": -12.8369,
+      "hi95": -12.620973,
       "material": "yes"
      },
      "mw": {
-      "np": 400997.295854,
-      "p": 613144.553493,
-      "effect": 212147.257639,
-      "lo95": 209884.24694,
-      "hi95": 214426.128003,
+      "np": 403330.010454,
+      "p": 614140.094413,
+      "effect": 210810.083958,
+      "lo95": 208474.198912,
+      "hi95": 213012.219881,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.049586,
-      "effect": 0.049586,
-      "lo95": 0.049143,
-      "hi95": 0.05002,
+      "p": 0.051658,
+      "effect": 0.051658,
+      "lo95": 0.051213,
+      "hi95": 0.052098,
       "material": "no"
      }
     }
@@ -406,85 +406,85 @@
    "adv": {
     "c22": {
      "bl": {
-      "np": 23.4277,
-      "p": 0.46558,
-      "effect": -22.96212,
-      "lo95": -23.085555,
-      "hi95": -22.844259,
+      "np": 23.94972,
+      "p": 0.51991,
+      "effect": -23.42981,
+      "lo95": -23.554323,
+      "hi95": -23.305813,
       "material": "yes"
      },
      "bk": {
-      "np": 48.47055,
-      "p": 2.37124,
-      "effect": -46.09931,
-      "lo95": -46.267773,
-      "hi95": -45.927384,
+      "np": 48.17222,
+      "p": 2.38932,
+      "effect": -45.7829,
+      "lo95": -45.956422,
+      "hi95": -45.601698,
       "material": "yes"
      },
      "wp": {
-      "np": 27.038985,
-      "p": 3.250738,
-      "effect": -23.788246,
-      "lo95": -23.917433,
-      "hi95": -23.663998,
+      "np": 27.452113,
+      "p": 3.454831,
+      "effect": -23.997282,
+      "lo95": -24.126147,
+      "hi95": -23.866406,
       "material": "yes"
      },
      "mw": {
-      "np": 273526.574677,
-      "p": 662353.629546,
-      "effect": 388827.054869,
-      "lo95": 386506.55504,
-      "hi95": 391026.066537,
+      "np": 275157.362368,
+      "p": 665450.664993,
+      "effect": 390293.302625,
+      "lo95": 387990.615747,
+      "hi95": 392536.728397,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.089863,
-      "effect": 0.089863,
-      "lo95": 0.089193,
-      "hi95": 0.090522,
+      "p": 0.092108,
+      "effect": 0.092108,
+      "lo95": 0.091429,
+      "hi95": 0.092765,
       "material": "no"
      }
     },
     "release": {
      "bl": {
-      "np": 23.4277,
-      "p": 12.24677,
-      "effect": -11.18093,
-      "lo95": -11.285972,
-      "hi95": -11.080004,
+      "np": 23.94972,
+      "p": 13.03458,
+      "effect": -10.91514,
+      "lo95": -11.022946,
+      "hi95": -10.807323,
       "material": "yes"
      },
      "bk": {
-      "np": 48.47055,
-      "p": 31.80194,
-      "effect": -16.66861,
-      "lo95": -16.783165,
-      "hi95": -16.556249,
+      "np": 48.17222,
+      "p": 32.21621,
+      "effect": -15.95601,
+      "lo95": -16.065461,
+      "hi95": -15.843,
       "material": "yes"
      },
      "wp": {
-      "np": 27.038985,
-      "p": 16.332256,
-      "effect": -10.706728,
-      "lo95": -10.820739,
-      "hi95": -10.590287,
+      "np": 27.452113,
+      "p": 17.042462,
+      "effect": -10.409651,
+      "lo95": -10.521286,
+      "hi95": -10.299678,
       "material": "yes"
      },
      "mw": {
-      "np": 273526.574677,
-      "p": 386851.777709,
-      "effect": 113325.203032,
-      "lo95": 111525.63844,
-      "hi95": 115032.263108,
+      "np": 275157.362368,
+      "p": 388385.04112,
+      "effect": 113227.678752,
+      "lo95": 111479.772083,
+      "hi95": 114949.47192,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.010524,
-      "effect": 0.010524,
-      "lo95": 0.009858,
-      "hi95": 0.011142,
+      "p": 0.009714,
+      "effect": 0.009714,
+      "lo95": 0.009087,
+      "hi95": 0.010315,
       "material": "no"
      }
     }
@@ -492,85 +492,85 @@
    "st": {
     "c22": {
      "bl": {
-      "np": 23.4277,
-      "p": 0.47784,
-      "effect": -22.94986,
-      "lo95": -23.074342,
-      "hi95": -22.830996,
+      "np": 23.94972,
+      "p": 0.54045,
+      "effect": -23.40927,
+      "lo95": -23.533928,
+      "hi95": -23.285359,
       "material": "yes"
      },
      "bk": {
-      "np": 48.47055,
-      "p": 3.09841,
-      "effect": -45.37214,
-      "lo95": -45.539503,
-      "hi95": -45.20336,
+      "np": 48.17222,
+      "p": 3.16821,
+      "effect": -45.00401,
+      "lo95": -45.176496,
+      "hi95": -44.822465,
       "material": "yes"
      },
      "wp": {
-      "np": 27.038985,
-      "p": 3.788872,
-      "effect": -23.250113,
-      "lo95": -23.378507,
-      "hi95": -23.125989,
+      "np": 27.452113,
+      "p": 4.035477,
+      "effect": -23.416636,
+      "lo95": -23.541736,
+      "hi95": -23.285095,
       "material": "yes"
      },
      "mw": {
-      "np": 273526.574677,
-      "p": 604237.882088,
-      "effect": 330711.307411,
-      "lo95": 328596.733524,
-      "hi95": 332905.827301,
+      "np": 275157.362368,
+      "p": 607938.179145,
+      "effect": 332780.816777,
+      "lo95": 330609.655164,
+      "hi95": 334894.529306,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 0.089479,
-      "effect": 0.089479,
-      "lo95": 0.0888,
-      "hi95": 0.090139,
+      "p": 0.091677,
+      "effect": 0.091677,
+      "lo95": 0.090999,
+      "hi95": 0.092335,
       "material": "no"
      }
     },
     "release": {
      "bl": {
-      "np": 23.4277,
-      "p": 18.88653,
-      "effect": -4.54117,
-      "lo95": -4.61234,
-      "hi95": -4.468436,
+      "np": 23.94972,
+      "p": 19.50621,
+      "effect": -4.44351,
+      "lo95": -4.511575,
+      "hi95": -4.376279,
       "material": "yes"
      },
      "bk": {
-      "np": 48.47055,
-      "p": 41.72524,
-      "effect": -6.74531,
-      "lo95": -6.815952,
-      "hi95": -6.673483,
+      "np": 48.17222,
+      "p": 41.71974,
+      "effect": -6.45248,
+      "lo95": -6.519551,
+      "hi95": -6.38494,
       "material": "yes"
      },
      "wp": {
-      "np": 27.038985,
-      "p": 22.693815,
-      "effect": -4.345169,
-      "lo95": -4.419092,
-      "hi95": -4.268575,
+      "np": 27.452113,
+      "p": 23.235949,
+      "effect": -4.216164,
+      "lo95": -4.287444,
+      "hi95": -4.144386,
       "material": "yes"
      },
      "mw": {
-      "np": 273526.574677,
-      "p": 319879.167454,
-      "effect": 46352.592777,
-      "lo95": 45157.955559,
-      "hi95": 47627.125674,
+      "np": 275157.362368,
+      "p": 321054.759798,
+      "effect": 45897.39743,
+      "lo95": 44630.807031,
+      "hi95": 47164.270948,
       "material": "yes"
      },
      "inf": {
       "np": 0.0,
-      "p": 7.6e-05,
-      "effect": 7.6e-05,
-      "lo95": 3.1e-05,
-      "hi95": 0.000134,
+      "p": 6.3e-05,
+      "effect": 6.3e-05,
+      "lo95": 2.4e-05,
+      "hi95": 0.000115,
       "material": "no"
      }
     }
@@ -582,16 +582,16 @@
   "40": "r2/study-40.json"
  },
  "studySha256": {
-  "20": "3af82d5ddd052fb9babf9ce4f62c57cc01e00f13dcc1cd30eaf9eb77b366ab1f",
-  "40": "b10427608c5b90349296646cece9ff7c740bbd366d2c3dab04b5b2fe9264f95c"
+  "20": "fa3d0f5d233f26ab696f7794ad1caed02d2487a6ca6cd42483cdecbcd9f8bb2b",
+  "40": "9b2365c81b055f824ff7b8510ced064a97fbd5b4d781fea9c06f56ff560c75e1"
  },
  "studyFrom": {
   "study": "x3",
-  "rerunAt": "6d095a1eefe71abbb025b82e8942cd80cfe9a34a",
+  "rerunAt": "50bc51d1d551697232fdaa74421325ce66432de6",
   "results": {
    "repo": "BetterToBest/compassionism-sim-results",
-   "folder": "x3-6d095a1",
-   "workflow": "run-study run 126, Nov 17, 2026 (GitHub Actions)"
+   "folder": "x3-50bc51d",
+   "workflow": "run-study run 291, Nov 23, 2026 (GitHub Actions)"
   },
   "prereg": "prereg/2026-11-x3-measures-addendum.md (BetterToBest/research-update)",
   "about": "The measures study and the BLEI paper’s other measures (EDC, FBS, IPBI’s public costs avoided) for release 2’s main row, re-run by job X3 with two reporting switches (the measured EDC and the FBS50 tally) and checked equal to release 2’s stored results, every key, row and seed."
