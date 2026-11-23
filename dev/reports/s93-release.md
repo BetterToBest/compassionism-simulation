@@ -43,15 +43,18 @@ Two kinds of check were run **before any figure was read**:
 **The main rows** (`s93-release-tables-50bc51d`). The change from the published v5.9 main rows to the release main rows is split into two steps. Each step is measured on the same 500 paired seeds, with 95% intervals.
 
 - Across 60 primary effects (two designs, three environments, two horizons, five outcomes), **no effect changes sign**. Its rounded value (two decimals, or whole dollars) changes in 53 of the 60. Overall, 21 changes favour the programme, 25 go against it, and in 14 the interval includes zero.
-- **The price at the sale** moved every poverty and wealth effect in the programme's favour.
+Each bullet below gives one step's change on its own; the tables give both steps and their total for every cell.
+
+- **The price at the sale** moved every poverty and wealth effect in the programme's favour (a negative change to a poverty effect is a larger cut).
   - Basket poverty: the full-coverage design's cut grew by 0.28 to 0.59 points, the opt-in design's by 0.04 to 0.26.
   - Median real wealth: the gain grew by $481 to $1,525 (full coverage) and $110 to $605 (opt-in).
   - Programme inflation: it changed by less than 0.0001 points a year. It rose by that much at most in four full-coverage cells (Adverse and Stress); elsewhere it fell slightly or did not change measurably.
 - **Pay by household type and the care credit** moved the two designs differently, as expected before the reruns:
   - **Opt-in design:** every poverty cut shrank. Basket poverty by 0.33 to 0.94 points, below 30 days of basic living by 0.13 to 0.39, and too little wealth by 0.19 to 0.42.
-  - **Full-coverage design:** its cut below 30 days of basic living grew by 0.42 to 0.75 points, and its other effects moved both ways.
+  - **Full-coverage design:** its cut below 30 days of basic living grew by 0.42 to 0.75 points. Its cut in basket poverty shrank in five of the six cells (by 0.11 to 0.68 points) and grew in Reference at 40 years (by 0.21). Its other effects moved little, most within their intervals.
+  - **Programme inflation:** the two additions raised it by 0.002 to 0.007 points a year in the full-coverage design; in the opt-in design they changed it by −0.001 to +0.003.
 
-**Every figure the pages print** (`s93-page-check-50bc51d`). The pages were rendered twice, from the published data and from the release data, and every printed figure was paired by its file, row and column. Of 3,262 printed figures, 2,132 change as printed and 37 change sign. Besides the readings below, the sign changes are bounds of intervals near zero and one financed basket-poverty cell (full coverage, Stress, 20 years: +0.6 to −0.6 points). The changes worth stating:
+**Every figure the pages print** (`s93-page-check-50bc51d`). The pages were rendered twice, from the published data and from the release data, and every printed figure was paired by its file, row and column. Of 3,262 printed figures, 2,132 change as printed and 37 change sign. Seven of them are the wage reading below, printed in several places, and thirteen are the yardstick study's change in programme inflation and its bounds. The rest are small figures near zero: interval bounds, offset shares and changes of a few dollars in the automation, lending and central-bank sections, and one financed basket-poverty cell (full coverage, Stress, 20 years: +0.6 to −0.6 points). The list is section 2 of `s93-page-check-50bc51d/s93-page-check.md`. The published page printed the wage reading's 20-year cells only; its Adverse 40-year cell was also a rise (+16.5 points) and is now a fall (2.0). The changes worth stating:
 
 - **Wages that follow half of programme inflation, the rest never made up, with nothing backed** (the supply study). This reading changed the most. At 20 years the programme now lowers basket poverty against no programme: by 8.5 points in Reference, 12.7 in Adverse and 1.2 in Stress. The published figures were rises of 9.6, 5.0 and 9.6. At 40 years it still raises basket poverty in Reference (11.3 points) and Stress (12.1), and lowers it in Adverse (2.0). **The change comes from the price at the sale** (`s93-wage-dec-50bc51d`; seeds 1-20 in each environment and horizon):
   - with only that change undone, the release engine gives the published figures again, within 0.3 points;
@@ -82,4 +85,4 @@ Below full backing, the preregistered swing measure **failed for a known reason*
 
 ## What stays as the record
 
-The model registered on OSF (v5.8, engine `104691f`) and the v5.9 figures stay published as the record. Each can be reproduced from its engine commit and the commands in its results folder's `run.txt`. The reports written for the v5.9 studies keep their figures and dated notes as history; where a page figure now differs, the page prints the release figure.
+The model registered on OSF (v5.8, engine `104691f`) and the v5.9 figures stay published as the record, and so does the v5.9 main row without pay by household type and the care credit (`r2FreezePair(P, design, true)` gives it exactly). Each can be reproduced from its engine commit and the commands in its results folder's `run.txt`. The reports written for the v5.9 studies keep their figures and dated notes as history; where a page figure now differs, the page prints the release figure.
