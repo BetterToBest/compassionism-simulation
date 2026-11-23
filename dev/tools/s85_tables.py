@@ -5,7 +5,7 @@ s85-<env>-<years>-<engine> of compassionism-sim-results (runner/jobs/s85.js; 20 
 main rows with the private price at the sale (s90-sale-<env>-<years>-b8ccd8d, check 1) and, when present, the supplement with the security
 measures on (s85sec-<env>-<years>-<engine>, Amendment 3 item 1; check 10). Writes Markdown tables and a summary JSON.
 
-  python3 dev/tools/s85_tables.py RESULTS_DIR OUT_DIR [--engine 503fa48] [--reps 10000] [--nosec]
+  python3 dev/tools/s85_tables.py RESULTS_DIR OUT_DIR [--engine 503fa48] [--reps 10000] [--nosec] [--main ENGINE7]
 
 Method (fixed by the preregistration and Amendment 3; where it is silent, the cautious reading, said so here and in the tables):
 - Effect: the programme run minus its own no-programme run (the row's `none` partner in the job's rowSpec), paired by seed.
@@ -89,12 +89,26 @@ def s90_rows(folder):
     return out
 
 
+MAIN = None  # S93 part 3 (Nov 23, 2026): --main ENGINE7 compares the main rows with the rerun part M r2-m-<env>-<years>-ENGINE7 (the release main row)
+
+
+def main_rows(src, e, y):
+    """the main rows the study's own must equal: the at-sale folder (default) or, with --main, the rerun part M (rows renamed as the at-sale ones)"""
+    if not MAIN: return s90_rows(os.path.join(src, 's90-sale-%s-%d-b8ccd8d' % (e, y)))
+    r = s90_rows(os.path.join(src, 'r2-m-%s-%d-%s' % (e, y, MAIN)))
+    return {'none': r['none'], 'c22.sale': r['c22'], 'rel.sale': r['rel']}
+
+
+def main_label(e, y):
+    return 'the published main row with the private price at the sale (s90-sale-%s-%d-b8ccd8d)' % (e, y) if not MAIN else 'the release main row (r2-m-%s-%d-%s)' % (e, y, MAIN)
+
+
 def load(src, e, y, eng, use_sec):
     """one folder: the kept keys per row (arrays over seeds) and every check that reads all keys"""
     fo = os.path.join(src, 's85-%s-%d-%s' % (e, y, eng)); C = []
     n, bad = sha_ok(fo); C.append(('SHA256SUMS: %d files, all match' % n, not bad, bad))
     fsx = shards(fo); D0 = jload(fsx[0]); spec = {r['name']: r for r in D0['_meta']['rowSpec']}
-    s90 = s90_rows(os.path.join(src, 's90-sale-%s-%d-b8ccd8d' % (e, y)))
+    s90 = main_rows(src, e, y)
     sfo = os.path.join(src, '%s-%s-%d-%s' % (SECDIR, e, y, eng)); sec = use_sec and os.path.exists(os.path.join(sfo, 'DONE'))
     sfs = shards(sfo) if sec else None
     if sec:
@@ -148,7 +162,7 @@ def load(src, e, y, eng, use_sec):
     C.append(('the release start\'s baseline check passed in every shard', base, None))
     C.append(('every stored value is finite (%d rows x %d keys)' % (len(R), nkeys), not nonfin, nonfin[:10]))
     for nm, ks in c1.items():
-        C.append(('check 1: %s equals the published main row with the private price at the sale in every key and seed' % nm, not ks, sorted(ks)[:20]))
+        C.append(('check 1: %s equals %s in every key and seed' % (nm, main_label(e, y) if MAIN else 'the published main row with the private price at the sale'), not ks, sorted(ks)[:20]))
     for (a_, b_), dk in chk2.items(): C.append(('check 2: %s equals %s in every key and seed (oh\'s own keys aside)' % (a_, b_), not dk, sorted(dk)[:10]))
     ohrows = [nm for nm in R if spec[nm]['oh']]
     bad3 = [(nm, float(np.max(R[nm]['ohChk']))) for nm in ohrows if np.max(R[nm]['ohChk']) > (0 if spec[nm]['oh']['f'] == 'jobs' else 1e-9)]
@@ -538,10 +552,11 @@ def keystr(d):
 
 
 def main():
-    global W, REPS
+    global W, REPS, MAIN
     src, out = sys.argv[1], sys.argv[2]
     eng = sys.argv[sys.argv.index('--engine') + 1] if '--engine' in sys.argv else '503fa48'
     if '--reps' in sys.argv: REPS = int(sys.argv[sys.argv.index('--reps') + 1])
+    if '--main' in sys.argv: MAIN = sys.argv[sys.argv.index('--main') + 1]
     use_sec = '--nosec' not in sys.argv
     os.makedirs(out, exist_ok=True)
     rng = np.random.default_rng(20261120); idx = rng.integers(0, NS, size=(REPS, NS))
