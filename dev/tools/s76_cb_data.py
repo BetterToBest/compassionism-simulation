@@ -11,6 +11,8 @@ Usage: python3 dev/tools/s76_cb_data.py RESULTS_DIR [--check-r2=R2_DIR]
   RESULTS_DIR  the folder with s74-pilot-ref.json, -adv, -st, -hx (compassionism-sim-results s74-final-<commit>)
   --check-r2   a folder holding r2-m-<env>-20-104691f/shard-0000.json.gz: the "no central bank" arm must equal release 2's main row per seed
                (Amendment 4's condition); the script stops if it does not.
+  --r2-engine=E7  the part M folders' engine for --check-r2 (default 104691f); S93 part 3 (Nov 23, 2026), the check against the release rerun
+  --check-only    stop after the check (writes nothing)
 """
 import gzip, json, math, os, sys
 
@@ -59,6 +61,7 @@ def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     if not args: print(__doc__); sys.exit(1)
     rdir = args[0]; chk = [a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--check-r2=')]
+    r2e = ([a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--r2-engine=')] or ['104691f'])[0]
     files = {e: json.load(open(os.path.join(rdir, 's74-pilot-%s.json' % e))) for e, _ in ENVS}
     man = files['ref']['_meta']['manifest']
     for e, f in files.items():
@@ -66,14 +69,15 @@ def main():
     if chk:  # Amendment 4: the no-central-bank arm is release 2's main row on seeds 1-100
         bad = []
         for e, re_ in [('ref', 'ref'), ('adv', 'adv'), ('st', 'str')]:
-            R = json.load(gzip.open(os.path.join(chk[0], 'r2-m-%s-20-104691f' % re_, 'shard-0000.json.gz')))['rows']
+            R = json.load(gzip.open(os.path.join(chk[0], 'r2-m-%s-20-%s' % (re_, r2e), 'shard-0000.json.gz')))['rows']
             for d, _ in DESIGNS:
                 for i, row in ((0, 'none'), (1, d)):
                     for k in ('fgt0PY', 'pov', 'wtMedE', 'bNAPy'):
                         a = files[e][d]['off'][i][k]; b = R['%s.%s' % (re_, row)][k][:len(a)]
                         if any(abs(x - y) > 1e-9 * max(1, abs(y)) for x, y in zip(a, b)): bad.append('%s %s %s %s' % (e, d, row, k))
         if bad: sys.exit('the no-central-bank arm does not equal release 2: ' + '; '.join(bad[:6]))
-        print('check: the no-central-bank arm equals release 2\'s main row per seed (Reference, Adverse, Stress; both designs; both runs; 4 keys)')
+        print('check: the no-central-bank arm equals the main row of r2-m-*-20-%s per seed (Reference, Adverse, Stress; both designs; both runs; 4 keys)' % r2e)
+    if '--check-only' in sys.argv: return
     cols = ['design', 'environment', 'central bank', 'outcome', 'no programme', 'programme', 'effect', 'lo95', 'hi95']
     cbc = ['design', 'environment', 'run', 'outcome', 'without the rule', 'with the rule', 'change', 'lo95', 'hi95']
     rows, cbr = [], []
