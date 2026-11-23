@@ -1287,7 +1287,7 @@ function phase15(done) {
     const t2 = d2.querySelectorAll('#suite table').length, l2 = [...d2.querySelectorAll('#tiers svg.fx-svg')].map(s => s.querySelectorAll('.fx-col').length).join();
     check('S11: the suite page opens on release 2 (no program, C2.2 and the release design) at 40 years on the C2.2 design, labelled with its engine; every section, chart and table draws, each with its downloads',
       S2.st.rel === '2' && S2.R && S2.R.version === '2' && p2 === '2,40,c22,ref' && d2.querySelectorAll('.su-sec').length === 9 && d2.querySelectorAll('.su-sec svg.fx-svg').length === 13 && l2 === '40,40' && t2 === 13 && d2.querySelectorAll('#suite .fx-tools button').length === 26 &&
-      /v5\.9/.test(d2.getElementById('rel-note').textContent) && /104691f/.test(d2.getElementById('rel-note').textContent) && !d2.getElementById('optimistic') && r2.errs.length === 0,
+      /v5\.9/.test(d2.getElementById('rel-note').textContent) && d2.getElementById('rel-note').textContent.includes(JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'releases', 'r2', 'index.json'), 'utf8')).engine.slice(0, 7)) && !d2.getElementById('optimistic') && r2.errs.length === 0,
       'release ' + S2.st.rel + '; pressed ' + p2 + '; ' + d2.querySelectorAll('.su-sec').length + ' sections, ' + d2.querySelectorAll('.su-sec svg.fx-svg').length + ' charts, ' + t2 + ' tables' + (r2.errs.length ? '; errors: ' + r2.errs.join('; ') : ''));
     [...d2.querySelectorAll('#controls button')].filter(x => x.dataset.value === 'release').forEach(x => x.click()); await later(100);
     const q2 = new URLSearchParams(r2.w.location.search);
