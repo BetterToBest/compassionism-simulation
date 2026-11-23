@@ -40,6 +40,28 @@ STUDY_RERUN = '6d095a1eefe71abbb025b82e8942cd80cfe9a34a'  # S79: job X3's engine
 STUDY_FOLDER = 'x3-' + STUDY_RERUN[:7]
 STUDY_RUN = 'run-study run 126, Nov 17, 2026 (GitHub Actions)'  # S79: the run-study workflow run that wrote it
 TEST = os.environ.get('SUITE_R2_TEST') == '1'
+ABOUT = None
+PREREG_X4 = 'prereg/2026-11-x4-weighted-addendum.md (BetterToBest/research-update)'
+X2_RUN = 'run-study run 125, Nov 16, 2026 (GitHub Actions)'
+# S93 part 4 (Nov 23, 2026): --engine=50bc51d writes the release's suite files (v5.9.23) from the visual suite rerun on the release engine (runs 290-292,
+# Nov 23, 2026: series-r2.js --panel=50bc51d, which checks every engine key of every row against the rerun part M before writing). x2, x3 and x4 ran
+# on the release engine itself, so the engine and the commit each job ran at are the same. --check picks the mode from index.json's engine.
+RELEASES = {'50bc51d': dict(ENGINE='50bc51d1d551697232fdaa74421325ce66432de6', RERUN='50bc51d1d551697232fdaa74421325ce66432de6',
+                            X2_RERUN='50bc51d1d551697232fdaa74421325ce66432de6', X2_FOLDER='x2-50bc51d', FOLDER='x4-50bc51d',
+                            RUN='run-study run 292, Nov 23, 2026 (GitHub Actions)', X2_RUN='run-study run 290, Nov 23, 2026 (GitHub Actions)',
+                            STUDY_RERUN='50bc51d1d551697232fdaa74421325ce66432de6', STUDY_FOLDER='x3-50bc51d',
+                            STUDY_RUN='run-study run 291, Nov 23, 2026 (GitHub Actions)',
+                            PREREG_X4='prereg/2026-11-x4-weighted-addendum.md and prereg/2026-11-s90-private-price-at-sale.md, Amendments 2-6 (BetterToBest/research-update)',
+                            ABOUT='The visual suite’s series for the release (v5.9.23, engine 50bc51d): the release main row, with the private businesses’ lower BU price set at the sale, '
+                                  'pay by household type and the child and dependent care credit, run by the visual suite’s jobs on the release engine and checked equal to the rerun part M '
+                                  '(r2-m-<env>-<years>-50bc51d), every engine key of every row and seed. Every plain key of x4 equals x2’s; the weighted keys (w…) count each simulated '
+                                  'adult at its population weight. Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x4-50bc51d; release 1’s suite files (v5.6/) are unchanged.')}
+
+
+def set_mode(e7):
+    if e7 not in RELEASES:
+        raise SystemExit('suite_r2.py: unknown --engine %s (known: %s)' % (e7, ', '.join(RELEASES)))
+    globals().update(RELEASES[e7])
 OUT = os.environ.get('SUITE_R2_OUT') or OUT
 ROWS = ['base', 'c22', 'release']
 ENVS = ['ref', 'adv', 'st']
@@ -116,13 +138,13 @@ def effects():
 def index(suite_sha, study_sha=None):
     eff, em = effects()
     X = {
-        'about': 'Release 2’s visual-suite series (S11, S81): the main row of release 2 (engine 104691f), re-run at engine commit a60bd3e by job X4 and checked equal to release 2’s stored results, '
+        'about': ABOUT or ('Release 2’s visual-suite series (S11, S81): the main row of release 2 (engine 104691f), re-run at engine commit a60bd3e by job X4 and checked equal to release 2’s stored results, '
                  'value by value. Every plain key equals job X2’s (engine commit 5b62481, the first source of these files); the weighted keys (w…) count each simulated adult at its population weight. '
-                 'Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x4-a60bd3e; release 1’s suite files (v5.6/) are unchanged.',
+                 'Written by dev/tools/suite_r2.py from BetterToBest/compassionism-sim-results x4-a60bd3e; release 1’s suite files (v5.6/) are unchanged.'),
         'release': '2', 'engine': ENGINE, 'rerunAt': RERUN, 'study': 'x4', 'seeds': 500, 'agents': 500, 'lifeSeed': 1,
         'results': {'repo': 'BetterToBest/compassionism-sim-results', 'folder': FOLDER, 'workflow': RUN},
-        'prereg': 'prereg/2026-11-x4-weighted-addendum.md (BetterToBest/research-update)',
-        'plainFrom': {'study': 'x2', 'rerunAt': X2_RERUN, 'folder': X2_FOLDER, 'workflow': 'run-study run 125, Nov 16, 2026 (GitHub Actions)', 'prereg': 'prereg/2026-11-x2-series-addendum.md (BetterToBest/research-update)',
+        'prereg': PREREG_X4,
+        'plainFrom': {'study': 'x2', 'rerunAt': X2_RERUN, 'folder': X2_FOLDER, 'workflow': X2_RUN, 'prereg': 'prereg/2026-11-x2-series-addendum.md (BetterToBest/research-update)',
                       'about': 'job X4 re-ran job X2’s series with the weighted keys added; every plain key of every row, year and environment equals job X2’s (checked by dev/tools/suite_r2.py and in the results folder’s run notes).'},
         'rows': {'base': 'No programme', 'c22': 'The C2.2 design', 'release': 'The release design'},
         'envs': ENV_TEXT,
@@ -323,10 +345,17 @@ def check():
 
 
 if __name__ == '__main__':
+    _e = [a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--engine=')]
+    sys.argv = [a for a in sys.argv if not a.startswith('--engine=')]
+    if _e:
+        set_mode(_e[0])
     if len(sys.argv) == 3 and sys.argv[1] == '--study':
         build_study(sys.argv[2])
         sys.exit(0)
     if sys.argv[1:] == ['--check']:
+        _ie = json.load(open(os.path.join(OUT, 'index.json'))).get('engine', '')[:7]
+        if _ie in RELEASES and not _e:
+            set_mode(_ie)
         sys.exit(0 if check() else 1)
     if len(sys.argv) not in (2, 3):
         raise SystemExit(__doc__)

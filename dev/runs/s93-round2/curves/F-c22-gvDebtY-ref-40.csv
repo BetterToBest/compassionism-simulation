@@ -1,0 +1,116 @@
+rank,point,reading,kind,estimate,lo95,hi95,excludes_zero,shift_from_main,shift_lo95,shift_hi95
+1,0,main row,main,0,0,0,0,0,0,0
+2,1,single.prK=0.2,single,0,0,0,0,0,0,0
+3,2,single.prR=0.45,single,0,0,0,0,0,0,0
+4,3,single.prA=0.5078,single,0,0,0,0,0,0,0
+5,4,single.prH=0.0446,single,0,0,0,0,0,0,0
+6,5,single.prBd=0.132,single,0,0,0,0,0,0,0
+7,6,single.sc=0.593,single,0,0,0,0,0,0,0
+8,7,single.wIdx=0.75,single,0,0,0,0,0,0,0
+9,8,single.rho=0.05,single,0,0,0,0,0,0,0
+10,9,single.rho=0.3,single,0,0,0,0,0,0,0
+11,10,single.paDem=1,single,0,0,0,0,0,0,0
+12,11,single.drLim=0,single,0,0,0,0,0,0,0
+13,12,single.drLim=10000,single,0,0,0,0,0,0,0
+14,13,single.lfConv=none,single,0,0,0,0,0,0,0
+15,14,single.lfFl=off,single,0,0,0,0,0,0,0
+16,15,single.lfPm=0,single,0,0,0,0,0,0,0
+17,16,single.lfPm=1,single,0,0,0,0,0,0,0
+18,17,single.rtPhi=0,single,0,0,0,0,0,0,0
+19,18,single.rtPhi=1,single,0,0,0,0,0,0,0
+20,19,single.rtNs=port,single,0,0,0,0,0,0,0
+21,20,single.rtIx=0.5,single,0,0,0,0,0,0,0
+22,21,single.rtChi=1,single,0,0,0,0,0,0,0
+23,22,single.bgPi=0.1,single,0,0,0,0,0,0,0
+24,23,single.bgM=1,single,0,0,0,0,0,0,0
+25,24,single.poCost=sector,single,0,0,0,0,0,0,0
+26,25,single.poCost=hub,single,0,0,0,0,0,0,0
+27,26,single.poTest=members,single,0,0,0,0,0,0,0
+28,27,single.poTest=capacity,single,0,0,0,0,0,0,0
+29,28,single.poHire=0.05,single,0,0,0,0,0,0,0
+30,29,single.poHire=0.02,single,0,0,0,0,0,0,0
+31,30,single.poBonus=members,single,0,0,0,0,0,0,0
+32,31,single.poPay=price,single,0,0,0,0,0,0,0
+33,37,single.fin=money,single,0,0,0,0,0,0,0
+34,38,single.fin=cap,single,0,0,0,0,0,0,0
+35,39,single.gvRr=0,single,0,0,0,0,0,0,0
+36,40,single.gvRr=0.0196,single,0,0,0,0,0,0,0
+37,41,single.gvDk=0,single,0,0,0,0,0,0,0
+38,42,single.gvR=rule,single,0,0,0,0,0,0,0
+39,43,single.gvA=0.25,single,0,0,0,0,0,0,0
+40,44,single.gvA=1,single,0,0,0,0,0,0,0
+41,45,single.gvB=0,single,0,0,0,0,0,0,0
+42,46,single.gvB=1,single,0,0,0,0,0,0,0
+43,47,single.gvRs=0,single,0,0,0,0,0,0,0
+44,48,single.gvRs=0.02,single,0,0,0,0,0,0,0
+45,49,single.gvIp=borrow,single,0,0,0,0,0,0,0
+46,50,pair.fin x rtIx,pair,0,0,0,0,0,0,0
+47,51,pair.rtChi x rtIx,pair,0,0,0,0,0,0,0
+48,52,pair.rtIx x wIdx,pair,0,0,0,0,0,0,0
+49,54,pair.fin x gvSh,pair,0,0,0,0,0,0,0
+50,61,pair.rtIx x rtPhi,pair,0,0,0,0,0,0,0
+51,62,pair.rtIx x sc,pair,0,0,0,0,0,0,0
+52,63,pair.rho x rtIx,pair,0,0,0,0,0,0,0
+53,64,pair.rtIx x rtNs,pair,0,0,0,0,0,0,0
+54,65,pair.lfFl x rtIx,pair,0,0,0,0,0,0,0
+55,66,pair.fin x sc,pair,0,0,0,0,0,0,0
+56,67,pair.fin x wIdx,pair,0,0,0,0,0,0,0
+57,68,pair.fin x rtChi,pair,0,0,0,0,0,0,0
+58,69,pair.fin x rtPhi,pair,0,0,0,0,0,0,0
+59,70,pair.fin x rtNs,pair,0,0,0,0,0,0,0
+60,71,pair.fin x gvIp,pair,0,0,0,0,0,0,0
+61,93,pair.rho x wIdx,pair,0,0,0,0,0,0,0
+62,94,pair.lfFl x wIdx,pair,0,0,0,0,0,0,0
+63,95,pair.gvIp x wIdx,pair,0,0,0,0,0,0,0
+64,96,pair.bgPi x wIdx,pair,0,0,0,0,0,0,0
+65,97,pair.gvDk x wIdx,pair,0,0,0,0,0,0,0
+66,102,pair.lfPm x wIdx,pair,0,0,0,0,0,0,0
+67,103,pair.lfConv x wIdx,pair,0,0,0,0,0,0,0
+68,104,pair.poPay x wIdx,pair,0,0,0,0,0,0,0
+69,105,pair.prBd x wIdx,pair,0,0,0,0,0,0,0
+70,106,pair.prK x rtIx,pair,0,0,0,0,0,0,0
+71,107,pair.fin x lfFl,pair,0,0,0,0,0,0,0
+72,108,pair.fin x prBd,pair,0,0,0,0,0,0,0
+73,109,pair.fin x gvBase,pair,0,0,0,0,0,0,0
+74,110,pair.fin x rho,pair,0,0,0,0,0,0,0
+75,111,pair.fin x prK,pair,0,0,0,0,0,0,0
+76,112,pair.cap x fin,pair,0,0,0,0,0,0,0
+77,113,pair.fin x prA,pair,0,0,0,0,0,0,0
+78,114,pair.fin x prR,pair,0,0,0,0,0,0,0
+79,115,pair.bgPi x fin,pair,0,0,0,0,0,0,0
+80,34,single.gvBase=wc,single,7.63547,7.16007,8.15408,1,7.59755,7.1235,8.07383
+81,76,pair.gvDk x gvSh,pair,3005.61,3002.89,3011.96,1,3005.61,3002.54,3011.95
+82,36,single.cap=0,single,7.69265e+09,7.22334e+09,7.97189e+09,1,7.69265e+09,7.22334e+09,7.97189e+09
+83,101,pair.cap x wIdx,pair,7.69265e+09,7.22334e+09,7.97189e+09,1,7.69265e+09,7.22334e+09,7.97189e+09
+84,33,single.gvBase=w,single,1.02629e+11,1.00399e+11,1.04744e+11,1,1.02629e+11,1.00399e+11,1.04744e+11
+85,83,pair.gvSh x poPay,pair,4.42281e+11,4.397e+11,4.45991e+11,1,4.42281e+11,4.397e+11,4.45991e+11
+86,81,pair.gvSh x poCost,pair,4.47352e+11,4.4366e+11,4.51616e+11,1,4.47352e+11,4.4366e+11,4.51616e+11
+87,74,pair.gvSh x prR,pair,4.63769e+11,4.59607e+11,4.6809e+11,1,4.63769e+11,4.59607e+11,4.6809e+11
+88,79,pair.gvR x gvSh,pair,4.66741e+11,4.6414e+11,4.7134e+11,1,4.66741e+11,4.6414e+11,4.7134e+11
+89,87,pair.bgPi x gvSh,pair,4.78e+11,4.74315e+11,4.82934e+11,1,4.78e+11,4.74315e+11,4.82934e+11
+90,100,pair.gvSh x sc,pair,4.82601e+11,4.78841e+11,4.87607e+11,1,4.82601e+11,4.78841e+11,4.87607e+11
+91,99,pair.gvSh x rtNs,pair,4.83203e+11,4.79738e+11,4.88335e+11,1,4.83203e+11,4.79738e+11,4.88335e+11
+92,84,pair.gvA x gvSh,pair,4.83763e+11,4.80699e+11,4.87985e+11,1,4.83763e+11,4.80699e+11,4.87985e+11
+93,92,pair.gvSh x rtChi,pair,4.84222e+11,4.81125e+11,4.89513e+11,1,4.84222e+11,4.81125e+11,4.89513e+11
+94,32,single.gvSh=0,single,4.84257e+11,4.81172e+11,4.89553e+11,1,4.84257e+11,4.81172e+11,4.89553e+11
+95,53,pair.gvSh x wIdx,pair,4.84257e+11,4.81172e+11,4.89553e+11,1,4.84257e+11,4.81172e+11,4.89553e+11
+96,60,pair.gvSh x prBd,pair,4.84257e+11,4.81172e+11,4.89553e+11,1,4.84257e+11,4.81172e+11,4.89553e+11
+97,73,pair.gvSh x prK,pair,4.84257e+11,4.81172e+11,4.89553e+11,1,4.84257e+11,4.81172e+11,4.89553e+11
+98,75,pair.gvSh x prA,pair,4.84257e+11,4.81172e+11,4.89553e+11,1,4.84257e+11,4.81172e+11,4.89553e+11
+99,88,pair.gvSh x prH,pair,4.84257e+11,4.81172e+11,4.89553e+11,1,4.84257e+11,4.81172e+11,4.89553e+11
+100,98,pair.gvSh x rtPhi,pair,4.8426e+11,4.81165e+11,4.89528e+11,1,4.8426e+11,4.81165e+11,4.89528e+11
+101,58,pair.gvSh x rtIx,pair,4.84698e+11,4.81596e+11,4.8996e+11,1,4.84698e+11,4.81596e+11,4.8996e+11
+102,86,pair.drLim x gvSh,pair,4.84987e+11,4.81956e+11,4.90313e+11,1,4.84987e+11,4.81956e+11,4.90313e+11
+103,89,pair.gvSh x lfConv,pair,4.86555e+11,4.82831e+11,4.90292e+11,1,4.86555e+11,4.82831e+11,4.90292e+11
+104,57,pair.gvSh x lfFl,pair,4.86782e+11,4.81678e+11,4.91067e+11,1,4.86782e+11,4.81678e+11,4.91067e+11
+105,90,pair.gvSh x paDem,pair,4.87821e+11,4.83746e+11,4.91136e+11,1,4.87821e+11,4.83746e+11,4.91136e+11
+106,59,pair.gvSh x lfPm,pair,4.9256e+11,4.89116e+11,4.97911e+11,1,4.9256e+11,4.89116e+11,4.97911e+11
+107,91,pair.gvSh x poTest,pair,4.94611e+11,4.91114e+11,4.99512e+11,1,4.94611e+11,4.91114e+11,4.99512e+11
+108,80,pair.gvSh x poHire,pair,4.96088e+11,4.91294e+11,5.00795e+11,1,4.96088e+11,4.91294e+11,5.00795e+11
+109,82,pair.gvRs x gvSh,pair,5.09779e+11,5.06083e+11,5.14528e+11,1,5.09779e+11,5.06083e+11,5.14528e+11
+110,85,pair.gvSh x poBonus,pair,5.32969e+11,5.28442e+11,5.36782e+11,1,5.32969e+11,5.28442e+11,5.36782e+11
+111,72,pair.gvBase x gvSh,pair,5.34268e+11,5.30586e+11,5.37957e+11,1,5.34268e+11,5.30586e+11,5.37957e+11
+112,55,pair.gvSh x rho,pair,5.43304e+11,5.38188e+11,5.4718e+11,1,5.43304e+11,5.38188e+11,5.4718e+11
+113,78,pair.gvRr x gvSh,pair,5.46829e+11,5.4274e+11,5.52583e+11,1,5.46829e+11,5.4274e+11,5.52583e+11
+114,56,pair.cap x gvSh,pair,7.09819e+11,7.0467e+11,7.13779e+11,1,7.09819e+11,7.0467e+11,7.13779e+11
+115,77,pair.gvIp x gvSh,pair,1.78941e+12,1.7803e+12,1.7974e+12,1,1.78941e+12,1.7803e+12,1.7974e+12

@@ -31,6 +31,8 @@ def main():
     if len(sys.argv) != 2:
         sys.exit('usage: s82_page_data.py <path to s82-summary.json>')
     S = json.load(open(sys.argv[1]))
+    global FOLDER
+    FOLDER = os.path.basename(os.path.dirname(os.path.abspath(sys.argv[1])))  # S93 part 4: the tables folder the summary sits in
     rows, be = [], []
     for e, en in ENVS:
         for yrs in (20, 40):
@@ -65,8 +67,8 @@ def main():
     bcols = ['environment', 'years', 'reading', 'outcome', 'break-even share', 'lo95', 'hi95', 'word']
     out = {'meta': {'id': 's82-supply', 'title': 'Limits on supply, wages that lag prices and a delayed BU (S82), along the backing curve',
                     'prereg': 'prereg/2026-11-s82-v6-supply-indexing.md (research-update; Amendments 1-6)', 'report': 'dev/reports/s82-supply-indexing.md',
-                    'engine': S['engine'], 'seeds': 500, 'resultsFolder': 's82-tables-aa2a4e0', 'resultsRepo': 'BetterToBest/compassionism-sim-results',
-                    'command': 'python3 dev/tools/s82_page_data.py s82-tables-aa2a4e0/s82-summary.json',
+                    'engine': S['engine'], 'seeds': 500, 'resultsFolder': FOLDER, 'resultsRepo': 'BetterToBest/compassionism-sim-results',
+                    'command': 'python3 dev/tools/s82_page_data.py %s/s82-summary.json' % FOLDER,
                     'intervals': '95% paired-bootstrap intervals over seeds 1-500 (10,000 replicates); the model\'s randomness only',
                     'limit': 'the supply limit cuts only the housing, care and food households receive; the money left over goes to other goods and the cut moves no price, '
                              'so wealth, basic living and inflation are the same with and without it',

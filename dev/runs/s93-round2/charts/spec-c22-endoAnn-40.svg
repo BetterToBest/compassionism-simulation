@@ -1,0 +1,1660 @@
+<svg class="cv" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-labelledby="t d">
+<style>.cv{--su:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--grid:#e3e2dc;--axis:#9a9992;--band:#efeee9;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])) .cv{--su:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#6f6e68;--band:#262624;--s1:#3987e5;--s2:#d95926;--s3:#199e70}}:root[data-theme="dark"] .cv{--su:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--grid:#2c2c2a;--axis:#6f6e68;--band:#262624;--s1:#3987e5;--s2:#d95926;--s3:#199e70}.cv{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.cv .bg{fill:var(--su)}.cv .t{font-size:15px;font-weight:600;fill:var(--ink)}.cv .h{font-size:13px;font-weight:600;fill:var(--ink)}.cv .sub,.cv .tk,.cv .ax{font-size:11.5px;fill:var(--ink2)}.cv .tk{font-variant-numeric:tabular-nums}.cv .lab{font-size:11.5px;fill:var(--ink)}.cv .g{stroke:var(--grid);stroke-width:1}.cv .z{stroke:var(--axis);stroke-width:1}.cv .band{fill:var(--band)}.cv .iv{stroke-width:1;stroke-opacity:.55}.cv .d{stroke:var(--su);stroke-width:1}.cv .m{fill:var(--su);stroke:var(--ink);stroke-width:2}.cv .ln{fill:none;stroke-width:2}.cv .ref{stroke:var(--ink2);stroke-width:1;stroke-dasharray:4 3}.cv .hit{fill:transparent}.cv .s1{fill:var(--s1);stroke:var(--s1)}.cv .s2{fill:var(--s2);stroke:var(--s2)}.cv .s3{fill:var(--s3);stroke:var(--s3)}.cv .ls1{stroke:var(--s1)}.cv .ls2{stroke:var(--s2)}.cv .ls3{stroke:var(--s3)}.cv .o{fill:var(--su);stroke-width:2}</style>
+<rect class="bg" width="1000" height="620"/>
+<desc id="d">Paid for by the Source, Reference: Across the 61 preregistered readings, the C2.2 design changes programme inflation by 0.06 to 0.07 points a year; no material change in programme inflation at the main row (0.07 points a year; materiality 1.00), seed interval 0.07 to 0.07. Paid for by the Source, Adverse: Across the 61 preregistered readings, the C2.2 design changes programme inflation by 0.09 to 0.10 points a year; no material change in programme inflation at the main row (0.09 points a year; materiality 1.00), seed interval 0.09 to 0.09. Paid for by the Source, Stress: Across the 61 preregistered readings, the C2.2 design changes programme inflation by 0.09 to 0.10 points a year; no material change in programme inflation at the main row (0.09 points a year; materiality 1.00), seed interval 0.09 to 0.09. Paid for by a contribution, Reference: Across the 116 preregistered readings, the C2.2 design changes programme inflation by 0.00 to 894.82 points a year; no material change in programme inflation at the main row (0.07 points a year; materiality 1.00), seed interval 0.06 to 0.07. Paid for by a contribution, Adverse: Across the 116 preregistered readings, the C2.2 design changes programme inflation by 0.02 to 1,003.82 points a year; no material change in programme inflation at the main row (0.07 points a year; materiality 1.00), seed interval 0.07 to 0.08. Paid for by a contribution, Stress: Across the 116 preregistered readings, the C2.2 design changes programme inflation by 0.01 to 981.52 points a year; no material change in programme inflation at the main row (0.07 points a year; materiality 1.00), seed interval 0.07 to 0.07.</desc>
+<title id="t">Programme inflation: the C2.2 design against no programme, 40 years</title>
+<text class="t" x="16" y="24">Programme inflation: the C2.2 design against no programme, 40 years</text>
+<text class="sub" x="16" y="42">Each dot is one preregistered reading, sorted by its effect, with its 95% seed interval (unit: points a year).</text>
+<text class="sub" x="16" y="58">Ringed: the main row. Diamond: the least-favourable bound. Shaded: not material (rule 3). Below each panel: the curve's verdict (rule 2).</text>
+<text class="h" x="16" y="98">Paid for by the Source (main row: full backing, a design parameter)</text>
+<line class="g" x1="76" x2="366" y1="300.0" y2="300.0"/>
+<text class="tk" x="70" y="300.0" text-anchor="end" dominant-baseline="middle">−2</text>
+<line class="g" x1="76" x2="366" y1="239.1" y2="239.1"/>
+<text class="tk" x="70" y="239.1" text-anchor="end" dominant-baseline="middle">−1</text>
+<line class="g" x1="76" x2="366" y1="178.2" y2="178.2"/>
+<text class="tk" x="70" y="178.2" text-anchor="end" dominant-baseline="middle">0</text>
+<line class="g" x1="76" x2="366" y1="117.3" y2="117.3"/>
+<text class="tk" x="70" y="117.3" text-anchor="end" dominant-baseline="middle">1</text>
+<rect class="band" x="76" width="290" y="117.3" height="121.8"><title>Not material: within 1.0 of zero (rule 3)</title></rect>
+<line class="z" x1="76" x2="366" y1="178.2" y2="178.2"/>
+<text class="lab" x="76" y="318">Reference · robust</text>
+<g><title>Reference, single.lfConv=none: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="82.0" x2="82.0" y1="174.5" y2="174.4"/>
+<circle class="d s1" cx="82.0" cy="174.4" r="2.6"/>
+<rect class="hit" x="79.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtNs x sc: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="86.6" x2="86.6" y1="174.4" y2="174.3"/>
+<circle class="d s1" cx="86.6" cy="174.4" r="2.6"/>
+<rect class="hit" x="84.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.wtM=6: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="91.3" x2="91.3" y1="174.4" y2="174.3"/>
+<circle class="d s1" cx="91.3" cy="174.4" r="2.6"/>
+<rect class="hit" x="89.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.lfFl x rtIx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="95.9" x2="95.9" y1="174.4" y2="174.3"/>
+<circle class="d s1" cx="95.9" cy="174.4" r="2.6"/>
+<rect class="hit" x="93.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.lfFl=off: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="100.5" x2="100.5" y1="174.4" y2="174.3"/>
+<circle class="d s1" cx="100.5" cy="174.4" r="2.6"/>
+<rect class="hit" x="98.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.lfFl x wIdx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="105.2" x2="105.2" y1="174.4" y2="174.3"/>
+<circle class="d s1" cx="105.2" cy="174.4" r="2.6"/>
+<rect class="hit" x="102.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtIx x sc: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="109.8" x2="109.8" y1="174.3" y2="174.3"/>
+<circle class="d s1" cx="109.8" cy="174.3" r="2.6"/>
+<rect class="hit" x="107.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtPhi x sc: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="114.4" x2="114.4" y1="174.3" y2="174.3"/>
+<circle class="d s1" cx="114.4" cy="174.3" r="2.6"/>
+<rect class="hit" x="112.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.sc=0.593: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="119.1" x2="119.1" y1="174.3" y2="174.3"/>
+<circle class="d s1" cx="119.1" cy="174.3" r="2.6"/>
+<rect class="hit" x="116.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgM x sc: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="123.7" x2="123.7" y1="174.3" y2="174.3"/>
+<circle class="d s1" cx="123.7" cy="174.3" r="2.6"/>
+<rect class="hit" x="121.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtIx x rtNs: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="128.3" x2="128.3" y1="174.3" y2="174.2"/>
+<circle class="d s1" cx="128.3" cy="174.3" r="2.6"/>
+<rect class="hit" x="126.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtNs=port: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="133.0" x2="133.0" y1="174.3" y2="174.2"/>
+<circle class="d s1" cx="133.0" cy="174.3" r="2.6"/>
+<rect class="hit" x="130.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rho x rtIx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="137.6" x2="137.6" y1="174.3" y2="174.2"/>
+<circle class="d s1" cx="137.6" cy="174.2" r="2.6"/>
+<rect class="hit" x="135.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rho=0.05: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="142.2" x2="142.2" y1="174.3" y2="174.2"/>
+<circle class="d s1" cx="142.2" cy="174.2" r="2.6"/>
+<rect class="hit" x="139.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rho x wIdx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="146.9" x2="146.9" y1="174.3" y2="174.2"/>
+<circle class="d s1" cx="146.9" cy="174.2" r="2.6"/>
+<rect class="hit" x="144.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poPay=price: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="151.5" x2="151.5" y1="174.3" y2="174.2"/>
+<circle class="d s1" cx="151.5" cy="174.2" r="2.6"/>
+<rect class="hit" x="149.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poPay x wIdx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="156.1" x2="156.1" y1="174.3" y2="174.2"/>
+<circle class="d s1" cx="156.1" cy="174.2" r="2.6"/>
+<rect class="hit" x="153.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.lfPm=1: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="160.8" x2="160.8" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="160.8" cy="174.2" r="2.6"/>
+<rect class="hit" x="158.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poTest=members: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="165.4" x2="165.4" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="165.4" cy="174.2" r="2.6"/>
+<rect class="hit" x="163.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poTest x wIdx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="170.0" x2="170.0" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="170.0" cy="174.2" r="2.6"/>
+<rect class="hit" x="167.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poHire=0.02: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="174.7" x2="174.7" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="174.7" cy="174.2" r="2.6"/>
+<rect class="hit" x="172.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poHire x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="179.3" x2="179.3" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="179.3" cy="174.2" r="2.6"/>
+<rect class="hit" x="177.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtIx x rtPhi: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="183.9" x2="183.9" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="183.9" cy="174.2" r="2.6"/>
+<rect class="hit" x="181.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtIx=0.5: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="188.6" x2="188.6" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="188.6" cy="174.2" r="2.6"/>
+<rect class="hit" x="186.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prK x rtIx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="193.2" x2="193.2" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="193.2" cy="174.2" r="2.6"/>
+<rect class="hit" x="190.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtIx x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="197.8" x2="197.8" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="197.8" cy="174.2" r="2.6"/>
+<rect class="hit" x="195.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prBd x rtIx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="202.5" x2="202.5" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="202.5" cy="174.2" r="2.6"/>
+<rect class="hit" x="200.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.rtChi x rtIx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="207.1" x2="207.1" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="207.1" cy="174.2" r="2.6"/>
+<rect class="hit" x="204.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poHire=0.05: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="211.7" x2="211.7" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="211.7" cy="174.2" r="2.6"/>
+<rect class="hit" x="209.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtPhi=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="216.4" x2="216.4" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="216.4" cy="174.2" r="2.6"/>
+<rect class="hit" x="214.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poCost=sector: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="221.0" x2="221.0" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="221.0" cy="174.2" r="2.6"/>
+<rect class="hit" x="218.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poCost x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="225.6" x2="225.6" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="225.6" cy="174.2" r="2.6"/>
+<rect class="hit" x="223.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, main row: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="230.3" x2="230.3" y1="174.2" y2="174.2"/>
+<rect class="hit" x="227.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prK=0.2: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="234.9" x2="234.9" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="234.9" cy="174.2" r="2.6"/>
+<rect class="hit" x="232.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prA=0.5078: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="239.5" x2="239.5" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="239.5" cy="174.2" r="2.6"/>
+<rect class="hit" x="237.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prH=0.0446: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="244.2" x2="244.2" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="244.2" cy="174.2" r="2.6"/>
+<rect class="hit" x="241.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prBd=0.132: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="248.8" x2="248.8" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="248.8" cy="174.2" r="2.6"/>
+<rect class="hit" x="246.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.wIdx=0.75: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="253.4" x2="253.4" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="253.4" cy="174.2" r="2.6"/>
+<rect class="hit" x="251.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.bgM=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="258.1" x2="258.1" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="258.1" cy="174.2" r="2.6"/>
+<rect class="hit" x="255.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prK x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="262.7" x2="262.7" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="262.7" cy="174.2" r="2.6"/>
+<rect class="hit" x="260.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prA x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="267.3" x2="267.3" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="267.3" cy="174.2" r="2.6"/>
+<rect class="hit" x="265.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgM x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="272.0" x2="272.0" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="272.0" cy="174.2" r="2.6"/>
+<rect class="hit" x="269.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prBd x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="276.6" x2="276.6" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="276.6" cy="174.2" r="2.6"/>
+<rect class="hit" x="274.3" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtPhi=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="281.2" x2="281.2" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="281.2" cy="174.2" r="2.6"/>
+<rect class="hit" x="278.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rtChi=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="285.9" x2="285.9" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="285.9" cy="174.2" r="2.6"/>
+<rect class="hit" x="283.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poCost=hub: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="290.5" x2="290.5" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="290.5" cy="174.2" r="2.6"/>
+<rect class="hit" x="288.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poTest=capacity: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="295.1" x2="295.1" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="295.1" cy="174.2" r="2.6"/>
+<rect class="hit" x="292.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgPi x rtIx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="299.8" x2="299.8" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="299.8" cy="174.2" r="2.6"/>
+<rect class="hit" x="297.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.bgPi=0.1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="304.4" x2="304.4" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="304.4" cy="174.2" r="2.6"/>
+<rect class="hit" x="302.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgPi x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="309.0" x2="309.0" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="309.0" cy="174.2" r="2.6"/>
+<rect class="hit" x="306.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.bgM x rtIx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="313.7" x2="313.7" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="313.7" cy="174.2" r="2.6"/>
+<rect class="hit" x="311.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.bgM=0.6536: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="318.3" x2="318.3" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="318.3" cy="174.2" r="2.6"/>
+<rect class="hit" x="316.0" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.poBonus=members: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="322.9" x2="322.9" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="322.9" cy="174.2" r="2.6"/>
+<rect class="hit" x="320.6" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.poBonus x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="327.6" x2="327.6" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="327.6" cy="174.2" r="2.6"/>
+<rect class="hit" x="325.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.lfPm=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="332.2" x2="332.2" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="332.2" cy="174.2" r="2.6"/>
+<rect class="hit" x="329.9" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.paDem=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="336.8" x2="336.8" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="336.8" cy="174.2" r="2.6"/>
+<rect class="hit" x="334.5" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.paDem x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="341.5" x2="341.5" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="341.5" cy="174.2" r="2.6"/>
+<rect class="hit" x="339.2" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.rho=0.3: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="346.1" x2="346.1" y1="174.2" y2="174.2"/>
+<circle class="d s1" cx="346.1" cy="174.2" r="2.6"/>
+<rect class="hit" x="343.8" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, pair.prR x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="350.7" x2="350.7" y1="174.2" y2="174.1"/>
+<circle class="d s1" cx="350.7" cy="174.1" r="2.6"/>
+<rect class="hit" x="348.4" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.prR=0.45: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="355.4" x2="355.4" y1="174.2" y2="174.1"/>
+<circle class="d s1" cx="355.4" cy="174.1" r="2.6"/>
+<rect class="hit" x="353.1" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, single.wtCut=p90: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="360.0" x2="360.0" y1="174.1" y2="174.0"/>
+<circle class="d s1" cx="360.0" cy="174.1" r="2.6"/>
+<rect class="hit" x="357.7" y="110" width="4.6" height="190"/></g>
+<g><title>Reference, main row: +0.07 (95% 0.07 to 0.07)</title><circle class="m" cx="230.3" cy="174.2" r="5"/></g>
+<text class="lab" x="237.3" y="164.2" text-anchor="start">main +0.07</text>
+<line class="g" x1="394" x2="684" y1="300.0" y2="300.0"/>
+<line class="g" x1="394" x2="684" y1="239.1" y2="239.1"/>
+<line class="g" x1="394" x2="684" y1="178.2" y2="178.2"/>
+<line class="g" x1="394" x2="684" y1="117.3" y2="117.3"/>
+<rect class="band" x="394" width="290" y="117.3" height="121.8"><title>Not material: within 1.0 of zero (rule 3)</title></rect>
+<line class="z" x1="394" x2="684" y1="178.2" y2="178.2"/>
+<text class="lab" x="394" y="318">Adverse · robust</text>
+<g><title>Adverse, single.lfConv=none: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="400.0" x2="400.0" y1="172.9" y2="172.8"/>
+<circle class="d s2" cx="400.0" cy="172.8" r="2.6"/>
+<rect class="hit" x="397.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.lfFl x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="404.6" x2="404.6" y1="172.8" y2="172.8"/>
+<circle class="d s2" cx="404.6" cy="172.8" r="2.6"/>
+<rect class="hit" x="402.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.wtM=6: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="409.3" x2="409.3" y1="172.8" y2="172.8"/>
+<circle class="d s2" cx="409.3" cy="172.8" r="2.6"/>
+<rect class="hit" x="406.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.lfFl=off: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="413.9" x2="413.9" y1="172.8" y2="172.7"/>
+<circle class="d s2" cx="413.9" cy="172.8" r="2.6"/>
+<rect class="hit" x="411.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.lfFl x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="418.5" x2="418.5" y1="172.8" y2="172.7"/>
+<circle class="d s2" cx="418.5" cy="172.8" r="2.6"/>
+<rect class="hit" x="416.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtIx x sc: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="423.2" x2="423.2" y1="172.7" y2="172.6"/>
+<circle class="d s2" cx="423.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="420.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.sc=0.593: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="427.8" x2="427.8" y1="172.7" y2="172.6"/>
+<circle class="d s2" cx="427.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="425.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtPhi x sc: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="432.4" x2="432.4" y1="172.7" y2="172.6"/>
+<circle class="d s2" cx="432.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="430.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtNs x sc: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="437.1" x2="437.1" y1="172.7" y2="172.6"/>
+<circle class="d s2" cx="437.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="434.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgM x sc: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="441.7" x2="441.7" y1="172.7" y2="172.6"/>
+<circle class="d s2" cx="441.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="439.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rho x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="446.3" x2="446.3" y1="172.7" y2="172.6"/>
+<circle class="d s2" cx="446.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="444.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rho=0.05: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="451.0" x2="451.0" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="451.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="448.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rho x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="455.6" x2="455.6" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="455.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="453.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poPay=price: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="460.2" x2="460.2" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="460.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="457.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poPay x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="464.9" x2="464.9" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="464.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="462.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.lfPm=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="469.5" x2="469.5" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="469.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="467.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtChi x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="474.1" x2="474.1" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="474.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="471.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtIx=0.5: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="478.8" x2="478.8" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="478.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="476.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prK x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="483.4" x2="483.4" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="483.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="481.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtIx x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="488.0" x2="488.0" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="488.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="485.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prBd x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="492.7" x2="492.7" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="492.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="490.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtIx x rtPhi: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="497.3" x2="497.3" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="497.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="495.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.rtIx x rtNs: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="501.9" x2="501.9" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="501.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="499.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poTest=members: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="506.6" x2="506.6" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="506.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="504.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poTest x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="511.2" x2="511.2" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="511.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="508.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtChi=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="515.8" x2="515.8" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="515.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="513.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poHire=0.02: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="520.5" x2="520.5" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="520.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="518.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poHire x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="525.1" x2="525.1" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="525.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="522.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poHire=0.05: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="529.7" x2="529.7" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="529.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="527.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtPhi=0: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="534.4" x2="534.4" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="534.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="532.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poCost=sector: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="539.0" x2="539.0" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="539.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="536.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poCost x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="543.6" x2="543.6" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="543.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="541.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, main row: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="548.3" x2="548.3" y1="172.6" y2="172.6"/>
+<rect class="hit" x="545.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prK=0.2: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="552.9" x2="552.9" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="552.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="550.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prA=0.5078: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="557.5" x2="557.5" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="557.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="555.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prH=0.0446: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="562.2" x2="562.2" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="562.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="559.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prBd=0.132: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="566.8" x2="566.8" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="566.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="564.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.wIdx=0.75: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="571.4" x2="571.4" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="571.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="569.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.bgM=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="576.1" x2="576.1" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="576.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="573.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prK x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="580.7" x2="580.7" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="580.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="578.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prA x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="585.3" x2="585.3" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="585.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="583.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgM x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="590.0" x2="590.0" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="590.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="587.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prBd x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="594.6" x2="594.6" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="594.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="592.3" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtPhi=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="599.2" x2="599.2" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="599.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="596.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poCost=hub: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="603.9" x2="603.9" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="603.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="601.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rtNs=port: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="608.5" x2="608.5" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="608.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="606.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poTest=capacity: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="613.1" x2="613.1" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="613.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="610.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgPi x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="617.8" x2="617.8" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="617.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="615.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.poBonus=members: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="622.4" x2="622.4" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="622.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="620.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.poBonus x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="627.0" x2="627.0" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="627.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="624.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.bgPi=0.1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="631.7" x2="631.7" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="631.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="629.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgPi x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="636.3" x2="636.3" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="636.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="634.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.lfPm=0: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="640.9" x2="640.9" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="640.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="638.6" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.bgM x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="645.6" x2="645.6" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="645.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="643.2" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.bgM=0.6536: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="650.2" x2="650.2" y1="172.6" y2="172.6"/>
+<circle class="d s2" cx="650.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="647.9" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.paDem=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="654.8" x2="654.8" y1="172.6" y2="172.5"/>
+<circle class="d s2" cx="654.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="652.5" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.paDem x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="659.5" x2="659.5" y1="172.6" y2="172.5"/>
+<circle class="d s2" cx="659.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="657.1" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.rho=0.3: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="664.1" x2="664.1" y1="172.6" y2="172.5"/>
+<circle class="d s2" cx="664.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="661.8" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.prR=0.45: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="668.7" x2="668.7" y1="172.5" y2="172.4"/>
+<circle class="d s2" cx="668.7" cy="172.5" r="2.6"/>
+<rect class="hit" x="666.4" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, pair.prR x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="673.4" x2="673.4" y1="172.5" y2="172.4"/>
+<circle class="d s2" cx="673.4" cy="172.5" r="2.6"/>
+<rect class="hit" x="671.0" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, single.wtCut=p90: +0.10 (95% 0.10 to 0.10)</title><line class="iv ls2" x1="678.0" x2="678.0" y1="172.4" y2="172.3"/>
+<circle class="d s2" cx="678.0" cy="172.4" r="2.6"/>
+<rect class="hit" x="675.7" y="110" width="4.6" height="190"/></g>
+<g><title>Adverse, main row: +0.09 (95% 0.09 to 0.09)</title><circle class="m" cx="548.3" cy="172.6" r="5"/></g>
+<text class="lab" x="555.3" y="162.6" text-anchor="start">main +0.09</text>
+<line class="g" x1="712" x2="1002" y1="300.0" y2="300.0"/>
+<line class="g" x1="712" x2="1002" y1="239.1" y2="239.1"/>
+<line class="g" x1="712" x2="1002" y1="178.2" y2="178.2"/>
+<line class="g" x1="712" x2="1002" y1="117.3" y2="117.3"/>
+<rect class="band" x="712" width="290" y="117.3" height="121.8"><title>Not material: within 1.0 of zero (rule 3)</title></rect>
+<line class="z" x1="712" x2="1002" y1="178.2" y2="178.2"/>
+<text class="lab" x="712" y="318">Stress · robust</text>
+<g><title>Stress, single.lfConv=none: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="718.0" x2="718.0" y1="172.9" y2="172.8"/>
+<circle class="d s3" cx="718.0" cy="172.8" r="2.6"/>
+<rect class="hit" x="715.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.wtM=6: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="722.6" x2="722.6" y1="172.9" y2="172.8"/>
+<circle class="d s3" cx="722.6" cy="172.8" r="2.6"/>
+<rect class="hit" x="720.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.lfFl x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="727.3" x2="727.3" y1="172.9" y2="172.8"/>
+<circle class="d s3" cx="727.3" cy="172.8" r="2.6"/>
+<rect class="hit" x="724.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.lfFl=off: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="731.9" x2="731.9" y1="172.8" y2="172.8"/>
+<circle class="d s3" cx="731.9" cy="172.8" r="2.6"/>
+<rect class="hit" x="729.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.lfFl x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="736.5" x2="736.5" y1="172.8" y2="172.8"/>
+<circle class="d s3" cx="736.5" cy="172.8" r="2.6"/>
+<rect class="hit" x="734.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtIx x sc: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="741.2" x2="741.2" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="741.2" cy="172.7" r="2.6"/>
+<rect class="hit" x="738.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.sc=0.593: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="745.8" x2="745.8" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="745.8" cy="172.7" r="2.6"/>
+<rect class="hit" x="743.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtPhi x sc: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="750.4" x2="750.4" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="750.4" cy="172.7" r="2.6"/>
+<rect class="hit" x="748.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtNs x sc: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="755.1" x2="755.1" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="755.1" cy="172.7" r="2.6"/>
+<rect class="hit" x="752.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgM x sc: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="759.7" x2="759.7" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="759.7" cy="172.7" r="2.6"/>
+<rect class="hit" x="757.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.lfPm=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="764.3" x2="764.3" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="764.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="762.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poPay=price: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="769.0" x2="769.0" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="769.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="766.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poPay x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="773.6" x2="773.6" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="773.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="771.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtChi x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="778.2" x2="778.2" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="778.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="775.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rho=0.3: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="782.9" x2="782.9" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="782.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="780.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtIx=0.5: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="787.5" x2="787.5" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="787.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="785.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prK x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="792.1" x2="792.1" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="792.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="789.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtIx x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="796.8" x2="796.8" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="796.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="794.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prBd x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="801.4" x2="801.4" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="801.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="799.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtIx x rtPhi: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="806.0" x2="806.0" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="806.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="803.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rtIx x rtNs: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="810.7" x2="810.7" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="810.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="808.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rho x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="815.3" x2="815.3" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="815.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="813.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poTest=members: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="819.9" x2="819.9" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="819.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="817.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poTest x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="824.6" x2="824.6" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="824.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="822.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtChi=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="829.2" x2="829.2" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="829.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="826.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rho=0.05: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="833.8" x2="833.8" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="833.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="831.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.rho x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="838.5" x2="838.5" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="838.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="836.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poHire=0.02: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="843.1" x2="843.1" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="843.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="840.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poHire x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="847.7" x2="847.7" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="847.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="845.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtPhi=0: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="852.4" x2="852.4" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="852.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="850.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poHire=0.05: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="857.0" x2="857.0" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="857.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="854.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poCost=sector: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="861.6" x2="861.6" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="861.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="859.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poCost x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="866.3" x2="866.3" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="866.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="863.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, main row: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="870.9" x2="870.9" y1="172.7" y2="172.6"/>
+<rect class="hit" x="868.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prK=0.2: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="875.5" x2="875.5" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="875.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="873.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prA=0.5078: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="880.2" x2="880.2" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="880.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="877.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prH=0.0446: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="884.8" x2="884.8" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="884.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="882.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prBd=0.132: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="889.4" x2="889.4" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="889.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="887.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.wIdx=0.75: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="894.1" x2="894.1" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="894.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="891.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.bgM=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="898.7" x2="898.7" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="898.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="896.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prK x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="903.3" x2="903.3" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="903.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="901.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prA x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="908.0" x2="908.0" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="908.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="905.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgM x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="912.6" x2="912.6" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="912.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="910.3" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prBd x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="917.2" x2="917.2" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="917.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="914.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtPhi=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="921.9" x2="921.9" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="921.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="919.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poCost=hub: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="926.5" x2="926.5" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="926.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="924.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.rtNs=port: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="931.1" x2="931.1" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="931.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="928.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poTest=capacity: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="935.8" x2="935.8" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="935.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="933.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgPi x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="940.4" x2="940.4" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="940.4" cy="172.6" r="2.6"/>
+<rect class="hit" x="938.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.poBonus=members: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="945.0" x2="945.0" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="945.0" cy="172.6" r="2.6"/>
+<rect class="hit" x="942.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.poBonus x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="949.7" x2="949.7" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="949.7" cy="172.6" r="2.6"/>
+<rect class="hit" x="947.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.bgPi=0.1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="954.3" x2="954.3" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="954.3" cy="172.6" r="2.6"/>
+<rect class="hit" x="952.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgPi x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="958.9" x2="958.9" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="958.9" cy="172.6" r="2.6"/>
+<rect class="hit" x="956.6" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.bgM x rtIx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="963.6" x2="963.6" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="963.6" cy="172.6" r="2.6"/>
+<rect class="hit" x="961.2" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.lfPm=0: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="968.2" x2="968.2" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="968.2" cy="172.6" r="2.6"/>
+<rect class="hit" x="965.9" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.bgM=0.6536: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="972.8" x2="972.8" y1="172.7" y2="172.6"/>
+<circle class="d s3" cx="972.8" cy="172.6" r="2.6"/>
+<rect class="hit" x="970.5" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.paDem=1: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="977.5" x2="977.5" y1="172.6" y2="172.6"/>
+<circle class="d s3" cx="977.5" cy="172.6" r="2.6"/>
+<rect class="hit" x="975.1" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.paDem x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="982.1" x2="982.1" y1="172.6" y2="172.6"/>
+<circle class="d s3" cx="982.1" cy="172.6" r="2.6"/>
+<rect class="hit" x="979.8" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.prR=0.45: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="986.7" x2="986.7" y1="172.5" y2="172.5"/>
+<circle class="d s3" cx="986.7" cy="172.5" r="2.6"/>
+<rect class="hit" x="984.4" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, pair.prR x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="991.4" x2="991.4" y1="172.5" y2="172.5"/>
+<circle class="d s3" cx="991.4" cy="172.5" r="2.6"/>
+<rect class="hit" x="989.0" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, single.wtCut=p90: +0.10 (95% 0.09 to 0.10)</title><line class="iv ls3" x1="996.0" x2="996.0" y1="172.4" y2="172.4"/>
+<circle class="d s3" cx="996.0" cy="172.4" r="2.6"/>
+<rect class="hit" x="993.7" y="110" width="4.6" height="190"/></g>
+<g><title>Stress, main row: +0.09 (95% 0.09 to 0.09)</title><circle class="m" cx="870.9" cy="172.6" r="5"/></g>
+<text class="lab" x="877.9" y="162.6" text-anchor="start">main +0.09</text>
+<text class="h" x="16" y="362">Paid for by a contribution (the financed rows)</text>
+<line class="g" x1="76" x2="366" y1="564.0" y2="564.0"/>
+<text class="tk" x="70" y="564.0" text-anchor="end" dominant-baseline="middle">−500</text>
+<line class="g" x1="76" x2="366" y1="504.0" y2="504.0"/>
+<text class="tk" x="70" y="504.0" text-anchor="end" dominant-baseline="middle">0</text>
+<line class="g" x1="76" x2="366" y1="444.0" y2="444.0"/>
+<text class="tk" x="70" y="444.0" text-anchor="end" dominant-baseline="middle">500</text>
+<line class="g" x1="76" x2="366" y1="384.0" y2="384.0"/>
+<text class="tk" x="70" y="384.0" text-anchor="end" dominant-baseline="middle">1000</text>
+<rect class="band" x="76" width="290" y="503.9" height="0.2"><title>Not material: within 1.0 of zero (rule 3)</title></rect>
+<line class="z" x1="76" x2="366" y1="504.0" y2="504.0"/>
+<text class="lab" x="76" y="582">Reference · robust</text>
+<g><title>Reference, pair.gvSh x rho: +0.00 (95% 0.00 to 0.00)</title><line class="iv ls1" x1="82.0" x2="82.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="82.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="80.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x lfConv: +0.00 (95% 0.00 to 0.01)</title><line class="iv ls1" x1="84.4" x2="84.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="84.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="82.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poPay: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="86.8" x2="86.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="86.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="84.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x lfPm: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="89.3" x2="89.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="89.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="87.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvRr x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="91.7" x2="91.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="91.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="89.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.drLim x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="94.1" x2="94.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="94.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="92.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvRs x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="96.5" x2="96.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="96.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="94.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poHire: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="98.9" x2="98.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="98.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="96.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rtPhi: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="101.3" x2="101.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="101.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="99.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvSh=0: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="103.8" x2="103.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="103.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="101.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x wIdx: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="106.2" x2="106.2" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="106.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="104.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prBd: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="108.6" x2="108.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="108.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="106.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prK: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="111.0" x2="111.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="111.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="109.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prA: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="113.4" x2="113.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="113.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="111.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prH: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="115.8" x2="115.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="115.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="113.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rtIx: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="118.3" x2="118.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="118.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="116.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvA x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="120.7" x2="120.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="120.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="118.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poCost: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="123.1" x2="123.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="123.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="121.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rtChi: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="125.5" x2="125.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="125.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="123.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvR x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="127.9" x2="127.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="127.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="125.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poTest: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="130.3" x2="130.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="130.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="128.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x rtNs: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="132.8" x2="132.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="132.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="130.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x sc: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="135.2" x2="135.2" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="135.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="133.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x poBonus: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="137.6" x2="137.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="137.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="135.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.bgPi x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="140.0" x2="140.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="140.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="138.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x prR: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls1" x1="142.4" x2="142.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="142.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="140.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x paDem: +0.01 (95% 0.01 to 0.02)</title><line class="iv ls1" x1="144.9" x2="144.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="144.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="142.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvSh x lfFl: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls1" x1="147.3" x2="147.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="147.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="145.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvBase x gvSh: +0.03 (95% 0.03 to 0.03)</title><line class="iv ls1" x1="149.7" x2="149.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="149.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="147.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.lfConv=none: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="152.1" x2="152.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="152.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="150.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.lfConv x wIdx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="154.5" x2="154.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="154.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="152.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.lfFl x rtIx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="156.9" x2="156.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="156.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="154.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.lfFl=off: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="159.4" x2="159.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="159.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="157.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.lfFl x wIdx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="161.8" x2="161.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="161.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="159.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtIx x sc: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="164.2" x2="164.2" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="164.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="162.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.sc=0.593: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="166.6" x2="166.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="166.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="164.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvBase=wc: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls1" x1="169.0" x2="169.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="169.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="167.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtIx x rtNs: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="171.4" x2="171.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="171.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="169.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtNs=port: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="173.9" x2="173.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="173.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="171.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rho x rtIx: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="176.3" x2="176.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="176.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="174.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rho=0.05: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="178.7" x2="178.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="178.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="176.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rho x wIdx: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="181.1" x2="181.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="181.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="179.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poPay=price: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="183.5" x2="183.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="183.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="181.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.poPay x wIdx: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="185.9" x2="185.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="185.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="183.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.lfPm=1: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="188.4" x2="188.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="188.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="186.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.drLim=10000: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="190.8" x2="190.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="190.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="188.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poTest=members: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="193.2" x2="193.2" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="193.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="191.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtIx x rtPhi: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="195.6" x2="195.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="195.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="193.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtIx=0.5: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="198.0" x2="198.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="198.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="196.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtIx x wIdx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="200.5" x2="200.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="200.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="198.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.prK x rtIx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="202.9" x2="202.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="202.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="200.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.rtChi x rtIx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="205.3" x2="205.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="205.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="203.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poCost=sector: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="207.7" x2="207.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="207.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="205.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poHire=0.02: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="210.1" x2="210.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="210.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="208.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvRr=0.0196: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="212.5" x2="212.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="212.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="210.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvA=0.25: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="215.0" x2="215.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="215.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="213.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtPhi=1: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="217.4" x2="217.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="217.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="215.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, main row: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="219.8" x2="219.8" y1="504.0" y2="504.0"/>
+<rect class="hit" x="217.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prK=0.2: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="222.2" x2="222.2" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="222.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="220.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prA=0.5078: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="224.6" x2="224.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="224.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="222.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prH=0.0446: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="227.0" x2="227.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="227.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="225.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prBd=0.132: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="229.5" x2="229.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="229.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="227.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.wIdx=0.75: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="231.9" x2="231.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="231.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="229.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.bgM=1: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="234.3" x2="234.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="234.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="232.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.prBd x wIdx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="236.7" x2="236.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="236.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="234.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtPhi=0: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="239.1" x2="239.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="239.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="237.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvR=rule: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="241.5" x2="241.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="241.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="239.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvB=0: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="244.0" x2="244.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="244.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="242.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvB=1: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="246.4" x2="246.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="246.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="244.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvA=1: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="248.8" x2="248.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="248.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="246.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvDk=0: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="251.2" x2="251.2" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="251.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="249.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvDk x wIdx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="253.6" x2="253.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="253.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="251.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvRs=0: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="256.1" x2="256.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="256.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="254.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvRr=0: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="258.5" x2="258.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="258.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="256.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvRs=0.02: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="260.9" x2="260.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="260.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="258.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvIp=borrow: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="263.3" x2="263.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="263.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="261.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvIp x wIdx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="265.7" x2="265.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="265.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="263.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poHire=0.05: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="268.1" x2="268.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="268.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="266.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rtChi=1: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="270.6" x2="270.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="270.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="268.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poTest=capacity: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="273.0" x2="273.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="273.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="271.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poBonus=members: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="275.4" x2="275.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="275.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="273.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.drLim=0: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="277.8" x2="277.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="277.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="275.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.poCost=hub: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls1" x1="280.2" x2="280.2" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="280.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="278.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.lfPm=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="282.6" x2="282.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="282.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="280.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.lfPm x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="285.1" x2="285.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="285.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="283.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.bgPi=0.1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="287.5" x2="287.5" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="287.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="285.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.bgPi x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="289.9" x2="289.9" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="289.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="287.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.cap=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="292.3" x2="292.3" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="292.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="290.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.cap x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="294.7" x2="294.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="294.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="292.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.cap x gvSh: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="297.1" x2="297.1" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="297.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="295.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.rho=0.3: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="299.6" x2="299.6" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="299.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="297.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.paDem=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="302.0" x2="302.0" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="302.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="300.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.prR=0.45: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="304.4" x2="304.4" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="304.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="302.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.gvBase=w: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="306.8" x2="306.8" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="306.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="304.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvDk x gvSh: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="309.2" x2="309.2" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="309.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="307.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.gvIp x gvSh: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls1" x1="311.7" x2="311.7" y1="504.0" y2="504.0"/>
+<circle class="d s1" cx="311.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="309.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x prK: +1.2 (95% 1.2 to 1.2)</title><line class="iv ls1" x1="314.1" x2="314.1" y1="503.9" y2="503.9"/>
+<circle class="d s1" cx="314.1" cy="503.9" r="2.6"/>
+<rect class="hit" x="312.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.bgPi x fin: +1.2 (95% 1.2 to 1.2)</title><line class="iv ls1" x1="316.5" x2="316.5" y1="503.9" y2="503.9"/>
+<circle class="d s1" cx="316.5" cy="503.9" r="2.6"/>
+<rect class="hit" x="314.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x prA: +1.2 (95% 1.2 to 1.2)</title><line class="iv ls1" x1="318.9" x2="318.9" y1="503.9" y2="503.9"/>
+<circle class="d s1" cx="318.9" cy="503.9" r="2.6"/>
+<rect class="hit" x="316.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x prR: +1.2 (95% 1.2 to 1.2)</title><line class="iv ls1" x1="321.3" x2="321.3" y1="503.9" y2="503.8"/>
+<circle class="d s1" cx="321.3" cy="503.9" r="2.6"/>
+<rect class="hit" x="319.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x lfFl: +1.2 (95% 1.2 to 1.2)</title><line class="iv ls1" x1="323.7" x2="323.7" y1="503.9" y2="503.8"/>
+<circle class="d s1" cx="323.7" cy="503.8" r="2.6"/>
+<rect class="hit" x="321.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.fin=money: +1.2 (95% 1.2 to 1.2)</title><line class="iv ls1" x1="326.2" x2="326.2" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="326.2" cy="503.8" r="2.6"/>
+<rect class="hit" x="324.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rho: +1.3 (95% 1.3 to 1.3)</title><line class="iv ls1" x1="328.6" x2="328.6" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="328.6" cy="503.8" r="2.6"/>
+<rect class="hit" x="326.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x wIdx: +1.3 (95% 1.3 to 1.3)</title><line class="iv ls1" x1="331.0" x2="331.0" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="331.0" cy="503.8" r="2.6"/>
+<rect class="hit" x="329.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x prBd: +1.4 (95% 1.4 to 1.4)</title><line class="iv ls1" x1="333.4" x2="333.4" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="333.4" cy="503.8" r="2.6"/>
+<rect class="hit" x="331.4" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rtChi: +1.5 (95% 1.4 to 1.5)</title><line class="iv ls1" x1="335.8" x2="335.8" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="335.8" cy="503.8" r="2.6"/>
+<rect class="hit" x="333.8" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x sc: +1.5 (95% 1.4 to 1.5)</title><line class="iv ls1" x1="338.2" x2="338.2" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="338.2" cy="503.8" r="2.6"/>
+<rect class="hit" x="336.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rtNs: +1.5 (95% 1.4 to 1.5)</title><line class="iv ls1" x1="340.7" x2="340.7" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="340.7" cy="503.8" r="2.6"/>
+<rect class="hit" x="338.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rtPhi: +1.5 (95% 1.4 to 1.5)</title><line class="iv ls1" x1="343.1" x2="343.1" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="343.1" cy="503.8" r="2.6"/>
+<rect class="hit" x="341.1" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, single.fin=cap: +1.5 (95% 1.4 to 1.5)</title><line class="iv ls1" x1="345.5" x2="345.5" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="345.5" cy="503.8" r="2.6"/>
+<rect class="hit" x="343.5" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x gvIp: +1.5 (95% 1.4 to 1.5)</title><line class="iv ls1" x1="347.9" x2="347.9" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="347.9" cy="503.8" r="2.6"/>
+<rect class="hit" x="345.9" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x rtIx: +1.5 (95% 1.5 to 1.5)</title><line class="iv ls1" x1="350.3" x2="350.3" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="350.3" cy="503.8" r="2.6"/>
+<rect class="hit" x="348.3" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x gvBase: +1.6 (95% 1.6 to 1.7)</title><line class="iv ls1" x1="352.7" x2="352.7" y1="503.8" y2="503.8"/>
+<circle class="d s1" cx="352.7" cy="503.8" r="2.6"/>
+<rect class="hit" x="350.7" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.cap x fin: +15.6 (95% 15.4 to 15.8)</title><line class="iv ls1" x1="355.2" x2="355.2" y1="502.1" y2="502.1"/>
+<circle class="d s1" cx="355.2" cy="502.1" r="2.6"/>
+<rect class="hit" x="353.2" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, pair.fin x gvSh: +58.5 (95% 58.4 to 58.7)</title><line class="iv ls1" x1="357.6" x2="357.6" y1="497.0" y2="496.9"/>
+<circle class="d s1" cx="357.6" cy="497.0" r="2.6"/>
+<rect class="hit" x="355.6" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, bound.c22.endoAnn [bgM=1, cap=0, drLim=0, fin=cap, gvSh=0, lfFl=off, lfPm=0, paDem=1, poTest=capacity, prA=0.5078, prBd=0.132, prH=0.0446, prR=0.45, rho=0.3, rtIx=0.5, rtPhi=1, wIdx=0.75]: +894.8 (95% 879.8 to 909.7)</title><line class="iv ls1" x1="360.0" x2="360.0" y1="398.4" y2="394.8"/>
+<path class="o ls1" style="stroke:var(--s1)" d="M360.0 392.1l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="358.0" y="374" width="4.0" height="190"/></g>
+<g><title>Reference, main row: +0.07 (95% 0.06 to 0.07)</title><circle class="m" cx="219.8" cy="504.0" r="5"/></g>
+<text class="lab" x="226.8" y="494.0" text-anchor="start">main +0.07</text>
+<line class="g" x1="394" x2="684" y1="564.0" y2="564.0"/>
+<line class="g" x1="394" x2="684" y1="504.0" y2="504.0"/>
+<line class="g" x1="394" x2="684" y1="444.0" y2="444.0"/>
+<line class="g" x1="394" x2="684" y1="384.0" y2="384.0"/>
+<rect class="band" x="394" width="290" y="503.9" height="0.2"><title>Not material: within 1.0 of zero (rule 3)</title></rect>
+<line class="z" x1="394" x2="684" y1="504.0" y2="504.0"/>
+<text class="lab" x="394" y="582">Adverse · robust</text>
+<g><title>Adverse, pair.gvSh x rho: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="400.0" x2="400.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="400.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="398.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rtIx: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="402.4" x2="402.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="402.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="400.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x lfConv: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="404.8" x2="404.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="404.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="402.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poPay: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="407.3" x2="407.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="407.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="405.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rtChi: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="409.7" x2="409.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="409.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="407.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x lfPm: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="412.1" x2="412.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="412.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="410.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvRr x gvSh: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="414.5" x2="414.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="414.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="412.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvRs x gvSh: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="416.9" x2="416.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="416.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="414.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvSh=0: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="419.3" x2="419.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="419.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="417.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x wIdx: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="421.8" x2="421.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="421.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="419.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prBd: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="424.2" x2="424.2" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="424.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="422.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prK: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="426.6" x2="426.6" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="426.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="424.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prA: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="429.0" x2="429.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="429.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="427.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prH: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="431.4" x2="431.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="431.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="429.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poHire: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="433.8" x2="433.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="433.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="431.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poCost: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="436.3" x2="436.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="436.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="434.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvR x gvSh: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="438.7" x2="438.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="438.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="436.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvA x gvSh: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="441.1" x2="441.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="441.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="439.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rtPhi: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="443.5" x2="443.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="443.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="441.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poTest: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="445.9" x2="445.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="445.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="443.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.drLim x gvSh: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="448.3" x2="448.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="448.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="446.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x rtNs: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="450.8" x2="450.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="450.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="448.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.bgPi x gvSh: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="453.2" x2="453.2" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="453.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="451.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x sc: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls2" x1="455.6" x2="455.6" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="455.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="453.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x lfFl: +0.02 (95% 0.02 to 0.03)</title><line class="iv ls2" x1="458.0" x2="458.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="458.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="456.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x poBonus: +0.02 (95% 0.02 to 0.03)</title><line class="iv ls2" x1="460.4" x2="460.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="460.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="458.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rho x rtIx: +0.03 (95% 0.02 to 0.03)</title><line class="iv ls2" x1="462.9" x2="462.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="462.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="460.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x prR: +0.03 (95% 0.03 to 0.03)</title><line class="iv ls2" x1="465.3" x2="465.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="465.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="463.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvSh x paDem: +0.03 (95% 0.03 to 0.03)</title><line class="iv ls2" x1="467.7" x2="467.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="467.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="465.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvBase=wc: +0.04 (95% 0.04 to 0.04)</title><line class="iv ls2" x1="470.1" x2="470.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="470.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="468.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvBase x gvSh: +0.04 (95% 0.04 to 0.04)</title><line class="iv ls2" x1="472.5" x2="472.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="472.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="470.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rho=0.05: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls2" x1="474.9" x2="474.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="474.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="472.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rho x wIdx: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls2" x1="477.4" x2="477.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="477.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="475.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.lfFl x rtIx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls2" x1="479.8" x2="479.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="479.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="477.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtChi x rtIx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls2" x1="482.2" x2="482.2" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="482.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="480.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtIx=0.5: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls2" x1="484.6" x2="484.6" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="484.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="482.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtIx x wIdx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls2" x1="487.0" x2="487.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="487.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="485.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.prK x rtIx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls2" x1="489.4" x2="489.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="489.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="487.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtIx x rtPhi: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls2" x1="491.9" x2="491.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="491.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="489.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtIx x sc: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls2" x1="494.3" x2="494.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="494.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="492.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.rtIx x rtNs: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls2" x1="496.7" x2="496.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="496.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="494.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.lfConv=none: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls2" x1="499.1" x2="499.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="499.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="497.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.lfConv x wIdx: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls2" x1="501.5" x2="501.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="501.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="499.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.lfPm=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls2" x1="503.9" x2="503.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="503.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="501.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.drLim=10000: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls2" x1="506.4" x2="506.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="506.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="504.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.lfFl=off: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls2" x1="508.8" x2="508.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="508.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="506.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.lfFl x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls2" x1="511.2" x2="511.2" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="511.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="509.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poPay=price: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls2" x1="513.6" x2="513.6" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="513.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="511.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.poPay x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls2" x1="516.0" x2="516.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="516.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="514.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvRr=0.0196: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="518.5" x2="518.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="518.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="516.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtChi=1: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="520.9" x2="520.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="520.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="518.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poTest=members: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="523.3" x2="523.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="523.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="521.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvRs=0.02: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="525.7" x2="525.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="525.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="523.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtPhi=0: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="528.1" x2="528.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="528.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="526.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poCost=sector: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="530.5" x2="530.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="530.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="528.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvB=0: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="533.0" x2="533.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="533.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="531.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poHire=0.02: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="535.4" x2="535.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="535.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="533.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.sc=0.593: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="537.8" x2="537.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="537.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="535.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poHire=0.05: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="540.2" x2="540.2" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="540.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="538.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, main row: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="542.6" x2="542.6" y1="504.0" y2="504.0"/>
+<rect class="hit" x="540.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prK=0.2: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="545.0" x2="545.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="545.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="543.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prA=0.5078: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="547.5" x2="547.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="547.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="545.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prH=0.0446: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="549.9" x2="549.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="549.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="547.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prBd=0.132: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="552.3" x2="552.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="552.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="550.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.wIdx=0.75: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="554.7" x2="554.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="554.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="552.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.bgM=1: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="557.1" x2="557.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="557.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="555.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.prBd x wIdx: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="559.5" x2="559.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="559.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="557.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvA=1: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="562.0" x2="562.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="562.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="560.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poTest=capacity: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="564.4" x2="564.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="564.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="562.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvDk=0: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="566.8" x2="566.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="566.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="564.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvDk x wIdx: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="569.2" x2="569.2" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="569.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="567.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvR=rule: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="571.6" x2="571.6" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="571.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="569.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvB=1: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="574.1" x2="574.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="574.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="572.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvA=0.25: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="576.5" x2="576.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="576.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="574.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtPhi=1: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="578.9" x2="578.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="578.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="576.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvRr=0: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="581.3" x2="581.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="581.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="579.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvRs=0: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="583.7" x2="583.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="583.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="581.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poBonus=members: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="586.1" x2="586.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="586.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="584.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.paDem=1: +0.07 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="588.6" x2="588.6" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="588.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="586.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvIp=borrow: +0.08 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="591.0" x2="591.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="591.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="589.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvIp x wIdx: +0.08 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="593.4" x2="593.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="593.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="591.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rtNs=port: +0.08 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="595.8" x2="595.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="595.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="593.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.drLim=0: +0.08 (95% 0.07 to 0.08)</title><line class="iv ls2" x1="598.2" x2="598.2" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="598.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="596.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.poCost=hub: +0.08 (95% 0.08 to 0.08)</title><line class="iv ls2" x1="600.6" x2="600.6" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="600.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="598.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.lfPm=0: +0.08 (95% 0.08 to 0.08)</title><line class="iv ls2" x1="603.1" x2="603.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="603.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="601.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.lfPm x wIdx: +0.08 (95% 0.08 to 0.08)</title><line class="iv ls2" x1="605.5" x2="605.5" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="605.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="603.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.bgPi=0.1: +0.08 (95% 0.08 to 0.08)</title><line class="iv ls2" x1="607.9" x2="607.9" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="607.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="605.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.bgPi x wIdx: +0.08 (95% 0.08 to 0.08)</title><line class="iv ls2" x1="610.3" x2="610.3" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="610.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="608.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.prR=0.45: +0.08 (95% 0.08 to 0.08)</title><line class="iv ls2" x1="612.7" x2="612.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="612.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="610.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.rho=0.3: +0.08 (95% 0.08 to 0.08)</title><line class="iv ls2" x1="615.1" x2="615.1" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="615.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="613.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvDk x gvSh: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="617.6" x2="617.6" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="617.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="615.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.cap=0: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="620.0" x2="620.0" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="620.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="618.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.cap x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="622.4" x2="622.4" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="622.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="620.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.cap x gvSh: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="624.8" x2="624.8" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="624.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="622.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.gvBase=w: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="627.2" x2="627.2" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="627.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="625.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.gvIp x gvSh: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls2" x1="629.7" x2="629.7" y1="504.0" y2="504.0"/>
+<circle class="d s2" cx="629.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="627.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x prK: +1.6 (95% 1.6 to 1.6)</title><line class="iv ls2" x1="632.1" x2="632.1" y1="503.8" y2="503.8"/>
+<circle class="d s2" cx="632.1" cy="503.8" r="2.6"/>
+<rect class="hit" x="630.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.bgPi x fin: +1.7 (95% 1.7 to 1.7)</title><line class="iv ls2" x1="634.5" x2="634.5" y1="503.8" y2="503.8"/>
+<circle class="d s2" cx="634.5" cy="503.8" r="2.6"/>
+<rect class="hit" x="632.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x prR: +1.8 (95% 1.7 to 1.8)</title><line class="iv ls2" x1="636.9" x2="636.9" y1="503.8" y2="503.8"/>
+<circle class="d s2" cx="636.9" cy="503.8" r="2.6"/>
+<rect class="hit" x="634.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x prA: +1.8 (95% 1.7 to 1.8)</title><line class="iv ls2" x1="639.3" x2="639.3" y1="503.8" y2="503.8"/>
+<circle class="d s2" cx="639.3" cy="503.8" r="2.6"/>
+<rect class="hit" x="637.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.fin=money: +1.8 (95% 1.8 to 1.8)</title><line class="iv ls2" x1="641.7" x2="641.7" y1="503.8" y2="503.8"/>
+<circle class="d s2" cx="641.7" cy="503.8" r="2.6"/>
+<rect class="hit" x="639.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x lfFl: +1.8 (95% 1.8 to 1.8)</title><line class="iv ls2" x1="644.2" x2="644.2" y1="503.8" y2="503.8"/>
+<circle class="d s2" cx="644.2" cy="503.8" r="2.6"/>
+<rect class="hit" x="642.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rho: +1.9 (95% 1.9 to 1.9)</title><line class="iv ls2" x1="646.6" x2="646.6" y1="503.8" y2="503.8"/>
+<circle class="d s2" cx="646.6" cy="503.8" r="2.6"/>
+<rect class="hit" x="644.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x prBd: +2.1 (95% 2.1 to 2.1)</title><line class="iv ls2" x1="649.0" x2="649.0" y1="503.7" y2="503.7"/>
+<circle class="d s2" cx="649.0" cy="503.7" r="2.6"/>
+<rect class="hit" x="647.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rtChi: +2.2 (95% 2.2 to 2.3)</title><line class="iv ls2" x1="651.4" x2="651.4" y1="503.7" y2="503.7"/>
+<circle class="d s2" cx="651.4" cy="503.7" r="2.6"/>
+<rect class="hit" x="649.4" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rtPhi: +2.3 (95% 2.2 to 2.3)</title><line class="iv ls2" x1="653.8" x2="653.8" y1="503.7" y2="503.7"/>
+<circle class="d s2" cx="653.8" cy="503.7" r="2.6"/>
+<rect class="hit" x="651.8" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x sc: +2.3 (95% 2.2 to 2.3)</title><line class="iv ls2" x1="656.2" x2="656.2" y1="503.7" y2="503.7"/>
+<circle class="d s2" cx="656.2" cy="503.7" r="2.6"/>
+<rect class="hit" x="654.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rtNs: +2.3 (95% 2.2 to 2.3)</title><line class="iv ls2" x1="658.7" x2="658.7" y1="503.7" y2="503.7"/>
+<circle class="d s2" cx="658.7" cy="503.7" r="2.6"/>
+<rect class="hit" x="656.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, single.fin=cap: +2.3 (95% 2.2 to 2.3)</title><line class="iv ls2" x1="661.1" x2="661.1" y1="503.7" y2="503.7"/>
+<circle class="d s2" cx="661.1" cy="503.7" r="2.6"/>
+<rect class="hit" x="659.1" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x gvIp: +2.3 (95% 2.2 to 2.3)</title><line class="iv ls2" x1="663.5" x2="663.5" y1="503.7" y2="503.7"/>
+<circle class="d s2" cx="663.5" cy="503.7" r="2.6"/>
+<rect class="hit" x="661.5" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x wIdx: +3.6 (95% 3.0 to 4.2)</title><line class="iv ls2" x1="665.9" x2="665.9" y1="503.6" y2="503.5"/>
+<circle class="d s2" cx="665.9" cy="503.6" r="2.6"/>
+<rect class="hit" x="663.9" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x rtIx: +4.0 (95% 3.6 to 4.4)</title><line class="iv ls2" x1="668.3" x2="668.3" y1="503.6" y2="503.5"/>
+<circle class="d s2" cx="668.3" cy="503.5" r="2.6"/>
+<rect class="hit" x="666.3" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x gvBase: +9.4 (95% 9.1 to 9.7)</title><line class="iv ls2" x1="670.7" x2="670.7" y1="502.9" y2="502.8"/>
+<circle class="d s2" cx="670.7" cy="502.9" r="2.6"/>
+<rect class="hit" x="668.7" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.cap x fin: +33.2 (95% 33.0 to 33.4)</title><line class="iv ls2" x1="673.2" x2="673.2" y1="500.0" y2="500.0"/>
+<circle class="d s2" cx="673.2" cy="500.0" r="2.6"/>
+<rect class="hit" x="671.2" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, pair.fin x gvSh: +75.2 (95% 75.0 to 75.4)</title><line class="iv ls2" x1="675.6" x2="675.6" y1="495.0" y2="494.9"/>
+<circle class="d s2" cx="675.6" cy="495.0" r="2.6"/>
+<rect class="hit" x="673.6" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, bound.c22.endoAnn [bgM=1, cap=0, drLim=0, fin=cap, gvSh=0, lfFl=off, lfPm=0, paDem=1, poTest=capacity, prA=0.5078, prBd=0.132, prH=0.0446, prR=0.45, rho=0.3, rtIx=0.5, rtPhi=1, wIdx=0.75]: +1003.8 (95% 986.5 to 1021.8)</title><line class="iv ls2" x1="678.0" x2="678.0" y1="385.6" y2="381.4"/>
+<path class="o ls2" style="stroke:var(--s2)" d="M678.0 379.0l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="676.0" y="374" width="4.0" height="190"/></g>
+<g><title>Adverse, main row: +0.07 (95% 0.07 to 0.08)</title><circle class="m" cx="542.6" cy="504.0" r="5"/></g>
+<text class="lab" x="549.6" y="494.0" text-anchor="start">main +0.07</text>
+<line class="g" x1="712" x2="1002" y1="564.0" y2="564.0"/>
+<line class="g" x1="712" x2="1002" y1="504.0" y2="504.0"/>
+<line class="g" x1="712" x2="1002" y1="444.0" y2="444.0"/>
+<line class="g" x1="712" x2="1002" y1="384.0" y2="384.0"/>
+<rect class="band" x="712" width="290" y="503.9" height="0.2"><title>Not material: within 1.0 of zero (rule 3)</title></rect>
+<line class="z" x1="712" x2="1002" y1="504.0" y2="504.0"/>
+<text class="lab" x="712" y="582">Stress · robust</text>
+<g><title>Stress, pair.gvSh x rho: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="718.0" x2="718.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="718.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="716.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rtIx: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="720.4" x2="720.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="720.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="718.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poPay: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="722.8" x2="722.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="722.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="720.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x lfConv: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="725.3" x2="725.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="725.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="723.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rtChi: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="727.7" x2="727.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="727.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="725.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x lfPm: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="730.1" x2="730.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="730.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="728.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvRr x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="732.5" x2="732.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="732.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="730.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poHire: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="734.9" x2="734.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="734.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="732.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvRs x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="737.3" x2="737.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="737.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="735.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvSh=0: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="739.8" x2="739.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="739.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="737.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x wIdx: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="742.2" x2="742.2" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="742.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="740.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prBd: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="744.6" x2="744.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="744.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="742.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prK: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="747.0" x2="747.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="747.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="745.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prA: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="749.4" x2="749.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="749.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="747.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prH: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="751.8" x2="751.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="751.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="749.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poCost: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="754.3" x2="754.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="754.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="752.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvR x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="756.7" x2="756.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="756.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="754.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvA x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="759.1" x2="759.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="759.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="757.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rtPhi: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="761.5" x2="761.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="761.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="759.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poTest: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="763.9" x2="763.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="763.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="761.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.drLim x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="766.3" x2="766.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="766.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="764.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x poBonus: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="768.8" x2="768.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="768.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="766.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x lfFl: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="771.2" x2="771.2" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="771.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="769.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.bgPi x gvSh: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="773.6" x2="773.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="773.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="771.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x rtNs: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="776.0" x2="776.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="776.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="774.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x sc: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="778.4" x2="778.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="778.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="776.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x paDem: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="780.9" x2="780.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="780.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="778.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvSh x prR: +0.01 (95% 0.01 to 0.01)</title><line class="iv ls3" x1="783.3" x2="783.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="783.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="781.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rho x rtIx: +0.02 (95% 0.02 to 0.02)</title><line class="iv ls3" x1="785.7" x2="785.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="785.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="783.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvBase=wc: +0.03 (95% 0.03 to 0.03)</title><line class="iv ls3" x1="788.1" x2="788.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="788.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="786.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvBase x gvSh: +0.03 (95% 0.03 to 0.03)</title><line class="iv ls3" x1="790.5" x2="790.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="790.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="788.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.lfFl x rtIx: +0.05 (95% 0.04 to 0.05)</title><line class="iv ls3" x1="792.9" x2="792.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="792.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="790.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rho=0.05: +0.05 (95% 0.04 to 0.05)</title><line class="iv ls3" x1="795.4" x2="795.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="795.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="793.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rho x wIdx: +0.05 (95% 0.04 to 0.05)</title><line class="iv ls3" x1="797.8" x2="797.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="797.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="795.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtChi x rtIx: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls3" x1="800.2" x2="800.2" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="800.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="798.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtIx=0.5: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls3" x1="802.6" x2="802.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="802.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="800.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtIx x wIdx: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls3" x1="805.0" x2="805.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="805.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="803.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.prK x rtIx: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls3" x1="807.4" x2="807.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="807.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="805.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtIx x rtPhi: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls3" x1="809.9" x2="809.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="809.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="807.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtIx x sc: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls3" x1="812.3" x2="812.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="812.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="810.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.rtIx x rtNs: +0.05 (95% 0.05 to 0.05)</title><line class="iv ls3" x1="814.7" x2="814.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="814.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="812.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.lfConv=none: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls3" x1="817.1" x2="817.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="817.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="815.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.lfConv x wIdx: +0.06 (95% 0.06 to 0.06)</title><line class="iv ls3" x1="819.5" x2="819.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="819.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="817.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.lfPm=1: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls3" x1="821.9" x2="821.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="821.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="819.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.lfFl=off: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls3" x1="824.4" x2="824.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="824.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="822.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.lfFl x wIdx: +0.06 (95% 0.06 to 0.07)</title><line class="iv ls3" x1="826.8" x2="826.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="826.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="824.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.drLim=10000: +0.07 (95% 0.06 to 0.07)</title><line class="iv ls3" x1="829.2" x2="829.2" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="829.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="827.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poPay=price: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="831.6" x2="831.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="831.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="829.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.poPay x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="834.0" x2="834.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="834.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="832.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvRr=0.0196: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="836.5" x2="836.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="836.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="834.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtChi=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="838.9" x2="838.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="838.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="836.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poTest=members: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="841.3" x2="841.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="841.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="839.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poCost=sector: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="843.7" x2="843.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="843.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="841.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtPhi=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="846.1" x2="846.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="846.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="844.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvRs=0.02: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="848.5" x2="848.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="848.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="846.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poHire=0.02: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="851.0" x2="851.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="851.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="849.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvB=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="853.4" x2="853.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="853.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="851.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poHire=0.05: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="855.8" x2="855.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="855.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="853.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, main row: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="858.2" x2="858.2" y1="504.0" y2="504.0"/>
+<rect class="hit" x="856.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prK=0.2: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="860.6" x2="860.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="860.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="858.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prA=0.5078: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="863.0" x2="863.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="863.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="861.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prH=0.0446: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="865.5" x2="865.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="865.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="863.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prBd=0.132: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="867.9" x2="867.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="867.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="865.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.wIdx=0.75: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="870.3" x2="870.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="870.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="868.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.bgM=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="872.7" x2="872.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="872.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="870.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.prBd x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="875.1" x2="875.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="875.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="873.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvDk=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="877.5" x2="877.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="877.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="875.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvDk x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="880.0" x2="880.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="880.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="878.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poTest=capacity: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="882.4" x2="882.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="882.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="880.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvA=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="884.8" x2="884.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="884.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="882.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.sc=0.593: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="887.2" x2="887.2" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="887.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="885.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvR=rule: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="889.6" x2="889.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="889.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="887.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvB=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="892.1" x2="892.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="892.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="890.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvA=0.25: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="894.5" x2="894.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="894.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="892.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtPhi=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="896.9" x2="896.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="896.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="894.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvRr=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="899.3" x2="899.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="899.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="897.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvRs=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="901.7" x2="901.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="901.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="899.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poBonus=members: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="904.1" x2="904.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="904.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="902.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvIp=borrow: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="906.6" x2="906.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="906.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="904.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvIp x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="909.0" x2="909.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="909.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="907.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rtNs=port: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="911.4" x2="911.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="911.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="909.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.paDem=1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="913.8" x2="913.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="913.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="911.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.drLim=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="916.2" x2="916.2" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="916.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="914.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.lfPm=0: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="918.6" x2="918.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="918.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="916.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.lfPm x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="921.1" x2="921.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="921.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="919.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.poCost=hub: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="923.5" x2="923.5" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="923.5" cy="504.0" r="2.6"/>
+<rect class="hit" x="921.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.bgPi=0.1: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="925.9" x2="925.9" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="925.9" cy="504.0" r="2.6"/>
+<rect class="hit" x="923.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.bgPi x wIdx: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="928.3" x2="928.3" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="928.3" cy="504.0" r="2.6"/>
+<rect class="hit" x="926.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.prR=0.45: +0.07 (95% 0.07 to 0.07)</title><line class="iv ls3" x1="930.7" x2="930.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="930.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="928.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.rho=0.3: +0.08 (95% 0.07 to 0.08)</title><line class="iv ls3" x1="933.1" x2="933.1" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="933.1" cy="504.0" r="2.6"/>
+<rect class="hit" x="931.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvDk x gvSh: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="935.6" x2="935.6" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="935.6" cy="504.0" r="2.6"/>
+<rect class="hit" x="933.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.cap=0: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="938.0" x2="938.0" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="938.0" cy="504.0" r="2.6"/>
+<rect class="hit" x="936.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.cap x wIdx: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="940.4" x2="940.4" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="940.4" cy="504.0" r="2.6"/>
+<rect class="hit" x="938.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.cap x gvSh: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="942.8" x2="942.8" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="942.8" cy="504.0" r="2.6"/>
+<rect class="hit" x="940.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.gvBase=w: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="945.2" x2="945.2" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="945.2" cy="504.0" r="2.6"/>
+<rect class="hit" x="943.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.gvIp x gvSh: +0.09 (95% 0.09 to 0.09)</title><line class="iv ls3" x1="947.7" x2="947.7" y1="504.0" y2="504.0"/>
+<circle class="d s3" cx="947.7" cy="504.0" r="2.6"/>
+<rect class="hit" x="945.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x prK: +1.5 (95% 1.5 to 1.5)</title><line class="iv ls3" x1="950.1" x2="950.1" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="950.1" cy="503.8" r="2.6"/>
+<rect class="hit" x="948.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.bgPi x fin: +1.6 (95% 1.6 to 1.6)</title><line class="iv ls3" x1="952.5" x2="952.5" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="952.5" cy="503.8" r="2.6"/>
+<rect class="hit" x="950.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x prA: +1.6 (95% 1.6 to 1.6)</title><line class="iv ls3" x1="954.9" x2="954.9" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="954.9" cy="503.8" r="2.6"/>
+<rect class="hit" x="952.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x prR: +1.6 (95% 1.6 to 1.6)</title><line class="iv ls3" x1="957.3" x2="957.3" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="957.3" cy="503.8" r="2.6"/>
+<rect class="hit" x="955.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x lfFl: +1.7 (95% 1.6 to 1.7)</title><line class="iv ls3" x1="959.7" x2="959.7" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="959.7" cy="503.8" r="2.6"/>
+<rect class="hit" x="957.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.fin=money: +1.7 (95% 1.6 to 1.7)</title><line class="iv ls3" x1="962.2" x2="962.2" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="962.2" cy="503.8" r="2.6"/>
+<rect class="hit" x="960.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rho: +1.7 (95% 1.7 to 1.7)</title><line class="iv ls3" x1="964.6" x2="964.6" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="964.6" cy="503.8" r="2.6"/>
+<rect class="hit" x="962.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x prBd: +1.9 (95% 1.9 to 1.9)</title><line class="iv ls3" x1="967.0" x2="967.0" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="967.0" cy="503.8" r="2.6"/>
+<rect class="hit" x="965.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rtChi: +1.9 (95% 1.8 to 2.0)</title><line class="iv ls3" x1="969.4" x2="969.4" y1="503.8" y2="503.8"/>
+<circle class="d s3" cx="969.4" cy="503.8" r="2.6"/>
+<rect class="hit" x="967.4" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rtPhi: +1.9 (95% 1.9 to 2.0)</title><line class="iv ls3" x1="971.8" x2="971.8" y1="503.8" y2="503.7"/>
+<circle class="d s3" cx="971.8" cy="503.8" r="2.6"/>
+<rect class="hit" x="969.8" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x sc: +2.0 (95% 1.9 to 2.0)</title><line class="iv ls3" x1="974.2" x2="974.2" y1="503.8" y2="503.7"/>
+<circle class="d s3" cx="974.2" cy="503.8" r="2.6"/>
+<rect class="hit" x="972.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rtNs: +2.0 (95% 1.9 to 2.0)</title><line class="iv ls3" x1="976.7" x2="976.7" y1="503.8" y2="503.7"/>
+<circle class="d s3" cx="976.7" cy="503.8" r="2.6"/>
+<rect class="hit" x="974.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, single.fin=cap: +2.0 (95% 1.9 to 2.1)</title><line class="iv ls3" x1="979.1" x2="979.1" y1="503.8" y2="503.7"/>
+<circle class="d s3" cx="979.1" cy="503.8" r="2.6"/>
+<rect class="hit" x="977.1" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x gvIp: +2.0 (95% 1.9 to 2.1)</title><line class="iv ls3" x1="981.5" x2="981.5" y1="503.8" y2="503.7"/>
+<circle class="d s3" cx="981.5" cy="503.8" r="2.6"/>
+<rect class="hit" x="979.5" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x wIdx: +2.9 (95% 2.4 to 3.3)</title><line class="iv ls3" x1="983.9" x2="983.9" y1="503.7" y2="503.6"/>
+<circle class="d s3" cx="983.9" cy="503.6" r="2.6"/>
+<rect class="hit" x="981.9" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x rtIx: +4.3 (95% 3.8 to 4.9)</title><line class="iv ls3" x1="986.3" x2="986.3" y1="503.5" y2="503.4"/>
+<circle class="d s3" cx="986.3" cy="503.5" r="2.6"/>
+<rect class="hit" x="984.3" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x gvBase: +11.2 (95% 10.9 to 11.5)</title><line class="iv ls3" x1="988.7" x2="988.7" y1="502.7" y2="502.6"/>
+<circle class="d s3" cx="988.7" cy="502.6" r="2.6"/>
+<rect class="hit" x="986.7" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.cap x fin: +31.5 (95% 31.2 to 31.7)</title><line class="iv ls3" x1="991.2" x2="991.2" y1="500.2" y2="500.2"/>
+<circle class="d s3" cx="991.2" cy="500.2" r="2.6"/>
+<rect class="hit" x="989.2" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, pair.fin x gvSh: +74.5 (95% 74.3 to 74.7)</title><line class="iv ls3" x1="993.6" x2="993.6" y1="495.1" y2="495.0"/>
+<circle class="d s3" cx="993.6" cy="495.1" r="2.6"/>
+<rect class="hit" x="991.6" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, bound.c22.endoAnn [bgM=1, cap=0, drLim=0, fin=cap, gvSh=0, lfFl=off, lfPm=0, paDem=1, poTest=capacity, prA=0.5078, prBd=0.132, prH=0.0446, prR=0.45, rho=0.3, rtIx=0.5, rtPhi=1, wIdx=0.75]: +981.5 (95% 964.8 to 998.3)</title><line class="iv ls3" x1="996.0" x2="996.0" y1="388.2" y2="384.2"/>
+<path class="o ls3" style="stroke:var(--s3)" d="M996.0 381.7l4.5 4.5l-4.5 4.5l-4.5-4.5z"/>
+<rect class="hit" x="994.0" y="374" width="4.0" height="190"/></g>
+<g><title>Stress, main row: +0.07 (95% 0.07 to 0.07)</title><circle class="m" cx="858.2" cy="504.0" r="5"/></g>
+<text class="lab" x="865.2" y="494.0" text-anchor="start">main +0.07</text>
+</svg>
