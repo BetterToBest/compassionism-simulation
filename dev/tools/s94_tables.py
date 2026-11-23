@@ -6,7 +6,7 @@ compassionism-sim-results (runner/jobs/s94.js; 20 shards of 25 seeds, seeds 1-50
 price at the sale (s90-sale-<env>-<years>-b8ccd8d; the extra check that the study's main row is the published one). Writes Markdown tables and a
 summary JSON.
 
-  python3 dev/tools/s94_tables.py RESULTS_DIR OUT_DIR [--engine c5682f9] [--reps 10000]
+  python3 dev/tools/s94_tables.py RESULTS_DIR OUT_DIR [--engine c5682f9] [--reps 10000] [--main ENGINE7]
 
 Method (fixed by the preregistration; where it is silent, the cautious reading, said so here and in the tables):
 - The contrast (blocks A-C): row minus the main row M of the same design, paired by seed. The no-programme run is shared, so this is also the change
@@ -99,11 +99,25 @@ def s90_rows(folder):
     return out
 
 
+MAIN = None  # S93 part 3 (Nov 23, 2026): --main ENGINE7 compares the main rows with the rerun part M r2-m-<env>-<years>-ENGINE7 (the release main row)
+
+
+def main_rows(src, e, y):
+    """the main rows the study's own must equal: the at-sale folder (default) or, with --main, the rerun part M (rows renamed as the at-sale ones)"""
+    if not MAIN: return s90_rows(os.path.join(src, 's90-sale-%s-%d-b8ccd8d' % (e, y)))
+    r = s90_rows(os.path.join(src, 'r2-m-%s-%d-%s' % (e, y, MAIN)))
+    return {'none': r['none'], 'c22.sale': r['c22'], 'rel.sale': r['rel']}
+
+
+def main_label(e, y):
+    return 'the published main row with the private price at the sale (s90-sale-%s-%d-b8ccd8d)' % (e, y) if not MAIN else 'the release main row (r2-m-%s-%d-%s)' % (e, y, MAIN)
+
+
 def load(src, e, y, eng):
     fo = os.path.join(src, 's94-%s-%d-%s' % (e, y, eng)); C = []
     C.append(('DONE and run.txt present', os.path.exists(os.path.join(fo, 'DONE')) and os.path.exists(os.path.join(fo, 'run.txt')), None))
     n, bad = sha_ok(fo); C.append(('check 9: SHA256SUMS, %d files, all match (the file does not list itself)' % n, not bad, bad))
-    s90 = s90_rows(os.path.join(src, 's90-sale-%s-%d-b8ccd8d' % (e, y)))
+    s90 = main_rows(src, e, y)
     fsx = shards(fo); R = {}; seeds = []; man = []; nullk = set(); nullkept = []; d2 = {}; c1 = {}; spec = None; nkeys = 0
     for f in fsx:
         d = jload(f); m = d['_meta']; seeds.append(tuple(m['seeds'])); man.append((m['manifest'], m['baseline'])); lo, hi = m['seeds']
@@ -140,8 +154,8 @@ def load(src, e, y, eng):
         C.append(('check 2: row D equals M in all %d shared keys, every seed (%s); keys only in D: the switch\'s own reporting keys (%d)'
                   % (dk['shared'], DESL[des], len(dk['only'])), not dk['diff'], sorted(dk['diff'])[:10]))
     for a_, ks in c1.items():
-        C.append(('%s equals the published main row with the private price at the sale (s90-sale-%s-%d-b8ccd8d) in all %d of its keys, every seed'
-                  % ('the no-programme run' if a_ == 'none' else 'M (%s)' % DESL[a_.split('.')[1]], e, y, ks['n']), not ks['diff'], sorted(ks['diff'])[:10]))
+        C.append(('%s equals %s in all %d of its keys, every seed'
+                  % ('the no-programme run' if a_ == 'none' else 'M (%s)' % DESL[a_.split('.')[1]], main_label(e, y), ks['n']), not ks['diff'], sorted(ks['diff'])[:10]))
     for nm in R:
         R[nm] = {k: np.array([np.nan if x is None else x for x in a], dtype=float) for k, a in R[nm].items()}
         if 'rtE1' in R[nm]:
@@ -306,10 +320,11 @@ def write(out, ALL, CHK, eng):
 
 
 def main():
-    global W, REPS
+    global W, REPS, MAIN
     src, out = sys.argv[1], sys.argv[2]
     eng = sys.argv[sys.argv.index('--engine') + 1] if '--engine' in sys.argv else 'c5682f9'
     if '--reps' in sys.argv: REPS = int(sys.argv[sys.argv.index('--reps') + 1])
+    if '--main' in sys.argv: MAIN = sys.argv[sys.argv.index('--main') + 1]
     os.makedirs(out, exist_ok=True)
     rng = np.random.default_rng(20261121); idx = rng.integers(0, NS, size=(REPS, NS))
     W = np.zeros((REPS, NS))
