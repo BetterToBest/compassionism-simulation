@@ -59,7 +59,7 @@ Each bullet below gives one step's change on its own; the tables give both steps
 - **Wages that follow half of programme inflation, the rest never made up, with nothing backed** (the supply study). This reading changed the most. At 20 years the programme now lowers basket poverty against no programme: by 8.5 points in Reference, 12.7 in Adverse and 1.2 in Stress. The published figures were rises of 9.6, 5.0 and 9.6. At 40 years it still raises basket poverty in Reference (11.3 points) and Stress (12.1), and lowers it in Adverse (2.0). **The change comes from the price at the sale** (`s93-wage-dec-50bc51d`; seeds 1-20 in each environment and horizon):
   - with only that change undone, the release engine gives the published figures again, within 0.3 points;
   - undoing pay by household type or the care credit moves them by half a point at most;
-  - the v5.9 row on the release engine equals the published engine's, so the engine fixes do not move them.
+  - the v5.9 row on the release engine equals the published engine's run by run at 20 years; at 40 years the fix to the lost payroll pool changes some runs, and the mean by at most 0.1 points, so the engine fixes do not move these figures.
   That run shows which change moves the figure, not the mechanism inside it.
 - **The yardstick study's change in programme inflation with both readings** is now a small rise (+0.0044 points a year at 20 years in Adverse and Stress). That study was rerun on the engine with the fix to the stored no-programme economy.
 - **Financed rows:** 45 of the 48 poverty and wealth curves are fragile, as before. Two of the full-coverage design's financed curves in Reference at 40 years (wealth poverty and programme inflation) moved from fragile to robust.
