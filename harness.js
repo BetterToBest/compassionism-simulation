@@ -2295,9 +2295,13 @@ function prUnitSuite(){
     var R = tbStudy([row(true, null, true), row(true, {pr:nest}, true)], 1, P, SO), d2 = Math.abs(R[1].pLev20/R[0].pLev20 - 1);
     var Pa = Object.assign({}, ADVERSE_REFERENCE, {years:20, nAgents:500}), rowA = function(x){ var M = relMainCfgs(tbPresets(Pa)); return c22Design(frozenRow(Object.assign(M[1], JSON.parse(JSON.stringify(Y)), x || {}))); };
     var Q = tbStudy([rowA(), rowA({pr:nest}), rowA({pr:{k:1, r:0, a:0, h:0}})], 39, Pa, SO, 39), d3 = Math.abs(Q[1].pLev20/Q[0].pLev20 - 1), d4 = Math.abs(Q[2].pLev20/Q[0].pLev20 - 1);
-    /* S93 (v5.9.22): d4 > 1e-6 is no longer asserted. It was set while this row took the supply path stored for the row before it (today's rule); on its own
-     * path the slack reading gives 1.6e-15 here. Reported as information; its analysis is a follow-up (research-update PLAN, the audit after the release). */
-    return {pass:d1 < 1e-12 && d2 < 1e-9 && d3 < 1e-9, detail:'rule alone ' + d1.toExponential(2) + '; C2.2 year-20 level ' + d2.toExponential(2) + ' (Reference), ' + d3.toExponential(2) + ' (Adverse; with the recession\'s slack counted ' + d4.toExponential(2) + ', information only since v5.9.22)'}; });
+    /* S103 (Nov 26, 2026; research-update audits/2026-11-26-s103-audit.md, section 2): with the private price at the sale (the default since v5.9.22) seed 39's
+     * recession leaves no idle income (prSlk 0), so the slack reading has nothing to count (d4 about 1e-15, information). With the price paid a year late, the timing
+     * the price-rule study ran on, it leaves 23.7% idle and counting it moves the year-20 level by 0.19%, each row on its own path (d5, asserted again). The
+     * v5.9.22 note here put the change down to the supply-path store; the audit found it comes from the price at the sale (the store's fix moves neither). */
+    var rowL = function(x){ var c = rowA(x); c.sp = Object.assign({}, c.sp === true ? {} : c.sp || {}, {vAt:'lag'}); return c; };
+    var QL = tbStudy([rowL(), rowL({pr:{k:1, r:0, a:0, h:0}})], 39, Pa, SO, 39), d5 = Math.abs(QL[1].pLev20/QL[0].pLev20 - 1);
+    return {pass:d1 < 1e-12 && d2 < 1e-9 && d3 < 1e-9 && d5 > 1e-6, detail:'rule alone ' + d1.toExponential(2) + '; C2.2 year-20 level ' + d2.toExponential(2) + ' (Reference), ' + d3.toExponential(2) + ' (Adverse; with the recession\'s slack counted ' + d4.toExponential(2) + ' at the sale, ' + d5.toExponential(2) + ' with the price a year late)'}; });
   t('S58: slack: new money no larger than the slack moves no price (normal-years slack h, and a recession\'s idle share), and output takes it', function(){
     var S = prNew({h:0.10, r:0, a:0}, true); prStep(S, 0.05, 1, 1, 0, 0, 1, 0, 0, 1.05);
     var T = prNew({h:0, r:0, a:0}, true); prStep(T, 0.08, 1, 1, 0, 0, 1, 0.10, 0, 1.08);
