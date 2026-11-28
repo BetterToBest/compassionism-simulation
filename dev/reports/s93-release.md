@@ -1,5 +1,7 @@
 # The release v5.9.23: the findings on the release engine
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Written Nov 23, 2026. This report says what the release changed, which studies were rerun for it, what was checked before any figure was published, and what stays as the record. Every figure below comes from a results folder in BetterToBest/compassionism-sim-results, named in backticks. Preregistration: BetterToBest/research-update `prereg/2026-11-s90-private-price-at-sale.md`, Amendments 2 to 6.
 
 ## What the release is

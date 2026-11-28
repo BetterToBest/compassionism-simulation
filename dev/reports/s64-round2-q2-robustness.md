@@ -1,5 +1,7 @@
 # The v5.9 model, question 2: do the effects hold across the preregistered readings?
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 15, 2026. The specification curves of the v5.9 batch, read as frozen. Engine `104691f`, 500 adults, seeds 1-500, three environments, 20 and 40 years. Preregistered: research-update `prereg/2026-11-s63-round2-freeze.md` (Design; decision rules 1-3; Amendment 3). Results: compassionism-sim-results `r2-s-*-104691f/` (Source rows) and `r2-f-*-104691f/` (financed rows). Tables: `dev/runs/s64-round2/s64-q2-curves.md`; one CSV per curve in `dev/runs/s64-round2/curves/` (`python3 dev/tools/s64_tables.py`).
 
 ## In short

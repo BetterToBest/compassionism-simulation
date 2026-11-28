@@ -1,5 +1,7 @@
 # Synergy report: what each part of the design contributes, and whether the parts work together
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 **Full study batch.** Every figure here comes from the preregistered batch: seeds 1-500, run once as frozen. These are not pilot figures.
 
 - Preregistration: research-update `prereg/2026-11-study-program.md` (question Q2, the Analysis section, decision rules 2, 3, 6 and 7), with Amendments 4 (the full-coverage design, built to meet NEEC's criterion C2.2, is the headline design), 9 (the design freeze; materiality for inflation read on the yearly rate) and 10 (the frozen spending share). How the rows are built: research-update `prereg/run-manifest.md`, section 3 (B and B10).

@@ -1,5 +1,7 @@
 # Economist review checklist (v5.9)
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 One page for an independent economist, rebuilt for v5.9 on Nov 17, 2026 (engine `104691f`). Each row names one thing to check, where it is in the repository, and what the model does today. Mark each row agree, disagree or cannot tell, with a line of why. You need not do every row. Rows about what the framework means (as opposed to how it is modelled) belong to its author, Duke Johnson; say so in a comment. The model in one page: [model-card.html](https://bettertobest.github.io/compassionism-simulation/model-card.html); in full: [ODD.md](ODD.md) and [MODEL_SPEC.md](MODEL_SPEC.md).
 
 Send it by opening an issue with the "Economist review" template (Issues, New issue), or by a comment on the pull request or discussion where you found the model.

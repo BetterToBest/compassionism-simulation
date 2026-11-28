@@ -1,5 +1,7 @@
 # Who receives the Basic Units, and do they cover basic needs? (NEEC's criterion C2.2: coverage and adequacy)
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Oct 31, 2026 · the coverage-and-adequacy study · Claude · engine switch `C22` (study row option `c22`), off by default · preregistration: research-update `prereg/2026-11-c22-coverage-adequacy.md`
 
 ## Why this step

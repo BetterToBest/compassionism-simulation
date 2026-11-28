@@ -1,5 +1,7 @@
 # The v5.9 model, question 6: who gains, at the main row
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 15, 2026. The distribution measures' distribution measures on the v5.9 main row (full backing, a design parameter; today's price rule). Engine `104691f`, seeds 1-500, three environments, 20 and 40 years. Preregistered: research-update `prereg/2026-11-s63-round2-freeze.md` (Q6; secondary family, Holm within each table; Amendment 3 item 5). Results: compassionism-sim-results `r2-m-*-104691f/`. Tables: `dev/runs/s64-round2/s64-q6-distribution.md` (`python3 dev/tools/s64_tables.py`).
 
 ## In short

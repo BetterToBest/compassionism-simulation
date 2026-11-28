@@ -1,5 +1,7 @@
 # The central bank in both runs: the 100-seed pilot
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 15, 2026. A pilot, not the study's result: it checks that the mechanisms work and shows their size before the forward sweep and the full report (`dev/reports/s74-central-bank.md`). Preregistration: research-update `prereg/2026-11-s74-central-bank.md` and its Amendment 1 (written after the build and before this run). Engine `5f11ceb`. Results are in compassionism-sim-results `s74-cb-5f11ceb`, and the full tables are in `dev/runs/s74-pilot/tables.md` (`node dev/tools/s74_pilot.js ENV 100`, then `node dev/tools/s74_table.js`).
 
 **First, the plain statement the preregistration requires.** In Reference, Adverse and Stress the programme's own yearly price change is the larger source of price instability. Outside inflation is a fixed rate there (0% or 2%), so its spread is zero, and the programme's own spread is 0.2-0.5 points. In History (2005-2025), outside inflation swings more (a spread of 1.76 points) than the programme's own (0.39-0.50 points).

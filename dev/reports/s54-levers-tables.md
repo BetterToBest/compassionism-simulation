@@ -1,5 +1,7 @@
 # Policy levers: tables (pilot, seeds 1-50; labelled pilot, not figures of the model)
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Engine e6da050. Written by `dev/tools/s54_levers.py` from compassionism-sim-results (stage 1: ../compassionism-sim-results/s54-levers1-e6da050; stage 2: ../compassionism-sim-results/s54-levers2-e6da050). Paired bootstrap over seeds, 2000 replicates, resampler seed 54, the same resample for every cell. research-update `prereg/2026-11-levers-addendum.md` defines every cell.
 
 ## Stage 1: each lever on its own (Q20, decision rule 1)

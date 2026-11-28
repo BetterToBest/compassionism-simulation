@@ -1,5 +1,7 @@
 # Who pays the programme, and what a year's rising prices cost households
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 14, 2026. Pilot: seeds 1-100, 500 adults, 20 years, three environments, engine `e03aa73` (clean worktree). A pilot is a mechanism check, not a result; the frozen 500-seed batch decides. Preregistered before the build and before any run (research-update `prereg/2026-11-s68-financing-identity.md`, with one dated amendment before the pilot). It answers findings 1 and 4 of the Nov 13 audit (research-update `audits/2026-11-13-simulation-audit.md`). Tables: `dev/runs/s68-financing/tables.md`; per-seed results: compassionism-sim-results `s68-financing-e03aa73`.
 
 ## In short

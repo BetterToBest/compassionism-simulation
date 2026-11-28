@@ -33,7 +33,7 @@
     var cat = cols.map(function (c, j) { var s = {}; rows.forEach(function (r) { s[r[j]] = 1; if (Object.keys(s).length > 40) return; }); var k = Object.keys(s); return typeof rows[0][j] === 'number' || k.length > 40 || k.length < 2 ? null : k; });
     var box = document.createElement('div'); host.appendChild(box);
     box.innerHTML = '<p class="fx-note">Preregistration <code>' + esc(m.prereg) + '</code>; report <code>' + esc(m.report) + '</code>; engine <code>' + esc(String(m.engine).slice(0, 7)) + '</code>; ' +
-      (m.seeds ? esc(String(m.seeds)) + ' seeds; ' : '') + esc(m.rows) + '. Results folder: <code>' + esc(m.resultsFolders) + '</code> in compassionism-sim-results. Outcome keys are explained in the report.</p>';
+      (m.seeds ? esc(String(m.seeds)) + ' seeds; ' : '') + esc(m.rows) + '. Results folder: <code>' + esc(m.resultsFolders) + '</code> in compassionism-sim-results (offline since GitHub disabled it; deposited with DOI 10.5281/zenodo.24615619; every figure reproducible from the engine commit with the commands in <code>REPRODUCE.md</code>). Outcome keys are explained in the report.</p>';
     var bar = document.createElement('div'); bar.className = 'fx-strip-bar'; box.appendChild(bar);
     cols.forEach(function (c, j) { if (!cat[j]) return; var l = document.createElement('label'); l.className = 'fx-note'; l.textContent = c + ' ';
       var s = document.createElement('select'); s.innerHTML = '<option value="">all</option>' + cat[j].map(function (k) { return '<option value="' + esc(k) + '">' + esc(fmt(k)) + '</option>'; }).join('');

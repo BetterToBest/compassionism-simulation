@@ -1,5 +1,7 @@
 # Who loses when inflation wipes out a debt: a creditor side for household debt
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 13, 2026. Pilot: seeds 1-100, 500 adults, 20 years, three environments, engine `f7572fd`. A pilot is a mechanism check, not a result; the frozen 500-seed batch decides. Preregistered before the build, before any coefficient was computed and before any run (research-update `prereg/2026-11-s71-creditor-side.md`, with one dated amendment before the pilot). Tables: `dev/runs/s71-creditors/tables.md`. Per-seed files: compassionism-sim-results `s71-creditors-f7572fd`.
 
 ## In short

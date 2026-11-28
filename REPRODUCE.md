@@ -1,5 +1,7 @@
 # Reproduce every published table and figure
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 This page gives the commands and fingerprints that regenerate every published figure: first for **v5.9**, the current release (rebuilt Nov 17, 2026), then for v5.3, whose data still drive the v5.6 panels of the pages. The model is described in [MODEL_SPEC.md](MODEL_SPEC.md) and [ODD.md](ODD.md); the switches in [TESTBED_SPEC.md](TESTBED_SPEC.md), section 0 for v5.9's main row.
 
 ## v5.9

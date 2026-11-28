@@ -1,5 +1,7 @@
 # Why wealth looks better at a 10% PTF share, how much of every wealth result is the erosion of opening savings, and the wealth harm with adults outside the labour force (Nov 10, 2026)
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 A trace, not a study of the programme. Preregistered before any run (research-update `prereg/2026-11-s66-low-share-trace.md`). No engine change: the engine is main at `78e1dd7`. The tool `dev/tools/s66_trace.js` runs its own copy of the engine with a read-only probe, and its preregistered check proves the copy gives the harness's outputs exactly (7,080 row-keys, seeds 1-5). Seeds 1-100, 500 adults, on the session machine. Tables: `dev/runs/s66-trace/tables.md` (from `dev/tools/s66_table.py`). Per-seed, per-year files: compassionism-sim-results `s66-trace-4e9d841`. Intervals are 95% paired-bootstrap intervals over seeds, unadjusted. No published figure changes here.
 
 ## In plain words
