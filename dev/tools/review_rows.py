@@ -80,9 +80,12 @@ ATTRIB = ('The math and code of this simulation were engineered by Claude, an AI
           'The model has not yet been reviewed by an independent economist; the full code is open for anyone to check, and expert collaborators are welcome.')
 
 
+NOTE = '> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.'
+
+
 def md():
     head = ['| # | Check | Where | What the model does today | Agree / disagree / cannot tell, and why |', '|---|---|---|---|---|']
-    o = ['# Economist review checklist (v5.9)', '', INTRO, '', 'Send it by opening an issue with the "Economist review" template (Issues, New issue), or by a comment on the pull request or discussion where you found the model.', '']
+    o = ['# Economist review checklist (v5.9)', '', NOTE, '', INTRO, '', 'Send it by opening an issue with the "Economist review" template (Issues, New issue), or by a comment on the pull request or discussion where you found the model.', '']
     for i, (_, g, a, w, m) in enumerate(ROWS, 1):
         if i == 1: o += [FIRST, ''] + head
         if g == 'rest' and ROWS[i - 2][1] == 'first': o += ['', REST, ''] + head
