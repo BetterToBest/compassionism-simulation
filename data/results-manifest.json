@@ -8,7 +8,18 @@
    "status": "published Nov 28, 2026 (CC BY 4.0)",
    "title": "Compassionism Simulation: study results (recovered folders, engine v5.9.23 release and earlier runs)",
    "concept_doi": "10.5281/zenodo.24615618",
-   "published": "2026-11-28"
+   "published": "2026-11-28",
+   "copies": [
+    {
+     "host": "osf",
+     "project": "7v5ur",
+     "url": "https://osf.io/7v5ur/",
+     "folder": "zenodo-24615619",
+     "files": 60,
+     "copied": "2026-11-28",
+     "checked": "every file: OSF MD5 equals Zenodo MD5"
+    }
+   ]
   }
  },
  "folders": {
