@@ -5,8 +5,10 @@
    "doi": "10.5281/zenodo.24615619",
    "url": "https://doi.org/10.5281/zenodo.24615619",
    "host": "zenodo",
-   "status": "draft (complete; waiting for Duke to press Publish)",
-   "title": "Compassionism Simulation: study results (recovered folders)"
+   "status": "published Nov 28, 2026 (CC BY 4.0)",
+   "title": "Compassionism Simulation: study results (recovered folders, engine v5.9.23 release and earlier runs)",
+   "concept_doi": "10.5281/zenodo.24615618",
+   "published": "2026-11-28"
   }
  },
  "folders": {
