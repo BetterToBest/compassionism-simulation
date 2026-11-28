@@ -1,5 +1,7 @@
 # Policy levers: what a government running the programme could set, and what each does (pilot, stages 1-3)
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 5, 2026 · the policy-levers study · study N · Claude
 
 **PILOT.** Seeds 1-50 on GitHub Actions. These numbers decide only what the full study (seeds 1-500 to choose, 501-1000 to confirm, after the design freeze) must contain. They are not figures of the model and should not be quoted as findings. Stage 3 (the confirmation on fresh seeds 51-100) is reported below; it is labelled pilot too.

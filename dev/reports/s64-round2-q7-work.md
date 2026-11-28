@@ -1,5 +1,7 @@
 # The v5.9 model, question 7: work, participation and hours at the main row
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 15, 2026. Engine `104691f`, the main row (full backing, a design parameter), seeds 1-500, three environments, 20 and 40 years; 500 adults, with the 10,000-adult main pair beside it. Preregistered: research-update `prereg/2026-11-s63-round2-freeze.md` (Q7; secondary family, Holm within each table). Results: compassionism-sim-results `r2-m-*-104691f/` and `r2-b-*-104691f/`. Tables: `dev/runs/s64-round2/s64-q7-work.md` (`python3 dev/tools/s64_tables.py`).
 
 ## In short

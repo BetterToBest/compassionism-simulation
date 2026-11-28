@@ -1,5 +1,7 @@
 # The price level in an outside engine: BeforeIT.jl with a Basic Unit
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Part 1, Nov 8, 2026: the design, the engine side, the outside engine built and checked, the runs dispatched. Part 2, Nov 9, 2026: BeforeIT's results (sections 4-6), read by the preregistered decision rules. Preregistration: research-update `prereg/2026-11-s39-outside-crosscheck.md`. Code: compassionism-sim-results `runner/jobs/s39-path.js`, `runner/jobs/beforeit.js`, `runner/jobs/beforeit/`. No engine change.
 
 ## In plain words (part 2: the results)

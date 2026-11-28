@@ -1,5 +1,7 @@
 # What it takes to back the new money: pilot results (PILOT)
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 2, 2026 · the backing study · Claude
 
 **This is a pilot.** 50 seeds on GitHub Actions. The figures below decide only what the design freeze carries into the full study; they are not figures of the model. The full study (seeds 1-500) runs after the freeze. Preregistration: `prereg/2026-11-backing-addendum.md` in BetterToBest/research-update (study M), committed before any run. Engine: commit `6428b96`. Per-seed values: BetterToBest/compassionism-sim-results, folder `s51-backing-6428b96/` (run.txt, SHA256SUMS; workflow run 41373143374). Every table: `dev/reports/s51-backing-tables.md`, made by `python3 dev/tools/s51_backing.py ../compassionism-sim-results/s51-backing-6428b96 --out dev/reports/s51-backing-tables.md`. Claude's reading of the design, written before the run: `dev/reports/s51-backing-reading.md`.

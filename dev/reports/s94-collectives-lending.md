@@ -1,5 +1,7 @@
 # The Creative Collectives' lending to community businesses, and charters of public utilities: what the model finds
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 21, 2026 · engine v5.9.21 (`c5682f9`) · preregistered before any build or run (BetterToBest/research-update `prereg/2026-11-s94-collectives-lending.md`, with two amendments written before any run) · Claude. How the design was read before the build: [the reading note](s94-collectives-lending-reading.md).
 
 ## 1. What was asked

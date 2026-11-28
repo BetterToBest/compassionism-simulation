@@ -1,5 +1,7 @@
 # The v5.9 model, question 1: what each design does at the main row
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 15, 2026. The v5.9 batch of the Compassionism Simulation, read as frozen. Engine `104691f` (compassionism-simulation pull request 107), 500 adults, seeds 1-500, Reference, Adverse and Stress, 20 and 40 years. Preregistered before any run: research-update `prereg/2026-11-s63-round2-freeze.md` (with three dated amendments; the third, after the results were read, records the checks and five points of reading, and changes no outcome or rule). Results: compassionism-sim-results `r2-m-<env>-<years>-104691f/` (part `M`, every key at full precision, with `run.txt` and `SHA256SUMS`). Tables: `dev/runs/s64-round2/s64-q1-main.md`, made by `python3 dev/tools/s64_tables.py`.
 
 ## In short

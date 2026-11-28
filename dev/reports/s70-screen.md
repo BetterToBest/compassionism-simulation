@@ -1,5 +1,7 @@
 # Which assumptions move the headline: the v5.9 screen
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 14, 2026. A screen of every swept reading of the v5.9 model, moved together. Engine `8b96cdd` (main after the second implementation, unchanged), the candidate main row (`r2MainRow`), 500 adults, 20 years, Reference and Adverse, seeds 1-40. Preregistered before any run (research-update `prereg/2026-11-s70-screen.md`, with two dated amendments: the first before dispatch, the second after the results were read; no rule changed). Results: compassionism-sim-results `s70-screen-s-8b96cdd/` and `s70-screen-f-8b96cdd/` (per-seed shard files, `run.txt`, `SHA256SUMS`, and these tables). Tables: `dev/runs/s70-screen/s70-S-tables.md` and `s70-F-tables.md`, made by `node dev/tools/s70_table.js`.
 
 A screen ranks readings. It does not estimate the programme's effect: its points are off the main row and its seeds are few. No figure in this note is a headline figure.

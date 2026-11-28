@@ -1,5 +1,7 @@
 # The v5.9 model, question 5: the designs paid for by a contribution, the rest borrowed
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 15, 2026. The financed rows of the v5.9 batch, read as frozen. **By Duke's decision, these rows are carried beside the main rows and never led with.** Engine `104691f`, 500 adults, seeds 1-500, three environments, 20 and 40 years. Preregistered: research-update `prereg/2026-11-s63-round2-freeze.md` (Design, financed rows; decision rule 5; Amendment 3). Results: compassionism-sim-results `r2-m-*-104691f/` (the financed main rows, full precision) and `r2-f-*-104691f/` (their curves). Tables: `dev/runs/s64-round2/s64-q5-financed.md`, and the financed section of `s64-q2-curves.md`.
 
 ## In short

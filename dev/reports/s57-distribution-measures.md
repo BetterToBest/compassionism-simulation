@@ -1,5 +1,7 @@
 # Distribution measures: what was added, and what the pilot shows
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Plain-words report. Preregistration: BetterToBest/research-update `prereg/2026-11-s57-distribution-measures.md` (with Amendment 1 of Nov 9). Engine: this repository, branch `claude/s57-distribution-measures`, tool commit `f156393`. Results: BetterToBest/compassionism-sim-results `s57-distribution-f156393` (per-seed values, `tables.md`, `estimates.csv`, run.txt, SHA256SUMS).
 
 ## What this step is

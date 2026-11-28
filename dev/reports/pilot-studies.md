@@ -1,5 +1,7 @@
 # Pilot studies: what the full study batch needs
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 **PILOT.** Every figure in this report comes from pilot runs: 50 seeds, 500 to 10,000 adults. None of them is a headline figure. The pilots were run to find out what the full batch (500 seeds) must contain, and how long it will take. The full batch, run once as frozen in the design freeze, is where findings come from.
 
 - Preregistration: research-update `prereg/2026-11-study-program.md`, with amendment 1 (engine commit, job script, choices made before any run).

@@ -1,5 +1,7 @@
 # The BU's two-year swing: a private business's lower BU price paid a year late
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 18, 2026. Written by Claude. A plain-words report of the research-update plan's step on this swing; the full decision is in `dev/DECISIONS.md` (Nov 18, "the two-year cycle in the BU's relief").
 
 ## What was seen

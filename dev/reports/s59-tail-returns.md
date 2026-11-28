@@ -1,5 +1,7 @@
 # The top of the wealth distribution, business owners and the income wealth pays
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Nov 13, 2026. Pilot: seeds 1-100, 500 adults, 20 years, three environments, engine `62a189b`. A pilot is a mechanism check, not a result; the frozen 500-seed batch decides. Preregistered before the build and before any run (research-update `prereg/2026-11-s59-tail-returns.md`, with dated amendments). Tables: `dev/runs/s59-tail/tables.md`. Per-seed files: compassionism-sim-results `s59-tail-62a189b`. Part 1 of this step is `dev/reports/s59-asset-classes.md`.
 
 ## In short

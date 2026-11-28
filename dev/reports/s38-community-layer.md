@@ -1,5 +1,7 @@
 # Community-layer report: does reading the Hub's density tests in each community change the results?
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 **Full study batch.** Every figure here comes from the preregistered batch: seeds 1-500, run once as frozen. These are not pilot figures, and no pilot of these rows was run.
 
 - Preregistration: research-update `prereg/2026-11-community-layer.md` (questions Q7-Q10, decision rules 1-6), with its Amendment 1 (the frozen engine and both designs). It uses the study programme's outcomes and analysis unchanged (`prereg/2026-11-study-program.md`, with Amendments 2, 4, 9 and 10). How the rows are built: research-update `prereg/run-manifest.md`, section 3 (G, G10, H, I, J).

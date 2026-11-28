@@ -1,5 +1,7 @@
 # Open PTF access: what changes when anyone can buy at PTF prices
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 **Full 500-seed runs.** Every figure here comes from the preregistered runs: seeds 1-500, run once as preregistered, paired seed by seed with the frozen batch. These are not pilot figures. The pilot (seeds 1-50) was a check only; its rows equal the first 50 seeds of these runs.
 
 - Preregistration: research-update `prereg/2026-11-ptf-access-addendum.md` (questions Q24-Q28, decision rules 1-6), committed before any run of these rows. It keeps the study programme's outcomes and analysis (`prereg/2026-11-study-program.md`) and the community-layer addendum's (`prereg/2026-11-community-layer.md`) unchanged. Run manifest Amendments 6 and 7 (shards, run links).

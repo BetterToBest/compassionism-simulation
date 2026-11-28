@@ -1,5 +1,7 @@
 # Testbed specification: every switch and alternative mechanism
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 **How to read this file for v5.9 (rebuilt Nov 17, 2026).** v5.9 is the current release (engine `104691f`, frozen Nov 14, 2026 without a central bank, and first published as v5.8; v5.9 added the central-bank switch). Its main row is set out option by option in section 0 below. Sections 1 to 5 were written for v5.6 and earlier: where their status column says "Main result", it means **v5.6's release row** (nothing backed, the spending share 0.593), not v5.9's; the lines where v5.9 differs say so. Section 6 is the frozen model (Nov 6, 2026); section 7 gives the plain name of every row option and its value in the candidate main row, which is v5.9's main row apart from the two items section 0 marks. Results: compassionism-sim-results `r2-<part>-<env>-<years>-104691f`; commands and fingerprints in [REPRODUCE.md](REPRODUCE.md), section "v5.9".
 
 ## 0. v5.9's main row, option by option

@@ -1,5 +1,7 @@
 # A third, independent implementation of the simulation: the candidate main row of round 2
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 *Report for Duke Johnson, November 14, 2026 (research-update step S69, part 2; phase 1).*
 
 **Note on the title (Nov 17, 2026; the release reviews' triage, research-update `audits/2026-11-release-review-triage.md`).** This program was written from the description with the engine's code excerpts and per-seed results to check against, so it is not an independent model. Its exact agreement shows that the description, the code and a careful port agree, and it found three gaps between the description and the code. It cannot catch a modelling choice that both share, for example that the model has no limit on what the economy can supply. The findings below stand.

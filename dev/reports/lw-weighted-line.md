@@ -1,5 +1,7 @@
 # The cost-of-living line, weighted by where people live
 
+> **Note (Nov 28, 2026).** The results repository named in this document, `BetterToBest/compassionism-sim-results`, is offline: GitHub disabled it. Every figure can be reproduced from the engine commit named beside it, with the commands in `REPRODUCE.md`. The results folders are deposited in an archive with a permanent identifier, DOI 10.5281/zenodo.24615619 (copied on OSF at osf.io/7v5ur); folders not in the archive are listed in `data/results-manifest.json`.
+
 Oct 31, 2026 · the weighted cost-of-living line · Claude · engine switch `LW` (study row option `lw`), off by default · preregistration: research-update `prereg/2026-11-lw-weighted-line.md` (study L)
 
 ## Why this step
